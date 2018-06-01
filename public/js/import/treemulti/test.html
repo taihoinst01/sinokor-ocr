@@ -1,0 +1,73 @@
+<!DOCTYPE html5>
+<html>
+  <head>
+    <title>Tree Multiselect test</title>
+
+    <meta charset="UTF-8">
+
+    <script src="/js/treemulti/lib/jquery-1.11.3.min.js"></script>
+    <script src="/js/treemulti/lib/jquery-ui.min.js"></script>
+    <script src="/js/treemulti/src/jquery.tree-multiselect.js"></script>
+
+    <style>
+      * {
+        font-family: sans-serif;
+      }
+    </style>
+    <link rel="stylesheet" href="/js/treemulti/dist/jquery.tree-multiselect.min.css">
+  </head>
+
+  <body>
+    <select id="test-select" multiple="multiple">
+      <option value="C1"  data-section="C">T1</option>
+      <option value="C2"  data-section="C">T2</option>
+      <option value="C3"  data-section="C">T3</option>
+
+      <option value="C11"  data-section="C/C1">T11</option>
+      <option value="C12"  data-section="C/C1">T12</option>
+      <option value="C21"  data-section="C/C2">T21</option>
+      <option value="C22"  data-section="C/C2">T22</option>
+      <option value="C23"  data-section="C/C2" data-description="help msg" selected="selected">T23</option>
+    </select>
+
+    <script type="text/javascript">
+      $("#test-select").treeMultiselect({
+
+          // Sections have checkboxes which when checked, check everything within them
+      //allowBatchSelection: true,
+
+      // Selected options can be sorted by dragging
+      // Requires jQuery UI
+      //sortable: false,
+
+      // Adds collapsibility to sections
+      //collapsible: true,
+
+      // Disables selection/deselection of options; aka display-only
+      //freeze: false,
+
+      // Hide the right panel showing all the selected items
+      //hideSidePanel: false,
+
+      // Only sections can be checked, not individual items
+      //onlyBatchSelection: false,
+
+      // Separator between sections in the select option data-section attribute
+      //sectionDelimiter: '/',
+
+      // Show section name on the selected items
+      //showSectionOnSelected: true,
+
+      // Activated only if collapsible is true; sections are collapsed initially
+      //startCollapsed: false,
+
+      // Callback
+      //onChange: null
+
+      enableSelectAll: true,
+            sortable: true
+
+          });
+    </script>
+  </body>
+</html>

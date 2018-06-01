@@ -1,0 +1,9 @@
+﻿body {
+}
+#accordionDiv{text-align:center}
+#accordionDiv, #formOcrDetailDiv {
+    display: none;
+}
+.accordionBtn {
+   
+}

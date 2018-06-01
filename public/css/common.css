@@ -1,0 +1,207 @@
+﻿/* ----------------------------------------------------------------------------------------------------
+Site : TIIZ_OCR_Service
+Version :  2018.03
+---------------------------------------------------------------------------------------------------- */
+
+@charset "utf-8";
+
+/* 기본 table */
+.Tbl_wrap{width:100%;display:inline-block;border-top: solid 2px #244db7}
+.Tbl_wrap02{height:405px; overflow-x:hidden; overflow-y:auto}
+.Tbl_wrap_br{width:98%;display:inline-block; border:solid 1px #eee; padding:1%}
+.Tbl {border-collapse:collapse;width:100%; clear:both;  }
+/*.Tbl tbody tr:hover{ background-color:#eee; cursor:pointer}*/
+.Tbl th { height:35px; color: #244db7;  text-align:left; font-weight:800; text-align:center; line-height:16px;border-bottom: 1px solid #244db7; font-size:14px; background-color:#fbfcff}
+.Tbl td{height:40px;  border-bottom: 1px solid #cccdce;text-align:center;line-height:18px; padding:5px 0  5px 0;word-break:break-all}
+.Tbl td a {color: #4e5056; font-weight:600 }
+.Tbl td a:hover{ color:#0574b3; text-decoration:underline}
+
+.bbs_tex01{ font-weight:600; color:#000}
+.bbs_tex02{ font-size:11px; display:block}
+.sortarr_up{ width:10px; height:11px; background:url(../images/btn_sort.gif) no-repeat 0 0; display:inline-block; margin-left:5px}
+.sortarr_down{ width:10px; height:11px; background:url(../images/btn_sort.gif) no-repeat 0 -76px; display:inline-block;margin-left:5px}
+.sub_cont_r {
+    width: 500px;
+    height: 640px;
+    float: left;
+    margin-left: 25px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px
+}
+
+.sub_cont_r02 {
+    width: 605px;
+    height: 640px;
+    float: left;
+    margin-left: 25px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    display: none;
+}
+/* 버튼영역 */
+.tbl_area {
+    width: 100%;
+    display: inline-block;
+    margin: 10px 0 10px 0;
+    line-height: 30px;
+    height: 30px
+}
+
+    .tbl_area.gridw {
+        height: auto;
+        margin-bottom: 30px
+    }
+
+.tbl_area_l {
+    width: 70%;
+    float: left;
+    text-align: left
+}
+
+.tbl_area_r {
+    width: 30%;
+    float: right;
+    text-align: right
+}
+/* Button */
+
+
+
+.btn.b02 {
+    background-color: #244db7;
+}
+
+    .btn.b02:hover {
+        background-color: #19398d
+    }
+
+.btn.b03 {
+
+    height: 29px;
+    line-height: 29px;
+    background-color: #fff;
+    border: solid 1px #c9cbcb;
+    color: #444;
+    padding: 0 6px 0 6px !important;
+}
+
+    .btn.b03:hover {
+        border: solid 1px #fd8f07 !important;
+        color: #fd8f07
+    }
+
+    .btn.b03.on {
+        border: solid 1px #fd8f07 !important;
+        background: url(../images/ico_check.gif) no-repeat 5px center;
+        padding-left: 17px !important;
+        color: #fd8f07
+    }
+/* 양식분석결과 */
+.rbox {
+    width: 450px;
+    height: 490px;
+    padding: 20px;
+    border: solid 1px #c3c3c3;
+    border-radius: 5px;
+    margin-top: 15px;
+    text-align: center
+}
+
+    .rbox .tex01 {
+        font-size: 22px;
+        font-weight: bold;
+        color: #6a6b6c;
+        margin: 30px 0 20px 0
+    }
+
+    .rbox .tex02 {
+        width: 100%;
+        font-size: 22px;
+        border-top: solid 1px #d8d8d8;
+        border-bottom: solid 1px #d8d8d8;
+        display: inline-block;
+        padding: 60px 0 30px 0
+    }
+
+        .rbox .tex02 .tnum01 {
+            color: #fd8f07;
+            font-size: 55px;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 20px
+        }
+
+        .rbox .tex02 .tnum02 {
+            color: #6a6b6c;
+            font-size: 22px;
+            font-weight: 600;
+            vertical-align: middle;
+            display: inline-block;
+            margin-top: 10px
+        }
+
+        .rbox .tex02 img {
+            vertical-align: middle;
+            margin-right: 5px
+        }
+
+        .rbox .tex02 .tnum03 {
+            display: block;
+            margin-top: 15px
+        }
+
+.rbox_wrap {
+    width: 100%;
+    display: inline-block;
+    margin-top: 45px
+}
+
+    .rbox_wrap .rb_l {
+        width: 45%;
+        float: left;
+    }
+
+    .rbox_wrap .rb_c {
+        width: 10px;
+        height: 135px;
+        border-left: dotted 1px #999;
+        float: left;
+        margin-left: 20px;
+        margin-right: 10px;
+    }
+
+    .rbox_wrap .rb_l .t01 {
+        font-size: 40px;
+        font-weight: 800;
+        color: #000;
+        margin: 30px 0 35px 0
+    }
+
+    .rbox_wrap .rb_l .t04 {
+        font-size: 40px;
+        font-weight: 800;
+        color: #fd8f07;
+        margin: 30px 0 35px 0
+    }
+
+    .rbox_wrap .rb_l .t05 {
+        font-size: 18px;
+        color: #505152;
+        margin-bottom: 15px
+    }
+
+.rbox .info_m {
+    width: 100%;
+    height: 176px;
+    background: url(../images/ico_info.gif) no-repeat center 0;
+    font-size: 18px;
+    padding: 110px 0 0 0;
+    margin-top: 120px;
+    line-height: 24px
+}
+
+
+
+ 

@@ -1,0 +1,196 @@
+
+.fl{ float:left}
+.fr{ float:right}
+.left_set{ width:13px; height:17px; border:none; outline:none; background:url(../../image/icon_01.png) no-repeat 0 0; display:inline-block; vertical-align:middle; float:right; margin-right:2px; }
+.left_set:hover{ background-position:0 -185px}
+.dropdown-toggle span{ width:9px; height:30px; background:url(../../image/ico_arr01.gif) no-repeat  0  8px; display:inline-block; float:right; margin-right:15px }
+.dropdown-toggle span.dropp{ width:10px !important; height:10px !important; display:inline-block; padding:0px !important; margin-right:0px !important}
+.dropdown-menu.dropp_body{ width:380px !important;  background-color:#fff; border:solid 1px #ddd; left: -150px !important; padding:10px !important}
+
+.out{width:100%;text-align:center;padding:20px;margin:15px;}
+/*.in{display:inline-block;width:50%;}*/
+input[type=file] {display:none}
+.bt {border-top:1px solid black}
+.br { border-right: 1px solid black}
+.bb { border-bottom: 1px solid black}
+.bl { border-left: 1px solid black}
+.w50{ width:45%;}
+.mr30{ margin-right:30px}
+.mr10{ margin-right:10px}
+.ml10{ margin-left:10px}
+.ml05{ margin-left:5px}
+.mt20{ margin-top:20px} 
+.mt50{ margin-top:50px}
+.mb05{ margin-bottom:5px}
+.tc{ text-align:center}
+.hc{ display:none}
+
+/* input radio*/
+.icheckbox_flat-green,.iradio_flat-green {display: inline-block; *display: inline;vertical-align: middle; margin: 0;padding: 0; width: 20px;height: 20px;background: url(../../image/blue.png) no-repeat; border: none; cursor: pointer;}
+.icheckbox_flat-green { background-position: 0 0;}
+.icheckbox_flat-green.checked { background-position: -22px 0;}
+.icheckbox_flat-green.disabled { background-position: -44px 0; cursor: default;}
+.icheckbox_flat-green.checked.disabled {background-position: -66px 0;}
+.iradio_flat-green { background-position: -88px 0;}
+.iradio_flat-green.checked { background-position: -110px 0;}
+.iradio_flat-green.disabled {background-position: -132px 0; cursor: default;}
+.iradio_flat-green.checked.disabled {background-position: -154px 0;}
+
+/* 필수입력*/
+.content-header>.nec { float:right; font-size:12px; color:#747475; margin-top:-15px }
+.nec_ico{ font-size:16px; color:#6999ed; margin:0 5px 0 5px; display:inline-block; font-weight:bold}
+.nec02 { float:left; font-size:12px; color:#747475;}
+
+/* circle*/
+.img-circle { width:18px; height:18px;border-radius: 20px;  margin:8px 0 0 15px; vertical-align:middle;float:left;cursor:pointer }
+.img-circle_s { width:12px; height:12px;border-radius:12px;  display:inline-block; margin:15px 0  5px 0 }
+.img-circle_s .co01 {  background:#f8cd36;}
+.img-circle_l { width:52px; height:52px;border-radius: 60px;;  margin:8px 0 0 15px; vertical-align:middle; float:left;}
+.img-circle_wrap{ float:left; margin:0 0 20px 10px}
+.img-circle_wrap02{ float:left;margin:20px 0 20px 20px; }
+.circle_col{}
+.circle_col:hover{ color:#fff !important}
+.color_01{ background-color:#f8cd36}
+.color_02{ background-color:#ff7659}
+.color_03{ background-color:#f26175}
+.color_04{ background-color:#5ca7df}
+.color_05{ background-color:#9e7ac2}
+.color_06{ background-color:#56dea7}
+.color_07{ background-color:#00b6de}
+.color_08{ background-color:#26b373}
+.color_09{ background-color:#466f85}
+.color_10{ background-color:#9bbb58}
+.color_11{ background-color:#58bbb1}
+.color_12{ background-color:#c57bbf}
+.color_13{ background-color:#586fbb}
+.color_14{ background-color:#39aac6}
+.color_15{ background-color:#d0412f}
+.color_sel{ border:solid 3px #42454a}
+
+/* chat_list*/
+.box_chatlist_h{ width:100%; height:20px; display:inline-block; border-radius:3px 3px 0px 0px;}
+.box_chatlist_h .lan{ float:right; font-size:11px; display:inline-block; margin-right:5px; font-weight:bold; line-height:20px}
+.box-body .title{ font-size:22px; font-weight:bold !important; color:#000 !important; display: inline-block}
+.box-body .title:hover,.title span:hover{ color:#ff7659 !important}
+.box-body .title span{ font-size:14px; font-weight:normal; display:block; color:#5a5c5f; margin-top:5px}
+.chatlis_result{ width:100%; height:56px; border-top:solid 1px #e6e6e6; line-height:52px;}
+.chatlis_result .re01{ width:50%; float:left; text-align:center;border-right:solid 1px #e6e6e6;}
+.chatlis_result .re02{ width:47%; float:right; text-align:center;}
+.chatlis_result span{ font-weight:bold; color:#5181ae; display:inline-block; margin-left:5px; font-size:16px}
+
+/* 기본 table */
+.Tbl_wrap{width:100%;display:inline-block;border-top: solid 2px #5181ae;}
+.Tbl_wrap_br{width:98%;display:inline-block; border:solid 1px #eee; padding:1%}
+.Tbl {border-collapse:collapse;width:100%; clear:both;  }
+/*.Tbl tbody tr:hover{ background-color:#eee; cursor:pointer}*/
+.Tbl th { height:40px; color: #003364;  text-align:left; font-weight: bold; text-align:center; line-height:16px;border-bottom: 1px solid #5181ae; font-size:14px}
+.Tbl td{height:40px;  border-bottom: 1px solid #cccdce;text-align:center;line-height:18px; padding:5px 0  5px 0;word-break:break-all}
+.Tbl tr.sel:hover{ background:#eee; cursor:pointer; }
+.Tbl tr.select{ background-color:#fdf5d9}
+.Tbl td.nobol{ border-left:none}
+.Tbl td .link{ color:#0257ba}
+.Tbl td .link:hover{ color:#054086; text-decoration:underline}
+.Tbl td.tex01{ color:#000}
+.txt_left{ text-align:left !important; padding-left:5px !important}
+.txt_left02{ text-align:left !important; padding-left:25px !important}
+.txt_right{ text-align:right !important;padding-right:5px !important}
+.txt_right02{ text-align:right !important;padding-right:25px !important}
+.txt_center{ text-align:center ; padding:0px !important}
+
+
+/* 대화상자 */
+.dialog_wrap{ width:100%; display:inline-block; margin-top:10px}
+.dialog_l{ width:6%; float:left; text-align:right}
+.dialog_r{ width:94%; float:left; padding-left:7px}
+.dialog_box{ width:98%; height:450px; background-color:#e6e9ec; border-radius:5px; display:inline-block; padding:1%; overflow-x:hidden; overflow-y:auto  }
+.dialog_result{ width:100%; clear:both; padding-left:25px}
+.dialog_result strong{ color:#ff6b00}
+.dialog_box02{ width: 850px; height:420px;display:inline-block; overflow-y:hidden; overflow-x:auto ; margin-left:25px}
+.dialog_box03{ width:98%; height:530px; background-color:#e6e9ec; border-radius:5px; display:inline-block; padding:1%; overflow-x:hidden; overflow-y:auto  }
+.chat_box_wrap{width: -moz-max-content; 
+    width: -webkit-max-content;
+    width: -o-max-content;
+    width: -ms-max-content;width:850px;height:420px; display: inline-block; overflow-y:auto; overflow-x: hiiden;}
+.chat_box{ width:47%; height:400px; display:inline-block; background-color:#e6e9ec;border-radius:5px; float:left; padding:15px; margin:0  20px   25px 0}
+
+.modal_con{ width:100%;display:inline-block}
+.dialog_w { width:100%; height:350px; overflow-x:hidden; overflow-y:auto;  }
+
+/* 유의어추가 */
+.more { display:block;width:19px;height:19px; background:url(../../image/btn_addp.png) no-repeat 0 0; margin-left:5px}
+.more:hover, .close:hover { cursor:pointer;}
+.close {display:block;width:19px;height:19px;background:url(../../image/btn_addp.png) no-repeat 0  -123px;margin-left:5px}
+.board {position:absolute;top: auto;left: auto;width:380px;background:#fff; visibility:hidden; display:block; margin-top:30px; z-index:99999999999; border:solid 1px #ddd; border-radius: 5px}
+.board li{ list-style:none}
+.board li.inp{}
+.board ul{ padding:15px  15px  30px  15px}
+
+/* 시뮬레이션 바 */
+.control-sidebar .hd_top { width:100%; height:50px; background-color:#63717e; display:inline-block}
+.control-sidebar .hd_top h4{ font-size:16px; color:#fff !important; display:inline-block; float:left; margin:0 0 0 20px; line-height:50px}
+.control-sidebar .hd_top .fa{ font-size:18px !important; font-weight: 200 !important}
+.control-sidebar .chat_con{ width:100%; padding:15px}
+
+.row.search_op{}
+.row.search_op label { line-height:35px}
+.admin_mtit{ width:100%; font-size:16px; text-align:center; display:inline-block; font-weight:bold; margin-left:-20px}
+
+.login_footer { width:100%; text-align:center;color: #444 ;font-size:11px; margin-top:25px}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

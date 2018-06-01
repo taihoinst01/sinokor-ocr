@@ -1,0 +1,124 @@
+﻿@charset 'utf-8';
+/*2017.06.21 수정 START -- pcLink에서 버튼 클릭시 코나봇 하단 고정하기*/
+body{margin: 0;    font-family: HyundaiSansTextKRRegular, HyundaiSansTextKRRegular, sans-serif; font-size: 12px;color: #999;}
+  #wrapper { /*position: relative;width: 100%;*/ /*background: url(../images/bg_visual.jpg) no-repeat center;background-color: #000000;*/}
+.motion-cont{ }
+.bot-wrap{width: 880px;/*min-height:352px;*/ margin: auto;position: fixed;bottom: 0;right: 0%; z-index:99;}
+/*2017.06.21 수정 END*/
+/*
+.panel-chart {  background:#34373c;box-shadow:0 10px 20px 0 rgba(0,0,0,0.30);border-radius:5px 5px 0 0;width: 310px; height: 352px;position: absolute; bottom: 0;left: 45%;border: 0px;}
+.panel-chart > .panel-heading { background:#34373c;border-radius:5px 5px 0 0;border: 0;height:32px;font-family:'HyundaiSansHeadKROTFMedium';font-size:14px;color:#ffffff;
+letter-spacing:-0.34px;padding: 4px 10px;}
+.panel-chart > .panel-heading + .panel-collapse > .panel-body {  border-top-color: 0}
+.panel-chart > .panel-heading .badge {  color: #f5f5f5;  background-color: #333;}
+.panel-chart > .panel-footer + .panel-collapse > .panel-body {  border-bottom-color: #ddd;}
+.panel-chart > .panel-body{background:#f1f3f6;width:310px;height:285px;}
+.panel-chart > .panel-footer{background:#ffffff;width:310px;height:36px; border-radius: 0;padding: 0}
+*/
+button{cursor: pointer;}
+ol, ul, menu { list-style: none; }
+.icoBubble{background: url(../images/ico_bubble.png) no-repeat;  width:21px;height:19px;display: inline-block;top: 2px;left:2px;    position: relative;   margin-right: 3px;}
+.icoTitle{background: url(../images/ico_title.png) no-repeat; height:14px;width:37px; display: inline-block;top: 9px; position: absolute; }       
+/*.btnMax{background: url(../images/ico_max.png) no-repeat;  width:14px;height:14px;display: inline-block;top: 9px; right: 32px;
+ position: absolute; }   
+ .btnMin{background: url(../images/ico_min.png) no-repeat;  width:14px;height:14px;display: inline-block;top: 9px; right: 32px;
+ position: absolute; }    
+.btnClose{background: url(../images/ico_close.png) no-repeat;  width:14px;height:14px;display: inline-block;top: 9px; right: 10px;
+ position: absolute;  }*/     
+.btnMenu{background: url(../images/ico_mMenu.png) no-repeat; background-size: 100%; width:21px;height:21px;display: inline-block;top:6px;left:9px;position: relative;cursor: pointer;} 
+.icoShaka{background: url(../images/ico_shaka.png) no-repeat; background-size: 100%; width:21px;height:21px;display: inline-block;top: 5px;left:17px;position: relative; cursor: pointer;} 
+
+.btnMax{background: url("https://bottest.hyundai.com/assets/images/01_title_min_btn@1x.png") no-repeat;  width:14px;height:14px;display: inline-block;top: 9px; right: 57px;position: absolute; }    
+.btnMin{background: url("https://bottest.hyundai.com/assets/images/01_title_max_btn@1x.png") no-repeat;  width:14px;height:14px;display: inline-block;top: 9px; right: 57px;position: absolute; }    
+.btnLayerFull{background: url("https://bottest.hyundai.com/assets/images/01_title_full_btn@1x.png") no-repeat;  width:14px;height:14px;display: inline-block;top: 9px; right: 32px;position: absolute; }
+.btnLayerMid{background: url("https://bottest.hyundai.com/assets/images/01_title_mid.png") no-repeat;  width:14px;height:14px;display: inline-block;top: 9px; right: 32px;position: absolute; }
+.btnClose{background: url("https://bottest.hyundai.com/assets/images/01_title_close_btn@1x.png") no-repeat;  width:14px;height:14px;display: inline-block;top: 9px; right: 10px;position: absolute;  }
+.chatTitle{background: url("https://bottest.hyundai.com/assets/images/title_icn_text_Final2.png") no-repeat; height:18px;width:85px; display: inline-block;top: 9px; position: absolute; }
+/*.chatVersion{background: url("https://bottest.hyundai.com/assets/images/beta_icn_US_38x17.png") no-repeat; height:18px;width:38px; display: inline-block;top: 7px; left:98px; position: absolute; }*/
+.chatVersion{background: url(../images/beta_icn_US_34x15.png) no-repeat; height:15px;width:34px; display: inline-block;top: 8px; left:97px; position: absolute; }
+.chatRecommend{background: url("https://bottest.hyundai.com/assets/images/03_chat_recommend_btn3.png") no-repeat; background-size: 100%; width:35px;height:21px;display: inline-block;top: 7px;left:18px;position: relative; cursor: pointer;} 
+.chatRecommendAction{background: url("https://bottest.hyundai.com/assets/images/03_chat_recommend_btn4.png") no-repeat; background-size: 100%; width:35px;height:21px;display: inline-block;top: 7px;left:18px;position: relative; cursor: pointer;} 
+.hamburgerBtn{background: url("https://bottest.hyundai.com/assets/images/03_chat_menu_btn_OV@1x.png") no-repeat; background-size: 100%; width:21px;height:21px;display: inline-block;top:7px;left:15px;position: relative;cursor: pointer;}
+.hamburgerBtnAction{background: url("https://bottest.hyundai.com/assets/images/03_chat_menu_btn_OUT@1x.png") no-repeat; background-size: 100%; width:21px;height:21px;display: inline-block;top:7px;left:15px;position: relative;cursor: pointer;}
+
+.wc-message-content.inBox{background: transparent;padding: 0; width: 100%;}
+.wc-card > P >i{background: url(../images/ico_360.png) no-repeat; background-size: 100%; width:50px;height:50px;position: absolute;left: 37%; top: 18%}
+/*.wc-list{width:170px;}*/
+.wc-message-from-bot .wc-message-content{width: inherit !important;}
+
+.imgBox{width:100%;}
+.imgBox img{width:568px;}
+.btnPopRight{background: url(../images/ico_popup_right.png) no-repeat; background-size: 100%; width:21px;height:36px;display: inline-block;top:43%;right:0px;position: absolute; z-index: 9} 
+
+.menuBox{width:218px;height:166px;display:none;position: absolute;bottom: 70px;right: 162px;z-index: 99;}
+.menuInner > ul{display: inline-block;margin: 0;padding: 0; width: 100%;}
+.menuInner > ul > li{border-top:1px solid #f0f1f4;width: 100%;height: 39px;cursor: pointer;}
+.menuInner > ul > li > span{font-size:13px;color:#00aad2;line-height:15px;padding: 11px 13px 7px; display: inline-block;}
+.menuInner a{font-size:13px;color:#00aad2;text-decoration: none;}
+.menuInner > p{background-color:#f1f3f6;border-radius:4px 4px 0 0;width:100%;height:31px;text-align:center;margin: 0;}
+.menuInner > p > span{font-size:12px;color:#333333;line-height:15px;    padding-top: 8px;    display: inline-block;}
+.menuInner{width: 100%;box-shadow:0 1px 10px 0 rgba(0,0,0,0.30);background:#ffffff;border:1px solid #CCC;border-radius:4px;}
+.indexIcon{background: url(../images/ico_index.png) no-repeat; width:19px;height:20px;position: absolute;bottom: -42px;left: 16px;}
+.depthMenu{background: url(../images/ico_menu_index.png) no-repeat;background-position: 195px center;}
+.depthMenuLink{background: url(../images/ico_menu_index2.png) no-repeat;background-position: 12px center; cursor: pointer;}
+.menuBoxDepth{width:218px;height:166px;display:none;position: absolute;bottom: 30px;right: 162px;z-index: 99;}
+
+.wc-message-from{display: none;}
+.popupArea{opacity:0;position: absolute;left: 200px;bottom: 176px; width:570px;height:352px;}
+.popHeader{/*background: url("https://bottest.hyundai.com/assets/images/02_contents_popup_header@1x.png") no-repeat;*/ background-color:#4b4f57; background-size: 100%;height: 32px;width: 570px; position: relative;}
+.popHeader > span{font-size: 14px;    color: #dbdbdb;    font-weight: bold;    padding: 7px 12px 0px;    display: inline-block;}
+.popHeader > button{background: url("https://bottest.hyundai.com/assets/images/01_title_close_btn@1x.png") no-repeat; width:18px;height:18px;position: absolute; right: 21px;top: 10px;}
+.popBody{background-color: #fbfbfb;height:318px; position: relative; /*border:1px solid rgba(0,0,0,0.20);*/}
+.popTxt{text-align: center;    position: absolute;    bottom:11px; width: 100%; }
+.popTxt > span{background-color:#bcbcbc; color: #FFF; border-radius: 5px; padding:4px 10px 5px;font-size: 12px;}
+
+
+.linkTest{color: #CCC; padding:10px; cursor: pointer;    position: absolute;    top: 10px;    left: 10px;}
+.wc-carousel-360 > div, .wx-carousel-map > div, .wc-carousel-play > div, .wc-carousel-image > div{cursor: pointer;}
+
+/*20170622 KSO*/	/*지도 이미지 생기면 추가해야함*/
+.imgContainer {position: relative;width: 100%;}
+.turnImg {  background: url(../images/ico_360_50.png);  width:50px;height:50px;transition: .5s ease;  opacity: 0;  position: absolute;  top: 50%;  left: 50%;  transform: translate(-50%, -50%);  -ms-transform: translate(-50%, -50%)}
+.playImg {  background: url(../images/ico_play_50.png);  width:50px;height:50px;transition: .5s ease;  opacity: 0;  position: absolute;  top: 50%;  left: 50%;  transform: translate(-50%, -50%);  -ms-transform: translate(-50%, -50%)}
+.mapImg {  background: url("https://bottest.hyundai.com/assets/images/m_btn_maximazing_blue_50.png");  width:50px;height:50px;transition: .5s ease;  opacity: 0;  position: absolute;  top: 50%;  left: 50%;  transform: translate(-50%, -50%);  -ms-transform: translate(-50%, -50%)}
+.imgImg {  background: url(../images/d_icn_img.png);  width:34px;height:34px;transition: .5s ease;  opacity: 0;  position: absolute;  top: 75%;  left: 85%;  transform: translate(-50%, -50%);  -ms-transform: translate(-50%, -50%)}
+
+.imgContainer .turnImg {  opacity: 1;}
+.imgContainer .playImg {  opacity: 1;}
+.imgContainer .mapImg {  opacity: 1;}
+.imgContainer .imgImg {  opacity: 1;}
+
+/*추천 UI CSS*/
+.lifestyle-popBody { background-color: #fbfbfb; height:395px; position: relative; border:1px solid rgba(0,0,0,0.20); }
+#lsTitle { color: white; }
+#trim { width:100%; height:320px; }
+#slider { position: relative; overflow: hidden; /*margin: 20px auto 0 auto;*/ background-color: white; width: 3000px; }
+#slider > ul { position: relative; margin: 0; padding: 0; height: 320px; list-style: none; }
+#slider > ul > li { position: relative; display: block; float: left; margin: 0; padding: 0; width: 568px; height: 320px; /*background: #ccc;*/ text-align: center; /*line-height: 300px;*/ }
+#slider > ul > li img { width:100%; height:267px; }
+#trim_info { width:568px; position:absolute; top:260px; height:60px; }
+#trim_prevBtn { float:left; width:10%; height:100%; text-align:center; }
+#slide_prev { width:50px;height:50px;background-color: #202020;color: white; background: url('../images/ls_trim_left.png'); margin-top:5px; display:none;}
+#trim_infoText { background-color:#EAEAEA;float:left; width:100%; height:100%; margin-top:8px; }
+#trim_infoText p { font-size:14px; line-height: 17px; padding:0 25px; margin:5px 0; color:#000}
+#trim_infoText b { font-size:13px; }
+#trim_nextBtn { float:left; width:10%; height:100%; text-align:center; }
+#slide_next { width:50px;height:50px;background-color: #202020;color: white; background: url('../images/ls_trim_right.png'); margin-top:5px; }
+#option { width:100%; height:75px; }
+#option_slider { background-color:#4b4f57; position: relative; overflow: hidden; width: 100%; height:75px; /*margin: 20px auto 0 auto;*/ }
+#option_slider > ul { position: relative; margin: 0 0 0 0; padding: 0; height: 75px; list-style: none; width: 1000px; /*margin-left: -142px;*/ }
+#option_slider > ul > li { position: relative; display: block; float: left; margin: 0; padding: 0; width: 142px; height: 75px; /*background: #ccc;*/ text-align: center; /*line-height: 300px;*/ }
+#option_slider > ul > li > img { width:142px; height:75px; padding:2px;}
+.option_prev { position: absolute; bottom:16px; z-index: 1; }
+.option_next { position: absolute; bottom:16px; right:0; z-index: 1; }
+#optionSlide_prev { background: url('https://bottest.hyundai.com/assets/images/02_contents_carousel_btn_left_401x.png'); width:32px; height:32px; opacity:0.8; }
+#optionSlide_next { background: url('https://bottest.hyundai.com/assets/images/02_contents_carousel_btn_right_401x.png'); width:32px; height:32px; opacity:0.8; }
+.optionVR_prev { position: absolute; bottom:83px; right:60px; z-index: 1; }
+.optionVR_next { position: absolute; bottom:83px; right:25px; z-index: 1; }
+#optionVR_prev { background: url('https://bottest.hyundai.com/assets/images/trim_btn_01-2.png'); width:32px; height:32px; opacity:0.8; }
+#optionVR_next { background: url('https://bottest.hyundai.com/assets/images/trim_btn_01-1.png'); width:32px; height:32px; opacity:0.8; }
+#option_detail { position: absolute; right: 0; top: 0; width:568px; height:320px; opacity: 1; background-color:#fff; display: none; z-index:2;}
+#option_detail > img { width:inherit; /*height:inherit;*/ padding:10px 0;}
+
+.timeStampBot{font-size:9px; color:gray; line-height:15px; text-align:left;}
+.timeStampUser{font-size:9px; color:gray; line-height:15px; text-align:right;}

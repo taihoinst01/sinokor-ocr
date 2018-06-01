@@ -1,0 +1,21 @@
+﻿body {
+}
+#accordionDiv{text-align:center}
+#accordionDiv, #formOcrDetailDiv {
+    display: none;
+}
+.dateInput {
+    height: 30px;
+    padding: 0;
+    border: 1px solid #ccc;
+    color: #6c6c6c;
+    text-indent: 7px;
+    line-height: 30px;
+    vertical-align: middle;
+}
+button:disabled,
+button[disabled] {
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+}

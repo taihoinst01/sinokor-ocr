@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>TIIZ OCR Service</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <%include  ../common/commonLib.html%>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
+
+    <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/common.ui.js"></script>
+    <script type="text/javascript" src="js/user/newDocLearning.js"></script>
+    <style>
+    </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <div class="main">
+        <div class="wrapper">
+            <!-- Header -->
+            <%include  ../common/header.html%>
+            <!-- //Header -->
+            <!-- Left Menu Side -->
+            <%include ../common/leftSideBar.html%>
+            <!--// Left Menu Side -->
+            <!-- Content Wrapper -->
+            <div class="content-wrapper">
+                <section class="content-header">
+                    <h1>신규 문서 학습</h1>
+                </section>
+
+                <section class="content">
+                    <div class="row">
+                        <div class="col-md-6" id="">
+                            <div class="box" style="height:650px">
+                                <div class="box-body02">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">이미지</h3>
+                                        <button class="fr uploadBtn">업로드</button>
+                                        <input id="initUpload" type="file" />
+                                    </div>
+                                    <div class="dialog_wrap">
+
+                                    </div>
+                                </div>
+                                <div id="holder" style="height:80%;"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="">
+                            <div class="box" style="height:650px">
+                                <div class="box-body02">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">신규 문서명</h3>
+                                        <input type="text" class="fr col-xs-6" placeholder="이곳에 신규 문서명을 입력해주세요" />
+                                    </div>
+                                    <div class="box-body-items" style="height: 50px;">
+                                        <div class="body-title" style="float:left; padding: 15px; width:70%; height:inherit;">
+                                            기존 유사 문서[ <b id="preTitle">ACCOUNT INVOICE</b> ]
+                                        </div>
+                                        <div class="body-count" style="float:right; width:30%; height:45px; text-align:center; margin-top:5px;">
+                                            정확도 : <b id="preAccuracy">100</b>%<br />
+                                            총 <b id="textCount">0</b> 건
+                                        </div>
+                                        <div style="clear:both;" />
+                                    </div>
+                                    <div style="height:500px; margin-top: 10px; overflow-y:scroll; overflow-x:hidden;">
+                                        <table id="textResultTbl" border="1" style="width:100%;"></table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  
+                </section>
+            </div>
+            <!--// Content Wrapper -->
+
+            <!-- Header -->
+            <%include  ../common/footer.html%>
+            <!-- //Header -->
+        </div>
+    </div>
+</body>
+</html>

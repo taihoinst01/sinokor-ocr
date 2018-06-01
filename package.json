@@ -1,0 +1,30 @@
+{
+  "name": "sinokor-ocr",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "description": "sinokor-ocr",
+  "author": {
+    "name": "Taiho"
+  },
+  "dependencies": {
+    "app-root-path": "^2.0.1",
+    "body-parser": "^1.15.0",
+    "cookie-parser": "^1.4.0",
+    "debug": "^2.2.0",
+    "ejs": "^2.6.1",
+    "exceljs": "^1.4.6",
+    "express": "^4.14.0",
+    "ghostscript4js": "^2.0.7",
+    "morgan": "^1.7.0",
+    "multer": "^1.3.0",
+    "pdf2img": "^0.5.0",
+    "pug": "^2.0.0-beta6",
+    "serve-favicon": "^2.3.0"
+  },
+  "engines": {
+    "node": "~6.10.x"
+  }
+}

@@ -1,0 +1,21 @@
+#pagination{
+    margin: 10px auto 0 auto;
+    height: 25px;
+}
+.li_paging{
+    margin-right : 7px;
+    padding: 3px;
+    float: left; 
+    width: 20px; 
+    height: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 13px;
+}
+.li_paging:hover{  
+    background-color: #c2c2c2;
+    cursor: pointer;
+}
+.active{
+    border : 1px solid #2b2b2b;
+}

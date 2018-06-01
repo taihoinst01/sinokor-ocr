@@ -1,0 +1,68 @@
+#setting-wrap{
+    position: absolute;
+    top: 41px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+}
+.setting-left-menu{
+    float: left;
+    width: 11%;
+    height: 100%;
+    border: 1px solid #ccc;
+}
+/*
+.setting-left-menu > ul{
+    margin: 50px 0 0 0;
+}
+*/
+.setting-left-menu > ul > li{
+    border-top: 2px solid #ccc ;
+    background-color: #083466;
+    height: 50px;
+}
+.setting-left-menu > ul > li > span{
+    font-size: 15px;
+    font-weight: bolder;
+    text-align: center;
+}
+.setting-left-menu > ul > li > span > p{
+    margin: 13px;
+    font-size: 25px;
+    color: #e2a0a0;
+}
+.setting-contents{
+    float: right;
+    margin: 30px 0 0 10px;
+    width: 86%;
+    height: 100%;
+}
+
+.setting-contents > .title {
+    font-size: 30px;
+    padding: 2px 0 10px 2px;
+}
+
+.settingBtn{  
+    display: inline-block;
+    width: 100%;
+    height: 38px;
+    padding-top: 14px;
+    font-size: 19px;
+    color: white;
+    text-shadow: 0px -2px rgba(0, 0, 0, 0.44);
+}
+.settingBtn:active{
+    transform: translateY(3px);
+}
+.settingBtn:hover{
+    width: 100%;
+    background-color: darkcyan;
+}
+.settingBtn.now{
+    width: 100%;
+    background-color: dimgray;
+}
+
+

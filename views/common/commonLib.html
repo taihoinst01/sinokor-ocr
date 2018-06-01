@@ -1,0 +1,35 @@
+<link rel="stylesheet" href="/common/css/bootstrap.min.css">
+<link rel="stylesheet" href="/common/css/font-awesome.min.css">
+<link rel="stylesheet" href="/common/css/AdminLTE.min.css">
+<link rel="stylesheet" href="/common/css/skin-blue.min.css">
+<link rel="stylesheet" href="/common/css/default.css">
+<link rel="stylesheet" href="/css/common.css">
+
+<!--[if lt IE 9]>
+<script src="common/js/html5shiv.min.js"></script>
+<script src="common/js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script src="/common/js/jquery.min.js"></script>
+<script src="/common/js/bootstrap.min.js"></script>
+<script src="/common/js/adminlte.min.js"></script>
+<script type="text/javascript" src="/js/import/jquery-2.2.4.min.js" charset="utf-8"></script>
+<script src="/common/js/icheck.min.js"></script>
+
+<%
+function dateConverter(date){ //YYYYMMDDHHmmss
+    function pad(num) {
+        num = num + '';
+        return num.length < 2 ? '0' + num : num;
+    }
+    return date.getFullYear() + pad(date.getMonth()+1) + pad(date.getDate()) + pad(date.getHours()) + pad(date.getMinutes()) + pad(date.getSeconds());
+}
+%>
+
+<script type="text/javascript" src="/js/import/ticommon.js?t=<%=dateConverter(new Date())%>" charset="utf-8"></script>
+<script type="text/javascript" src="/js/import/jquery-ti-init.js" charset="utf-8"></script>
+<!-- <script type="text/javascript" src="/js/import/jqgrid-ti-grid2016.min.js" charset="utf-8"></script> -->
+<script type="text/javascript" src="/js/import/jquery-ti-common.js?t=<%=dateConverter(new Date())%>" charset="utf-8"></script>
+<script type="text/javascript" src="/js/import/jquery-ti-datepicker.js?t=<%=dateConverter(new Date())%>" charset="utf-8"></script>
+<script type="text/javascript" src="/js/import/jquery-ti-validate.min.js?t=<%=dateConverter(new Date())%>" charset="utf-8"></script>
+<script type="text/javascript" src="/js/import/jquery-ti-ajaxvalidate.min.js?t=<%=dateConverter(new Date())%>" charset="utf-8"></script>
+<script type="text/javascript" src="/js/import/jquery-ti-ajax.min.js?t=<%=dateConverter(new Date())%>" charset="utf-8"></script>

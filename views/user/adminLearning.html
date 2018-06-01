@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>TIIZ OCR Service</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <%include  ../common/commonLib.html%>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <script type="text/javascript" src="js/user/adminLearning.js"></script>
+    <style>
+    </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <div class="main">
+        <div class="wrapper">
+            <!-- Header -->
+            <%include  ../common/header.html%>
+            <!-- //Header -->
+            <!-- Left Menu Side -->
+            <%include ../common/leftSideBar.html%>
+            <!--// Left Menu Side -->
+            <!-- Content Wrapper -->
+            <div class="content-wrapper">
+                <section class="content-header">
+                    <h1>어드민 학습</h1>
+                </section>
+
+                <section class="content">
+
+                    <!--이미지 업로드 및 미리보기-->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="box" style="height:650px">
+                                <div class="bb tc" style="height:90%">
+                                    <div class="in">
+                                        엑셀 파일을 드래그 하시거나 업로드 버튼을 눌러 파일을 업로드 해주세요
+                                    </div>
+                                    <br />
+                                </div>
+                                <div style="height:10%">
+                                    <div class="tc fl" style="width: 33%; height:100%; padding:10px">
+                                        <button class="uploadBtn">업로드</button>
+                                        <input type="file" />
+                                    </div>
+                                    <div class="tc fl" style="width: 33%; height:100%; padding:10px">
+                                        <b>일치하지 않은 건수</b><br />
+                                        <b>0</b>
+                                    </div>
+                                    <div class="tc fl" style="width: 33%; height:100%; padding:10px">
+                                        <button><</button>오타 이동<button>></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--//이미지 업로드 및 미리보기-->
+
+                    <!--양식 분석 결과-->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="bt" style="height:120px">
+                                <div class="box-body br fl tc" style="height:100%; width:20%">
+                                    <h3 class="box-title">양식 분석 결과</h3>
+                                </div>
+                                <div class="box-body fl tc" style="height:100%; width:20%">
+                                    <b>총 분석 문서</b><br />
+                                    <b>28</b>
+                                </div>
+                                <div class="box-body fl tc" style="height:100%; width:20%">
+                                    <b>확인된 양식 문서</b><br />
+                                    <b>23</b><br />
+                                    <button>엑셀저장</button>
+                                </div>
+                                <div class="box-body fl tc" style="height:100%; width:20%">
+                                    <b>미확인된 양식 문서</b><br />
+                                    <b>5</b><br />
+                                    <button>엑셀저장</button>
+                                </div>
+                                <div class="box-body fl tc" style="height:100%; width:20%">
+                                    <button>서버반영</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--//양식 분석 결과-->
+                </section>
+            </div>
+            <!--// Content Wrapper -->
+
+            <!-- Header -->
+            <%include  ../common/footer.html%>
+            <!-- //Header -->
+        </div>
+    </div>
+</body>
+</html>
