@@ -1,0 +1,2 @@
+model_checkpoint_path: "C:/Users/Taiho/Source/Repos/sinokor-ocr/ml/data/nmt_model/translate.ckpt-1500"
+all_model_checkpoint_paths: "C:/Users/Taiho/Source/Repos/sinokor-ocr/ml/data/nmt_model/translate.ckpt-1500"

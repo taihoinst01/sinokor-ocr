@@ -1,6 +1,4 @@
-﻿var lineText = []; // OCR 텍스트 가공 배열
-
-$(function () {
+﻿$(function () {
     uploadBtnEvent(); // 업로드시 미리보기 이벤트
 })
 
@@ -64,7 +62,7 @@ function makeblob(dataURL) {
 // ocr api 호출 함수
 function initOcrApi(imgBinaryData) {
     var params = {
-        "language": "unk",
+        "language": "ko",
         "detectOrientation ": "true",
     };
     var subscriptionKey = "fedbc6bb74714bd78270dc8f70593122";
@@ -79,9 +77,8 @@ function initOcrApi(imgBinaryData) {
         data: imgBinaryData,
         processData: false
     }).done(function (data) {
-        ocrData2Array(data.regions);
-        //mlPrediction();
-        appendText(data.regions);
+        mlPrediction(ocrData2Array(data.regions));
+        //appendText(data.regions);
     }).fail(function (err) {
         console.log(err);
     });
@@ -89,25 +86,41 @@ function initOcrApi(imgBinaryData) {
 
 // ocr data 라인 단위로 배열 저장하는 함수
 function ocrData2Array(regions) {
-    lineText = [];
+    var lineText = [];
     for (var i = 0; i < regions.length; i++) {
         for (var j = 0; j < regions[i].lines.length; j++) {
             var item = '';
             for (var k = 0; k < regions[i].lines[j].words.length; k++) {
                 item += regions[i].lines[j].words[k].text + ' ';
             }
-            lineText.push({ 'location': regions[i].lines[j].boundingBox, 'text': item });
+            lineText.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
         }
     }
+
+    //console.log(lineText);
+    return lineText;
 }
 
 // 머신러닝 오타체크, 문서 예측 함수
-function mlPrediction() {
-
+function mlPrediction(lineText) {
+    $.ajax({
+        url: '/newDocLearning/ml',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'lineText': lineText }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            //console.log(data.message);
+            appendText(data.message);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 }
 
 // 테이블 html 추가 함수
-function appendText(regions) {
+function appendText(lineText) {
     $('#textCount').html('');
 
     var appendHTML = '';

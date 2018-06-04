@@ -12,6 +12,7 @@
   "dependencies": {
     "app-root-path": "^2.0.1",
     "body-parser": "^1.15.0",
+    "child_process": "^1.0.2",
     "cookie-parser": "^1.4.0",
     "debug": "^2.2.0",
     "ejs": "^2.6.1",

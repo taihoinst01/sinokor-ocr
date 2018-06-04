@@ -1,0 +1,9 @@
+# log_file=/tmp/jhy_nmt_model/log_1528079145
+# Start step 1000, lr 1, Mon Jun  4 11:25:45 2018
+  step 1100 lr 1 step-time 0.02s wps 8.68K ppl 1.03 gN 0.05 bleu 98.73, Mon Jun  4 11:25:51 2018
+  step 1200 lr 1 step-time 0.02s wps 9.51K ppl 1.02 gN 0.05 bleu 98.73, Mon Jun  4 11:25:57 2018
+  step 1300 lr 1 step-time 0.02s wps 9.52K ppl 1.02 gN 0.04 bleu 98.73, Mon Jun  4 11:26:03 2018
+  step 1400 lr 1 step-time 0.02s wps 9.57K ppl 1.01 gN 0.04 bleu 98.73, Mon Jun  4 11:26:10 2018
+  step 1500 lr 1 step-time 0.02s wps 9.50K ppl 1.01 gN 0.03 bleu 98.73, Mon Jun  4 11:26:17 2018
+# Final, step 1500 lr 1 step-time 0.02s wps 9.50K ppl 1.01 gN 0.03 dev ppl 1.01, dev bleu 98.7, test ppl 1.01, test bleu 98.7, Mon Jun  4 11:26:17 2018
+# Best bleu, step 1000 lr 1 step-time 0.02s wps 9.50K ppl 1.01 gN 0.03 dev ppl 1.03, dev bleu 98.7, test ppl 1.03, test bleu 98.7, Mon Jun  4 11:26:17 2018
