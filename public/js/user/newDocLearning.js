@@ -115,6 +115,8 @@ function mlPrediction(lineText) {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             //console.log(data);
+            $('#preTitle').html(data.formName);
+            $('#preAccuracy').html(data.formScore);
             appendText(data.message);
         },
         error: function (err) {

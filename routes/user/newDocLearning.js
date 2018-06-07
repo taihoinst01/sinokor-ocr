@@ -97,11 +97,10 @@ router.post('/ml', function (req, res) {
                             // 고정가변 분류 머신러닝 END
 
                             // 양식분류 머신러닝 START
-                            /*
                             var keyArr = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-                                'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'ETC', 'FORM'];
+                                'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'ETC'];
                             var formParams = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-                                '', '', '', '', '', '', '', '', '', '', '', '', ''];
+                                '', '', '', '', '', '', '', '', '', '', '', ''];
                             for (var i = 0; i < lineText.length; i++) {
                                 if (lineText[i].isFixed == 'True') {
                                     for (var j = 0; j < keyArr.length; j++) {
@@ -127,7 +126,7 @@ router.post('/ml', function (req, res) {
                                     formParams[i] = '0';
                                 }
                             }
-                            console.log(formParams);
+                            //console.log(formParams);
                             
                             options = {
                                 mode: 'json',
@@ -139,15 +138,17 @@ router.post('/ml', function (req, res) {
                             };
                             PythonShell.run('formClassification.py', options, function (err, results) {
                                 if (err) {
-                                    throw err;
+                                    console.log(err);
                                 } else {
-                                    console.log(results);
-                                    //res.send(JSON.parse(results));
-                                }
-                            });*/
-                            // 양식분류 머신러닝 END
+                                    results[0] = results[0].replace(/Scored Labels/gi, 'ScoredLabels')
+                                    var formResult = JSON.parse(results[0]).Results.output1[0].ScoredLabels;                                 
+                                    var scoreResult = JSON.stringify(results[0]).split('"'+formResult+'\\\\\\\"\\\":\\\"')[1];
+                                    scoreResult = Number(scoreResult.split("\\\",\\\"ScoredLabels")[0]).toFixed(1);
 
-                            res.send({ code: '200', message: lineText });
+                                    res.send({ code: '200', message: lineText, formName: formResult, formScore: scoreResult * 100.0});
+                                }
+                            });                            
+                            // 양식분류 머신러닝 END
                         }
                     });
                 }

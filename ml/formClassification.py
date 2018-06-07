@@ -2,7 +2,6 @@ import sys
 import urllib.request
 import json
 
-
 param = []
 param.append({
     'A': sys.argv[1],   
@@ -32,19 +31,17 @@ param.append({
     'Y': sys.argv[25],  
     'Z': sys.argv[26],
     'ETC': sys.argv[27],
-    'FORM': sys.argv[28]
+    'FORM': '0'
     });
 
 data = {
         "Inputs": {
                 "input1": param
-
         },
     "GlobalParameters":  {
     }
 }
-print(data)
-'''
+
 body = str.encode(json.dumps(data))
 
 url = 'https://ussouthcentral.services.azureml.net/workspaces/40d09a0901e34fd1a176fb9af1e349a5/services/188cb99092844c399fff587709fe2036/execute?api-version=2.0&format=swagger'
@@ -61,4 +58,3 @@ try:
 
 except urllib.error.HTTPError as error:
     print(json.loads(error.read().decode("utf8", 'ignore')))
-'''
