@@ -57,8 +57,8 @@
                                     <div class="box-body-items" style="height: 50px;">
                                         <div class="body-title" style="float:left; padding: 15px; width:70%; height:inherit;">
                                             기존 유사 문서[ <b id="preTitle">ACCOUNT INVOICE</b> ]
-                                            <select style="width:60px;">
-                                                <option value="fix" selected>고정</option>
+                                            <select id="fvSelect" style="width:60px;">
+                                                <option value="fixed" selected>고정</option>
                                                 <option value="variable">가변</option>
                                             </select>
                                         </div>
@@ -70,9 +70,7 @@
                                     </div>
                                     <div style="height:500px; margin-top: 10px; overflow-y:scroll; overflow-x:hidden;">
                                         <table id="fixedTextResultTbl" border="1" style="width:100%;"></table>
-                                    </div>
-                                    <div style="height:500px; margin-top: 10px; overflow-y:scroll; overflow-x:hidden; display:none;">
-                                        <table id="variableTextResultTbl" border="1" style="width:100%;"></table>
+                                        <table id="variableTextResultTbl" border="1" style="width:100%; display:none;"></table>
                                     </div>
                                 </div>
                             </div>

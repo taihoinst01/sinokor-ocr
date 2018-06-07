@@ -1,10 +1,11 @@
 ﻿$(function () {
     uploadBtnEvent(); // 업로드시 미리보기 이벤트
+    fvSelectEvent(); // 고정&가변 select Box 이벤트
 })
 
 function uploadBtnEvent() {
     $('.uploadBtn').click(function () {
-        $(this).next().click(function () {
+        $(this).next().click(function () {           
             initUpload();
         });
         $(this).next().click();
@@ -61,6 +62,9 @@ function makeblob(dataURL) {
 
 // ocr api 호출 함수
 function initOcrApi(imgBinaryData) {
+    $('#fixedTextResultTbl').html('');
+    $('#variableTextResultTbl').html('');
+
     var params = {
         "language": "ko",
         "detectOrientation ": "true",
@@ -141,4 +145,18 @@ function appendText(lineText) {
     $('#fixedTextResultTbl').append(fixedAppendHTML);
     $('#variableTextResultTbl').append(variableAppendHTML);
     $('#textCount').html(lineText.length);
+}
+
+//고정 가변 select 이벤트
+function fvSelectEvent() {
+    $('#fvSelect').change(function () {
+        var selectVal = $(this).find('option:selected').val();
+        if (selectVal == 'fixed') {
+            $('#fixedTextResultTbl').show();
+            $('#variableTextResultTbl').hide();
+        } else if (selectVal == 'variable') {
+            $('#fixedTextResultTbl').hide();
+            $('#variableTextResultTbl').show();
+        }
+    });
 }
