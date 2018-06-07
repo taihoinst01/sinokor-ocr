@@ -110,7 +110,7 @@ function mlPrediction(lineText) {
         data: JSON.stringify({ 'lineText': lineText }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            //console.log(data.message);
+            //console.log(data);
             appendText(data.message);
         },
         error: function (err) {
@@ -123,13 +123,22 @@ function mlPrediction(lineText) {
 function appendText(lineText) {
     $('#textCount').html('');
 
-    var appendHTML = '';
-    appendHTML += '<tr><th style="text-align:center;">목록</th><th style="text-align:center;">DB 컬럼</th></tr>';
+    var fixedAppendHTML = '';
+    var variableAppendHTML = '';
+    fixedAppendHTML += '<tr><th style="text-align:center;">목록</th><th style="text-align:center;">DB 컬럼</th></tr>';
+    variableAppendHTML += '<tr><th style="text-align:center;">목록</th><th style="text-align:center;">DB 컬럼</th></tr>';
     for (var i = 0; i < lineText.length; i++) {
-        appendHTML += '<tr><td><input type="text" value="' + lineText[i].text + '" style="width:100%; border:0;" />'
-        + '<input type = "hidden" value = "' + lineText[i].location + '" /></td>'
-            + '<td><select style="width:100%; height:100%;  border:0;"><option value=""><option></select></td></tr>';
+        if (lineText[i].isFixed == 'True') {
+            fixedAppendHTML += '<tr><td><input type="text" value="' + lineText[i].text + '" style="width:100%; border:0;" />'
+                + '<input type = "hidden" value = "' + lineText[i].location + '" /></td>'
+                + '<td><select style="width:100%; height:100%;  border:0;"><option value=""><option></select></td></tr>';
+        } else {
+            variableAppendHTML += '<tr><td><input type="text" value="' + lineText[i].text + '" style="width:100%; border:0;" />'
+                + '<input type = "hidden" value = "' + lineText[i].location + '" /></td>'
+                + '<td><select style="width:100%; height:100%;  border:0;"><option value=""><option></select></td></tr>';
+        }
     }
-    $('#textResultTbl').append(appendHTML);
+    $('#fixedTextResultTbl').append(fixedAppendHTML);
+    $('#variableTextResultTbl').append(variableAppendHTML);
     $('#textCount').html(lineText.length);
 }

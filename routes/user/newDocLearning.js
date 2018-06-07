@@ -5,6 +5,10 @@ var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var exec = require('child_process').exec;
+var PythonShell = require('python-shell');
+var sql = require('mssql');
+var dbConfig = require('../../config/dbConfig');
+
 var router = express.Router();
 
 router.get('/favicon.ico', function (req, res) {
@@ -26,6 +30,7 @@ router.get('/', function (req, res) {
     res.render('user/newDocLearning');
 });
 
+//머신러닝 api call
 router.post('/ml', function (req, res) {
     var lineText = req.body.lineText;
     var word = '';
@@ -45,6 +50,8 @@ router.post('/ml', function (req, res) {
         if (err) {
             throw err;
         } else {
+            
+            // 오타수정 머신러닝 START
             const defaults = {
                 encoding: 'utf8'
             };
@@ -62,15 +69,94 @@ router.post('/ml', function (req, res) {
                     for (var i = 0; i < lineText.length; i++) {
                         lineText[i].text = typoResult[i];
                     }
-                    res.send({ code: '200', message: lineText });
+                    // 오타수정 머신러닝 END
+
+                    // 고정가변 분류 머신러닝 START
+                    var fvParams = []
+                    for (var i = 0; i < lineText.length; i++) {
+                        fvParams.push(lineText[i].location.split(',')[0] + ',' + lineText[i].location.split(',')[1] +
+                            ',' + lineText[i].text);
+                    }
+                    var options = {
+                        mode: 'json',
+                        encoding: 'utf8',
+                        pythonPath: '',
+                        pythonOptions: ['-u'],
+                        scriptPath: appRoot + '\\ml',
+                        args: fvParams
+                    };
+                    PythonShell.run('fvClassification.py', options, function (err, results) {
+                        if (err) {
+                            throw err;
+                        } else {
+                            results[0] = results[0].replace(/Scored Labels/gi, 'ScoredLabels');
+                            var fvResult = JSON.parse(results[0]).Results.output;
+                            for (var i = 0; i < fvResult.length; i++) {
+                                lineText[i].isFixed = fvResult[i].ScoredLabels;
+                            }
+                            // 고정가변 분류 머신러닝 END
+
+                            // 양식분류 머신러닝 START
+                            /*
+                            var keyArr = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+                                'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'ETC', 'FORM'];
+                            var formParams = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+                                '', '', '', '', '', '', '', '', '', '', '', '', ''];
+                            for (var i = 0; i < lineText.length; i++) {
+                                if (lineText[i].isFixed == 'True') {
+                                    for (var j = 0; j < keyArr.length; j++) {
+                                        if (lineText[i].text.substr(0, 1) == keyArr[j]) {
+                                            formParams[j] += (formParams[j] == '') ? '' : ',';
+                                            formParams[j] = formParams[j] + lineText[i].text + ',' +
+                                                lineText[i].location.split(',')[0] + ',' +
+                                                lineText[i].location.split(',')[1];
+                                            break;
+                                        } else {
+                                            if (j == keyArr.length - 1) {
+                                                formParams[26] += (formParams[26] == '') ? '' : ',';
+                                                formParams[26] = formParams[26] + lineText[i].text + ',' +
+                                                    lineText[i].location.split(',')[0] + ',' +
+                                                    lineText[i].location.split(',')[1];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            for (var i = 0; i < formParams.length; i++) {
+                                if (formParams[i] == '') {
+                                    formParams[i] = '0';
+                                }
+                            }
+                            console.log(formParams);
+                            
+                            options = {
+                                mode: 'json',
+                                encoding: 'utf8',
+                                pythonPath: '',
+                                pythonOptions: ['-u'],
+                                scriptPath: appRoot + '\\ml',
+                                args: formParams
+                            };
+                            PythonShell.run('formClassification.py', options, function (err, results) {
+                                if (err) {
+                                    throw err;
+                                } else {
+                                    console.log(results);
+                                    //res.send(JSON.parse(results));
+                                }
+                            });*/
+                            // 양식분류 머신러닝 END
+
+                            res.send({ code: '200', message: lineText });
+                        }
+                    });
                 }
             });
-        }
-        
-    });
-    
+        }      
+    });  
 });
 
+//오늘날짜 변환함수
 function getConvertDate() {
 
     var today = new Date();

@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="config\dbConfig.js" />
     <Compile Include="public\common\js\adminlte.min.js" />
     <Compile Include="public\common\js\BootSideMenu.js" />
     <Compile Include="public\common\js\bootstrap-datepicker.min.js" />
@@ -599,6 +600,8 @@
     <Content Include="ml\nmt\__pycache__\train.cpython-36.pyc" />
     <Content Include="ml\nmt\__pycache__\__init__.cpython-35.pyc" />
     <Content Include="ml\nmt\__pycache__\__init__.cpython-36.pyc" />
+    <Content Include="ml\formClassification.py" />
+    <Content Include="ml\fvClassification.py" />
     <Content Include="ml\template.py" />
     <Content Include="package.json" />
     <Content Include="public\common\css\AdminLTE.min.css" />
@@ -1572,6 +1575,7 @@
     <Folder Include="ml\nmt\utils\" />
     <Folder Include="ml\nmt\utils\__pycache__\" />
     <Folder Include="ml\nmt\__pycache__\" />
+    <Folder Include="config\" />
     <Folder Include="public\" />
     <Folder Include="public\common\" />
     <Folder Include="public\common\css\" />
@@ -1646,18 +1650,13 @@
     <Folder Include="routes\admin\" />
     <Folder Include="routes\user\" />
     <Folder Include="uploads\" />
-    <Folder Include="uploads\convert\" />
     <Folder Include="views\" />
     <Folder Include="views\admin\" />
     <Folder Include="views\common\" />
     <Folder Include="views\user\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="uploads\ACCOUNT_INVOICE_01.jpg" />
-    <Content Include="uploads\ACCOUNT_INVOICE_02.jpg" />
-    <Content Include="uploads\ACCOUNT_INVOICE_03.jpg" />
-    <Content Include="uploads\ACCOUNT_INVOICE_04.jpg" />
-    <Content Include="uploads\ACCOUNT_INVOICE_05.jpg" />
+    <Content Include="uploads\file1.pdf" />
     <Content Include="views\admin\adminDashboard.html" />
     <Content Include="views\admin\userManagement.html" />
     <Content Include="views\common\commonLib.html" />
