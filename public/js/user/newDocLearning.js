@@ -114,10 +114,10 @@ function mlPrediction(lineText) {
         data: JSON.stringify({ 'lineText': lineText }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            //console.log(data);
+            console.log(data);
             $('#preTitle').html(data.formName);
             $('#preAccuracy').html(data.formScore);
-            appendText(data.message);
+            appendText(data.message, data.columns);
         },
         error: function (err) {
             console.log(err);
@@ -125,8 +125,20 @@ function mlPrediction(lineText) {
     });
 }
 
+//옵션 HTML 함수
+function optionHTML(columns) {
+    var optionHTML = '<select style="width:100%; height:100%;  border:0;">';
+    optionHTML += '<option value=""></option>';
+    for (var i = 0; i < columns.length; i++) {
+        optionHTML += '<option value="' + columns[i].no + '">' + columns[i].columnName + '</option>';
+    }    
+    optionHTML += '</select>';
+
+    return optionHTML;
+}
+
 // 테이블 html 추가 함수
-function appendText(lineText) {
+function appendText(lineText, columns) {
     $('#textCount').html('');
 
     var fixedAppendHTML = '';
@@ -137,11 +149,11 @@ function appendText(lineText) {
         if (lineText[i].isFixed == 'True') {
             fixedAppendHTML += '<tr><td><input type="text" value="' + lineText[i].text + '" style="width:100%; border:0;" />'
                 + '<input type = "hidden" value = "' + lineText[i].location + '" /></td>'
-                + '<td><select style="width:100%; height:100%;  border:0;"><option value=""><option></select></td></tr>';
+                + '<td>' + optionHTML(columns) + '</td></tr>';
         } else {
             variableAppendHTML += '<tr><td><input type="text" value="' + lineText[i].text + '" style="width:100%; border:0;" />'
                 + '<input type = "hidden" value = "' + lineText[i].location + '" /></td>'
-                + '<td><select style="width:100%; height:100%;  border:0;"><option value=""><option></select></td></tr>';
+                + '<td>' + optionHTML(columns) + '</td></tr>';
         }
     }
     $('#fixedTextResultTbl').append(fixedAppendHTML);

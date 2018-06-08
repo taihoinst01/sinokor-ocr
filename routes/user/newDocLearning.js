@@ -8,6 +8,7 @@ var exec = require('child_process').exec;
 var PythonShell = require('python-shell');
 var sql = require('mssql');
 var dbConfig = require('../../config/dbConfig');
+var queryConfig = require('../../config/queryConfig');
 
 var router = express.Router();
 
@@ -141,13 +142,31 @@ router.post('/ml', function (req, res) {
                                     console.log(err);
                                 } else {
                                     results[0] = results[0].replace(/Scored Labels/gi, 'ScoredLabels')
-                                    var formResult = JSON.parse(results[0]).Results.output1[0].ScoredLabels;                                 
+                                    var formResult = JSON.parse(results[0]).Results.output1[0].ScoredLabels;
                                     var scoreResult = JSON.stringify(results[0]).split('"'+formResult+'\\\\\\\"\\\":\\\"')[1];
                                     scoreResult = Number(scoreResult.split("\\\",\\\"ScoredLabels")[0]).toFixed(1);
 
-                                    res.send({ code: '200', message: lineText, formName: formResult, formScore: scoreResult * 100.0});
+                                    //DB컬럼 조회
+                                    (async () => {
+                                        try {
+                                            var queryString = queryConfig.selectDbColumns;
+                                            let pool = await sql.connect(dbConfig);
+                                            let result1 = await pool.request().query(queryString);
+                                            let rows = result1.recordset;
+
+                                            res.send({ code: '200', message: lineText, formName: formResult, formScore: scoreResult * 100.0, columns: rows });
+
+                                        } catch (err) {
+                                            console.log(err)
+                                        } finally {
+                                            sql.close();
+                                        }
+                                    })()
+
+                                    sql.on('error', err => {
+                                    })             
                                 }
-                            });                            
+                            });
                             // 양식분류 머신러닝 END
                         }
                     });
