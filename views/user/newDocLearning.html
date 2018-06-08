@@ -68,23 +68,72 @@
                                         </div>
                                         <div style="clear:both;" />
                                     </div>
-                                    <div style="height:500px; margin-top: 10px; overflow-y:scroll; overflow-x:hidden;">
+                                    <div id="newDocTblDiv" style="height:450px; margin-top: 10px; overflow-y:scroll; overflow-x:hidden;">
                                         <table id="fixedTextResultTbl" border="1" style="width:100%;"></table>
                                         <table id="variableTextResultTbl" border="1" style="width:100%; display:none;"></table>
                                     </div>
+                                    <button id="domainChangeBtn" class="mt20" style="display: none;" data-toggle="modal" data-target="#domainChangeConfirm">고정 < - > 가변</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                  
+
                 </section>
             </div>
             <!--// Content Wrapper -->
-
             <!-- Header -->
             <%include  ../common/footer.html%>
             <!-- //Header -->
         </div>
     </div>
+
+    <!-- 팝업_고정&가변 변경 확인창 -->
+    <div class="modal fade" id="domainChangeConfirm" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg02">
+            <div class="modal-content" style="min-height: 500px; max-height: 700px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="">고정&가변 변경 확인</h4>
+                </div>
+                <div class="modal-body" style="overflow:auto;min-height: 300px;max-height: 500px;">
+                    <div class="modal_con">
+                        <div class="col-md-6">
+                            <p>고정영역 -> 가변영역</p>
+                            <table id="fixedTextConfirmTbl" border="1" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center;"><input type="checkbox" class="allChk"></th>
+                                        <th>목록</th>
+                                        <th>DB 컬럼</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <p>가변영역 -> 고정영역</p>
+                            <table id="variableTextConfirmTbl" border="1" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center;"><input type="checkbox" class="allChk"></th>
+                                        <th>목록</th>
+                                        <th>DB 컬럼</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>                  
+                </div>
+                <div class="modal-footer">
+                    <div class="btn_wrap">
+                        <button type="button" class="btn btn_01" id="domainChangeOkBtn">변경</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //팝업_회원 정보 -->
 </body>
 </html>

@@ -1,6 +1,8 @@
 ﻿$(function () {
     uploadBtnEvent(); // 업로드시 미리보기 이벤트
     fvSelectEvent(); // 고정&가변 select Box 이벤트
+    domainChange(); // 고정&가변 변경 이벤트
+    allChk() // 체크박스 전체 선택 해제 이벤트
 })
 
 function uploadBtnEvent() {
@@ -129,15 +131,15 @@ function appendText(lineText) {
 
     var fixedAppendHTML = '';
     var variableAppendHTML = '';
-    fixedAppendHTML += '<tr><th style="text-align:center;">목록</th><th style="text-align:center;">DB 컬럼</th></tr>';
-    variableAppendHTML += '<tr><th style="text-align:center;">목록</th><th style="text-align:center;">DB 컬럼</th></tr>';
+    fixedAppendHTML += '<thead><tr><th style="text-align:center;"><input type="checkbox" class="allChk"></th><th style="text-align:center;">목록</th><th style="text-align:center;">DB 컬럼</th></tr></thead>';
+    variableAppendHTML += '<thead><tr><th style="text-align:center;"><input type="checkbox" class="allChk"></th><th style="text-align:center;">목록</th><th style="text-align:center;">DB 컬럼</th></tr></thead>';
     for (var i = 0; i < lineText.length; i++) {
         if (lineText[i].isFixed == 'True') {
-            fixedAppendHTML += '<tr><td><input type="text" value="' + lineText[i].text + '" style="width:100%; border:0;" />'
+            fixedAppendHTML += '<tr><td style="text-align: center;"><input type="checkbox" class="fixedTblChk"></td><td><input type="text" value="' + lineText[i].text + '" style="width:100%; border:0;" />'
                 + '<input type = "hidden" value = "' + lineText[i].location + '" /></td>'
                 + '<td><select style="width:100%; height:100%;  border:0;"><option value=""><option></select></td></tr>';
         } else {
-            variableAppendHTML += '<tr><td><input type="text" value="' + lineText[i].text + '" style="width:100%; border:0;" />'
+            variableAppendHTML += '<tr><td style="text-align: center;"><input type="checkbox" class="variableTblChk"></td><td><input type="text" value="' + lineText[i].text + '" style="width:100%; border:0;" />'
                 + '<input type = "hidden" value = "' + lineText[i].location + '" /></td>'
                 + '<td><select style="width:100%; height:100%;  border:0;"><option value=""><option></select></td></tr>';
         }
@@ -145,6 +147,8 @@ function appendText(lineText) {
     $('#fixedTextResultTbl').append(fixedAppendHTML);
     $('#variableTextResultTbl').append(variableAppendHTML);
     $('#textCount').html(lineText.length);
+
+    $('#domainChangeBtn').show();
 }
 
 //고정 가변 select 이벤트
@@ -159,4 +163,74 @@ function fvSelectEvent() {
             $('#variableTextResultTbl').show();
         }
     });
+}
+
+// 체크박스 전체 선택 해제 이벤트
+function allChk() {
+    $(document).on('click', '.allChk', function () {
+        if ($(this).prop("checked")) {
+            $(this).parents('thead').next().find('input[type=checkbox]').prop("checked", true);
+        } else {
+            $(this).parents('thead').next().find('input[type=checkbox]').prop("checked", false);
+        }
+    })
+}
+
+// 고정&가변 변경 이벤트
+function domainChange() {
+
+    // 고정<->가변 버튼을 클릭 시 체크된 것들이 고정&가변 변경 확인 모달창 테이블로 복사
+    $('#domainChangeBtn').click(function () {
+        $('#variableTextConfirmTbl tbody').html('');
+        $('#fixedTextConfirmTbl tbody').html('');
+
+        $('.fixedTblChk:checked').each(function () {
+            $('#fixedTextConfirmTbl tbody').append($(this).parent().parent().clone());
+        })
+
+        $('.variableTblChk:checked').each(function () {
+            $('#variableTextConfirmTbl tbody').append($(this).parent().parent().clone());
+        })
+    });
+
+    // 고정&가변 변경 확인 모달창에서 변경 버튼 클릭시 체크된 항목들을 fixedResultTbl, variableResultTbl 들로 이동
+    $('#domainChangeOkBtn').click(function () {
+        var fixedConfirmTbl, fixedResultTbl, variableConfirmTbl, variableResultTbl;
+
+        $('#fixedTextConfirmTbl .fixedTblChk:checked').each(function () {
+            fixedConfirmTbl = $(this).parents('tr').find('td:eq(1)').html();
+
+            $('#fixedTextResultTbl .fixedTblChk:checked').each(function () {
+                fixedResultTbl = $(this).parents('tr').find('td:eq(1)').html();
+
+                if (fixedConfirmTbl == fixedResultTbl) {
+                    $(this).parents('tr').remove();               
+                }                     
+            })
+
+            $(this).toggleClass('fixedTblChk variableTblChk');
+            $('#variableTextResultTbl tbody').append($(this).parent().parent());
+        })
+
+        $('#variableTextConfirmTbl .variableTblChk:checked').each(function () {
+            variableConfirmTbl = $(this).parents('tr').find('td:eq(1)').html();
+
+            $('#variableTextResultTbl .variableTblChk:checked').each(function () {
+                variableResultTbl = $(this).parents('tr').find('td:eq(1)').html();
+
+                if (variableConfirmTbl == variableResultTbl) {
+                    $(this).parents('tr').remove();
+                }
+            })
+
+            $(this).toggleClass('variableTblChk fixedTblChk');
+            $('#fixedTextResultTbl tbody').append($(this).parent().parent());
+        })
+
+        $('#fixedTextResultTbl .fixedTblChk:checked').attr('checked', false);
+        $('#variableTextResultTbl .variableTblChk:checked').attr('checked', false);
+        $('.allChk').prop("checked", false);
+
+        $('.close').click();
+    })
 }
