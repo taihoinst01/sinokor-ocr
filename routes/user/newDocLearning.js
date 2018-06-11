@@ -151,13 +151,15 @@ router.post('/ml', function (req, res) {
                                         try {
                                             var queryString = queryConfig.selectDbColumns;
                                             let pool = await sql.connect(dbConfig);
-                                            let result1 = await pool.request().query(queryString);
+                                            let result1 = await pool.request()
+                                                .input('formName', sql.NVarChar, formResult)
+                                                .query(queryString);
                                             let rows = result1.recordset;
 
                                             res.send({ code: '200', message: lineText, formName: formResult, formScore: scoreResult * 100.0, columns: rows });
 
                                         } catch (err) {
-                                            console.log(err)
+                                            res.send({ code: '500', message: 'db select error!'});
                                         } finally {
                                             sql.close();
                                         }
