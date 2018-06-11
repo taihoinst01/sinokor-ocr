@@ -145,31 +145,67 @@ router.post('/ml', function (req, res) {
                                     var formResult = JSON.parse(results[0]).Results.output1[0].ScoredLabels;
                                     var scoreResult = JSON.stringify(results[0]).split('"'+formResult+'\\\\\\\"\\\":\\\"')[1];
                                     scoreResult = Number(scoreResult.split("\\\",\\\"ScoredLabels")[0]).toFixed(1);
+                                    // 양식분류 머신러닝 END
 
-                                    //DB컬럼 조회
-                                    (async () => {
-                                        try {
-                                            var queryString = queryConfig.selectDbColumns;
-                                            let pool = await sql.connect(dbConfig);
-                                            let result1 = await pool.request()
-                                                .input('formName', sql.NVarChar, formResult)
-                                                .query(queryString);
-                                            let rows = result1.recordset;
+                                    // DB컬럼 분류 머신러닝 START
+                                    var colParams = [];
 
-                                            res.send({ code: '200', message: lineText, formName: formResult, formScore: scoreResult * 100.0, columns: rows });
-
-                                        } catch (err) {
-                                            res.send({ code: '500', message: 'db select error!'});
-                                        } finally {
-                                            sql.close();
+                                    for (var i = 0; i < lineText.length; i++) {
+                                        if (lineText[i].isFixed == 'False') {
+                                            colParams.push(lineText[i].location.split(',')[0] + '::' + lineText[i].location.split(',')[1]
+                                                + '::' + lineText[i].text);
                                         }
-                                    })()
+                                    }
 
-                                    sql.on('error', err => {
-                                    })             
+                                    options = {
+                                        mode: 'json',
+                                        encoding: 'utf8',
+                                        pythonPath: '',
+                                        pythonOptions: ['-u'],
+                                        scriptPath: appRoot + '\\ml',
+                                        args: colParams
+                                    };
+                                    PythonShell.run('srClassification.py', options, function (err, results) {
+                                        if (err) {
+                                            console.log(err);
+                                        } else {
+                                            results[0] = results[0].replace(/Scored Labels/gi, 'ScoredLabels')
+                                            var srResult = JSON.parse(results[0]).Results.output1;
+
+                                            for (var i = 0; i < srResult.length; i++) {
+                                                for (var j = 0; j < lineText.length; j++) {
+                                                    if (lineText[j].text == srResult[i].text) {
+                                                        lineText[j].column = srResult[i].ScoredLabels;
+                                                    }
+                                                }
+                                            }
+
+                                            // DB컬럼 조회
+                                            (async () => {
+                                                try {
+                                                    var queryString = queryConfig.selectDbColumns;
+                                                    let pool = await sql.connect(dbConfig);
+                                                    let result1 = await pool.request()
+                                                        .input('formName', sql.NVarChar, formResult)
+                                                        .query(queryString);
+                                                    let rows = result1.recordset;
+
+                                                    res.send({ code: '200', message: lineText, formName: formResult, formScore: scoreResult * 100.0, columns: rows });
+
+                                                } catch (err) {
+                                                    res.send({ code: '500', message: 'db select error!' });
+                                                } finally {
+                                                    sql.close();
+                                                }
+                                            })()
+
+                                            sql.on('error', err => {
+                                            })
+                                        }
+                                    });   
+                                    // DB컬럼 분류 머신러닝 END
                                 }
                             });
-                            // 양식분류 머신러닝 END
                         }
                     });
                 }

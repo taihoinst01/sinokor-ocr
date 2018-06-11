@@ -116,7 +116,7 @@ function mlPrediction(lineText) {
         data: JSON.stringify({ 'lineText': lineText }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
+            //console.log(data);
             $('#preTitle').html(data.formName);
             $('#preAccuracy').html(data.formScore);
             appendText(data.message, data.columns);
@@ -128,11 +128,13 @@ function mlPrediction(lineText) {
 }
 
 //옵션 HTML 함수
-function optionHTML(columns) {
+function optionHTML(columnNo, columns) {
     var optionHTML = '<select style="width:100%; height:100%;  border:0;">';
     optionHTML += '<option value=""></option>';
     for (var i = 0; i < columns.length; i++) {
-        optionHTML += '<option value="' + columns[i].no + '">' + columns[i].columnName + '</option>';
+        itemHTML = '<option value="' + columns[i].no + '"' + ((columnNo == columns[i].no) ? 'selected' : '') + '>'
+            + columns[i].columnName + '</option>';
+        optionHTML += itemHTML;
     }    
     optionHTML += '</select>';
 
@@ -151,11 +153,11 @@ function appendText(lineText, columns) {
         if (lineText[i].isFixed == 'True') {
             fixedAppendHTML += '<tr><td style="text-align: center;"><input type="checkbox" class="fixedTblChk"></td><td><input type="text" value="' + lineText[i].text + '" style="width:100%; border:0;" />'
                 + '<input type = "hidden" value = "' + lineText[i].location + '" /></td>'
-                + '<td>' + optionHTML(columns) + '</td></tr>';
+                + '<td>' + optionHTML(lineText[i].column, columns) + '</td></tr>';
         } else {
             variableAppendHTML += '<tr><td style="text-align: center;"><input type="checkbox" class="variableTblChk"></td><td><input type="text" value="' + lineText[i].text + '" style="width:100%; border:0;" />'
                 + '<input type = "hidden" value = "' + lineText[i].location + '" /></td>'
-                + '<td>' + optionHTML(columns) + '</td></tr>';
+                + '<td>' + optionHTML(lineText[i].column, columns) + '</td></tr>';
         }
     }
     $('#fixedTextResultTbl').append(fixedAppendHTML);
@@ -163,6 +165,7 @@ function appendText(lineText, columns) {
     $('#textCount').html(lineText.length);
 
     $('#domainChangeBtn').show();
+    $('#trainBtn').show();
 }
 
 //고정 가변 select 이벤트

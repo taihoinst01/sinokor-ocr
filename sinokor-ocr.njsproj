@@ -603,6 +603,7 @@
     <Content Include="ml\nmt\__pycache__\__init__.cpython-36.pyc" />
     <Content Include="ml\formClassification.py" />
     <Content Include="ml\fvClassification.py" />
+    <Content Include="ml\srClassification.py" />
     <Content Include="ml\template.py" />
     <Content Include="package.json" />
     <Content Include="public\common\css\AdminLTE.min.css" />
