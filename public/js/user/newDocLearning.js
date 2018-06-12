@@ -2,7 +2,8 @@
     uploadBtnEvent(); // 업로드시 미리보기 이벤트
     fvSelectEvent(); // 고정&가변 select Box 이벤트
     domainChange(); // 고정&가변 변경 이벤트
-    allChk() // 체크박스 전체 선택 해제 이벤트
+    allChk(); // 체크박스 전체 선택 해제 이벤트
+    trainBtnEvent(); // 학습 버튼 클릭 이벤트
 })
 
 function uploadBtnEvent() {
@@ -116,7 +117,7 @@ function mlPrediction(lineText) {
         data: JSON.stringify({ 'lineText': lineText }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            //console.log(data);
+            console.log(data.fvResult);
             $('#preTitle').html(data.formName);
             $('#preAccuracy').html(data.formScore);
             appendText(data.message, data.columns);
@@ -250,4 +251,45 @@ function domainChange() {
 
         $('.close').click();
     })
+}
+
+function trainBtnEvent() {
+    $('#trainBtn').click(function () {
+        var insertData = [];
+        var fixedTr = $('#fixedTextResultTbl > tbody > tr');
+        var variableTr = $('#variableTextResultTbl > tbody > tr');
+        for (var i = 0; i < fixedTr.length; i++) {
+            var item = {
+                'location': fixedTr[i].childNodes[1].childNodes[1].value,
+                'text': fixedTr[i].childNodes[1].childNodes[0].value,
+                'isFixed': true
+            };
+            insertData.push(item);
+        }
+        for (var i = 0; i < variableTr.length; i++) {
+            var item = {
+                'location': variableTr[i].childNodes[1].childNodes[1].value,
+                'text': variableTr[i].childNodes[1].childNodes[0].value,
+                'isFixed': false,
+                'column': variableTr[i].childNodes[2].childNodes[0].options[variableTr[i].childNodes[2].childNodes[0].selectedIndex].value
+            };
+            insertData.push(item);
+        }
+        
+        $.ajax({
+            url: '/newDocLearning/insertTrainData',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({ 'formName': $('#preTitle').text() , 'data': insertData }),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                alert(data.message);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+        
+    });
+
 }

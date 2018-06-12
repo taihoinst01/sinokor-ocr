@@ -4,7 +4,7 @@ import sys
 
 param =[]
 for item in sys.argv[1:]:
-    param.append({'x' : item.split(',')[0], 'y': item.split(',')[1], 'text' : item.split(',')[2], 'isFixed' : 'false'})
+    param.append({'x' : item.split('::')[0], 'y': item.split('::')[1], 'text' : item.split('::')[2], 'isFixed' : 'false'})
 
 data = {
         "Inputs": {
