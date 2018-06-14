@@ -280,7 +280,7 @@ function trainBtnEvent() {
             url: '/newDocLearning/insertTrainData',
             type: 'post',
             datatype: "json",
-            data: JSON.stringify({ 'formName': $('#preTitle').text() , 'data': insertData }),
+            data: JSON.stringify({ 'formName': (($('#newDocName').val() == '') ? $('#newDocName').val() : $('#preTitle').text()) , 'data': insertData }),
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
                 alert(data.message);
