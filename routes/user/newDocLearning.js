@@ -111,17 +111,25 @@ router.post('/ml', function (req, res) {
                                 if (lineText[i].isFixed == 'True') {
                                     for (var j = 0; j < keyArr.length; j++) {
                                         if (lineText[i].text.substr(0, 1) == keyArr[j]) {
-                                            formParams[j] += (formParams[j] == '') ? '' : ',';
-                                            formParams[j] = formParams[j] + lineText[i].text + ',' +
+                                            var appendText = lineText[i].text + ',' +
                                                 lineText[i].location.split(',')[0] + ',' +
                                                 lineText[i].location.split(',')[1];
+                                            if (formParams[j] == '') {
+                                                formParams[j] = appendText;
+                                            } else {
+                                                formParams[j] = ((formParams[j] < appendText) ? formParams[j] + "," + appendText : appendText + "," + formParams[j]);
+                                            }
                                             break;
                                         } else {
                                             if (j == keyArr.length - 1) {
-                                                formParams[26] += (formParams[26] == '') ? '' : ',';
-                                                formParams[26] = formParams[26] + lineText[i].text + ',' +
+                                                var appendText = lineText[i].text + ',' +
                                                     lineText[i].location.split(',')[0] + ',' +
                                                     lineText[i].location.split(',')[1];
+                                                if (formParams[26] == '') {
+                                                    formParams[26] = appendText;
+                                                } else {
+                                                    formParams[26] = ((formParams[26] < appendText) ? formParams[26] + "," + appendText : appendText + "," + formParams[26]);
+                                                }
                                             }
                                         }
                                     }
@@ -246,17 +254,25 @@ router.post('/insertTrainData', function (req, res) {
                 if (data[i].isFixed) {
                     for (var j = 0; j < keyArr.length; j++) {
                         if (data[i].text.substr(0, 1) == keyArr[j]) {
-                            formParams[j] += (formParams[j] == '') ? '' : ',';
-                            formParams[j] = formParams[j] + data[i].text + ',' +
+                            var appendText = data[i].text + ',' +
                                 data[i].location.split(',')[0] + ',' +
                                 data[i].location.split(',')[1];
+                            if (formParams[j] == '') {
+                                formParams[j] = appendText;
+                            } else {
+                                formParams[j] = ((formParams[j] < appendText) ? formParams[j] + "," + appendText : appendText + "," + formParams[j]);
+                            }                           
                             break;
                         } else {
                             if (j == keyArr.length - 1) {
-                                formParams[26] += (formParams[26] == '') ? '' : ',';
-                                formParams[26] = formParams[26] + data[i].text + ',' +
+                                var appendText = data[i].text + ',' +
                                     data[i].location.split(',')[0] + ',' +
                                     data[i].location.split(',')[1];
+                                if (formParams[26] == '') {
+                                    formParams[26] = appendText;
+                                } else {
+                                    formParams[26] = ((formParams[26] < appendText) ? formParams[26] + "," + appendText : appendText + "," + formParams[26]);
+                                }  
                             }
                         }
                     }

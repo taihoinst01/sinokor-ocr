@@ -117,7 +117,7 @@ function mlPrediction(lineText) {
         data: JSON.stringify({ 'lineText': lineText }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data.fvResult);
+            //console.log(data);
             $('#preTitle').html(data.formName);
             $('#preAccuracy').html(data.formScore);
             appendText(data.message, data.columns);
