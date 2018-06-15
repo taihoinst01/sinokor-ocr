@@ -356,7 +356,7 @@ function ocrDataProcessing(regions, fileName) {
             for (var k = 0; k < regions[i].lines[j].words.length; k++) {
                 item += regions[i].lines[j].words[k].text + ' ';
             }
-            lineText.push({ 'location': regions[i].lines[j].boundingBox, 'text': item });
+            lineText.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
         }
     }
 
@@ -488,15 +488,27 @@ function paging() {
     for (var i = 0; i < ocrdata[currentPage - 1].lineText.length; i++) {
         appendText += '<tr><td><input type="text" value="' + ocrdata[currentPage - 1].lineText[i].text + '" style="width:100%; border:0;" />'
             + '<input type = "hidden" value = "' + ocrdata[currentPage - 1].lineText[i].location + '" /></td>'
-            + '<td><select style="width:100%; height:100%;  border:0;"><option value=""><option></select></td></tr>';
-        /*var appendText = '<tr onmouseover="hoverSquare(this)"><td><input type="text" value="' + ocrdata[currentPage - 1][i].text + '" style="width:100%;" />'
-            + '<input type = "hidden" value = "' + ocrdata[currentPage - 1][i].location + '" /></td></tr> ';*/       
+            + '<td>' + optionHTML(ocrdata[currentPage - 1].lineText[i].column, ocrdata[currentPage - 1].columns) + '</td></tr>';  
     }
     $('#textResultTbl').append(appendText);
 
     $('#fileName').html(imgFileName[currentPage - 1]);
     $('#pagingText').html(currentPage + ' / ' + checkCount);
    imageInit();   
+}
+
+function optionHTML(columnNo, columns) {
+    var optionHTML = '<select style="width:100%; height:100%;  border:0;">';
+    optionHTML += '<option value=""></option>';
+    for (var i = 0; i < columns.length; i++) {
+        itemHTML = '<option value="' + columns[i].no + '"' + ((columnNo == columns[i].no) ? 'selected' : '') + '>'
+            + columns[i].columnName + '</option>';
+        optionHTML += itemHTML;
+    }
+    optionHTML += '</select>';
+
+    return optionHTML;
+
 }
 
 // 문서 검토하기

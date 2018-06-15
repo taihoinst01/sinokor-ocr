@@ -3,6 +3,11 @@ var dbConfig = {
     password: 'taiho9788!',
     server: 'taiholab.database.windows.net',
     database: 'ocrdemo',
+    pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000
+    },
     options: {
         encrypt: true
     }
