@@ -1578,6 +1578,7 @@
     <Folder Include="ml\nmt\utils\__pycache__\" />
     <Folder Include="ml\nmt\__pycache__\" />
     <Folder Include="config\" />
+    <Folder Include="pdf2img\" />
     <Folder Include="public\" />
     <Folder Include="public\common\" />
     <Folder Include="public\common\css\" />

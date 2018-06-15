@@ -18,15 +18,6 @@ router.get('/favicon.ico', function (req, res) {
 
 // newDocLearning.html 보여주기
 router.get('/', function (req, res) {
-    /*const gs = require('ghostscript4js')
-
-    try {
-        const version = gs.version()
-        console.log(version)
-        gs.executeSync('-sDEVICE=jpeg -sOutputFile=page-%03d.jpg -r100x100 -f uploads/file1.pdf -c quit')
-    } catch (err) {
-        throw err
-    }*/
 
     res.render('user/newDocLearning');
 });

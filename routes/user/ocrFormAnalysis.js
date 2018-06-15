@@ -4,6 +4,7 @@ var fs = require('fs');
 var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
+const gs = require('ghostscript4js')
 var router = express.Router();
 
 // upload file setting
@@ -79,6 +80,17 @@ router.post('/deleteFile', function (req, res) {
 //pdf에서 img로 변환
 router.post('/pdf2img', function (req, res) {
     var inputFile = req.body.fileName;
+
+    try {
+        const version = gs.version()
+        //console.log(version)
+        var dirName = getConvertDate();
+        fs.mkdirSync("./pdf2img/" + dirName);
+        gs.executeSync('-psconv -q -dNOPAUSE -sDEVICE=jpeg -sOutputFile=pdf2img/' + dirName + '/' +inputFile.split('.')[0] +'-%03d.jpg -r800x800 -f uploads/' + inputFile + ' -c quit');
+        res.send({ code: 200, dirName: dirName , imgName: fs.readdirSync("./pdf2img/" + dirName) });
+    } catch (err) {
+        throw err;
+    }
 
 });
 
@@ -456,6 +468,21 @@ function getFiles(dir, files_) {
 //ocr 결과값 데이터 추출 함수
 function typeOfdata(data) {
     var result = [];
+}
+
+//오늘날짜 변환함수
+function getConvertDate() {
+
+    var today = new Date();
+    var yyyy = today.getFullYear();
+    var mm = (today.getMonth() + 1 < 10) ? '0' + (today.getMonth() + 1) : today.getMonth() + 1;
+    var dd = today.getDate();
+    var hh = (today.getHours() < 10) ? '0' + today.getHours() : today.getHours();
+    var minute = (today.getMinutes() < 10) ? '0' + today.getMinutes() : today.getMinutes();
+    var ss = (today.getSeconds() < 10) ? '0' + today.getSeconds() : today.getSeconds();
+    var mss = (today.getMilliseconds() < 100) ? ((today.getMilliseconds() < 10) ? '00' + today.getMilliseconds() : '0' + today.getMilliseconds()) : today.getMilliseconds();
+
+    return '' + yyyy + mm + dd + hh + minute + ss + mss;
 }
 
 module.exports = router;

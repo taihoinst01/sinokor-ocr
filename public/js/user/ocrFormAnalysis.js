@@ -108,7 +108,7 @@ function getFiles() {
 
 function checkBoxEvent() {
     $('input[type="checkbox"]').change(function (e) {
-        var checkCount = 0;
+        checkCount = 0;
         if ($(e.target).val() == 'all') {
             if ($(e.target).is(':checked')) {
                 $("input[type=checkbox]").prop("checked", true);
@@ -116,14 +116,16 @@ function checkBoxEvent() {
                 $("input[type=checkbox]").prop("checked", false);
             }
         }
-
+        
         $("input[type=checkbox]:checked").each(function (i, el) {
             if (el.value != 'all') {
-                checkCount++;
+                checkNum++;
             }
         });
+        /*
         $('.mtp10 > strong').text(checkCount);
         checkNum = checkCount;
+        */
     });
 }
 
@@ -217,7 +219,7 @@ function ocrApi() {
         
         ocrdata = [];
         imgFileName = [];
-        checkCount = 0;
+        checkNum = 0;
         processCount = 0;
         $('#container2').hide();
         $('.tex01').text('분석 상세 내용');
@@ -227,12 +229,12 @@ function ocrApi() {
         $('.t04').text('0');
         $("input[type=checkbox]:checked").each(function (i, el) {
             if (el.value != 'all') {
-                processImage($(el).val());
-                checkCount++;
+                pdf2img($(el).val());
+                checkNum++;
             }
         });
 
-        if (checkCount > 0) {
+        if (checkNum > 0) {
             $("input[type=checkbox]").prop("checked", false);
             $('.mtp10 > strong').text('0');
             //analysisImg();
@@ -244,15 +246,19 @@ function ocrApi() {
 }
 
 //pdf to img 변환
-function pdf2img() {
+function pdf2img(fileName) {
     $.ajax({
         url: '/ocrFormAnalysis/pdf2img',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({'fileName': 'packing_list_01.pdf'}),
+        data: JSON.stringify({ 'fileName': fileName}),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
+            for (var i = 0; i < data.imgName.length; i++) {
+                checkCount++;
+                imgFileName.push(data.imgName[i]);
+                processImage(data.imgName[i]);
+            }
         },
         error: function (err) {
             console.log(err);
@@ -299,7 +305,6 @@ function processImage(fileName) {
     }).done(function (data) {
         //console.log(data);
         $('.tnum01').text((Number($('.tnum01').text()) + 1));
-        imgFileName.push(fileName);
         ocrDataProcessing(data.regions, fileName);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
