@@ -342,7 +342,7 @@ function analysisImg(type) {
 }
 
 function ocrDataProcessing(regions, fileName) {
-    processCount++;
+    processCount = 0;
     var lineText = [];
     var docDate, companyName, contractName, email,
         price1, price2, price3,
@@ -380,18 +380,44 @@ function ocrDataProcessing(regions, fileName) {
             }
         }
     }
-    ocrdata.push(lineText);
-    if (processCount == 1) {
-        currentPage = 1;
-        if (checkCount > 1) {
-            $('#rightPagingBtn').attr('disabled', false);
-        } else {
-            $('#rightPagingBtn').attr('disabled', true);
+
+    mlPrediction(lineText, fileName);
+}
+
+function mlPrediction(lineText, fileName) {
+    $.ajax({
+        url: '/newDocLearning/ml',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'lineText': lineText }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            processCount++;
+            ocrdata.push({
+                'fileName': fileName,
+                'formName': data.formName,
+                'formScore': data.formScore,
+                'lineText': data.message,
+                'columns': data.columns
+            });
+
+            if (processCount == Number($('.tnum01').text())) {
+                currentPage = 1;
+                if (checkCount > 1) {
+                    $('#rightPagingBtn').attr('disabled', false);
+                } else {
+                    $('#rightPagingBtn').attr('disabled', true);
+                }
+                $('#leftPagingBtn').attr('disabled', true);
+                $('#originalShowBtn').show();
+                paging();
+            }
+
+        },
+        error: function (err) {
+            console.log(err);
         }
-        $('#leftPagingBtn').attr('disabled', true);
-        $('#originalShowBtn').show();
-        paging();
-    }
+    });
 }
 
 function validationCheck(value) {
@@ -454,12 +480,14 @@ function clickPagingBtn() {
 
 function paging() {
     $('#redNemo').hide();
-   
+
+    $('#accuracy').html(ocrdata[currentPage - 1].formScore + '%');
+    $('#formSelect').val(ocrdata[currentPage - 1].formName);
     $('#textResultTbl').html('');
     var appendText = '<tr><th style="text-align:center;">목록</th><th style="text-align:center;">DB 컬럼</th></tr>';
-    for (var i = 0; i < ocrdata[currentPage - 1].length; i++) {
-        appendText += '<tr><td><input type="text" value="' + ocrdata[currentPage - 1][i].text + '" style="width:100%; border:0;" />'
-            + '<input type = "hidden" value = "' + ocrdata[currentPage - 1][i].location + '" /></td>'
+    for (var i = 0; i < ocrdata[currentPage - 1].lineText.length; i++) {
+        appendText += '<tr><td><input type="text" value="' + ocrdata[currentPage - 1].lineText[i].text + '" style="width:100%; border:0;" />'
+            + '<input type = "hidden" value = "' + ocrdata[currentPage - 1].lineText[i].location + '" /></td>'
             + '<td><select style="width:100%; height:100%;  border:0;"><option value=""><option></select></td></tr>';
         /*var appendText = '<tr onmouseover="hoverSquare(this)"><td><input type="text" value="' + ocrdata[currentPage - 1][i].text + '" style="width:100%;" />'
             + '<input type = "hidden" value = "' + ocrdata[currentPage - 1][i].location + '" /></td></tr> ';*/       

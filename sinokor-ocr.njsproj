@@ -606,6 +606,9 @@
     <Content Include="ml\srClassification.py" />
     <Content Include="ml\template.py" />
     <Content Include="package.json" />
+    <Content Include="pdf2img\20180614152820406\file1-001.jpg" />
+    <Content Include="pdf2img\20180614152820406\file1-002.jpg" />
+    <Content Include="pdf2img\20180614152820406\file1-003.jpg" />
     <Content Include="public\common\css\AdminLTE.min.css" />
     <Content Include="public\common\css\bootstrap-datepicker.min.css" />
     <Content Include="public\common\css\bootstrap.min.css" />
@@ -1579,6 +1582,7 @@
     <Folder Include="ml\nmt\__pycache__\" />
     <Folder Include="config\" />
     <Folder Include="pdf2img\" />
+    <Folder Include="pdf2img\20180614152820406\" />
     <Folder Include="public\" />
     <Folder Include="public\common\" />
     <Folder Include="public\common\css\" />
@@ -1659,7 +1663,7 @@
     <Folder Include="views\user\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="uploads\file1.pdf" />
+    <Content Include="uploads\SHIPPING_REQUEST.pdf" />
     <Content Include="views\admin\adminDashboard.html" />
     <Content Include="views\admin\userManagement.html" />
     <Content Include="views\common\commonLib.html" />
