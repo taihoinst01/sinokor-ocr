@@ -154,7 +154,8 @@ router.post('/uploadExcel', function (req, res) {
             var row = worksheet.getRow(4);
             for (var i = 0; i < successData.length; i++) {
                 row = worksheet.getRow(4 + i);
-                row.getCell(1).value = (i+1);
+                row.getCell(1).value = (i + 1);
+                row.getCell(2).value = successData[i].fileName;
                 for (var j = 0; j < successData[i].lineText.length; j++) {
                     if (successData[i].lineText[j].column) {
                         for (var k = 0; k < successData[i].columns.length; k++) {

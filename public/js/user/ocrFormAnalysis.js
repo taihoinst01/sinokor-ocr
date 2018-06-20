@@ -379,7 +379,7 @@ function mlPrediction() {
             success: function (data) {
                 processCount++;
                 ocrdata.push({
-                    'fileName': fileName[i],
+                    'fileName': fileNameArr[i],
                     'formName': data.formName,
                     'formScore': data.formScore,
                     'lineText': data.message,
