@@ -183,25 +183,29 @@ router.post('/ml', function (req, res) {
                                             }
 
                                             // DB컬럼 조회
+                                            var sendObj = {};
                                             (async () => {
                                                 try {
                                                     var queryString = queryConfig.selectDbColumns;
-                                                    let pool = await sql.connect(dbConfig);
-                                                    let result1 = await pool.request()
+                                                    var pool = await sql.connect(dbConfig);
+                                                    var result1 = await pool.request()
                                                         .input('formName', sql.NVarChar, formResult)
                                                         .query(queryString);
-                                                    let rows = result1.recordset;
+                                                    var rows = result1.recordset;
 
-                                                    res.send({ code: '200', message: lineText, formName: formResult, formScore: scoreResult * 100.0, columns: rows });
+                                                    sendObj = { code: '200', message: lineText, formName: formResult, formScore: scoreResult * 100.0, columns: rows };
 
                                                 } catch (err) {
-                                                    res.send({ code: '500', message: 'db select error!' });
-                                                } finally {
+                                                    console.log(err);
+                                                    sendObj = { code: '500', message: 'db select error!' };
+                                                } finally { 
                                                     sql.close();
+                                                    res.send(sendObj);
                                                 }
                                             })()
 
                                             sql.on('error', err => {
+                                                console.log(err);
                                             })
                                         }
                                     });   

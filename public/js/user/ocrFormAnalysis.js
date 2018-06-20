@@ -1,10 +1,12 @@
 ﻿var ocrdata = [];
-var excelParams = []; // 엑셀 작업에 필요한 파라미터
 var checkNum = 0;
 var checkCount = 0; // 문서 분석 개수
 var processCount = 0; // 문서 처리 개수
+var ocrCount = 0;
 var imgFileName = []; // 검토하기에 필요한 분석한 이미지 파일명
 var currentPage;
+var lineTextArr = [];
+var fileNameArr = [];
 var x, y, textWidth, textHeight; // 문서 글씨 좌표
 var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, 마우스 이동 좌표
 
@@ -221,6 +223,9 @@ function ocrApi() {
         imgFileName = [];
         checkNum = 0;
         processCount = 0;
+        ocrCount = 0;
+        lineTextArr = [];
+        fileNameArr = [];
         $('#container2').hide();
         $('.tex01').text('분석 상세 내용');
         excelParams = [];
@@ -305,6 +310,7 @@ function processImage(fileName) {
     }).done(function (data) {
         //console.log(data);
         $('.tnum01').text((Number($('.tnum01').text()) + 1));
+        ocrCount++;
         ocrDataProcessing(data.regions, fileName);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
@@ -313,33 +319,6 @@ function processImage(fileName) {
         alert(errorString);
     });
 };
-
-function analysisImg(type) {
-    //console.log(excelParams)
-    var params = { 'data': excelParams };
-
-    $.ajax({
-        url: '/ocrFormAnalysis/uploadExcel',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify(params),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            //$('#successExcelName').val(data.successExcelName);
-            //$('#failExcelName').val(data.failExcelName);
-            setTimeout(function () {
-                if (type == 'success') {
-                    window.location = '/ocrFormAnalysis/downloadExcel?fileName=' + data.successExcelName;
-                } else {
-                    window.location = '/ocrFormAnalysis/downloadExcel?fileName=' + data.failExcelName;
-                }
-            }, 1000);           
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
-}
 
 function ocrDataProcessing(regions, fileName) {
     processCount = 0;
@@ -380,39 +359,76 @@ function ocrDataProcessing(regions, fileName) {
             }
         }
     }
-
-    mlPrediction(lineText, fileName);
+    lineTextArr.push(lineText);
+    fileNameArr.push(fileName);
+    if (ocrCount == checkCount) {
+        mlPrediction();
+    }
+    //mlPrediction(lineText, fileName);
 }
 
-function mlPrediction(lineText, fileName) {
+function mlPrediction() {
+    for (var i = 0; i < lineTextArr.length; i++) {
+        $.ajax({
+            url: '/newDocLearning/ml',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({ 'lineText': lineTextArr[i] }),
+            contentType: 'application/json; charset=UTF-8',
+            async: false,
+            success: function (data) {
+                processCount++;
+                ocrdata.push({
+                    'fileName': fileName[i],
+                    'formName': data.formName,
+                    'formScore': data.formScore,
+                    'lineText': data.message,
+                    'columns': data.columns
+                });
+
+                if (processCount == Number($('.tnum01').text())) { //모든 이미지파일 ml 완료 후
+                    currentPage = 1;
+                    if (checkCount > 1) {
+                        $('#rightPagingBtn').attr('disabled', false);
+                    } else {
+                        $('#rightPagingBtn').attr('disabled', true);
+                    }
+                    $('#leftPagingBtn').attr('disabled', true);
+                    $('#originalShowBtn').show();
+                    paging();
+                    analysisImg();
+                }
+
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+}
+
+function analysisImg() {
+    var params = { 'data': ocrdata };
+
     $.ajax({
-        url: '/newDocLearning/ml',
+        url: '/ocrFormAnalysis/uploadExcel',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'lineText': lineText }),
+        data: JSON.stringify(params),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            processCount++;
-            ocrdata.push({
-                'fileName': fileName,
-                'formName': data.formName,
-                'formScore': data.formScore,
-                'lineText': data.message,
-                'columns': data.columns
-            });
-
-            if (processCount == Number($('.tnum01').text())) {
-                currentPage = 1;
-                if (checkCount > 1) {
-                    $('#rightPagingBtn').attr('disabled', false);
+            //console.log(data);
+            $('#successScore').html(data.successCount);
+            $('#successExcelName').val(data.successExcelName);
+            /*
+            setTimeout(function () {
+                if (type == 'success') {
+                    window.location = '/ocrFormAnalysis/downloadExcel?fileName=' + data.successExcelName;
                 } else {
-                    $('#rightPagingBtn').attr('disabled', true);
+                    window.location = '/ocrFormAnalysis/downloadExcel?fileName=' + data.failExcelName;
                 }
-                $('#leftPagingBtn').attr('disabled', true);
-                $('#originalShowBtn').show();
-                paging();
-            }
-
+            }, 1000);
+            */
         },
         error: function (err) {
             console.log(err);
@@ -433,16 +449,14 @@ function excelSaveEvent() {
         if ($('.t01').text() == '0') {
             alert('확인된 양식의 문서가 없습니다.');
         } else {
-            analysisImg('success');
-            //window.location = '/downloadExcel?fileName=' + $('#successExcelName').val();
+            window.location = '/ocrFormAnalysis/downloadExcel?fileName=' + $('#successExcelName').val();
         }
     });
     $('#failExcelBtn').click(function () {
         if ($('.t04').text() == '0') {
             alert('미확인된 양식의 문서가 없습니다.');
         } else {
-            analysisImg('fail');
-            //window.location = '/downloadExcel?fileName=' + $('#failExcelName').val();
+            window.location = '/ocrFormAnalysis/downloadExcel?fileName=' + $('#failExcelName').val();
         }
     });
 }
