@@ -25,6 +25,7 @@ $(function () {
     clickPagingBtn();
     uploadFile();
     deleteFile();
+    modifyOcrdata();
 
     /*
     // 이미지 원본보기
@@ -683,5 +684,25 @@ function deleteFile() {
         } else {
             alert('삭제할 이미지를 선택해주세요.');
         }
+    });
+}
+
+//목록 수정
+function modifyOcrdata() {
+    $('#modifyBtn').click(function () {
+        var modifyData = [];
+
+        for (var i = 1; i < $('#textResultTbl > tbody > tr').length; i++) {
+            var item = {
+                'location': $('#textResultTbl > tbody > tr').eq(i).children().eq(0).children().eq(0).val(),
+                'text': $('#textResultTbl > tbody > tr').eq(i).children().eq(0).children().eq(1).val(),
+                'isFixed': ocrdata[currentPage - 1].lineText[i-1].isFixed,
+            };
+            if (ocrdata[currentPage - 1].lineText[i - 1].column || ocrdata[currentPage - 1].lineText[i - 1].column != '' ||$('#textResultTbl > tbody > tr').eq(i).children().eq(1).children().eq(0).val() != '') {
+                item.column = $('#textResultTbl > tbody > tr').eq(i).children().eq(1).children().eq(0).val()
+            }
+            modifyData.push(item);
+        }
+        ocrdata[currentPage - 1].lineText = modifyData;
     });
 }
