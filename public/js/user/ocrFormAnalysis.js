@@ -692,17 +692,23 @@ function modifyOcrdata() {
     $('#modifyBtn').click(function () {
         var modifyData = [];
 
+        if ($('#textResultTbl > tbody > tr').length == 0) {
+            alert('수정 사항이 없습니다.');
+            return false;
+        }
+
         for (var i = 1; i < $('#textResultTbl > tbody > tr').length; i++) {
             var item = {
                 'location': $('#textResultTbl > tbody > tr').eq(i).children().eq(0).children().eq(0).val(),
                 'text': $('#textResultTbl > tbody > tr').eq(i).children().eq(0).children().eq(1).val(),
-                'isFixed': ocrdata[currentPage - 1].lineText[i-1].isFixed,
+                'isFixed': ocrdata[currentPage - 1].lineText[i-1].isFixed
             };
-            if (ocrdata[currentPage - 1].lineText[i - 1].column || ocrdata[currentPage - 1].lineText[i - 1].column != '' ||$('#textResultTbl > tbody > tr').eq(i).children().eq(1).children().eq(0).val() != '') {
+            if (ocrdata[currentPage - 1].lineText[i - 1].column || ocrdata[currentPage - 1].lineText[i - 1].column != '' || $('#textResultTbl > tbody > tr').eq(i).children().eq(1).children().eq(0).val() != '') {
                 item.column = $('#textResultTbl > tbody > tr').eq(i).children().eq(1).children().eq(0).val()
             }
             modifyData.push(item);
         }
         ocrdata[currentPage - 1].lineText = modifyData;
+        alert('수정 완료');
     });
 }
