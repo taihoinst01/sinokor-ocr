@@ -246,7 +246,7 @@ function ocrApi() {
             //analysisImg();
 
         } else {
-            alert('분석할 문서를 선택해주세요');
+            alert('분석할 문서를 선택해주세요.');
         }
     });
 }
