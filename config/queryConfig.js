@@ -17,4 +17,21 @@ var queryConfig = {
         "values (@x,@y,@text,@columnNo)"
 };
 
-module.exports = queryConfig;
+var userMngConfig = {
+    selUserList:
+        "SELECT seqNum, userId, auth, email, DATE_FORMAT(joinDate,'%Y-%m-%d') joinDate, " +
+        "DATE_FORMAT(lastLoginDate,'%Y-%m-%d %H:%i:%S') lastLoginDate, icrUseCount " +
+        "FROM TBL_ICR_USER",
+    insertUser:
+        "INSERT INTO TBL_ICR_USER (USERID, USERPW, AUTH, EMAIL, JOINDATE, ICRUSECOUNT) " +
+        "VALUES(?, ?, ?, ?, now(), '0')",
+    deleteUser:
+        "DELETE FROM TBL_USER WHERE USERID = @id",
+    updateUser:
+        "UPDATE TBL_USER SET PW=@pw WHERE ID = @id"
+};
+
+module.exports = {
+    queryConfig: queryConfig,
+    userMngConfig: userMngConfig
+}

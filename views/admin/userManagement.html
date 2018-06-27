@@ -72,61 +72,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    <%
+                                        for(var i=0; i < rows.length; i++) {
+                                    %>
                                         <tr>
-                                            <td>1</td>
-                                            <td>admin</td>
+                                            <td><%=rows[i].seqNum%></td>
+                                            <td><%=rows[i].userId%></td>
                                             <td><button class="btn btn-default">수정</button></td>
-                                            <td>관리자</td>
-                                            <td>admin@taiho.com</td>
-                                            <td>2018-05-09</td>
-                                            <td>2018-05-10<br />22:10:55</td>
-                                            <td>0</td>
-                                            <td><button class="btn btn_delete">삭제</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>admin</td>
-                                            <td><button class="btn btn-default">수정</button></td>
-                                            <td>관리자</td>
-                                            <td>admin@taiho.com</td>
-                                            <td>2018-05-09</td>
-                                            <td>2018-05-10<br />22:10:55</td>
-                                            <td>0</td>
-                                            <td><button class="btn btn_delete">삭제</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>admin</td>
-                                            <td><button class="btn btn-default">수정</button></td>
-                                            <td>관리자</td>
-                                            <td>admin@taiho.com</td>
-                                            <td>2018-05-09</td>
-                                            <td>2018-05-10<br />22:10:55</td>
-                                            <td>0</td>
-                                            <td><button class="btn btn_delete">삭제</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>admin</td>
-                                            <td><button class="btn btn-default">수정</button></td>
-                                            <td>관리자</td>
-                                            <td>admin@taiho.com</td>
-                                            <td>2018-05-09</td>
-                                            <td>2018-05-10<br />22:10:55</td>
-                                            <td>0</td>
-                                            <td><button class="btn btn_delete">삭제</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>admin</td>
-                                            <td><button class="btn btn-default">수정</button></td>
-                                            <td>관리자</td>
-                                            <td>admin@taiho.com</td>
-                                            <td>2018-05-09</td>
-                                            <td>2018-05-10<br />22:10:55</td>
-                                            <td>0</td>
-                                            <td><button class="btn btn_delete">삭제</button></td>
-                                        </tr>
+                                            <td><%=rows[i].auth%></td>
+                                            <td><%=rows[i].email%></td>
+                                            <td><%=rows[i].joinDate%></td>
+                                            <td><%=rows[i].lastLoginDate%></td>
+                                            <td><%=rows[i].icrUseCount%></td>
+                                            <td><button class="btn btn_delete" onclick='deleteUser(<%=rows[i].seqNum%>)'>삭제</button></td>
+                                        </tr>            
+                                    <%
+                                        }
+                                    %>
                                     </tbody>
                                 </table>
                                 <div class="pagination_wrap">
@@ -158,7 +120,7 @@
                     <h4 class="modal-title">사용자 추가</h4>
                 </div>
                 <div class="modal-body">
-                    <form name="" id="" method="post">
+                    <form name="insUserForm" id="insUserForm" action="/userManagement/insertUser" method="post">
                         <table class="Tbl">
                             <colgroup>
                                 <col width="50%" />
@@ -173,7 +135,7 @@
                                         아이디
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" />
+                                        <input type="text" name="userId" id="userId" class="form-control" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -181,7 +143,15 @@
                                         비밀번호
                                     </td>
                                     <td>
-                                        <input type="password" class="form-control" />
+                                        <input type="password" name="userPw" id="userPw" class="form-control" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        비밀번호 확인
+                                    </td>
+                                    <td>
+                                        <input type="password" name="userPwConfirm" id="userPwConfirm" class="form-control" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -189,7 +159,18 @@
                                         이메일
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" />
+                                        <input type="text" name="email" id="email" class="form-control" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        권한
+                                    </td>
+                                    <td>
+                                        <select class="form-control" name="auth" id="auth">
+                                            <option value="user">사용자</option>
+                                            <option value="admin">관리자</option>
+                                        </select>
                                     </td>
                                 </tr>
                             </tbody>
@@ -198,8 +179,8 @@
                 </div>
                 <div class="modal-footer">
                     <div class="btn_wrap">
-                        <button type="button" class="btn btn_01" id="">저장</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                        <button type="button" class="btn btn_01" id="insUserBtn">저장</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="insUserCancelBtn">취소</button>
                     </div>
                 </div>
             </div>

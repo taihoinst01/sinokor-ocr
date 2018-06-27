@@ -1,16 +1,11 @@
 var dbConfig = {
-    user: 'taihoinst',
-    password: 'taiho9788!',
-    server: 'taiholab.database.windows.net',
-    database: 'ocrdemo',
-    pool: {
-        max: 10,
-        min: 0,
-        idleTimeoutMillis: 30000
-    },
-    options: {
-        encrypt: true
-    }
+    connectionLimit: 10,
+    host: 'localhost',
+    port: 3307,
+    user: 'root',
+    password: '1234',
+    database: 'koreanreICR'
 };
 
 module.exports = dbConfig;
+
