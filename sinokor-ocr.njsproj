@@ -436,6 +436,7 @@
     <Compile Include="public\js\import\jquery-ti-init.js" />
     <Compile Include="public\js\import\jquery-ti-validate.min.js" />
     <Compile Include="public\js\import\jquery-ui-1.11.4.custom.min.js" />
+    <Compile Include="public\js\import\jquery.form.min.js" />
     <Compile Include="public\js\import\jquery.jqGrid.min.js" />
     <Compile Include="public\js\import\stb.dropdown.min.js" />
     <Compile Include="public\js\import\test.js" />
@@ -609,6 +610,13 @@
     <Content Include="ml\fvClassification.py" />
     <Content Include="ml\srClassification.py" />
     <Content Include="ml\template.py" />
+    <Content Include="module\imageMagick\ChangeLog" />
+    <Content Include="module\imageMagick\colors.xml" />
+    <Content Include="module\imageMagick\compare.exe" />
+    <Content Include="module\imageMagick\composite.exe" />
+    <Content Include="module\imageMagick\configure.xml" />
+    <Content Include="module\imageMagick\conjure.exe" />
+    <Content Include="module\imageMagick\convert.exe" />
     <Content Include="package.json" />
     <Content Include="pdf2img\20180614152820406\file1-001.jpg" />
     <Content Include="pdf2img\20180614152820406\file1-002.jpg" />
@@ -1587,6 +1595,8 @@
     <Folder Include="ml\nmt\utils\__pycache__\" />
     <Folder Include="ml\nmt\__pycache__\" />
     <Folder Include="config\" />
+    <Folder Include="module\" />
+    <Folder Include="module\imageMagick\" />
     <Folder Include="pdf2img\" />
     <Folder Include="pdf2img\20180614152820406\" />
     <Folder Include="public\" />

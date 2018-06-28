@@ -12,6 +12,7 @@
     <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
+    <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
 
     <script type="text/javascript" src="js/user/batchLearning.js"></script>
     <style>
@@ -44,35 +45,11 @@
                                     <li role="presentation"><a href="#">학습확인</a></li>
                                 </ul>
 
-                                <div class="bb tc" style="height:90%">
-
-                                    <blockquote>
-                                        <p>
-                                            File Upload widget with multiple file selection, drag&amp;drop support and progress bar for jQuery.<br>
-                                            Supports cross-domain, chunked and resumable file uploads.<br>
-                                            Works with any server-side platform (PHP, Python, Ruby on Rails, Java, Node.js, Go etc.) that supports standard HTML form file uploads.
-                                        </p>
-                                    </blockquote>
-                                    <br>
-                                    <!-- The fileinput-button span is used to style the file input field as button -->
-                                    <span class="btn btn-default fileinput-button">
-                                        <i class="glyphicon glyphicon-plus"></i>
-                                        <span id="fileuploadBtn">Select files...</span>
-                                        <!-- The file input field used as target for the file upload widget -->
-                                        <input id="fileupload" type="file" name="files[]" multiple>
-                                    </span>
-                                    <br>
-                                    <br>
-                                    <!-- The global progress bar -->
-                                    <div id="progress" class="progress">
-                                        <div class="progress-bar progress-bar-success"></div>
-                                    </div>
-                                    <!-- The container for the uploaded files -->
-                                    <div id="files" class="files">
-                                        test
-                                    </div>
-                                    <br>
-
+                                <div class="bb tc" style="height:80%">
+                                    <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
+                                        <input type="file" id="uploadFile" name="file" value="upload" multiple>
+                                        <input id="multiUploadBtn" type="button" value="upload">
+                                    </form>
                                 </div>
 
                                 <div style="height:10%">
