@@ -26,9 +26,9 @@ var userMngConfig = {
         "INSERT INTO TBL_ICR_USER (USERID, USERPW, AUTH, EMAIL, JOINDATE, ICRUSECOUNT) " +
         "VALUES(?, ?, ?, ?, now(), '0')",
     deleteUser:
-        "DELETE FROM TBL_USER WHERE USERID = @id",
-    updateUser:
-        "UPDATE TBL_USER SET PW=@pw WHERE ID = @id"
+        "DELETE FROM TBL_ICR_USER WHERE SEQNUM = ?",
+    updatePw:
+        "UPDATE TBL_ICR_USER SET PW = ? WHERE SEQNUM = ?"
 };
 
 module.exports = {

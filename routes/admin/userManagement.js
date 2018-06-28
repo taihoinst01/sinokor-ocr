@@ -49,6 +49,21 @@ router.post('/insertUser', function (req, res) {
     });
 });
 
+//사용자 삭제
+router.post('/deleteUser', function (req, res) {
+    var data = [req.body.seqNum];
+
+    pool.getConnection(function (err, connection) {
+        var sql = queryConfig.userMngConfig.deleteUser;
+
+        connection.query(sql, data, function (err, rows) {
+            if (err) console.error("err : " + err);
+
+            res.redirect('/userManagement');
+            connection.release();
+        })
+    });
+});
 
 
 

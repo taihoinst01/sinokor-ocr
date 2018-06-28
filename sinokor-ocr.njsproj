@@ -299,6 +299,9 @@
     <Compile Include="public\js\import\ext\jquery.maskedinput.min.js" />
     <Compile Include="public\js\import\ext\jquery.numberformatter-1.2.4.min.js" />
     <Compile Include="public\js\import\ext\jshashtable-2.1.js" />
+    <Compile Include="public\js\import\fileupload\jquery.fileupload.js" />
+    <Compile Include="public\js\import\fileupload\jquery.iframe-transport.js" />
+    <Compile Include="public\js\import\fileupload\jquery.ui.widget.js" />
     <Compile Include="public\js\import\freejqgrid\js\i18n\grid.locale-ar.js" />
     <Compile Include="public\js\import\freejqgrid\js\i18n\grid.locale-ar.min.js" />
     <Compile Include="public\js\import\freejqgrid\js\i18n\grid.locale-bg.js" />
@@ -454,6 +457,7 @@
     <Compile Include="public\js\index.js" />
     <Compile Include="public\js\interact.js" />
     <Compile Include="public\js\interact.min.js" />
+    <Compile Include="public\js\user\batchLearning.js" />
     <Compile Include="public\js\user\adminLearning.js" />
     <Compile Include="public\js\user\newDocLearning.js" />
     <Compile Include="public\js\user\ocrFormAnalysis.js" />
@@ -463,6 +467,7 @@
     <Compile Include="routes\admin\adminDashboard.js" />
     <Compile Include="routes\admin\userManagement.js" />
     <Compile Include="routes\index.js" />
+    <Compile Include="routes\user\batchLearning.js" />
     <Compile Include="routes\user\adminLearning.js" />
     <Compile Include="routes\user\newDocLearning.js" />
     <Compile Include="routes\user\ocrFormAnalysis.js" />
@@ -613,6 +618,8 @@
     <Content Include="public\common\css\bootstrap.min.css" />
     <Content Include="public\common\css\daterangepicker.css" />
     <Content Include="public\common\css\default.css" />
+    <Content Include="public\common\css\fileupload\jquery.fileupload.css" />
+    <Content Include="public\common\css\fileupload\style.css" />
     <Content Include="public\common\css\font-awesome.min.css" />
     <Content Include="public\common\css\morris.css" />
     <Content Include="public\common\css\skin-blue.min.css" />
@@ -1585,6 +1592,7 @@
     <Folder Include="public\" />
     <Folder Include="public\common\" />
     <Folder Include="public\common\css\" />
+    <Folder Include="public\common\css\fileupload\" />
     <Folder Include="public\common\font\" />
     <Folder Include="public\common\js\" />
     <Folder Include="public\css\" />
@@ -1643,6 +1651,7 @@
     <Folder Include="public\js\import\jqcloud\" />
     <Folder Include="public\js\import\jqplot\" />
     <Folder Include="public\js\import\jqplot\plugins\" />
+    <Folder Include="public\js\import\fileupload\" />
     <Folder Include="public\js\import\properties\" />
     <Folder Include="public\js\import\treemulti\" />
     <Folder Include="public\js\import\treemulti\dist\" />
@@ -1671,6 +1680,7 @@
     <Content Include="views\common\layout.html" />
     <Content Include="views\common\leftSideBar.html" />
     <Content Include="views\index.html" />
+    <Content Include="views\user\batchLearning.html" />
     <Content Include="views\user\adminLearning.html" />
     <Content Include="views\user\newDocLearning.html" />
     <Content Include="views\user\ocrFormAnalysis.html" />

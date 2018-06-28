@@ -17,14 +17,10 @@ function deleteUser(seqNum) {
         url: '/userManagement/deleteUser',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'fileName': fileName }),
+        data: JSON.stringify({ 'seqNum': seqNum }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            for (var i = 0; i < data.imgName.length; i++) {
-                checkCount++;
-                imgFileName.push(data.imgName[i]);
-                processImage(data.imgName[i]);
-            }
+            location.href = "/userManagement";
         },
         error: function (err) {
             console.log(err);

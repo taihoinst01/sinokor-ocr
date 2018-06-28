@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>TIIZ OCR Service</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <%include  ../common/commonLib.html%>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
+
+    <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
+    <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
+    <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
+
+    <script type="text/javascript" src="js/user/batchLearning.js"></script>
+    <style>
+    </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <div class="main">
+        <div class="wrapper">
+            <!-- Header -->
+            <%include  ../common/header.html%>
+            <!-- //Header -->
+            <!-- Left Menu Side -->
+            <%include ../common/leftSideBar.html%>
+            <!--// Left Menu Side -->
+            <!-- Content Wrapper -->
+            <div class="content-wrapper">
+                <section class="content-header">
+                    <h1>배치 학습</h1>
+                </section>
+
+                <section class="content">
+
+                    <!--이미지 업로드 및 미리보기-->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="box" style="height:650px">
+                                <ul class="nav nav-pills">
+                                    <li role="presentation" class="active"><a href="#">이미지 파일 업로드</a></li>
+                                    <li role="presentation"><a href="#">학습데이터 업로드</a></li>
+                                    <li role="presentation"><a href="#">학습확인</a></li>
+                                </ul>
+
+                                <div class="bb tc" style="height:90%">
+
+                                    <blockquote>
+                                        <p>
+                                            File Upload widget with multiple file selection, drag&amp;drop support and progress bar for jQuery.<br>
+                                            Supports cross-domain, chunked and resumable file uploads.<br>
+                                            Works with any server-side platform (PHP, Python, Ruby on Rails, Java, Node.js, Go etc.) that supports standard HTML form file uploads.
+                                        </p>
+                                    </blockquote>
+                                    <br>
+                                    <!-- The fileinput-button span is used to style the file input field as button -->
+                                    <span class="btn btn-default fileinput-button">
+                                        <i class="glyphicon glyphicon-plus"></i>
+                                        <span id="fileuploadBtn">Select files...</span>
+                                        <!-- The file input field used as target for the file upload widget -->
+                                        <input id="fileupload" type="file" name="files[]" multiple>
+                                    </span>
+                                    <br>
+                                    <br>
+                                    <!-- The global progress bar -->
+                                    <div id="progress" class="progress">
+                                        <div class="progress-bar progress-bar-success"></div>
+                                    </div>
+                                    <!-- The container for the uploaded files -->
+                                    <div id="files" class="files">
+                                        test
+                                    </div>
+                                    <br>
+
+                                </div>
+
+                                <div style="height:10%">
+                                    <div class="tc fl" style="width: 33%; height:100%; padding:10px">
+                                        <button class="uploadBtn">업로드</button>
+                                        <input type="file" />
+                                    </div>
+                                    <div class="tc fl" style="width: 33%; height:100%; padding:10px">
+                                        <b>일치하지 않은 건수</b><br />
+                                        <b>0</b>
+                                    </div>
+                                    <div class="tc fl" style="width: 33%; height:100%; padding:10px">
+                                        <button><</button>오타 이동<button>></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--//이미지 업로드 및 미리보기-->
+
+                    <!--양식 분석 결과-->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="bt" style="height:120px">
+                                <div class="box-body br fl tc" style="height:100%; width:20%">
+                                    <h3 class="box-title">양식 분석 결과</h3>
+                                </div>
+                                <div class="box-body fl tc" style="height:100%; width:20%">
+                                    <b>총 분석 문서</b><br />
+                                    <b>28</b>
+                                </div>
+                                <div class="box-body fl tc" style="height:100%; width:20%">
+                                    <b>확인된 양식 문서</b><br />
+                                    <b>23</b><br />
+                                    <button>엑셀저장</button>
+                                </div>
+                                <div class="box-body fl tc" style="height:100%; width:20%">
+                                    <b>미확인된 양식 문서</b><br />
+                                    <b>5</b><br />
+                                    <button>엑셀저장</button>
+                                </div>
+                                <div class="box-body fl tc" style="height:100%; width:20%">
+                                    <button>서버반영</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--//양식 분석 결과-->
+                </section>
+            </div>
+            <!--// Content Wrapper -->
+
+            <!-- Header -->
+            <%include  ../common/footer.html%>
+            <!-- //Header -->
+        </div>
+    </div>
+</body>
+</html>
