@@ -9,7 +9,7 @@ var cookieparser = require('cookie-parser');
 var bodyparser = require('body-parser');
 var approot = require('app-root-path').path;
 */
-var importjs = require(require('app-root-path').path + '/public/js/import.js');
+var commMoudle = require(require('app-root-path').path + '/public/js/import.js');
 var index = require('./routes/index');
 //user
 var userDashboard = require('./routes/user/userDashboard')

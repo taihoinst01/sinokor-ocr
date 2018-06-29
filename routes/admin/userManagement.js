@@ -1,6 +1,7 @@
 ﻿'use strict';
-var importjs = require(require('app-root-path').path + '/public/js/import.js');
-var router = importjs.router;
+var commMoudle  = require(require('app-root-path').path + '/public/js/import.js');
+var router = commMoudle.router;
+var queryConfig = commMoudle.queryConfig;
 
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
@@ -11,7 +12,7 @@ var callbackFunc1 = function (rows, req, res) {
     res.render('admin/userManagement', { rows: rows ? rows : {} });
 }
 router.get('/', function (req, res) {
-    importjs.commonDB.reqQuery("", importjs.queryConfig.userMngConfig.selUserList, callbackFunc1, req, res);
+    importjs.commonDB.reqQuery("", queryConfig.userMngConfig.selUserList, callbackFunc1, req, res);
     
     //pool.getConnection(function (err, connection) {
     //    var sql = queryConfig.userMngConfig.selUserList;
@@ -62,4 +63,18 @@ router.post('/deleteUser', function (req, res) {
     });
 });
 
-module.exports = importjs.router;
+
+//router.get('/', function (req, res) {
+//    pool.getConnection(function (err, connection) {
+//        var sql = queryConfig.userMngConfig.selUserList;
+
+//        connection.query(sql, function (err, rows) {
+//            if (err) console.error("err : " + err);
+
+//            res.render('admin/userManagement', { rows: rows ? rows : {} });
+//            connection.release();
+//        })
+//    });
+//});
+
+module.exports = router;
