@@ -33,22 +33,23 @@ router.post('/', function (req, res) {
 
 // fileupload
 router.post('/multiUpload', upload.any(), function (req, res) {
-    var file = req.files;
- 
-    console.log(file);
-    res.send();
-});
+    var files = req.files;
+    var endCount = 0;
+    var returnObj = [];
 
-// tif to jpg 변환
-router.post('/tif', function (req, res) {
-    var ifile = appRoot + '\\uploads\\test.tif';
-    var ofile = appRoot + '\\pdf2img\\test.jpg'
-
-    exec('module\\imageMagick\\convert.exe -density 600x600 ' + ifile + ' ' + ofile, function (err, out, code) {
-        console.log(out)
-    });
-
-    res.send({});
+    for (var i = 0; i < files.length; i++) {
+        if (files[i].originalname.split('.')[1] === 'TIF') {
+            var ifile = appRoot + '\\' + files[i].path;
+            var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
+            returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
+            exec('module\\imageMagick\\convert.exe -density 600x600 ' + ifile + ' ' + ofile, function (err, out, code) {                
+                if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
+                    res.send({ code: 200, message: returnObj });
+                }
+                endCount++;
+            });
+        }
+    }
 });
 
 module.exports = router;

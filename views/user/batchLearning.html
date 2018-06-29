@@ -14,6 +14,15 @@
     <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
     <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
 
+    <!-- grid import-->
+    <script src="js/import/toast-ui-grid/underscore/underscore.js"></script>
+    <script src="js/import/toast-ui-grid/backbone/backbone.js"></script>
+    <script src="js/import/toast-ui-grid/tui-code-snippet/dist/tui-code-snippet.js"></script>
+    <script src="js/import/toast-ui-grid/tui-pagination/dist/tui-pagination.js"></script>
+    <script src="js/import/toast-ui-grid/tui-date-picker/dist/tui-date-picker.js"></script>
+    <script src="js/import/toast-ui-grid/tui-grid/dist/tui-grid.js"></script>
+    <link rel="stylesheet" type="text/css" href="js/import/toast-ui-grid/tui-grid/dist/tui-grid.css" />
+
     <script type="text/javascript" src="js/user/batchLearning.js"></script>
     <style>
     </style>
@@ -50,7 +59,9 @@
                                         <input type="file" id="uploadFile" name="file" value="upload" multiple>
                                         <input id="multiUploadBtn" type="button" value="upload">
                                     </form>
-                                </div>
+                                    <br/>
+                                    <div id="grid" style="width:1000px;"></div>
+                                </div>                            
 
                                 <div style="height:10%">
                                     <div class="tc fl" style="width: 33%; height:100%; padding:10px">
