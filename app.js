@@ -1,13 +1,15 @@
 ﻿'use strict';
+/*
 var debug = require('debug');
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var appRoot = require('app-root-path').path;
-
+var cookieparser = require('cookie-parser');
+var bodyparser = require('body-parser');
+var approot = require('app-root-path').path;
+*/
+var commMoudle = require(require('app-root-path').path + '/public/js/import.js');
 var index = require('./routes/index');
 //user
 var userDashboard = require('./routes/user/userDashboard')
@@ -21,19 +23,19 @@ var newDocLearning = require('./routes/user/newDocLearning');
 var adminDashboard = require('./routes/admin/adminDashboard')
 var userManagement = require('./routes/admin/userManagement');
 
-var app = express();
+var app = commMoudle.express();
 
-app.use('/uploads', express.static(__dirname + '/uploads'));
-app.use('/excel', express.static(__dirname + '/excel'));
-app.set('views', path.join(__dirname, 'views'));
+app.use('/uploads', commMoudle.express.static(__dirname + '/uploads'));
+app.use('/excel', commMoudle.express.static(__dirname + '/excel'));
+app.set('views', commMoudle.path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(commMoudle.logger('dev'));
+app.use(commMoudle.bodyParser.json());
+app.use(commMoudle.bodyParser.urlencoded({ extended: false }));
+app.use(commMoudle.cookieParser());
+app.use(commMoudle.express.static(commMoudle.path.join(__dirname, 'public')));
 
 app.use('/', index);
 //user
@@ -52,5 +54,5 @@ app.use('/userManagement', userManagement);
 app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function () {
-    debug('Server Start!! port : ' + server.address().port);
+    commMoudle.debug('Server Start!! port : ' + server.address().port);
 });
