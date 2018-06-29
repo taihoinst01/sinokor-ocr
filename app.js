@@ -1,13 +1,15 @@
 ﻿'use strict';
+/*
 var debug = require('debug');
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var appRoot = require('app-root-path').path;
-
+var cookieparser = require('cookie-parser');
+var bodyparser = require('body-parser');
+var approot = require('app-root-path').path;
+*/
+var importjs = require(require('app-root-path').path + '/public/js/import.js');
 var index = require('./routes/index');
 //user
 var userDashboard = require('./routes/user/userDashboard')
@@ -20,19 +22,19 @@ var newDocLearning = require('./routes/user/newDocLearning');
 var adminDashboard = require('./routes/admin/adminDashboard')
 var userManagement = require('./routes/admin/userManagement');
 
-var app = express();
+var app = importjs.express();
 
-app.use('/uploads', express.static(__dirname + '/uploads'));
-app.use('/excel', express.static(__dirname + '/excel'));
-app.set('views', path.join(__dirname, 'views'));
+app.use('/uploads', importjs.express.static(__dirname + '/uploads'));
+app.use('/excel', importjs.express.static(__dirname + '/excel'));
+app.set('views', importjs.path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(importjs.logger('dev'));
+app.use(importjs.bodyParser.json());
+app.use(importjs.bodyParser.urlencoded({ extended: false }));
+app.use(importjs.cookieParser());
+app.use(importjs.express.static(importjs.path.join(__dirname, 'public')));
 
 app.use('/', index);
 //user
@@ -50,5 +52,5 @@ app.use('/userManagement', userManagement);
 app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function () {
-    debug('Server Start!! port : ' + server.address().port);
+    importjs.debug('Server Start!! port : ' + server.address().port);
 });

@@ -1,43 +1,42 @@
 ﻿'use strict';
-var express = require('express');
-var fs = require('fs');
-var multer = require("multer");
-var exceljs = require('exceljs');
-var appRoot = require('app-root-path').path;
-var mysql = require('mysql');
-var dbConfig = require('../../config/dbConfig');
-var pool = mysql.createPool(dbConfig);
-var queryConfig = require('../../config/queryConfig.js');
-var router = express.Router();
+var importjs = require(require('app-root-path').path + '/public/js/import.js');
 
-router.get('/favicon.ico', function (req, res) {
+importjs.router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 
 // userManagement.html 보여주기
-router.get('/', function (req, res) {
-    pool.getConnection(function (err, connection) {
-        var sql = queryConfig.userMngConfig.selUserList;
+var callbackFunc1 = function (rows, req, res) {
+    console.log("콜백 실행");
+    console.log("row 내용 : " + JSON.stringify(rows));
+    res.render('admin/userManagement', { rows: rows ? rows : {} });
+}
+importjs.router.get('/', function (req, res) {
+    console.log("호출합니다. v3");
+    importjs.commonDB.reqQuery("", importjs.queryConfig.userMngConfig.selUserList, callbackFunc1, req, res);
+    
+    //pool.getConnection(function (err, connection) {
+    //    var sql = queryConfig.userMngConfig.selUserList;
 
-        connection.query(sql, function (err, rows) {
-            if (err) console.error("err : " + err);
+    //    connection.query(sql, function (err, rows) {
+    //        if (err) console.error("err : " + err);
 
-            res.render('admin/userManagement', { rows: rows ? rows : {} });
-            connection.release();
-        })
-    });
+    //        res.render('admin/userManagement', { rows: rows ? rows : {} });
+    //        connection.release();
+    //    })
+    //});
 });
 
 // userManagement.html 보여주기
-router.post('/', function (req, res) {
+importjs.router.post('/', function (req, res) {
     res.render('admin/userManagement');
 });
 
 //사용자 추가
-router.post('/insertUser', function (req, res) {
+importjs.router.post('/insertUser', function (req, res) {
     var data = [req.body.userId, req.body.userPw, req.body.auth, req.body.email];
 
-    pool.getConnection(function (err, connection) {
+    importjs.pool.getConnection(function (err, connection) {
         var sql = queryConfig.userMngConfig.insertUser;
 
         connection.query(sql, data, function (err, rows) {
@@ -53,4 +52,4 @@ router.post('/insertUser', function (req, res) {
 
 
 
-module.exports = router;
+module.exports = importjs.router;
