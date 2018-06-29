@@ -72,23 +72,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <%
+                                        <%
                                         for(var i=0; i < rows.length; i++) {
-                                    %>
+                                        %>
                                         <tr>
                                             <td><%=rows[i].seqNum%></td>
                                             <td><%=rows[i].userId%></td>
-                                            <td><button class="btn btn-default">수정</button></td>
+                                            <td><button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn">수정</button></td>
                                             <td><%=rows[i].auth%></td>
                                             <td><%=rows[i].email%></td>
                                             <td><%=rows[i].joinDate%></td>
                                             <td><%=rows[i].lastLoginDate%></td>
                                             <td><%=rows[i].icrUseCount%></td>
                                             <td><button class="btn btn_delete" onclick='deleteUser(<%=rows[i].seqNum%>)'>삭제</button></td>
-                                        </tr>            
-                                    <%
+                                        </tr>
+                                        <%
                                         }
-                                    %>
+                                        %>
                                     </tbody>
                                 </table>
                                 <div class="pagination_wrap">
@@ -187,6 +187,66 @@
         </div>
     </div>
     <!-- //사용자 추가-->
+
+    <!-- 비밀번호 수정-->
+    <div class="modal fade" id="userUpdate" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="min-height: 300px; max-height: 400px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">비밀번호 수정</h4>
+                </div>
+                <div class="modal-body">
+                    <form name="updatePwForm" id="updatePwForm" action="/userManagement/updatePw" method="post">
+                        <table class="Tbl">
+                            <colgroup>
+                                <col width="50%" />
+                                <col width="50%" />
+                            </colgroup>
+                            <thead>
+
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        회원번호
+                                    </td>
+                                    <td>
+                                        <input type="text" name="seqNumUpdate" id="seqNumUpdate" class="form-control" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        비밀번호
+                                    </td>
+                                    <td>
+                                        <input type="password" name="userPwUpdate" id="userPwUpdate" class="form-control" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        비밀번호 확인
+                                    </td>
+                                    <td>
+                                        <input type="password" name="userPwUpdateConfirm" id="userPwUpdateConfirm" class="form-control" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn_wrap">
+                        <button type="button" class="btn btn_01" id="updatePwBtn">저장</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="updatePwCancelBtn">취소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //비밀번호 수정-->
+
+
     <script>
         //iCheck for checkbox and radio inputs
         $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({

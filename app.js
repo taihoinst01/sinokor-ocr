@@ -15,6 +15,7 @@ var index = require('./routes/index');
 var userDashboard = require('./routes/user/userDashboard')
 var ocrFormAnalysis = require('./routes/user/ocrFormAnalysis');
 var adminLearning = require('./routes/user/adminLearning');
+var batchLearning = require('./routes/user/batchLearning');
 var uiLearning = require('./routes/user/uiLearning');
 var ocrHistorySearch = require('./routes/user/ocrHistorySearch');
 var newDocLearning = require('./routes/user/newDocLearning');
@@ -41,6 +42,7 @@ app.use('/', index);
 app.use('/userDashboard', userDashboard);
 app.use('/ocrFormAnalysis', ocrFormAnalysis);
 app.use('/adminLearning', adminLearning);
+app.use('/batchLearning', batchLearning);
 app.use('/uiLearning', uiLearning);
 app.use('/ocrHistorySearch', ocrHistorySearch);
 app.use('/newDocLearning', newDocLearning);

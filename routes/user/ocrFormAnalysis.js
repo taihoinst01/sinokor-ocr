@@ -24,6 +24,7 @@ router.get('/favicon.ico', function (req, res) {
 
 // ocrFormAnalysis.html 보여주기
 router.get('/', function (req, res) {
+
     res.render('user/ocrFormAnalysis');
 });
 
