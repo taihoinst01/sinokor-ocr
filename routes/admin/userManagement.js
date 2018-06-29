@@ -1,18 +1,16 @@
 ﻿'use strict';
 var importjs = require(require('app-root-path').path + '/public/js/import.js');
+var router = importjs.router;
 
-importjs.router.get('/favicon.ico', function (req, res) {
+router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 
 // userManagement.html 보여주기
 var callbackFunc1 = function (rows, req, res) {
-    console.log("콜백 실행");
-    console.log("row 내용 : " + JSON.stringify(rows));
     res.render('admin/userManagement', { rows: rows ? rows : {} });
 }
-importjs.router.get('/', function (req, res) {
-    console.log("호출합니다. v3");
+router.get('/', function (req, res) {
     importjs.commonDB.reqQuery("", importjs.queryConfig.userMngConfig.selUserList, callbackFunc1, req, res);
     
     //pool.getConnection(function (err, connection) {
@@ -28,12 +26,12 @@ importjs.router.get('/', function (req, res) {
 });
 
 // userManagement.html 보여주기
-importjs.router.post('/', function (req, res) {
+router.post('/', function (req, res) {
     res.render('admin/userManagement');
 });
 
 //사용자 추가
-importjs.router.post('/insertUser', function (req, res) {
+router.post('/insertUser', function (req, res) {
     var data = [req.body.userId, req.body.userPw, req.body.auth, req.body.email];
 
     importjs.pool.getConnection(function (err, connection) {
@@ -63,8 +61,5 @@ router.post('/deleteUser', function (req, res) {
         })
     });
 });
-
-
-
 
 module.exports = importjs.router;
