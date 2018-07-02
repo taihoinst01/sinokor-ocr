@@ -91,6 +91,10 @@ function appendOcrData(regions) {
                         type: 'text',
                         useViewMode: true
                     },
+                    onAfterChange: function (ev) {
+                        ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        return ev;
+                    },
                     width: 200
                 },
                 {
@@ -99,6 +103,10 @@ function appendOcrData(regions) {
                     editOptions: {
                         type: 'text',
                         useViewMode: true
+                    },
+                    onAfterChange: function (ev) {
+                        ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        return ev;
                     },
                     width: 200
                 },
