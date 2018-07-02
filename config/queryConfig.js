@@ -1,3 +1,8 @@
+var count = {
+    startQuery: "SELECT COUNT(*) AS cnt FROM ( ",
+    endQuery:   " ) AS COUNTQUERY "
+}
+
 var queryConfig = {
     selectDbColumns:
         "SELECT " + 
@@ -32,6 +37,7 @@ var userMngConfig = {
 };
 
 module.exports = {
+    count : count,
     queryConfig: queryConfig,
     userMngConfig: userMngConfig
 }
