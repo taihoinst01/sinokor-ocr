@@ -1,4 +1,5 @@
-﻿var ocrCount = 0;
+﻿var totCount = 0; // 총 이미지 분석 개수
+var ocrCount = 0; // ocr 수행 횟수
 var grid;
 
 $(function () {
@@ -11,6 +12,10 @@ $(function () {
 function multiUploadEvent() {
     $('#uploadFile').change(function () {
         if ($(this).val() !== '') {
+            ocrCount = 0;
+            grid = '';
+            $('#grid').html('');
+            $('#step01').html('이미지 파일 업로드');
             $('#multiUploadForm').submit();
         }
     });
@@ -24,7 +29,8 @@ function multiUploadEvent() {
             return true;
         },
         success: function (responseText, statusText) {
-            console.log(responseText);
+            //console.log(responseText);
+            totCount = responseText.message.length;
             for (var i = 0; i < responseText.message.length; i++) {
                 processImage(responseText.message[i]);
             }
@@ -76,7 +82,6 @@ function appendOcrData(regions) {
             el: $('#grid'),
             data: gridData,
             virtualScrolling: true,
-            editingEvent: 'click',
             bodyHeight: 300,
             columns: [
                 {
@@ -85,7 +90,10 @@ function appendOcrData(regions) {
                     editOptions: {
                         type: 'text',
                         useViewMode: true
-
+                    },
+                    onAfterChange: function (ev) {
+                        ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        return ev;
                     },
                     width: 200
                 },
@@ -95,6 +103,10 @@ function appendOcrData(regions) {
                     editOptions: {
                         type: 'text',
                         useViewMode: true
+                    },
+                    onAfterChange: function (ev) {
+                        ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        return ev;
                     },
                     width: 200
                 },
@@ -138,7 +150,10 @@ function appendOcrData(regions) {
             text: lineText[i].text
         });
     }
-    console.log(lineText);
     grid.appendRow(gridData);
+
+    if (totCount == ocrCount) { // 모든 OCR 분석 완료되면
+        $('#step01').html('∨ OCR 분석완료');
+    }
 }
 

@@ -49,21 +49,21 @@
                         <div class="col-md-12">
                             <div class="box" style="height:650px">
                                 <ul class="nav nav-pills">
-                                    <li role="presentation" class="active"><a href="#">이미지 파일 업로드</a></li>
-                                    <li role="presentation"><a href="#">학습데이터 업로드</a></li>
-                                    <li role="presentation"><a href="#">학습확인</a></li>
+                                    <li role="presentation" class="active"><a id="step01" href="#">이미지 파일 업로드</a></li>
+                                    <li role="presentation"><a id="step02" href="#">학습데이터 업로드</a></li>
+                                    <li role="presentation"><a id="step03" href="#">학습확인</a></li>
                                 </ul>
 
                                 <div class="bb tc" style="height:80%">
                                     <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
                                         <input type="file" id="uploadFile" name="file" value="upload" multiple>
-                                        <input id="multiUploadBtn" type="button" value="upload">
+                                        <input id="multiUploadBtn" type="button" value="업로드">
                                     </form>
                                     <br/>
                                     <div id="grid" style="width:1000px;"></div>
                                 </div>                            
 
-                                <div style="height:10%">
+                                <div style="height:10%; display:none;">
                                     <div class="tc fl" style="width: 33%; height:100%; padding:10px">
                                         <button class="uploadBtn">업로드</button>
                                         <input type="file" />
