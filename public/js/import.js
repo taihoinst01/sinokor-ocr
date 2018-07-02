@@ -16,6 +16,7 @@ var dbConfig = require(appRoot + '/config/dbConfig');
 var pool = mysql.createPool(dbConfig);
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
+var commonUtil = require(appRoot + '/public/js/common.util.js');
 
 exports.appRoot = appRoot;
 exports.express = express;
@@ -34,3 +35,4 @@ exports.dbConfig = dbConfig;
 exports.pool = pool;
 exports.queryConfig = queryConfig;
 exports.commonDB = commonDB;
+exports.commonUtil = commonUtil;

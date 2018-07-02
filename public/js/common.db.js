@@ -1,24 +1,35 @@
 ﻿'use strict';
-var commModule = require(require('app-root-path').path + '/public/js/import.js');
 
-var reqQuery = function (param, sql, callbackFunc, req, res) {
+/******************************************
+ * server database function js
+ * ****************************************/
+var commModule = require(require('app-root-path').path + '/public/js/import.js');
+var queryConfig = commModule.queryConfig;
+
+// count가 추가된 리스트 쿼리 요청
+var reqListQuery = function (sql, callbackFunc, totalCount, req, res) {
+    commModule.pool.getConnection(function (err, connection) {
+        connection.query(sql, function (err, rows) {
+            if (err) console.error("MariaDB err : ", err);
+            rows[0].totalCount = totalCount;
+            callbackFunc(rows, req, res);
+            connection.release();
+        });
+    });
+};
+
+// 일반 쿼리 요청
+var reqQuery = function (sql, callbackFunc, req, res) {
     commModule.pool.getConnection(function (err, connection) {
         connection.query(sql, function (err, rows) {
             if (err) console.error("MariaDB err : ", err);
             callbackFunc(rows, req, res);
             connection.release();
-        })
+        });
     });
 };
 
-function db_print(param) {
-    console.log("테스트 출력 :", param);
-}
-
-var db_print1 = function(param) {
-    console.log("테스트 출력1 :", param);
-}
-
 module.exports = {
-    reqQuery    : reqQuery
+    reqListQuery : reqListQuery,
+    reqQuery   : reqQuery
 }
