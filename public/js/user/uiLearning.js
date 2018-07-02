@@ -2,7 +2,7 @@
 var totCount = 0; // 전체 분석 문서 개수
 var ocrCount = 0; // ocr 수행 횟수
 var searchDBColumnsCount = 0; // DB컬럼 조회 수행 횟수
-var thumbImgs = [];
+var thumbImgs = []; // 썸네일 이미지 경로 배열
 var thumnImgPageCount = 1; // 썸네일 이미지 페이징 번호
 
 $(function () {
@@ -114,7 +114,7 @@ function thumbImgPaging(pageCount) {
         $('#thumb-prev').attr('disabled', false);
     }
 
-    if (endImgCnt > thumbImgs.length) {
+    if (endImgCnt >= thumbImgs.length) {
         endImgCnt = thumbImgs.length;
         $('#thumb-next').attr('disabled', true);
     } else {
