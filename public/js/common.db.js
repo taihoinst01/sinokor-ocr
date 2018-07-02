@@ -6,6 +6,14 @@
 var commModule = require(require('app-root-path').path + '/public/js/import.js');
 var queryConfig = commModule.queryConfig;
 
+// Paing query 생성
+var makePagingQuery = function (req) {
+    var startNum = req.body.startNum ? req.body.startNum : 1;
+    var endNum = req.body.endNum ? req.body.endNum : commonUtil.MAX_ENTITY_IN_PAGE;
+    var query = " LIMIT " + startNum + " , " + endNum;
+    return query;
+}
+
 // count가 추가된 리스트 쿼리 요청
 var reqListQuery = function (sql, callbackFunc, totalCount, req, res) {
     commModule.pool.getConnection(function (err, connection) {
@@ -30,6 +38,7 @@ var reqQuery = function (sql, callbackFunc, req, res) {
 };
 
 module.exports = {
+    makePagingQuery: makePagingQuery,
     reqListQuery : reqListQuery,
     reqQuery   : reqQuery
 }
