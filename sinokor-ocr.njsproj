@@ -54,8 +54,10 @@
     <Compile Include="public\common\js\select2.full.min.js" />
     <Compile Include="public\js\admin\adminDashboard.js" />
     <Compile Include="public\js\admin\userManagement.js" />
+    <Compile Include="public\js\common.client.js" />
     <Compile Include="public\js\common.db.js" />
     <Compile Include="public\js\common.ui.js" />
+    <Compile Include="public\js\common.util.js" />
     <Compile Include="public\js\import.js" />
     <Compile Include="public\js\import\authgrp-btn.js" />
     <Compile Include="public\js\import\authgrp-common.js" />
