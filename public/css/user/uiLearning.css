@@ -1,9 +1,30 @@
-﻿body {
+﻿body {}
+#thumbnailDiv {
+    padding-right: 0;
+
 }
-#accordionDiv{text-align:center}
-#accordionDiv, #formOcrDetailDiv {
-    display: none;
+#imageBox {
+    padding: 20px 0 20px 0;
 }
-.accordionBtn {
-   
+#formImgDiv {
+    padding-left: 0;
+}
+.thumb-img {
+    width: 95%;
+    margin: 5%;
+    cursor: pointer;
+}
+.thumb-img:hover {
+    border: 1px solid lightblue;
+}
+.main-img {
+    width: 100%;
+    max-height: 600px;
+}
+#uploadDiv {
+    border: 1px solid black;
+    height: 300px;
+    margin: 200px 0 200px 0;
+    text-align: center;
+    padding: 100px;
 }

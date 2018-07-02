@@ -38,11 +38,11 @@ router.post('/multiUpload', upload.any(), function (req, res) {
     var returnObj = [];
 
     for (var i = 0; i < files.length; i++) {
-        if (files[i].originalname.split('.')[1] === 'TIF') {
+        if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif') {
             var ifile = appRoot + '\\' + files[i].path;
             var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
             returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
-            exec('module\\imageMagick\\convert.exe -density 600x600 ' + ifile + ' ' + ofile, function (err, out, code) {                
+            exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {                
                 if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
                     res.send({ code: 200, message: returnObj });
                 }

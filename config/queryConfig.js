@@ -36,8 +36,15 @@ var userMngConfig = {
         "UPDATE TBL_ICR_USER SET PW = ? WHERE SEQNUM = ?"
 };
 
+var dbcolumnsConfig = {
+    selDBColumns:
+        "select seqNum, ko_keyword, en_keyword " +
+        "from tbl_extraction_keyword"
+};
+
 module.exports = {
     count : count,
     queryConfig: queryConfig,
-    userMngConfig: userMngConfig
+    userMngConfig: userMngConfig,
+    dbcolumnsConfig: dbcolumnsConfig
 }
