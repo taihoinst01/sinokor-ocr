@@ -126,6 +126,7 @@ function thumbImgPaging(pageCount) {
         imageTag += '<img class="thumb-img" src="../../uploads/' + thumbImgs[i] + '" />';        
     }   
     $('#imageBox').append(imageTag);
+    thumbImgEvent();
 }
 
 function thumbImgEvent() {
