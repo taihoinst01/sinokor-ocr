@@ -7,6 +7,12 @@
     <%include  ../common/commonLib.html%>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
+    <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
+
+    <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
+    <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
+    <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
+    <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
     <script type="text/javascript" src="js/user/uiLearning.js"></script>
     <style>
     </style>
@@ -31,57 +37,45 @@
                     <!-- 저장소, 양식이미지, 양식 분석 상세-->
                     <div class="row">
 
-                        <div class="col-md-1" id="accordionDiv">
-                            <div class="box" style="height:650px">
-                                <div class="box-body02">
-                                    <div class="box-header">
-                                        <button class="accordionBtn">>></button>
-                                        <div class="mt20">
-                                            <h3 class="box-title">저</h3><br />
-                                            <h3 class="box-title">장</h3><br />
-                                            <h3 class="box-title">소</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 저장소 -->
-                        <div class="col-md-7" id="storageDiv">
-                            <div class="box" style="height:650px">
-                                <div class="box-body02">
-                                    <div class="box-header with-border">
-                                        <h3 class="box-title">저장소</h3>
-
-                                        <button class="accordionBtn fr"><<</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- //저장소 -->
                         <!-- 양식 이미지 -->
-                        <div class="col-md-5" id="formImgDiv">
-                            <div class="box" style="height:650px">
+                        <div class="col-md-1" id="thumbnailDiv">
+                            <div id="imageBox" class="box" style="height:760px; padding:0; margin:0;">
+                                <!--<img class="thumb-img" src="../../uploads/tst1.jpg" />-->                                
+                            </div>   
+                            <div class="box" style="height:40px; width:100%;">
+                                <input type="button" id="thumb-prev" value="◀" style="width:30px; margin:0 5px 0 0;" />
+                                <input type="button" id="thumb-next" value="▶" style="width:30px;" />
+                            </div>
+                        </div>
+                        <div class="col-md-7" id="formImgDiv">
+                            <div class="box" style="height:800px">
                                 <div class="box-body02">
                                     <div class="box-header with-border">
                                         <h3 class="box-title">양식 이미지</h3>
                                     </div>
                                     <div class="dialog_wrap">
-
+                                        <div id="uploadDiv">
+                                            <b>파일을 업로드 해주세요</b><br/>
+                                            <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
+                                                <input type="file" id="uploadFile" name="file" value="upload" multiple>
+                                                <input id="multiUploadBtn" type="button" value="업로드">
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- //양식 이미지 -->
                         <!-- 양식 분석 상세 -->
-                        <div class="col-md-6" id="formOcrDetailDiv">
-                            <div class="box" style="height:650px">
+                        <div class="col-md-4" id="formOcrDetailDiv">
+                            <div class="box" style="height:800px">
                                 <div class="box-body02">
                                     <div class="box-header with-border">
                                         <h3 class="box-title">양식 분석 상세</h3>
                                     </div>
-                                    <div class="">
-
+                                    <div class="tableDiv" style="max-height:600px; overflow:auto;">
+                                        <table id="textResultTbl" border="1" style="width:100%;">                                            
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -89,34 +83,6 @@
                         <!-- //양식 분석 상세 -->
                     </div>
                     <!--// 저장소 -->
-                    <!--양식 분석 결과-->
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="bt" style="height:120px">
-                                <div class="box-body br fl tc" style="height:100%; width:20%">
-                                    <h3 class="box-title">양식 분석 결과</h3>
-                                </div>
-                                <div class="box-body fl tc fl" style="height:100%; width:20%">
-                                    <b>총 분석 문서</b><br />
-                                    <b>28</b>
-                                </div>
-                                <div class="box-body fl tc fl" style="height:100%; width:20%">
-                                    <b>확인된 양식 문서</b><br />
-                                    <b>23</b><br />
-                                    <button>엑셀저장</button>
-                                </div>
-                                <div class="box-body fl tc fl" style="height:100%; width:20%">
-                                    <b>미확인된 양식 문서</b><br />
-                                    <b>5</b><br />
-                                    <button>엑셀저장</button>
-                                </div>
-                                <div class="box-body fl tc fl" style="height:100%; width:20%">
-                                    <button>서버반영</button>
-                                </div>          
-                            </div>
-                        </div>
-                    </div>
-                    <!--//양식 분석 결과-->
                 </section>
             </div>
             <!--// Content Wrapper -->
