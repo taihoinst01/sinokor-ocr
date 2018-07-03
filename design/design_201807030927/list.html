@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="kr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<title>코리안리</title>
+<link rel="shortcut icon" href="images/ico/lg_favicon.ico">
+<link rel="stylesheet" type="text/css" href="css/webfonts_kr.css">
+<style type="text/css">
+	*{padding:0;margin:0;}
+	html, body {background-image:none !important;background:#fff;font-family:dotum;}
+	li {list-style:none;}
+	#contents {width:1200px;margin:0 auto;padding:30px 0 50px;}
+	table {width:100%;table-layout:fixed;border-collapse:collapse;border:1px solid #d8d8d8;border-right:none;background:#fff;font-size:11px;color:#333;}
+	th {padding:4px;background:#fff;border:1px solid #d8d8d8;border-top:3px solid #ca2f5d;text-align:center;}
+	th:first-child {border-top-color:#343434;}
+	td {padding:5px;border:1px solid #d8d8d8;text-align:left;color:#333;}
+	td.date, td.center {text-align:center !important;}
+	td.linetitle {background:#e8effc;padding:4px;}
+	tr.subtitle td {background:#f7f7f7;padding:4px;}
+	a:link,
+	a:visited {color:#000;text-decoration:none;}
+	a:hover {color:#999;text-decoration:none;}
+	td span {color:#d8d8d8;}
+	td i {color:blue; font-style:normal;}
+	.tab {background: rgba(3,3,3, .7);text-align:center;}
+	.tab > div {overflow:hidden;width:1200px;margin:0 auto;padding:10px 5px;}
+	.tab > div >ul {overflow:hidden;width:100%;border-radius:5px;border:1px solid #19010b;}
+	.tab > div >ul.web {background:#696667;}
+	.tab li {float:left;width:25%;width:calc(25% - 1px);border-left:1px solid #19010b;}
+	.tab li:first-child {width:25%;border-left:none;}
+	.tab li > a{display:block;padding:0 10px;color:#fff;text-align:center;font-family: "LG Smart";font-size:17px;line-height:30px;}
+	.tab li > a.current {background: #C12B56;color:#fff;}
+	.state { float: right; padding-bottom: 10px;}
+	.state:after { content: ''; display: block; clear: both; }
+	.state > span:before { content: "\2666 \a0 \a0 \a0"; display: inline-block; font-size: 14px; width: 16px;}
+	.blue {color:#006dc8;}
+	.gray {color:#666;}
+	.red {color:#e03642;}
+</style>
+<script type="text/javascript">
+	var no = 0;
+	var u = 0;
+	
+	function viewlist(title, title2, title3, url, writer, check) {
+		no = no + 1;
+		document.write("<tr><td class='center'>");
+		if(writer == "") {
+			u = u + 1;
+			document.write(no);
+		} else {
+			document.write(no);
+		}
+		document.write("</td><td>"+title+"</td><td>"+title2+"</td><td>"+title3+"</td><td><nobr><a href='"+url+"' target='_blank'>"+url+"</a></nobr></td><td>"+writer+"</td><td>"+check+"</td></tr>");  
+	}
+	function viewstitle(title, title2, title3,  url, writer, check){
+		no = no + 1;
+		document.write("<tr class='subtitle'><td class='center'>");
+		if(writer == "") {
+			u = u + 1;
+			document.write(no);
+		} else {
+			document.write(no);
+		}
+		document.write("</td><td>"+title+"</td><td>"+title2+"</td><td><nobr><a href='"+url+"' target='_blank'>"+url+"</a></nobr></td><td>"+writer+"</td><td>"+check+"</td></tr>"); 
+	}
+	function viewtitle(title) {
+		document.write("<tr><td colspan='7' class='linetitle' id='"+title+"'><strong>"+title+"</strong></td></tr>");
+	}
+</script>   
+</head>
+<body>
+<!-- HEADER -->
+<header id="header" class="header">
+	<div style="text-align:center;padding:20px 0;background-color: #fff;">
+		<h1 style="" tyle="float:none;">코리안리 - TIIZ OCR Service Web</h1>
+	</div>
+
+	<div class="tab">
+		<div>
+			<!-- 텝영역
+			<ul class="web">
+				<li><a href="../mob/list.html">Mobile</a></li>
+				<li><a href="../pc/list.html">PC</a></li>
+				<li><a href="../admin/list.html" class="current">admin</a></li>
+				<li><a href="../advertiser/list.html">광고주</a></li>
+			</ul>
+			 -->			
+		</div>
+	</div>
+</header>
+<!-- // HEADER -->
+<!-- COTAINTER -->
+<div id="container">
+	<div id="contents">  
+		<div class="state">
+			<span class="blue">완료</span> <span class="gray">진행중</span> <span class="red">수정</span>
+		</div>
+			<table>
+		<div id="guide">
+				<colgroup>
+					<col style="width:4%;" />
+					<col style="width:12%;" />
+					<col style="width:12%;" />
+					<col style="width:12%;" />
+					<col style="width:auto;" />
+					<col style="width:25%;" />
+					<col style="width:5%;" />
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope="col">no</th>
+						<th scope="col">1Depth</th>
+						<th scope="col">2Depth</th>
+						<th scope="col">3Depth</th>
+						<th scope="col">url</th>
+						<th scope="col">비고</th>
+						<th scope="col">상태</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- <tr>
+						<td colspan="6">
+							<strong>Browser</strong> : Chrome , Mozilla Firefox, ie9+ /
+							<strong>Mobile OS</strong> : current -1 /
+							<strong>Resolution</strong> 768px 이하 Mobile
+						</td>
+					</tr> -->
+
+					<script type="text/javascript">
+					viewtitle("Login : 로그인");
+						viewlist('로그인', '', '', 'html/login.html', '', '<span class="gray">진행중</span>');
+						viewlist('회원정보', '', '', 'html/memberinfor_pop.html', '팝업', '<span class="blue"></span>');
+
+					viewtitle("대시보드");
+						viewlist('대시보드', '', '', 'html/dashboard_01.html', '', '<span class="gray">진행중</span>');
+
+
+					viewtitle("OCR 엔트리 추출");
+						viewlist('저장소', '', '', 'html/icrentry_01.html', '', '<span class="blue"></span>');
+						viewlist('양식이미지', '', '', 'html/icrentry_02.html', '', '<span class="blue"></span>');
+						viewlist('양식분석상세', '', '', 'html/icrentry_03.html', '', '<span class="blue"></span>');
+
+
+					viewtitle("배치 학습");
+						viewlist('이미지 파일 업로드', '', '', 'html/deployment_01.html', '', '<span class="gray">진행중</span>');
+						viewlist('학습 원본 파일 업로드', '', '', 'html/deployment_02.html', '', '<span class="gray">진행중</span>');
+						viewlist('학습 검토', '', '', 'html/deployment_03.html', '', '<span class="gray">진행중</span>');
+
+
+					viewtitle("UI 학습");
+						viewlist('이미지 파일 업로드', '', '', 'html/ui_01.html', '', '<span class="blue"></span>');
+						viewlist('양식 이미지', '', '', 'html/ui_02.html', '', '<span class="blue"></span>');
+
+
+					viewtitle("계약 조회");
+						viewlist('계약 조회', '', '', 'html/contract_01.html', '', '<span class="blue"></span>');
+						viewlist('이미지 미리보기', '', '', 'html/contract_pop.html', '팝업', '<span class="blue"></span>');
+
+
+
+					viewtitle("관리자 대시보드");
+						viewlist('관리자 대시보드', '', '', 'html/admindashboard_01.html', '', '<span class="blue"></span>');
+
+
+					viewtitle("사용자관리");
+						viewlist('사용자관리 ', '', '', 'html/user_01.html', '', '<span class="blue"></span>');
+						viewlist('사용자추가', '', '', 'html/user_pop.html', '팝업', '<span class="blue"></span>');
+
+					</script>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<!-- COTAINTER -->
+</body>
+</html>
+
+

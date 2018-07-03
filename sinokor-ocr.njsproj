@@ -33,6 +33,10 @@
     <Compile Include="app.js" />
     <Compile Include="config\queryConfig.js" />
     <Compile Include="config\dbConfig.js" />
+    <Compile Include="design\design_201807030927\js\Chart.min.js" />
+    <Compile Include="design\design_201807030927\js\jquery-1.9.1.min.js" />
+    <Compile Include="design\design_201807030927\js\jquery-ui.js" />
+    <Compile Include="design\design_201807030927\js\jquery.mCustomScrollbar.concat.min.js" />
     <Compile Include="public\common\js\adminlte.min.js" />
     <Compile Include="public\common\js\BootSideMenu.js" />
     <Compile Include="public\common\js\bootstrap-datepicker.min.js" />
@@ -842,6 +846,29 @@
     <Compile Include="routes\user\ocrHistorySearch.js" />
     <Compile Include="routes\user\uiLearning.js" />
     <Compile Include="routes\user\userDashboard.js" />
+    <Content Include="design\design_201807030927\css\bg_img.png" />
+    <Content Include="design\design_201807030927\css\bg_main.jpg" />
+    <Content Include="design\design_201807030927\css\common.css" />
+    <Content Include="design\design_201807030927\css\jquery.mCustomScrollbar.css" />
+    <Content Include="design\design_201807030927\css\man1.png" />
+    <Content Include="design\design_201807030927\css\man2.png" />
+    <Content Include="design\design_201807030927\css\notokr-bold.eot" />
+    <Content Include="design\design_201807030927\css\notokr-bold.svg" />
+    <Content Include="design\design_201807030927\css\notokr-bold.ttf" />
+    <Content Include="design\design_201807030927\css\notokr-bold.woff" />
+    <Content Include="design\design_201807030927\css\notokr-bold.woff2" />
+    <Content Include="design\design_201807030927\css\notokr-medium.eot" />
+    <Content Include="design\design_201807030927\css\notokr-medium.svg" />
+    <Content Include="design\design_201807030927\css\notokr-medium.ttf" />
+    <Content Include="design\design_201807030927\css\notokr-medium.woff" />
+    <Content Include="design\design_201807030927\css\notokr-medium.woff2" />
+    <Content Include="design\design_201807030927\css\sample.jpg" />
+    <Content Include="design\design_201807030927\html\dashboard_01.html" />
+    <Content Include="design\design_201807030927\html\deployment_01.html" />
+    <Content Include="design\design_201807030927\html\deployment_02.html" />
+    <Content Include="design\design_201807030927\html\deployment_03.html" />
+    <Content Include="design\design_201807030927\html\login.html" />
+    <Content Include="design\design_201807030927\list.html" />
     <Content Include="excel\template.xlsx" />
     <Content Include="excel\template2.xlsx" />
     <Content Include="ml\data\inout\input_2018064171352295" />
@@ -2100,6 +2127,10 @@
     <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="design\design_201807030927\" />
+    <Folder Include="design\design_201807030927\css\" />
+    <Folder Include="design\design_201807030927\html\" />
+    <Folder Include="design\design_201807030927\js\" />
     <Folder Include="excel\" />
     <Folder Include="ml\" />
     <Folder Include="ml\data\" />
@@ -2125,6 +2156,7 @@
     <Folder Include="config\" />
     <Folder Include="module\" />
     <Folder Include="module\imageMagick\" />
+    <Folder Include="design\" />
     <Folder Include="pdf2img\" />
     <Folder Include="pdf2img\20180614152820406\" />
     <Folder Include="public\" />
