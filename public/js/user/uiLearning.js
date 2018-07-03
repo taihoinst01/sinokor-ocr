@@ -186,8 +186,8 @@ function detailTable(fileName) {
         if (lineText[i].fileName == fileName) {
             var item = lineText[i];
             for (var j = 0; j < item.data.length; j++) {     
-                //tblTag += '<tr onmouseover="hoverSquare(this)">';
-                tblTag += '<tr>';
+                tblTag += '<tr onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                //tblTag += '<tr>';
                 tblTag += '<td>';
                 tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
                 tblTag += '<input type="hidden" value="' + item.data[j].location + '" />';
@@ -212,7 +212,7 @@ function dbColumnsOption(dbColumns) {
     }
     return optionTag;
 }
-/*
+
 function ocrBoxFocus() {
     $('#formImageZoom').mousedown(function (e) {
         console.log("마우스 누름: " + e.pageX + ', ' + e.pageY);
@@ -242,15 +242,24 @@ function hoverSquare(e) {
     y = parseInt(location[1]);
     textWidth = parseInt(location[2]);
     textHeight = parseInt(location[3]);
-    console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
-    console.log("x: " + x/100 + ", y: " + y/100 + ", textWidth: " + textWidth/100 + ", textHeight: " + textHeight/100);
-    imageZoom(x, y);
+    //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
+    //console.log("x: " + x/100 + ", y: " + y/100 + ", textWidth: " + textWidth/100 + ", textHeight: " + textHeight/100);
+    //imageZoom(x, y);
 
     // 선택한 글씨에 빨간 네모 그리기
+    $('#redNemo').css('x', x / 10);
+    $('#redNemo').css('y', y / 10);
     $('#redNemo').css('width', textWidth);
     $('#redNemo').css('height', textHeight);
     $('#redNemo').show();
 
+}
+
+function moutSquare(e) {
+    $('#redNemo').hide();
+
+    var zoomDiv = document.getElementById("mainImage");
+    zoomDiv.style.backgroundPosition = "";
 }
 
 // 문서이미지 좌표값에 따른 줌
@@ -274,4 +283,3 @@ function imageMove(xDistance, yDistance) {
     y = yResult;
     zoomDiv.style.backgroundPosition = "-" + x + "px -" + y + "px";
 }
-*/

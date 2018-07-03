@@ -65,18 +65,23 @@ router.post('/multiUpload', upload.any(), function (req, res) {
                 var isStop = false;
                 while (!isStop) {
                     try {
-                        var stat = fs.statSync(appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg');
+                        var stat = fs.statSync(appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg'); 
                         if (stat) {
                             returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
                         } else {
-                            if (j == 0) {
-                                returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
-                            }
                             isStop = true;
                             break;
-                        }
+                        }                   
                     } catch (err) {
-                        break;
+                        try {
+                            var stat2 = fs.statSync(appRoot + '\\' + files[i].path.split('.')[0] + '.jpg');
+                            if (stat2) {
+                                returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
+                                break;
+                            }
+                        } catch (e) {
+                            break;
+                        }
                     }
                     j++;
                 }                
