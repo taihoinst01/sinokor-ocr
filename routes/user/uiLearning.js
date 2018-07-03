@@ -49,7 +49,7 @@ router.post('/searchDBColumns', function (req, res) {
 });
 
 // fileupload
-router.post('/multiUpload', upload.any(), function (req, res) {
+router.post('/uploadFile', upload.any(), function (req, res) {
     var files = req.files;
     var endCount = 0;
     var returnObj = [];

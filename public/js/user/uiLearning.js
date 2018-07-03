@@ -9,13 +9,13 @@ var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, �
 
 $(function () {
 
-    multiUploadEvent();
+    uploadFileEvent();
     thumbImgPagingEvent();
 
 });
 
-// 다중 파일 업로드 이벤트
-function multiUploadEvent() {
+// 파일 업로드 이벤트
+function uploadFileEvent() {
     $('#uploadFile').change(function () {
         if ($(this).val() !== '') {
             lineText = [];
@@ -23,15 +23,15 @@ function multiUploadEvent() {
             totCount = 0;
             ocrCount = 0;
             searchDBColumnsCount = 0;
-            $('#multiUploadForm').submit();
+            $('#uploadFileForm').submit();
         }
     });
 
-    $('#multiUploadBtn').click(function () {
+    $('#uploadFileBtn').click(function () {
         $('#uploadFile').click();
     });
 
-    $('#multiUploadForm').ajaxForm({
+    $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
             return true;
         },
