@@ -262,7 +262,7 @@ function ocrBoxFocus() {
 }
 */
 
-// 분석 결과 확인
+// 마우스 오버 이벤트
 function hoverSquare(e) {
     // 해당 페이지로 이동
     /* 몇 페이지 어디인지 표시
@@ -301,6 +301,7 @@ function hoverSquare(e) {
 
 }
 
+// 마우스 아웃 이벤트
 function moutSquare(e) {
     $('#redNemo').hide();
 

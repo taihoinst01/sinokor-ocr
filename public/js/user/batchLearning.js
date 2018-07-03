@@ -104,7 +104,11 @@ function appendOcrData(regions) {
                         useViewMode: true
                     },
                     onAfterChange: function (ev) {
-                        ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        if (!isNaN(parseInt(ev.value))) {
+                            ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        } else {
+                            ev.instance.setValue(ev.rowKey, ev.columnName, 0);
+                        }
                         return ev;
                     },
                     width: 200
@@ -117,7 +121,11 @@ function appendOcrData(regions) {
                         useViewMode: true
                     },
                     onAfterChange: function (ev) {
-                        ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        if (!isNaN(parseInt(ev.value))) {
+                            ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        } else {
+                            ev.instance.setValue(ev.rowKey, ev.columnName, 0);
+                        }
                         return ev;
                     },
                     width: 200
