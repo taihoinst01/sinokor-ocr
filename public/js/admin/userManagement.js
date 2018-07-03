@@ -47,7 +47,7 @@ function searchUser(curPage) {
                     html += "<td>" + nvl(entry.email) + "</td>";
                     html += "<td>" + nvl(entry.joinDate) + "</td>";
                     html += "<td>" + nvl(entry.lastLoginDate) + "</td>";
-                    html += "<td>" + nvl(entry.icrUseCount) + "</td>";
+                    html += "<td>" + entry.icrUseCount + "</td>";
                     html += "<td>" + '<button class="btn btn_delete" onclick="deleteUser(' + entry.seqNum + ')">삭제</button>' + "</td>";
                     html += "</tr>";
                 });

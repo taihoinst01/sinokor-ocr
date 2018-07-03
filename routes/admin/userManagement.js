@@ -30,7 +30,7 @@ router.post('/insertUser', function (req, res) {    //사용자 추가
 /***************************************************************
  * function
  * *************************************************************/
- // [조회조건] 사용자 조회 query 
+ // [조회조건추가] 사용자 조회 query 
 function conditionFunc(req) {
     var query = selectQuery;
     var userId = req.body.userId;
