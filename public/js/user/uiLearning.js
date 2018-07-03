@@ -161,7 +161,7 @@ function appendOcrData(fileName, regions) {
         success: function (data) {
             lineText.push(data);
             searchDBColumnsCount++;
-
+            
             if (searchDBColumnsCount == 1) {                
                 $('.dialog_wrap').html('<div id="mainImage" style="height:700px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
                 var originalDiv = document.getElementById("mainImage");
@@ -171,6 +171,16 @@ function appendOcrData(fileName, regions) {
             if (totCount == searchDBColumnsCount) {
                 thumbImgEvent();
             }
+
+            /* 몇 페이지 어디인지 표시
+            if (totCount == searchDBColumnsCount) {
+                $('.dialog_wrap').html('<div id="mainImage" style="height:700px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
+                var originalDiv = document.getElementById("mainImage");
+                originalDiv.style.backgroundImage = "url('../../uploads/" + thumbImgs[0] + "')";
+                detailTable(fileName);
+                thumbImgEvent();
+            }
+            */
         },
         error: function (err) {
             console.log(err);
@@ -201,6 +211,23 @@ function detailTable(fileName) {
             }
             break;
         }
+        /* 몇 페이지 어디인지 표시
+        var item = lineText[i];
+        for (var j = 0; j < item.data.length; j++) {
+            tblTag += '<tr onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+            //tblTag += '<tr>';
+            tblTag += '<td>';
+            tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
+            tblTag += '<input type="hidden" value="' + item.data[j].location + '" alt="' + item.fileName + '" />';
+            tblTag += '</td>';
+            tblTag += '<td>';
+            tblTag += '<select style="width:100%; height:100%;  border:0;">';
+            tblTag += dbColumnsOption(item.dbColumns);
+            tblTag += '</select>';
+            tblTag += '</td>';
+            tblTag += '</tr>';
+        }
+        */
     }
     $('#textResultTbl').append(tblTag);
 }
@@ -237,6 +264,15 @@ function ocrBoxFocus() {
 
 // 분석 결과 확인
 function hoverSquare(e) {
+    // 해당 페이지로 이동
+    /* 몇 페이지 어디인지 표시
+    var fileName = $(e).find('input[type=hidden]').attr('alt');
+    $('.thumb-img').each(function (i, el) {
+        if ($(this).attr('src').split('/')[3] == fileName) {
+            $(this).click();
+        }
+    });
+    */
 
     // 사각형 좌표값
     var location = $(e).find('input[type=hidden]').val().split(',');
