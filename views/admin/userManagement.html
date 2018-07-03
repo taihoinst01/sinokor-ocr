@@ -46,7 +46,7 @@
                             </div>
 
                             <!-- 사용자관리 테이블 -->
-                            <input type="hidden" id="totalCount" value="<%= rows[0].totalCount %>" />
+                            <input type="hidden" id="totalCount" value="" />
                             <div class="Tbl_wrap">
                                 <table class="Tbl" summary="사용자관리">
                                     <colgroup>
@@ -74,23 +74,6 @@
                                         </tr>
                                     </thead>
                                     <tbody id="tbody_user">
-                                        <%
-                                        for(var i=0; i < rows.length; i++) {
-                                        %>
-                                        <tr>
-                                            <td><%=rows[i].seqNum%></td>
-                                            <td><%=rows[i].userId%></td>
-                                            <td><button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn">수정</button></td>
-                                            <td><%=rows[i].auth%></td>
-                                            <td><%=rows[i].email%></td>
-                                            <td><%=rows[i].joinDate%></td>
-                                            <td><%=rows[i].lastLoginDate%></td>
-                                            <td><%=rows[i].icrUseCount%></td>
-                                            <td><button class="btn btn_delete" onclick='deleteUser(<%=rows[i].seqNum%>)'>삭제</button></td>
-                                        </tr>
-                                        <%
-                                        }
-                                        %>
                                     </tbody>
                                 </table>
                                 <div class="pagination_wrap">

@@ -9,6 +9,8 @@ $(function () {
     });
     // 페이징 초기화
     $("#pagination").html(pagination(curPage, $("#totalCount").val()));
+
+    searchUser(1);
 })
 
 /**
@@ -28,7 +30,6 @@ function searchUser(curPage) {
         'startNum': ((curPage - 1) * MAX_ENTITY_IN_PAGE) + 1,
         'endNum': MAX_ENTITY_IN_PAGE
     };
-
     $.ajax({
         url: '/userManagement/searchUser',
         type: 'post',
@@ -36,19 +37,21 @@ function searchUser(curPage) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            $.each(data, function (index, entry) {
-                html += '<tr>';
-                html += '<td>' + nvl(entry.seqNum) + '</td>';
-                html += '<td>' + nvl(entry.userId) + '</td>';
-                html += '<td>' + '<button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn">수정</button>' + '</td>';
-                html += "<td>" + nvl(entry.auth) + "</td>";
-                html += "<td>" + nvl(entry.email) + "</td>";
-                html += "<td>" + nvl(entry.joinDate) + "</td>";
-                html += "<td>" + nvl(entry.lastLoginDate) + "</td>";
-                html += "<td>" + nvl(entry.icrUseCount) + "</td>";
-                html += "<td>" + '<button class="btn btn_delete" onclick="deleteUser(' + entry.seqNum + ')">삭제</button>' + "</td>";
-                html += "</tr>";
-            });
+            if (data.length > 0) {
+                $.each(data, function (index, entry) {
+                    html += '<tr>';
+                    html += '<td>' + nvl(entry.seqNum) + '</td>';
+                    html += '<td>' + nvl(entry.userId) + '</td>';
+                    html += '<td>' + '<button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn">수정</button>' + '</td>';
+                    html += "<td>" + nvl(entry.auth) + "</td>";
+                    html += "<td>" + nvl(entry.email) + "</td>";
+                    html += "<td>" + nvl(entry.joinDate) + "</td>";
+                    html += "<td>" + nvl(entry.lastLoginDate) + "</td>";
+                    html += "<td>" + entry.icrUseCount + "</td>";
+                    html += "<td>" + '<button class="btn btn_delete" onclick="deleteUser(' + entry.seqNum + ')">삭제</button>' + "</td>";
+                    html += "</tr>";
+                });
+            }
             $("#tbody_user").empty().append(html);
             $("#pagination").html(pagination(curPage, data[0].totalCount));
         },

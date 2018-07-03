@@ -1,83 +1,67 @@
 ﻿'use strict';
 var commModule = require(require('app-root-path').path + '/public/js/import.js');
 var commonUtil = commModule.commonUtil;
+var commonDB = commModule.commonDB;
 var queryConfig = commModule.queryConfig;
 var router = commModule.router;
 
-var refreshPageYN = true; // 페이지 갱신 여부
 var selectQuery = queryConfig.userMngConfig.selUserList; // 사용자 조회 쿼리
 var insertQuery = queryConfig.userMngConfig.insertUser; // 사용자 추가 쿼리
 var deleteQuery = queryConfig.userMngConfig.deleteUser; // 사용자 삭제 쿼리
 var updateQuery = queryConfig.userMngConfig.updatePw; // 사용자(비밀번호) 수정 쿼리
-var sortQuery = " ORDER BY seqNum DESC ";   // 사용자 조회 정렬 쿼리
 
-// callback Function
-// 사용자 조회 CallBack
-var callbackFunc_view = function (rows, req, res) {
-    res.render('admin/userManagement', { rows: rows ? rows : {} });
-}
-// 사용자 조회 콜백
-var callbackFunc_search = function (rows, req, res) {
-    if (!refreshPageYN) {
-        res.send(rows);
-    } else {
-        refreshPageYN = false;
-        res.render('admin/userManagement', { rows: rows ? rows : {} });
-    }
-}
-// 사용자 카운트 쿼리 콜백
-var callbackFunc_count = function (rows, req, res) {
-    var query = selectQuery;
-    // userId (리스트 조건)
-    var userId = req.body.userId;
-    if (!commonUtil.isNull(userId))
-        query += " WHERE userId LIKE concat('%', '" + userId + "', '%') " + sortQuery;
-    // Paging (리스트 조건)
-    var startNum = req.body.startNum ? req.body.startNum : 1;
-    var endNum = req.body.endNum ? req.body.endNum : commonUtil.MAX_ENTITY_IN_PAGE;
-    if (!commonUtil.isNull(startNum) && !commonUtil.isNull(endNum))
-        query += " LIMIT " + startNum + " , " + endNum;
-    // Query
-    commModule.commonDB.reqListQuery(query, callbackFunc_search, JSON.stringify(rows[0].cnt), req, res);
-};
-
-// 사용자 조회 (userManagement.js Load)
-router.get('/favicon.ico', function (req, res) {
+/***************************************************************
+ * Router
+ * *************************************************************/
+router.get('/favicon.ico', function (req, res) {    // favicon
     res.status(204).end();
 });
-router.get('/', function (req, res) {
-    refreshPageYN = true; // 페이지가 변경됨
-    var countQuery = queryConfig.count.startQuery + selectQuery + queryConfig.count.endQuery;
-    commModule.commonDB.reqQuery(countQuery, callbackFunc_count, req, res);
-});
-router.post('/', function (req, res) {
+router.get('/', function (req, res) {               // 사용자 관리 (GET)
     res.render('admin/userManagement');
 });
+router.post('/searchUser', function (req, res) {    // 사용자 조회
+    fn_search(req, res);
+});
+router.post('/insertUser', function (req, res) {    //사용자 추가
+    var data = [req.body.userId, req.body.userPw, req.body.auth, req.body.email];
+    commonDB.reqQuery(insertQuery, callbackFunc_insert, req, res);
+});
 
-router.post('/searchUser', function (req, res) {
-    refreshPageYN = false; // 페이지가 변경되지 않음 (데이터만 호출)
+/***************************************************************
+ * function
+ * *************************************************************/
+ // [조회조건추가] 사용자 조회 query 
+function conditionFunc(req) {
     var query = selectQuery;
-    // userId (카운트 쿼리 조건)
     var userId = req.body.userId;
     if (!commonUtil.isNull(userId))
-        query += " WHERE userId LIKE concat('%', '" + userId + "', '%') ";
-    // 카운트 쿼리
+        query += " WHERE userId LIKE concat('%', '" + userId + "', '%') " + " ORDER BY seqNum DESC ";
+    return query;
+}
+// [List] 사용자 조회 
+function fn_search(req, res) {
+    var query = conditionFunc(req);
+    // Count query
     var countQuery = queryConfig.count.startQuery + query + queryConfig.count.endQuery;
-    commModule.commonDB.reqQuery(countQuery, callbackFunc_count, req, res);
-});
-
-
-// 사용자 추가 콜백
-var callbackFunc_insert = function (rows, req, res) {
-    refreshPageYN = true;
+    commonDB.reqQuery(countQuery, callbackFunc_count, req, res);
+}
+// [CALLBACK] 사용자 조회 카운트
+function callbackFunc_count(rows, req, res) {
+    var query = conditionFunc(req);
+    // Paging
+    if (!commonUtil.isNull(req.body.startNum) && !commonUtil.isNull(req.body.endNum))
+        query += commonDB.makePagingQuery(req);
+    // List query
+    commonDB.reqListQuery(query, callbackFunc_search, JSON.stringify(rows[0].cnt), req, res);
+};
+// [CALLBACK] 사용자 조회
+function callbackFunc_search(rows, req, res) {
+    res.send(rows);
+}
+// [CALLBACK] 사용자 추가
+function callbackFunc_insert(rows, req, res) {
     res.redirect('/userManagement');
 };
-//사용자 추가
-router.post('/insertUser', function (req, res) {
-    var data = [req.body.userId, req.body.userPw, req.body.auth, req.body.email];
-    commModule.commonDB.reqQuery(insertQuery, callbackFunc_insert, req, res);
-});
-
 
 // 사용자수정 콜백
 // 사용자수정
