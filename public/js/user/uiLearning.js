@@ -163,7 +163,7 @@ function appendOcrData(fileName, regions) {
             searchDBColumnsCount++;
 
             if (searchDBColumnsCount == 1) {                
-                $('.dialog_wrap').html('<div id="mainImage" style="height:510px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
+                $('.dialog_wrap').html('<div id="mainImage" style="height:700px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
                 var originalDiv = document.getElementById("mainImage");
                 originalDiv.style.backgroundImage = "url('../../uploads/" + fileName + "')";
                 detailTable(fileName);
@@ -213,6 +213,7 @@ function dbColumnsOption(dbColumns) {
     return optionTag;
 }
 
+/*
 function ocrBoxFocus() {
     $('#formImageZoom').mousedown(function (e) {
         console.log("마우스 누름: " + e.pageX + ', ' + e.pageY);
@@ -232,6 +233,7 @@ function ocrBoxFocus() {
         imageMove(xDistance, yDistance);
     });
 }
+*/
 
 // 분석 결과 확인
 function hoverSquare(e) {
@@ -246,11 +248,19 @@ function hoverSquare(e) {
     //console.log("x: " + x/100 + ", y: " + y/100 + ", textWidth: " + textWidth/100 + ", textHeight: " + textHeight/100);
     //imageZoom(x, y);
 
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
     // 선택한 글씨에 빨간 네모 그리기
-    $('#redNemo').css('x', x / 10);
-    $('#redNemo').css('y', y / 10);
-    $('#redNemo').css('width', textWidth);
-    $('#redNemo').css('height', textHeight);
+    $('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 45) + 'px');
+    $('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 20) + 'px');
+    $('#redNemo').css('width', (textWidth / (width / $('#mainImage').width())) + 'px');
+    $('#redNemo').css('height', (textHeight / (height / $('#mainImage').height())) + 'px');
     $('#redNemo').show();
 
 }
@@ -262,13 +272,16 @@ function moutSquare(e) {
     zoomDiv.style.backgroundPosition = "";
 }
 
+/*
 // 문서이미지 좌표값에 따른 줌
 function imageZoom(x, y) {
     var zoomDiv = document.getElementById("mainImage");
 
     zoomDiv.style.backgroundPosition = "-" + x/10 + "px -" + y/10 + "px";
 }
+*/
 
+/*
 // 마우스로 이미지 눌러 드래그시 이미지 이동
 function imageMove(xDistance, yDistance) {
 
@@ -283,3 +296,4 @@ function imageMove(xDistance, yDistance) {
     y = yResult;
     zoomDiv.style.backgroundPosition = "-" + x + "px -" + y + "px";
 }
+*/
