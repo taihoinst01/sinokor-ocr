@@ -59,7 +59,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
             files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff') {
             var ifile = appRoot + '\\' + files[i].path;
             var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
-            execSync('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile);
+            execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 ' + ifile + ' ' + ofile);
             if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
                 var j = 0;
                 var isStop = false;
