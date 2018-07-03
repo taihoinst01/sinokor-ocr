@@ -24,7 +24,6 @@ function multiUploadEvent() {
             ocrCount = 0;
             grid = '';
             $('#grid').html('');
-            $('#step01').html('이미지 파일 업로드');
             $('#multiUploadForm').submit();
         }
     });
