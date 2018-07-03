@@ -64,12 +64,6 @@
                 <!-- // Step 영역 -->
 
                 <div class="box_content box_st02">
-                    <div id="gridDiv" style="padding: 0 20% 0 20%;">
-                        <div id="grid" style="width:1000px;"></div>
-                        <div class="box_cotent_bottom">
-                            <span><button type="button" class="button_st1">원본파일 업로드</button></span>
-                        </div>
-                    </div>
                     <div id="uploadDiv">
                         <h3 class="blind"><span>이미지 파일 업로드</span></h3>
                         <div class="st_infortext_01">
@@ -81,6 +75,38 @@
                                 </form>
                             </div>
                             <br />
+                        </div>
+                    </div>
+
+                    <div id="gridDiv" style="padding: 0 20% 0 20%;">
+                        <div id="grid" style="width:1000px;"></div>
+                        <div class="box_cotent_bottom">
+                            <span><button type="button" id="originFileUploadBtn" class="button_st1">원본파일 업로드</button></span>
+                        </div>
+                    </div>
+
+                    <div id="reviewDiv">
+                        <h3 class="blind"><span>학습 검토</span></h3>
+
+                        <div class="mCustomScrollbar box_scroll_st2" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                            그리드 영역
+                        </div>
+
+                        <div class="box_cotent_bottom">
+                            <div class="box_fl box_txts">
+                                <dl>
+                                    <dt>일치하지 않은 건수 : </dt>
+                                    <dd><strong> 3 건</strong></dd>
+                                </dl>
+                            </div>
+                            <div class="box_typingerror">
+                                <ul>
+                                    <li><button type="button" class="button_typingerror button_typingerror01">왼쪽이동</button></li>
+                                    <li><span>오타이동</span></li>
+                                    <li><button type="button" class="button_typingerror button_typingerror02">오른쪽이동</button></li>
+                                </ul>
+                            </div>
+                            <div class="box_fr"><button type="button" class="button_st1">최종 학습</button></div>
                         </div>
                     </div>
                 </div>

@@ -6,7 +6,9 @@ $(function () {
 
     $('#uploadFile').css('display', 'none');
     $('#gridDiv').hide();
+    $('#reviewDiv').hide();
     multiUploadEvent();
+    originFileUploadBtnEvent();
 
 })
 
@@ -163,5 +165,16 @@ function appendOcrData(regions) {
         $('#stepUl > li').eq(1).attr('title', '현재단계');
         $('.step_wrap').addClass('s2');
     }
+}
+
+function originFileUploadBtnEvent() {
+    $('#originFileUploadBtn').click(function () {
+        $('#gridDiv').hide();
+        $('#reviewDiv').show();
+        $('#stepUl > li').eq(1).removeAttr('title');
+        $('.step_wrap').removeClass('s2');
+        $('#stepUl > li').eq(2).attr('title', '현재단계');
+        $('.step_wrap').addClass('s3');
+    });
 }
 
