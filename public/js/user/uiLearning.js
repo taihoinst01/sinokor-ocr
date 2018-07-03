@@ -4,6 +4,8 @@ var ocrCount = 0; // ocr 수행 횟수
 var searchDBColumnsCount = 0; // DB컬럼 조회 수행 횟수
 var thumbImgs = []; // 썸네일 이미지 경로 배열
 var thumnImgPageCount = 1; // 썸네일 이미지 페이징 번호
+var x, y, textWidth, textHeight; // 문서 글씨 좌표
+var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, 마우스 이동 좌표
 
 $(function () {
 
@@ -100,7 +102,7 @@ function thumnImg(fileName) {
         $('#imageBox').append(imageTag);
     }
     thumbImgs.push(fileName);
-    console.log(thumbImgs);
+    //console.log(thumbImgs);
 }
 
 function thumbImgPaging(pageCount) {
@@ -131,7 +133,9 @@ function thumbImgPaging(pageCount) {
 
 function thumbImgEvent() {
     $('.thumb-img').click(function () {
-        $('.main-img').attr('src', $(this).attr('src'));
+        //$('.main-img').attr('src', $(this).attr('src'));
+        var originalDiv = document.getElementById("mainImage");
+        originalDiv.style.backgroundImage = "url('" + $(this).attr('src') + "')";
         detailTable($(this).attr('src').split('/')[3]);
     });
 }
@@ -158,8 +162,10 @@ function appendOcrData(fileName, regions) {
             lineText.push(data);
             searchDBColumnsCount++;
 
-            if (searchDBColumnsCount == 1) {
-                $('.dialog_wrap').html('<img class="main-img" src="../../uploads/' + fileName + '" />')
+            if (searchDBColumnsCount == 1) {                
+                $('.dialog_wrap').html('<div id="mainImage" style="height:510px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
+                var originalDiv = document.getElementById("mainImage");
+                originalDiv.style.backgroundImage = "url('../../uploads/" + fileName + "')";
                 detailTable(fileName);
             }
             if (totCount == searchDBColumnsCount) {
@@ -179,7 +185,8 @@ function detailTable(fileName) {
     for (var i = 0; i < lineText.length; i++) {
         if (lineText[i].fileName == fileName) {
             var item = lineText[i];
-            for (var j = 0; j < item.data.length; j++) {               
+            for (var j = 0; j < item.data.length; j++) {     
+                //tblTag += '<tr onmouseover="hoverSquare(this)">';
                 tblTag += '<tr>';
                 tblTag += '<td>';
                 tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
@@ -205,3 +212,66 @@ function dbColumnsOption(dbColumns) {
     }
     return optionTag;
 }
+/*
+function ocrBoxFocus() {
+    $('#formImageZoom').mousedown(function (e) {
+        console.log("마우스 누름: " + e.pageX + ', ' + e.pageY);
+        mouseX = e.pageX;
+        mouseY = e.pageY;
+    }).mouseup(function (e) {
+        var xDistance, yDistance;
+
+        console.log("마우스 땜: " + e.pageX + ', ' + e.pageY);
+        mouseMoveX = e.pageX;
+        mouseMoveY = e.pageY;
+
+        xDistance = mouseX - mouseMoveX;
+        yDistance = mouseMoveY - mouseY;
+        console.log("xDistance: " + xDistance + ", yDistance: " + yDistance);
+
+        imageMove(xDistance, yDistance);
+    });
+}
+
+// 분석 결과 확인
+function hoverSquare(e) {
+
+    // 사각형 좌표값
+    var location = $(e).find('input[type=hidden]').val().split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+    console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
+    console.log("x: " + x/100 + ", y: " + y/100 + ", textWidth: " + textWidth/100 + ", textHeight: " + textHeight/100);
+    imageZoom(x, y);
+
+    // 선택한 글씨에 빨간 네모 그리기
+    $('#redNemo').css('width', textWidth);
+    $('#redNemo').css('height', textHeight);
+    $('#redNemo').show();
+
+}
+
+// 문서이미지 좌표값에 따른 줌
+function imageZoom(x, y) {
+    var zoomDiv = document.getElementById("mainImage");
+
+    zoomDiv.style.backgroundPosition = "-" + x/10 + "px -" + y/10 + "px";
+}
+
+// 마우스로 이미지 눌러 드래그시 이미지 이동
+function imageMove(xDistance, yDistance) {
+
+    var zoomDiv = document.getElementById("mainImage");
+    var xResult, yResult;
+
+    $('#redNemo').hide();
+
+    xResult = x + xDistance;
+    x = xResult;
+    yResult = y - yDistance;
+    y = yResult;
+    zoomDiv.style.backgroundPosition = "-" + x + "px -" + y + "px";
+}
+*/

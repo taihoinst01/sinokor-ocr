@@ -38,7 +38,8 @@ router.post('/multiUpload', upload.any(), function (req, res) {
     var returnObj = [];
 
     for (var i = 0; i < files.length; i++) {
-        if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif') {
+        if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
+            files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff') {
             var ifile = appRoot + '\\' + files[i].path;
             var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
             returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
