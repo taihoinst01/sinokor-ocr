@@ -54,7 +54,7 @@
                 <!-- Step 영역 -->
                 <div class="box_step">
                     <div class="step_wrap s1">
-                        <ul>
+                        <ul id="stepUl">
                             <li title="현재 단계"><span>1</span>이미지 파일 업로드</li>
                             <li><span>2</span>학습 원본 파일 업로드</li>
                             <li><span>3</span>학습 검토</li>
@@ -64,15 +64,24 @@
                 <!-- // Step 영역 -->
 
                 <div class="box_content box_st02">
-                    <h3 class="blind"><span>이미지 파일 업로드</span></h3>
-                    <div class="st_infortext_01">
-                        <span>파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
-                        <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
-                            <input type="file" id="uploadFile" name="file" value="upload" multiple />
-                            <p class="attach_btn"><label id="multiUploadBtn" for="customer_file">업로드</label></p>
-                        </form>
-                        <br />
-                        <div id="grid" style="width:1000px;"></div>                        
+                    <div id="gridDiv" style="padding: 0 20% 0 20%;">
+                        <div id="grid" style="width:1000px;"></div>
+                        <div class="box_cotent_bottom">
+                            <span><button type="button" class="button_st1">원본파일 업로드</button></span>
+                        </div>
+                    </div>
+                    <div id="uploadDiv">
+                        <h3 class="blind"><span>이미지 파일 업로드</span></h3>
+                        <div class="st_infortext_01">
+                            <div id="uploadDiv">
+                                <span>파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
+                                <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
+                                    <input type="file" id="uploadFile" name="file" value="upload" multiple />
+                                    <p class="attach_btn"><label id="multiUploadBtn" for="customer_file">업로드</label></p>
+                                </form>
+                            </div>
+                            <br />
+                        </div>
                     </div>
                 </div>
 

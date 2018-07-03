@@ -4,7 +4,8 @@ var grid;
 
 $(function () {
 
-    $('#uploadFile').css('display','none');
+    $('#uploadFile').css('display', 'none');
+    $('#gridDiv').hide();
     multiUploadEvent();
 
 })
@@ -77,6 +78,9 @@ function processImage(fileName) {
 function appendOcrData(regions) {
     var lineText = [];
     var gridData = [];
+
+    $('#uploadDiv').hide();
+    $('#gridDiv').show();
 
     if (ocrCount === 1) {
         grid = new tui.Grid({
@@ -154,7 +158,10 @@ function appendOcrData(regions) {
     grid.appendRow(gridData);
 
     if (totCount == ocrCount) { // 모든 OCR 분석 완료되면
-        $('#step01').html('∨ OCR 분석완료');
+        $('#stepUl > li').eq(0).removeAttr('title');
+        $('.step_wrap').removeClass('s1');
+        $('#stepUl > li').eq(1).attr('title', '현재단계');
+        $('.step_wrap').addClass('s2');
     }
 }
 
