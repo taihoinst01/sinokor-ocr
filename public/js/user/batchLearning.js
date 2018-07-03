@@ -4,13 +4,18 @@ var grid;
 
 $(function () {
 
-    $('#uploadFile').css('display', 'none');
-    $('#gridDiv').hide();
-    $('#reviewDiv').hide();
+    init();
     multiUploadEvent();
     originFileUploadBtnEvent();
 
 })
+
+// 초기 작업
+function init() {
+    $('#uploadFile').css('display', 'none');
+    $('#gridDiv').hide();
+    $('#reviewDiv').hide();
+}
 
 // 다중 파일 업로드 이벤트
 function multiUploadEvent() {
@@ -167,6 +172,7 @@ function appendOcrData(regions) {
     }
 }
 
+// 원본 파일 업로드 클릭 이벤트
 function originFileUploadBtnEvent() {
     $('#originFileUploadBtn').click(function () {
         $('#gridDiv').hide();
