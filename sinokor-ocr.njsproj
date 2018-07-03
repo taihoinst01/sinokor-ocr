@@ -836,6 +836,10 @@
     <Compile Include="public\js\user\ocrHistorySearch.js" />
     <Compile Include="public\js\user\uiLearning.js" />
     <Compile Include="public\js\user\userDashboard.js" />
+    <Compile Include="public\publish\js\Chart.min.js" />
+    <Compile Include="public\publish\js\jquery-1.9.1.min.js" />
+    <Compile Include="public\publish\js\jquery-ui.js" />
+    <Compile Include="public\publish\js\jquery.mCustomScrollbar.concat.min.js" />
     <Compile Include="routes\admin\adminDashboard.js" />
     <Compile Include="routes\admin\userManagement.js" />
     <Compile Include="routes\index.js" />
@@ -2124,6 +2128,22 @@
     <Content Include="public\js\import\treeview\images\treeview-red-line.gif" />
     <Content Include="public\js\import\treeview\images\treeview-red.gif" />
     <Content Include="public\js\import\treeview\jquery.treeview.css" />
+    <Content Include="public\publish\css\common.css" />
+    <Content Include="public\publish\css\jquery.mCustomScrollbar.css" />
+    <Content Include="public\publish\font\notokr-bold.eot" />
+    <Content Include="public\publish\font\notokr-bold.svg" />
+    <Content Include="public\publish\font\notokr-bold.ttf" />
+    <Content Include="public\publish\font\notokr-bold.woff" />
+    <Content Include="public\publish\font\notokr-bold.woff2" />
+    <Content Include="public\publish\font\notokr-medium.eot" />
+    <Content Include="public\publish\font\notokr-medium.svg" />
+    <Content Include="public\publish\font\notokr-medium.ttf" />
+    <Content Include="public\publish\font\notokr-medium.woff" />
+    <Content Include="public\publish\font\notokr-medium.woff2" />
+    <Content Include="public\publish\image\bg_img.png" />
+    <Content Include="public\publish\image\man1.png" />
+    <Content Include="public\publish\image\man2.png" />
+    <Content Include="public\publish\image\sample.jpg" />
     <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
@@ -2350,6 +2370,11 @@
     <Folder Include="public\js\import\treeview\" />
     <Folder Include="public\js\import\treeview\images\" />
     <Folder Include="public\js\user\" />
+    <Folder Include="public\publish\" />
+    <Folder Include="public\publish\css\" />
+    <Folder Include="public\publish\js\" />
+    <Folder Include="public\publish\font\" />
+    <Folder Include="public\publish\image\" />
     <Folder Include="routes\" />
     <Folder Include="routes\admin\" />
     <Folder Include="routes\user\" />
@@ -2363,10 +2388,13 @@
     <Content Include="uploads\SHIPPING_REQUEST.pdf" />
     <Content Include="views\admin\adminDashboard.html" />
     <Content Include="views\admin\userManagement.html" />
+    <Content Include="views\common\commonLib_before.html" />
     <Content Include="views\common\commonLib.html" />
     <Content Include="views\common\footer.html" />
+    <Content Include="views\common\header_before.html" />
     <Content Include="views\common\header.html" />
     <Content Include="views\common\layout.html" />
+    <Content Include="views\common\leftSideBar_before.html" />
     <Content Include="views\common\leftSideBar.html" />
     <Content Include="views\index.html" />
     <Content Include="views\user\batchLearning.html" />

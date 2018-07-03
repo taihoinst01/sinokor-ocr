@@ -1,4 +1,4 @@
-﻿<!--
+﻿
 <aside class="main-sidebar">
     <section class="sidebar">
         <div class="sidebar-form">
@@ -61,39 +61,3 @@
         });
 
     </script>
--->
-
-<h2 class="blind">LNB</h2>
-<div class="lnb_menu">
-    <h3>서비스<span>목록</span></h3>
-    <ul>
-        <li><a href="/userDashboard" class="lnb_menu01" title="대시보드"><span>대시보드</span></a></li>
-        <li><a href="/ocrFormAnalysis" class="lnb_menu02" title="OCR엔트리추출"><span>OCR 엔트리 추출</span></a></li>
-        <li><a href="/batchLearning" class="lnb_menu03" title="배치학습"><span>배치 학습</span></a></li>
-        <li><a href="/uiLearning" class="lnb_menu04" title="UI학습"><span>UI 학습</span></a></li>
-        <li><a href="#" class="lnb_menu05" title="계약조회"><span>계약 조회</span></a></li>
-    </ul>
-    <h3>관리자<span>목록</span></h3>
-    <ul>
-        <li><a href="/adminDashboard" class="lnb_menu11" title="관리자 대시보드"><span>관리자 대시보드</span></a></li>
-        <li><a href="/userManagement" class="lnb_menu12" title="사용자관리"><span>사용자관리</span></a></li>
-    </ul>
-
-    <div class="btn_content_infor">
-        <a href="#none" class="btn_st05 btn_reduction" title="메뉴작게보기">메뉴작게보기</a>
-        <a href="#none" class="btn_st05 btn_expansion" style="display:none;" title="메뉴크게보기">메뉴크게보기</a>
-    </div>
-</div>
-
-<script>
-    $(window).on('load', function () {
-        var pageTitle = $.trim($('title').attr('alt')).replace(/ /gi, "");
-        $('.lnb_menu > ul > li').each(function (i, el) {
-            var menuName = $.trim(el.childNodes[0].title).replace(/ /gi, "");
-            if (menuName === pageTitle) {
-                el.setAttribute('class', 'on');
-                return;
-            }
-        });
-    });
-</script>

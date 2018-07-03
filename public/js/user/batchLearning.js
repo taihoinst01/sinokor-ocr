@@ -4,6 +4,7 @@ var grid;
 
 $(function () {
 
+    $('#uploadFile').css('display','none');
     multiUploadEvent();
 
 })
