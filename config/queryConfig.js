@@ -33,7 +33,7 @@ var userMngConfig = {
     deleteUser:
         "DELETE FROM TBL_ICR_USER WHERE SEQNUM = ?",
     updatePw:
-        "UPDATE TBL_ICR_USER SET PW = ? WHERE SEQNUM = ?"
+        "UPDATE TBL_ICR_USER SET USERPW = ? WHERE SEQNUM = ?"
 };
 
 var dbcolumnsConfig = {
