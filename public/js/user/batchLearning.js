@@ -174,7 +174,7 @@ function appendOcrData(regions) {
             text: lineText[i].text
         });
     }
-    insertRegion(lineText);
+    //insertRegion(lineText);
     grid.appendRow(gridData);
 
     if (totCount == ocrCount) { // 모든 OCR 분석 완료되면
