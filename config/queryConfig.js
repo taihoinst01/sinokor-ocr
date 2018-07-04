@@ -29,7 +29,7 @@ var userMngConfig = {
         "FROM TBL_ICR_USER",
     insertUser:
         "INSERT INTO TBL_ICR_USER (USERID, USERPW, AUTH, EMAIL, JOINDATE, ICRUSECOUNT) " +
-        "VALUES(?, ?, ?, ?, now(), '0')",
+        "VALUES(?, ?, ?, ?, now(), 0)",
     deleteUser:
         "DELETE FROM TBL_ICR_USER WHERE SEQNUM = ?",
     updatePw:
@@ -42,9 +42,18 @@ var dbcolumnsConfig = {
         "from tbl_extraction_keyword"
 };
 
+var batchLearningConfig = {
+    insertBatchLearningData:
+        //"INSERT INTO TBL_TEXT_CLASSIFICATION_DEV (X_COODI, Y_COODI, HEIGHT, LENGHT, TEXT, CLASS) " +
+        //"VALUES(?, ?, ?, ?, ?, ?)"
+        "INSERT INTO TBL_TEXT_CLASSIFICATION_DEV (X_COODI, Y_COODI, LENGHT, TEXT) " +
+        "VALUES(?, ?, ?, ?)"
+}
+
 module.exports = {
     count : count,
     queryConfig: queryConfig,
     userMngConfig: userMngConfig,
-    dbcolumnsConfig: dbcolumnsConfig
+    dbcolumnsConfig: dbcolumnsConfig,
+    batchLearningConfig: batchLearningConfig
 }

@@ -26,16 +26,19 @@ function multiUploadEvent() {
 
     $('#multiUploadForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
+            loadProgressBar(); // 프로그레스바 시작
+            addProgressBar(1, 5); // 프로그레스바 진행
             return true;
         },
         success: function (responseText, statusText) {
-            //console.log(responseText);
-            totCount = responseText.message.length;
+            addProgressBar(6, 100); // 프로그레스바 진행
             for (var i = 0; i < responseText.message.length; i++) {
                 processImage(responseText.message[i]);
+                if (i == responseText.message.length) closeProgressBar();
             }
         },
         error: function (e) {
+            closeProgressBar(); // 에러 발생 시 프로그레스바 종료
             console.log(e);
         }
     });
@@ -69,11 +72,13 @@ function processImage(fileName) {
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
         alert(errorString);
+        closeProgressBar(); // 에러 발생 시 프로그레스바 종료
     });
 };
 
 // OCR 데이터 렌더링
 function appendOcrData(regions) {
+    console.log("regions.. : " + JSON.stringify(regions));
     var lineText = [];
     var gridData = [];
 
@@ -150,10 +155,34 @@ function appendOcrData(regions) {
             text: lineText[i].text
         });
     }
+    console.log("lineText : " + lineText);
+    insertRegion(lineText);
     grid.appendRow(gridData);
 
     if (totCount == ocrCount) { // 모든 OCR 분석 완료되면
         $('#step01').html('∨ OCR 분석완료');
+    }
+}
+
+function insertRegion(lineText) {
+    if (lineText) {
+        var param = {
+            batchLearningData : lineText
+        }
+
+        $.ajax({
+            url: '/batchLearning/insertBatchLearningData',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                console.log("성공 : " + data);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
     }
 }
 
