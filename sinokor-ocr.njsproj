@@ -2372,9 +2372,9 @@
     <Folder Include="public\js\user\" />
     <Folder Include="public\publish\" />
     <Folder Include="public\publish\css\" />
-    <Folder Include="public\publish\js\" />
     <Folder Include="public\publish\font\" />
     <Folder Include="public\publish\image\" />
+    <Folder Include="public\publish\js\" />
     <Folder Include="routes\" />
     <Folder Include="routes\admin\" />
     <Folder Include="routes\user\" />

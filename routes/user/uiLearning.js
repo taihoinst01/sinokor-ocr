@@ -23,6 +23,23 @@ var queryConfig = commModule.queryConfig;
 
 var router = express.Router();
 
+router.get('/dmzTest', function (req, res) {
+    var request = require('request');
+
+    var r = request.post("http://localhost:3001/ocr/api");
+    var up = fs.createReadStream('uploads/26.jpg');
+    up.pipe(r);
+
+    up.on('data', function (result) {
+        //console.log(result);
+    });
+
+    up.on('end', function (result) {
+        console.log(result);
+    });
+
+});
+
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
