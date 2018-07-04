@@ -1,4 +1,4 @@
-﻿var lineText = [];
+﻿var lineText = []; // line별로 가공된 ocr데이터 배열
 var totCount = 0; // 전체 분석 문서 개수
 var ocrCount = 0; // ocr 수행 횟수
 var searchDBColumnsCount = 0; // DB컬럼 조회 수행 횟수
@@ -50,7 +50,7 @@ function uploadFileEvent() {
         },
         error: function (e) {
             closeProgressBar();
-            console.log(e);
+            //console.log(e);
         }
     });
 }
@@ -87,6 +87,7 @@ function processImage(fileName) {
     });
 };
 
+// 썸네일 이미지 페이지 이동 버튼 클릭 이벤트
 function thumbImgPagingEvent() {
     $('#thumb-prev').click(function () {
         thumnImgPageCount--;
@@ -98,6 +99,7 @@ function thumbImgPagingEvent() {
     });
 }
 
+// 썸네일 이미지 렌더링
 function thumnImg(fileName) {
     $('#thumb-prev').attr('disabled', true);
     $('#thumb-next').attr('disabled', false);
@@ -110,6 +112,7 @@ function thumnImg(fileName) {
     //console.log(thumbImgs);
 }
 
+// 썸네일 이미지 페이징
 function thumbImgPaging(pageCount) {
     $('#imageBox').html('');
     var startImgCnt = 4 * pageCount - 4;
@@ -136,6 +139,7 @@ function thumbImgPaging(pageCount) {
     thumbImgEvent();
 }
 
+// 썸네일 이미지 클릭 이벤트
 function thumbImgEvent() {
     $('.thumb-img').click(function () {
         //$('.main-img').attr('src', $(this).attr('src'));
@@ -145,6 +149,7 @@ function thumbImgEvent() {
     });
 }
 
+// OCR 데이터 line별 가공 & 상세 테이블 렌더링 & DB컬럼 조회
 function appendOcrData(fileName, regions) {
     var data = [];
     for (var i = 0; i < regions.length; i++) {
@@ -193,10 +198,11 @@ function appendOcrData(fileName, regions) {
     });
 }
 
+// 상세 테이블 렌더링
 function detailTable(fileName) {
     $('#textResultTbl').html('');
     var tblTag = '<colgroup><col style="width:70%;"/><col style="width:30%;"/></colgroup>';
-    tblTag += '<tr><th style = "text-align:center;">추출텍스트</th><th style="text-align:center;">DB 컬럼</th></tr>';
+    tblTag += '<tr><th style = "text-align:center;">추출 텍스트</th><th style="text-align:center;">DB 컬럼</th></tr>';
     for (var i = 0; i < lineText.length; i++) {
         if (lineText[i].fileName == fileName) {
             var item = lineText[i];
@@ -237,6 +243,7 @@ function detailTable(fileName) {
     $('#textResultTbl').append(tblTag);
 }
 
+// DB 컬럼 option 렌더링
 function dbColumnsOption(dbColumns) {
     var optionTag = '<option value=""></option>';
     for (var i = 0; i < dbColumns.length; i++) {

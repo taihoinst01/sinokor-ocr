@@ -27,12 +27,12 @@ router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 
-// uiLearning.html 보여주기
+// uiLearning.html 보여주기 (get)
 router.get('/', function (req, res) {
     res.render('user/uiLearning');
 });
 
-// userDashbaord.html 보여주기
+// userDashbaord.html 보여주기 (post)
 router.post('/', function (req, res) {
     res.render('user/uiLearning');
 });
@@ -53,6 +53,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     var files = req.files;
     var endCount = 0;
     var returnObj = [];
+    var convertType = '';
 
     for (var i = 0; i < files.length; i++) {
         if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
@@ -64,15 +65,15 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 var j = 0;
                 var isStop = false;
                 while (!isStop) {
-                    try {
-                        var stat = fs.statSync(appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg'); 
+                    try { // 하나의 파일 안의 여러 페이지면
+                        var stat = fs.statSync(appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg');
                         if (stat) {
                             returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
                         } else {
                             isStop = true;
                             break;
-                        }                   
-                    } catch (err) {
+                        }
+                    } catch (err) { // 하나의 파일 안의 한 페이지면
                         try {
                             var stat2 = fs.statSync(appRoot + '\\' + files[i].path.split('.')[0] + '.jpg');
                             if (stat2) {
@@ -84,12 +85,47 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                         }
                     }
                     j++;
-                }                
+                }
             }
             endCount++;
         }
     }
     res.send({ code: 200, message: returnObj });
+
+    /*
+    for (var i = 0; i < files.length; i++) {
+        var ifile = appRoot + '\\' + files[i].path;
+        var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
+
+        if (files[i].originalname.split('.')[1].toLowerCase() === 'tif' ||
+            files[i].originalname.split('.')[1].toLowerCase() === 'tiff') {
+            execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 ' + ifile + ' ' + ofile);
+            convertType = files[i].originalname.split('.')[1].toLowerCase();
+        } else {
+
+        }
+
+        if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
+            if (convertType === 'tif') {
+                try {
+                    var stat = fs.statSync(appRoot + '\\' + files[i].path.split('.')[0] + '.jpg');
+                    if (stat) {
+                        returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
+                    }
+                } catch (e) {
+                }
+            } else if (convertType === 'tiff') {
+                var j = 0;
+                var isStop = false;
+                while (!isStop) {
+
+                }
+            }           
+        }
+
+        endCount++;
+    }
+    */
 });
 
 

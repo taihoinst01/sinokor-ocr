@@ -38,8 +38,10 @@ var userMngConfig = {
 
 var dbcolumnsConfig = {
     selDBColumns:
-        "select seqNum, ko_keyword, en_keyword " +
-        "from tbl_extraction_keyword"
+        "SELECT " +
+            "seqNum, koKeyword, enKeyword " +
+        "FROM " +
+            "tbl_extraction_keyword"
 };
 
 var batchLearningConfig = {
@@ -50,10 +52,15 @@ var batchLearningConfig = {
         "VALUES(?, ?, ?, ?)"
 }
 
+var uiLearningConfig = {
+
+}
+
 module.exports = {
     count : count,
     queryConfig: queryConfig,
     userMngConfig: userMngConfig,
     dbcolumnsConfig: dbcolumnsConfig,
-    batchLearningConfig: batchLearningConfig
+    batchLearningConfig: batchLearningConfig,
+    uiLearningConfig: uiLearningConfig
 }
