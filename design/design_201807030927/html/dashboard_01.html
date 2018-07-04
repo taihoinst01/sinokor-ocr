@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="kr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<title>코리안리 TIIZ OCR Service Web</title>
+<link type="text/css" rel="stylesheet" href="../css/common.css" />
+<link type="text/css" rel="stylesheet" href="../css/jquery.mCustomScrollbar.css" />
+<script type="text/javascript" src="../js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="../js/Chart.min.js"></script>
+<script type="text/javascript" src="../js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.js"></script>
+
+</head>
+<body>
+
+<div id="wrap">
+
+<!-- skip navi -->
+<div id="accessibility">
+	<ul>
+		<li><a href="#lnb">메뉴 바로가기</a></li>
+		<li><a href="#container">본문으로 바로가기</a></li> 
+	</ul>
+</div>
+<!-- //skip navi --> 
+
+<header>
+	<div id="header">
+		<div id="lnb" class="lnb">
+			<h1><a href="#none" title="TIIZ OCR Service Web"><span class="blind">TIIZ OCR Service Web</span></a></h1>
+
+			<!-- GNB -->
+			<div class="gnb_box">
+				<div class="gnb_connectionday">
+					<dl>
+						<dt>최종접속일</dt>
+						<dd>2018-00-00 12:34:56</dd>
+					</dl>
+				</div>				
+				<div class="gnb_setting">
+					<a href="#none" title="서비스설정">서비스 설정</a>
+				</div>
+				<div class="gnb_infor">
+					<a href="#none" onclick="layer_open('layer1'); return false;" title="회원정보"> 
+						<span>TIIZ_admin01 TIIZ_admin01TIIZ_a dmin01TII Z_admin01TIIZ_a dmin01TIIZ_admin01</span>
+						 <i  class="tmb" style="background-image:url(../css/man1.png);"></i>
+					</a>
+				</div>
+				<div class="btn_logout">
+					<a href="#none" title="로그아웃"><span class="blind">로그아웃</span></a>
+				</div>
+			</div>
+			<!-- // GNB -->
+		</div>
+	</div>
+</header>
+
+<!-- Content -->
+<div id="container">
+	<!-- LNB -->
+	<h2  class="blind">LNB</h2>
+	<div class="lnb_menu">
+		<h3>서비스<span>목록</span></h3>
+		<ul>
+			<li class="on"><a href="#none" class="lnb_menu01" title="대시보드"><span>대시보드</span></a></li>
+			<li><a href="#none" class="lnb_menu02" title="OCR엔트리추출"><span>OCR 엔트리 추출</span></a></li>
+			<li><a href="#none" class="lnb_menu03" title="배치학습"><span>배치 학습</span></a></li>
+			<li><a href="#none" class="lnb_menu04" title="UI학습"><span>UI 학습</span></a></li>
+			<li><a href="#none" class="lnb_menu05" title="계약조회"><span>계약 조회</span></a></li>
+		</ul>
+		<h3>관리자<span>목록</span></h3>
+		<ul>
+			<li><a href="#none" class="lnb_menu11" title="관리자 대시보드"><span>관리자 대시보드</span></a></li>
+			<li><a href="#none" class="lnb_menu12" title="사용자관리"><span>사용자관리</span></a></li>
+		</ul>
+		</ul>
+
+		<div class="btn_content_infor">
+			<a href="#none" class="btn_st05 btn_reduction" title="메뉴작게보기">메뉴작게보기</a>
+			<a href="#none" class="btn_st05 btn_expansion" style="display:none;" title="메뉴크게보기">메뉴크게보기</a>
+		</div>
+	</div>
+	<!-- // LNB -->
+
+	<!-- 본문영역 -->
+	<div id="content">
+		<h2 class="subtit subtit_st01 blind"><span>대시보드</span></h2>
+
+		<!-- 검색목록
+		<div class="box_content box_stsearch">
+			<h3  class="blind">서비스목록</h3>
+			sdfasd
+		</div>
+		 -->
+
+		<div class="box_content box_st01">
+			<h3><span>최근 작업한 파일</span></h3>
+
+			<div class="table_style02">
+				<table class="tithead">
+					<caption>최근 작업한 파일 타이틀 정보</caption>
+					<colgroup>
+						<col style="width:50%" />
+						<col style="width:25%" />
+						<col style="width:25%" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="row">파일명</th>
+							<th scope="row">작업</th>
+							<th scope="row">작업일</th>
+						</tr>
+					</thead>
+				</table>
+				<div class="mCustomScrollbar box_scroll_st1" data-mcs-theme="dark-3">
+					<table>
+						<caption>최근 작업한 파일 정보</caption>
+						<colgroup>
+							<col style="width:50%" />
+							<col style="width:25%" />
+							<col style="width:25%" />
+						</colgroup>				
+						<tbody>
+							<tr>
+								<th scope="row"><a href="#none">TIIZ_사업견적서.JPG</a></th>
+								<td>OCR양식분석</td>
+								<td>2018-00-00</td>
+							</tr>							
+							<tr>
+								<th scope="row"><a href="#none">TIIZ_사업견적서TIIZ_사업견적서TIIZ_사업견적서TIIZ_사업견적서TIIZ_사업견적서.JPG</a></th>
+								<td>OCR양식분석</td>
+								<td>2018-00-00</td>
+							</tr>
+							<tr>
+								<th scope="row"><a href="#none">TIIZ_사업견적서TIIZ_사업견적서TIIZ_사업견적서TIIZ_사업견적서.JPG</a></th>
+								<td>UI분석</td>
+								<td>2018-00-00</td>
+							</tr>
+							<tr>
+								<th scope="row"><a href="#none">TIIZ_사업견적서.JPG</a></th>
+								<td>OCR양식분석</td>
+								<td>2018-00-00</td>
+							</tr>							
+							<tr>
+								<th scope="row"><a href="#none">TS-2550제품스펙 TIIZ_사업견적서.pdf</a></th>
+								<td>OCR양식분석</td>
+								<td>2018-00-00</td>
+							</tr>
+							<tr>
+								<th scope="row"><a href="#none">TIIZ_사업견적서.JPG</a></th>
+								<td>OCR양식분석</td>
+								<td>2018-00-00</td>
+							</tr>
+							<tr>
+								<th scope="row"><a href="#none">TIIZ_사업견적서.JPG</a></th>
+								<td>OCR양식분석</td>
+								<td>2018-00-00</td>
+							</tr>
+							<tr>
+								<th scope="row"><a href="#none">TIIZ_사업견적서.JPG</a></th>
+								<td>OCR양식분석</td>
+								<td>2018-00-00</td>
+							</tr>
+							<tr>
+								<th scope="row"><a href="#none">TIIZ_사업견적서.JPG</a></th>
+								<td>OCR양식분석</td>
+								<td>2018-00-00</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="box_content box_st01 layout_st1">
+			<h3><span>한달간 작업한 파일 수</span></h3>
+
+			<div id="canvas-holder">
+				<div class="box_chart">
+					<strong>120</strong>
+					<span>TOTAL</span>
+				</div>
+				<canvas id="chart-area" />
+			</div>
+			<script>
+				var randomScalingFactor = function() {
+				    return Math.round(Math.random() * 100);
+				};
+				var config = {
+				type: 'doughnut',
+				data: {
+				    datasets: [{
+				        data: [45,10,15,25],
+				        backgroundColor: [
+				            '#5093e1','#9faec5','#66cae6','#dadada','#f9e71d','#913ebd','#f99f1d','#40497c','#e860a7','#d57cd8','#eee'
+				        ],
+				        label: '%'
+				    }],
+				    labels: [ ]
+				    },
+				    options: {
+				        responsive: true,
+						cutoutPercentage: 0,
+				        legend: {
+				            position: '',
+				        },
+				        animation: {
+				            animateScale: true,
+				            animateRotate: true
+				        },
+                        tooltips: {
+                        	enabled: false
+                        }				        
+				    }
+				};
+
+				window.onload = function() {
+				    var ctx = document.getElementById("chart-area").getContext("2d");
+				    window.myDoughnut = new Chart(ctx, config);
+				};
+			</script>
+
+			<div class="table_style02">
+				<table class="tithead">
+					<caption>한달간 작업한 파일 수 타이틀</caption>
+					<colgroup>
+						<col style="width:55%" />
+						<col style="width:45%" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="row">형식</th>
+							<th scope="row">파일 수</th>
+						</tr>
+					</thead>
+				</table>
+				<div class="mCustomScrollbar box_scroll_st1" data-mcs-theme="dark-3">
+					<table>
+						<caption>한달간 작업한 파일 수 정보</caption>
+						<colgroup>
+							<col style="width:55%" />
+							<col style="width:45%" />
+						</colgroup>				
+						<tbody>
+							<tr>
+								<td><button type="button" class="button_table_st1" onclick="">XLSX</button></td>
+								<td>55</td>
+							</tr>	
+							<tr>
+								<td><button type="button" class="button_table_st2" onclick="">DOC</button></td>
+								<td>15</td>
+							</tr>	
+							<tr>
+								<td><button type="button" class="button_table_st3" onclick="">PDF</button></td>
+								<td>20</td>
+							</tr>	
+							<tr>
+								<td><button type="button" class="button_table_st4" onclick="">JPG</button></td>
+								<td>35</td>
+							</tr>	
+							<tr>
+								<td><button type="button" class="button_table_stto" onclick="">TOTAL</button></td>
+								<td>120</td>
+							</tr>	
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="box_content box_st01">
+			<h3><span>일주일간 사용자 및 작업 수</span></h3>
+
+			<div class="box_chart2">
+				<canvas id="myChart" width="400" height="230"></canvas>
+			</div>
+			<script>
+				var ctx = document.getElementById("myChart");
+				var myChart = new Chart(ctx, {
+				    type: 'line',
+				    data: {
+				        labels: ["7월09일", "7월10일", "7월11일", "7월12일", "7월13일", "7월14일"],
+						datasets: [{
+							    label: "사용자수",
+					            backgroundColor: 'rgba(54, 162, 235, 0)',
+					            borderColor: 'rgba(54, 162, 235, 1)',
+							    data: [2, 3, 5, 7, 11, 13, 17]
+							},
+							{
+							    label: "작업수",
+					            backgroundColor: 'rgba(204, 102, 0, 0)',
+					            borderColor: 'rgba(204, 102, 0, 1)',
+							    data: [10, 12, 9, 2, 13, 5, 8]
+							}]
+				    },
+				    options: {
+				        scales: {
+				            yAxes: [{
+				                ticks: {
+				                    beginAtZero:true
+				                }
+				            }]
+				        }
+				    }
+				});
+			</script>
+
+		</div>
+
+		<div class="box_content box_st01">
+			<div class="box_fileadd">
+				<button type="button" class="button_fileadd" onclick="">파일추가</button>
+			</div>
+		</div>
+	</div>
+	<!-- // 본문영역 -->
+
+</div>
+<!-- // Content -->
+
+</div>
+
+
+
+
+
+<!-- 팝업_회원정보 -->
+<div id="layer1" class="poplayer">
+	<div class="bg"></div>
+	<div class="pop_layer">
+		<div class="pop_popup01">
+			<div class="txts_01">사용자 ARS 인증 대기중 입니다.
+				<span class="txts_02">ARS 인증번호을 입력하십시요.</span>
+			</div>
+			<div class="pop_footer">
+				<a href="#none" class="btn_st01 btn_botton cbtn" >로그인 페이지로</a>
+			</div>
+			<!-- <a href="#none" class="btn_popup_clase cbtn" title="Close"><span class="blind">Close</span></a> -->
+		</div>
+	</div>
+</div>
+<!-- // 팝업_회원정보 -->
+
+
+
+
+</body>
+</html>

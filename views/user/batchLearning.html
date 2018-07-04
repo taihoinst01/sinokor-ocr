@@ -1,20 +1,30 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>TIIZ OCR Service</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title alt="배치학습"> OCR Service Web - 배치 학습</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
 
     <%include  ../common/commonLib.html%>
+
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
+    <!-- tui-grid css import-->
     <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
+    <!-- tui-grid css import-->
 
+    <!-- form submit aync & multi-upload js import -->
     <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
     <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
+    <!-- // form submit aync & multi-upload js import -->
 
-    <!-- grid import-->
+    <!-- tui-grid js import-->
     <script src="js/import/toast-ui-grid/underscore/underscore.js"></script>
     <script src="js/import/toast-ui-grid/backbone/backbone.js"></script>
     <script src="js/import/toast-ui-grid/tui-code-snippet/dist/tui-code-snippet.js"></script>
@@ -22,119 +32,101 @@
     <script src="js/import/toast-ui-grid/tui-date-picker/dist/tui-date-picker.js"></script>
     <script src="js/import/toast-ui-grid/tui-grid/dist/tui-grid.js"></script>
     <link rel="stylesheet" type="text/css" href="js/import/toast-ui-grid/tui-grid/dist/tui-grid.css" />
+    <!-- // tui-grid js import-->
 
-    <script type="text/javascript" src="js/common.client.js"></script>
     <script type="text/javascript" src="js/user/batchLearning.js"></script>
-    <style>
-        #myProgress {
-            background-color: grey;
-            position: absolute;
-            top: 50%;
-            left: 60%;
-            background: #36f;
-            transform: translate(-50%, -50%);
-            width: 420px;
-            z-index: 1000;
-            display: none
-        }
-        #myBar {
-            width: 1%;
-            height: 30px;
-            background-color: #006;
-        }
-    </style>
+
 </head>
-<body class="hold-transition skin-blue sidebar-mini">
-    <div id="myProgress">
-        <div id="myBar"></div>
-    </div>
-    <div class="main">
-        <div class="wrapper">
-            <!-- Header -->
-            <%include  ../common/header.html%>
-            <!-- //Header -->
-            <!-- Left Menu Side -->
-            <%include ../common/leftSideBar.html%>
-            <!--// Left Menu Side -->
-            <!-- Content Wrapper -->
-            <div class="content-wrapper">
-                <section class="content-header">
-                    <h1>배치 학습</h1>
-                </section>
-
-                <section class="content">
-
-                    <!--이미지 업로드 및 미리보기-->
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="box" style="height:650px">
-                                <ul class="nav nav-pills">
-                                    <li role="presentation" class="active"><a id="step01" href="#">이미지 파일 업로드</a></li>
-                                    <li role="presentation"><a id="step02" href="#">학습데이터 업로드</a></li>
-                                    <li role="presentation"><a id="step03" href="#">학습확인</a></li>
-                                </ul>
-
-                                <div class="bb tc" style="height:80%">
-                                    <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
-                                        <input type="file" id="uploadFile" name="file" value="upload" multiple>
-                                        <input id="multiUploadBtn" type="button" value="업로드">
-                                    </form>
-                                    <br />
-                                    <div id="grid" style="width:1000px;"></div>
-                                </div>
-
-                                <div style="height:10%; display:none;">
-                                    <div class="tc fl" style="width: 33%; height:100%; padding:10px">
-                                        <button class="uploadBtn">업로드</button>
-                                        <input type="file" />
-                                    </div>
-                                    <div class="tc fl" style="width: 33%; height:100%; padding:10px">
-                                        <b>일치하지 않은 건수</b><br />
-                                        <b>0</b>
-                                    </div>
-                                    <div class="tc fl" style="width: 33%; height:100%; padding:10px">
-                                        <button><</button>오타 이동<button>></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--//이미지 업로드 및 미리보기-->
-                    <!--양식 분석 결과-->
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="bt" style="height:120px">
-                                <div class="box-body br fl tc" style="height:100%; width:20%">
-                                    <h3 class="box-title">양식 분석 결과</h3>
-                                </div>
-                                <div class="box-body fl tc" style="height:100%; width:20%">
-                                    <b>총 분석 문서</b><br />
-                                    <b>28</b>
-                                </div>
-                                <div class="box-body fl tc" style="height:100%; width:20%">
-                                    <b>확인된 양식 문서</b><br />
-                                    <b>23</b><br />
-                                    <button>엑셀저장</button>
-                                </div>
-                                <div class="box-body fl tc" style="height:100%; width:20%">
-                                    <b>미확인된 양식 문서</b><br />
-                                    <b>5</b><br />
-                                    <button>엑셀저장</button>
-                                </div>
-                                <div class="box-body fl tc" style="height:100%; width:20%">
-                                    <button>서버반영</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--//양식 분석 결과-->
-                </section>
-            </div>
-            <!--// Content Wrapper -->
-            <!-- Header -->
-            <%include  ../common/footer.html%>
-            <!-- //Header -->
+<body>
+    <div id="wrap">
+        <!-- skip navi -->
+        <div id="accessibility">
+            <ul>
+                <li><a href="#lnb">메뉴 바로가기</a></li>
+                <li><a href="#container">본문으로 바로가기</a></li>
+            </ul>
         </div>
+
+        <%include  ../common/header.html%>
+        
+        <div id="container">
+
+            <%include  ../common/leftSideBar.html%>
+
+            <!-- 본문영역 -->
+            <div id="content">
+                <h2 class="subtit subtit_st01 blind"><span>배치학습</span></h2>
+                <!-- Step 영역 -->
+                <div class="box_step">
+                    <div class="step_wrap s1">
+                        <ul id="stepUl">
+                            <li title="현재 단계"><span>1</span>이미지 파일 업로드</li>
+                            <li><span>2</span>학습 원본 파일 업로드</li>
+                            <li><span>3</span>학습 검토</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- // Step 영역 -->
+
+                <div class="box_content box_st02">
+
+                    <!-- Step01 이미지 업로드 영역 -->
+                    <div id="uploadDiv">
+                        <h3 class="blind"><span>이미지 파일 업로드</span></h3>
+                        <div class="st_infortext_01">
+                            <div id="uploadDiv">
+                                <span>파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
+                                <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
+                                    <input type="file" id="uploadFile" name="file" value="upload" multiple />
+                                    <p class="attach_btn"><label id="multiUploadBtn" for="customer_file">업로드</label></p>
+                                </form>
+                            </div>
+                            <br />
+                        </div>
+                    </div>
+                    <!-- // Step01 이미지 업로드 영역 -->
+
+                    <!-- Step02 원본파일 업로드 영역 -->
+                    <div id="gridDiv" style="padding: 0 20% 0 20%;">
+                        <div id="grid" style="width:1000px;"></div>
+                        <div class="box_cotent_bottom">
+                            <span><button type="button" id="originFileUploadBtn" class="button_st1">원본파일 업로드</button></span>
+                        </div>
+                    </div>
+                    <!-- // Step01 원본파일 업로드 영역 -->
+
+                    <!-- Step03 학습 검토 영역 -->
+                    <div id="reviewDiv">
+                        <h3 class="blind"><span>학습 검토</span></h3>
+
+                        <div class="mCustomScrollbar box_scroll_st2" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                            그리드 영역
+                        </div>
+
+                        <div class="box_cotent_bottom">
+                            <div class="box_fl box_txts">
+                                <dl>
+                                    <dt>일치하지 않은 건수 : </dt>
+                                    <dd><strong> 3 건</strong></dd>
+                                </dl>
+                            </div>
+                            <div class="box_typingerror">
+                                <ul>
+                                    <li><button type="button" class="button_typingerror button_typingerror01">왼쪽이동</button></li>
+                                    <li><span>오타이동</span></li>
+                                    <li><button type="button" class="button_typingerror button_typingerror02">오른쪽이동</button></li>
+                                </ul>
+                            </div>
+                            <div class="box_fr"><button type="button" class="button_st1">최종 학습</button></div>
+                        </div>
+                    </div>
+                    <!-- // Step03 학습 검토 영역 -->
+                </div>
+
+            </div>
+            <!-- // 본문영역 -->
+        </div>
+        <!-- // Content -->
     </div>
 </body>
 </html>

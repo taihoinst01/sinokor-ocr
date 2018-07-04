@@ -4,7 +4,7 @@
     <title>TIIZ OCR Service</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel='stylesheet' href='/css/user/uiLearning.css' />
-    <%include  ../common/commonLib.html%>
+    <%include  ../common/commonLib_before.html%>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
     <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
@@ -21,13 +21,11 @@
     <div class="main">
         <div class="wrapper">
             <!-- Header -->
-            <%include  ../common/header.html%>
+            <%include  ../common/header_before.html%>
             <!-- //Header -->
-
             <!-- Left Menu Side -->
-            <%include ../common/leftSideBar.html%>
+            <%include ../common/leftSideBar_before.html%>
             <!--// Left Menu Side -->
-
             <!-- Content Wrapper -->
             <div class="content-wrapper">
                 <section class="content-header">
@@ -40,8 +38,8 @@
                         <!-- 양식 이미지 -->
                         <div class="col-md-1" id="thumbnailDiv">
                             <div id="imageBox" class="box" style="height:760px; padding:0; margin:0;">
-                                <!--<img class="thumb-img" src="../../uploads/tst1.jpg" />-->                                
-                            </div>   
+                                <!--<img class="thumb-img" src="../../uploads/tst1.jpg" />-->
+                            </div>
                             <div class="box" style="height:40px; width:100%;">
                                 <input type="button" id="thumb-prev" value="◀" style="width:30px; margin:0 5px 0 0;" />
                                 <input type="button" id="thumb-next" value="▶" style="width:30px;" />
@@ -50,15 +48,15 @@
                         <div class="col-md-7" id="formImgDiv">
                             <div class="box" style="height:800px">
                                 <div class="box-body02">
-                                    <div class="box-header with-border">
+                                    <div id="imgHeader" class="box-header with-border">
                                         <h3 class="box-title">양식 이미지</h3>
                                     </div>
                                     <div class="dialog_wrap">
                                         <div id="uploadDiv">
-                                            <b>파일을 업로드 해주세요</b><br/>
-                                            <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
-                                                <input type="file" id="uploadFile" name="file" value="upload" multiple>
-                                                <input id="multiUploadBtn" type="button" value="업로드">
+                                            <b>파일을 업로드 해주세요</b><br />
+                                            <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
+                                                <input type="file" id="uploadFile" name="file" value="upload" />
+                                                <input id="uploadFileBtn" type="button" value="업로드">
                                             </form>
                                         </div>
                                     </div>
@@ -74,8 +72,7 @@
                                         <h3 class="box-title">양식 분석 상세</h3>
                                     </div>
                                     <div class="tableDiv" style="max-height:600px; overflow:auto;">
-                                        <table id="textResultTbl" border="1" style="width:100%;">                                            
-                                        </table>
+                                        <table id="textResultTbl" border="1" style="width:100%;"></table>
                                     </div>
                                 </div>
                             </div>
@@ -86,7 +83,6 @@
                 </section>
             </div>
             <!--// Content Wrapper -->
-
             <!-- Header -->
             <%include  ../common/footer.html%>
             <!-- //Header -->

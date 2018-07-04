@@ -4,9 +4,18 @@ var grid;
 
 $(function () {
 
+    init();
     multiUploadEvent();
+    originFileUploadBtnEvent();
 
 })
+
+// 초기 작업
+function init() {
+    $('#uploadFile').css('display', 'none');
+    $('#gridDiv').hide();
+    $('#reviewDiv').hide();
+}
 
 // 다중 파일 업로드 이벤트
 function multiUploadEvent() {
@@ -15,7 +24,6 @@ function multiUploadEvent() {
             ocrCount = 0;
             grid = '';
             $('#grid').html('');
-            $('#step01').html('이미지 파일 업로드');
             $('#multiUploadForm').submit();
         }
     });
@@ -26,19 +34,16 @@ function multiUploadEvent() {
 
     $('#multiUploadForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
-            loadProgressBar(); // 프로그레스바 시작
-            addProgressBar(1, 5); // 프로그레스바 진행
             return true;
         },
         success: function (responseText, statusText) {
-            addProgressBar(6, 100); // 프로그레스바 진행
+            //console.log(responseText);
+            totCount = responseText.message.length;
             for (var i = 0; i < responseText.message.length; i++) {
                 processImage(responseText.message[i]);
-                if (i == responseText.message.length) closeProgressBar();
             }
         },
         error: function (e) {
-            closeProgressBar(); // 에러 발생 시 프로그레스바 종료
             console.log(e);
         }
     });
@@ -72,15 +77,16 @@ function processImage(fileName) {
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
         alert(errorString);
-        closeProgressBar(); // 에러 발생 시 프로그레스바 종료
     });
 };
 
 // OCR 데이터 렌더링
 function appendOcrData(regions) {
-    console.log("regions.. : " + JSON.stringify(regions));
     var lineText = [];
     var gridData = [];
+
+    $('#uploadDiv').hide();
+    $('#gridDiv').show();
 
     if (ocrCount === 1) {
         grid = new tui.Grid({
@@ -97,7 +103,11 @@ function appendOcrData(regions) {
                         useViewMode: true
                     },
                     onAfterChange: function (ev) {
-                        ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        if (!isNaN(parseInt(ev.value))) {
+                            ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        } else {
+                            ev.instance.setValue(ev.rowKey, ev.columnName, 0);
+                        }
                         return ev;
                     },
                     width: 200
@@ -110,7 +120,11 @@ function appendOcrData(regions) {
                         useViewMode: true
                     },
                     onAfterChange: function (ev) {
-                        ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        if (!isNaN(parseInt(ev.value))) {
+                            ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+                        } else {
+                            ev.instance.setValue(ev.rowKey, ev.columnName, 0);
+                        }
                         return ev;
                     },
                     width: 200
@@ -155,34 +169,25 @@ function appendOcrData(regions) {
             text: lineText[i].text
         });
     }
-    console.log("lineText : " + lineText);
-    insertRegion(lineText);
     grid.appendRow(gridData);
 
     if (totCount == ocrCount) { // 모든 OCR 분석 완료되면
-        $('#step01').html('∨ OCR 분석완료');
+        $('#stepUl > li').eq(0).removeAttr('title');
+        $('.step_wrap').removeClass('s1');
+        $('#stepUl > li').eq(1).attr('title', '현재단계');
+        $('.step_wrap').addClass('s2');
     }
 }
 
-function insertRegion(lineText) {
-    if (lineText) {
-        var param = {
-            batchLearningData : lineText
-        }
-
-        $.ajax({
-            url: '/batchLearning/insertBatchLearningData',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify(param),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-                console.log("성공 : " + data);
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    }
+// 원본 파일 업로드 클릭 이벤트
+function originFileUploadBtnEvent() {
+    $('#originFileUploadBtn').click(function () {
+        $('#gridDiv').hide();
+        $('#reviewDiv').show();
+        $('#stepUl > li').eq(1).removeAttr('title');
+        $('.step_wrap').removeClass('s2');
+        $('#stepUl > li').eq(2).attr('title', '현재단계');
+        $('.step_wrap').addClass('s3');
+    });
 }
 
