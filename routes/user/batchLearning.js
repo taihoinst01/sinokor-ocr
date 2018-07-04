@@ -74,9 +74,26 @@ router.post('/insertBatchLearningData', function (req, res) {
     }
 
     // TO-DO eval.py 
-    var dataPath = appRoot + '\\ml\\data'; // 데이터 root 경로
+    //var dataPath = appRoot + '\\ml\\data'; // 데이터 root 경로
+    var dataPath = "C:\\workspace\\cnn-text-classification\\";
     var inputName = 'input_' + getConvertDate();
     var outputName = 'output_' + getConvertDate();
+
+    // 오타수정 머신러닝 START
+    const defaults = {
+        encoding: 'utf8'
+    };
+
+    var exeString = 'python -m ' + dataPath + ' eval.py';
+    exec(exeString, defaults, function (err1, stdout1, stderr1) {
+        if (err1) {
+            console.log(err1);
+            res.send({ code: '500', message: err1 });
+        } else {
+            var result = fs.readFileSync(dataPath + "prediction.csv");
+            console.log("!! result : " + result);
+        }
+    });
     
     //var options = {
     //    mode: 'text',
