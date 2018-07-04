@@ -20,46 +20,48 @@ router.get('/', function (req, res) {               // 사용자 관리 (GET)
     res.render('admin/userManagement');
 });
 router.post('/searchUser', function (req, res) {    // 사용자 조회
-    fn_search(req, res);
+    fnSearch(req, res);
 });
 router.post('/insertUser', function (req, res) {    //사용자 추가
     var data = [req.body.userId, req.body.userPw, req.body.auth, req.body.email];
-    commonDB.reqQuery(insertQuery, callbackFunc_insert, req, res);
+    commonDB.reqQuery(insertQuery, callbackInsert, req, res);
 });
 
 /***************************************************************
  * function
  * *************************************************************/
- // [조회조건추가] 사용자 조회 query 
-function conditionFunc(req) {
-    var query = selectQuery;
-    var userId = req.body.userId;
-    if (!commonUtil.isNull(userId))
-        query += " WHERE userId LIKE concat('%', '" + userId + "', '%') " + " ORDER BY seqNum DESC ";
-    return query;
+ // [조회조건] 사용자 리스트
+function condFuncList(req) {
+    if (!commonUtil.isNull(req.body.userId))
+        return selectQuery + " WHERE userId LIKE concat('%', '" + req.body.userId + "', '%') " + " ORDER BY seqNum DESC ";
+    else return selectQuery + " ORDER BY seqNum DESC ";
+}
+// [조회조건] 사용자
+function condFuncSelect(req) {
+    return selectQuery + " WHERE userId = '" + req.body.userId + "' ";
 }
 // [List] 사용자 조회 
-function fn_search(req, res) {
-    var query = conditionFunc(req);
+function fnSearch(req, res) {
+    var query = condFuncList(req);
     // Count query
     var countQuery = queryConfig.count.startQuery + query + queryConfig.count.endQuery;
-    commonDB.reqQuery(countQuery, callbackFunc_count, req, res);
+    commonDB.reqQuery(countQuery, callbackCount, req, res);
 }
 // [CALLBACK] 사용자 조회 카운트
-function callbackFunc_count(rows, req, res) {
-    var query = conditionFunc(req);
+function callbackCount(rows, req, res) {
+    var query = condFuncList(req);
     // Paging
     if (!commonUtil.isNull(req.body.startNum) && !commonUtil.isNull(req.body.endNum))
         query += commonDB.makePagingQuery(req);
     // List query
-    commonDB.reqListQuery(query, callbackFunc_search, JSON.stringify(rows[0].cnt), req, res);
+    commonDB.reqListQuery(query, callbackSearch, JSON.stringify(rows[0].cnt), req, res);
 };
 // [CALLBACK] 사용자 조회
-function callbackFunc_search(rows, req, res) {
+function callbackSearch(rows, req, res) {
     res.send(rows);
 }
 // [CALLBACK] 사용자 추가
-function callbackFunc_insert(rows, req, res) {
+function callbackInsert(rows, req, res) {
     res.redirect('/userManagement');
 };
 

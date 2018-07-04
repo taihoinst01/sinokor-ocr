@@ -65,7 +65,27 @@ function searchUser(curPage) {
 function insUserBtnEvent() {
     $('#insUserBtn').click(function () {
         //예외 처리
-
+        if(isNull($("#userId").val())) {
+            alert("사용자 ID를 입력해주세요.");
+            $("#userId").focus();
+            return;
+        }
+        
+        if (isNull($("#userPw").val())) {
+            alert("비밀번호를 입력해주세요.");
+            $("#userPw").focus();
+            return;
+        }
+        if (isNull($("#userPwConfirm").val())) {
+            alert("비밀번호를 확인해주세요.");
+            $("#userPwConfirm").focus();
+            return;
+        }
+        if ($("#userPw").val() != $("#userPwConfirm").val()) {
+            alert("비밀번호 확인이 일치하지 않습니다.");
+            $("#userPwConfirm").focus();
+            return;
+        }
         $("#insUserForm").submit();
     });
 }

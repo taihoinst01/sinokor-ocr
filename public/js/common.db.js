@@ -14,12 +14,23 @@ var makePagingQuery = function (req) {
     return query;
 }
 
-// count가 추가된 리스트 쿼리 요청
+// 리스트 쿼리 요청 (totalCount 포함)
 var reqListQuery = function (sql, callbackFunc, totalCount, req, res) {
     commModule.pool.getConnection(function (err, connection) {
         connection.query(sql, function (err, rows) {
             if (err) console.error("MariaDB err : ", err);
             rows[0].totalCount = totalCount;
+            callbackFunc(rows, req, res);
+            connection.release();
+        });
+    });
+};
+
+// 일반 쿼리 요청 (파라미터 포함)
+var reqQueryParam = function (sql, param, callbackFunc, req, res) {
+    commModule.pool.getConnection(function (err, connection) {
+        connection.query(sql, param, function (err, rows) {
+            if (err) console.error("MariaDB err : ", err);
             callbackFunc(rows, req, res);
             connection.release();
         });
@@ -37,8 +48,11 @@ var reqQuery = function (sql, callbackFunc, req, res) {
     });
 };
 
+
 module.exports = {
     makePagingQuery: makePagingQuery,
-    reqListQuery : reqListQuery,
-    reqQuery   : reqQuery
+    reqListQuery: reqListQuery,
+    reqQueryParam: reqQueryParam,
+    reqQuery: reqQuery
+    
 }
