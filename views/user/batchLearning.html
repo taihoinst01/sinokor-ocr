@@ -16,14 +16,14 @@
     <!-- tui-grid css import-->
     <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
     <!-- tui-grid css import-->
-
     <!-- form submit aync & multi-upload js import -->
     <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
     <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
-    <!-- // form submit aync & multi-upload js import -->
+    <script type="text/javascript" src="js/common.client.js"></script>
 
+    <!-- // form submit aync & multi-upload js import -->
     <!-- tui-grid js import-->
     <script src="js/import/toast-ui-grid/underscore/underscore.js"></script>
     <script src="js/import/toast-ui-grid/backbone/backbone.js"></script>
@@ -33,100 +33,119 @@
     <script src="js/import/toast-ui-grid/tui-grid/dist/tui-grid.js"></script>
     <link rel="stylesheet" type="text/css" href="js/import/toast-ui-grid/tui-grid/dist/tui-grid.css" />
     <!-- // tui-grid js import-->
-
+    <script type="text/javascript" src="js/common.client.js"></script>
     <script type="text/javascript" src="js/user/batchLearning.js"></script>
+    <style>
+        #myProgress {
+            background-color: grey;
+            position: absolute;
+            top: 50%;
+            left: 60%;
+            background: #36f;
+            transform: translate(-50%, -50%);
+            width: 420px;
+            z-index: 1000;
+            display: none
+        }
 
+        #myBar {
+            width: 1%;
+            height: 30px;
+            background-color: #006;
+        }
+    </style>
 </head>
 <body>
     <div id="wrap">
-        <!-- skip navi -->
-        <div id="accessibility">
-            <ul>
-                <li><a href="#lnb">메뉴 바로가기</a></li>
-                <li><a href="#container">본문으로 바로가기</a></li>
-            </ul>
-        </div>
-
-        <%include  ../common/header.html%>
-        
-        <div id="container">
-
-            <%include  ../common/leftSideBar.html%>
-
-            <!-- 본문영역 -->
-            <div id="content">
-                <h2 class="subtit subtit_st01 blind"><span>배치학습</span></h2>
-                <!-- Step 영역 -->
-                <div class="box_step">
-                    <div class="step_wrap s1">
-                        <ul id="stepUl">
-                            <li title="현재 단계"><span>1</span>이미지 파일 업로드</li>
-                            <li><span>2</span>학습 원본 파일 업로드</li>
-                            <li><span>3</span>학습 검토</li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- // Step 영역 -->
-
-                <div class="box_content box_st02">
-
-                    <!-- Step01 이미지 업로드 영역 -->
-                    <div id="uploadDiv">
-                        <h3 class="blind"><span>이미지 파일 업로드</span></h3>
-                        <div class="st_infortext_01">
-                            <div id="uploadDiv">
-                                <span>파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
-                                <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
-                                    <input type="file" id="uploadFile" name="file" value="upload" multiple />
-                                    <p class="attach_btn"><label id="multiUploadBtn" for="customer_file">업로드</label></p>
-                                </form>
-                            </div>
-                            <br />
-                        </div>
-                    </div>
-                    <!-- // Step01 이미지 업로드 영역 -->
-
-                    <!-- Step02 원본파일 업로드 영역 -->
-                    <div id="gridDiv" style="padding: 0 20% 0 20%;">
-                        <div id="grid" style="width:1000px;"></div>
-                        <div class="box_cotent_bottom">
-                            <span><button type="button" id="originFileUploadBtn" class="button_st1">원본파일 업로드</button></span>
-                        </div>
-                    </div>
-                    <!-- // Step01 원본파일 업로드 영역 -->
-
-                    <!-- Step03 학습 검토 영역 -->
-                    <div id="reviewDiv">
-                        <h3 class="blind"><span>학습 검토</span></h3>
-
-                        <div class="mCustomScrollbar box_scroll_st2" data-mcs-axis="yx" data-mcs-theme="dark-3">
-                            그리드 영역
-                        </div>
-
-                        <div class="box_cotent_bottom">
-                            <div class="box_fl box_txts">
-                                <dl>
-                                    <dt>일치하지 않은 건수 : </dt>
-                                    <dd><strong> 3 건</strong></dd>
-                                </dl>
-                            </div>
-                            <div class="box_typingerror">
-                                <ul>
-                                    <li><button type="button" class="button_typingerror button_typingerror01">왼쪽이동</button></li>
-                                    <li><span>오타이동</span></li>
-                                    <li><button type="button" class="button_typingerror button_typingerror02">오른쪽이동</button></li>
-                                </ul>
-                            </div>
-                            <div class="box_fr"><button type="button" class="button_st1">최종 학습</button></div>
-                        </div>
-                    </div>
-                    <!-- // Step03 학습 검토 영역 -->
-                </div>
-
+            <div id="myProgress">
+                <div id="myBar"></div>
             </div>
-            <!-- // 본문영역 -->
+            <!-- skip navi -->
+            <div id="accessibility">
+                <ul>
+                    <li><a href="#lnb">메뉴 바로가기</a></li>
+                    <li><a href="#container">본문으로 바로가기</a></li>
+                </ul>
+            </div>
+
+            <%include  ../common/header.html%>
+
+            <div id="container">
+
+                <%include  ../common/leftSideBar.html%>
+
+                <!-- 본문영역 -->
+                <div id="content">
+                    <h2 class="subtit subtit_st01 blind"><span>배치학습</span></h2>
+                    <!-- Step 영역 -->
+                    <div class="box_step">
+                        <div class="step_wrap s1">
+                            <ul id="stepUl">
+                                <li title="현재 단계"><span>1</span>이미지 파일 업로드</li>
+                                <li><span>2</span>학습 원본 파일 업로드</li>
+                                <li><span>3</span>학습 검토</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- // Step 영역 -->
+
+                    <div class="box_content box_st02">
+
+                        <!-- Step01 이미지 업로드 영역 -->
+                        <div id="uploadDiv">
+                            <h3 class="blind"><span>이미지 파일 업로드</span></h3>
+                            <div class="st_infortext_01">
+                                <div id="uploadDiv">
+                                    <span>파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
+                                    <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
+                                        <input type="file" id="uploadFile" name="file" value="upload" multiple />
+                                        <p class="attach_btn"><label id="multiUploadBtn" for="customer_file">업로드</label></p>
+                                    </form>
+                                </div>
+                                <br />
+                            </div>
+                        </div>
+                        <!-- // Step01 이미지 업로드 영역 -->
+                        <!-- Step02 원본파일 업로드 영역 -->
+                        <div id="gridDiv" style="padding: 0 20% 0 20%;">
+                            <div id="grid" style="width:1000px;"></div>
+                            <div class="box_cotent_bottom">
+                                <span><button type="button" id="originFileUploadBtn" class="button_st1">원본파일 업로드</button></span>
+                            </div>
+                        </div>
+                        <!-- // Step01 원본파일 업로드 영역 -->
+                        <!-- Step03 학습 검토 영역 -->
+                        <div id="reviewDiv">
+                            <h3 class="blind"><span>학습 검토</span></h3>
+
+                            <div class="mCustomScrollbar box_scroll_st2" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                                그리드 영역
+                            </div>
+
+                            <div class="box_cotent_bottom">
+                                <div class="box_fl box_txts">
+                                    <dl>
+                                        <dt>일치하지 않은 건수 : </dt>
+                                        <dd><strong> 3 건</strong></dd>
+                                    </dl>
+                                </div>
+                                <div class="box_typingerror">
+                                    <ul>
+                                        <li><button type="button" class="button_typingerror button_typingerror01">왼쪽이동</button></li>
+                                        <li><span>오타이동</span></li>
+                                        <li><button type="button" class="button_typingerror button_typingerror02">오른쪽이동</button></li>
+                                    </ul>
+                                </div>
+                                <div class="box_fr"><button type="button" class="button_st1">최종 학습</button></div>
+                            </div>
+                        </div>
+                        <!-- // Step03 학습 검토 영역 -->
+                    </div>
+
+                </div>
+                <!-- // 본문영역 -->
+            </div>
+            <!-- // Content -->
         </div>
-        <!-- // Content -->
-    </div>
 </body>
 </html>
