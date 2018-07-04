@@ -33,10 +33,14 @@ function uploadFileEvent() {
 
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
+            $('#uploadFileBtn').hide();
+            loadProgressBar();
+            addProgressBar(1, 40);
             return true;
         },
         success: function (responseText, statusText) {
-            //console.log(responseText);           
+            //console.log(responseText);
+            addProgressBar(41, 100);
             if (responseText.message.length > 0) {
                 totCount = responseText.message.length;
                 for (var i = 0; i < responseText.message.length; i++) {
@@ -45,6 +49,7 @@ function uploadFileEvent() {
             }
         },
         error: function (e) {
+            closeProgressBar();
             console.log(e);
         }
     });
