@@ -68,3 +68,30 @@ function pagination(curPage, totalCount) {
         return paging_result;
     }
 }
+
+// Progress Bar
+function loadProgressBar() {
+    $("#myProgress").fadeIn("slow");
+}
+function addProgressBar(fromVal, toVal) {
+    var elem = document.getElementById("myBar");
+    var width = fromVal;
+    elem.style.width = fromVal + '%';
+    var id = setInterval(frame, 10);
+    function frame() {
+        console.log(width);
+        if (width >= 100) {
+            closeProgressBar();
+            clearInterval(id);
+        } else if (width >= toVal) {
+            clearInterval(id);
+        } else {
+            width++;
+            elem.style.width = width + '%';
+        }
+    }
+}
+function closeProgressBar() {
+    $("#myProgress").fadeOut("slow");
+    document.getElementById("myBar").style.width = 1;
+}

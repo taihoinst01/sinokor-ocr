@@ -34,16 +34,20 @@ function multiUploadEvent() {
 
     $('#multiUploadForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
+            loadProgressBar(); // 프로그레스바 시작
+            addProgressBar(1, 5); // 프로그레스바 진행
             return true;
         },
         success: function (responseText, statusText) {
             //console.log(responseText);
+            addProgressBar(6, 100); // 프로그레스바 진행
             totCount = responseText.message.length;
             for (var i = 0; i < responseText.message.length; i++) {
                 processImage(responseText.message[i]);
             }
         },
         error: function (e) {
+            closeProgressBar(); // 에러 발생 시 프로그레스바 종료
             console.log(e);
         }
     });
@@ -77,6 +81,7 @@ function processImage(fileName) {
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
         alert(errorString);
+        closeProgressBar(); // 에러 발생 시 프로그레스바 종료
     });
 };
 
@@ -169,6 +174,7 @@ function appendOcrData(regions) {
             text: lineText[i].text
         });
     }
+    insertRegion(lineText);
     grid.appendRow(gridData);
 
     if (totCount == ocrCount) { // 모든 OCR 분석 완료되면
@@ -191,3 +197,24 @@ function originFileUploadBtnEvent() {
     });
 }
 
+// 배치 학습 DB insert
+function insertRegion(lineText) {
+    if (lineText) {
+        var param = {
+            batchLearningData: lineText
+        }
+        $.ajax({
+            url: '/batchLearning/insertBatchLearningData',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                console.log("성공 : " + data);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+}
