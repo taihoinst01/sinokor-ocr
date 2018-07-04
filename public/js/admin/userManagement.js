@@ -7,6 +7,11 @@ $(function () {
     $("#btn_search").on("click", function () {
         searchUser(curPage);
     });
+    // 사용자 비밀번호 수정
+    $("#updatePwBtn").on("click", function () {
+        updatePw();
+    });
+   
     // 페이징 초기화
     $("#pagination").html(pagination(curPage, $("#totalCount").val()));
 
@@ -27,7 +32,7 @@ function searchUser(curPage) {
     var html = "";
     var param = {
         'userId': $("#searchUserId").val(),
-        'startNum': ((curPage - 1) * MAX_ENTITY_IN_PAGE) + 1,
+        'startNum': ((curPage - 1) * MAX_ENTITY_IN_PAGE),
         'endNum': MAX_ENTITY_IN_PAGE
     };
     $.ajax({
@@ -37,18 +42,19 @@ function searchUser(curPage) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
+            console.log("data : " + JSON.stringify(data));
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     html += '<tr>';
                     html += '<td>' + nvl(entry.seqNum) + '</td>';
                     html += '<td>' + nvl(entry.userId) + '</td>';
-                    html += '<td>' + '<button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn">수정</button>' + '</td>';
+                    html += '<td>' + '<button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn" onclick="javascript:openUpdatePw(' + entry.seqNum + ',\'' + entry.userId + '\')">수정</button>' + '</td>';
                     html += "<td>" + nvl(entry.auth) + "</td>";
                     html += "<td>" + nvl(entry.email) + "</td>";
                     html += "<td>" + nvl(entry.joinDate) + "</td>";
                     html += "<td>" + nvl(entry.lastLoginDate) + "</td>";
                     html += "<td>" + entry.icrUseCount + "</td>";
-                    html += "<td>" + '<button class="btn btn_delete" onclick="deleteUser(' + entry.seqNum + ')">삭제</button>' + "</td>";
+                    html += "<td>" + '<button class="btn btn_delete" onclick="javascript:openDeleteUser(' + entry.seqNum + ')">삭제</button>' + "</td>";
                     html += "</tr>";
                 });
             }
@@ -70,7 +76,6 @@ function insUserBtnEvent() {
             $("#userId").focus();
             return;
         }
-        
         if (isNull($("#userPw").val())) {
             alert("비밀번호를 입력해주세요.");
             $("#userPw").focus();
@@ -90,9 +95,43 @@ function insUserBtnEvent() {
     });
 }
 
+// 비밀번호 변경 팝업 호출
+function openUpdatePw(seqNum, userId) {
+    $("#seqNumUpdate").val(seqNum);
+}
+
+// 비밀번호 변경
+function updatePw() {
+    //예외 처리
+    if (isNull($("#userPwUpdate").val())) {
+        alert("비밀번호를 입력해주세요.");
+        $("#userPwUpdate").focus();
+        return;
+    }
+    if (isNull($("#userPwUpdateConfirm").val())) {
+        alert("비밀번호를 확인해주세요.");
+        $("#userPwUpdateConfirm").focus();
+        return;
+    }
+    if ($("#userPwUpdate").val() != $("#userPwUpdateConfirm").val()) {
+        alert("비밀번호 확인이 일치하지 않습니다.");
+        $("#userPwUpdateConfirm").focus();
+        return;
+    }
+    $("#updatePwForm").submit();
+    alert("수정되었습니다.");
+}
+
 /**
  * 사용자 삭제
  */
+function openDeleteUser(seqNum) {
+    if (confirm("삭제하시겠습니까?")) {
+        deleteUser(seqNum);
+    } else {
+        return;
+    }
+}
 function deleteUser(seqNum) {
     console.log(seqNum);
 
@@ -103,6 +142,7 @@ function deleteUser(seqNum) {
         data: JSON.stringify({ 'seqNum': seqNum }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
+            alert("삭제되었습니다.");
             location.href = "/userManagement";
         },
         error: function (err) {

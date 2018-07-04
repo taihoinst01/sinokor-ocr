@@ -24,7 +24,15 @@ router.post('/searchUser', function (req, res) {    // 사용자 조회
 });
 router.post('/insertUser', function (req, res) {    //사용자 추가
     var data = [req.body.userId, req.body.userPw, req.body.auth, req.body.email];
-    commonDB.reqQuery(insertQuery, callbackInsert, req, res);
+    commonDB.reqQueryParam(insertQuery, data, callbackInsert, req, res);
+});
+router.post("/updatePw", function (req, res) {     // 사용자 비밀번호 수정
+    var data = [req.body.userPwUpdate, req.body.seqNumUpdate];
+    commonDB.reqQueryParam(updateQuery, data, callbackUpdate, req, res);
+});
+router.post("/deleteUser", function (req, res) {     // 사용자 비밀번호 수정
+    var data = [req.body.seqNum];
+    commonDB.reqQueryParam(deleteQuery, data, callbackDelete, req, res);
 });
 
 /***************************************************************
@@ -51,7 +59,7 @@ function fnSearch(req, res) {
 function callbackCount(rows, req, res) {
     var query = condFuncList(req);
     // Paging
-    if (!commonUtil.isNull(req.body.startNum) && !commonUtil.isNull(req.body.endNum))
+    if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.endNum))
         query += commonDB.makePagingQuery(req);
     // List query
     commonDB.reqListQuery(query, callbackSearch, JSON.stringify(rows[0].cnt), req, res);
@@ -64,61 +72,13 @@ function callbackSearch(rows, req, res) {
 function callbackInsert(rows, req, res) {
     res.redirect('/userManagement');
 };
-
-// 사용자수정 콜백
-// 사용자수정
-
-// 사용자삭제 콜백
-// 사용자삭제
-
+// [CALLBACK] 사용자 비밀번호 수정
+function callbackUpdate(rows, req, res) {
+    res.redirect('/userManagement');
+}
+// [CALLBACK] 사용자 삭제
+function callbackDelete(rows, req, res) {
+    res.redirect('/userManagement');
+}
 
 module.exports = router;
-
-// 사용자 조회
-//router.get('/', function (req, res) {
-//    pool.getConnection(function (err, connection) {
-//        var sql = queryConfig.userMngConfig.selUserList;
-
-//        connection.query(sql, function (err, rows) {
-//            if (err) console.error("err : " + err);
-
-//            res.render('admin/userManagement', { rows: rows ? rows : {} });
-//            connection.release();
-//        })
-//    });
-//});
-
-
-//사용자 추가
-//router.post('/insertUser', function (req, res) {
-//    var data = [req.body.userId, req.body.userPw, req.body.auth, req.body.email];
-//    commModule.pool.getConnection(function (err, connection) {
-//        var sql = queryConfig.userMngConfig.insertUser;
-
-//        connection.query(sql, data, function (err, rows) {
-//            if (err) console.error("err : " + err);
-//            refreshPageYN = true;
-//            res.redirect('/userManagement');
-//            connection.release();
-//        })
-//    });
-//});
-
-//사용자 삭제
-//router.post('/deleteUser', function (req, res) {
-//    var data = [req.body.seqNum];
-//    console.log("delete : " + data);
-
-//    commModule.pool.getConnection(function (err, connection) {
-//        var sql = queryConfig.userMngConfig.deleteUser;
-
-//        connection.query(sql, data, function (err, rows) {
-//            if (err) console.error("err : " + err);
-
-//            res.redirect('/userManagement');
-//            connection.release();
-//        })
-//    });
-//});
-
-

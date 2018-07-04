@@ -8,7 +8,7 @@ var queryConfig = commModule.queryConfig;
 
 // Paing query 생성
 var makePagingQuery = function (req) {
-    var startNum = req.body.startNum ? req.body.startNum : 1;
+    var startNum = req.body.startNum ? req.body.startNum : 0;
     var endNum = req.body.endNum ? req.body.endNum : commonUtil.MAX_ENTITY_IN_PAGE;
     var query = " LIMIT " + startNum + " , " + endNum;
     return query;
