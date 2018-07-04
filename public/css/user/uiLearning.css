@@ -28,3 +28,20 @@
     text-align: center;
     padding: 100px;
 }
+#myProgress {
+    background-color: grey;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: #36f;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    z-index: 1000;
+    display: none
+}
+
+#myBar {
+    width: 1%;
+    height: 30px;
+    background-color: #006;
+}

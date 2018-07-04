@@ -3,19 +3,30 @@
 <head>
     <title>TIIZ OCR Service</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel='stylesheet' href='/css/user/uiLearning.css' />
+
     <%include  ../common/commonLib_before.html%>
+
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
+    <!-- file upload css -->
     <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
+    <!-- // file upload css -->
 
+    <link rel="stylesheet" href="css/user/uiLearning.css">
+
+    <!-- multiFileUpload & form async js -->
     <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
     <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
+    <!-- // multiFileUpload & form async js -->
+
+    <!-- 공통 js -->
+    <script type="text/javascript" src="js/common.client.js"></script>
+    <!-- // 공통 js -->
+
     <script type="text/javascript" src="js/user/uiLearning.js"></script>
-    <style>
-    </style>
+
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
     <div class="main">
@@ -59,6 +70,9 @@
                                                 <input type="file" id="uploadFile" name="file" value="upload" />
                                                 <input id="uploadFileBtn" type="button" value="업로드">
                                             </form>
+                                            <div id="myProgress">
+                                                <div id="myBar"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
