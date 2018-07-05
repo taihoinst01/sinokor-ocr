@@ -23,21 +23,26 @@ var queryConfig = commModule.queryConfig;
 
 var router = express.Router();
 
+// web server to rest server file upload test router
 router.get('/dmzTest', function (req, res) {
-    var request = require('request');
+	var request = require('request');
+	
+	var formData = {
+        file: {
+        value: fs.createReadStream('uploads/26.jpg'),
+        options: {
+            filename: '26.jpg',
+		    contentType: 'image/jpeg'
+        }
+        }
+    };
 
-    var r = request.post("http://localhost:3001/ocr/api");
-    var up = fs.createReadStream('uploads/26.jpg');
-    up.pipe(r);
-
-    up.on('data', function (result) {
-        //console.log(result);
-    });
-
-    up.on('end', function (result) {
-        console.log(result);
-    });
-
+    request.post({url: 'http://localhost:3001/ocr/api', formData: formData}, function (err,httpRes,body){
+		var data = (JSON.parse(body));
+		//console.log(data);
+		res.send(data);
+	});
+	
 });
 
 router.get('/favicon.ico', function (req, res) {
@@ -68,6 +73,7 @@ router.post('/searchDBColumns', function (req, res) {
 // fileupload
 router.post('/uploadFile', upload.any(), function (req, res) {
     var files = req.files;
+	console.log(files);
     var endCount = 0;
     var returnObj = [];
     var convertType = '';
