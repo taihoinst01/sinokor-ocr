@@ -1,0 +1,3 @@
+http://docs.likejazz.com/cnn-text-classification-tf/
+
+https://github.com/likejazz/cnn-text-classification-tf
