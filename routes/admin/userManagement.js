@@ -1,22 +1,27 @@
 ﻿'use strict';
-var commModule = require(require('app-root-path').path + '/public/js/import.js');
-var commonUtil = commModule.commonUtil;
-var commonDB = commModule.commonDB;
-var queryConfig = commModule.queryConfig;
-var router = commModule.router;
+var commonModule = require(require('app-root-path').path + '/public/js/import.js');
+var commonUtil = commonModule.commonUtil;
+var commonDB = commonModule.commonDB;
+var queryConfig = commonModule.queryConfig;
+var router = commonModule.router;
 
 var selectQuery = queryConfig.userMngConfig.selUserList; // 사용자 조회 쿼리
 var insertQuery = queryConfig.userMngConfig.insertUser; // 사용자 추가 쿼리
 var deleteQuery = queryConfig.userMngConfig.deleteUser; // 사용자 삭제 쿼리
 var updateQuery = queryConfig.userMngConfig.updatePw; // 사용자(비밀번호) 수정 쿼리
 
+
 /***************************************************************
  * Router
  * *************************************************************/
+
+
 router.get('/favicon.ico', function (req, res) {    // favicon
     res.status(204).end();
 });
-router.get('/', function (req, res) {               // 사용자 관리 (GET)
+router.get('/',  function (req, res) {               // 사용자 관리 (GET)
+    console.log("req.userId : " + req.userId);
+    console.log("req.user : " + req.user);
     res.render('admin/userManagement');
 });
 router.post('/searchUser', function (req, res) {    // 사용자 조회

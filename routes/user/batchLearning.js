@@ -64,27 +64,36 @@ router.post('/multiUpload', upload.any(), function (req, res) {
 
 // insert batchLearningData
 router.post('/insertBatchLearningData', function (req, res) {
-    var batchLearningData = req.body.batchLearningData;
-    var word = '';
     for (var i = 0; i < batchLearningData.length; i++) {
-        word += (i != batchLearningData.length - 1) ? batchLearningData[i].text + "\n" : batchLearningData[i].text;
+        var xcoodi = batchLearningData[i].location.split(',')[0];
+        var ycoodi = batchLearningData[i].location.split(',')[1];
+        var text = batchLearningData[i].text;
+        var len = batchLearningData[i].text.length;
+        var data = [xcoodi, ycoodi, len, text];
+        //commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
     }
-    if (!batchLearningData) {
-        res.send({ code: '400', message: 'The parameter is invalid' });
-    }
+});
 
+// run batchLearningData
+router.post('/execBatchLearningData', function (req, res) {
+    //var batchLearningData = req.body.batchLearningData;
+    //var word = '';
+    //for (var i = 0; i < batchLearningData.length; i++) {
+    //    word += (i != batchLearningData.length - 1) ? batchLearningData[i].text + "\n" : batchLearningData[i].text;
+    //}
+    //if (!batchLearningData) {
+    //    res.send({ code: '400', message: 'The parameter is invalid' });
+    //}
     // TO-DO eval.py 
     //var dataPath = appRoot + '\\ml\\data'; // 데이터 root 경로
     var dataPath = "C:\\workspace\\cnn-text-classification\\";
     var inputName = 'input_' + getConvertDate();
     var outputName = 'output_' + getConvertDate();
-
     // 오타수정 머신러닝 START
     const defaults = {
         encoding: 'utf8'
     };
-
-    var exeString = 'python -m ' + dataPath + ' eval.py';
+    var exeString = 'python ' + dataPath + 'eval.py';
     exec(exeString, defaults, function (err1, stdout1, stderr1) {
         if (err1) {
             console.log(err1);
@@ -94,30 +103,6 @@ router.post('/insertBatchLearningData', function (req, res) {
             console.log("!! result : " + result);
         }
     });
-    
-    //var options = {
-    //    mode: 'text',
-    //    encoding: 'utf8',
-    //    pythonPath: 'C:\\Users\\hykim\\AppData\\Local\\Programs\\Python\\Python35\\python.exe',
-    //    pythonOptions: ['-u'],
-    //    scriptPath: appRoot + '\\ml',
-    //    args: word
-    //};
-
-    //PythonShell.run('eval.py', options, function (err, results) {
-    //    if (err) throw err;
-    //    console.log('results: %j', results);
-    //});
-    
-    for (var i = 0; i < batchLearningData.length; i++) {
-        var xcoodi = batchLearningData[i].location.split(',')[0];
-        var ycoodi = batchLearningData[i].location.split(',')[1];
-        var text = batchLearningData[i].text;
-        var len = batchLearningData[i].text.length;
-        var data = [xcoodi, ycoodi, len, text];
-        //commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
-    }
-    res.send({ code: 200, message: '입력 성공!' });
 });
 
 //오늘날짜 변환함수

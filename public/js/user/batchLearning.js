@@ -45,6 +45,7 @@ function multiUploadEvent() {
             for (var i = 0; i < responseText.message.length; i++) {
                 processImage(responseText.message[i]);
             }
+            execBatchLearningData(); // cnn-text-classification test
         },
         error: function (e) {
             closeProgressBar(); // 에러 발생 시 프로그레스바 종료
@@ -217,4 +218,24 @@ function insertRegion(lineText) {
             }
         });
     }
+}
+
+// 배치 학습 Data 처리
+function execBatchLearningData() {
+    var param = {
+
+    };
+    $.ajax({
+        url: '/batchLearning/execBatchLearningData',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log("success execBatchLearningData : " + data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 }

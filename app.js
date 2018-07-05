@@ -9,7 +9,8 @@ var cookieparser = require('cookie-parser');
 var bodyparser = require('body-parser');
 var approot = require('app-root-path').path;
 */
-var commMoudle = require(require('app-root-path').path + '/public/js/import.js');
+var commonModule = require(require('app-root-path').path + '/public/js/import.js');
+var flash = require('connect-flash');
 var index = require('./routes/index');
 //user
 var userDashboard = require('./routes/user/userDashboard')
@@ -23,19 +24,35 @@ var newDocLearning = require('./routes/user/newDocLearning');
 var adminDashboard = require('./routes/admin/adminDashboard')
 var userManagement = require('./routes/admin/userManagement');
 
-var app = commMoudle.express();
+var app = commonModule.express();
 
-app.use('/uploads', commMoudle.express.static(__dirname + '/uploads'));
-app.use('/excel', commMoudle.express.static(__dirname + '/excel'));
-app.set('views', commMoudle.path.join(__dirname, 'views'));
+app.use('/uploads', commonModule.express.static(__dirname + '/uploads'));
+app.use('/excel', commonModule.express.static(__dirname + '/excel'));
+app.set('views', commonModule.path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
-app.use(commMoudle.logger('dev'));
-app.use(commMoudle.bodyParser.json());
-app.use(commMoudle.bodyParser.urlencoded({ extended: false }));
-app.use(commMoudle.cookieParser());
-app.use(commMoudle.express.static(commMoudle.path.join(__dirname, 'public')));
+app.use(commonModule.logger('dev'));
+app.use(commonModule.express.static(commonModule.path.join(__dirname, 'public')));
+app.use(commonModule.cookieParser());
+app.use(commonModule.bodyParser.json());
+app.use(commonModule.bodyParser.urlencoded({ extended: false }));
+
+// login
+//app.use(commonModule.cookieSession({
+//    keys: ['koreanreocr'],
+//    cookie: {
+//        maxAge: 1000 * 60 * 180 // 3 hour
+//    }
+//}));
+app.use(commonModule.expressSession({
+    secret: 'koreanre-ocr',
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(flash()); // login 실패 시 session clear
+app.use(commonModule.passport.initialize());
+app.use(commonModule.passport.session());
 
 app.use('/', index);
 //user
@@ -54,5 +71,5 @@ app.use('/userManagement', userManagement);
 app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function () {
-    commMoudle.debug('Server Start!! port : ' + server.address().port);
+    commonModule.debug('Server Start!! port : ' + server.address().port);
 });
