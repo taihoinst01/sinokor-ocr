@@ -17,7 +17,8 @@ var commonUtil = commonModule.commonUtil;
 var commonDB = commonModule.commonDB;
 var queryConfig = commonModule.queryConfig;
 var router = commonModule.router;
-var passport = commonModule.passport;
+var passport = require('passport')
+    , LocalStrategy = require('passport-local').Strategy;
 
 // 로그인 쿼리
 var loginQuery = "SELECT * FROM TBL_ICR_USER WHERE USERID = ?";
@@ -28,12 +29,35 @@ router.get('/favicon.ico', function (req, res) {
 
 // index.html
 router.get('/', function (req, res) {
-    console.log("GET / : " + req.url);
+    console.log("main page GET / : " + req.url);
+    console.log("req.user : " + req.user);
+    if (commonUtil.isNull(req.user))
+        res.redirect("/logout");
+    //res.redirect('/userDashboard');
+    else res.render('user/userDashboard');
+
+    //if (req.user !== undefined) {
+    //    console.log("GET / : user != undefiend");
+    //    if (req.url == "/") {
+    //        console.log("req.url로 이동합니다1 : " + req.url);
+    //        res.redirect('/userDashboard'); // 요청된 URL이 없거나 첫 접속일 때 userDashboard로 이동
+    //    } else {
+    //        console.log("req.url로 이동합니다2 : " + req.url);
+    //        res.redirect(req.url); // 요청된 URL이 있으면 해당 URL로 이동
+    //    }
+    //} else {
+    //    console.log("GET / : user == undefiend");
+    //    res.render('index');
+    //}
+});
+router.get('/login', function (req, res) {
+    console.log("GET /login");
+    //res.redirect('/'); 
     if (req.user !== undefined) {
         console.log("GET / : user != undefiend");
         if (req.url == "/") {
-            console.log("req.url로 이동합니다1 : " + req.url);
-            res.redirect('/userDashboard'); // 요청된 URL이 없거나 첫 접속일 때 userDashboard로 이동
+            console.log("/로 이동합니다1 : " + req.url);
+            res.redirect('/'); // 요청된 URL이 없거나 첫 접속일 때 userDashboard로 이동
         } else {
             console.log("req.url로 이동합니다2 : " + req.url);
             res.redirect(req.url); // 요청된 URL이 있으면 해당 URL로 이동
@@ -43,20 +67,16 @@ router.get('/', function (req, res) {
         res.render('index');
     }
 });
-router.get('/login', function (req, res) {
-    console.log("GET /login");
-    res.redirect('/'); 
-});
 // 로그인
-router.post('/login', passport.authenticate('local', { failureRedirect: '/', failureFlash: true }), function (req, res) {
+router.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), function (req, res) {
     console.log("POST /login");
-    res.redirect('/userManagement');
+    res.redirect('/');
 });
 // Log out
 router.get('/logout', function (req, res) {
     console.log("GET /logout");
     req.logout();
-    res.redirect('/');
+    res.redirect('/login');
 });
 
 passport.serializeUser(function (user, done) {
@@ -75,9 +95,9 @@ var isAuthenticated = function (req, res, next) {
         return next();
     }
     console.log("isAuthenticated 로그인 아님");
-    res.redirect('/');
+    res.redirect('/login');
 };
-passport.use(new commonModule.LocalStrategy({
+passport.use(new LocalStrategy({
     usernameField: 'userId',
     passwordField: 'userPw',
     passReqToCallback: true

@@ -23,6 +23,13 @@ var newDocLearning = require('./routes/user/newDocLearning');
 //admin
 var adminDashboard = require('./routes/admin/adminDashboard')
 var userManagement = require('./routes/admin/userManagement');
+// Session
+//var cookieSession = require('cookie-session');
+var expressSession = require('express-session');
+var flash = require('connect-flash');
+var passport = require('passport')
+    , LocalStrategy = require('passport-local').Strategy;
+var bcrypt = require('bcrypt');
 
 var app = commonModule.express();
 
@@ -39,20 +46,20 @@ app.use(commonModule.bodyParser.json());
 app.use(commonModule.bodyParser.urlencoded({ extended: false }));
 
 // login
-//app.use(commonModule.cookieSession({
+//app.use(cookieSession({
 //    keys: ['koreanreocr'],
 //    cookie: {
 //        maxAge: 1000 * 60 * 180 // 3 hour
 //    }
 //}));
-app.use(commonModule.expressSession({
+app.use(expressSession({
     secret: 'koreanre-ocr',
     resave: true,
     saveUninitialized: true
 }));
 app.use(flash()); // login 실패 시 session clear
-app.use(commonModule.passport.initialize());
-app.use(commonModule.passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', index);
 //user

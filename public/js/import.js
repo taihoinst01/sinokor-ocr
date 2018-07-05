@@ -18,12 +18,7 @@ var pool = mysql.createPool(dbConfig);
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
-// Session
-var expressSession = require('express-session');
-var flash = require('connect-flash');
-var passport = require('passport')
-    , LocalStrategy = require('passport-local').Strategy;
-var bcrypt = require('bcrypt');
+
 
 exports.appRoot = appRoot;
 exports.express = express;
@@ -43,8 +38,9 @@ exports.pool = pool;
 exports.queryConfig = queryConfig;
 exports.commonDB = commonDB;
 exports.commonUtil = commonUtil;
-exports.expressSession = expressSession;
-exports.flash = flash;
-exports.passport = passport;
-exports.LocalStrategy = LocalStrategy;
-exports.bcrypt = bcrypt;
+//exports.cookieSession = cookieSession;
+//exports.expressSession = expressSession;
+//exports.flash = flash;
+//exports.passport = passport;
+//exports.LocalStrategy = LocalStrategy;
+//exports.bcrypt = bcrypt;
