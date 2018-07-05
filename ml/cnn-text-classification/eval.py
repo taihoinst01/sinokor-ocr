@@ -103,8 +103,13 @@ if y_test is not None:
 class_predictions = data_loader.class_labels(all_predictions.astype(int))
 predictions_human_readable = np.column_stack((np.array(x_raw), class_predictions))
 
+dicText = {}
+
 for item in predictions_human_readable:
-    print(item)
+	dicText[item[0]] = item[1]
+	
+print(json.dumps(dicText))
+
 #
 # out_path = os.path.join(FLAGS.checkpoint_dir, "../../../", "prediction.csv")
 # print("Saving evaluation to {0}".format(out_path))
