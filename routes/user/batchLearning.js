@@ -40,6 +40,81 @@ router.post('/', function (req, res) {
     res.render('user/batchLearning');
 });
 
+router.get('/pyTest', function (req, res) {
+
+    const defaults = {
+        encoding: 'utf8',
+    };
+
+    var arg = '"Partner of Choice"' + ' ' + '"Class of Business"' + ' ';
+    //var exeString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ' + arg;
+    var exeString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + arg;
+    exec(exeString, defaults, function (err, stdout, stderr) {
+        console.log(stdout);
+        console.log(stderr);
+        res.send(stdout);
+    });
+
+});
+
+router.get('/fixvalueTest', function (req, res) {
+    var test = 'test';
+    var excelArray = [];
+
+    var workbook = new exceljs.Workbook();
+    workbook.xlsx.readFile('E:\\projectworks\\koreanre\\docsample.xlsx')
+        .then(function () {
+            var worksheet = workbook.getWorksheet('Sheet1');
+            worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
+
+                var data = {};
+                data.cell1 = row.values[1];
+                data.cell2 = row.values[2];
+                data.cell3 = row.values[3];
+                data.cell4 = row.values[4];
+                data.cell5 = "";
+
+                excelArray.push(data);
+                /*
+                                if (row.values[4] == 'fixvalue') {
+                                    console.log("Row " + rowNumber + " = " + row.values[1] + "," + row.values[2] + "," + row.values[3] + "," + row.values[4]);
+                                }
+                */
+            });
+
+            for (var i = 0; i < excelArray.length; i++) {
+                if (excelArray[i].cell4 == "fixvalue") {
+
+                    var valueXNum = excelArray[i].cell1;
+                    var valueYNum = excelArray[i].cell2;
+                    var minDis = 100000;
+                    var fixlabel;
+
+                    for (var j = 0; j < excelArray.length; j++) {
+                        if (excelArray[j].cell4 == "fixlabel") {
+                            var xNum = excelArray[j].cell1;
+                            var yNum = excelArray[j].cell2;
+                            var diffX = valueXNum - xNum;
+                            var diffY = valueYNum - yNum;
+
+                            var dis = Math.sqrt(Math.abs(diffX * diffX) + Math.abs(diffY * diffY));
+
+                            if (minDis > dis) {
+                                minDis = dis;
+                                fixlabel = excelArray[j].cell3;
+                            }
+                        }
+                    }
+
+                    excelArray[i].cell5 = fixlabel;
+                    console.log(excelArray[i]);
+                }
+            }
+        })
+
+    res.send(test);
+});
+
 // fileupload
 router.post('/multiUpload', upload.any(), function (req, res) {
     var files = req.files;
