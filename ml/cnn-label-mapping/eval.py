@@ -48,7 +48,7 @@ else:
 
 # checkpoint_dir이 없다면 가장 최근 dir 추출하여 셋팅
 if FLAGS.checkpoint_dir == "":
-    all_subdirs = ["./ml/cnn-text-classification/runs/" + d for d in os.listdir('./ml/cnn-text-classification/runs/.') if os.path.isdir("./ml/cnn-text-classification/runs/" + d)]
+    all_subdirs = ["./ml/cnn-label-mapping/runs/" + d for d in os.listdir('./ml/cnn-label-mapping/runs/.') if os.path.isdir("./ml/cnn-label-mapping/runs/" + d)]
     latest_subdir = max(all_subdirs, key=os.path.getmtime)
     FLAGS.checkpoint_dir = latest_subdir + "/checkpoints/"
 
