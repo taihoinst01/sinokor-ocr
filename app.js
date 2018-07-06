@@ -1,19 +1,33 @@
 ﻿'use strict';
-/*
-var debug = require('debug');
 var express = require('express');
+var fs = require('fs');
+var debug = require('debug');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieparser = require('cookie-parser');
-var bodyparser = require('body-parser');
-var approot = require('app-root-path').path;
-*/
-var commonModule = require(require('app-root-path').path + '/public/js/import.js');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var multer = require("multer");
+var exceljs = require('exceljs');
+var appRoot = require('app-root-path').path;
+var router = express.Router();
 var flash = require('connect-flash');
+
+// Session
+var session = require('express-session');   //var cookieSession = require('cookie-session');
+var flash = require('connect-flash');
+var passport = require('passport')
+    , LocalStrategy = require('passport-local').Strategy;
+var bcrypt = require('bcrypt');
+
+var app = express();
+
+// routes
+var routes = require('./routes');
 var index = require('./routes/index');
+
 //user
-var userDashboard = require('./routes/user/userDashboard')
+var userDashboard = require('./routes/user/userDashboard');
 var ocrFormAnalysis = require('./routes/user/ocrFormAnalysis');
 var adminLearning = require('./routes/user/adminLearning');
 var batchLearning = require('./routes/user/batchLearning');
@@ -21,30 +35,28 @@ var uiLearning = require('./routes/user/uiLearning');
 var ocrHistorySearch = require('./routes/user/ocrHistorySearch');
 var newDocLearning = require('./routes/user/newDocLearning');
 //admin
-var adminDashboard = require('./routes/admin/adminDashboard')
+var adminDashboard = require('./routes/admin/adminDashboard');
 var userManagement = require('./routes/admin/userManagement');
-// Session
-//var cookieSession = require('cookie-session');
-var expressSession = require('express-session');
-var flash = require('connect-flash');
-var passport = require('passport')
-    , LocalStrategy = require('passport-local').Strategy;
-var bcrypt = require('bcrypt');
 
-var app = commonModule.express();
 
-app.use('/uploads', commonModule.express.static(__dirname + '/uploads'));
-app.use('/excel', commonModule.express.static(__dirname + '/excel'));
-app.set('views', commonModule.path.join(__dirname, 'views'));
+app.use('/uploads', express.static(__dirname + '/uploads'));
+app.use('/excel', express.static(__dirname + '/excel'));
+app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
-app.use(commonModule.logger('dev'));
-app.use(commonModule.express.static(commonModule.path.join(__dirname, 'public')));
-app.use(commonModule.cookieParser());
-app.use(commonModule.bodyParser.json());
-app.use(commonModule.bodyParser.urlencoded({ extended: false }));
+app.use(logger('dev'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
+// Custom Middlewares
+app.use(function (req, res, next) {
+    res.locals.isAuthenticated = req.isAuthenticated();
+    res.locals.currentUser = req.user;
+    next();
+});
 // login
 //app.use(cookieSession({
 //    keys: ['koreanreocr'],
@@ -52,16 +64,17 @@ app.use(commonModule.bodyParser.urlencoded({ extended: false }));
 //        maxAge: 1000 * 60 * 180 // 3 hour
 //    }
 //}));
-app.use(expressSession({
+//app.use(app.mountpath);
+app.use(session({
     secret: 'koreanre-ocr',
     resave: true,
     saveUninitialized: true
 }));
-app.use(flash()); // login 실패 시 session clear
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', index);
+app.use('/', routes);
 //user
 app.use('/userDashboard', userDashboard);
 app.use('/ocrFormAnalysis', ocrFormAnalysis);
@@ -78,5 +91,5 @@ app.use('/userManagement', userManagement);
 app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function () {
-    commonModule.debug('Server Start!! port : ' + server.address().port);
+    debug('Server Start!! port : ' + server.address().port);
 });

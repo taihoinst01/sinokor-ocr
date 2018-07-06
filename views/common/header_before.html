@@ -12,12 +12,19 @@
 
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-                <li class="user_id"> <strong>TIIZ_OCR 님</strong> </li>
+                <% if(currentUser != null) { %>
+                <li class="user_id"> <strong><%=currentUser.userId%>님</strong> </li>
+                <% } %>
                 <li class="btn_set01">
                     <button id="userInfoPopupBtn" class="left_set" data-toggle="modal" data-target="#userInfoPopup"></button>
                 </li>
                 <li><a href="/logout" class="btn_log_out" style="margin-left: 5px;">로그아웃</a></li>
             </ul>
+            <% if(currentUser != null) { %>
+            <input type="hidden" id="sessionInfo" value="<%= currentUser %>" />
+            <% } else { %>
+            <input type="hidden" id="sessionInfo" value="" />
+            <% } %>
         </div>
     </nav>
 </header>

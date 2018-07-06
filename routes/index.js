@@ -1,24 +1,27 @@
 ﻿'use strict';
-//var express = require('express');
-//var appRoot = require('app-root-path').path;
-//var router = express.Router();
-//var passport = require('passport')
-//    , LocalStrategy = require('passport-local').Strategy;
-
-//var mysql = require('mysql');
-//var dbConfig = require(appRoot + '/config/dbConfig');
-//var pool = mysql.createPool(dbConfig);
-//var queryConfig = require(appRoot + '/config/queryConfig.js');
-//var commonDB = require(appRoot + '/public/js/common.db.js');
-//var commonUtil = require(appRoot + '/public/js/common.util.js');
-//var bcrypt = require('bcrypt');
-var commonModule = require(require('app-root-path').path + '/public/js/import.js');
-var commonUtil = commonModule.commonUtil;
-var commonDB = commonModule.commonDB;
-var queryConfig = commonModule.queryConfig;
-var router = commonModule.router;
+var express = require('express');
+var fs = require('fs');
+var debug = require('debug');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var multer = require("multer");
+var exceljs = require('exceljs');
+var appRoot = require('app-root-path').path;
+var router = express.Router();
+// DB
+var mysql = require('mysql');
+var dbConfig = require(appRoot + '/config/dbConfig');
+var pool = mysql.createPool(dbConfig);
+var queryConfig = require(appRoot + '/config/queryConfig.js');
+var commonDB = require(appRoot + '/public/js/common.db.js');
+var commonUtil = require(appRoot + '/public/js/common.util.js');
+// Session
 var passport = require('passport')
     , LocalStrategy = require('passport-local').Strategy;
+var session = require('express-session');
 
 // 로그인 쿼리
 var loginQuery = "SELECT * FROM TBL_ICR_USER WHERE USERID = ?";
@@ -29,72 +32,92 @@ router.get('/favicon.ico', function (req, res) {
 
 // index.html
 router.get('/', function (req, res) {
-    console.log("main page GET / : " + req.url);
-    console.log("req.user : " + req.user);
-    if (commonUtil.isNull(req.user))
+    if (commonUtil.isNull(req.user)) {
         res.redirect("/logout");
-    //res.redirect('/userDashboard');
-    else res.render('user/userDashboard');
-
-    //if (req.user !== undefined) {
-    //    console.log("GET / : user != undefiend");
-    //    if (req.url == "/") {
-    //        console.log("req.url로 이동합니다1 : " + req.url);
-    //        res.redirect('/userDashboard'); // 요청된 URL이 없거나 첫 접속일 때 userDashboard로 이동
-    //    } else {
-    //        console.log("req.url로 이동합니다2 : " + req.url);
-    //        res.redirect(req.url); // 요청된 URL이 있으면 해당 URL로 이동
-    //    }
-    //} else {
-    //    console.log("GET / : user == undefiend");
-    //    res.render('index');
-    //}
+    } else {
+        var sess = req.session;
+        if (req.isAuthenticated()) {
+            //res.locals.currentUser = req.user;
+            res.render('user/userDashboard', { currentUser: req.user });
+        } else {
+            res.render("index", {
+                messages: { error: req.flash('errors') }
+            });
+        }
+    }
 });
 router.get('/login', function (req, res) {
-    console.log("GET /login");
-    //res.redirect('/'); 
     if (req.user !== undefined) {
-        console.log("GET / : user != undefiend");
-        if (req.url == "/") {
-            console.log("/로 이동합니다1 : " + req.url);
-            res.redirect('/'); // 요청된 URL이 없거나 첫 접속일 때 userDashboard로 이동
-        } else {
-            console.log("req.url로 이동합니다2 : " + req.url);
-            res.redirect(req.url); // 요청된 URL이 있으면 해당 URL로 이동
-        }
+        res.redirect("/");
     } else {
-        console.log("GET / : user == undefiend");
-        res.render('index');
+        res.render('index', {
+            messages: { error: req.flash('errors') }
+        });
     }
 });
 // 로그인
-router.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), function (req, res) {
-    console.log("POST /login");
-    res.redirect('/');
-});
+//router.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), function (req, res) {
+//    console.log("POST /login"); 
+//    res.redirect('/');
+//});
+router.post("/login",
+    function (req, res, next) {
+        var sess;
+        sess = req.session;
+        var loginMessage = {};
+        var isValid = true;
+        if (!req.body.userId) {
+            isValid = false;
+            loginMessage = "Username is required!";
+        }
+        if (!req.body.userPw) {
+            isValid = false;
+            loginMessage = "Password is required!";
+        }
+        if (isValid) {
+            sess.userId = req.body.userId;
+            next();
+        } else {
+            res.redirect("/login");
+        }
+    },
+    passport.authenticate("local", {
+        successRedirect: "/",
+        failureRedirect: "/login",
+        failureFlash: true
+    }
+));
 // Log out
 router.get('/logout', function (req, res) {
-    console.log("GET /logout");
-    req.logout();
-    res.redirect('/login');
+    var sess = req.session;
+    if (sess.username) {
+        req.session.destroy(function (err) {
+            if (err) {
+                console.log(err);
+            } else {
+                req.logout();
+                res.redirect('/login');
+            }
+        });
+    } else {
+        req.logout();
+        res.redirect('/login');
+    }
 });
 
 passport.serializeUser(function (user, done) {
-    console.log('serializeUser : 사용자 정보 세션 저장');  
-    console.log("serializeUser user : ", JSON.stringify(user));
+    var sessionInfo = user;
     done(null, user);
 });
 passport.deserializeUser(function (user, done) {
-    console.log('deserialize : 사용자 정보 세션에서 호출');  
-    console.log("deserialize user : ", JSON.stringify(user));
+    var sessionInfo = JSON.parse(JSON.stringify(user));
     done(null, user);
 });
 var isAuthenticated = function (req, res, next) {
     if (req.isAuthenticated()) {
-        console.log("isAuthenticated 로그인 유저 ");
+        res.locals.currentUser = req.user;
         return next();
     }
-    console.log("isAuthenticated 로그인 아님");
     res.redirect('/login');
 };
 passport.use(new LocalStrategy({
@@ -102,7 +125,7 @@ passport.use(new LocalStrategy({
     passwordField: 'userPw',
     passReqToCallback: true
 }, function (req, userId, userPw, done) {
-    commonModule.pool.getConnection(function (err, connection) {
+    pool.getConnection(function (err, connection) {
         connection.query(loginQuery, userId, function (err, result) {
             if (err) {
                 console.log('err :' + err);
@@ -110,19 +133,21 @@ passport.use(new LocalStrategy({
             } else {
                 if (result.length === 0) {
                     console.log('해당 사용자가 없습니다');
+                    req.flash("errors", "해당 사용자가 존재하지 않습니다.");
                     return done(false, null);
                 } else {
                     //if (!bcrypt.compareSync(userPw, result[0].userPw)) {
                     if (userPw != result[0].userPw) {
                         console.log('패스워드가 일치하지 않습니다');
+                        req.flash("errors", "패스워드가 일치하지 않습니다.");
                         return done(false, null);
                     } else {
-                        console.log('로그인 성공');
-                        return done(null, {
-                            'userId': userId,
-                            'auth': result[0].auth,
-                            'email': result[0].email
-                        });
+                        var sessionInfo = {
+                            userId: userId,
+                            email: result[0].email,
+                            auth: result[0].auth
+                        };
+                        return done(null, sessionInfo);
                     }
                 }
             }

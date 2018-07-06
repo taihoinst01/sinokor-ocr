@@ -1,7 +1,7 @@
 ﻿'use strict';
 var appRoot = require('app-root-path').path;
-var express = require('express');
-var router = express.Router();
+//var express = require('express');
+//var router = express.Router();
 var fs = require('fs');
 var debug = require('debug');
 var path = require('path');
@@ -21,8 +21,8 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 
 
 exports.appRoot = appRoot;
-exports.express = express;
-exports.router = router;
+//exports.express = express;
+//exports.router = router;
 exports.fs = fs;
 exports.debug = debug;
 exports.path = path;

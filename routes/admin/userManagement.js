@@ -1,9 +1,23 @@
 ﻿'use strict';
-var commonModule = require(require('app-root-path').path + '/public/js/import.js');
-var commonUtil = commonModule.commonUtil;
-var commonDB = commonModule.commonDB;
-var queryConfig = commonModule.queryConfig;
-var router = commonModule.router;
+var express = require('express');
+var fs = require('fs');
+var debug = require('debug');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var multer = require("multer");
+var exceljs = require('exceljs');
+var appRoot = require('app-root-path').path;
+var router = express.Router();
+// DB
+var mysql = require('mysql');
+var dbConfig = require(appRoot + '/config/dbConfig');
+var pool = mysql.createPool(dbConfig);
+var queryConfig = require(appRoot + '/config/queryConfig.js');
+var commonDB = require(appRoot + '/public/js/common.db.js');
+var commonUtil = require(appRoot + '/public/js/common.util.js');
 
 var selectQuery = queryConfig.userMngConfig.selUserList; // 사용자 조회 쿼리
 var insertQuery = queryConfig.userMngConfig.insertUser; // 사용자 추가 쿼리
@@ -14,30 +28,27 @@ var updateQuery = queryConfig.userMngConfig.updatePw; // 사용자(비밀번호)
 /***************************************************************
  * Router
  * *************************************************************/
-
-
 router.get('/favicon.ico', function (req, res) {    // favicon
     res.status(204).end();
 });
-router.get('/',  function (req, res) {               // 사용자 관리 (GET)
-    console.log("req.userId : " + req.userId);
-    console.log("req.user : " + req.user);
-    res.render('admin/userManagement');
+router.get('/', function (req, res) {               // 사용자 관리 (GET)
+    if (req.isAuthenticated()) res.render('admin/userManagement', { currentUser: req.user });
+    else res.redirect("/logout");
 });
 router.post('/searchUser', function (req, res) {    // 사용자 조회
-    fnSearch(req, res);
+    if (req.isAuthenticated()) fnSearch(req, res);
 });
 router.post('/insertUser', function (req, res) {    //사용자 추가
     var data = [req.body.userId, req.body.userPw, req.body.auth, req.body.email];
-    commonDB.reqQueryParam(insertQuery, data, callbackInsert, req, res);
+    if (req.isAuthenticated()) commonDB.reqQueryParam(insertQuery, data, callbackInsert, req, res);
 });
 router.post("/updatePw", function (req, res) {     // 사용자 비밀번호 수정
     var data = [req.body.userPwUpdate, req.body.seqNumUpdate];
-    commonDB.reqQueryParam(updateQuery, data, callbackUpdate, req, res);
+    if (req.isAuthenticated()) commonDB.reqQueryParam(updateQuery, data, callbackUpdate, req, res);
 });
 router.post("/deleteUser", function (req, res) {     // 사용자 비밀번호 수정
     var data = [req.body.seqNum];
-    commonDB.reqQueryParam(deleteQuery, data, callbackDelete, req, res);
+    if (req.isAuthenticated()) commonDB.reqQueryParam(deleteQuery, data, callbackDelete, req, res);
 });
 
 /***************************************************************
