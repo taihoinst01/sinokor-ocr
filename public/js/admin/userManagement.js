@@ -41,8 +41,12 @@ function searchUser(curPage) {
         datatype: "json",
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            startProgressBar(); // 프로그레스바 시작
+            addProgressBar(1, 1); // 프로그레스바 진행
+        },
         success: function (data) {
-            console.log("data : " + JSON.stringify(data));
+            addProgressBar(2, 100); // 프로그레스바 진행
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     html += '<tr>';
@@ -60,8 +64,10 @@ function searchUser(curPage) {
             }
             $("#tbody_user").empty().append(html);
             $("#pagination").html(pagination(curPage, data[0].totalCount));
+            endProgressBar();
         },
         error: function (err) {
+            endProgressBar();
             console.log(err);
         }
     });

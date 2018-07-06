@@ -34,7 +34,7 @@ function multiUploadEvent() {
 
     $('#multiUploadForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
-            loadProgressBar(); // 프로그레스바 시작
+            startProgressBar(); // 프로그레스바 시작
             addProgressBar(1, 5); // 프로그레스바 진행
             return true;
         },
@@ -48,7 +48,7 @@ function multiUploadEvent() {
             execBatchLearningData(); // cnn-text-classification test
         },
         error: function (e) {
-            closeProgressBar(); // 에러 발생 시 프로그레스바 종료
+            endProgressBar(); // 에러 발생 시 프로그레스바 종료
             console.log(e);
         }
     });
@@ -82,7 +82,7 @@ function processImage(fileName) {
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
         alert(errorString);
-        closeProgressBar(); // 에러 발생 시 프로그레스바 종료
+        endProgressBar(); // 에러 발생 시 프로그레스바 종료
     });
 };
 
@@ -233,8 +233,10 @@ function execBatchLearningData() {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log("success execBatchLearningData : " + data);
+            endProgressBar();
         },
         error: function (err) {
+            endProgressBar();
             console.log(err);
         }
     });

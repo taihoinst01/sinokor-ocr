@@ -10,11 +10,31 @@
     <script type="text/javascript" src="js/common.client.js"></script>
     <script type="text/javascript" src="js/admin/userManagement.js"></script>
     <style>
+        #ocrProgress {
+            background-color: grey;
+            position: absolute;
+            top: 50%;
+            left: 60%;
+            background: #36f;
+            transform: translate(-50%, -50%);
+            width: 420px;
+            z-index: 1000;
+            display: none
+        }
+
+        #ocrBar {
+            width: 1%;
+            height: 30px;
+            background-color: #006;
+        }
     </style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
     <div class="main">
         <div class="wrapper">
+            <div id="ocrProgress">
+                <div id="ocrBar"></div>
+            </div>
             <!-- Header -->
             <%include  ../common/header_before.html%>
             <!-- //Header -->
