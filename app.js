@@ -12,20 +12,16 @@ var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var router = express.Router();
 var flash = require('connect-flash');
-
 // Session
-var session = require('express-session');   //var cookieSession = require('cookie-session');
+var session = require('express-session');
 var flash = require('connect-flash');
 var passport = require('passport')
     , LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt');
-
 var app = express();
-
 // routes
 var routes = require('./routes');
 var index = require('./routes/index');
-
 //user
 var userDashboard = require('./routes/user/userDashboard');
 var ocrFormAnalysis = require('./routes/user/ocrFormAnalysis');
@@ -38,19 +34,18 @@ var newDocLearning = require('./routes/user/newDocLearning');
 var adminDashboard = require('./routes/admin/adminDashboard');
 var userManagement = require('./routes/admin/userManagement');
 
-
+// 
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use('/excel', express.static(__dirname + '/excel'));
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
-
+//
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
 // Custom Middlewares
 app.use(function (req, res, next) {
     res.locals.isAuthenticated = req.isAuthenticated();
@@ -58,13 +53,6 @@ app.use(function (req, res, next) {
     next();
 });
 // login
-//app.use(cookieSession({
-//    keys: ['koreanreocr'],
-//    cookie: {
-//        maxAge: 1000 * 60 * 180 // 3 hour
-//    }
-//}));
-//app.use(app.mountpath);
 app.use(session({
     secret: 'koreanre-ocr',
     resave: true,
@@ -73,9 +61,9 @@ app.use(session({
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
-
+// routes
 app.use('/', routes);
-//user
+// user
 app.use('/userDashboard', userDashboard);
 app.use('/ocrFormAnalysis', ocrFormAnalysis);
 app.use('/adminLearning', adminLearning);
@@ -83,13 +71,11 @@ app.use('/batchLearning', batchLearning);
 app.use('/uiLearning', uiLearning);
 app.use('/ocrHistorySearch', ocrHistorySearch);
 app.use('/newDocLearning', newDocLearning);
-
-//admin
+// admin
 app.use('/adminDashboard', adminDashboard);
 app.use('/userManagement', userManagement);
-
+// server 
 app.set('port', process.env.PORT || 3000);
-
 var server = app.listen(app.get('port'), function () {
     debug('Server Start!! port : ' + server.address().port);
 });

@@ -3,6 +3,11 @@ var count = {
     endQuery:   " ) AS COUNTQUERY "
 }
 
+var sessionConfig = {
+    loginQuery: "SELECT * FROM TBL_ICR_USER WHERE USERID = ?",
+    lastLoginUpdateQuery: "UPDATE TBL_ICR_USER SET lastLoginDate = now() WHERE USERID = ?"
+}
+
 var queryConfig = {
     selectDbColumns:
         "SELECT " + 
@@ -57,7 +62,8 @@ var uiLearningConfig = {
 }
 
 module.exports = {
-    count : count,
+    count: count,
+    sessionConfig: sessionConfig,
     queryConfig: queryConfig,
     userMngConfig: userMngConfig,
     dbcolumnsConfig: dbcolumnsConfig,

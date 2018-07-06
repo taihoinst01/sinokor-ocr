@@ -23,9 +23,6 @@ var passport = require('passport')
     , LocalStrategy = require('passport-local').Strategy;
 var session = require('express-session');
 
-var loginQuery = "SELECT * FROM TBL_ICR_USER WHERE USERID = ?"; // 로그인 쿼리
-var updateQuery = "UPDATE TBL_ICR_USER SET lastLoginDate = now() WHERE USERID = ?"; // 마지막 접속 일자 수정
-
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
@@ -75,7 +72,7 @@ router.post("/login",
             loginMessage = "Password is required!";
         }
         if (isValid) {
-            commonDB.reqQueryParam(updateQuery, [req.body.userId], callbackUpdate, req, res);
+            commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [req.body.userId], callbackUpdate, req, res);
             sess.userId = req.body.userId;
             next();
         } else {
@@ -109,11 +106,9 @@ router.get('/logout', function (req, res) {
 });
 
 passport.serializeUser(function (user, done) {
-    var sessionInfo = user;
     done(null, user);
 });
 passport.deserializeUser(function (user, done) {
-    var sessionInfo = JSON.parse(JSON.stringify(user));
     done(null, user);
 });
 var isAuthenticated = function (req, res, next) {
@@ -129,7 +124,7 @@ passport.use(new LocalStrategy({
     passReqToCallback: true
 }, function (req, userId, userPw, done) {
     pool.getConnection(function (err, connection) {
-        connection.query(loginQuery, userId, function (err, result) {
+        connection.query(queryConfig.sessionConfig.loginQuery, userId, function (err, result) {
             if (err) {
                 console.log('err :' + err);
                 return done(false, null);
