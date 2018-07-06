@@ -23,8 +23,8 @@ var passport = require('passport')
     , LocalStrategy = require('passport-local').Strategy;
 var session = require('express-session');
 
-// 로그인 쿼리
-var loginQuery = "SELECT * FROM TBL_ICR_USER WHERE USERID = ?";
+var loginQuery = "SELECT * FROM TBL_ICR_USER WHERE USERID = ?"; // 로그인 쿼리
+var updateQuery = "UPDATE TBL_ICR_USER SET lastLoginDate = now() WHERE USERID = ?"; // 마지막 접속 일자 수정
 
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
@@ -75,6 +75,7 @@ router.post("/login",
             loginMessage = "Password is required!";
         }
         if (isValid) {
+            commonDB.reqQueryParam(updateQuery, [req.body.userId], callbackUpdate, req, res);
             sess.userId = req.body.userId;
             next();
         } else {
@@ -86,7 +87,9 @@ router.post("/login",
         failureRedirect: "/login",
         failureFlash: true
     }
-));
+    ));
+function callbackUpdate(rows, req, res) {
+}
 // Log out
 router.get('/logout', function (req, res) {
     var sess = req.session;
