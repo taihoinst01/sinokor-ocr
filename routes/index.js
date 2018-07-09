@@ -53,11 +53,12 @@ router.get('/login', function (req, res) {
         });
     }
 });
-// 로그인
+// 로그인 (기본)
 //router.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), function (req, res) {
 //    console.log("POST /login"); 
 //    res.redirect('/');
 //});
+// 로그인 (확장)
 router.post("/login",
     function (req, res, next) {
         var sess;
@@ -72,13 +73,12 @@ router.post("/login",
             isValid = false;
             loginMessage = "Password is required!";
         }
-        // 체크시 on, 체크 안할 시 undefined
+        // remember-me (아이디 저장) 체크시 on, 체크 안할 시 undefined
         if (isValid) {
-            // ID만 기억하기
+            // ID 저장하기
             if (req.body.remember_me == "on") {
-                res.cookie('ocr_userid', req.body.userId, { maxAge: 604800000 }); // 7days
+                res.cookie('ocr_userid', req.body.userId, { maxAge: 604800000 }); // save cookie 7days
             }
-
             commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [req.body.userId], callbackUpdate, req, res);
             sess.userId = req.body.userId;
             next();
@@ -108,12 +108,11 @@ router.get('/logout', function (req, res) {
             }
         });
     } else {
-        //res.clearCookie('ocr_userid', { path: '/' });
         req.logout();
         res.redirect('/login');
     }
 });
-
+// Passport module
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
@@ -166,6 +165,7 @@ passport.use(new LocalStrategy({
     });
 }));
 
+// Auto login
 /* Fake, in-memory database of remember me tokens */
 var tokens = {}
 function consumeRememberMeToken(token, fn) {
@@ -183,7 +183,7 @@ passport.use(new RememberMeStrategy(
         consumeRememberMeToken(token, function (err, uid) {
             if (err) { return done(err); }
             if (!uid) { return done(null, false); }
-            // 자동로그인 시작
+            // Auto login 
             pool.getConnection(function (err, connection) {
                 connection.query(queryConfig.sessionConfig.loginQuery, uid, function (err, result) {
                     if (err) { return done(err); }
@@ -196,12 +196,11 @@ passport.use(new RememberMeStrategy(
                     return done(null, sessionInfo);
                 });
             });
-            // 자동로그인 종료
+            // /Auto login
         });
     },
     issueToken
 ));
-
 function issueToken(userId, done) {
     var token = randomString(64);
     saveRememberMeToken(token, userId, function (err) {

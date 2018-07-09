@@ -62,7 +62,7 @@ app.use(session({
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use(passport.authenticate('remember-me')); // 자동 로그인
+// app.use(passport.authenticate('remember-me')); // Auto login
 // routes
 app.use('/', routes);
 // user

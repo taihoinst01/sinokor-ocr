@@ -37,7 +37,6 @@ function deleteCookie(cookieName) {
     document.cookie = cookieName + "= " + "; expires=" + expireDate.toGMTString() + "; path=/";
 }
 
-
 $('#loginfrm').validate({
     onkeyup: false,
     submitHandler: function () {
