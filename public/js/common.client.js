@@ -79,7 +79,6 @@ function addProgressBar(fromVal, toVal) {
     elem.style.width = fromVal + '%';
     var id = setInterval(frame, 10);
     function frame() {
-        console.log(width);
         if (width >= 100) {
             endProgressBar();
             clearInterval(id);
