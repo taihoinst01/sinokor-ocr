@@ -20,7 +20,8 @@ var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 // Session
 var passport = require('passport')
-    , LocalStrategy = require('passport-local').Strategy;
+    , LocalStrategy = require('passport-local').Strategy
+    , RememberMeStrategy = require('passport-remember-me').Strategy;
 var session = require('express-session');
 
 router.get('/favicon.ico', function (req, res) {
@@ -71,7 +72,13 @@ router.post("/login",
             isValid = false;
             loginMessage = "Password is required!";
         }
+        // 체크시 on, 체크 안할 시 undefined
         if (isValid) {
+            // ID만 기억하기
+            if (req.body.remember_me == "on") {
+                res.cookie('ocr_userid', req.body.userId, { maxAge: 604800000 }); // 7days
+            }
+
             commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [req.body.userId], callbackUpdate, req, res);
             sess.userId = req.body.userId;
             next();
@@ -84,7 +91,7 @@ router.post("/login",
         failureRedirect: "/login",
         failureFlash: true
     }
-    ));
+));
 function callbackUpdate(rows, req, res) {
 }
 // Log out
@@ -95,11 +102,13 @@ router.get('/logout', function (req, res) {
             if (err) {
                 console.log(err);
             } else {
+                res.clearCookie('ocr_userid', {path:'/'});
                 req.logout();
                 res.redirect('/login');
             }
         });
     } else {
+        //res.clearCookie('ocr_userid', { path: '/' });
         req.logout();
         res.redirect('/login');
     }
@@ -129,15 +138,19 @@ passport.use(new LocalStrategy({
                 console.log('err :' + err);
                 return done(false, null);
             } else {
-                if (result.length === 0) {
-                    console.log('해당 사용자가 없습니다');
+                if (commonUtil.isNull(userId)) {
+                    req.flash("errors", "사용자 ID를 입력해주세요.");
+                    return done(false, null);
+                } else if (result.length === 0) {
                     req.flash("errors", "해당 사용자가 존재하지 않습니다.");
                     return done(false, null);
                 } else {
                     //if (!bcrypt.compareSync(userPw, result[0].userPw)) {
-                    if (userPw != result[0].userPw) {
-                        console.log('패스워드가 일치하지 않습니다');
-                        req.flash("errors", "패스워드가 일치하지 않습니다.");
+                    if (commonUtil.isNull(userPw)) {
+                        req.flash("errors", "비밀번호를 입력해주세요.");
+                        return done(false, null);
+                    } else if (userPw != result[0].userPw) {
+                        req.flash("errors", "비밀번호가 일치하지 않습니다.");
                         return done(false, null);
                     } else {
                         var sessionInfo = {
@@ -152,5 +165,61 @@ passport.use(new LocalStrategy({
         });
     });
 }));
+
+/* Fake, in-memory database of remember me tokens */
+var tokens = {}
+function consumeRememberMeToken(token, fn) {
+    var uid = tokens[token];
+    // invalidate the single-use token
+    delete tokens[token];
+    return fn(null, uid);
+}
+function saveRememberMeToken(token, uid, fn) {
+    tokens[token] = uid;
+    return fn();
+}
+passport.use(new RememberMeStrategy(
+    function (token, done) {
+        consumeRememberMeToken(token, function (err, uid) {
+            if (err) { return done(err); }
+            if (!uid) { return done(null, false); }
+            // 자동로그인 시작
+            pool.getConnection(function (err, connection) {
+                connection.query(queryConfig.sessionConfig.loginQuery, uid, function (err, result) {
+                    if (err) { return done(err); }
+                    if (!result) { return done(null, false); }
+                    var sessionInfo = {
+                        userId: uid,
+                        email: result[0].email,
+                        auth: result[0].auth
+                    };
+                    return done(null, sessionInfo);
+                });
+            });
+            // 자동로그인 종료
+        });
+    },
+    issueToken
+));
+
+function issueToken(userId, done) {
+    var token = randomString(64);
+    saveRememberMeToken(token, userId, function (err) {
+        if (err) { return done(err); }
+        return done(null, token);
+    });
+}
+function randomString(len) {
+    var buf = []
+        , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+        , charlen = chars.length;
+    for (var i = 0; i < len; ++i) {
+        buf.push(chars[getRandomInt(0, charlen - 1)]);
+    }
+    return buf.join('');
+};
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 module.exports = router;

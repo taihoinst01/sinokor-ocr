@@ -16,7 +16,8 @@ var flash = require('connect-flash');
 var session = require('express-session');
 var flash = require('connect-flash');
 var passport = require('passport')
-    , LocalStrategy = require('passport-local').Strategy;
+    , LocalStrategy = require('passport-local').Strategy
+    , RememberMeStrategy = require('passport-remember-me').Strategy;
 var bcrypt = require('bcrypt');
 var app = express();
 // routes
@@ -61,6 +62,7 @@ app.use(session({
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+// app.use(passport.authenticate('remember-me')); // 자동 로그인
 // routes
 app.use('/', routes);
 // user
