@@ -151,33 +151,41 @@ router.post('/insertBatchLearningData', function (req, res) {
 
 // run batchLearningData
 router.post('/execBatchLearningData', function (req, res) {
-    //var batchLearningData = req.body.batchLearningData;
-    //var word = '';
-    //for (var i = 0; i < batchLearningData.length; i++) {
-    //    word += (i != batchLearningData.length - 1) ? batchLearningData[i].text + "\n" : batchLearningData[i].text;
-    //}
-    //if (!batchLearningData) {
-    //    res.send({ code: '400', message: 'The parameter is invalid' });
-    //}
-    // TO-DO eval.py 
-    //var dataPath = appRoot + '\\ml\\data'; // 데이터 root 경로
-    var dataPath = "C:\\workspace\\cnn-text-classification\\";
+    var classificationResult;
+    var labelMappingResult;
+    var arg = '"Partner of Choice"' + ' ' + '"Class of Business"' + ' ';
+
+    var localCnnTextClassificationPath = "C:\\workspace\\cnn-text-classification\\";
+    var localLabelMappingPath = "C:\\workspace\\cnn-label-mapping\\";
+
+    var cnnTextClassificationPath = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ';
+    var labelMappingPath = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ';
+
     var inputName = 'input_' + getConvertDate();
     var outputName = 'output_' + getConvertDate();
     // 오타수정 머신러닝 START
     const defaults = {
         encoding: 'utf8'
     };
-    var exeString = 'python ' + dataPath + 'eval.py';
-    exec(exeString, defaults, function (err1, stdout1, stderr1) {
+    exec(localCnnTextClassificationPath + 'eval.py', defaults, function (err1, stdout1, stderr1) {
+    //exec(cnnTextClassificationPath, defaults, function (err1, stdout1, stderr1) {
         if (err1) {
             console.log(err1);
             res.send({ code: '500', message: err1 });
         } else {
-            var result = fs.readFileSync(dataPath + "prediction.csv");
-            console.log("!! result : " + result);
+            classificationResult = fs.readFileSync(localCnnTextClassificationPath + "prediction.csv");
+            console.log("!! classificationResult : " + classificationResult);
+            labelMappingFunc(classificationResult);
         }
     });
+    function labelMappingFunc(classificationResult) {
+        exec(localLabelMappingPath + 'eval.py ' + classificationResult, defaults, function (err, stdout, stderr) {
+        //exec(labelMappingPath + classificationResult, defaults, function (err, stdout, stderr) {
+            labelMappingResult = stdout;
+            console.log("labelMappingResult : " + labelMappingResult); // TO-DO 그리드 변경되면 그리드에 출력
+            //res.send(stdout);
+        });
+    }
 });
 
 //오늘날짜 변환함수
