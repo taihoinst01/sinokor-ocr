@@ -5,6 +5,7 @@ var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var execSync = require('child_process').execSync;
+var exec = require('child_process').exec;
 var request = require('request');
 const upload = multer({
     storage: multer.diskStorage({
