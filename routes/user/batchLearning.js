@@ -12,6 +12,7 @@ var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 
+var csvParser = require('papaparse');
 var PythonShell = require('python-shell');
  
 const upload = multer({
@@ -159,8 +160,8 @@ router.post('/execBatchLearningData', function (req, res) {
     var localCnnTextClassificationPath = "C:\\workspace\\cnn-text-classification\\";
     var localLabelMappingPath = "C:\\workspace\\cnn-label-mapping\\";
 
-    var cnnTextClassificationPath = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ';
-    var labelMappingPath = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ';
+    var cnnTextClassificationPath = 'python ' + appRoot + '\\ml\\cnn-text-classification\\';
+    var labelMappingPath = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\';
 
     var inputName = 'input_' + getConvertDate();
     var outputName = 'output_' + getConvertDate();
@@ -168,20 +169,22 @@ router.post('/execBatchLearningData', function (req, res) {
     const defaults = {
         encoding: 'utf8'
     };
-    exec(localCnnTextClassificationPath + 'eval.py', defaults, function (err1, stdout1, stderr1) {
-    //exec(cnnTextClassificationPath, defaults, function (err1, stdout1, stderr1) {
+    exec(cnnTextClassificationPath + 'eval.py', defaults, function (err1, stdout1, stderr1) {
+    //exec(cnnTextClassificationPath + 'eval.py', defaults, function (err1, stdout1, stderr1) {
         if (err1) {
             console.log(err1);
             res.send({ code: '500', message: err1 });
         } else {
-            classificationResult = fs.readFileSync(localCnnTextClassificationPath + "prediction.csv");
-            console.log("!! classificationResult : " + classificationResult);
-            labelMappingFunc(classificationResult);
+            console.log("stdout : " + stdout1);
+            //var classificationResult = "";
+            //var classificationResult = fs.readFileSync(localCnnTextClassificationPath + "prediction.csv", "utf8");
+            //var classificationResult = csvParser.parse(classificationResult);
+            //console.log("classification result : " + JSON.stringify(classificationResult));
         }
     });
     function labelMappingFunc(classificationResult) {
         exec(localLabelMappingPath + 'eval.py ' + classificationResult, defaults, function (err, stdout, stderr) {
-        //exec(labelMappingPath + classificationResult, defaults, function (err, stdout, stderr) {
+        //exec(labelMappingPath + 'eval.py ' + classificationResult, defaults, function (err, stdout, stderr) {
             labelMappingResult = stdout;
             console.log("labelMappingResult : " + labelMappingResult); // TO-DO 그리드 변경되면 그리드에 출력
             //res.send(stdout);
