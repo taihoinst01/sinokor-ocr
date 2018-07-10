@@ -47,8 +47,9 @@ router.get('/pyTest', function (req, res) {
     };
 
     var arg = '"Partner of Choice"' + ' ' + '"Class of Business"' + ' ';
-    //var exeString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ' + arg;
-    var exeString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + arg;
+    var exeString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ' + arg;
+    //var exeString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + arg;
+    //var exeString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py';
     exec(exeString, defaults, function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);

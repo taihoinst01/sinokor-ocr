@@ -5,6 +5,7 @@ var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var execSync = require('child_process').execSync;
+var exec = require('child_process').exec;
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -65,9 +66,118 @@ router.post('/searchDBColumns', function (req, res) {
     var data = req.body.data;
     var query = queryConfig.dbcolumnsConfig.selDBColumns;
 
+    const defaults = {
+        encoding: 'utf8',
+    };
+
+    //var arg = '"Partner of Choice"' + ' ' + '"Class of Business"' + ' ';
+
+    var args = '';
+    for (var i = 0; i < data.length; i++) {
+        args += '"' + data[i].text + '"' + ' ';
+    }
+
+    var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ' + args;
+    //var exeString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + arg;
+    exec(exeTextString, defaults, function (err, stdout, stderr) {
+        var obj = JSON.parse(stdout);
+        //console.log(obj);
+        var label = [];
+
+        for (var key in obj) {
+
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].text.toLowerCase() == key.toLowerCase()) {
+                    data[i].label = obj[key];
+                }
+            }
+
+            if (obj[key] == "fixlabel" || obj[key] == "entryrowlabel") {
+                label.push(key);        
+                //console.log("key:" + key + ", value:" + obj[key]);
+            }
+        }
+
+        var labelArgs = '';
+
+        for (var i = 0; i < label.length; i++) {
+            labelArgs += '"' + label[i] + '" ';
+        }
+
+        var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + labelArgs;
+        exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
+            var jsonLabel = JSON.parse(stdout1);
+            var dataArray = [];
+
+            var dataText = JSON.stringify(stdout1);
+            dataText = dataText.replace(/\\/gi, "");
+            dataText = dataText.slice(0, -4);
+            //console.log(dataText);
+
+            for (var key in jsonLabel) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].text.toLowerCase() == key.toLowerCase()) {
+                        data[i].column = jsonLabel[key];
+                        var obj = {};
+                        obj.text = data[i].text;
+                        obj.column = data[i].column;
+                        dataArray.push(obj);
+                    }
+                }
+            }
+
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].label == "fixvalue" || data[i].label == "entryvalue") {
+
+                    var splitLocation = data[i].location.split(",");
+
+                    var xCoodi = splitLocation[0];
+                    var yCoodi = splitLocation[1];
+                    var minDis = 100000;
+                    var columnText = '';
+
+                    for (var j = 0; j < data.length; j++) {
+                        if (data[j].label == "fixlabel" || data[j].label == "entryrowlabel") {
+                            var jSplitLocation = data[j].location.split(",");
+
+                            var xNum = jSplitLocation[0];
+                            var yNum = jSplitLocation[1];
+
+                            var diffX = xCoodi - xNum;
+                            var diffY = yCoodi - yNum;
+
+                            var dis = Math.sqrt(Math.abs(diffX * diffX) + Math.abs(diffY * diffY));
+
+                            if (minDis > dis) {
+                                minDis = dis;
+                                columnText = data[j].column;
+                            }
+                        }
+                    }
+                    data[i].column = columnText + "_VALUE";
+
+                    //dataText += ',"' + data[i].text + '":"' + data[i].column + '"'; 
+
+                    var obj = {}
+                    obj.text = data[i].text
+                    obj.column = data[i].column;
+                    dataArray.push(obj);
+
+                }
+            }
+
+            res.send({ 'fileName': fileName, 'data': data, 'dbColumns': dataArray });
+            
+        });
+
+    });
+
+    /*
     commModule.commonDB.reqQuery(query, function (rows, req, res) {
         res.send({ 'fileName': fileName, 'data':data, 'dbColumns': rows });
     }, req, res);
+    */
+
 });
 
 // fileupload

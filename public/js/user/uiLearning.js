@@ -215,7 +215,7 @@ function detailTable(fileName) {
                 tblTag += '</td>';
                 tblTag += '<td>';
                 tblTag += '<select style="width:100%; height:100%;  border:0;">';
-                tblTag += dbColumnsOption(item.dbColumns);
+                tblTag += dbColumnsOption(item.data[j].text, item.dbColumns);
                 tblTag += '</select>';
                 tblTag += '</td>';
                 tblTag += '</tr>';
@@ -244,12 +244,28 @@ function detailTable(fileName) {
 }
 
 // DB 컬럼 option 렌더링
-function dbColumnsOption(dbColumns) {
-    var optionTag = '<option value=""></option>';
-    for (var i = 0; i < dbColumns.length; i++) {
-        optionTag += '<option value="' + dbColumns[i].seqNum + '">' + dbColumns[i].ko_keyword+'</option>';
+function dbColumnsOption(text, dbColumns) {
+
+    var optionTag = '';
+    var selected = '';
+
+    for (var key in dbColumns) {
+        var columnText = String(dbColumns[key].text);
+        if (text.toLowerCase() == columnText.toLowerCase()) {
+            optionTag += '<option value="' + dbColumns[key].column + '" selected>' + enLabelToKorLabel(dbColumns[key].column) + '</option>';
+            selected = 'selected';
+        }
+        optionTag += '<option value="' + dbColumns[key].column + '">' + enLabelToKorLabel(dbColumns[key].column) + '</option>';
     }
+
+    if (selected == 'selected') {
+        optionTag += '<option value="UNDEFINED">없음</option>';
+    } else {
+        optionTag += '<option value="UNDEFINED" selected>없음</option>';
+    }
+
     return optionTag;
+
 }
 
 /*
@@ -319,6 +335,74 @@ function moutSquare(e) {
 
     var zoomDiv = document.getElementById("mainImage");
     zoomDiv.style.backgroundPosition = "";
+}
+
+function enLabelToKorLabel(text) {
+    var label = ''
+
+    switch (text) {
+        case 'CSCO_NM':
+            label = '거래사명';
+            break;
+        case 'CT_NM':
+            label = '계약명';
+            break;
+        case 'INS_ST_DT':
+            label = '보험개시일';
+            break;
+        case 'INS_END_DT':
+            label = '보험종료일';
+            break;
+        case 'CUR_CD':
+            label = '화폐코드';
+            break;
+        case 'PRE':
+            label = '보험료';
+            break;
+        case 'COM':
+            label = '일반수수료';
+            break;
+        case 'BRKG':
+            label = '중개수수료';
+            break;
+        case 'TXAM':
+            label = '세금';
+            break;
+        case 'PRRS_CF':
+            label = '보험료유보금적립액';
+            break;
+        case 'PRRS_RLS':
+            label = '보험료유보금해제액';
+            break;
+        case 'LSRES_CF':
+            label = '보험금유보금적립액';
+            break;
+        case 'LSRES_RLS':
+            label = '보험금유보금해제액';
+            break;
+        case 'CLA':
+            label = '보험금';
+            break;
+        case 'EXEX':
+            label = '부대비';
+            break;
+        case 'SVF':
+            label = '손해조사비';
+            break;
+        case 'CAS':
+            label = '즉시불보험금(CASH)';
+            break;
+        case 'NTBL':
+            label = '순평균';
+            break;
+        case 'CSCO_SA_RFRN_CNNT2':
+            label = '참고';
+            break;
+        default:
+            label = text;
+    }
+
+    return label;
 }
 
 /*
