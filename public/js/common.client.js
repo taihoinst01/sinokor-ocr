@@ -70,18 +70,17 @@ function pagination(curPage, totalCount) {
 }
 
 // Progress Bar
-function loadProgressBar() {
-    $("#myProgress").fadeIn("slow");
+function startProgressBar() {
+    $("#ocrProgress").fadeIn("fast");
 }
 function addProgressBar(fromVal, toVal) {
-    var elem = document.getElementById("myBar");
+    var elem = document.getElementById("ocrBar");
     var width = fromVal;
     elem.style.width = fromVal + '%';
     var id = setInterval(frame, 10);
     function frame() {
-        console.log(width);
         if (width >= 100) {
-            closeProgressBar();
+            endProgressBar();
             clearInterval(id);
         } else if (width >= toVal) {
             clearInterval(id);
@@ -91,7 +90,7 @@ function addProgressBar(fromVal, toVal) {
         }
     }
 }
-function closeProgressBar() {
-    $("#myProgress").fadeOut("slow");
-    document.getElementById("myBar").style.width = 1;
+function endProgressBar() {
+    $("#ocrProgress").fadeOut("fast");
+    document.getElementById("ocrBar").style.width = 1;
 }

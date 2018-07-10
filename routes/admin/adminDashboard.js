@@ -12,6 +12,8 @@ router.get('/favicon.ico', function (req, res) {
 
 // adminDashboard.html 보여주기
 router.get('/', function (req, res) {
+    console.log("adminDashboard : " + JSON.stringify(req.user));
+    console.log("adminDashboard req user : " + req.user);
     res.render('admin/adminDashboard');
 });
 

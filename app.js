@@ -1,18 +1,30 @@
 ﻿'use strict';
-/*
-var debug = require('debug');
 var express = require('express');
+var fs = require('fs');
+var debug = require('debug');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieparser = require('cookie-parser');
-var bodyparser = require('body-parser');
-var approot = require('app-root-path').path;
-*/
-var commMoudle = require(require('app-root-path').path + '/public/js/import.js');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var multer = require("multer");
+var exceljs = require('exceljs');
+var appRoot = require('app-root-path').path;
+var router = express.Router();
+var flash = require('connect-flash');
+// Session
+var session = require('express-session');
+var flash = require('connect-flash');
+var passport = require('passport')
+    , LocalStrategy = require('passport-local').Strategy
+    , RememberMeStrategy = require('passport-remember-me').Strategy;
+var bcrypt = require('bcrypt');
+var app = express();
+// routes
+var routes = require('./routes');
 var index = require('./routes/index');
 //user
-var userDashboard = require('./routes/user/userDashboard')
+var userDashboard = require('./routes/user/userDashboard');
 var ocrFormAnalysis = require('./routes/user/ocrFormAnalysis');
 var adminLearning = require('./routes/user/adminLearning');
 var batchLearning = require('./routes/user/batchLearning');
@@ -20,25 +32,40 @@ var uiLearning = require('./routes/user/uiLearning');
 var ocrHistorySearch = require('./routes/user/ocrHistorySearch');
 var newDocLearning = require('./routes/user/newDocLearning');
 //admin
-var adminDashboard = require('./routes/admin/adminDashboard')
+var adminDashboard = require('./routes/admin/adminDashboard');
 var userManagement = require('./routes/admin/userManagement');
 
-var app = commMoudle.express();
-
-app.use('/uploads', commMoudle.express.static(__dirname + '/uploads'));
-app.use('/excel', commMoudle.express.static(__dirname + '/excel'));
-app.set('views', commMoudle.path.join(__dirname, 'views'));
+// 
+app.use('/uploads', express.static(__dirname + '/uploads'));
+app.use('/excel', express.static(__dirname + '/excel'));
+app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
-
-app.use(commMoudle.logger('dev'));
-app.use(commMoudle.bodyParser.json());
-app.use(commMoudle.bodyParser.urlencoded({ extended: false }));
-app.use(commMoudle.cookieParser());
-app.use(commMoudle.express.static(commMoudle.path.join(__dirname, 'public')));
-
-app.use('/', index);
-//user
+//
+app.use(logger('dev'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+// Custom Middlewares
+app.use(function (req, res, next) {
+    res.locals.isAuthenticated = req.isAuthenticated();
+    res.locals.currentUser = req.user;
+    next();
+});
+// login
+app.use(session({
+    secret: 'koreanre-ocr',
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+// app.use(passport.authenticate('remember-me')); // Auto login
+// routes
+app.use('/', routes);
+// user
 app.use('/userDashboard', userDashboard);
 app.use('/ocrFormAnalysis', ocrFormAnalysis);
 app.use('/adminLearning', adminLearning);
@@ -46,13 +73,11 @@ app.use('/batchLearning', batchLearning);
 app.use('/uiLearning', uiLearning);
 app.use('/ocrHistorySearch', ocrHistorySearch);
 app.use('/newDocLearning', newDocLearning);
-
-//admin
+// admin
 app.use('/adminDashboard', adminDashboard);
 app.use('/userManagement', userManagement);
-
+// server 
 app.set('port', process.env.PORT || 3000);
-
 var server = app.listen(app.get('port'), function () {
-    commMoudle.debug('Server Start!! port : ' + server.address().port);
+    debug('Server Start!! port : ' + server.address().port);
 });

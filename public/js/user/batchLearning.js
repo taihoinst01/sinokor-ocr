@@ -34,7 +34,7 @@ function multiUploadEvent() {
 
     $('#multiUploadForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
-            loadProgressBar(); // 프로그레스바 시작
+            startProgressBar(); // 프로그레스바 시작
             addProgressBar(1, 5); // 프로그레스바 진행
             return true;
         },
@@ -45,9 +45,10 @@ function multiUploadEvent() {
             for (var i = 0; i < responseText.message.length; i++) {
                 processImage(responseText.message[i]);
             }
+            execBatchLearningData(); // cnn-text-classification test
         },
         error: function (e) {
-            closeProgressBar(); // 에러 발생 시 프로그레스바 종료
+            endProgressBar(); // 에러 발생 시 프로그레스바 종료
             console.log(e);
         }
     });
@@ -81,7 +82,7 @@ function processImage(fileName) {
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
         alert(errorString);
-        closeProgressBar(); // 에러 발생 시 프로그레스바 종료
+        endProgressBar(); // 에러 발생 시 프로그레스바 종료
     });
 };
 
@@ -217,4 +218,26 @@ function insertRegion(lineText) {
             }
         });
     }
+}
+
+// 배치 학습 Data 처리
+function execBatchLearningData() {
+    var param = {
+
+    };
+    $.ajax({
+        url: '/batchLearning/execBatchLearningData',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log("success execBatchLearningData : " + data);
+            endProgressBar();
+        },
+        error: function (err) {
+            endProgressBar();
+            console.log(err);
+        }
+    });
 }
