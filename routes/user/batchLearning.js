@@ -155,7 +155,8 @@ router.post('/insertBatchLearningData', function (req, res) {
 router.post('/execBatchLearningData', function (req, res) {
     var classificationResult;
     var labelMappingResult;
-    var arg = '"Partner of Choice"' + ' ' + '"Class of Business"' + ' ';
+    //var arg = '"Partner of Choice"' + ' ' + '"Class of Business"' + ' ';
+    var arg = req.body.param;
 
     var localCnnTextClassificationPath = "C:\\workspace\\cnn-text-classification\\";
     var localLabelMappingPath = "C:\\workspace\\cnn-label-mapping\\";
@@ -169,13 +170,14 @@ router.post('/execBatchLearningData', function (req, res) {
     const defaults = {
         encoding: 'utf8'
     };
-    exec(cnnTextClassificationPath + 'eval.py', defaults, function (err1, stdout1, stderr1) {
-    //exec(cnnTextClassificationPath + 'eval.py', defaults, function (err1, stdout1, stderr1) {
+    exec(cnnTextClassificationPath + 'eval.py ' + arg, defaults, function (err1, stdout1, stderr1) {
         if (err1) {
             console.log(err1);
             res.send({ code: '500', message: err1 });
         } else {
-            console.log("stdout : " + stdout1);
+            var text1, text2, text3 = "";
+            // TO-DO : JSON -> String 방식 변경 예정
+            labelMappingFunc(stdout1);
             //var classificationResult = "";
             //var classificationResult = fs.readFileSync(localCnnTextClassificationPath + "prediction.csv", "utf8");
             //var classificationResult = csvParser.parse(classificationResult);
@@ -183,9 +185,12 @@ router.post('/execBatchLearningData', function (req, res) {
         }
     });
     function labelMappingFunc(classificationResult) {
-        exec(localLabelMappingPath + 'eval.py ' + classificationResult, defaults, function (err, stdout, stderr) {
-        //exec(labelMappingPath + 'eval.py ' + classificationResult, defaults, function (err, stdout, stderr) {
-            labelMappingResult = stdout;
+        exec(labelMappingPath + 'eval.py ' + classificationResult, defaults, function (err, stdout2, stderr) {
+            labelMappingResult = stdout2;
+            console.log("labelMappingResult.length : " + labelMappingResult.length);
+            for (var i = 0, x = labelMappingResult.length; i < x; i++) {
+                console.log(i);
+            }
             console.log("labelMappingResult : " + labelMappingResult); // TO-DO 그리드 변경되면 그리드에 출력
             //res.send(stdout);
         });

@@ -39,13 +39,11 @@ function multiUploadEvent() {
             return true;
         },
         success: function (responseText, statusText) {
-            //console.log(responseText);
             addProgressBar(6, 100); // 프로그레스바 진행
             totCount = responseText.message.length;
             for (var i = 0; i < responseText.message.length; i++) {
                 processImage(responseText.message[i]);
             }
-            execBatchLearningData(); // cnn-text-classification test
         },
         error: function (e) {
             endProgressBar(); // 에러 발생 시 프로그레스바 종료
@@ -183,6 +181,14 @@ function appendOcrData(regions) {
         $('.step_wrap').removeClass('s1');
         $('#stepUl > li').eq(1).attr('title', '현재단계');
         $('.step_wrap').addClass('s2');
+
+        console.log("lineText : " + JSON.stringify(lineText));
+        var resultText = "";
+        for (var i = 0, x = lineText.length; i < x; i++) {
+            resultText += '"' + lineText[i].text + '" ';
+            //resultText += lineText[i].text + '\n';
+        }
+        execBatchLearningData(resultText);
     }
 }
 
@@ -221,10 +227,10 @@ function insertRegion(lineText) {
 }
 
 // 배치 학습 Data 처리
-function execBatchLearningData() {
+function execBatchLearningData(paramText) {
     var param = {
-
-    };
+        "param" : paramText
+    }
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
         type: 'post',
