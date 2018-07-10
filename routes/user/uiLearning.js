@@ -113,6 +113,14 @@ router.post('/searchDBColumns', function (req, res) {
         args += '"' + data[i].text + '"' + ' ';
     }
 
+    //execSync('E:\\projectworks\\koreanre\\sentenceUpd\\typosentence\\main.py ' + 'test');
+
+    exec('python E:\\projectworks\\koreanre\\sentenceUpd\\typosentence\\main.py ' + args, defaults, function (err2, stdout2, stderr2) {
+        console.log('typosentence1');
+        console.log(stdout2);
+        console.log('typosentence2');
+    });
+ 
     var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ' + args;
     //var exeString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + arg;
     exec(exeTextString, defaults, function (err, stdout, stderr) {
