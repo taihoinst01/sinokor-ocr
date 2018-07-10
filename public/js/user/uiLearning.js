@@ -34,7 +34,7 @@ function uploadFileEvent() {
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
             $('#uploadFileBtn').hide();
-            loadProgressBar();
+            startProgressBar();
             addProgressBar(1, 40);
             return true;
         },

@@ -219,7 +219,6 @@ router.post('/searchDBColumns', function (req, res) {
 // fileupload
 router.post('/uploadFile', upload.any(), function (req, res) {
     var files = req.files;
-	console.log(files);
     var endCount = 0;
     var returnObj = [];
     var convertType = '';

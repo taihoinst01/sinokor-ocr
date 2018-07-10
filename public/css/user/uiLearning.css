@@ -28,7 +28,7 @@
     text-align: center;
     padding: 100px;
 }
-#myProgress {
+#ocrProgress {
     background-color: grey;
     position: absolute;
     top: 50%;
@@ -40,7 +40,7 @@
     display: none
 }
 
-#myBar {
+#ocrBar {
     width: 1%;
     height: 30px;
     background-color: #006;
