@@ -106,9 +106,9 @@ predictions_human_readable = np.column_stack((np.array(x_raw), class_predictions
 dicText = {}
 
 for item in predictions_human_readable:
-	dicText[item[0]] = item[1]
-	
-print(json.dumps(dicText))
+    retText += item[0] + "||" + item[1] + "^"
+
+print(retText[:-1])
 
 #
 # out_path = os.path.join(FLAGS.checkpoint_dir, "../../../", "prediction.csv")
