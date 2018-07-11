@@ -10,14 +10,14 @@ $(function () {
 
 })
 
-// 초기 작업
+// Step0 : 초기 작업
 function init() {
     $('#uploadFile').css('display', 'none');
     $('#gridDiv').hide();
     $('#reviewDiv').hide();
 }
 
-// 다중 파일 업로드 이벤트
+// Step1 : 다중 파일 업로드 이벤트
 function multiUploadEvent() {
     $('#uploadFile').change(function () {
         if ($(this).val() !== '') {
@@ -39,7 +39,8 @@ function multiUploadEvent() {
             return true;
         },
         success: function (responseText, statusText) {
-            addProgressBar(6, 100); // 프로그레스바 진행
+            $("#progressMsg").html("이미지를 분석 중 입니다.");
+            addProgressBar(6, 30); // 프로그레스바 진행
             totCount = responseText.message.length;
             for (var i = 0; i < responseText.message.length; i++) {
                 processImage(responseText.message[i]);
@@ -52,7 +53,7 @@ function multiUploadEvent() {
     });
 }
 
-// OCR API
+// Step2 :  OCR API
 function processImage(fileName) {
     var subscriptionKey = "fedbc6bb74714bd78270dc8f70593122";
     var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
@@ -74,7 +75,8 @@ function processImage(fileName) {
         data: '{"url": ' + '"' + sourceImageUrl + '"}',
     }).done(function (data) {
         ocrCount++;
-        appendOcrData(data.regions);
+        //appendOcrData(data.regions);
+        execBatchLearningData(data.regions);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
@@ -84,6 +86,118 @@ function processImage(fileName) {
     });
 };
 
+// Step3 : 배치 학습 Data 처리
+function execBatchLearningData(regions) {
+    var lineText = [];
+    var paramText = "";
+    for (var i = 0, x = regions.length; i < x; i++) {
+        for (var j = 0; j < regions[i].lines.length; j++) {
+            var item = '';
+            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
+                item += regions[i].lines[j].words[k].text + ' ';
+            }
+            lineText.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+        }
+    }
+    for (var i = 0, x = lineText.length; i < x; i++) {
+        paramText += '"' + lineText[i].text + '" ';
+    }
+    var param = {
+        "param": paramText
+    }
+    $.ajax({
+        url: '/batchLearning/execBatchLearningData',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsg").html("데이터를 전송합니다.");
+            addProgressBar(31, 60); // 프로그레스바 진행
+        },
+        success: function (data) {
+            console.log("success execBatchLearningData : " + data);
+            $("#progressMsg").html("결과를 분석하고 출력합니다.");
+            addProgressBar(61, 100); // 프로그레스바 진행
+            appendGridData(data);
+            setTimeout(function () { endProgressBar(); }, 2000); // 프로그레스바 종료
+        },
+        error: function (err) {
+            endProgressBar();
+            console.log(err);
+        }
+    });
+}
+
+// Step4 : 그리드에 표시
+function appendGridData(data) {
+    var gridData = [];
+    $('#uploadDiv').hide();
+    $('#gridDiv').show();
+
+    if (ocrCount === 1) generateGrid(gridData);
+
+    var temp1 = data.split("^");
+    for (var i = 0, x = temp1.length; i < x; i++) {
+        var temp2 = temp1[i].split("||");
+        gridData.push({
+            _value: temp2[0],
+            _label: temp2[1]
+        });
+    }
+    grid.appendRow(gridData);
+
+    if (totCount == ocrCount) { // 모든 OCR 분석 완료되면
+        $('#stepUl > li').eq(0).removeAttr('title');
+        $('.step_wrap').removeClass('s1');
+        $('#stepUl > li').eq(1).attr('title', '현재단계');
+        $('.step_wrap').addClass('s2');
+        $("#content").css("margin-left", 0);
+    }
+}
+
+// 그리드 생성
+function generateGrid(gridData) {
+    grid = new tui.Grid({
+        el: $('#grid'),
+        data: gridData,
+        virtualScrolling: true,
+        bodyHeight: 300,
+        columns: [
+            { title: 'Label', name: '_label', width: 100, editOptions: { type: 'text', useViewMode: true } },
+            { title: 'Value', name: '_value', width: 100, editOptions: { type: 'text', useViewMode: true } }
+            //{   title: 'No', name: 'no', width: 50, editOptions: { type: 'text', useViewMode: true },
+            //    //onAfterChange: function (ev) {
+            //    //    if (!isNaN(parseInt(ev.value))) ev.instance.setValue(ev.rowKey, ev.columnName, parseInt(ev.value));
+            //    //    else ev.instance.setValue(ev.rowKey, ev.columnName, 0);
+            //    //    return ev;
+            //    //}
+            //},
+            //{ title: '파일명', name: 'fileNm', width: 100, editOptions: { type: 'text', useViewMode: true } },
+            //{ title: '일자', name: 'insStDt', width: 100, editOptions: { type: 'text', useViewMode: true } },
+            //{ title: '회사명', name: 'cscoNm', width: 100, editOptions: { type: 'text', useViewMode: true } },
+            //{ title: '계약명', name: 'ctNm', width: 100, editOptions: { type: 'text', useViewMode: true } },
+            //{ title: '이메일', name: 'email', width: 100, editOptions: { type: 'text', useViewMode: true } },
+            //{ title: '금액1', name: 'pre', width: 100, editOptions: { type: 'text', useViewMode: true } },
+            //{ title: '금액2', name: 'com', width: 100, editOptions: { type: 'text', useViewMode: true } },
+            //{ title: '금액3', name: 'brkg', width: 100, editOptions: { type: 'text', useViewMode: true } },
+            //{ title: '총합계', name: 'total', width: 150, editOptions: { type: 'text', useViewMode: true } },
+            //{ title: '일치여부', name: 'equalYn', width: 50, editOptions: { type: 'text', useViewMode: true } },
+            //{ title: '학습여부', name: 'learnYn', width: 50, editOptions: { type: 'text', useViewMode: true } }
+        ]
+    });
+    tui.Grid.applyTheme('striped', {
+        cell: {
+            head: { background: '#fff' },
+            evenRow: { background: '#fff' }
+        }
+    });
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 이하는 legacy source
+ 
 // OCR 데이터 렌더링
 function appendOcrData(regions) {
     var lineText = [];
@@ -173,7 +287,7 @@ function appendOcrData(regions) {
             text: lineText[i].text
         });
     }
-    //insertRegion(lineText);
+    ////insertRegion(lineText);
     grid.appendRow(gridData);
 
     if (totCount == ocrCount) { // 모든 OCR 분석 완료되면
@@ -188,8 +302,8 @@ function appendOcrData(regions) {
             resultText += '"' + lineText[i].text + '" ';
             //resultText += lineText[i].text + '\n';
         }
-        execBatchLearningData(resultText);
     }
+    execBatchLearningData(resultText);
 }
 
 // 원본 파일 업로드 클릭 이벤트
@@ -226,24 +340,4 @@ function insertRegion(lineText) {
     }
 }
 
-// 배치 학습 Data 처리
-function execBatchLearningData(paramText) {
-    var param = {
-        "param" : paramText
-    }
-    $.ajax({
-        url: '/batchLearning/execBatchLearningData',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify(param),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log("success execBatchLearningData : " + data);
-            endProgressBar();
-        },
-        error: function (err) {
-            endProgressBar();
-            console.log(err);
-        }
-    });
-}
+

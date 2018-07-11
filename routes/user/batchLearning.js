@@ -175,24 +175,22 @@ router.post('/execBatchLearningData', function (req, res) {
             console.log(err1);
             res.send({ code: '500', message: err1 });
         } else {
+            var classificationResult = "";
             var text1, text2, text3 = "";
-            // TO-DO : JSON -> String 방식 변경 예정
-            labelMappingFunc(stdout1);
-            //var classificationResult = "";
-            //var classificationResult = fs.readFileSync(localCnnTextClassificationPath + "prediction.csv", "utf8");
-            //var classificationResult = csvParser.parse(classificationResult);
-            //console.log("classification result : " + JSON.stringify(classificationResult));
+            let temp1 = stdout1.split("^");
+            for (var i = 0, x = temp1.length; i < x; i++) {
+                let temp2 = temp1[i].split("||");
+                if (temp2[1] == "fixlabel") classificationResult += '"' + temp2[0] + '" ';
+            }
+            console.log("결과 : " + classificationResult);
+            labelMappingFunc(classificationResult);
         }
     });
     function labelMappingFunc(classificationResult) {
         exec(labelMappingPath + 'eval.py ' + classificationResult, defaults, function (err, stdout2, stderr) {
             labelMappingResult = stdout2;
-            console.log("labelMappingResult.length : " + labelMappingResult.length);
-            for (var i = 0, x = labelMappingResult.length; i < x; i++) {
-                console.log(i);
-            }
             console.log("labelMappingResult : " + labelMappingResult); // TO-DO 그리드 변경되면 그리드에 출력
-            //res.send(stdout);
+            res.send(stdout2);
         });
     }
 });
