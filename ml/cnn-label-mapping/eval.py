@@ -102,6 +102,7 @@ class_predictions = data_loader.class_labels(all_predictions.astype(int))
 predictions_human_readable = np.column_stack((np.array(x_raw), class_predictions))
 
 dicText = {}
+retText = ''
 
 for item in predictions_human_readable:
     retText += item[0] + "||" + item[1] + "^"
