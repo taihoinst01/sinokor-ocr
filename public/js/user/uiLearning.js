@@ -256,6 +256,7 @@ function dbColumnsOption(text, dbColumns) {
         var columnText = String(dbColumns[key].text);
         if (text.toLowerCase() == columnText.toLowerCase()) {
             optionTag += '<a class="dbColumnText" href="javascript:void(0);">' + enLabelToKorLabel(dbColumns[key].column) + '</a>';
+            isMatch = true;
             break;
         }
     }
@@ -481,7 +482,7 @@ function dbSelectClickEvent() {
         e.preventDefault();
         e.stopPropagation();
     });
-    $('.selectBox > li > ul > li > ul > li').click(function (e) {
+    $('.selectBox > li > ul > li > ul > li').click(function (e) {       
         var firstCategory = $(this).parent().prev().children('span').text();
         var lastCategory = ($(this).children('a').text() == '키워드') ? '' : ' 값';
         $(this).parent().parent().parent().prev().text(firstCategory + lastCategory);
