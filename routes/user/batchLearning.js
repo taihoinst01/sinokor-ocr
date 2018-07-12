@@ -14,6 +14,8 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 
 var csvParser = require('papaparse');
 var PythonShell = require('python-shell');
+
+var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
  
 const upload = multer({
     storage: multer.diskStorage({
@@ -27,20 +29,71 @@ const upload = multer({
 });
 var router = express.Router();
 
+
+/***************************************************************
+ * Router
+ * *************************************************************/
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
+router.get('/', function (req, res) {                           // 배치학습 (GET)
+    if (req.isAuthenticated()) res.render('user/batchLearning', { currentUser: req.user });
+    else res.redirect("/logout");
+});
+router.post('/searchBatchLearnDataList', function (req, res) {   // 배치학습데이터리스트 조회
+    if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
+}); 
 
-// batchLearning.html 보여주기
-router.get('/', function (req, res) {
-    res.render('user/batchLearning');
+
+/***************************************************************
+ * function
+ * *************************************************************/
+ // [List] 배치학습데이터리스트 조회 
+var fnSearchBatchLearningDataList = function (req, res) {
+    // 조건절
+    var condQuery = "";
+    if (!commonUtil.isNull(req.body.addCond)) {
+        if (req.body.addCond == "SHOW_UNFINISH") condQuery = " AND CSCO_NM IS NULL AND CT_NM IS NULL ";
+        else if (req.body.addCond == "SHOW_FINISH") condQuery = " AND CSCO_NM IS NOT NULL AND CT_NM IS NOT NULL ";
+    }
+    // LIMIT
+    var limitQuery = "";
+    if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) limitQuery = " LIMIT " + req.body.startNum + "," + req.body.moreNum;
+    var listQuery = selectBatchLearningDataListQuery + condQuery + limitQuery;
+    commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
+};
+// [CALLBACK] 배치학습데이터리스트 조회
+var callbackBatchLearningDataList = function (rows, req, res) {
+    res.send(rows);
+}
+// [POST] 이미지 업로드
+router.post('/imageUpload', upload.any(), function (req, res) {
+    console.log("image upload??? ");
+    var files = req.files;
+    var endCount = 0;
+    var returnObj = [];
+
+    for (var i = 0; i < files.length; i++) {
+        if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
+            files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff') {
+            var ifile = appRoot + '\\' + files[i].path;
+            var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
+            returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
+            exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
+                if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
+                    res.send({ code: 200, message: returnObj });
+                }
+                endCount++;
+            });
+        }
+    }
 });
 
-// batchLearning.html 보여주기
-router.post('/', function (req, res) {
-    res.render('user/batchLearning');
-});
 
+
+/***************************************************************
+ * (legacy)
+ * *************************************************************/
 router.get('/pyTest', function (req, res) {
 
     const defaults = {
