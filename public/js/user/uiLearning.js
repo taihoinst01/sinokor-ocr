@@ -446,6 +446,63 @@ function enLabelToKorLabel(text) {
         case 'CSCO_SA_RFRN_CNNT2':
             label = '참고';
             break;
+        case 'CSCO_NM_VALUE':
+            label = '거래사명값';
+            break;
+        case 'CT_NM_VALUE':
+            label = '계약명값';
+            break;
+        case 'INS_ST_DT_VALUE':
+            label = '보험개시일값';
+            break;
+        case 'INS_END_DT_VALUE':
+            label = '보험종료일값';
+            break;
+        case 'CUR_CD_VALUE':
+            label = '화폐코드값';
+            break;
+        case 'PRE_VALUE':
+            label = '보험료값';
+            break;
+        case 'COM_VALUE':
+            label = '일반수수료값';
+            break;
+        case 'BRKG_VALUE':
+            label = '중개수수료값';
+            break;
+        case 'TXAM_VALUE':
+            label = '세금값';
+            break;
+        case 'PRRS_CF_VALUE':
+            label = '보험료유보금적립액값';
+            break;
+        case 'PRRS_RLS_VALUE':
+            label = '보험료유보금해제액값';
+            break;
+        case 'LSRES_CF_VALUE':
+            label = '보험금유보금적립액값';
+            break;
+        case 'LSRES_RLS_VALUE':
+            label = '보험금유보금해제액값';
+            break;
+        case 'CLA_VALUE':
+            label = '보험금값';
+            break;
+        case 'EXEX_VALUE':
+            label = '부대비값';
+            break;
+        case 'SVF_VALUE':
+            label = '손해조사비값';
+            break;
+        case 'CAS_VALUE':
+            label = '즉시불보험금(CASH)값';
+            break;
+        case 'NTBL_VALUE':
+            label = '순평균값';
+            break;
+        case 'CSCO_SA_RFRN_CNNT2_VALUE':
+            label = '참고값';
+            break;
         default:
             label = text;
     }

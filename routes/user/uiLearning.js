@@ -137,143 +137,149 @@ router.post('/searchDBColumns', function (req, res) {
             var typoUpdWord = typoSplit[2];
 
             for (var j = 0; j < data.length; j++) {
-                if (data[j].text.toLowerCase() == typoOriWord) {
+                if (data[j].text.toLowerCase() == typoText && typoOriWord.match(/:|-|[1234567890]/g) == null) {
                     var updWord = typoUpdWord.split(":");
-                    data[j].text = data[j].text.toLowerCase().replace(typoOriWord, updWord);
+                    data[j].text = data[j].text.toLowerCase().replace(typoOriWord, updWord[0]);
                 }
             }
-
-        }
-    });
-
-    //도메인 사전 번역
-    var exeDomainString = 'python ' + appRoot + '\\ml\\typosentence\\main.py ' + args;
-    exec(exeDomainString, defaults, function (err2, stdout2, stderr2) {
-
-        var ocrText = stdout2.split(/\r\n/g);
-        var ocrTextLen = ocrText.length;
-
-        while (ocrTextLen--) {
-            if (ocrText[ocrTextLen] == "") {
-                ocrText.splice(ocrTextLen, 1);
-            }
         }
 
+        console.log(data);
+
+        var domainArgs = '';
         for (var i = 0; i < data.length; i++) {
-            if (data[i].text.toLowerCase() != ocrText[i].toLowerCase()) {
-                data[i].text = ocrText[i];
-            }
+            domainArgs += '"' + data[i].text.toLowerCase() + '"' + ' ';
         }
 
+        //도메인 사전 번역
+        var exeDomainString = 'python ' + appRoot + '\\ml\\typosentence\\main.py ' + domainArgs;
+        exec(exeDomainString, defaults, function (err2, stdout2, stderr2) {
 
-        var classiText = '';
-        for (var i = 0; i < ocrText.length; i++) {
-            classiText += '"' + ocrText[i] + '"' + ' ';
-        }
+            var ocrText = stdout2.split(/\r\n/g);
+            var ocrTextLen = ocrText.length;
 
-        //text-classification
-        var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ' + classiText;
-        exec(exeTextString, defaults, function (err, stdout, stderr) {
-            //console.log(stdout);
-            var obj = stdout.split("^");
-
-            var label = [];
-
-            for (var key in obj) {
-                var objSplit = obj[key].split("||");
-
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i].text.toLowerCase() == objSplit[0].toLowerCase()) {
-                        data[i].label = objSplit[1];
-                    }
-                }
-
-                if (objSplit[1] == "fixlabel" || objSplit[1] == "entryrowlabel") {
-                    label.push(objSplit[0]);
+            while (ocrTextLen--) {
+                if (ocrText[ocrTextLen] == "") {
+                    ocrText.splice(ocrTextLen, 1);
                 }
             }
 
-            var labelArgs = '';
-
-            for (var i = 0; i < label.length; i++) {
-                labelArgs += '"' + label[i] + '" ';
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].text.toLowerCase() != ocrText[i].toLowerCase()) {
+                    data[i].text = ocrText[i];
+                }
             }
 
-            //label-mapping
-            var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + labelArgs;
-            exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
-                console.log(stdout1);
 
-                var labelMapping = stdout1.split("^");
+            var classiText = '';
+            for (var i = 0; i < ocrText.length; i++) {
+                classiText += '"' + ocrText[i] + '"' + ' ';
+            }
 
-                //var jsonLabel = JSON.parse(stdout1);
-                var dataArray = [];
+            //text-classification
+            var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ' + classiText;
+            exec(exeTextString, defaults, function (err, stdout, stderr) {
+                //console.log(stdout);
+                var obj = stdout.split("^");
 
-                for (var key in labelMapping) {
+                var label = [];
 
-                    var objLabel = labelMapping[key].split("||");
+                for (var key in obj) {
+                    var objSplit = obj[key].split("||");
 
                     for (var i = 0; i < data.length; i++) {
-                        if (data[i].text.toLowerCase() == objLabel[0].toLowerCase()) {
-                            data[i].column = objLabel[1];
-                            var obj = {};
-                            obj.text = objLabel[0];
-                            obj.column = objLabel[1];
-                            dataArray.push(obj);
+                        if (data[i].text.toLowerCase() == objSplit[0].toLowerCase()) {
+                            data[i].label = objSplit[1];
                         }
+                    }
+
+                    if (objSplit[1] == "fixlabel" || objSplit[1] == "entryrowlabel") {
+                        label.push(objSplit[0]);
                     }
                 }
 
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i].label == "fixvalue" || data[i].label == "entryvalue") {
+                var labelArgs = '';
 
-                        var splitLocation = data[i].location.split(",");
+                for (var i = 0; i < label.length; i++) {
+                    labelArgs += '"' + label[i] + '" ';
+                }
 
-                        var xCoodi = splitLocation[0];
-                        var yCoodi = splitLocation[1];
-                        var minDis = 100000;
-                        var columnText = '';
+                //label-mapping
+                var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + labelArgs;
+                exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
+                    console.log(stdout1);
 
-                        for (var j = 0; j < data.length; j++) {
-                            if (data[j].label == "fixlabel" || data[j].label == "entryrowlabel") {
-                                var jSplitLocation = data[j].location.split(",");
+                    var labelMapping = stdout1.split("^");
 
-                                var xNum = jSplitLocation[0];
-                                var yNum = jSplitLocation[1];
+                    //var jsonLabel = JSON.parse(stdout1);
+                    var dataArray = [];
 
-                                var diffX = xCoodi - xNum;
-                                var diffY = yCoodi - yNum;
+                    for (var key in labelMapping) {
 
-                                var dis = Math.sqrt(Math.abs(diffX * diffX) + Math.abs(diffY * diffY));
+                        var objLabel = labelMapping[key].split("||");
 
-                                if (minDis > dis) {
-                                    minDis = dis;
-                                    columnText = data[j].column;
-                                }
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].text.toLowerCase() == objLabel[0].toLowerCase()) {
+                                data[i].column = objLabel[1];
+                                var obj = {};
+                                obj.text = objLabel[0];
+                                obj.column = objLabel[1];
+                                dataArray.push(obj);
                             }
                         }
-                        data[i].column = columnText + "_VALUE";
-
-                        //dataText += ',"' + data[i].text + '":"' + data[i].column + '"'; 
-
-                        var obj = {};
-                        obj.text = data[i].text;
-                        obj.column = data[i].column;
-
-                        console.log(obj);
-
-                        dataArray.push(obj);
-
                     }
-                }
 
-                res.send({ 'fileName': fileName, 'data': data, 'dbColumns': dataArray });
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].label == "fixvalue" || data[i].label == "entryvalue") {
+
+                            var splitLocation = data[i].location.split(",");
+
+                            var xCoodi = splitLocation[0];
+                            var yCoodi = splitLocation[1];
+                            var minDis = 100000;
+                            var columnText = '';
+
+                            for (var j = 0; j < data.length; j++) {
+                                if (data[j].label == "fixlabel" || data[j].label == "entryrowlabel") {
+                                    var jSplitLocation = data[j].location.split(",");
+
+                                    var xNum = jSplitLocation[0];
+                                    var yNum = jSplitLocation[1];
+
+                                    var diffX = xCoodi - xNum;
+                                    var diffY = yCoodi - yNum;
+
+                                    var dis = Math.sqrt(Math.abs(diffX * diffX) + Math.abs(diffY * diffY));
+
+                                    if (minDis > dis) {
+                                        minDis = dis;
+                                        columnText = data[j].column;
+                                    }
+                                }
+                            }
+                            data[i].column = columnText + "_VALUE";
+
+                            //dataText += ',"' + data[i].text + '":"' + data[i].column + '"'; 
+
+                            var obj = {};
+                            obj.text = data[i].text;
+                            obj.column = data[i].column;
+
+                            console.log(obj);
+
+                            dataArray.push(obj);
+
+                        }
+                    }
+
+                    res.send({ 'fileName': fileName, 'data': data, 'dbColumns': dataArray });
+
+                });
 
             });
 
         });
 
-        
     });
  
     /*
