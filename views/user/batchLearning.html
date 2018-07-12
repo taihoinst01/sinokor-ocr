@@ -35,6 +35,23 @@
     <!-- // tui-grid js import-->
     <script type="text/javascript" src="js/user/batchLearning.js"></script>
     <style>
+        #layerPopup {
+            background-color: #fff;
+            border: 1px solid red;
+            position: absolute;
+            bottom : 0%;
+            width: 80%;
+            height: 600px;
+            z-index : 100;
+            display: none
+        }
+        #layerPopup.closeButton {
+            position : absolute;
+            right: 95%;
+            top: 0;
+            border: 2px solid red;
+            cursor: pointer
+        }
         #ocrProgress {
             background-color: grey;
             position: absolute;
@@ -64,6 +81,9 @@
             <div id="ocrProgress">
                 <div id="progressMsg"></div>
                 <div id="ocrBar"></div>
+            </div>
+            <div id="layerPopup">
+                <div class="closeButton"><input type="button" id="btn_closeLayerPopup" value="닫기" /></div>
             </div>
             <!-- skip navi -->
             <div id="accessibility">

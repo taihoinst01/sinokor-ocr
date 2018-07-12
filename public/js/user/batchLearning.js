@@ -14,6 +14,7 @@ $(function () {
     //multiUploadEvent();
     //originFileUploadBtnEvent();
     imageUploadEvent();
+    screenEvent();
 })
 
 // Step0
@@ -118,34 +119,34 @@ var searchBatchLearnDataList = function (addCond) {
             addProgressBar(2, 100); // proceed progressbar
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
-                    appendHtml += '<tr>';
-                    appendHtml += '<td><input type="checkbox" name="listCheck" value="' + entry.IMG_ID + '"/></td>';
-                    appendHtml += '<td>' + entry.IMG_ID + '</td>';
-                    appendHtml += '<td>' + entry.IMG_FILE_ST_NO + '</td>';
-                    appendHtml += '<td>' + entry.IMG_FILE_END_NO + '</td>';
-                    appendHtml += '<td>' + entry.CSCO_NM + '</td>';
-                    appendHtml += '<td>' + entry.CT_NM + '</td>';
-                    appendHtml += '<td>' + entry.INS_ST_DT + '</td>';
-                    appendHtml += '<td>' + entry.INS_END_DT + '</td>';
-                    appendHtml += '<td>' + entry.CUR_CD + '</td>';
-                    appendHtml += '<td>' + entry.PRE + '</td>';
-                    appendHtml += '<td>' + entry.COM + '</td>';
-                    appendHtml += '<td>' + entry.BRKG + '</td>';
-                    appendHtml += '<td>' + entry.TXAM + '</td>';
-                    appendHtml += '<td>' + entry.PRRS_CF + '</td>';
-                    appendHtml += '<td>' + entry.PRRS_RLS + '</td>';
-                    appendHtml += '<td>' + entry.LSRES_CF + '</td>';
-                    appendHtml += '<td>' + entry.LSRES_RLS + '</td>';
-                    appendHtml += '<td>' + entry.CLA + '</td>';
-                    appendHtml += '<td>' + entry.EXEX + '</td>';
-                    appendHtml += '<td>' + entry.SVF + '</td>';
-                    appendHtml += '<td>' + entry.CAS + '</td>';
-                    appendHtml += '<td>' + entry.NTBL + '</td>';
-                    appendHtml += '<td>' + entry.CSCO_SA_RFRN_CNNT2 + '</td>';
-                    appendHtml += '</tr>';
+                    appendHtml += `<tr>`;
+                    appendHtml += `<td><input type="checkbox" name="listCheck" value="${entry.IMG_ID}"/></td>`;
+                    appendHtml += `<td>${entry.IMG_ID}</td>`;
+                    appendHtml += `<td>${entry.IMG_FILE_ST_NO}</td>`;
+                    appendHtml += `<td>${entry.IMG_FILE_END_NO}</td>`;
+                    appendHtml += `<td>${entry.CSCO_NM}</td>`;
+                    appendHtml += `<td>${entry.CT_NM}</td>`;
+                    appendHtml += `<td>${entry.INS_ST_DT}</td>`;
+                    appendHtml += `<td>${entry.INS_END_DT}</td>`;
+                    appendHtml += `<td>${entry.CUR_CD}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.PRE)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.COM)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.BRKG)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.TXAM)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.PRRS_CF)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.PRRS_RLS)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.LSRES_CF)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.LSRES_RLS)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.CLA)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.EXEX)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.SVF)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.CAS)}</td>`;
+                    appendHtml += `<td>${entry.NTBL}</td>`;
+                    appendHtml += `<td>${entry.CSCO_SA_RFRN_CNNT2}</td>`;
+                    appendHtml += `</tr>`;
                 });
             } else {
-                appendHtml += '<tr colspan="23"><td>조회할 데이터가 없습니다.</td></tr>';
+                appendHtml += '<tr><td colspan="23">조회할 데이터가 없습니다.</td></tr>';
             }
             endProgressBar(); // end progressbar
             $(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
@@ -179,7 +180,12 @@ var fn_proceedLearn = function () {
 };
 // 수동학습
 var fn_manualLearn = function () {
-
+    //var top = ($(window).scrollTop() + ($(window).height() - $('#layerPopup').height()) / 2);
+    var top = ($(window).scrollTop() + ($(window).height() - $('#layerPopup').height()) - 10);
+    var left = ($(window).scrollLeft() + ($(window).width() - $('#layerPopup').width()) / 2);
+    $("#layerPopup").css("top", top);
+    $("#layerPopup").css("left", left);
+    $("#layerPopup").show();
 };
 // 최종학습
 var fn_lastLearn = function () {
@@ -224,6 +230,29 @@ var imageUploadEvent = function () {
             console.log(e);
         }
     });
+}
+
+// [screen event]
+var screenEvent = function () {
+    //var top_layerPopup = parseInt($("#layerPopup").css('top'));
+    var top_layerPopup = ($(window).scrollTop() + ($(window).height() - $('#layerPopup').height()) - 10);
+    
+    $(window).scroll(function () {
+        var scrollTop = $(window).scrollTop();
+        var newPosition = scrollTop + top_layerPopup + "px";
+		// 애니메이션 없이 바로 따라감
+        $("#layerPopup").css('top', newPosition);
+        // 따라다니는 애니메이션 효과
+        //$("#layerPopup").stop().animate({
+        //    "top": newPosition
+        //}, 10);
+    }).scroll();
+
+    // 레이어 팝업 닫기
+    $("#btn_closeLayerPopup").on("click", function () {
+        $("#layerPopup").fadeOut();
+    });
+    
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
