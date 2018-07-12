@@ -7,7 +7,7 @@ class MySQL:
     def __init__(self):
         self.conn = None
         try:
-            self.conn = pymysql.connect(host='127.0.0.1', port=3307, user='root', passwd='1234', db='koreanreicr', cursorclass=pymysql.cursors.DictCursor)
+            self.conn = pymysql.connect(host='172.16.53.142', port=3307, user='root', passwd='1234', db='koreanreicr', cursorclass=pymysql.cursors.DictCursor)
             self.conn.autocommit(1)
         except pymysql.DatabaseError as exc:
             print(exc)

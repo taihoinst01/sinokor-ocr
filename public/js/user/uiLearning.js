@@ -200,6 +200,7 @@ function appendOcrData(fileName, regions) {
 
 // 상세 테이블 렌더링
 function detailTable(fileName) {
+
     $('#textResultTbl').html('');
     var tblTag = '<colgroup><col style="width:70%;"/><col style="width:30%;"/></colgroup>';
     tblTag += '<tr><th style = "text-align:center;">추출 텍스트</th><th style="text-align:center;">DB 컬럼</th></tr>';
@@ -214,9 +215,9 @@ function detailTable(fileName) {
                 tblTag += '<input type="hidden" value="' + item.data[j].location + '" />';
                 tblTag += '</td>';
                 tblTag += '<td>';
-                tblTag += '<select style="width:100%; height:100%;  border:0;">';
+                tblTag += '<ul class="selectBox">';
                 tblTag += dbColumnsOption(item.data[j].text, item.dbColumns);
-                tblTag += '</select>';
+                tblTag += '</ul>';
                 tblTag += '</td>';
                 tblTag += '</tr>';
             }
@@ -241,11 +242,41 @@ function detailTable(fileName) {
         */
     }
     $('#textResultTbl').append(tblTag);
+    dbSelectClickEvent();
 }
 
 // DB 컬럼 option 렌더링
 function dbColumnsOption(text, dbColumns) {
+    var optionTag = '';
+    var selected = '';
 
+    optionTag += '<li>';
+    var isMatch = false;
+    for (var key in dbColumns) {
+        var columnText = String(dbColumns[key].text);
+        if (text.toLowerCase() == columnText.toLowerCase()) {
+            optionTag += '<a class="dbColumnText" href="javascript:void(0);">' + enLabelToKorLabel(dbColumns[key].column) + '</a>';
+            break;
+        }
+    }
+    if (!isMatch) {
+        optionTag += '<a class="dbColumnText" href="javascript:void(0);">없음</a>';
+    }
+    optionTag += '<ul>';
+    for (var key in dbColumns) {
+        optionTag += '<li>';
+        optionTag += '<a href="javascript:void(0);"><span>' + enLabelToKorLabel(dbColumns[key].column)+'</span></a>';
+        optionTag += '<ul>';
+        optionTag += '<li><a href="javascript:void(0);">키워드</a></li>';
+        optionTag += '<li><a href="javascript:void(0);">가변값</a></li>';
+        optionTag += '</ul>';
+        optionTag += '</li>';
+    }
+    optionTag += '</ul>';
+    optionTag += '</li>';
+
+    return optionTag;
+    /*
     var optionTag = '';
     var selected = '';
 
@@ -265,8 +296,9 @@ function dbColumnsOption(text, dbColumns) {
     }
 
     return optionTag;
-
+    */
 }
+
 
 /*
 function ocrBoxFocus() {
@@ -365,11 +397,20 @@ function enLabelToKorLabel(text) {
         case 'BRKG':
             label = '중개수수료';
             break;
+        case 'BRKG_VALUE':
+            label = '중개수수료 값';
+            break;
         case 'TXAM':
             label = '세금';
             break;
         case 'PRRS_CF':
             label = '보험료유보금적립액';
+            break;
+        case 'PRRS_CF_VALUE':
+            label = '보험료유보금적립액 값';
+            break;
+        case 'PRRS_CF\r\n_VALUE':
+            label = '보험료유보금적립액 값';
             break;
         case 'PRRS_RLS':
             label = '보험료유보금해제액';
@@ -383,6 +424,9 @@ function enLabelToKorLabel(text) {
         case 'CLA':
             label = '보험금';
             break;
+        case 'CLA_VALUE':
+            label = '보험금 값';
+            break;
         case 'EXEX':
             label = '부대비';
             break;
@@ -395,6 +439,9 @@ function enLabelToKorLabel(text) {
         case 'NTBL':
             label = '순평균';
             break;
+        case 'NTBL_VALUE':
+            label = '순평균 값';
+            break;
         case 'CSCO_SA_RFRN_CNNT2':
             label = '참고';
             break;
@@ -405,6 +452,48 @@ function enLabelToKorLabel(text) {
     return label;
 }
 
+function dbSelectClickEvent() {
+    $('.selectBox > li').click(function (e) {
+        if ($(this).children('ul').css('display') == 'none') {
+            $('.selectBox > li > ul').hide();
+            $('.selectBox > li > ul').css('visibility', 'hidden').css('z-index', '0');
+            $(this).children('ul').show();
+            $(this).children('ul').css('visibility', 'visible').css('z-index', '1');
+            $('.box_table_st').css('height', Number($('.box_table_st').height() + $(this).children('ul').height()) + 'px');
+        } else {
+            $(this).children('ul').hide();
+            $(this).children('ul').css('visibility', 'hidden').css('z-index', '0');
+            $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).children('ul').height()) + 'px');
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    $('.selectBox > li > ul > li').click(function (e) {
+        if ($(this).children('ul').css('display') == 'none') {
+            $('.selectBox > li > ul > li > ul').hide();
+            $('.selectBox > li > ul > li > ul').css('visibility', 'hidden');
+            $(this).children('ul').show();
+            $(this).children('ul').css('visibility', 'visible').css('z-index', '999');
+        } else {
+            $(this).children('ul').hide();
+            $(this).children('ul').css('visibility', 'hidden');
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    $('.selectBox > li > ul > li > ul > li').click(function (e) {
+        var firstCategory = $(this).parent().prev().children('span').text();
+        var lastCategory = ($(this).children('a').text() == '키워드') ? '' : ' 값';
+        $(this).parent().parent().parent().prev().text(firstCategory + lastCategory);
+        $(this).parent().parent().children('ul').hide();
+        $(this).parent().parent().children('ul').css('visibility', 'hidden');
+        $(this).parent().parent().parent().parent().children('ul').hide();
+        $(this).parent().parent().parent().parent().children('ul').css('visibility', 'hidden').css('z-index', '0');
+        $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).parent().parent().parent().parent().children('ul').height()) + 'px')
+        e.preventDefault();
+        e.stopPropagation();
+    });
+}
 /*
 // 문서이미지 좌표값에 따른 줌
 function imageZoom(x, y) {
