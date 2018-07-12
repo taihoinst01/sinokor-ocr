@@ -836,10 +836,9 @@
     <Compile Include="public\js\user\ocrHistorySearch.js" />
     <Compile Include="public\js\user\uiLearning.js" />
     <Compile Include="public\js\user\userDashboard.js" />
-    <Compile Include="public\publish\js\Chart.min.js" />
     <Compile Include="public\publish\js\jquery-1.9.1.min.js" />
     <Compile Include="public\publish\js\jquery-ui.js" />
-    <Compile Include="public\publish\js\jquery.mCustomScrollbar.concat.min.js" />
+    <Compile Include="public\publish\js\jquerys.js" />
     <Compile Include="routes\admin\adminDashboard.js" />
     <Compile Include="routes\admin\userManagement.js" />
     <Compile Include="routes\index.js" />
@@ -2971,7 +2970,6 @@
     <Content Include="public\js\import\treeview\images\treeview-red.gif" />
     <Content Include="public\js\import\treeview\jquery.treeview.css" />
     <Content Include="public\publish\css\common.css" />
-    <Content Include="public\publish\css\jquery.mCustomScrollbar.css" />
     <Content Include="public\publish\font\notokr-bold.eot" />
     <Content Include="public\publish\font\notokr-bold.svg" />
     <Content Include="public\publish\font\notokr-bold.ttf" />
@@ -2983,9 +2981,12 @@
     <Content Include="public\publish\font\notokr-medium.woff" />
     <Content Include="public\publish\font\notokr-medium.woff2" />
     <Content Include="public\publish\image\bg_img.png" />
+    <Content Include="public\publish\image\bg_main.jpg" />
     <Content Include="public\publish\image\man1.png" />
     <Content Include="public\publish\image\man2.png" />
     <Content Include="public\publish\image\sample.jpg" />
+    <Content Include="public\publish\image\sample01.jpg" />
+    <Content Include="public\publish\image\sample02.jpg" />
     <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
@@ -3344,6 +3345,7 @@
     <Content Include="views\user\ocrFormAnalysis.html" />
     <Content Include="views\user\ocrHistorySearch.html" />
     <Content Include="views\user\ocrImgJson.html" />
+    <Content Include="views\user\uiLearning_before.html" />
     <Content Include="views\user\uiLearning.html" />
     <Content Include="views\user\userDashboard.html" />
     <Content Include="Web.config" />

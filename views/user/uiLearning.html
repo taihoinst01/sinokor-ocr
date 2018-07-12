@@ -1,12 +1,14 @@
-﻿<!DOCTYPE html>
-<html>
+﻿<!doctype html>
+<html lang="kr">
 <head>
-    <title>TIIZ OCR Service</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <title alt="UI학습">KoreanRe OCR Service - UI학습</title>
 
-    <%include  ../common/commonLib_before.html%>
-
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <%include  ../common/commonLib.html%>
 
     <!-- file upload css -->
     <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
@@ -26,82 +28,89 @@
     <!-- // 공통 js -->
 
     <script type="text/javascript" src="js/user/uiLearning.js"></script>
-
 </head>
-<body class="hold-transition skin-blue sidebar-mini">
-    <div class="main">
-        <div class="wrapper">
-            <!-- Header -->
-            <%include  ../common/header_before.html%>
-            <!-- //Header -->
-            <!-- Left Menu Side -->
-            <%include ../common/leftSideBar_before.html%>
-            <!--// Left Menu Side -->
-            <!-- Content Wrapper -->
-            <div class="content-wrapper">
-                <section class="content-header">
-                    <h1>UI 학습</h1>
-                </section>
-                <section class="content">
-                    <!-- 저장소, 양식이미지, 양식 분석 상세-->
-                    <div class="row">
-
-                        <!-- 양식 이미지 -->
-                        <div class="col-md-1" id="thumbnailDiv">
-                            <div id="imageBox" class="box" style="height:760px; padding:0; margin:0;">
-                                <!--<img class="thumb-img" src="../../uploads/tst1.jpg" />-->
-                            </div>
-                            <div class="box" style="height:40px; width:100%; text-align:center;">
-                                <input type="button" id="thumb-total" value="전체" style="width:30px; margin:0 5px 0 0; padding:0;" />
-                                <input type="button" id="thumb-prev" value="◀" style="width:30px; margin:0 5px 0 0; padding:0;" />
-                                <input type="button" id="thumb-next" value="▶" style="width:30px; padding:0;" />
-                            </div>
-                        </div>
-                        <div class="col-md-7" id="formImgDiv">
-                            <div class="box" style="height:800px">
-                                <div class="box-body02">
-                                    <div id="imgHeader" class="box-header with-border">
-                                        <h3 class="box-title">양식 이미지</h3>
-                                    </div>
-                                    <div class="dialog_wrap">
-                                        <div id="uploadDiv">
-                                            <b>파일을 업로드 해주세요</b><br />
-                                            <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
-                                                <input type="file" id="uploadFile" name="file" value="upload" />
-                                                <input id="uploadFileBtn" type="button" value="업로드">
-                                            </form>
-                                            <div id="ocrProgress">
-                                                <div id="ocrBar"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- //양식 이미지 -->
-                        <!-- 양식 분석 상세 -->
-                        <div class="col-md-4" id="formOcrDetailDiv">
-                            <div class="box" style="height:800px">
-                                <div class="box-body02">
-                                    <div class="box-header with-border">
-                                        <h3 class="box-title">양식 분석 상세</h3>
-                                    </div>
-                                    <div class="tableDiv" style="max-height:600px; overflow:auto;">
-                                        <table id="textResultTbl" border="1" style="width:100%;"></table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- //양식 분석 상세 -->
-                    </div>
-                    <!--// 저장소 -->
-                </section>
-            </div>
-            <!--// Content Wrapper -->
-            <!-- Header -->
-            <%include  ../common/footer.html%>
-            <!-- //Header -->
+<body>
+    <div id="wrap">
+        <!-- skip navi -->
+        <div id="accessibility">
+            <ul>
+                <li><a href="#lnb">메뉴 바로가기</a></li>
+                <li><a href="#container">본문으로 바로가기</a></li>
+            </ul>
         </div>
+        <!-- //skip navi -->
+        <%include  ../common/header.html%>
+        <!-- Content -->
+        <div id="container">
+            <!-- LNB -->
+            <%include  ../common/leftSideBar.html%>
+            <!-- // LNB -->
+            <!-- 본문영역 -->
+            <div id="content">
+                <h2 class="subtit subtit_st01 blind"><span>청약서입력</span></h2>
+                <div class="box_content box_st04">
+                    <div class="box_st041">
+                        <div class="box_imgtmb" style="height:98%;">
+                            <ul id="imageBox">                                                                
+                            </ul>
+                        </div>
+                        <div class="box_imgtmbcontrol" style="height:2%;">
+                            <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
+                            <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
+                            <button type="button" id="thumb-tot" class="button_control button_control3">전체</button>
+                        </div>
+                    </div>
+                    <div class="box_st042">
+                        <h3><span>양식이미지</span></h3>
+                        <!-- 파일업로드 -->
+                        <div class="st_infortext_01">
+                            <span>파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
+                            <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
+                                <p class="attach_btn">
+                                    <input type="file" id="uploadFile" name="file" value="upload" />
+                                    <label id="uploadFileBtn" for="customer_file">업로드</label>
+                                </p>
+                            </form>
+                            <div id="ocrProgress">
+                                <div id="ocrBar"></div>
+                            </div>
+                        </div>
+                        <!-- // 파일업로드 -->
+                    </div>
+                </div>
+                <div class="box_content box_st05 box_stlast">
+                    <h3 class="tits"><span>양식 분석 상세</span></h3>
+                    <div class="mCustomScrollbar box_scroll_st6" data-mcs-theme="dark-3">
+                        <div class="table_style02">
+                            <table>
+                                <caption>양식 분석 상세 정보</caption>
+                                <colgroup>
+                                    <col style="width:50%" />
+                                    <col style="width:50%" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th scope="row">추출 텍스트</th>
+                                        <th scope="row">DB 컬럼</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div id="textResultTbl" class="box_table_st box_table_st04">
+                                <dl>
+                                    <dt></dt>
+                                    <dd>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- // 본문영역 -->
+        </div>
+        <!-- // Content -->
     </div>
+
+
 </body>
-</html >
+</html>

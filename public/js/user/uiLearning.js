@@ -101,12 +101,16 @@ function thumbImgPagingEvent() {
 
 // 썸네일 이미지 렌더링
 function thumnImg(fileName) {
-    $('#thumb-prev').attr('disabled', true);
-    $('#thumb-next').attr('disabled', false);
-    if ($('#imageBox > img').length < 4) {
-        var imageTag = '';
-        imageTag += '<img class="thumb-img" src="../../uploads/' + fileName + '" />';       
+    if ($('#imageBox > li').length < 10) {
+        var imageTag = '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/'+fileName+'); width: 48px;"></a></li>';   
         $('#imageBox').append(imageTag);
+    }
+    if (thumbImgs.length == 11) { //한번만 수행하기 위해서 크기비교 x
+        $('#thumb-prev').attr('disabled', true);
+        $('#thumb-next').attr('disabled', false);
+    } else {
+        $('#thumb-prev').attr('disabled', true);
+        $('#thumb-next').attr('disabled', true);
     }
     thumbImgs.push(fileName);
     //console.log(thumbImgs);
@@ -115,8 +119,8 @@ function thumnImg(fileName) {
 // 썸네일 이미지 페이징
 function thumbImgPaging(pageCount) {
     $('#imageBox').html('');
-    var startImgCnt = 4 * pageCount - 4;
-    var endImgCnt = 4 * pageCount;
+    var startImgCnt = 10 * pageCount - 10;
+    var endImgCnt = 10 * pageCount;
 
     if (startImgCnt == 0) {
         $('#thumb-prev').attr('disabled', true);
@@ -133,7 +137,7 @@ function thumbImgPaging(pageCount) {
 
     var imageTag = '';
     for (var i = startImgCnt; i < endImgCnt; i++) {   
-        imageTag += '<img class="thumb-img" src="../../uploads/' + thumbImgs[i] + '" />';        
+        imageTag += '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + ');"></a></li>';     
     }   
     $('#imageBox').append(imageTag);
     thumbImgEvent();
@@ -142,7 +146,6 @@ function thumbImgPaging(pageCount) {
 // 썸네일 이미지 클릭 이벤트
 function thumbImgEvent() {
     $('.thumb-img').click(function () {
-        //$('.main-img').attr('src', $(this).attr('src'));
         var originalDiv = document.getElementById("mainImage");
         originalDiv.style.backgroundImage = "url('" + $(this).attr('src') + "')";
         detailTable($(this).attr('src').split('/')[3]);
@@ -173,9 +176,9 @@ function appendOcrData(fileName, regions) {
             searchDBColumnsCount++;
             
             if (searchDBColumnsCount == 1) {                
-                $('.dialog_wrap').html('<div id="mainImage" style="height:700px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
+                $('.box_st042').html('<h3><span>양식이미지</span></h3><div id="mainImage" style="height:700px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
                 var originalDiv = document.getElementById("mainImage");
-                originalDiv.style.backgroundImage = "url('../../uploads/" + fileName + "')";
+                originalDiv.style.backgroundImage = "url('../../uploads/" + fileName + "')"
                 detailTable(fileName);
             }
             if (totCount == searchDBColumnsCount) {
@@ -202,27 +205,29 @@ function appendOcrData(fileName, regions) {
 function detailTable(fileName) {
 
     $('#textResultTbl').html('');
-    var tblTag = '<colgroup><col style="width:70%;"/><col style="width:30%;"/></colgroup>';
-    tblTag += '<tr><th style = "text-align:center;">추출 텍스트</th><th style="text-align:center;">DB 컬럼</th></tr>';
+    var tblTag = '';
     for (var i = 0; i < lineText.length; i++) {
         if (lineText[i].fileName == fileName) {
             var item = lineText[i];
-            for (var j = 0; j < item.data.length; j++) {     
-                tblTag += '<tr onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
-                //tblTag += '<tr>';
-                tblTag += '<td>';
+            for (var j = 0; j < item.data.length; j++) {
+                tblTag += '<dl>'
+                tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                tblTag += '<label for="langDiv'+i+'" class="tip" title="마진율:10%">';
                 tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
                 tblTag += '<input type="hidden" value="' + item.data[j].location + '" />';
-                tblTag += '</td>';
-                tblTag += '<td>';
+                tblTag += '</label>';
+                tblTag += '</dt>';
+                tblTag += '<dd>';
+                tblTag += '<div class="selects">';
                 tblTag += '<ul class="selectBox">';
                 tblTag += dbColumnsOption(item.data[j].text, item.dbColumns);
-                tblTag += '</ul>';
-                tblTag += '</td>';
-                tblTag += '</tr>';
+                tblTag += '</div>';
+                tblTag += '</dd>';
+                tblTag += '</dl>';
             }
             break;
         }
+
         /* 몇 페이지 어디인지 표시
         var item = lineText[i];
         for (var j = 0; j < item.data.length; j++) {
@@ -354,10 +359,10 @@ function hoverSquare(e) {
     var height = reImg.height;
 
     // 선택한 글씨에 빨간 네모 그리기
-    $('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 45) + 'px');
-    $('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 20) + 'px');
-    $('#redNemo').css('width', (textWidth / (width / $('#mainImage').width())) + 'px');
-    $('#redNemo').css('height', (textHeight / (height / $('#mainImage').height())) + 'px');
+    $('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 5) + 'px');
+    $('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 5) + 'px');
+    $('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 10) + 'px');
+    $('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 10) + 'px');
     $('#redNemo').show();
 
 }
@@ -445,6 +450,63 @@ function enLabelToKorLabel(text) {
             break;
         case 'CSCO_SA_RFRN_CNNT2':
             label = '참고';
+            break;
+        case 'CSCO_NM_VALUE':
+            label = '거래사명값';
+            break;
+        case 'CT_NM_VALUE':
+            label = '계약명값';
+            break;
+        case 'INS_ST_DT_VALUE':
+            label = '보험개시일값';
+            break;
+        case 'INS_END_DT_VALUE':
+            label = '보험종료일값';
+            break;
+        case 'CUR_CD_VALUE':
+            label = '화폐코드값';
+            break;
+        case 'PRE_VALUE':
+            label = '보험료값';
+            break;
+        case 'COM_VALUE':
+            label = '일반수수료값';
+            break;
+        case 'BRKG_VALUE':
+            label = '중개수수료값';
+            break;
+        case 'TXAM_VALUE':
+            label = '세금값';
+            break;
+        case 'PRRS_CF_VALUE':
+            label = '보험료유보금적립액값';
+            break;
+        case 'PRRS_RLS_VALUE':
+            label = '보험료유보금해제액값';
+            break;
+        case 'LSRES_CF_VALUE':
+            label = '보험금유보금적립액값';
+            break;
+        case 'LSRES_RLS_VALUE':
+            label = '보험금유보금해제액값';
+            break;
+        case 'CLA_VALUE':
+            label = '보험금값';
+            break;
+        case 'EXEX_VALUE':
+            label = '부대비값';
+            break;
+        case 'SVF_VALUE':
+            label = '손해조사비값';
+            break;
+        case 'CAS_VALUE':
+            label = '즉시불보험금(CASH)값';
+            break;
+        case 'NTBL_VALUE':
+            label = '순평균값';
+            break;
+        case 'CSCO_SA_RFRN_CNNT2_VALUE':
+            label = '참고값';
             break;
         default:
             label = text;
