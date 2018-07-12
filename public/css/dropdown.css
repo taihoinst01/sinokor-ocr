@@ -13,6 +13,10 @@
     background-color: white;
 }
 
+.selectBox .on {
+    border: 1px solid #A3A2FF;
+}
+
 .selectBox li a {
     margin: 0 0 0 0;
     padding: 0 0 0 5px;

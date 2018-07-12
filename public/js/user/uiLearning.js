@@ -456,8 +456,10 @@ function enLabelToKorLabel(text) {
 function dbSelectClickEvent() {
     $('.selectBox > li').click(function (e) {
         if ($(this).children('ul').css('display') == 'none') {
+            $('.selectBox > li').removeClass('on');
             $('.selectBox > li > ul').hide();
             $('.selectBox > li > ul').css('visibility', 'hidden').css('z-index', '0');
+            $(this).addClass('on');
             $(this).children('ul').show();
             $(this).children('ul').css('visibility', 'visible').css('z-index', '1');
             $('.box_table_st').css('height', Number($('.box_table_st').height() + $(this).children('ul').height()) + 'px');
