@@ -212,7 +212,7 @@ function detailTable(fileName) {
             for (var j = 0; j < item.data.length; j++) {
                 tblTag += '<dl>'
                 tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
-                tblTag += '<label for="langDiv'+i+'" class="tip" title="마진율:10%">';
+                tblTag += '<label for="langDiv' + i + '" class="tip" title="마진율:10%" style="width:100%;">';
                 tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
                 tblTag += '<input type="hidden" value="' + item.data[j].location + '" />';
                 tblTag += '</label>';
