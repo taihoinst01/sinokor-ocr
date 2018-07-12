@@ -1,7 +1,8 @@
 
 jQuery(function($){
 
-	/* 메인지도하단컨텐츠_좌우이동_효과 */
+
+	// LNB_좌우이동_효과 
 		$('.btn_reduction').click(function(){
 			$('.lnb_menu').animate({'width':'50px'},250);
 			$('#content').animate({'margin-left':'49px'},250);
@@ -9,8 +10,6 @@ jQuery(function($){
 			$('.btn_expansion').show();
 			$('.lnb_menu').addClass('on');
 			$('.lnb_menu h3 span, .lnb_menu li a span').fadeOut(100);	
-
-
 
 		});
 		$('.btn_expansion').click(function(){
@@ -21,19 +20,60 @@ jQuery(function($){
 			$('.lnb_menu').removeClass('on');			
 			$('.lnb_menu h3 span, .lnb_menu li a span').delay(200).fadeIn(100);	
 
-
-
-
 		});
 
-	/* 메뉴용on_효과 */
+	// INPUT 글자입력시에 삭제버튼생성
+	var $ipt = $('.box_inpw_in input'), 
+		$clearIpt = $('.sch_del');
+		$ipt.keyup(function(){
+			$(this).next(".sch_del").toggle(Boolean($(this).val()));
+		});
+		$clearIpt.toggle(Boolean($ipt.val()));
+		$clearIpt.click(function(){
+		  $(this).prev("input").val('').focus();
+		  $(this).hide();
+		  $("#textlimit1").text("0");
+		});
+
+
+	// 메뉴용 on/off_효과
 		$(".lnb_menu li>a").click(function(){
 			$('.lnb_menu li').removeClass('on');
 			$(this).parent('li').addClass('on');
 		});
+	// 양식이미지용 on/off_효과
+		$(".box_imgtmb li>a").click(function(){
+			$('.box_imgtmb li').removeClass('on');
+			$(this).parent('li').addClass('on');
+		});
+
+	// input 선택시 전체선택/해제
+	$("#checknb_all").change(function(){
+	 	var chk = $(".checknb_alls");
+	 	if(this.checked){
+	  	chk.prop("checked", true);
+	 	}else{
+	  	chk.prop("checked", false);
+	 	}
+	});
+
+	//스크롤 하단시에 selectbox 위로 열림
+	$('.selects').click(function(e){
+	    var ys_h = e.pageY; 
+	    var cont_h = $('body').height()*0.8;
+	    if( cont_h < ys_h ){
+	       $(".idealSelect ul").css({"bottom":"28px"});
+	    }else{
+	       $(".idealSelect ul").css({"bottom":"inherit"});
+	    }
+	});
+
+
+
 
 
 });
+
 
 /* Select */
 (function ($) {
@@ -163,6 +203,7 @@ jQuery(function($){
             /////////////////////////////////////////////////////////////	
         });
     };
+
 })(jQuery);
 $(function(){
 	$('.selects').idealForms();	
@@ -208,11 +249,11 @@ $(document).ready(function(){
 	$('.box_input input').click(function(){
 		$(this).parent().find('label').hide();
 	});
-	$('.box_login').mousemove(function(){
+	/*$('.box_login').mousemove(function(){
 		if($('.input_pw').val().length > 0){
 			$('.input_pw').parent().find('label').show();
 		}
-	});
+	});*/
 	$('.box_input input').blur(function(){
 		if(this.value==""){
 			$(this).parent().find('label').show();
@@ -225,7 +266,13 @@ $(document).ready(function(){
 (function($){$.fn.ezMark=function(options){options=options||{};var defaultOpt={checkboxCls:options.checkboxCls||'ez-checkbox',radioCls:options.radioCls||'ez-radio',checkedCls:options.checkedCls||'ez-checked',selectedCls:options.selectedCls||'ez-selected',hideCls:'ez-hide'};return this.each(function(){var $this=$(this);var wrapTag=$this.attr('type')=='checkbox'?'<div class="'+defaultOpt.checkboxCls+'">':'<div class="'+defaultOpt.radioCls+'">';if($this.attr('type')=='checkbox'){$this.addClass(defaultOpt.hideCls).wrap(wrapTag).change(function(){if($(this).is(':checked')){$(this).parent().addClass(defaultOpt.checkedCls);}
 else{$(this).parent().removeClass(defaultOpt.checkedCls);}});if($this.is(':checked')){$this.parent().addClass(defaultOpt.checkedCls);}}
 else if($this.attr('type')=='radio'){$this.addClass(defaultOpt.hideCls).wrap(wrapTa).change(function(){$('input[name="'+$(this).attr('name')+'"]').each(function(){if($(this).is(':checked')){$(this).parent().addClass(defaultOpt.selectedCls);}else{$(this).parent().removeClass(defaultOpt.selectedCls);}});});if($this.is(':checked')){$this.parent().addClass(defaultOpt.selectedCls);}}});}})(jQuery);
+
 $(document).ready(function(){
-	$('input[type=radio]').ezMark();
+//	$('input[type=radio]').ezMark();
 	$('input[type=checkbox]').ezMark();
+	new $.Zebra_Tooltips($('.tip'));
 });
+
+
+
+
