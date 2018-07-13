@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
+
     <title alt="UI학습">KoreanRe OCR Service - UI학습</title>
 
     <%include  ../common/commonLib.html%>
@@ -23,11 +24,14 @@
     <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
     <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
     <!-- // multiFileUpload & form async js -->
+
     <!-- 공통 js -->
     <script type="text/javascript" src="js/common.client.js"></script>
     <!-- // 공통 js -->
 
+    <!-- UI 학습 전용 js -->
     <script type="text/javascript" src="js/user/uiLearning.js"></script>
+    <!-- // UI 학습 전용 js -->
 </head>
 <body>
     <div id="wrap">
@@ -49,10 +53,10 @@
             <div id="content">
                 <h2 class="subtit subtit_st01 blind"><span>청약서입력</span></h2>
                 <div class="box_content box_st04">
+                    <!-- 썸네일 이미지 영역 -->
                     <div class="box_st041">
                         <div class="box_imgtmb" style="height:98%;">
-                            <ul id="imageBox">                                                                
-                            </ul>
+                            <ul id="imageBox"></ul>
                         </div>
                         <div class="box_imgtmbcontrol" style="height:2%;">
                             <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
@@ -60,6 +64,8 @@
                             <button type="button" id="thumb-tot" class="button_control button_control3">전체</button>
                         </div>
                     </div>
+                    <!-- // 썸네일 이미지 영역 -->
+                    <!-- 메인 이미지 영역 -->
                     <div class="box_st042">
                         <h3><span>양식이미지</span></h3>
                         <div id="img_content">
@@ -77,10 +83,12 @@
                             </div>
                         </div>
                     </div>
+                    <!-- // 메인 이미지 영역 -->
                 </div>
                 <div class="box_content box_st05 box_stlast">
                     <h3 class="tits"><span>양식 분석 상세</span></h3>
                     <div class="mCustomScrollbar box_scroll_st6" data-mcs-theme="dark-3">
+                        <!-- 상세 정보 테이블 영역 -->
                         <div class="table_style02">
                             <table>
                                 <caption>양식 분석 상세 정보</caption>
@@ -103,6 +111,7 @@
                                 </dl>
                             </div>
                         </div>
+                        <!-- // 상세 정보 테이블 영역 -->
                     </div>
                 </div>
             </div>
@@ -110,7 +119,5 @@
         </div>
         <!-- // Content -->
     </div>
-
-
 </body>
 </html>

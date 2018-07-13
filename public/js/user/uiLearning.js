@@ -16,6 +16,7 @@ $(function () {
 
 });
 
+// 초기 작업
 function init() {
     $('.button_control').attr('disabled', true);
 }
@@ -146,7 +147,9 @@ function thumbImgPaging(pageCount) {
 
     var imageTag = '';
     for (var i = startImgCnt; i < endImgCnt; i++) {   
-        imageTag += '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a></li>';     
+        imageTag += '<li>';     
+        imageTag += '<a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a>';
+        imageTag += '</li>';
     }   
     $('#imageBox').append(imageTag);
     thumbImgEvent();
@@ -155,9 +158,8 @@ function thumbImgPaging(pageCount) {
 // 썸네일 이미지 클릭 이벤트
 function thumbImgEvent() {
     $('.thumb-img').click(function () {
-        var originalDiv = document.getElementById("mainImage");
-        originalDiv.style.backgroundImage = "url('" + $(this).attr('src') + "')";
-        detailTable($(this).attr('src').split('/')[3]);
+        $('#mainImage').css('background-image', $(this).css('background-image'));
+        detailTable($(this).css('background-image').split('/')[4].split('")')[0]);
     });
 }
 
@@ -190,9 +192,12 @@ function appendOcrData(fileName, regions) {
                 mainImgHtml += '<div id="redNemo">';
                 mainImgHtml += '</div>';
                 mainImgHtml += '</div>';
+                mainImgHtml += '<div id="imageZoom" >';
+                mainImgHtml += '<div id="redZoomNemo">';
+                mainImgHtml += '</div>';
+                mainImgHtml += '</div>';
                 $('#img_content').html(mainImgHtml);
-                var originalDiv = document.getElementById("mainImage");
-                originalDiv.style.backgroundImage = "url('../../uploads/" + fileName + "')"
+                $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
                 detailTable(fileName);
             }
             if (totCount == searchDBColumnsCount) {
@@ -226,7 +231,7 @@ function detailTable(fileName) {
             for (var j = 0; j < item.data.length; j++) {
                 tblTag += '<dl>'
                 tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
-                tblTag += '<label for="langDiv' + i + '" class="tip" title="마진율:10%" style="width:100%;">';
+                tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
                 tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
                 tblTag += '<input type="hidden" value="' + item.data[j].location + '" />';
                 tblTag += '</label>';
@@ -301,29 +306,6 @@ function dbColumnsOption(text, dbColumns) {
     return optionTag;
 }
 
-
-/*
-function ocrBoxFocus() {
-    $('#formImageZoom').mousedown(function (e) {
-        console.log("마우스 누름: " + e.pageX + ', ' + e.pageY);
-        mouseX = e.pageX;
-        mouseY = e.pageY;
-    }).mouseup(function (e) {
-        var xDistance, yDistance;
-
-        console.log("마우스 땜: " + e.pageX + ', ' + e.pageY);
-        mouseMoveX = e.pageX;
-        mouseMoveY = e.pageY;
-
-        xDistance = mouseX - mouseMoveX;
-        yDistance = mouseMoveY - mouseY;
-        console.log("xDistance: " + xDistance + ", yDistance: " + yDistance);
-
-        imageMove(xDistance, yDistance);
-    });
-}
-*/
-
 // 마우스 오버 이벤트
 function hoverSquare(e) {
     // 해당 페이지로 이동
@@ -336,6 +318,9 @@ function hoverSquare(e) {
     });
     */
 
+    //$('#mainImage').css('height', '500px');
+    //$('#imageZoom').css('height', '300px').css('background-image', $('#mainImage').css('background-image')).show();
+
     // 사각형 좌표값
     var location = $(e).find('input[type=hidden]').val().split(',');
     x = parseInt(location[0]);
@@ -343,9 +328,10 @@ function hoverSquare(e) {
     textWidth = parseInt(location[2]);
     textHeight = parseInt(location[3]);
     //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
-    //console.log("x: " + x/100 + ", y: " + y/100 + ", textWidth: " + textWidth/100 + ", textHeight: " + textHeight/100);
-    //imageZoom(x, y);
 
+    // 해당 텍스트 x y좌표 원본 이미지에서 찾기
+    $('#imageZoom').css('background-position', '-' + (x - 5) + 'px -' + (y - 5) + 'px');
+    
     //실제 이미지 사이즈와 메인이미지div 축소율 판단
     var reImg = new Image();
     var imgPath = $('#mainImage').css('background-image').split('("')[1];
@@ -360,15 +346,63 @@ function hoverSquare(e) {
     $('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
     $('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
     $('#redNemo').show();
+    //$('#redZoomNemo').css('width', textWidth + 10);
+    //$('#redZoomNemo').css('height', textHeight+ 10);
+    //$('#redZoomNemo').show();
 
 }
 
 // 마우스 아웃 이벤트
 function moutSquare(e) {
     $('#redNemo').hide();
+    //$('#redZoomNemo').hide();
+    //$('#imageZoom').hide();
+    //$('#mainImage').css('height', '700px');
+}
 
-    var zoomDiv = document.getElementById("mainImage");
-    zoomDiv.style.backgroundPosition = "";
+function dbSelectClickEvent() {
+    $('.selectBox > li').click(function (e) {
+        if ($(this).children('ul').css('display') == 'none') {
+            $('.selectBox > li').removeClass('on');
+            $('.selectBox > li > ul').hide();
+            $('.selectBox > li > ul').css('visibility', 'hidden').css('z-index', '0');
+            $(this).addClass('on');
+            $(this).children('ul').show();
+            $(this).children('ul').css('visibility', 'visible').css('z-index', '1');
+            $('.box_table_st').css('height', Number($('.box_table_st').height() + $(this).children('ul').height()) + 'px');
+        } else {
+            $(this).children('ul').hide();
+            $(this).children('ul').css('visibility', 'hidden').css('z-index', '0');
+            $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).children('ul').height()) + 'px');
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    $('.selectBox > li > ul > li').click(function (e) {
+        if ($(this).children('ul').css('display') == 'none') {
+            $('.selectBox > li > ul > li > ul').hide();
+            $('.selectBox > li > ul > li > ul').css('visibility', 'hidden');
+            $(this).children('ul').show();
+            $(this).children('ul').css('visibility', 'visible').css('z-index', '2');
+        } else {
+            $(this).children('ul').hide();
+            $(this).children('ul').css('visibility', 'hidden');
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    $('.selectBox > li > ul > li > ul > li').click(function (e) {
+        var firstCategory = $(this).parent().prev().children('span').text();
+        var lastCategory = ($(this).children('a').text() == '키워드') ? '' : ' 값';
+        $(this).parent().parent().parent().prev().text(firstCategory + lastCategory);
+        $(this).parent().parent().children('ul').hide();
+        $(this).parent().parent().children('ul').css('visibility', 'hidden');
+        $(this).parent().parent().parent().parent().children('ul').hide();
+        $(this).parent().parent().parent().parent().children('ul').css('visibility', 'hidden').css('z-index', '0');
+        $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).parent().parent().parent().parent().children('ul').height()) + 'px')
+        e.preventDefault();
+        e.stopPropagation();
+    });
 }
 
 function enLabelToKorLabel(text) {
@@ -511,56 +545,25 @@ function enLabelToKorLabel(text) {
     return label;
 }
 
-function dbSelectClickEvent() {
-    $('.selectBox > li').click(function (e) {
-        if ($(this).children('ul').css('display') == 'none') {
-            $('.selectBox > li').removeClass('on');
-            $('.selectBox > li > ul').hide();
-            $('.selectBox > li > ul').css('visibility', 'hidden').css('z-index', '0');
-            $(this).addClass('on');
-            $(this).children('ul').show();
-            $(this).children('ul').css('visibility', 'visible').css('z-index', '1');
-            $('.box_table_st').css('height', Number($('.box_table_st').height() + $(this).children('ul').height()) + 'px');
-        } else {
-            $(this).children('ul').hide();
-            $(this).children('ul').css('visibility', 'hidden').css('z-index', '0');
-            $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).children('ul').height()) + 'px');
-        }
-        e.preventDefault();
-        e.stopPropagation();
-    });
-    $('.selectBox > li > ul > li').click(function (e) {
-        if ($(this).children('ul').css('display') == 'none') {
-            $('.selectBox > li > ul > li > ul').hide();
-            $('.selectBox > li > ul > li > ul').css('visibility', 'hidden');
-            $(this).children('ul').show();
-            $(this).children('ul').css('visibility', 'visible').css('z-index', '999');
-        } else {
-            $(this).children('ul').hide();
-            $(this).children('ul').css('visibility', 'hidden');
-        }
-        e.preventDefault();
-        e.stopPropagation();
-    });
-    $('.selectBox > li > ul > li > ul > li').click(function (e) {       
-        var firstCategory = $(this).parent().prev().children('span').text();
-        var lastCategory = ($(this).children('a').text() == '키워드') ? '' : ' 값';
-        $(this).parent().parent().parent().prev().text(firstCategory + lastCategory);
-        $(this).parent().parent().children('ul').hide();
-        $(this).parent().parent().children('ul').css('visibility', 'hidden');
-        $(this).parent().parent().parent().parent().children('ul').hide();
-        $(this).parent().parent().parent().parent().children('ul').css('visibility', 'hidden').css('z-index', '0');
-        $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).parent().parent().parent().parent().children('ul').height()) + 'px')
-        e.preventDefault();
-        e.stopPropagation();
-    });
-}
 /*
-// 문서이미지 좌표값에 따른 줌
-function imageZoom(x, y) {
-    var zoomDiv = document.getElementById("mainImage");
+function ocrBoxFocus() {
+    $('#formImageZoom').mousedown(function (e) {
+        console.log("마우스 누름: " + e.pageX + ', ' + e.pageY);
+        mouseX = e.pageX;
+        mouseY = e.pageY;
+    }).mouseup(function (e) {
+        var xDistance, yDistance;
 
-    zoomDiv.style.backgroundPosition = "-" + x/10 + "px -" + y/10 + "px";
+        console.log("마우스 땜: " + e.pageX + ', ' + e.pageY);
+        mouseMoveX = e.pageX;
+        mouseMoveY = e.pageY;
+
+        xDistance = mouseX - mouseMoveX;
+        yDistance = mouseMoveY - mouseY;
+        console.log("xDistance: " + xDistance + ", yDistance: " + yDistance);
+
+        imageMove(xDistance, yDistance);
+    });
 }
 */
 
