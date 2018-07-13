@@ -84,7 +84,7 @@ function processImage(fileName) {
         data: '{"url": ' + '"' + sourceImageUrl + '"}',
     }).done(function (data) {
         ocrCount++;
-        thumnImg(fileName);
+        thumbImgs.push(fileName);
         appendOcrData(fileName,data.regions);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
@@ -106,16 +106,17 @@ function thumbImgPagingEvent() {
     });
 }
 
-// 썸네일 이미지 렌더링
-function thumnImg(fileName) {
-    if ($('#imageBox > li').length < thumnbImgPerPage) {
-        var imageTag = '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/'+fileName+'); width: 48px;"></a></li>';   
-        $('#imageBox').append(imageTag);
+// 초기 썸네일 이미지 렌더링
+function thumnImg() {
+    for (var i in thumbImgs) {
+        if ($('#imageBox > li').length < thumnbImgPerPage) {
+            var imageTag = '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a></li>';
+            $('#imageBox').append(imageTag);
+        } else {
+            break;
+        }
     }
-    thumbImgs.push(fileName);
-    if (thumbImgs.length == 1) {
-        $('#thumb-tot').attr('disabled', false);
-    }
+    $('#thumb-tot').attr('disabled', false);
     if (thumbImgs.length > thumnbImgPerPage) {
         $('#thumb-prev').attr('disabled', true);
         $('#thumb-next').attr('disabled', false);
@@ -148,7 +149,7 @@ function thumbImgPaging(pageCount) {
     var imageTag = '';
     for (var i = startImgCnt; i < endImgCnt; i++) {   
         imageTag += '<li>';     
-        imageTag += '<a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a>';
+        imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a>';
         imageTag += '</li>';
     }   
     $('#imageBox').append(imageTag);
@@ -158,6 +159,8 @@ function thumbImgPaging(pageCount) {
 // 썸네일 이미지 클릭 이벤트
 function thumbImgEvent() {
     $('.thumb-img').click(function () {
+        $('#imageBox > li').removeClass('on');
+        $(this).parent().addClass('on');
         $('#mainImage').css('background-image', $(this).css('background-image'));
         detailTable($(this).css('background-image').split('/')[4].split('")')[0]);
     });
@@ -198,6 +201,8 @@ function appendOcrData(fileName, regions) {
                 mainImgHtml += '</div>';
                 $('#img_content').html(mainImgHtml);
                 $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+                thumnImg();
+                $('#imageBox > li').eq(0).addClass('on');
                 detailTable(fileName);
             }
             if (totCount == searchDBColumnsCount) {
