@@ -323,8 +323,8 @@ function hoverSquare(e) {
     });
     */
 
-    //$('#mainImage').css('height', '500px');
-    //$('#imageZoom').css('height', '300px').css('background-image', $('#mainImage').css('background-image')).show();
+    $('#mainImage').css('height', '500px');
+    $('#imageZoom').css('height', '300px').css('background-image', $('#mainImage').css('background-image')).show();
 
     // 사각형 좌표값
     var location = $(e).find('input[type=hidden]').val().split(',');
@@ -351,18 +351,18 @@ function hoverSquare(e) {
     $('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
     $('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
     $('#redNemo').show();
-    //$('#redZoomNemo').css('width', textWidth + 10);
-    //$('#redZoomNemo').css('height', textHeight+ 10);
-    //$('#redZoomNemo').show();
+    $('#redZoomNemo').css('width', textWidth + 10);
+    $('#redZoomNemo').css('height', textHeight+ 10);
+    $('#redZoomNemo').show();
 
 }
 
 // 마우스 아웃 이벤트
 function moutSquare(e) {
     $('#redNemo').hide();
-    //$('#redZoomNemo').hide();
-    //$('#imageZoom').hide();
-    //$('#mainImage').css('height', '700px');
+    $('#redZoomNemo').hide();
+    $('#imageZoom').hide();
+    $('#mainImage').css('height', '700px');
 }
 
 function dbSelectClickEvent() {
