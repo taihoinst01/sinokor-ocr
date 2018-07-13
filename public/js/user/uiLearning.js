@@ -4,15 +4,21 @@ var ocrCount = 0; // ocr 수행 횟수
 var searchDBColumnsCount = 0; // DB컬럼 조회 수행 횟수
 var thumbImgs = []; // 썸네일 이미지 경로 배열
 var thumnImgPageCount = 1; // 썸네일 이미지 페이징 번호
+var thumnbImgPerPage = 10; // 한 페이지당 썸네일 이미지 개수
 var x, y, textWidth, textHeight; // 문서 글씨 좌표
 var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, 마우스 이동 좌표
 
 $(function () {
 
+    init();
     uploadFileEvent();
     thumbImgPagingEvent();
 
 });
+
+function init() {
+    $('.button_control').attr('disabled', true);
+}
 
 // 파일 업로드 이벤트
 function uploadFileEvent() {
@@ -33,7 +39,7 @@ function uploadFileEvent() {
 
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
-            $('#uploadFileBtn').hide();
+            $('#uploadFileBtn , #uploadInfoText').hide();
             startProgressBar();
             addProgressBar(1, 40);
             return true;
@@ -49,7 +55,7 @@ function uploadFileEvent() {
             }
         },
         error: function (e) {
-            closeProgressBar();
+            endProgressBar();
             //console.log(e);
         }
     });
@@ -101,26 +107,29 @@ function thumbImgPagingEvent() {
 
 // 썸네일 이미지 렌더링
 function thumnImg(fileName) {
-    if ($('#imageBox > li').length < 10) {
+    if ($('#imageBox > li').length < thumnbImgPerPage) {
         var imageTag = '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/'+fileName+'); width: 48px;"></a></li>';   
         $('#imageBox').append(imageTag);
     }
-    if (thumbImgs.length == 11) { //한번만 수행하기 위해서 크기비교 x
+    thumbImgs.push(fileName);
+    if (thumbImgs.length == 1) {
+        $('#thumb-tot').attr('disabled', false);
+    }
+    if (thumbImgs.length > thumnbImgPerPage) {
         $('#thumb-prev').attr('disabled', true);
         $('#thumb-next').attr('disabled', false);
     } else {
         $('#thumb-prev').attr('disabled', true);
         $('#thumb-next').attr('disabled', true);
     }
-    thumbImgs.push(fileName);
     //console.log(thumbImgs);
 }
 
 // 썸네일 이미지 페이징
 function thumbImgPaging(pageCount) {
     $('#imageBox').html('');
-    var startImgCnt = 10 * pageCount - 10;
-    var endImgCnt = 10 * pageCount;
+    var startImgCnt = thumnbImgPerPage * pageCount - thumnbImgPerPage;
+    var endImgCnt = thumnbImgPerPage * pageCount;
 
     if (startImgCnt == 0) {
         $('#thumb-prev').attr('disabled', true);
@@ -137,7 +146,7 @@ function thumbImgPaging(pageCount) {
 
     var imageTag = '';
     for (var i = startImgCnt; i < endImgCnt; i++) {   
-        imageTag += '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + ');"></a></li>';     
+        imageTag += '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a></li>';     
     }   
     $('#imageBox').append(imageTag);
     thumbImgEvent();
@@ -175,8 +184,13 @@ function appendOcrData(fileName, regions) {
             lineText.push(data);
             searchDBColumnsCount++;
             
-            if (searchDBColumnsCount == 1) {                
-                $('.box_st042').html('<h3><span>양식이미지</span></h3><div id="mainImage" style="height:700px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
+            if (searchDBColumnsCount == 1) {  
+                var mainImgHtml = '';
+                mainImgHtml += '<div id="mainImage">';
+                mainImgHtml += '<div id="redNemo">';
+                mainImgHtml += '</div>';
+                mainImgHtml += '</div>';
+                $('#img_content').html(mainImgHtml);
                 var originalDiv = document.getElementById("mainImage");
                 originalDiv.style.backgroundImage = "url('../../uploads/" + fileName + "')"
                 detailTable(fileName);
@@ -282,27 +296,6 @@ function dbColumnsOption(text, dbColumns) {
     optionTag += '</li>';
 
     return optionTag;
-    /*
-    var optionTag = '';
-    var selected = '';
-
-    for (var key in dbColumns) {
-        var columnText = String(dbColumns[key].text);
-        if (text.toLowerCase() == columnText.toLowerCase()) {
-            optionTag += '<option value="' + dbColumns[key].column + '" selected>' + enLabelToKorLabel(dbColumns[key].column) + '</option>';
-            selected = 'selected';
-        }
-        optionTag += '<option value="' + dbColumns[key].column + '">' + enLabelToKorLabel(dbColumns[key].column) + '</option>';
-    }
-
-    if (selected == 'selected') {
-        optionTag += '<option value="UNDEFINED">없음</option>';
-    } else {
-        optionTag += '<option value="UNDEFINED" selected>없음</option>';
-    }
-
-    return optionTag;
-    */
 }
 
 
