@@ -195,7 +195,7 @@ function appendOcrData(fileName, regions) {
                 mainImgHtml += '<div id="redNemo">';
                 mainImgHtml += '</div>';
                 mainImgHtml += '</div>';
-                mainImgHtml += '<div id="imageZoom" >';
+                mainImgHtml += '<div id="imageZoom">';
                 mainImgHtml += '<div id="redZoomNemo">';
                 mainImgHtml += '</div>';
                 mainImgHtml += '</div>';
