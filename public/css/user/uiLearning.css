@@ -45,3 +45,21 @@
     height: 30px;
     background-color: #006;
 }
+
+#mainImage {
+    height: 700px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+#redNemo {
+    display: none;
+    border: 2px solid red;
+    position: absolute;
+}
+
+button[disabled]{
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    cursor: not-allowed;
+}

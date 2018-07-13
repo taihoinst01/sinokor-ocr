@@ -62,20 +62,20 @@
                     </div>
                     <div class="box_st042">
                         <h3><span>양식이미지</span></h3>
-                        <!-- 파일업로드 -->
-                        <div class="st_infortext_01">
-                            <span>파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
-                            <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
-                                <p class="attach_btn">
-                                    <input type="file" id="uploadFile" name="file" value="upload" />
-                                    <label id="uploadFileBtn" for="customer_file">업로드</label>
-                                </p>
-                            </form>
-                            <div id="ocrProgress">
-                                <div id="ocrBar"></div>
+                        <div id="img_content">
+                            <div class="st_infortext_01">
+                                <span id="uploadInfoText">파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
+                                <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
+                                    <p class="attach_btn">
+                                        <input type="file" id="uploadFile" name="file" value="upload" />
+                                        <label id="uploadFileBtn" for="customer_file">업로드</label>
+                                    </p>
+                                </form>
+                                <div id="ocrProgress">
+                                    <div id="ocrBar"></div>
+                                </div>
                             </div>
                         </div>
-                        <!-- // 파일업로드 -->
                     </div>
                 </div>
                 <div class="box_content box_st05 box_stlast">
