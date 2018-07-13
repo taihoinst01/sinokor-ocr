@@ -4,10 +4,10 @@
     font-family: 'notokr-regular';
     src: url('/publish/font/notokr-regular.eot');
     src: url('/publish/font/notokr-regular.eot?#iefix') format('embedded-opentype'),
-         url('/publish/font/notokr-regular.woff2') format('woff2'),
-         url('/publish/font/notokr-regular.woff') format('woff'),
-         url('/publish/font/notokr-regular.ttf') format('truetype'),
-         url('/publish/font/notokr-regular.svg#notokr-regular') format('svg');
+    /*url('/publish/font/notokr-regular.woff2') format('woff2'),*/
+    /*url('/publish/font/notokr-regular.woff') format('woff'),*/
+    /*url('/publish/font/notokr-regular.ttf') format('truetype'),*/
+    url('/publish/font/notokr-regular.svg#notokr-regular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -47,7 +47,7 @@ input {box-sizing:border-box;border:1px solid #ccc;outline-style:none; font:inhe
 /* input:hover, textarea:hover {border:1px solid #444c59;}
 input:focus, textarea:focus {border:1px solid #444c59;} 
 input.noline{border:none !important;}*/
-input::-ms-clear { display: none; width : 0; height: 0; }
+    input::-ms-clear { display: none; width : 0; height: 0; }
 input[type='text'],
 .input-area input[type='email'] ,
 .input-area input[type='password'],
