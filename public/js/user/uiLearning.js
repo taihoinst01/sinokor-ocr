@@ -352,10 +352,10 @@ function hoverSquare(e) {
     var height = reImg.height;
 
     // 선택한 글씨에 빨간 네모 그리기
-    $('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 5) + 'px');
-    $('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 5) + 'px');
-    $('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 10) + 'px');
-    $('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 10) + 'px');
+    $('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 10) + 'px');
+    $('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 10) + 'px');
+    $('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
+    $('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
     $('#redNemo').show();
 
 }
