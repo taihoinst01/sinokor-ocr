@@ -49,17 +49,17 @@ function searchUser(curPage) {
             addProgressBar(2, 100); // 프로그레스바 진행
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
-                    html += '<tr>';
-                    html += '<td>' + nvl(entry.seqNum) + '</td>';
-                    html += '<td>' + nvl(entry.userId) + '</td>';
-                    html += '<td>' + '<button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn" onclick="javascript:openUpdatePw(' + entry.seqNum + ',\'' + entry.userId + '\')">수정</button>' + '</td>';
-                    html += "<td>" + nvl(entry.auth) + "</td>";
-                    html += "<td>" + nvl(entry.email) + "</td>";
-                    html += "<td>" + nvl(entry.joinDate) + "</td>";
-                    html += "<td>" + nvl(entry.lastLoginDate) + "</td>";
-                    html += "<td>" + entry.icrUseCount + "</td>";
-                    html += "<td>" + '<button class="btn btn_delete" onclick="javascript:openDeleteUser(' + entry.seqNum + ')">삭제</button>' + "</td>";
-                    html += "</tr>";
+                    html += `<tr>`;
+                    html += `<td>${nvl(entry.seqNum)}</td>`;
+                    html += `<td>${nvl(entry.userId)}</td>`;
+                    html += `<td><button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn" onclick="javascript:openUpdatePw(${entry.seqNum}, ${entry.userId})">수정</button></td>`;
+                    html += `<td>${nvl(entry.auth)}</td>`;
+                    html += `<td>${nvl(entry.email)}</td>`;
+                    html += `<td>${nvl(entry.joinDate)}</td>`;
+                    html += `<td>${nvl(entry.lastLoginDate)}</td>`;
+                    html += `<td>${entry.icrUseCount}</td>`;
+                    html += `<td><button class="btn btn_delete" onclick="javascript:openDeleteUser(${entry.seqNum})">삭제</button></td>`;
+                    html += `</tr>`;
                 });
             }
             $("#tbody_user").empty().append(html);
