@@ -8,29 +8,21 @@ var addCond = "";
 var startNum = 1;
 var moreNum = 20;
 
-
 $(function () {
     _init();
-    //multiUploadEvent();
-    //originFileUploadBtnEvent();
-    imageUploadEvent();
-    screenEvent();
-})
+});
 
-// Step0
-function _init() {
-    $('#uploadFile').css('display', 'none');
-    $("#uploadDiv").hide();
-    $('#gridDiv').hide();
-    $('#reviewDiv').hide();
-
-    // [checkbox event]
+// [Checkbox Event]
+var checkboxEvent = function () {
+    // all checkbox
     $("#listCheckAll").click(function () {
         if ($("#listCheckAll").prop("checked")) $("input[name=listCheck]").prop("checked", true);
         else $("input[name=listCheck]").prop("checked", false);
     });
+}
 
-    // [Button event]
+// [Button Event]
+var buttonEvent = function () {
     // 10개 더보기, 100개 더보기, 1000개 더보기
     $("input[name='more_button']").on("click", function () {
         startNum = startNum + moreNum;
@@ -49,6 +41,7 @@ function _init() {
         }
         searchBatchLearnDataList("");
     });
+
     // 전체, 학습미완료, 학습완료
     $("input[name='show_button']").on("click", function () {
         switch ($(this).attr("id")) {
@@ -69,34 +62,126 @@ function _init() {
         moreNum = 20;
         searchBatchLearnDataList(addCond);
     });
+
     // 정답엑셀 업로드
     $("#btn_rightExcelUpload").on("click", function () {
         fn_rightExcelUpload();
     });
+
     // 이미지 업로드
     $("#btn_imageUpload").on("click", function () {
         fn_imageUpload();
     });
+
     // 이미지 삭제
     $("#btn_imageDelete").on("click", function () {
         fn_imageDelete();
     });
+
     // 학습실행
     $("#btn_proceedLearn").on("click", function () {
         fn_proceedLearn();
     });
+
     // 수동학습
     $("#btn_manualLearn").on("click", function () {
         fn_manualLearn();
     });
+
     // 최종학습
     $("#btn_lastLearn").on("click", function () {
         fn_lastLearn();
     });
-    // list (1, 20)
-    searchBatchLearnDataList("");
+
+    // popupButton
+    $("#btn_closeLayerPopup").on("click", function () {
+        popupEvent.closePopup();
+    });
 }
 
+// [popup event]
+var popupEvent = (function () {
+    var layerPopup = $("#layerPopup");
+
+    var scrollPopup = function () {
+        //var top_layerPopup = parseInt($("#layerPopup").css('top'));
+        var top_layerPopup = ($(window).scrollTop() + ($(window).height() - layerPopup.height()) - 10);
+
+        // Scroll event
+        $(window).scroll(function () {
+            var scrollTop = $(window).scrollTop();
+            var newPosition = scrollTop + top_layerPopup + "px";
+            $("#layerPopup").css('top', newPosition);   // without animation
+            //$("#layerPopup").stop().animate({         // with follow animation
+            //    "top": newPosition
+            //}, 10);
+        }).scroll();
+    }
+
+    // open popup
+    var openPopup = function () {
+        var top = ($(window).scrollTop() + ($(window).height() - layerPopup.height()) - 10);
+        var left = ($(window).scrollLeft() + ($(window).width() - layerPopup.width()) / 2);
+        layerPopup.css("top", top);
+        layerPopup.css("left", left);
+        layerPopup.show();
+    }
+
+    // close popup
+    var closePopup = function () {
+        layerPopup.fadeOut();
+    }
+
+    return {
+        scrollPopup: scrollPopup,
+        openPopup: openPopup,
+        closePopup: closePopup
+    };
+}());
+
+// [imageUpload event]
+var imageUploadEvent = function () {
+    var multiUploadForm = $("#multiUploadForm");
+
+    $('#imageFile').on("change", function () {
+        multiUploadForm.attr("action", "/batchLearning/imageUpload");
+        if ($(this).val() !== '') {
+            multiUploadForm.submit();
+        }
+    });
+
+    $("#btn_imageUpload").on("click", function () {
+        $("#imageFile").click();
+    });
+
+    multiUploadForm.ajaxForm({
+        beforeSubmit: function (data, frm, opt) {
+            startProgressBar();
+            $("#progressMsg").html("ready upload image...");
+            addProgressBar(1, 5);
+            return true;
+        },
+        success: function (responseText, statusText) {
+            var fileNames = "";
+            $("#progressMsg").html("start upload image...");
+            addProgressBar(6, 100);
+            totCount = responseText.message.length;
+            for (var i = 0; i < responseText.message.length; i++) {
+                //processImage(responseText.message[i]);
+                fileNames += responseText.message[i] + ", ";
+            }
+            alert(responseText.message.length + "개의 이미지를 업로드함, " + fileNames + "\nTODO : 업로드된 이미지들의 정보는 DB에 저장");
+            searchBatchLearnDataList("");
+            endProgressBar();
+        },
+        error: function (e) {
+            endProgressBar();
+            console.log(e);
+        }
+    });
+}
+
+// [Function]
 // 배치학습데이터 조회
 var searchBatchLearnDataList = function (addCond) {
     var param = {
@@ -162,10 +247,12 @@ var searchBatchLearnDataList = function (addCond) {
 var fn_rightExcelUpload = function() {
 
 };
+
 // 이미지 업로드
 var fn_imageUpload = function () {
 
 };
+
 // 이미지 삭제
 var fn_imageDelete = function () {
     var chkSize = 0;
@@ -174,86 +261,40 @@ var fn_imageDelete = function () {
     });
     alert("체크된 갯수는 : " + chkSize);
 };
+
 // 학습실행
 var fn_proceedLearn = function () {
-
+    alert("학습 실행");
 };
+
 // 수동학습
 var fn_manualLearn = function () {
     //var top = ($(window).scrollTop() + ($(window).height() - $('#layerPopup').height()) / 2);
-    var top = ($(window).scrollTop() + ($(window).height() - $('#layerPopup').height()) - 10);
-    var left = ($(window).scrollLeft() + ($(window).width() - $('#layerPopup').width()) / 2);
-    $("#layerPopup").css("top", top);
-    $("#layerPopup").css("left", left);
-    $("#layerPopup").show();
+    popupEvent.openPopup();
 };
+
 // 최종학습
 var fn_lastLearn = function () {
 
 };
 
-// [upload event]
-var imageUploadEvent = function () {
-    $('#imageFile').on("change", function () {
-        $("#multiUploadForm").attr("action", "/batchLearning/imageUpload");
-        if ($(this).val() !== '') {
-            $('#multiUploadForm').submit();
-        }
-    });
+// init
+function _init() {
+    $('#uploadFile').css('display', 'none');
+    $("#uploadDiv").hide();
+    $('#gridDiv').hide();
+    $('#reviewDiv').hide();
 
-    $("#btn_imageUpload").on("click", function () {
-        $("#imageFile").click();
-    });
+    //multiUploadEvent();
+    //originFileUploadBtnEvent();
+    checkboxEvent();            // checkbox event
+    buttonEvent();              // button event
+    popupEvent.scrollPopup();   // popup event - scroll
+    imageUploadEvent();         // image upload event
 
-    $('#multiUploadForm').ajaxForm({
-        beforeSubmit: function (data, frm, opt) {
-            startProgressBar(); // start progressbar
-            $("#progressMsg").html("ready upload image...");
-            addProgressBar(1, 5); // proceed progressbar
-            return true;
-        },
-        success: function (responseText, statusText) {
-            var fileNames = "";
-            $("#progressMsg").html("start upload image...");
-            addProgressBar(6, 100); // proceed progressbar
-            totCount = responseText.message.length;
-            for (var i = 0; i < responseText.message.length; i++) {
-                //processImage(responseText.message[i]);
-                fileNames += responseText.message[i] + ", ";
-            }
-            alert(responseText.message.length + "개의 이미지를 업로드함, " + fileNames + "\nTODO : 업로드된 이미지들의 정보는 DB에 저장");
-            searchBatchLearnDataList("");
-            endProgressBar(); // end progressbar
-        },
-        error: function (e) {
-            endProgressBar(); // end progressbar
-            console.log(e);
-        }
-    });
+    searchBatchLearnDataList("");   // 배치 학습 데이터 조회
 }
 
-// [screen event]
-var screenEvent = function () {
-    //var top_layerPopup = parseInt($("#layerPopup").css('top'));
-    var top_layerPopup = ($(window).scrollTop() + ($(window).height() - $('#layerPopup').height()) - 10);
-    
-    $(window).scroll(function () {
-        var scrollTop = $(window).scrollTop();
-        var newPosition = scrollTop + top_layerPopup + "px";
-		// 애니메이션 없이 바로 따라감
-        $("#layerPopup").css('top', newPosition);
-        // 따라다니는 애니메이션 효과
-        //$("#layerPopup").stop().animate({
-        //    "top": newPosition
-        //}, 10);
-    }).scroll();
-
-    // 레이어 팝업 닫기
-    $("#btn_closeLayerPopup").on("click", function () {
-        $("#layerPopup").fadeOut();
-    });
-    
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 이하는 legacy source1
