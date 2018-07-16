@@ -43,6 +43,28 @@ function isNull(obj) {
 }
 
 /**
+ * 천단위 콤마
+ * @param {any} double
+ */
+function NumberWithComma(double) {
+    var parts = double.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+}
+/**
+ * 천단위 콤마 및 소수점 자르기
+ * @param {any} double
+ * @param {any} decimalPointCipher
+ */
+function NumberWithCommas(double, decimalPointCipher) {
+    var parts = double.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    parts[1] = parts[1].substr(0, decimalPointCipher);
+    if (decimalPointCipher < 1) return parts[0];
+    else return parts.join(".");
+}
+
+/**
  * 페이징 생성
  * 
  * @param {any} curPage 현재 페이지

@@ -35,6 +35,23 @@
     <!-- // tui-grid js import-->
     <script type="text/javascript" src="js/user/batchLearning.js"></script>
     <style>
+        #layerPopup {
+            background-color: #fff;
+            border: 1px solid red;
+            position: absolute;
+            bottom : 0%;
+            width: 80%;
+            height: 600px;
+            z-index : 100;
+            display: none
+        }
+        #layerPopup.closeButton {
+            position : absolute;
+            right: 95%;
+            top: 0;
+            border: 2px solid red;
+            cursor: pointer
+        }
         #ocrProgress {
             background-color: grey;
             position: absolute;
@@ -64,6 +81,9 @@
             <div id="ocrProgress">
                 <div id="progressMsg"></div>
                 <div id="ocrBar"></div>
+            </div>
+            <div id="layerPopup">
+                <div class="closeButton"><input type="button" id="btn_closeLayerPopup" value="닫기" /></div>
             </div>
             <!-- skip navi -->
             <div id="accessibility">
@@ -95,17 +115,95 @@
                     <!-- // Step 영역 -->
 
                     <div class="box_content box_st02">
+                        <!-- Button -->
+                        <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
+                            <input type="button" name="more_button" style="cursor:pointer" id="more10" value="10개 더보기" />
+                            <input type="button" name="more_button" style="cursor:pointer" id="more100" value="100개 더보기" />
+                            <input type="button" name="more_button" style="cursor:pointer" id="more1000" value="1000개 더보기" />
+                            <input type="button" name="show_button" style="cursor:pointer" id="show_all" value="전체" />
+                            <input type="button" name="show_button" style="cursor:pointer" id="show_unfinish" value="학습미완료" />
+                            <input type="button" name="show_button" style="cursor:pointer" id="show_finish" value="학습완료" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="button" style="cursor:pointer" id="btn_rightExcelUpload" value="정답엑셀업로드" />
 
+                            <input type="button" style="cursor:pointer;position: absolute;width:100px;" id="btn_imageUpload" value="이미지 업로드" />
+                            <input type="file" id="imageFile" name="file" value="file" multiple style="opacity: 0; position: relative; width:100px"/>
+                            
+                            <input type="button" style="cursor:pointer" id="btn_imageDelete" value="이미지 삭제" />
+                            <input type="button" style="cursor:pointer" id="btn_proceedLearn" value="학습실행" />
+                            <input type="button" style="cursor:pointer" id="btn_manualLearn" value="수동학습" />
+                            <input type="button" style="cursor:pointer" id="btn_lastLearn" value="최종학습" />
+                        </form>
+                        <!-- 배치학습데이터리스트 -->
+                        <div id="batchListDiv " class="Tbl_wrap">
+                            <table class="Tbl" summary="배치학습데이터리스트">
+                                <colgroup>
+                                    <col width="2%" />
+                                    <col width="5%" />
+                                    <col width="5%" />
+                                    <col width="5%" />
+                                    <col width="5%" />
+                                    <col width="5%" />
+                                    <col width="5%" />
+                                    <col width="5%" />
+                                    <col width="5%" />
+                                    <col width="5%" />
+                                    <col width="5%" />
+                                    <col width="4%" />
+                                    <col width="4%" />
+                                    <col width="4%" />
+                                    <col width="4%" />
+                                    <col width="4%" />
+                                    <col width="4%" />
+                                    <col width="4%" />
+                                    <col width="4%" />
+                                    <col width="4%" />
+                                    <col width="4%" />
+                                    <col width="4%" />
+                                    <col width="4%" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="listCheckAll" /></th>
+                                        <th>IMG ID</th>
+                                        <th>PGNUM-S</th>
+                                        <th>PGNUM-E</th>
+                                        <th>거래사명</th>
+                                        <th>계약명</th>
+                                        <th>보험개시일</th>
+                                        <th>보험종료일</th>
+                                        <th>화페코드</th>
+                                        <th>보험료</th>
+                                        <th>일반수수료</th>
+                                        <th>중개수수료</th>
+                                        <th>세금</th>
+                                        <th>보험료유보금적립액</th>
+                                        <th>보험료유보금해제액</th>
+                                        <th>보험료유보금적립액</th>
+                                        <th>보험료유보금해제액</th>
+                                        <th>보험금</th>
+                                        <th>부대비</th>
+                                        <th>손해조사비</th>
+                                        <th>즉시불보험금</th>
+                                        <th>NET BALANCE</th>
+                                        <th>Your Reference</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody_batchList"></tbody>
+                            </table>
+                        </div>
+
+                        <!-- legacy html -->
                         <!-- Step01 이미지 업로드 영역 -->
                         <div id="uploadDiv">
                             <h3 class="blind"><span>이미지 파일 업로드</span></h3>
                             <div class="st_infortext_01">
                                 <div id="uploadDiv">
                                     <span>파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
-                                    <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
+                                    <!--<form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
                                         <input type="file" id="uploadFile" name="file" value="upload" multiple />
                                         <p class="attach_btn"><label id="multiUploadBtn" for="customer_file">업로드</label></p>
-                                    </form>
+                                    </form>-->
                                 </div>
                                 <br />
                             </div>
@@ -145,6 +243,7 @@
                             </div>
                         </div>
                         <!-- // Step03 학습 검토 영역 -->
+                        <!-- // legacy html -->
                     </div>
 
                 </div>

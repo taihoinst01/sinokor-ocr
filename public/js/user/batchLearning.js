@@ -1,14 +1,304 @@
-﻿var totCount = 0; // 총 이미지 분석 개수
+﻿"use strict";
+
+var totCount = 0; // 총 이미지 분석 개수
 var ocrCount = 0; // ocr 수행 횟수
 var grid;
 
+var addCond = "";
+var startNum = 1;
+var moreNum = 20;
+
 $(function () {
+    _init();
+});
 
-    init();
-    multiUploadEvent();
-    originFileUploadBtnEvent();
+// [Checkbox Event]
+var checkboxEvent = function () {
+    // all checkbox
+    $("#listCheckAll").click(function () {
+        if ($("#listCheckAll").prop("checked")) $("input[name=listCheck]").prop("checked", true);
+        else $("input[name=listCheck]").prop("checked", false);
+    });
+}
 
-})
+// [Button Event]
+var buttonEvent = function () {
+    // 10개 더보기, 100개 더보기, 1000개 더보기
+    $("input[name='more_button']").on("click", function () {
+        startNum = startNum + moreNum;
+        switch ($(this).attr("id")) {
+            case "more10":
+                moreNum = 10;
+                break;
+            case "more100":
+                moreNum = 100;
+                break;
+            case "more1000":
+                moreNum = 1000;
+                break;
+            default:
+                break;
+        }
+        searchBatchLearnDataList("");
+    });
+
+    // 전체, 학습미완료, 학습완료
+    $("input[name='show_button']").on("click", function () {
+        switch ($(this).attr("id")) {
+            case "show_all":
+                addCond = "";
+                break;
+            case "show_unfinish":
+                addCond = "SHOW_UNFINISH"; // 학습 미완료
+                break;
+            case "show_finish":
+                addCond = "SHOW_FINISH"; // 학습 완료
+                break;
+            default:
+                break;
+        }
+        $("#tbody_batchList").empty(); // 리스트 제거
+        startNum = 1;
+        moreNum = 20;
+        searchBatchLearnDataList(addCond);
+    });
+
+    // 정답엑셀 업로드
+    $("#btn_rightExcelUpload").on("click", function () {
+        fn_rightExcelUpload();
+    });
+
+    // 이미지 업로드
+    $("#btn_imageUpload").on("click", function () {
+        fn_imageUpload();
+    });
+
+    // 이미지 삭제
+    $("#btn_imageDelete").on("click", function () {
+        fn_imageDelete();
+    });
+
+    // 학습실행
+    $("#btn_proceedLearn").on("click", function () {
+        fn_proceedLearn();
+    });
+
+    // 수동학습
+    $("#btn_manualLearn").on("click", function () {
+        fn_manualLearn();
+    });
+
+    // 최종학습
+    $("#btn_lastLearn").on("click", function () {
+        fn_lastLearn();
+    });
+
+    // popupButton
+    $("#btn_closeLayerPopup").on("click", function () {
+        popupEvent.closePopup();
+    });
+}
+
+// [popup event]
+var popupEvent = (function () {
+    var layerPopup = $("#layerPopup");
+
+    var scrollPopup = function () {
+        //var top_layerPopup = parseInt($("#layerPopup").css('top'));
+        var top_layerPopup = ($(window).scrollTop() + ($(window).height() - layerPopup.height()) - 10);
+
+        // Scroll event
+        $(window).scroll(function () {
+            var scrollTop = $(window).scrollTop();
+            var newPosition = scrollTop + top_layerPopup + "px";
+            $("#layerPopup").css('top', newPosition);   // without animation
+            //$("#layerPopup").stop().animate({         // with follow animation
+            //    "top": newPosition
+            //}, 10);
+        }).scroll();
+    }
+
+    // open popup
+    var openPopup = function () {
+        var top = ($(window).scrollTop() + ($(window).height() - layerPopup.height()) - 10);
+        var left = ($(window).scrollLeft() + ($(window).width() - layerPopup.width()) / 2);
+        layerPopup.css("top", top);
+        layerPopup.css("left", left);
+        layerPopup.show();
+    }
+
+    // close popup
+    var closePopup = function () {
+        layerPopup.fadeOut();
+    }
+
+    return {
+        scrollPopup: scrollPopup,
+        openPopup: openPopup,
+        closePopup: closePopup
+    };
+}());
+
+// [imageUpload event]
+var imageUploadEvent = function () {
+    var multiUploadForm = $("#multiUploadForm");
+
+    $('#imageFile').on("change", function () {
+        multiUploadForm.attr("action", "/batchLearning/imageUpload");
+        if ($(this).val() !== '') {
+            multiUploadForm.submit();
+        }
+    });
+
+    $("#btn_imageUpload").on("click", function () {
+        $("#imageFile").click();
+    });
+
+    multiUploadForm.ajaxForm({
+        beforeSubmit: function (data, frm, opt) {
+            startProgressBar();
+            $("#progressMsg").html("ready upload image...");
+            addProgressBar(1, 5);
+            return true;
+        },
+        success: function (responseText, statusText) {
+            var fileNames = "";
+            $("#progressMsg").html("start upload image...");
+            addProgressBar(6, 100);
+            totCount = responseText.message.length;
+            for (var i = 0; i < responseText.message.length; i++) {
+                //processImage(responseText.message[i]);
+                fileNames += responseText.message[i] + ", ";
+            }
+            alert(responseText.message.length + "개의 이미지를 업로드함, " + fileNames + "\nTODO : 업로드된 이미지들의 정보는 DB에 저장");
+            searchBatchLearnDataList("");
+            endProgressBar();
+        },
+        error: function (e) {
+            endProgressBar();
+            console.log(e);
+        }
+    });
+}
+
+// [Function]
+// 배치학습데이터 조회
+var searchBatchLearnDataList = function (addCond) {
+    var param = {
+        'startNum' : startNum,
+        'moreNum' : moreNum,
+        'addCond' : nvl(addCond)
+    };
+    var appendHtml = "";
+    $.ajax({
+        url: '/batchLearning/searchBatchLearnDataList',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            startProgressBar(); // start progressbar
+            addProgressBar(1, 1); // proceed progressbar
+        },
+        success: function (data) {
+            addProgressBar(2, 100); // proceed progressbar
+            if (data.length > 0) {
+                $.each(data, function (index, entry) {
+                    appendHtml += `<tr>`;
+                    appendHtml += `<td><input type="checkbox" name="listCheck" value="${entry.IMG_ID}"/></td>`;
+                    appendHtml += `<td>${entry.IMG_ID}</td>`;
+                    appendHtml += `<td>${entry.IMG_FILE_ST_NO}</td>`;
+                    appendHtml += `<td>${entry.IMG_FILE_END_NO}</td>`;
+                    appendHtml += `<td>${entry.CSCO_NM}</td>`;
+                    appendHtml += `<td>${entry.CT_NM}</td>`;
+                    appendHtml += `<td>${entry.INS_ST_DT}</td>`;
+                    appendHtml += `<td>${entry.INS_END_DT}</td>`;
+                    appendHtml += `<td>${entry.CUR_CD}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.PRE)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.COM)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.BRKG)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.TXAM)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.PRRS_CF)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.PRRS_RLS)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.LSRES_CF)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.LSRES_RLS)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.CLA)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.EXEX)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.SVF)}</td>`;
+                    appendHtml += `<td>${NumberWithComma(entry.CAS)}</td>`;
+                    appendHtml += `<td>${entry.NTBL}</td>`;
+                    appendHtml += `<td>${entry.CSCO_SA_RFRN_CNNT2}</td>`;
+                    appendHtml += `</tr>`;
+                });
+            } else {
+                appendHtml += '<tr><td colspan="23">조회할 데이터가 없습니다.</td></tr>';
+            }
+            endProgressBar(); // end progressbar
+            $(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
+        },
+        error: function (err) {
+            endProgressBar(); // end progressbar
+            console.log(err);
+        }
+    });
+};
+
+// 정답엑셀 업로드
+var fn_rightExcelUpload = function() {
+
+};
+
+// 이미지 업로드
+var fn_imageUpload = function () {
+
+};
+
+// 이미지 삭제
+var fn_imageDelete = function () {
+    var chkSize = 0;
+    $('input[name="listCheck"]').each(function (index, element) {
+        if ($(this).is(":checked")) chkSize++;
+    });
+    alert("체크된 갯수는 : " + chkSize);
+};
+
+// 학습실행
+var fn_proceedLearn = function () {
+    alert("학습 실행");
+};
+
+// 수동학습
+var fn_manualLearn = function () {
+    //var top = ($(window).scrollTop() + ($(window).height() - $('#layerPopup').height()) / 2);
+    popupEvent.openPopup();
+};
+
+// 최종학습
+var fn_lastLearn = function () {
+
+};
+
+// init
+function _init() {
+    $('#uploadFile').css('display', 'none');
+    $("#uploadDiv").hide();
+    $('#gridDiv').hide();
+    $('#reviewDiv').hide();
+
+    //multiUploadEvent();
+    //originFileUploadBtnEvent();
+    checkboxEvent();            // checkbox event
+    buttonEvent();              // button event
+    popupEvent.scrollPopup();   // popup event - scroll
+    imageUploadEvent();         // image upload event
+
+    searchBatchLearnDataList("");   // 배치 학습 데이터 조회
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 이하는 legacy source1
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Step0 : 초기 작업
 function init() {
@@ -196,7 +486,8 @@ function generateGrid(gridData) {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 이하는 legacy source
+// 이하는 legacy source2
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  
 // OCR 데이터 렌더링
 function appendOcrData(regions) {

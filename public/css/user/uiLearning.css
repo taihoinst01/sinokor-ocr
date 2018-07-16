@@ -1,47 +1,13 @@
 ﻿body {}
-#thumbnailDiv {
-    padding-right: 0;
-
-}
-#imageBox {
-    padding: 20px 0 20px 0;
-}
-#formImgDiv {
-    padding-left: 0;
-}
-.thumb-img {
-    width: 95%;
-    margin: 5%;
-    cursor: pointer;
-}
-.thumb-img:hover {
-    border: 1px solid lightblue;
-}
-.main-img {
-    width: 100%;
-    max-height: 600px;
-}
-#uploadDiv {
-    border: 1px solid black;
-    height: 300px;
-    margin: 200px 0 200px 0;
-    text-align: center;
-    padding: 100px;
-}
-#ocrProgress {
-    background-color: grey;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    background: #36f;
-    transform: translate(-50%, -50%);
-    width: 200px;
-    z-index: 1000;
-    display: none
-}
-
-#ocrBar {
-    width: 1%;
-    height: 30px;
-    background-color: #006;
-}
+#thumbnailDiv { padding-right: 0; }
+#imageBox { padding: 20px 0 20px 0; }
+#formImgDiv { padding-left: 0; }
+.thumb-img { width: 95%; margin: 5%; cursor: pointer; }
+.main-img { width: 100%; max-height: 600px; }
+#uploadDiv { border: 1px solid black; height: 300px; margin: 200px 0 200px 0; text-align: center; padding: 100px; }
+#ocrProgress { background-color: grey; position: absolute; top: 50%; left: 50%; background: #36f; transform: translate(-50%, -50%); width: 200px; z-index: 1000; display: none }
+#ocrBar { width: 1%; height: 30px; background-color: #006;}
+#mainImage { height: 700px; background-size: 100% 100%; background-repeat: no-repeat; }
+#imageZoom { background-repeat: no-repeat; display: none; }
+#redNemo, #redZoomNemo { display: none; border: 2px solid red; position: absolute; }
+button[disabled] { opacity: 0.5; cursor: default; }
