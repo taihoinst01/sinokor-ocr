@@ -17,13 +17,29 @@ const upload = multer({
         }
     }),
 });
-
+var commonDB = require(appRoot + '/public/js/common.db.js');
 var commModule = require(appRoot + '/public/js/import.js');
+var MySql = require('sync-mysql');
+var connection = new MySql({
+    host: 'localhost',
+    port: 3307,
+    user: 'root',
+    password: '1234',
+    database: 'koreanreicr'
+});
 var commonUtil = commModule.commonUtil;
 var router = commModule.router;
 var queryConfig = commModule.queryConfig;
 
 var router = express.Router();
+
+var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
+var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
+var selectLabel = queryConfig.uiLearningConfig.selectLabel;
+var insertTypo = queryConfig.uiLearningConfig.insertTypo;
+var insertDomainDic = queryConfig.uiLearningConfig.insertDomainDic;
+var selectTypo = queryConfig.uiLearningConfig.selectTypo;
+var updateTypo = queryConfig.uiLearningConfig.updateTypo;
 
 // web server to rest server file upload test router
 router.get('/dmzTest', function (req, res) {
@@ -164,12 +180,13 @@ router.post('/searchDBColumns', function (req, res) {
                 }
             }
 
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].text.toLowerCase() != ocrText[i].toLowerCase()) {
-                    data[i].text = ocrText[i];
+            if (ocrTextLen > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].text.toLowerCase() != ocrText[i].toLowerCase()) {
+                        data[i].text = ocrText[i];
+                    }
                 }
             }
-
 
             var classiText = '';
             for (var i = 0; i < ocrText.length; i++) {
@@ -223,7 +240,7 @@ router.post('/searchDBColumns', function (req, res) {
                                 data[i].column = objLabel[1];
                                 var obj = {};
                                 obj.text = objLabel[0];
-                                obj.column = objLabel[1];
+                                obj.column = objLabel[1].replace(/\r\n/g,'');
                                 dataArray.push(obj);
                             }
                         }
@@ -253,7 +270,7 @@ router.post('/searchDBColumns', function (req, res) {
 
                                     if (minDis > dis) {
                                         minDis = dis;
-                                        columnText = data[j].column;
+                                        columnText = data[j].column.replace(/\r\n/g, '');
                                     }
                                 }
                             }
@@ -271,7 +288,6 @@ router.post('/searchDBColumns', function (req, res) {
 
                         }
                     }
-
                     res.send({ 'fileName': fileName, 'data': data, 'dbColumns': dataArray });
 
                 });
@@ -370,5 +386,171 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     */
 });
 
+// uiTrain
+router.post('/uiTrain', function (req, res) {
+
+    //console.log(req.body);
+
+    var data = req.body.data;
+    
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].originText != null) {
+            console.log(data[i].originText);
+            var originSplit = data[i].originText.split(" ");
+            var textSplit = data[i].text.split(" ");
+
+            var textleng = Math.abs(data[i].originText.length - data[i].text.length);
+
+            if (textleng < 4) {
+                //typo train
+                for (var ty = 0; ty < textSplit.length; ty++) {
+                    if (originSplit[ty] != textSplit[ty]) {
+                        var selTypoCond = [];
+                        selTypoCond.push(textSplit[ty].toLowerCase());
+                        const selTypoRes = connection.query(selectTypo, selTypoCond);
+
+                        if (selTypoRes.length == 0 || selTypoRes == null) {
+                            //insert
+                            const insTypoRes = connection.query(insertTypo, selTypoCond);
+                        } else {
+                            //update
+                            var updTypoCond = [];
+                            updTypoCond.push(selTypoRes[0].KEYWORD);
+                            const updTypoRes = connection.query(updateTypo, updTypoCond);
+                        }
+                    }
+                }
+            } else {
+                //domain dictionary train
+                var os = 0;
+                var osNext = 0;
+                var updText = "";
+                for (var j = 1; j < textSplit.length; j++) {
+                    updText += textSplit[j] + ' ';
+                }
+                updText.slice(0, -1);
+
+                var domainText = [];
+                domainText.push(textSplit[0]);
+                domainText.push(updText);
+                
+                for (var ts = 0; ts < domainText.length; ts++) {
+
+                    for (os; os < originSplit.length; os++) {
+                        if (ts == 1) {
+                            var insDicCond = [];
+
+                            //originword
+                            insDicCond.push(originSplit[os]);
+
+                            //frontword
+                            if (os == 0) {
+                                insDicCond.push("<<N>>");
+                            } else {
+                                insDicCond.push(originSplit[os - 1]);
+                            }
+
+                            //correctedword
+                            if (osNext == os) {
+                                insDicCond.push(domainText[ts]);
+                            } else {
+                                insDicCond.push("<<N>>");
+                            }
+
+                            //rearword
+                            if (os == originSplit.length - 1) {
+                                insDicCond.push("<<N>>");
+                            } else {
+                                insDicCond.push(originSplit[os + 1]);
+                            }
+
+                            const insDomainDicRes = connection.query(insertDomainDic, insDicCond);
+
+                        } else if (domainText[ts].toLowerCase() != originSplit[os].toLowerCase()) {
+                            var insDicCond = [];
+
+                            //originword
+                            insDicCond.push(originSplit[os]);
+
+                            //frontword
+                            if (os == 0) {
+                                insDicCond.push("<<N>>");
+                            } else {
+                                insDicCond.push(originSplit[os - 1]);
+                            }
+
+                            //correctedword
+                            insDicCond.push("<<N>>");
+
+                            //rearword
+                            if (os == originSplit.length - 1) {
+                                insDicCond.push("<<N>>");
+                            } else {
+                                insDicCond.push(originSplit[os + 1]);
+                            }
+
+                            const insDomainDicRes = connection.query(insertDomainDic, insDicCond);
+
+                        } else {
+                            os++;
+                            osNext = os;
+                            break;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    console.log("typo test");
+
+    //text-classification DB insert
+    for (var i in data) {
+        var selectLabelCond = [];
+        selectLabelCond.push(data[i].column);
+
+        const selectLabelRes = connection.query(selectLabel, selectLabelCond);
+
+        if (selectLabelRes.length == 0) {
+            data[i].textClassi = 'undefined';
+        } else {
+            data[i].textClassi = selectLabelRes[0].LABEL;
+            data[i].labelMapping = selectLabelRes[0].ENKEYWORD;
+        }
+
+        var insTextClassifiCond = [];
+        insTextClassifiCond.push(data[i].text);
+        insTextClassifiCond.push(data[i].textClassi);
+
+        const insTextClassifiRes = connection.query(insertTextClassification, insTextClassifiCond);
+    }
+
+    const defaults = {
+        encoding: 'utf8',
+    };
+
+    //text-classification train
+    var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
+    exec(exeTextString, defaults, function (err, stdout, stderr) {
+        //label-mapping DB insert
+        for (var i in data) {
+            if (data[i].textClassi == "fixlabel" || data[i].textClassi == "entryrowlabel") {
+                var insLabelMapCond = [];
+                insLabelMapCond.push(data[i].text);
+                insLabelMapCond.push(data[i].labelMapping);
+
+                const insLabelMapRes = connection.query(insertLabelMapping, insLabelMapCond);
+            }
+        }
+
+        //label-mapping train
+        var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\train.py'
+        exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
+            res.send("ui 학습 완료");
+        });
+
+    });
+});
 
 module.exports = router;

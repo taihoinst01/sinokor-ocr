@@ -13,6 +13,7 @@ $(function () {
     init();
     uploadFileEvent();
     thumbImgPagingEvent();
+    uiTrainEvent();
 
 });
 
@@ -293,7 +294,7 @@ function dbColumnsOption(text, dbColumns) {
         }
     }
     if (!isMatch) {
-        optionTag += '<a class="dbColumnText" href="javascript:void(0);">없음</a>';
+        optionTag += '<a class="dbColumnText" href="javascript:void(0);">none</a>';
     }
     optionTag += '<ul>';
     for (var key in dbColumns) {
@@ -487,61 +488,61 @@ function enLabelToKorLabel(text) {
             label = '참고';
             break;
         case 'CSCO_NM_VALUE':
-            label = '거래사명값';
+            label = '거래사명 값';
             break;
         case 'CT_NM_VALUE':
-            label = '계약명값';
+            label = '계약명 값';
             break;
         case 'INS_ST_DT_VALUE':
-            label = '보험개시일값';
+            label = '보험개시일 값';
             break;
         case 'INS_END_DT_VALUE':
-            label = '보험종료일값';
+            label = '보험종료일 값';
             break;
         case 'CUR_CD_VALUE':
-            label = '화폐코드값';
+            label = '화폐코드 값';
             break;
         case 'PRE_VALUE':
-            label = '보험료값';
+            label = '보험료 값';
             break;
         case 'COM_VALUE':
-            label = '일반수수료값';
+            label = '일반수수료 값';
             break;
         case 'BRKG_VALUE':
-            label = '중개수수료값';
+            label = '중개수수료 값';
             break;
         case 'TXAM_VALUE':
-            label = '세금값';
+            label = '세금 값';
             break;
         case 'PRRS_CF_VALUE':
-            label = '보험료유보금적립액값';
+            label = '보험료유보금적립액 값';
             break;
         case 'PRRS_RLS_VALUE':
-            label = '보험료유보금해제액값';
+            label = '보험료유보금해제액 값';
             break;
         case 'LSRES_CF_VALUE':
-            label = '보험금유보금적립액값';
+            label = '보험금유보금적립액 값';
             break;
         case 'LSRES_RLS_VALUE':
-            label = '보험금유보금해제액값';
+            label = '보험금유보금해제액 값';
             break;
         case 'CLA_VALUE':
-            label = '보험금값';
+            label = '보험금 값';
             break;
         case 'EXEX_VALUE':
-            label = '부대비값';
+            label = '부대비 값';
             break;
         case 'SVF_VALUE':
-            label = '손해조사비값';
+            label = '손해조사비 값';
             break;
         case 'CAS_VALUE':
-            label = '즉시불보험금(CASH)값';
+            label = '즉시불보험금(CASH) 값';
             break;
         case 'NTBL_VALUE':
-            label = '순평균값';
+            label = '순평균 값';
             break;
         case 'CSCO_SA_RFRN_CNNT2_VALUE':
-            label = '참고값';
+            label = '참고n값';
             break;
         default:
             label = text;
@@ -588,3 +589,59 @@ function imageMove(xDistance, yDistance) {
     zoomDiv.style.backgroundPosition = "-" + x + "px -" + y + "px";
 }
 */
+
+function uiTrainEvent() {
+    $("#uiTrainBtn").click(function (e) {
+        uiTrainAjax();
+    });
+}
+
+function uiTrainAjax() {
+
+    var dataArray = [];
+
+    var tr = $("#textResultTbl tbody").children();
+
+    //console.log(td.eq(0).text());
+
+    for (var i = 1; i < tr.length; i++) {
+        var td = tr.eq(i).children();
+
+        var text = td.eq(0).children('input[type="text"]').val();
+        var location = td.eq(0).children('input[type="hidden"]').val();
+        var column = td.eq(1).children().find("a.dbColumnText").text();
+        //var textClassi = td.eq(1).children();
+
+        var obj = {}
+        obj.text = text;
+        obj.location = location;
+        obj.column = column;
+        //obj.textClassi = textClassi;
+
+        dataArray.push(obj);
+    }
+
+    for (var i = 0; i < lineText[0].data.length; i++) {
+        for (var j = 0; j < dataArray.length; j++) {
+            if (lineText[0].data[i].location == dataArray[j].location) {
+                if (lineText[0].data[i].text != dataArray[j].text) {
+                    dataArray[j].originText = lineText[0].data[i].text;
+                }
+            }
+        }
+    }
+
+    $.ajax({
+        url: '/uiLearning/uiTrain',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ "data": dataArray }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            alert(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
