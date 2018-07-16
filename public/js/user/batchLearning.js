@@ -1,67 +1,92 @@
-﻿"use strict";
+﻿//import { identifier } from "babel-types";
+
+"use strict";
 
 var totCount = 0; // 총 이미지 분석 개수
 var ocrCount = 0; // ocr 수행 횟수
 var grid;
 
-var addCond = "";
+var addCond = "LEARN_N"; // LEARN_N:학습미완료, LEARN_Y:학습완료, default:학습미완료
 var startNum = 1;
 var moreNum = 20;
 
 $(function () {
+    //$("select[name=select_view_count]").on("change", function () {
+    //    alert(1);
+    //    //$(this).attr("title", `행표시 : ` + $(this).val());
+    //    searchBatchLearnDataList(addCond);
+    //});
+
     _init();
 });
 
 // [Checkbox Event]
 var checkboxEvent = function () {
     // all checkbox
-    $("#listCheckAll").click(function () {
-        if ($("#listCheckAll").prop("checked")) $("input[name=listCheck]").prop("checked", true);
-        else $("input[name=listCheck]").prop("checked", false);
+    $("#listCheckAll_before").on("click", function () {
+        if ($("#listCheckAll_before").prop("checked")) $("input[name=listCheck_before]").prop("checked", true);
+        else $("input[name=listCheck_before]").prop("checked", false);
+    });
+    $("#listCheckAll_after").on("click", function () {
+        if ($("#listCheckAll_after").prop("checked")) $("input[name=listCheck_after]").prop("checked", true);
+        else $("input[name=listCheck_after]").prop("checked", false);
+    });
+
+    // checkbox change
+    $("input[name=listCheck_before], #listCheckAll_before").on("change", function () {
+        let chkCnt = 0;
+        $("input[name=listCheck_before]").each(function (index, entry) {
+            if ($(this).is(":checked")) chkCnt++;
+        });
+        $("#choose_cnt_before").html(chkCnt);
+    });
+    $("input:checkbox[name=listCheck_after], #listCheckAll_after").on("change", function () {
+        let chkCnt = 0;
+        $("input[name=listCheck_after]").each(function (index, entry) {
+            if ($(this).is(":checked")) chkCnt++;
+        });
+        $("#choose_cnt_after").html(chkCnt);
     });
 }
 
 // [Button Event]
 var buttonEvent = function () {
     // 10개 더보기, 100개 더보기, 1000개 더보기
-    $("input[name='more_button']").on("click", function () {
-        startNum = startNum + moreNum;
-        switch ($(this).attr("id")) {
-            case "more10":
-                moreNum = 10;
-                break;
-            case "more100":
-                moreNum = 100;
-                break;
-            case "more1000":
-                moreNum = 1000;
-                break;
-            default:
-                break;
-        }
-        searchBatchLearnDataList("");
+    $("#select_view_count").on("change", function () {
+        alert("얘는 되나");
+    });
+
+    // 학습미완료 보기
+    $("#tab_before").on("click", function () {
+        addCond = "LEARN_N";
+        searchBatchLearnDataList(addCond);
+    });
+    // 학습완료 보기
+    $("#tab_after").on("click", function () {
+        addCond = "LEARN_Y";
+        searchBatchLearnDataList(addCond);
     });
 
     // 전체, 학습미완료, 학습완료
-    $("input[name='show_button']").on("click", function () {
-        switch ($(this).attr("id")) {
-            case "show_all":
-                addCond = "";
-                break;
-            case "show_unfinish":
-                addCond = "SHOW_UNFINISH"; // 학습 미완료
-                break;
-            case "show_finish":
-                addCond = "SHOW_FINISH"; // 학습 완료
-                break;
-            default:
-                break;
-        }
-        $("#tbody_batchList").empty(); // 리스트 제거
-        startNum = 1;
-        moreNum = 20;
-        searchBatchLearnDataList(addCond);
-    });
+    //$("input[name='show_button']").on("click", function () {
+    //    switch ($(this).attr("id")) {
+    //        case "show_all":
+    //            addCond = "";
+    //            break;
+    //        case "show_unfinish":
+    //            addCond = "LEARN_N"; // 학습 미완료
+    //            break;
+    //        case "show_finish":
+    //            addCond = "LEARN_Y"; // 학습 완료
+    //            break;
+    //        default:
+    //            break;
+    //    }
+    //    $("#tbody_batchList").empty(); // 리스트 제거
+    //    startNum = 1;
+    //    moreNum = 20;
+    //    searchBatchLearnDataList(addCond);
+    //});
 
     // 정답엑셀 업로드
     $("#btn_rightExcelUpload").on("click", function () {
@@ -186,10 +211,12 @@ var imageUploadEvent = function () {
 var searchBatchLearnDataList = function (addCond) {
     var param = {
         'startNum' : startNum,
-        'moreNum' : moreNum,
+        'moreNum': nvl2($("#select_view_count").val(), 20),
         'addCond' : nvl(addCond)
     };
+    
     var appendHtml = "";
+    var checkboxHtml = "";
     $.ajax({
         url: '/batchLearning/searchBatchLearnDataList',
         type: 'post',
@@ -201,40 +228,49 @@ var searchBatchLearnDataList = function (addCond) {
             addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
+            if (addCond == "LEARN_N") $("#total_cnt_before").html(data.length);
+            else $("#total_cnt_after").html(data.length);
             addProgressBar(2, 100); // proceed progressbar
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
-                    appendHtml += `<tr>`;
-                    appendHtml += `<td><input type="checkbox" name="listCheck" value="${entry.IMG_ID}"/></td>`;
-                    appendHtml += `<td>${entry.IMG_ID}</td>`;
-                    appendHtml += `<td>${entry.IMG_FILE_ST_NO}</td>`;
-                    appendHtml += `<td>${entry.IMG_FILE_END_NO}</td>`;
-                    appendHtml += `<td>${entry.CSCO_NM}</td>`;
-                    appendHtml += `<td>${entry.CT_NM}</td>`;
-                    appendHtml += `<td>${entry.INS_ST_DT}</td>`;
-                    appendHtml += `<td>${entry.INS_END_DT}</td>`;
-                    appendHtml += `<td>${entry.CUR_CD}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.PRE)}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.COM)}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.BRKG)}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.TXAM)}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.PRRS_CF)}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.PRRS_RLS)}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.LSRES_CF)}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.LSRES_RLS)}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.CLA)}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.EXEX)}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.SVF)}</td>`;
-                    appendHtml += `<td>${NumberWithComma(entry.CAS)}</td>`;
-                    appendHtml += `<td>${entry.NTBL}</td>`;
-                    appendHtml += `<td>${entry.CSCO_SA_RFRN_CNNT2}</td>`;
-                    appendHtml += `</tr>`;
+                    // allow after or before checkbox name
+                    if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMG_ID}" class="stb00" name="listCheck_before" /></div></th>`;
+                    else checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMG_ID}" class="stb00" name="listCheck_after" /></div></th>`;
+
+                    appendHtml += `<tr>` + checkboxHtml + 
+                        `<td>${entry.IMG_ID}</td>
+                        <td>${entry.IMG_FILE_ST_NO}</td>
+                        <td>${entry.IMG_FILE_END_NO}</td>
+                        <td>${entry.CSCO_NM}</td>
+                        <td>${entry.CT_NM}</td>
+                        <td>${entry.INS_ST_DT}</td>
+                        <td>${entry.INS_END_DT}</td>
+                        <td>${entry.CUR_CD}</td>
+                        <td>${NumberWithComma(entry.PRE)}</td>
+                        <td>${NumberWithComma(entry.COM)}</td>
+                        <td>${NumberWithComma(entry.BRKG)}</td>
+                        <td>${NumberWithComma(entry.TXAM)}</td>
+                        <td>${NumberWithComma(entry.PRRS_CF)}</td>
+                        <td>${NumberWithComma(entry.PRRS_RLS)}</td>
+                        <td>${NumberWithComma(entry.LSRES_CF)}</td>
+                        <td>${NumberWithComma(entry.LSRES_RLS)}</td>
+                        <td>${NumberWithComma(entry.CLA)}</td>
+                        <td>${NumberWithComma(entry.EXEX)}</td>
+                        <td>${NumberWithComma(entry.SVF)}</td>
+                        <td>${NumberWithComma(entry.CAS)}</td>
+                        <td>${entry.NTBL}</td>
+                        <td>${entry.CSCO_SA_RFRN_CNNT2}</td>
+                    </tr>`;
                 });
             } else {
-                appendHtml += '<tr><td colspan="23">조회할 데이터가 없습니다.</td></tr>';
+                appendHtml += `<tr><td colspan="23">조회할 데이터가 없습니다.</td></tr>`;
             }
             endProgressBar(); // end progressbar
-            $(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
+            //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
+            if (addCond == "LEARN_N") $("#tbody_batchList_before").empty().append(appendHtml);
+            else $("#tbody_batchList_after").empty().append(appendHtml);
+
+            checkboxEvent(); // refresh checkbox event
         },
         error: function (err) {
             endProgressBar(); // end progressbar
@@ -292,7 +328,7 @@ function _init() {
     popupEvent.scrollPopup();   // popup event - scroll
     imageUploadEvent();         // image upload event
 
-    searchBatchLearnDataList("");   // 배치 학습 데이터 조회
+    searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
 }
 
 

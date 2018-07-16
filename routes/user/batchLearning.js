@@ -53,8 +53,8 @@ var fnSearchBatchLearningDataList = function (req, res) {
     // 조건절
     var condQuery = "";
     if (!commonUtil.isNull(req.body.addCond)) {
-        if (req.body.addCond == "SHOW_UNFINISH") condQuery = " AND CSCO_NM IS NULL AND CT_NM IS NULL ";
-        else if (req.body.addCond == "SHOW_FINISH") condQuery = " AND CSCO_NM IS NOT NULL AND CT_NM IS NOT NULL ";
+        if (req.body.addCond == "LEARN_N") condQuery = " AND CSCO_NM IS NULL AND CT_NM IS NULL ";
+        else if (req.body.addCond == "LEARN_Y") condQuery = " AND CSCO_NM IS NOT NULL AND CT_NM IS NOT NULL ";
     }
     // LIMIT
     var limitQuery = "";

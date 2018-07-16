@@ -1,7 +1,6 @@
 
 jQuery(function($){
 
-
 	// LNB_좌우이동_효과 
 		$('.btn_reduction').click(function(){
 			$('.lnb_menu').animate({'width':'50px'},250);
@@ -13,14 +12,15 @@ jQuery(function($){
 
 		});
 		$('.btn_expansion').click(function(){
-			$('.lnb_menu').animate({'width':'204px'},250);
-			$('#content').animate({'margin-left':'205px'},250);
+			$('.lnb_menu').animate({'width':'185px'},250);
+			$('#content').animate({'margin-left':'185px'},250);
 			$(this).hide();
 			$('.btn_reduction').show();
 			$('.lnb_menu').removeClass('on');			
 			$('.lnb_menu h3 span, .lnb_menu li a span').delay(200).fadeIn(100);	
 
 		});
+
 
 	// INPUT 글자입력시에 삭제버튼생성
 	var $ipt = $('.box_inpw_in input'), 
@@ -48,12 +48,24 @@ jQuery(function($){
 		});
 
 	// input 선택시 전체선택/해제
-	$("#checknb_all").change(function(){
-	 	var chk = $(".checknb_alls");
+	$("#sta00_all").change(function(){
+	 	var chk = $(".sta00");
 	 	if(this.checked){
 	  	chk.prop("checked", true);
+	  	chk.parent().addClass('ez-checked');
 	 	}else{
 	  	chk.prop("checked", false);
+	  	chk.parent().removeClass('ez-checked');
+	 	}
+	});
+	$("#stb00_all").change(function(){
+	 	var chk = $(".stb00");
+	 	if(this.checked){
+	  	chk.prop("checked", true);
+	  	chk.parent().addClass('ez-checked');
+	 	}else{
+	  	chk.prop("checked", false);
+	  	chk.parent().removeClass('ez-checked');
 	 	}
 	});
 
@@ -68,9 +80,43 @@ jQuery(function($){
 	    }
 	});
 
+	// 버튼 선택시 class=on 추가제거
+	$('.button_st5').click(function(e){
+	 	var thiss = $(this);
+	 	if(thiss.hasClass('on')){
+	  		thiss.removeClass('on');
+	 	}else{
+	 		thiss.addClass('on');
+	 	}
+	});
 
+	// TEP 버튼 선택시 시변경
+	$('.btn_tep_01').click(function(){
+	 	$('.bt_tep > li').removeClass("on");
+	 	$(this).parent().addClass('on');
+	 	$('.tep_st02').hide();
+	 	$('.tep_st01').show();
+	 	$('.subtit_st01 span').text('학습미완료 보기')
+	});
+	$('.btn_tep_02').click(function(){
+	 	$('.bt_tep > li').removeClass("on");
+	 	$(this).parent().addClass('on');
+	 	$('.tep_st01').hide();
+	 	$('.tep_st02').show();
+	 	$('.subtit_st01 span').text('학습완료 보기')
+	});
 
-
+	// 학습실행팝업창 학습범위지정 선택시 활성화
+	$('#radio-choice-3').on('change',function(){
+		if( $(this).is(':checked') ){
+			$('.box_day').fadeIn(300);
+		} 
+	});
+	$('#radio-choice-1, #radio-choice-2').on('change',function(){
+		if( $(this).is(':checked') ){
+			$('.box_day').fadeOut(100);
+		} 
+	});
 
 });
 
@@ -140,8 +186,8 @@ jQuery(function($){
 						//'top': ((headerHeight-(arrowHeight/2))/2) + 'px'
 						'right': '0px',
 						'top': '0px',
-						'width': '24px',
-						'height': '28px'
+						'width': '30px',
+						'height': '30px'
 					});
 				};				
 				this.show = function(){
@@ -223,21 +269,18 @@ function layer_open(el){
 	// 화면의 중앙에 레이어를 띄운다.
 	if (temp.outerHeight() < $(document).height() ) temp.css('margin-top', '-'+temp.outerHeight()/2+'px');
 	else temp.css('top', '0px');
-	if (temp.outerWidth() < $(document).width() ) temp.css('margin-left', '-354px');
+	if (temp.outerWidth() < $(document).width() ) temp.css('margin-left', '-'+temp.outerWidth()/2+'px');
 	else temp.css('left', '0px');
 	//	temp.find('a.cbtn').click(function(e){
 	$('a.cbtn').click(function(e){
-		if(bg){
-			$('.poplayer').fadeOut(); //'bg' 클래스가 존재하면 레이어를 사라지게 한다. 
-		}else{
-			temp1.fadeOut();
-		}
+		$(this).parents('.poplayer').fadeOut();
 		e.preventDefault();
 	});
 	$('.poplayer .bg_click').click(function(e){	//배경을 클릭하면 레이어를 사라지게 하는 이벤트 핸들러
 		$('.poplayer').fadeOut();
-		e.preventDefault();
+		e.preventDefault();		
 	});
+
 }
 
 
@@ -265,10 +308,12 @@ $(document).ready(function(){
 /* Input Cleckbox */
 (function($){$.fn.ezMark=function(options){options=options||{};var defaultOpt={checkboxCls:options.checkboxCls||'ez-checkbox',radioCls:options.radioCls||'ez-radio',checkedCls:options.checkedCls||'ez-checked',selectedCls:options.selectedCls||'ez-selected',hideCls:'ez-hide'};return this.each(function(){var $this=$(this);var wrapTag=$this.attr('type')=='checkbox'?'<div class="'+defaultOpt.checkboxCls+'">':'<div class="'+defaultOpt.radioCls+'">';if($this.attr('type')=='checkbox'){$this.addClass(defaultOpt.hideCls).wrap(wrapTag).change(function(){if($(this).is(':checked')){$(this).parent().addClass(defaultOpt.checkedCls);}
 else{$(this).parent().removeClass(defaultOpt.checkedCls);}});if($this.is(':checked')){$this.parent().addClass(defaultOpt.checkedCls);}}
-else if($this.attr('type')=='radio'){$this.addClass(defaultOpt.hideCls).wrap(wrapTa).change(function(){$('input[name="'+$(this).attr('name')+'"]').each(function(){if($(this).is(':checked')){$(this).parent().addClass(defaultOpt.selectedCls);}else{$(this).parent().removeClass(defaultOpt.selectedCls);}});});if($this.is(':checked')){$this.parent().addClass(defaultOpt.selectedCls);}}});}})(jQuery);
+else if($this.attr('type')=='radio'){$this.addClass(defaultOpt.hideCls).wrap(wrapTag).change(function(){$('input[name="'+$(this).attr('name')+'"]').each(function(){if($(this).is(':checked')){$(this).parent().addClass(defaultOpt.selectedCls);}else{$(this).parent().removeClass(defaultOpt.selectedCls);}});});if($this.is(':checked')){$this.parent().addClass(defaultOpt.selectedCls);}}});}})(jQuery);
+
+
 
 $(document).ready(function(){
-//	$('input[type=radio]').ezMark();
+	$('input[type=radio]').ezMark();
 	$('input[type=checkbox]').ezMark();
 	new $.Zebra_Tooltips($('.tip'));
 });

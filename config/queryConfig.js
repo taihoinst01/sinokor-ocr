@@ -51,13 +51,16 @@ var dbcolumnsConfig = {
 
 var batchLearningConfig = {
     selectBatchLearningDataList: 
-        "SELECT IMG_ID, IMG_FILE_ST_NO, IMG_FILE_END_NO, CSCO_NM, CT_NM, INS_ST_DT, INS_END_DT, CUR_CD, PRE, COM, BRKG, TXAM, PRRS_CF, PRRS_RLS, LSRES_CF, LSRES_RLS, CLA, EXEX, SVF, CAS, NTBL, CSCO_SA_RFRN_CNNT2 " +
-	    " FROM tbl_batch_learn_data WHERE 1=1 ",
+        `SELECT IMG_ID, IMG_FILE_ST_NO, IMG_FILE_END_NO, CSCO_NM, CT_NM,  
+                DATE_FORMAT(INS_ST_DT, '%Y-%m-%d %H:%i:%s') AS INS_ST_DT, 
+                DATE_FORMAT(INS_END_DT, '%Y-%m-%d %H:%i:%s') AS INS_END_DT, 
+                CUR_CD, PRE, COM, BRKG, TXAM, PRRS_CF, PRRS_RLS, LSRES_CF, LSRES_RLS, CLA, EXEX, SVF, CAS, NTBL, CSCO_SA_RFRN_CNNT2
+	       FROM tbl_batch_learn_data WHERE 1=1 `,
     insertBatchLearningData:
         //"INSERT INTO TBL_TEXT_CLASSIFICATION_DEV (X_COODI, Y_COODI, HEIGHT, LENGHT, TEXT, CLASS) " +
         //"VALUES(?, ?, ?, ?, ?, ?)"
-        "INSERT INTO TBL_TEXT_CLASSIFICATION_DEV (X_COODI, Y_COODI, LENGHT, TEXT) " +
-        "VALUES(?, ?, ?, ?)"
+       `"INSERT INTO TBL_TEXT_CLASSIFICATION_DEV (X_COODI, Y_COODI, LENGHT, TEXT) " +
+        VALUES(?, ?, ?, ?)`
 }
 
 var uiLearningConfig = {
