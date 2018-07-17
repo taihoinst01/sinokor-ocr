@@ -16,9 +16,25 @@ $(function () {
     //    //$(this).attr("title", `행표시 : ` + $(this).val());
     //    searchBatchLearnDataList(addCond);
     //});
-
+    idealformsEvent();
     _init();
 });
+
+// [Select Event]
+var selectViewCount = function (value) {
+    $("#select_view_count").val(value);
+    searchBatchLearnDataList(addCond);
+}
+
+var idealformsEvent = function () {
+    $("#select_view_count").on("change", function () {
+        alert(1);
+    });
+
+    //$("#select_view_count").change(function () {
+    //    alert(1);
+    //});
+}
 
 // [Checkbox Event]
 var checkboxEvent = function () {
@@ -51,10 +67,6 @@ var checkboxEvent = function () {
 
 // [Button Event]
 var buttonEvent = function () {
-    // 10개 더보기, 100개 더보기, 1000개 더보기
-    $("#select_view_count").on("change", function () {
-        alert("얘는 되나");
-    });
 
     // 학습미완료 보기
     $("#tab_before").on("click", function () {

@@ -102,25 +102,30 @@
             <!-- 본문영역 -->
             <div id="content">
                 <h2 class="subtit subtit_st01">기본 LIST -  <span id="tab_title">학습미완료 보기</span></h2>
-                <select id="select_view_count2" title="20">
-                    <option value="20">20</option>
-                    <option value="100">100</option>
-                    <option value="1000">1000</option>
-                </select>
-
                 <!-- TEP 상단영역 -->
                 <div class="tep_tit">
                     <ul class="bt_tep">
                         <li class="on"><a href="#none" id="tab_before" class="btn_tep_01" title="Before Training">Before Training</a></li>
                         <li><a href="#none" class="btn_tep_02" id="tab_after" title="After Training">After Training</a></li>
                     </ul>
-                    <div id="div_select_view_count" class="selects">
+                    <!--<div id="div_select_view_count" class="selects">
                         <select id="select_view_count" title="20">
                             <option value="20">20</option>
                             <option value="100">100</option>
                             <option value="1000">1000</option>
                         </select>
+                    </div>-->
+                    <input type="hidden" id="select_view_count" value="20" />
+                    <div class="select_style">
+                        <span class="ctrl"><span class="arrow"></span></span>
+                        <button type="button" class="myValue">선택하기</button>
+                        <ul class="aList">
+                            <li><a href="#none" onclick="javascript: selectViewCount(20)">행표시 : 20</a></li>
+                            <li><a href="#none" onclick="javascript: selectViewCount(100)">행표시 : 100</a></li>
+                            <li><a href="#none" onclick="javascript: selectViewCount(1000);">행표시 : 1000</a></li>
+                        </ul>
                     </div>
+
                     <div class="fr">
                         <!--<button type="button" id="btn_rightExcelUpload" class="button_st5 on">Excel Upload</button>-->
                         <button type="button" id="btn_rightExcelUpload" class="button_st5">Excel Upload</button>

@@ -118,6 +118,81 @@ jQuery(function($){
 		} 
 	});
 
+
+/* select_style 관련 */
+	// Common
+	var select_root = $('div.select_style');
+	var select_value = $('.myValue, .ctrl');
+	var select_a = $('div.select_style>ul>li>a');
+	var select_input = $('div.select_style>ul>li>input[type=radio]');
+	var select_label = $('div.select_style>ul>li>label');
+	
+	// Radio Default Value
+	$('div.myValue').each(function(){
+		var default_value = $(this).next('.iList').find('input[checked]').next('label').text();
+		$(this).append(default_value);
+	});
+	
+	// Line
+	select_value.bind('focusin',function(){$(this).addClass('outLine');});
+	select_value.bind('focusout',function(){$(this).removeClass('outLine');});
+	select_input.bind('focusin',function(){$(this).parents('div.select_style').children('div.myValue').addClass('outLine');});
+	select_input.bind('focusout',function(){$(this).parents('div.select_style').children('div.myValue').removeClass('outLine');});
+	
+	// Show
+	function show_option(){
+		$(this).parents('div.select_style:first').toggleClass('open');
+	}
+	
+	// Hover
+	function i_hover(){
+		$(this).parents('ul:first').children('li').removeClass('hover');
+		$(this).parents('li:first').toggleClass('hover');
+	}
+	
+	// Hide
+	function hide_option(){
+		var t = $(this);
+		setTimeout(function(){
+			t.parents('div.select_style:first').removeClass('open');
+		}, 1);
+	}
+	
+	// Set Input
+	function set_label(){
+		var v = $(this).next('label').text();
+		$(this).parents('ul:first').prev('.myValue').text('').append(v);
+		$(this).parents('ul:first').prev('.myValue').addClass('selected');
+	}
+	
+	// Set Anchor
+	function set_anchor(){
+		var v = $(this).text();
+		$(this).parents('ul:first').prev('.myValue').text('').append(v);
+		$(this).parents('ul:first').prev('.myValue').addClass('selected');
+	}
+
+	// Anchor Focus Out
+	$('*:not("div.select_style a")').focus(function(){
+		$('.aList').parent('.select_style').removeClass('open');
+	});
+	
+	select_value.click(show_option);
+	select_root.removeClass('open');
+	select_root.mouseleave(function(){$(this).removeClass('open');});
+	select_a.click(set_anchor).click(hide_option).focus(i_hover).hover(i_hover);
+	select_input.change(set_label).focus(set_label);
+	select_label.hover(i_hover).click(hide_option);
+	
+	// Form Reset
+	$('input[type="reset"], button[type="reset"]').click(function(){
+		$(this).parents('form:first').find('.myValue').each(function(){
+			var origin = $(this).next('ul:first').find('li:first label').text();
+			$(this).text(origin).removeClass('selected');
+		});
+	});
+
+	
 });
 
 
@@ -187,7 +262,7 @@ jQuery(function($){
 						'right': '0px',
 						'top': '0px',
 						'width': '30px',
-						'height': '30px'
+						'height': '38px'
 					});
 				};				
 				this.show = function(){

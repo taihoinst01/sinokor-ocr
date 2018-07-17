@@ -288,7 +288,7 @@ function dbColumnsOption(text, dbColumns) {
     for (var key in dbColumns) {
         var columnText = String(dbColumns[key].text);
         if (text.toLowerCase() == columnText.toLowerCase()) {
-            optionTag += '<a class="dbColumnText" href="javascript:void(0);">' + enLabelToKorLabel(dbColumns[key].column) + '</a>';
+            optionTag += '<a class="dbColumnText" href="javascript:void(0);">' + enLabelToKorLabel(dbColumns[key].column) + '</a><p>Label</p>';
             isMatch = true;
             break;
         }
@@ -416,7 +416,7 @@ function enLabelToKorLabel(text) {
 
     switch (text) {
         case 'CSCO_NM':
-            label = '거래사명';
+            label = '거래사명 LABEL';
             break;
         case 'CT_NM':
             label = '계약명';
