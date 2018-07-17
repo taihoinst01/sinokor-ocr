@@ -11,7 +11,7 @@ with open('frequency_dictionary_en_82_765.txt') as f:
         line = line.split(" ")
         textList.append(line[0])
 
-print(textList.__contains__("infinity"))
+#print(textList.__contains__("infinity"))
 
 for originword in sys.argv[1:]:
     for word in originword.split():
