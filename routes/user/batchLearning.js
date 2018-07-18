@@ -275,9 +275,11 @@ router.get('/mlEvalTest', function (req, res) {
         domainDictionaryEval(result1, function (result2) {
             
             textClassificationEval(result2, function (result3) {
-                console.log(result3);
-                res.send("test");
-
+                
+                labelMappingEval(result3, function (result4) {
+                    console.log(result4);
+                    res.send("test");
+                })
             })
         })
     });
@@ -376,15 +378,23 @@ function textClassificationEval(data, callback) {
 }
 
 //label mapping eval
-function labelMappingEval(req, callback) {
+function labelMappingEval(data, callback) {
+
+    var labelData = [];
+
+    for (var num in data) {
+        if (data[num].label == "fixlabel" || data[num].label == "entryrowlabel") {
+            labelData.push(data[num]);
+        }
+    }
+
+    var args = dataToArgs(labelData);
+
     var exeTypoString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
 
-        console.log(stdout);
-
         var labelMapping = stdout.split("^");
 
-        //var jsonLabel = JSON.parse(stdout1);
         var dataArray = [];
 
         for (var key in labelMapping) {
@@ -393,7 +403,7 @@ function labelMappingEval(req, callback) {
 
             for (var i = 0; i < data.length; i++) {
                 if (data[i].text.toLowerCase() == objLabel[0].toLowerCase()) {
-                    data[i].column = objLabel[1];
+                    data[i].column = objLabel[1].replace(/\r\n/g, '');
                     var obj = {};
                     obj.text = objLabel[0];
                     obj.column = objLabel[1].replace(/\r\n/g, '');
@@ -438,7 +448,7 @@ function labelMappingEval(req, callback) {
                 obj.text = data[i].text;
                 obj.column = data[i].column;
 
-                console.log(obj);
+                //console.log(obj);
 
                 dataArray.push(obj);
 
@@ -518,12 +528,51 @@ function domainDictionaryTrain() {
 
 }
 
-function textClassificationTrain() {
+function textClassificationTrain(data) {
+    //text-classification DB insert
+    for (var i in data) {
+        var selectLabelCond = [];
+        selectLabelCond.push(data[i].column);
 
+        const selectLabelRes = connection.query(selectLabel, selectLabelCond);
+
+        if (selectLabelRes.length == 0) {
+            data[i].textClassi = 'undefined';
+        } else {
+            data[i].textClassi = selectLabelRes[0].LABEL;
+            data[i].labelMapping = selectLabelRes[0].ENKEYWORD;
+        }
+
+        var insTextClassifiCond = [];
+        insTextClassifiCond.push(data[i].text);
+        insTextClassifiCond.push(data[i].textClassi);
+
+        const insTextClassifiRes = connection.query(insertTextClassification, insTextClassifiCond);
+    }
+
+    var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
+    exec(exeTextString, defaults, function (err, stdout, stderr) {
+        console.log("textTrain");
+    });
 }
 
-function labelMappingTrain() {
+function labelMappingTrain(data) {
+    //label-mapping DB insert
+    for (var i in data) {
+        if (data[i].textClassi == "fixlabel" || data[i].textClassi == "entryrowlabel") {
+            var insLabelMapCond = [];
+            insLabelMapCond.push(data[i].text);
+            insLabelMapCond.push(data[i].labelMapping);
 
+            const insLabelMapRes = connection.query(insertLabelMapping, insLabelMapCond);
+        }
+    }
+
+    //label-mapping train
+    var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\train.py'
+    exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
+        console.log("labelTrain");
+    });
 }
 
 

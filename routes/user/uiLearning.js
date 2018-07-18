@@ -30,7 +30,9 @@ var connection = new MySql({
 var commonUtil = commModule.commonUtil;
 var router = commModule.router;
 var queryConfig = commModule.queryConfig;
-
+const defaults = {
+    encoding: 'utf8',
+};
 var router = express.Router();
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
@@ -114,6 +116,29 @@ router.post('/', function (req, res) {
 
 // db컬럼명 조회
 router.post('/searchDBColumns', function (req, res) {
+
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+
+    typoSentenceEval(data, function (result1) {
+
+        domainDictionaryEval(result1, function (result2) {
+
+            textClassificationEval(result2, function (result3) {
+
+                labelMappingEval(result3, function (result4) {
+                    console.log(result4);
+                    res.send({ 'fileName': fileName, 'data': result4 });
+                })
+            })
+        })
+    });
+});
+
+
+// db컬럼명 조회
+/*
+router.post('/searchDBColumns', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
     var query = queryConfig.dbcolumnsConfig.selDBColumns;
@@ -123,7 +148,6 @@ router.post('/searchDBColumns', function (req, res) {
     };
 
     //var arg = '"Partner of Choice"' + ' ' + '"Class of Business"' + ' ';
-
     var args = '';
     for (var i = 0; i < data.length; i++) {
         //data[i].text = data[i].text.replace(": ", "");
@@ -180,7 +204,7 @@ router.post('/searchDBColumns', function (req, res) {
                 }
             }
 
-            if (ocrTextLen > 0) {
+            if (ocrTextLen != null) {
                 for (var i = 0; i < data.length; i++) {
                     if (data[i].text.toLowerCase() != ocrText[i].toLowerCase()) {
                         data[i].text = ocrText[i];
@@ -237,7 +261,7 @@ router.post('/searchDBColumns', function (req, res) {
 
                         for (var i = 0; i < data.length; i++) {
                             if (data[i].text.toLowerCase() == objLabel[0].toLowerCase()) {
-                                data[i].column = objLabel[1];
+                                data[i].column = objLabel[1].replace(/\r\n/g, '');
                                 var obj = {};
                                 obj.text = objLabel[0];
                                 obj.column = objLabel[1].replace(/\r\n/g,'');
@@ -297,14 +321,8 @@ router.post('/searchDBColumns', function (req, res) {
         });
 
     });
- 
-    /*
-    commModule.commonDB.reqQuery(query, function (rows, req, res) {
-        res.send({ 'fileName': fileName, 'data':data, 'dbColumns': rows });
-    }, req, res);
-    */
-
 });
+*/
 
 // fileupload
 router.post('/uploadFile', upload.any(), function (req, res) {
@@ -533,6 +551,9 @@ router.post('/uiTrain', function (req, res) {
     //text-classification train
     var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
     exec(exeTextString, defaults, function (err, stdout, stderr) {
+        console.log("text-classification");
+        console.log(stdout);
+
         //label-mapping DB insert
         for (var i in data) {
             if (data[i].textClassi == "fixlabel" || data[i].textClassi == "entryrowlabel") {
@@ -552,5 +573,195 @@ router.post('/uiTrain', function (req, res) {
 
     });
 });
+
+//오타 검사 
+function typoSentenceEval(data, callback) {
+
+    var args = dataToArgs(data);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\typo.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+        console.log("typo Test : " + stdout);
+        var typoData = stdout.split(/\r\n/g);
+
+        var typoDataLen = typoData.length;
+
+        while (typoDataLen--) {
+            if (typoData[typoDataLen] == "") {
+                typoData.splice(typoDataLen, 1);
+            }
+        }
+
+        for (var i = 0; i < typoData.length; i++) {
+            var typoSplit = typoData[i].split("^");
+            var typoText = typoSplit[0];
+            var typoOriWord = typoSplit[1];
+            var typoUpdWord = typoSplit[2];
+
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].text.toLowerCase() == typoText && typoOriWord.match(/:|-|[1234567890]/g) == null) {
+                    var updWord = typoUpdWord.split(":");
+                    data[j].text = data[j].text.toLowerCase().replace(typoOriWord, updWord[0]);
+                }
+            }
+        }
+        callback(data);
+    });
+
+}
+
+//domain dictionary eval
+function domainDictionaryEval(data, callback) {
+
+    var args = dataToArgs(data);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\main.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+
+        var ocrText = stdout.split(/\r\n/g);
+        var ocrTextLen = ocrText.length;
+
+        while (ocrTextLen--) {
+            if (ocrText[ocrTextLen] == "") {
+                ocrText.splice(ocrTextLen, 1);
+            }
+        }
+
+        if (ocrTextLen != null) {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].text.toLowerCase() != ocrText[i].toLowerCase()) {
+                    data[i].text = ocrText[i];
+                }
+            }
+        }
+
+        callback(data);
+    });
+}
+
+//text classification eval
+function textClassificationEval(data, callback) {
+
+    var args = dataToArgs(data);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+
+        var obj = stdout.split("^");
+
+        var label = [];
+
+        for (var key in obj) {
+            var objSplit = obj[key].split("||");
+
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].text.toLowerCase() == objSplit[0].toLowerCase()) {
+                    data[i].label = objSplit[1].replace(/\r\n/g, "");
+                }
+            }
+        }
+
+        callback(data);
+
+    });
+}
+
+//label mapping eval
+function labelMappingEval(data, callback) {
+
+    var labelData = [];
+
+    for (var num in data) {
+        if (data[num].label == "fixlabel" || data[num].label == "entryrowlabel") {
+            labelData.push(data[num]);
+        }
+    }
+
+    var args = dataToArgs(labelData);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+
+        console.log(stdout);
+
+        var labelMapping = stdout.split("^");
+
+        //var jsonLabel = JSON.parse(stdout1);
+        var dataArray = [];
+
+        for (var key in labelMapping) {
+
+            var objLabel = labelMapping[key].split("||");
+
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].text.toLowerCase() == objLabel[0].toLowerCase()) {
+                    data[i].column = objLabel[1].replace(/\r\n/g, '');
+                    var obj = {};
+                    obj.text = objLabel[0];
+                    obj.column = objLabel[1].replace(/\r\n/g, '');
+                    dataArray.push(obj);
+                }
+            }
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].label == "fixvalue" || data[i].label == "entryvalue") {
+
+                var splitLocation = data[i].location.split(",");
+
+                var xCoodi = splitLocation[0];
+                var yCoodi = splitLocation[1];
+                var minDis = 100000;
+                var columnText = '';
+
+                for (var j = 0; j < data.length; j++) {
+                    if (data[j].label == "fixlabel" || data[j].label == "entryrowlabel") {
+                        var jSplitLocation = data[j].location.split(",");
+
+                        var xNum = jSplitLocation[0];
+                        var yNum = jSplitLocation[1];
+
+                        var diffX = xCoodi - xNum;
+                        var diffY = yCoodi - yNum;
+
+                        var dis = Math.sqrt(Math.abs(diffX * diffX) + Math.abs(diffY * diffY));
+
+                        if (minDis > dis) {
+                            minDis = dis;
+                            columnText = data[j].column.replace(/\r\n/g, '');
+                        }
+                    }
+                }
+                data[i].column = columnText + "_VALUE";
+
+                //dataText += ',"' + data[i].text + '":"' + data[i].column + '"'; 
+
+                var obj = {};
+                obj.text = data[i].text;
+                obj.column = data[i].column;
+
+                //console.log(obj);
+
+                dataArray.push(obj);
+
+            }
+        }
+
+        callback(data);
+
+    });
+}
+
+function dataToArgs(data) {
+
+    var args = '';
+    for (var i = 0; i < data.length; i++) {
+        //data[i].text = data[i].text.replace(": ", "");
+        args += '"' + data[i].text.toLowerCase() + '"' + ' ';
+
+    }
+
+    return args;
+}
 
 module.exports = router;
