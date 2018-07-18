@@ -11,7 +11,6 @@ var pool = mysql.createPool(dbConfig);
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
-
 var csvParser = require('papaparse');
 var PythonShell = require('python-shell');
 
@@ -520,12 +519,119 @@ function testDataPrepare() {
     return array;
 }
 
-function typoSentenceTrain() {
+//---------------------------- train test 영역 --------------------------------------------//
 
+//http://localhost:3000/batchLearning/trainTest
+router.get('/trainTest', function (req, res) {
+    var data = trainPrepare();
+    var inputData = inputPrepare();
+
+    //typoSentenceTrain(data);
+    domainDictionaryTrain(data, inputData);
+    
+    res.send({});
+});
+
+function trainPrepare() { // jhy용 test
+    var array = [];
+
+    var obj = {};
+    obj.location = "1019,338,409,23";
+    obj.text = ": Marine Cargo Surplus 2018 - Inward 1 2";
+
+    array.push(obj);
+
+    return array;
+}
+function inputPrepare() { // jhy용 test
+    var array = [];
+
+    var obj = {};
+    obj.location = "1019,338,409,23";
+    obj.text = "Cargo Q/S & S/P Inward adfe";
+
+    array.push(obj);
+
+    return array;
 }
 
-function domainDictionaryTrain() {
+/**
+ * 
+ * @param {any} data -> ml 완료한 데이터
+ * @return boolean -> true : 정상 완료 , false : error
+ */
+function typoSentenceTrain(data) {
+    var wordCount = 0; // 단어 총 개수
+    var trainCount = 0; // train한 횟수
+    var query = queryConfig.batchLearningConfig.selectIsExistWordToSymspell;
 
+    for (var i in data) {
+        var line = data[i].text.split(' ');
+        wordCount += line.length;
+        for (var j in line) {
+            try {
+                commonDB.queryParam(query, [line[j].toLowerCase()], function (rows, origin) {
+                    if (rows.length > 0) { // 단어가 테이블에 존재하면
+                        query = queryConfig.batchLearningConfig.updataSymsepll;
+                    } else { // 단어가 테이블에 존재하지 않으면
+                        query = queryConfig.batchLearningConfig.insertSymspell;
+                    }
+                    commonDB.queryNoRows(query, [origin], function () {
+                        trainCount++;
+                        if (trainCount == queryCount) { // train 완료되면
+                            return true;
+                        }
+                    });
+                }, line[j].toLowerCase());
+            } catch (e) {
+                console.log(e);
+                return false;
+            }
+        }
+    }
+}
+
+/**
+ * 
+ * @param {any} mlData -> ml 완료한 데이터
+ * @param {any} inputData -> 사용자 수정 데이터
+ * @return boolean -> true : 정상 완료 , false : error
+ */
+function domainDictionaryTrain(mlData, inputData) {
+    var param = [];
+    var count = [];
+    for (var i in mlData) {
+        for (var j in inputData) {
+            if (mlData[i].location == inputData[j].location) { // 같은 라인의 문장이면
+                var mlDataWords = mlData[i].text.toLowerCase().split(' ');
+                var inputDataWords = inputData[j].text.toLowerCase().split(' ');
+                var indexOfCnt = 0;               
+                for (var k in mlDataWords) {
+                    if (inputData[j].text.toLowerCase().indexOf(mlDataWords[k], indexOfCnt) == -1) {
+                        if (k == 0) {
+                            param.push([mlDataWords[k], '<<N>>', '<<N>>', mlDataWords[Number(k) + 1]]);
+                        } else if (k == mlDataWords.length - 1) {
+                            param.push([mlDataWords[k], mlDataWords[Number(k) - 1], '<<N>>', '<<N>>']);
+                        } else {
+                            param.push([mlDataWords[k], mlDataWords[Number(k) - 1], '<<N>>', mlDataWords[Number(k) + 1]]);
+                        }                        
+                    } else {
+                        indexOfCnt = inputData[j].text.toLowerCase().indexOf(mlDataWords[k], indexOfCnt) + mlDataWords[k].length;  
+                        param.push([mlDataWords[k], inputData[j].text.toLowerCase().substring(indexOfCnt)]);
+                    }       
+                    count.push(indexOfCnt);
+                }
+                console.log(param);
+                console.log(count);
+                var overlapCount = [];
+                for (var k in param) {               
+                    
+                }
+                //console.log(param);
+                break;
+            }
+        }
+    }
 }
 
 function textClassificationTrain(data) {
@@ -574,6 +680,6 @@ function labelMappingTrain(data) {
         console.log("labelTrain");
     });
 }
-
+//---------------------------- // train test 영역 --------------------------------------------//
 
 module.exports = router;
