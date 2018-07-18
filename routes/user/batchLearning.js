@@ -655,7 +655,7 @@ function textClassificationTrain(data) {
 
         const insTextClassifiRes = connection.query(insertTextClassification, insTextClassifiCond);
     }
-
+    
     var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
     exec(exeTextString, defaults, function (err, stdout, stderr) {
         console.log("textTrain");

@@ -217,9 +217,6 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 
 // uiTrain
 router.post('/uiTrain', function (req, res) {
-
-    //console.log(req.body);
-
     var data = req.body.data;
     
     for (var i = 0; i < data.length; i++) {
@@ -354,10 +351,6 @@ router.post('/uiTrain', function (req, res) {
 
         const insTextClassifiRes = connection.query(insertTextClassification, insTextClassifiCond);
     }
-
-    const defaults = {
-        encoding: 'utf8',
-    };
 
     //text-classification train
     var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
