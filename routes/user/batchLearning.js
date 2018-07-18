@@ -11,7 +11,6 @@ var pool = mysql.createPool(dbConfig);
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
-
 var csvParser = require('papaparse');
 var PythonShell = require('python-shell');
 //var uuid = require('uuid');
@@ -28,6 +27,9 @@ const upload = multer({
         }
     }),
 });
+const defaults = {
+    encoding: 'utf8',
+};
 var router = express.Router();
 
 
@@ -320,5 +322,423 @@ function getConvertDate() {
 
     return '' + yyyy + mm + dd + hh + minute + ss + mss;
 }
+
+router.get('/mlEvalTest', function (req, res) {
+
+    var dataArray = [];
+    dataArray = testDataPrepare();
+
+    typoSentenceEval(dataArray, function(result1) {
+
+        domainDictionaryEval(result1, function (result2) {
+            
+            textClassificationEval(result2, function (result3) {
+                
+                labelMappingEval(result3, function (result4) {
+                    console.log(result4);
+                    res.send("test");
+                })
+            })
+        })
+    });
+});
+
+//오타 검사 
+function typoSentenceEval(data, callback) {
+
+    var args = dataToArgs(data);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\typo.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+        console.log("typo Test : " + stdout);
+        var typoData = stdout.split(/\r\n/g);
+
+        var typoDataLen = typoData.length;
+
+        while (typoDataLen--) {
+            if (typoData[typoDataLen] == "") {
+                typoData.splice(typoDataLen, 1);
+            }
+        }
+
+        for (var i = 0; i < typoData.length; i++) {
+            var typoSplit = typoData[i].split("^");
+            var typoText = typoSplit[0];
+            var typoOriWord = typoSplit[1];
+            var typoUpdWord = typoSplit[2];
+
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].text.toLowerCase() == typoText && typoOriWord.match(/:|-|[1234567890]/g) == null) {
+                    var updWord = typoUpdWord.split(":");
+                    data[j].text = data[j].text.toLowerCase().replace(typoOriWord, updWord[0]);
+                }
+            }
+        }
+        callback(data);
+    });
+    
+}
+
+//domain dictionary eval
+function domainDictionaryEval(data, callback) {
+
+    var args = dataToArgs(data);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\main.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+
+        var ocrText = stdout.split(/\r\n/g);
+        var ocrTextLen = ocrText.length;
+
+        while (ocrTextLen--) {
+            if (ocrText[ocrTextLen] == "") {
+                ocrText.splice(ocrTextLen, 1);
+            }
+        }
+
+        if (ocrTextLen != null) {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].text.toLowerCase() != ocrText[i].toLowerCase()) {
+                    data[i].text = ocrText[i];
+                }
+            }
+        }       
+        
+        callback(data);
+    });
+}
+
+//text classification eval
+function textClassificationEval(data, callback) {
+
+    var args = dataToArgs(data);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+
+        var obj = stdout.split("^");
+
+        var label = [];
+
+        for (var key in obj) {
+            var objSplit = obj[key].split("||");
+
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].text.toLowerCase() == objSplit[0].toLowerCase()) {
+                    data[i].label = objSplit[1].replace(/\r\n/g,"");
+                }
+            }
+        }
+
+        callback(data);
+
+    });
+}
+
+//label mapping eval
+function labelMappingEval(data, callback) {
+
+    var labelData = [];
+
+    for (var num in data) {
+        if (data[num].label == "fixlabel" || data[num].label == "entryrowlabel") {
+            labelData.push(data[num]);
+        }
+    }
+
+    var args = dataToArgs(labelData);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+
+        var labelMapping = stdout.split("^");
+
+        var dataArray = [];
+
+        for (var key in labelMapping) {
+
+            var objLabel = labelMapping[key].split("||");
+
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].text.toLowerCase() == objLabel[0].toLowerCase()) {
+                    data[i].column = objLabel[1].replace(/\r\n/g, '');
+                    var obj = {};
+                    obj.text = objLabel[0];
+                    obj.column = objLabel[1].replace(/\r\n/g, '');
+                    dataArray.push(obj);
+                }
+            }
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].label == "fixvalue" || data[i].label == "entryvalue") {
+
+                var splitLocation = data[i].location.split(",");
+
+                var xCoodi = splitLocation[0];
+                var yCoodi = splitLocation[1];
+                var minDis = 100000;
+                var columnText = '';
+
+                for (var j = 0; j < data.length; j++) {
+                    if (data[j].label == "fixlabel" || data[j].label == "entryrowlabel") {
+                        var jSplitLocation = data[j].location.split(",");
+
+                        var xNum = jSplitLocation[0];
+                        var yNum = jSplitLocation[1];
+
+                        var diffX = xCoodi - xNum;
+                        var diffY = yCoodi - yNum;
+
+                        var dis = Math.sqrt(Math.abs(diffX * diffX) + Math.abs(diffY * diffY));
+
+                        if (minDis > dis) {
+                            minDis = dis;
+                            columnText = data[j].column.replace(/\r\n/g, '');
+                        }
+                    }
+                }
+                data[i].column = columnText + "_VALUE";
+
+                //dataText += ',"' + data[i].text + '":"' + data[i].column + '"'; 
+
+                var obj = {};
+                obj.text = data[i].text;
+                obj.column = data[i].column;
+
+                //console.log(obj);
+
+                dataArray.push(obj);
+
+            }
+        }
+
+        callback(data);
+
+    });
+}
+
+function dataToArgs(data) {
+
+    var args = '';
+    for (var i = 0; i < data.length; i++) {
+        //data[i].text = data[i].text.replace(": ", "");
+        args += '"' + data[i].text.toLowerCase() + '"' + ' ';
+
+    }
+
+    return args;
+}
+
+function testDataPrepare() {
+    var array = [];
+
+    var obj = {};
+    obj.location = "1018,240,411,87";
+    obj.text = "APEX";
+
+    array.push(obj);
+
+    var obj = {};
+    obj.location = "1019,338,409,23";
+    obj.text = "Partner of Choice";
+
+    array.push(obj);
+
+    var obj = {};
+    obj.location = "1562,509,178,25";
+    obj.text = "Voucher No";
+
+    array.push(obj);
+
+    var obj = {};
+    obj.location = "206,848,111,24";
+    obj.text = "Cedant";
+
+    array.push(obj);
+
+    var obj = {};
+    obj.location = "206,908,285,24";
+    obj.text = "Class of Business";
+
+    array.push(obj);
+
+    var obj = {};
+    obj.location = "574,847,492,32";
+    obj.text = ": Solidarity- First Insurance 2018";
+
+    array.push(obj);
+
+    var obj = {};
+    obj.location = "574,907,568,32";
+    obj.text = ": Marine Cargo Surplus 2018 - Inward";
+
+    array.push(obj);
+
+    return array;
+}
+
+//---------------------------- train test 영역 --------------------------------------------//
+
+//http://localhost:3000/batchLearning/trainTest
+router.get('/trainTest', function (req, res) {
+    var data = trainPrepare();
+    var inputData = inputPrepare();
+
+    //typoSentenceTrain(data);
+    domainDictionaryTrain(data, inputData);
+    
+    res.send({});
+});
+
+function trainPrepare() { // jhy용 test
+    var array = [];
+
+    var obj = {};
+    obj.location = "1019,338,409,23";
+    obj.text = ": Marine Cargo Surplus 2018 - Inward 1 2";
+
+    array.push(obj);
+
+    return array;
+}
+function inputPrepare() { // jhy용 test
+    var array = [];
+
+    var obj = {};
+    obj.location = "1019,338,409,23";
+    obj.text = "Cargo Q/S & S/P Inward adfe";
+
+    array.push(obj);
+
+    return array;
+}
+
+/**
+ * 
+ * @param {any} data -> ml 완료한 데이터
+ * @return boolean -> true : 정상 완료 , false : error
+ */
+function typoSentenceTrain(data) {
+    var wordCount = 0; // 단어 총 개수
+    var trainCount = 0; // train한 횟수
+    var query = queryConfig.batchLearningConfig.selectIsExistWordToSymspell;
+
+    for (var i in data) {
+        var line = data[i].text.split(' ');
+        wordCount += line.length;
+        for (var j in line) {
+            try {
+                commonDB.queryParam(query, [line[j].toLowerCase()], function (rows, origin) {
+                    if (rows.length > 0) { // 단어가 테이블에 존재하면
+                        query = queryConfig.batchLearningConfig.updataSymsepll;
+                    } else { // 단어가 테이블에 존재하지 않으면
+                        query = queryConfig.batchLearningConfig.insertSymspell;
+                    }
+                    commonDB.queryNoRows(query, [origin], function () {
+                        trainCount++;
+                        if (trainCount == queryCount) { // train 완료되면
+                            return true;
+                        }
+                    });
+                }, line[j].toLowerCase());
+            } catch (e) {
+                console.log(e);
+                return false;
+            }
+        }
+    }
+}
+
+/**
+ * 
+ * @param {any} mlData -> ml 완료한 데이터
+ * @param {any} inputData -> 사용자 수정 데이터
+ * @return boolean -> true : 정상 완료 , false : error
+ */
+function domainDictionaryTrain(mlData, inputData) {
+    var param = [];
+    var count = [];
+    for (var i in mlData) {
+        for (var j in inputData) {
+            if (mlData[i].location == inputData[j].location) { // 같은 라인의 문장이면
+                var mlDataWords = mlData[i].text.toLowerCase().split(' ');
+                var inputDataWords = inputData[j].text.toLowerCase().split(' ');
+                var indexOfCnt = 0;               
+                for (var k in mlDataWords) {
+                    if (inputData[j].text.toLowerCase().indexOf(mlDataWords[k], indexOfCnt) == -1) {
+                        if (k == 0) {
+                            param.push([mlDataWords[k], '<<N>>', '<<N>>', mlDataWords[Number(k) + 1]]);
+                        } else if (k == mlDataWords.length - 1) {
+                            param.push([mlDataWords[k], mlDataWords[Number(k) - 1], '<<N>>', '<<N>>']);
+                        } else {
+                            param.push([mlDataWords[k], mlDataWords[Number(k) - 1], '<<N>>', mlDataWords[Number(k) + 1]]);
+                        }                        
+                    } else {
+                        indexOfCnt = inputData[j].text.toLowerCase().indexOf(mlDataWords[k], indexOfCnt) + mlDataWords[k].length;  
+                        param.push([mlDataWords[k], inputData[j].text.toLowerCase().substring(indexOfCnt)]);
+                    }       
+                    count.push(indexOfCnt);
+                }
+                console.log(param);
+                console.log(count);
+                var overlapCount = [];
+                for (var k in param) {               
+                    
+                }
+                //console.log(param);
+                break;
+            }
+        }
+    }
+}
+
+function textClassificationTrain(data) {
+    //text-classification DB insert
+    for (var i in data) {
+        var selectLabelCond = [];
+        selectLabelCond.push(data[i].column);
+
+        const selectLabelRes = connection.query(selectLabel, selectLabelCond);
+
+        if (selectLabelRes.length == 0) {
+            data[i].textClassi = 'undefined';
+        } else {
+            data[i].textClassi = selectLabelRes[0].LABEL;
+            data[i].labelMapping = selectLabelRes[0].ENKEYWORD;
+        }
+
+        var insTextClassifiCond = [];
+        insTextClassifiCond.push(data[i].text);
+        insTextClassifiCond.push(data[i].textClassi);
+
+        const insTextClassifiRes = connection.query(insertTextClassification, insTextClassifiCond);
+    }
+    
+    var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
+    exec(exeTextString, defaults, function (err, stdout, stderr) {
+        console.log("textTrain");
+    });
+}
+
+function labelMappingTrain(data) {
+    //label-mapping DB insert
+    for (var i in data) {
+        if (data[i].textClassi == "fixlabel" || data[i].textClassi == "entryrowlabel") {
+            var insLabelMapCond = [];
+            insLabelMapCond.push(data[i].text);
+            insLabelMapCond.push(data[i].labelMapping);
+
+            const insLabelMapRes = connection.query(insertLabelMapping, insLabelMapCond);
+        }
+    }
+
+    //label-mapping train
+    var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\train.py'
+    exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
+        console.log("labelTrain");
+    });
+}
+//---------------------------- // train test 영역 --------------------------------------------//
 
 module.exports = router;

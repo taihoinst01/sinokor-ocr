@@ -245,7 +245,7 @@ function detailTable(fileName) {
                 tblTag += '<dd>';
                 tblTag += '<div class="selects">';
                 tblTag += '<ul class="selectBox">';
-                tblTag += dbColumnsOption(item.data[j].text, item.dbColumns);
+                tblTag += dbColumnsOption(item.data[j], item.data);
                 tblTag += '</div>';
                 tblTag += '</dd>';
                 tblTag += '</dl>';
@@ -279,35 +279,50 @@ function detailTable(fileName) {
 }
 
 // DB 컬럼 option 렌더링
-function dbColumnsOption(text, dbColumns) {
+function dbColumnsOption(data, allData) {
     var optionTag = '';
     var selected = '';
 
+    var dbColumns = [];
+
+    for (var num in allData) {
+        var bool = true;
+
+        for (var dbNum in dbColumns) {
+            if (dbColumns[dbNum] == allData[num].column) {
+                bool = false;
+                break;
+            }
+        }
+
+        if (bool == true) {
+            dbColumns.push(allData[num].column);
+        }
+
+    }
+
     optionTag += '<li>';
     var isMatch = false;
-    for (var key in dbColumns) {
-        var columnText = String(dbColumns[key].text);
-        if (text.toLowerCase() == columnText.toLowerCase()) {
-            optionTag += '<a class="dbColumnText" href="javascript:void(0);">' + enLabelToKorLabel(dbColumns[key].column) + '</a><p>Label</p>';
-            isMatch = true;
-            break;
-        }
-    }
-    if (!isMatch) {
+
+    if (data.column != null) {
+        optionTag += '<a class="dbColumnText" href="javascript:void(0);">' + enLabelToKorLabel(data.column) + '</a>';
+    } else {
         optionTag += '<a class="dbColumnText" href="javascript:void(0);">none</a>';
     }
     optionTag += '<ul>';
-    for (var key in dbColumns) {
+    for (var row of dbColumns) {
         optionTag += '<li>';
-        optionTag += '<a href="javascript:void(0);"><span>' + enLabelToKorLabel(dbColumns[key].column)+'</span></a>';
+        optionTag += '<a href="javascript:void(0);"><span>' + enLabelToKorLabel(row) + '</span></a>';
         optionTag += '<ul>';
         optionTag += '<li><a href="javascript:void(0);">키워드</a></li>';
         optionTag += '<li><a href="javascript:void(0);">가변값</a></li>';
         optionTag += '</ul>';
         optionTag += '</li>';
     }
+
     optionTag += '</ul>';
     optionTag += '</li>';
+
 
     return optionTag;
 }

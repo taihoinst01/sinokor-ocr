@@ -37,6 +37,17 @@ var reqQueryParam = function (sql, param, callbackFunc, req, res) {
     });
 };
 
+// 쿼리 요청 (파라미터 포함, req & res 미포함, 함수 파라미터 하나 포함)
+var queryParam = function (sql, param, callbackFunc, origin) {
+    commModule.pool.getConnection(function (err, connection) {
+        connection.query(sql, param, function (err, rows) {
+            if (err) console.error("MariaDB err : ", err);
+            callbackFunc(rows, origin);
+            connection.release();
+        });
+    });
+};
+
 // 일반 쿼리 요청
 var reqQuery = function (sql, callbackFunc, req, res) {
     commModule.pool.getConnection(function (err, connection) {
@@ -48,11 +59,23 @@ var reqQuery = function (sql, callbackFunc, req, res) {
     });
 };
 
+// 쿼리 요청 (파라미터 포함, req & res 미포함, rows 미포함)
+var queryNoRows = function (sql, param, callbackFunc) {
+    commModule.pool.getConnection(function (err, connection) {
+        connection.query(sql, param, function (err) {
+            if (err) console.error("MariaDB err : ", err);
+            callbackFunc();
+            connection.release();
+        });
+    });
+};
+
 
 module.exports = {
     makePagingQuery: makePagingQuery,
     reqListQuery: reqListQuery,
     reqQueryParam: reqQueryParam,
-    reqQuery: reqQuery
-    
+    reqQuery: reqQuery,
+    queryParam: queryParam,
+    queryNoRows: queryNoRows   
 }

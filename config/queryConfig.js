@@ -59,11 +59,16 @@ var batchLearningConfig = {
     insertBatchLearningData:
         //"INSERT INTO TBL_TEXT_CLASSIFICATION_DEV (X_COODI, Y_COODI, HEIGHT, LENGHT, TEXT, CLASS) " +
         //"VALUES(?, ?, ?, ?, ?, ?)"
-       "INSERT INTO TBL_TEXT_CLASSIFICATION_DEV (X_COODI, Y_COODI, LENGHT, TEXT) " +
-       "VALUES (?, ?, ?, ?)",
-    insertFileInfo:
-        "INSERT INTO TBL_ICR_FILE (IMG_ID, FILE_PATH, ORI_FILE_NAME, SVR_FILE_NAME, FILE_EXT, FILE_SIZE, CONTENT_TYPE, FILE_TYPE, REG_ID, REG_DATE) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, now())"
+        "INSERT INTO TBL_TEXT_CLASSIFICATION_DEV (X_COODI, Y_COODI, LENGHT, TEXT) " +
+        "VALUES(?, ?, ?, ?)",
+    selectIsExistWordToSymspell:
+        "SELECT keyword, frequency " +
+        "FROM tbl_icr_symspell " +
+        "WHERE keyword=?",
+    insertSymspell:
+        "INSERT INTO tbl_icr_symspell(keyword, frequency) VALUES (?,1)",
+    updataSymsepll:
+        "UPDATE tbl_icr_symspell SET frequency=frequency+1 WHERE keyword=?"
 }
 
 var uiLearningConfig = {
