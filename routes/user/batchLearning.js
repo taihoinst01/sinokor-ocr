@@ -14,6 +14,7 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 
 var csvParser = require('papaparse');
 var PythonShell = require('python-shell');
+//var uuid = require('uuid');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
  
@@ -72,21 +73,79 @@ router.post('/imageUpload', upload.any(), function (req, res) {
     var files = req.files;
     var endCount = 0;
     var returnObj = [];
-
+    var fileInfo = [];
+    console.log("파일 길이 : " + files.length);
     for (var i = 0; i < files.length; i++) {
         if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
             files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff') {
             var ifile = appRoot + '\\' + files[i].path;
             var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
-            returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
+            // 파일 정보 추출
+            var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성
+            console.log("생성한 imgId와 길이 : " + imgId + " : " + imgId.length);
+            var fileObj = files[i]; // 파일
+            var filePath = fileObj.path;    // 파일 경로
+            var oriFileName = fileObj.originalname; // 파일 원본명
+            var _lastDot = oriFileName.lastIndexOf('.');    
+            var fileExt = oriFileName.substring(_lastDot+1, oriFileName.length).toLowerCase();        // 파일 확장자
+            var fileSize = fileObj.size;  // 파일 크기
+            var contentType = fileObj.mimetype; // 컨텐트타입
+            var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
+
+            var fileParam = {
+                imgId: imgId,
+                filePath: filePath,
+                oriFileName: oriFileName,
+                convertFileName: oriFileName.split('.')[0] + '.jpg',
+                fileExt: fileExt,
+                fileSize: fileSize,
+                contentType: contentType,
+                svrFileName: svrFileName
+            };
+            fileInfo.push(fileParam);
+            returnObj.push(oriFileName.split('.')[0] + '.jpg');
+            
             exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
                 if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
-                    res.send({ code: 200, message: returnObj });
+                    res.send({ code: 200, message: returnObj, fileInfo: fileInfo });
                 }
                 endCount++;
             });
         }
     }
+});
+
+// INSERT fileInfo
+var callbackInsertFileInfo = function (rows, req, res) {
+    console.log("upload finish..");
+}
+router.post('/insertFileInfo', function (req, res) {
+    console.log("insert FILE INFO : " + JSON.stringify(req.body.fileInfo));
+    var fileInfo = req.body.fileInfo;
+
+    var imgId = fileInfo.imgId;
+    var filePath = fileInfo.filePath;
+    var oriFileName = fileInfo.oriFileName;
+    var svrFileName = fileInfo.svrFileName;
+    var convertFileName = fileInfo.convertFileName;
+    var fileExt = fileInfo.fileExt;
+    var fileSize = fileInfo.fileSize;
+    var contentType = fileInfo.contentType;
+    //var regId = req.body.userId;
+    var regId = req.session.userId;
+
+    var data = [imgId, filePath, oriFileName, svrFileName, fileExt, fileSize, contentType, 'B', regId];
+    console.log("입력 데이터 : " + JSON.stringify(data));
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertFileInfo, data, callbackInsertFileInfo, req, res);
+    
+    //for (var i = 0; i < fileInfo.length; i++) {
+    //    var xcoodi = batchLearningData[i].location.split(',')[0];
+    //    var ycoodi = batchLearningData[i].location.split(',')[1];
+    //    var text = batchLearningData[i].text;
+    //    var len = batchLearningData[i].text.length;
+    //    var data = [xcoodi, ycoodi, len, text];
+    //    //commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
+    //}
 });
 
 

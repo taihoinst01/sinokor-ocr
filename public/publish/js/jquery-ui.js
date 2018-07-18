@@ -42,7 +42,7 @@ jQuery(function($){
 			$(this).parent('li').addClass('on');
 		});
 	// 양식이미지용 on/off_효과
-		$(".box_imgtmb li>a").click(function(){
+		$(".box_imgtmb li .box_img").click(function(){
 			$('.box_imgtmb li').removeClass('on');
 			$(this).parent('li').addClass('on');
 		});
@@ -81,7 +81,7 @@ jQuery(function($){
 	});
 
 	// 버튼 선택시 class=on 추가제거
-	$('.button_st5').click(function(e){
+	$('.button_st51111111111').click(function(e){
 	 	var thiss = $(this);
 	 	if(thiss.hasClass('on')){
 	  		thiss.removeClass('on');
@@ -192,142 +192,19 @@ jQuery(function($){
 		});
 	});
 
-	
-});
+	 //스크롤 하단시에 위로 열림
+	 $('.select_style').click(function(e){
+	     var ys_h = e.pageY; 
+	     var cont_h1 = $('#wrap').height();
+	     var cont_h = cont_h1*0.8;
+	     if( cont_h < ys_h ){
+	        $("ul.aList").css({"bottom":"40px"}).css({"top":"inherit"});
+	     }else{
+	        $("ul.aList").css({"bottom":"inherit"});
+	     }
+	 });
 
 
-/* Select */
-(function ($) {
-    $.fn.idealForms = function () {
-        var form = this;
-        /* Select ***************************************************************/		
-        form.find('select').each(function () {
-			var select = $(this);			
-			select.css({'position': 'absolute', 'margin-left': '-9999px'}); // Hide original select menu			
-			var SelectMenu = { // Original select menu				
-				id: select.attr('id'),
-				title: select.attr('title'),	
-				items: select.find('option'),
-				itemsHtml: function(){
-					var items = '';
-					select.children('option').each(function(){
-						var item = $(this).text();
-						if ($(this).val() !== '') {
-							$(this).attr('value', item);
-						}
-						items += '<li>' + '<span>' + item + '</span>' + '</li>';
-					});
-					return items;
-				}				
-			};			
-			(function(){ // Create Ideal Select menu
-				var html =
-					'<ul class="idealSelect" id="' + SelectMenu.id + '">' + 
-					'<div>' + '<span></span>' + '<li>' + SelectMenu.title + '</li>' + '</div>' + 
-					'<ul>' + SelectMenu.itemsHtml() + '</ul>' + 
-					'</ul>';
-				select.after(html);
-			}());						
-			var IdealSelect = function(){ // Ideal Select menu				
-				this.menu = select.next('ul');
-				this.header = this.menu.children('div');
-				this.headerTitle = this.header.children('li');
-				this.headerArrow = this.header.children('span');
-                this.dropDown =  this.menu.find('ul');
-                this.items = this.dropDown.find('li');
-				this.setHeight = function(){ /* Set height to fix Firefox annoying hover bug */
-					var height = this.header.height();
-					this.menu.css('height', height);
-				};
-				this.setWidth = function(){
-					var maxWidth = 0;
-					this.items.each(function(){
-						$(this).css('fontWeight', 'bold');
-						var currentWidth = $(this).width();
-						if (currentWidth > maxWidth) { maxWidth = currentWidth; }
-						$(this).css('fontWeight', 'normal');
-					});
-					//Set select width
-					var itemPadding = this.items.css('padding-left').replace('px', '');
-					maxWidth += (itemPadding * 2);
-					this.headerTitle.width(maxWidth);		
-					this.items.width(maxWidth);
-					this.dropDown.width(maxWidth + (itemPadding * 2)); // For scrollbar
-					// Set arrow position
-					var headerHeight = this.header.outerHeight();
-					var arrowHeight = form.css('font-size').replace('px', '');					
-					this.headerArrow.css({
-						//'left': (maxWidth) + 'px',
-						//'top': ((headerHeight-(arrowHeight/2))/2) + 'px'
-						'right': '0px',
-						'top': '0px',
-						'width': '30px',
-						'height': '38px'
-					});
-				};				
-				this.show = function(){
-					select.focus();
-					this.menu.addClass('menuOpen');
-					this.dropDown.css('visibility', 'visible');
-				};
-				this.hide = function(){
-					this.menu.removeClass('menuOpen');
-					this.dropDown.css('visibility', 'hidden');
-				};
-				this.change = function(index, title){
-					select.focus();
-					this.headerTitle.text(title);
-					SelectMenu.items
-						.removeAttr('selected')
-						.eq(index).attr('selected', true);
-				};	
-				this.next = function(){
-					var title = select.find(':selected').val();
-					this.headerTitle.text(title);
-				};			
-			};
-
-			var idealSelect = new IdealSelect();
-			idealSelect.setHeight();
-			idealSelect.setWidth();
-						
-			// Actions			
-			idealSelect.header.click(function(){ idealSelect.show(); }); // Open menu
-			idealSelect.menu.hover(function(){}, function(){ idealSelect.hide(); }); // Hide menu
-			idealSelect.items.click(function(){ // Change option
-				var index = $(this).index();
-				var title = $(this).text();
-				idealSelect.change(index, title);
-				idealSelect.hide();
-			});
-					
-			select
-				.focus(function(){
-					idealSelect.menu.addClass('focused');
-				})
-				.blur(function(){
-					idealSelect.menu.removeClass('focused');
-				});
-			
-			select.keyup(function(e){ // Keyboard arrows change
-				if (e.keyCode === 40 || e.keyCode === 38) {
-					idealSelect.next();
-				}			
-			});	
-
-            // IE z-index fix			
-            var zIndexNumber = 1000;
-            $('ul').each(function () {
-                $(this).css('zIndex', zIndexNumber);
-                zIndexNumber -= 10;
-            });
-            /////////////////////////////////////////////////////////////	
-        });
-    };
-
-})(jQuery);
-$(function(){
-	$('.selects').idealForms();	
 });
 
 

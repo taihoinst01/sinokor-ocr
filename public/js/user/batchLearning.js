@@ -70,11 +70,13 @@ var buttonEvent = function () {
 
     // 학습미완료 보기
     $("#tab_before").on("click", function () {
+        $("#listCheckAll_after").prop("checked", false);
         addCond = "LEARN_N";
         searchBatchLearnDataList(addCond);
     });
     // 학습완료 보기
     $("#tab_after").on("click", function () {
+        $("#listCheckAll_before").prop("checked", false);        
         addCond = "LEARN_Y";
         searchBatchLearnDataList(addCond);
     });
@@ -180,42 +182,178 @@ var popupEvent = (function () {
 var imageUploadEvent = function () {
     var multiUploadForm = $("#multiUploadForm");
 
-    $('#imageFile').on("change", function () {
+    $('#document_file').on("change", function () {
         multiUploadForm.attr("action", "/batchLearning/imageUpload");
         if ($(this).val() !== '') {
             multiUploadForm.submit();
         }
     });
-
-    $("#btn_imageUpload").on("click", function () {
-        $("#imageFile").click();
-    });
-
-    multiUploadForm.ajaxForm({
-        beforeSubmit: function (data, frm, opt) {
-            startProgressBar();
-            $("#progressMsg").html("ready upload image...");
-            addProgressBar(1, 5);
-            return true;
-        },
-        success: function (responseText, statusText) {
-            var fileNames = "";
-            $("#progressMsg").html("start upload image...");
-            addProgressBar(6, 100);
-            totCount = responseText.message.length;
-            for (var i = 0; i < responseText.message.length; i++) {
-                //processImage(responseText.message[i]);
-                fileNames += responseText.message[i] + ", ";
+    // STEP 1 : FILE UPLOAD
+    var uploadPromise = new Promise(function (resolve, reject) {
+        multiUploadForm.ajaxForm({
+            beforeSubmit: function (data, frm, opt) {
+                $("#progressMsg").html("uploading image files...");
+                startProgressBar();
+                addProgressBar(1, 5);
+                return true;
+            },
+            success: function getData(responseText, statusText) {
+                //$("#progressMsg").html("progress image files...");
+                //addProgressBar(6, 50);
+                console.log("upload image data : " + JSON.stringify(responseText));
+                console.log("file info : " + JSON.stringify(responseText.fileInfo));
+                totCount = responseText.message.length;
+                console.log("count : " + totCount);
+                console.log("uploadPromise : process Image 이전");
+                for (var i = 0; i < totCount; i++) {
+                    insertFileInfo(responseText.fileInfo[i]);
+                    processImage(responseText.message[i]);
+                }
+                console.log("uploadPromise : process Image 이후");
+                resolve(responseText, statusText);
+            },
+            error: function (e) {
+                reject(e);
             }
-            alert(responseText.message.length + "개의 이미지를 업로드함, " + fileNames + "\nTODO : 업로드된 이미지들의 정보는 DB에 저장");
-            searchBatchLearnDataList("");
-            endProgressBar();
+        });
+    });
+    uploadPromise.then(function (responseText, statusText) {
+
+        $("#progressMsg").html("upload process data...");
+        console.log("uploadPromise : then 이전");
+        addProgressBar(5, 40);
+        //endProgressBar();
+        console.log("uploadPromise : then 이후");
+    });
+    uploadPromise.then().catch(function (e) {
+        //endProgressBar();
+        console.log(e);
+    });
+}
+
+// STEP 2 : FILE INFO DB INSERT
+function insertFileInfo(fileInfo) {
+    if (fileInfo) {
+        var param = { fileInfo: fileInfo };
+        $.ajax({
+            url: '/batchLearning/insertFileInfo',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                console.log("fileInfo DB INSERT SUCCESS : " + data);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+}
+                
+// STEP 3 : FILE -> OCR API
+function processImage(fileName) {
+    var subscriptionKey = "fedbc6bb74714bd78270dc8f70593122";
+    var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
+
+    var params = {
+        "language": "unk",
+        "detectOrientation": "true",
+    };
+
+    var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
+
+    $.ajax({
+        url: uriBase + "?" + $.param(params),
+        beforeSend: function (jqXHR) {
+            jqXHR.setRequestHeader("Content-Type", "application/json");
+            jqXHR.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
         },
-        error: function (e) {
-            endProgressBar();
-            console.log(e);
+        type: "POST",
+        data: '{"url": ' + '"' + sourceImageUrl + '"}',
+    }).done(function (data) {
+        console.log("processImage : done ");
+        ocrCount++;
+        addProgressBar(41, 70);
+        //appendOcrData(data.regions);
+        execBatchLearningData(data.regions);
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
+        errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
+            jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
+        alert(errorString);
+        endProgressBar(); // 에러 발생 시 프로그레스바 종료
+    });
+};
+
+// STEP 4 : OCR API -> CLASSIFICATION -> LABEL MAPPING
+function execBatchLearningData(regions) {
+    var lineText = [];
+    var paramText = "";
+    for (var i = 0, x = regions.length; i < x; i++) {
+        for (var j = 0; j < regions[i].lines.length; j++) {
+            var item = '';
+            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
+                item += regions[i].lines[j].words[k].text + ' ';
+            }
+            lineText.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+        }
+    }
+    for (var i = 0, x = lineText.length; i < x; i++) {
+        paramText += '"' + lineText[i].text + '" ';
+    }
+    var param = {
+        "param": paramText
+    }
+    $.ajax({
+        url: '/batchLearning/execBatchLearningData',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+        },
+        success: function (data) {
+            appendGridData(data);
+            addProgressBar(71, 99);
+            setTimeout(function () {
+                console.log("리스트 출력....");
+                alert("Finish batch Learning data");
+                searchBatchLearnDataList(addCond);
+            }, 2000); // 프로그레스바 종료
+        },
+        error: function (err) {
+            console.log(err);
         }
     });
+}
+
+// STEP 5 : FILE PARSING RESULT DB INSERT
+function appendGridData(data) {
+    console.log("결과 appendGridData : " + JSON.stringify(data));
+    //var gridData = [];
+    //$('#uploadDiv').hide();
+    //$('#gridDiv').show();
+
+    //if (ocrCount === 1) generateGrid(gridData);
+
+    //var temp1 = data.split("^");
+    //for (var i = 0, x = temp1.length; i < x; i++) {
+    //    var temp2 = temp1[i].split("||");
+    //    gridData.push({
+    //        _value: temp2[0],
+    //        _label: temp2[1]
+    //    });
+    //}
+    //grid.appendRow(gridData);
+
+    //if (totCount == ocrCount) { // 모든 OCR 분석 완료되면
+    //    $('#stepUl > li').eq(0).removeAttr('title');
+    //    $('.step_wrap').removeClass('s1');
+    //    $('#stepUl > li').eq(1).attr('title', '현재단계');
+    //    $('.step_wrap').addClass('s2');
+    //    $("#content").css("margin-left", 0);
+    //}
 }
 
 // [Function]
@@ -236,6 +374,7 @@ var searchBatchLearnDataList = function (addCond) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
+            $("#progressMsg").html("retrieving learn data...");
             startProgressBar(); // start progressbar
             addProgressBar(1, 1); // proceed progressbar
         },
@@ -277,11 +416,11 @@ var searchBatchLearnDataList = function (addCond) {
             } else {
                 appendHtml += `<tr><td colspan="23">조회할 데이터가 없습니다.</td></tr>`;
             }
-            endProgressBar(); // end progressbar
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") $("#tbody_batchList_before").empty().append(appendHtml);
             else $("#tbody_batchList_after").empty().append(appendHtml);
-
+            console.log("리스트 출력 종료 ");
+            endProgressBar(); // end progressbar
             checkboxEvent(); // refresh checkbox event
         },
         error: function (err) {
@@ -298,15 +437,21 @@ var fn_rightExcelUpload = function() {
 
 // 이미지 업로드
 var fn_imageUpload = function () {
-
+    
 };
 
 // 이미지 삭제
 var fn_imageDelete = function () {
     var chkSize = 0;
-    $('input[name="listCheck"]').each(function (index, element) {
-        if ($(this).is(":checked")) chkSize++;
-    });
+    if (addCond == "LEARN_N") {
+        $('input[name="listCheck_before"]').each(function (index, element) {
+            if ($(this).is(":checked")) chkSize++;
+        });
+    } else {
+        $('input[name="listCheck_after"]').each(function (index, element) {
+            if ($(this).is(":checked")) chkSize++;
+        });
+    }
     alert("체크된 갯수는 : " + chkSize);
 };
 
@@ -372,12 +517,12 @@ function multiUploadEvent() {
 
     $('#multiUploadForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
+            $("#progressMsg").html("이미지를 분석 중 입니다.");
             startProgressBar(); // 프로그레스바 시작
             addProgressBar(1, 5); // 프로그레스바 진행
             return true;
         },
         success: function (responseText, statusText) {
-            $("#progressMsg").html("이미지를 분석 중 입니다.");
             addProgressBar(6, 30); // 프로그레스바 진행
             totCount = responseText.message.length;
             for (var i = 0; i < responseText.message.length; i++) {
@@ -392,107 +537,13 @@ function multiUploadEvent() {
 }
 
 // Step2 :  OCR API
-function processImage(fileName) {
-    var subscriptionKey = "fedbc6bb74714bd78270dc8f70593122";
-    var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
 
-    var params = {
-        "language": "unk",
-        "detectOrientation": "true",
-    };
-
-    var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
-
-    $.ajax({
-        url: uriBase + "?" + $.param(params),
-        beforeSend: function (jqXHR) {
-            jqXHR.setRequestHeader("Content-Type", "application/json");
-            jqXHR.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
-        },
-        type: "POST",
-        data: '{"url": ' + '"' + sourceImageUrl + '"}',
-    }).done(function (data) {
-        ocrCount++;
-        //appendOcrData(data.regions);
-        execBatchLearningData(data.regions);
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
-        errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
-            jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
-        alert(errorString);
-        endProgressBar(); // 에러 발생 시 프로그레스바 종료
-    });
-};
 
 // Step3 : 배치 학습 Data 처리
-function execBatchLearningData(regions) {
-    var lineText = [];
-    var paramText = "";
-    for (var i = 0, x = regions.length; i < x; i++) {
-        for (var j = 0; j < regions[i].lines.length; j++) {
-            var item = '';
-            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
-                item += regions[i].lines[j].words[k].text + ' ';
-            }
-            lineText.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
-        }
-    }
-    for (var i = 0, x = lineText.length; i < x; i++) {
-        paramText += '"' + lineText[i].text + '" ';
-    }
-    var param = {
-        "param": paramText
-    }
-    $.ajax({
-        url: '/batchLearning/execBatchLearningData',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify(param),
-        contentType: 'application/json; charset=UTF-8',
-        beforeSend: function () {
-            $("#progressMsg").html("데이터를 전송합니다.");
-            addProgressBar(31, 60); // 프로그레스바 진행
-        },
-        success: function (data) {
-            console.log("success execBatchLearningData : " + data);
-            $("#progressMsg").html("결과를 분석하고 출력합니다.");
-            addProgressBar(61, 100); // 프로그레스바 진행
-            appendGridData(data);
-            setTimeout(function () { endProgressBar(); }, 2000); // 프로그레스바 종료
-        },
-        error: function (err) {
-            endProgressBar();
-            console.log(err);
-        }
-    });
-}
+
 
 // Step4 : 그리드에 표시
-function appendGridData(data) {
-    var gridData = [];
-    $('#uploadDiv').hide();
-    $('#gridDiv').show();
 
-    if (ocrCount === 1) generateGrid(gridData);
-
-    var temp1 = data.split("^");
-    for (var i = 0, x = temp1.length; i < x; i++) {
-        var temp2 = temp1[i].split("||");
-        gridData.push({
-            _value: temp2[0],
-            _label: temp2[1]
-        });
-    }
-    grid.appendRow(gridData);
-
-    if (totCount == ocrCount) { // 모든 OCR 분석 완료되면
-        $('#stepUl > li').eq(0).removeAttr('title');
-        $('.step_wrap').removeClass('s1');
-        $('#stepUl > li').eq(1).attr('title', '현재단계');
-        $('.step_wrap').addClass('s2');
-        $("#content").css("margin-left", 0);
-    }
-}
 
 // 그리드 생성
 function generateGrid(gridData) {
