@@ -13,6 +13,7 @@ var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 var csvParser = require('papaparse');
 var PythonShell = require('python-shell');
+const FileHound = require('filehound');
 //var uuid = require('uuid');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
@@ -342,6 +343,49 @@ router.get('/mlEvalTest', function (req, res) {
         })
     });
 });
+
+router.get('/fileTest', function (req, res) {
+    const testFolder = 'E:\\projectworks\\koreanre\\sinokor-ocr\\uploads\\';
+
+    const files = FileHound.create()
+        .paths(testFolder)
+        .ext('jpg','tif')
+        .find();
+
+    console.log("test");
+
+    files.then(function (res) {
+        console.log(res);
+    });
+
+    res.send("test");
+});
+
+function ocrFileList(req, res) {
+    const testFolder = 'E:\\projectworks\\koreanre\\sinokor-ocr\\uploads\\';
+
+    const files = FileHound.create()
+        .paths(testFolder)
+        .ext('jpg', 'tif')
+        .find();
+    
+    var resText = [];
+
+    files.then(function (result) {
+        for (var i = 0; i < result.length; i++) {
+            var splitText = result[i].split("uploads\\");
+
+            var obj = {};
+            obj.IMG_ID = splitText[1];
+            resText.push(obj);
+        }
+
+    });
+
+    files.done(function () {
+        res.render('user/batchLearning', {rows: resText, currentUser: req.user });
+    });
+}
 
 //오타 검사 
 function typoSentenceEval(data, callback) {

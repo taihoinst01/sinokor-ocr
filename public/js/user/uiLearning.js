@@ -48,7 +48,7 @@ function uploadFileEvent() {
         },
         success: function (responseText, statusText) {
             //console.log(responseText);
-            addProgressBar(41, 100);
+            addProgressBar(41, 60);
             if (responseText.message.length > 0) {
                 totCount = responseText.message.length;
                 for (var i = 0; i < responseText.message.length; i++) {
@@ -86,7 +86,8 @@ function processImage(fileName) {
     }).done(function (data) {
         ocrCount++;
         thumbImgs.push(fileName);
-        appendOcrData(fileName,data.regions);
+        appendOcrData(fileName, data.regions);
+        addProgressBar(61, 80);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
@@ -209,7 +210,7 @@ function appendOcrData(fileName, regions) {
             if (totCount == searchDBColumnsCount) {
                 thumbImgEvent();
             }
-
+            addProgressBar(81, 100);
             /* 몇 페이지 어디인지 표시
             if (totCount == searchDBColumnsCount) {
                 $('.dialog_wrap').html('<div id="mainImage" style="height:700px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
