@@ -528,7 +528,11 @@ function labelMappingEval(data, callback) {
                         var diffX = xCoodi - xNum;
                         var diffY = yCoodi - yNum;
 
-                        var dis = Math.sqrt(Math.abs(diffX * diffX) + Math.abs(diffY * diffY));
+                        //점 최소 거리
+                        //var dis = Math.sqrt(Math.abs(diffX * diffX) + Math.abs(diffY * diffY));
+
+                        //y좌표 최소 거리
+                        var dis = Math.abs(yCoodi - yNum);
 
                         if (minDis > dis) {
                             minDis = dis;
