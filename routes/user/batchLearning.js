@@ -56,6 +56,7 @@ router.post('/searchBatchLearnDataList', function (req, res) {   // 배치학습
 var fnSearchBatchLearningDataList = function (req, res) {
     // 조건절
     var condQuery = "";
+    var orderQuery = " ORDER BY REG_DATE DESC ";
     if (!commonUtil.isNull(req.body.addCond)) {
         if (req.body.addCond == "LEARN_N") condQuery = " AND CSCO_NM IS NULL AND CT_NM IS NULL ";
         else if (req.body.addCond == "LEARN_Y") condQuery = " AND CSCO_NM IS NOT NULL AND CT_NM IS NOT NULL ";
@@ -63,7 +64,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
     // LIMIT
     var limitQuery = "";
     if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) limitQuery = " LIMIT " + req.body.startNum + "," + req.body.moreNum;
-    var listQuery = selectBatchLearningDataListQuery + condQuery + limitQuery;
+    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery + limitQuery;
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
 };
 // [CALLBACK] 배치학습데이터리스트 조회
@@ -72,7 +73,6 @@ var callbackBatchLearningDataList = function (rows, req, res) {
 }
 // [POST] 이미지 업로드
 router.post('/imageUpload', upload.any(), function (req, res) {
-    console.log("image upload??? ");
     var files = req.files;
     var endCount = 0;
     var returnObj = [];
@@ -120,7 +120,8 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 
 // INSERT fileInfo
 var callbackInsertFileInfo = function (rows, req, res) {
-    console.log("upload finish..");
+    console.log("upload fileInfo finish..");
+    res.send({ code: 200, rows: rows });
 }
 router.post('/insertFileInfo', function (req, res) {
     console.log("insert FILE INFO : " + JSON.stringify(req.body.fileInfo));
@@ -134,22 +135,66 @@ router.post('/insertFileInfo', function (req, res) {
     var fileExt = fileInfo.fileExt;
     var fileSize = fileInfo.fileSize;
     var contentType = fileInfo.contentType;
-    //var regId = req.body.userId;
     var regId = req.session.userId;
 
     var data = [imgId, filePath, oriFileName, svrFileName, fileExt, fileSize, contentType, 'B', regId];
     console.log("입력 데이터 : " + JSON.stringify(data));
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertFileInfo, data, callbackInsertFileInfo, req, res);
-    
-    //for (var i = 0; i < fileInfo.length; i++) {
-    //    var xcoodi = batchLearningData[i].location.split(',')[0];
-    //    var ycoodi = batchLearningData[i].location.split(',')[1];
-    //    var text = batchLearningData[i].text;
-    //    var len = batchLearningData[i].text.length;
-    //    var data = [xcoodi, ycoodi, len, text];
-    //    //commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
-    //}
 });
+
+// RUN batchLearningData
+router.post('/execBatchLearningData', function (req, res) {
+    var arg = req.body.data;
+    typoSentenceEval(arg, function (result1) {
+        domainDictionaryEval(result1, function (result2) {
+            textClassificationEval(result2, function (result3) {
+                labelMappingEval(result3, function (result4) {
+                    console.log("labelMapping Result : " + JSON.stringify(result4));
+                    res.send(result4);
+                })
+            })
+        })
+    });
+});
+
+// insert batchLearningData
+var callbackInsertBatchLearningData = function (rows, req, res) {
+    console.log("upload batchLearningData finish..");
+    res.send({ code: 200, rows: rows });
+};
+router.post('/insertBatchLearningData', function (req, res) {
+    var dataObj = req.body.dataObj;
+    console.log("insert dataObj " + JSON.stringify(dataObj));
+    var imgId = dataObj.imgId; // 필수값
+    var imgFileStNo = commonUtil.nvl(dataObj.IMG_FILE_ST_NO);
+    var imgFileEndNo = commonUtil.nvl(dataObj.IMG_FILE_END_NO);
+    var cscoNm = commonUtil.nvl(dataObj.CSCO_NM);
+    var ctNm = commonUtil.nvl(dataObj.CT_NM);
+    var insStDt = commonUtil.nvl(dataObj.INS_ST_DT);
+    var insEndDt = commonUtil.nvl(dataObj.INS_END_DT);
+    var curCd = commonUtil.nvl(dataObj.CUR_CD);
+    var pre = commonUtil.nvl2(dataObj.PRE, '0');
+    var com = commonUtil.nvl2(dataObj.COM, '0');
+    var brkg = commonUtil.nvl2(dataObj.BRKG, '0');
+    var txam = commonUtil.nvl2(dataObj.TXAM, '0');
+    var prrsCf = commonUtil.nvl2(dataObj.PRRS_CF, '0');
+    var prrsRls = commonUtil.nvl2(dataObj.PRRS_RLS, '0');
+    var lsresCf = commonUtil.nvl2(dataObj.LSRES_CF, '0');
+    var lsresRls = commonUtil.nvl2(dataObj.LSRES_RLS, '0');
+    var cla = commonUtil.nvl2(dataObj.CLA, '0');
+    var exex = commonUtil.nvl2(dataObj.EXEX, '0');
+    var svf = commonUtil.nvl2(dataObj.SVF, '0');
+    var cas = commonUtil.nvl2(dataObj.CAS, '0');
+    var ntbl = commonUtil.nvl2(dataObj.NTBL, '0');
+    var cscoSaRfrnCnnt2 = commonUtil.nvl(dataObj.CSCO_SA_RFRN_CNNT2);
+    var regId = req.session.userId;
+    
+    var data = [imgId, imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, regId];
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
+    
+});
+
+
 
 
 
@@ -254,61 +299,7 @@ router.post('/multiUpload', upload.any(), function (req, res) {
     }
 });
 
-// insert batchLearningData
-router.post('/insertBatchLearningData', function (req, res) {
-    for (var i = 0; i < batchLearningData.length; i++) {
-        var xcoodi = batchLearningData[i].location.split(',')[0];
-        var ycoodi = batchLearningData[i].location.split(',')[1];
-        var text = batchLearningData[i].text;
-        var len = batchLearningData[i].text.length;
-        var data = [xcoodi, ycoodi, len, text];
-        //commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
-    }
-});
 
-// run batchLearningData
-router.post('/execBatchLearningData', function (req, res) {
-    var classificationResult;
-    var labelMappingResult;
-    //var arg = '"Partner of Choice"' + ' ' + '"Class of Business"' + ' ';
-    var arg = req.body.param;
-
-    var localCnnTextClassificationPath = "C:\\workspace\\cnn-text-classification\\";
-    var localLabelMappingPath = "C:\\workspace\\cnn-label-mapping\\";
-
-    var cnnTextClassificationPath = 'python ' + appRoot + '\\ml\\cnn-text-classification\\';
-    var labelMappingPath = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\';
-
-    var inputName = 'input_' + getConvertDate();
-    var outputName = 'output_' + getConvertDate();
-    // 오타수정 머신러닝 START
-    const defaults = {
-        encoding: 'utf8'
-    };
-    exec(cnnTextClassificationPath + 'eval.py ' + arg, defaults, function (err1, stdout1, stderr1) {
-        if (err1) {
-            console.log(err1);
-            res.send({ code: '500', message: err1 });
-        } else {
-            var classificationResult = "";
-            var text1, text2, text3 = "";
-            let temp1 = stdout1.split("^");
-            for (var i = 0, x = temp1.length; i < x; i++) {
-                let temp2 = temp1[i].split("||");
-                if (temp2[1] == "fixlabel") classificationResult += '"' + temp2[0] + '" ';
-            }
-            console.log("결과 : " + classificationResult);
-            labelMappingFunc(classificationResult);
-        }
-    });
-    function labelMappingFunc(classificationResult) {
-        exec(labelMappingPath + 'eval.py ' + classificationResult, defaults, function (err, stdout2, stderr) {
-            labelMappingResult = stdout2;
-            console.log("labelMappingResult : " + labelMappingResult); // TO-DO 그리드 변경되면 그리드에 출력
-            res.send(stdout2);
-        });
-    }
-});
 
 //오늘날짜 변환함수
 function getConvertDate() {

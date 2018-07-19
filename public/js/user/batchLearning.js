@@ -7,7 +7,7 @@ var ocrCount = 0; // ocr 수행 횟수
 var grid;
 
 var addCond = "LEARN_N"; // LEARN_N:학습미완료, LEARN_Y:학습완료, default:학습미완료
-var startNum = 1;
+var startNum = 0;
 var moreNum = 20;
 
 $(function () {
@@ -80,27 +80,6 @@ var buttonEvent = function () {
         addCond = "LEARN_Y";
         searchBatchLearnDataList(addCond);
     });
-
-    // 전체, 학습미완료, 학습완료
-    //$("input[name='show_button']").on("click", function () {
-    //    switch ($(this).attr("id")) {
-    //        case "show_all":
-    //            addCond = "";
-    //            break;
-    //        case "show_unfinish":
-    //            addCond = "LEARN_N"; // 학습 미완료
-    //            break;
-    //        case "show_finish":
-    //            addCond = "LEARN_Y"; // 학습 완료
-    //            break;
-    //        default:
-    //            break;
-    //    }
-    //    $("#tbody_batchList").empty(); // 리스트 제거
-    //    startNum = 1;
-    //    moreNum = 20;
-    //    searchBatchLearnDataList(addCond);
-    //});
 
     // 정답엑셀 업로드
     $("#btn_rightExcelUpload").on("click", function () {
@@ -183,6 +162,8 @@ var imageUploadEvent = function () {
     var multiUploadForm = $("#multiUploadForm");
 
     $('#document_file').on("change", function () {
+        startProgressBar();
+        addProgressBar(1, 5);
         multiUploadForm.attr("action", "/batchLearning/imageUpload");
         if ($(this).val() !== '') {
             multiUploadForm.submit();
@@ -192,24 +173,13 @@ var imageUploadEvent = function () {
     var uploadPromise = new Promise(function (resolve, reject) {
         multiUploadForm.ajaxForm({
             beforeSubmit: function (data, frm, opt) {
-                $("#progressMsg").html("uploading image files...");
+                $("#progressMsg").html("Preparing to upload files...");
                 startProgressBar();
-                addProgressBar(1, 5);
+                addProgressBar(6, 15);
                 return true;
             },
             success: function getData(responseText, statusText) {
-                //$("#progressMsg").html("progress image files...");
-                //addProgressBar(6, 50);
                 console.log("upload image data : " + JSON.stringify(responseText));
-                console.log("file info : " + JSON.stringify(responseText.fileInfo));
-                totCount = responseText.message.length;
-                console.log("count : " + totCount);
-                console.log("uploadPromise : process Image 이전");
-                for (var i = 0; i < totCount; i++) {
-                    insertFileInfo(responseText.fileInfo[i]);
-                    processImage(responseText.message[i]);
-                }
-                console.log("uploadPromise : process Image 이후");
                 resolve(responseText, statusText);
             },
             error: function (e) {
@@ -218,51 +188,27 @@ var imageUploadEvent = function () {
         });
     });
     uploadPromise.then(function (responseText, statusText) {
-
-        $("#progressMsg").html("upload process data...");
-        console.log("uploadPromise : then 이전");
-        addProgressBar(5, 40);
-        //endProgressBar();
-        console.log("uploadPromise : then 이후");
+        $("#progressMsg").html("uploading image files...");
+        addProgressBar(16, 40);
+        totCount = responseText.message.length;
+        for (var i = 0; i < totCount; i++) {
+            processImage(responseText.fileInfo[i], responseText.message[i]);
+        }
     });
     uploadPromise.then().catch(function (e) {
-        //endProgressBar();
         console.log(e);
     });
 }
-
-// STEP 2 : FILE INFO DB INSERT
-function insertFileInfo(fileInfo) {
-    if (fileInfo) {
-        var param = { fileInfo: fileInfo };
-        $.ajax({
-            url: '/batchLearning/insertFileInfo',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify(param),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-                console.log("fileInfo DB INSERT SUCCESS : " + data);
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    }
-}
-                
-// STEP 3 : FILE -> OCR API
-function processImage(fileName) {
+               
+// STEP 2 : FILE -> OCR API
+function processImage(fileInfo, fileName) {
     var subscriptionKey = "fedbc6bb74714bd78270dc8f70593122";
     var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
-
     var params = {
         "language": "unk",
         "detectOrientation": "true",
     };
-
     var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
-
     $.ajax({
         url: uriBase + "?" + $.param(params),
         beforeSend: function (jqXHR) {
@@ -275,8 +221,7 @@ function processImage(fileName) {
         console.log("processImage : done ");
         ocrCount++;
         addProgressBar(41, 70);
-        //appendOcrData(data.regions);
-        execBatchLearningData(data.regions);
+        execBatchLearningData(fileInfo, fileName, data.regions); // goto STEP 3
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
@@ -286,41 +231,35 @@ function processImage(fileName) {
     });
 };
 
-// STEP 4 : OCR API -> CLASSIFICATION -> LABEL MAPPING
-function execBatchLearningData(regions) {
-    var lineText = [];
-    var paramText = "";
-    for (var i = 0, x = regions.length; i < x; i++) {
+// STEP 3 : OCR API -> CLASSIFICATION -> LABEL MAPPING
+function execBatchLearningData(fileInfo, fileName, regions) {
+    var data = [];
+    for (var i = 0; i < regions.length; i++) {
         for (var j = 0; j < regions[i].lines.length; j++) {
             var item = '';
             for (var k = 0; k < regions[i].lines[j].words.length; k++) {
                 item += regions[i].lines[j].words[k].text + ' ';
             }
-            lineText.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
         }
     }
-    for (var i = 0, x = lineText.length; i < x; i++) {
-        paramText += '"' + lineText[i].text + '" ';
-    }
-    var param = {
-        "param": paramText
-    }
+
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify(param),
+        //data: JSON.stringify(param),
+        data: JSON.stringify({ 'fileName': fileName, 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
         },
         success: function (data) {
-            appendGridData(data);
+            insertBatchLearningData(fileInfo, data);
             addProgressBar(71, 99);
             setTimeout(function () {
-                console.log("리스트 출력....");
-                alert("Finish batch Learning data");
+                alert("완료되었습니다.");
                 searchBatchLearnDataList(addCond);
-            }, 2000); // 프로그레스바 종료
+            }, 1000); // 프로그레스바 종료
         },
         error: function (err) {
             console.log(err);
@@ -328,9 +267,87 @@ function execBatchLearningData(regions) {
     });
 }
 
-// STEP 5 : FILE PARSING RESULT DB INSERT
-function appendGridData(data) {
-    console.log("결과 appendGridData : " + JSON.stringify(data));
+// STEP 4 : INSERT FILE PARSING RESULT AND FILE INFO IN DB
+function insertBatchLearningData(fileInfo, data) {
+    console.log("insertBatchLearningData fileInfo : " + JSON.stringify(fileInfo));
+    console.log("data[0] : " + JSON.stringify(data[0]));
+    var dataObj = {};
+
+    for (var i = 0, x = data.length; i < x; i++) {
+        var location = nvl(data[i]["location"]);
+        var label = nvl(data[i]["label"]);
+        var text = nvl(data[i]["text"]);
+        var column = nvl(data[i]["column"]);
+        if (label == "fixlabel" || label == "entryrowlabel") {
+            for (var j = 0, y = data.length; j < y; j++) {
+                if (data[j].column == column + "_VALUE") {
+                    console.log("Find Label and Value : " + data[j]["column"] + " >> " + data[j]["text"]);
+                    if (isNull(dataObj[column])) {
+                        // DOUBLE 형태의 값은 공백 제거 처리
+                        if (column == "PRE" || column == "COM" || column == "BRKG" || column == "TXAM" ||
+                            column == "PRRS_CF" || column == "PRRS_RLS" || column == "LSRES_CF" ||
+                            column == "LSRES_RLS" || column == "CLA" || column == "EXEX" || column == "SVF" ||
+                            column == "CAS" || column == "NTBL") {
+                            dataObj[column] = data[j]["text"].replace(/(\s*)/g,"");
+                        } else {
+                            dataObj[column] = data[j]["text"];
+                        }
+                    } else {
+                        console.log("Alreaday exist Column(KEY) : " + data[j]["column"] + " >> " + data[j]["text"]);
+                    }
+                }
+            }
+        } 
+    }
+    console.log("결과 : " + JSON.stringify(dataObj));
+    // FILE INSERT
+    var insertFile = function (fileInfo) {
+        if (fileInfo) {
+            var param = { fileInfo: fileInfo };
+            $.ajax({
+                url: '/batchLearning/insertFileInfo',
+                type: 'post',
+                datatype: "json",
+                data: JSON.stringify(param),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+    }
+    // BatchLearning Data Insert
+    if (dataObj) {
+        var imgId = fileInfo.imgId;
+        var filePath = fileInfo.filePath;
+        var oriFileName = fileInfo.oriFileName;
+        var svrFileName = fileInfo.svrFileName;
+        var convertFileName = fileInfo.convertFileName;
+        var fileExt = fileInfo.fileExt;
+        var fileSize = fileInfo.fileSize;
+        var contentType = fileInfo.contentType;
+
+        dataObj["imgId"] = imgId;
+        var param = { dataObj: dataObj };
+        $.ajax({
+            url: '/batchLearning/insertBatchLearningData',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                insertFile(fileInfo); // BatchlearningData 저장에 성공하면 File 정보 insert
+                console.log("SUCCESS insertBatchLearningData : " + JSON.stringify(data));
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
     //var gridData = [];
     //$('#uploadDiv').hide();
     //$('#gridDiv').show();
@@ -419,7 +436,6 @@ var searchBatchLearnDataList = function (addCond) {
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") $("#tbody_batchList_before").empty().append(appendHtml);
             else $("#tbody_batchList_after").empty().append(appendHtml);
-            console.log("리스트 출력 종료 ");
             endProgressBar(); // end progressbar
             checkboxEvent(); // refresh checkbox event
         },
