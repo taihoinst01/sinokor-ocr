@@ -69,9 +69,9 @@ var batchLearningConfig = {
           ORDER BY SEQNUM DESC`,
     insertBatchLearningData:
         "INSERT INTO tbl_batch_learn_data (IMG_ID, IMG_FILE_ST_NO, IMG_FILE_END_NO, CSCO_NM, CT_NM, INS_ST_DT, INS_END_DT, CUR_CD, PRE, COM, " +
-        "BRKG, TXAM, PRRS_CF, PRRS_RLS, LSRES_CF, LSRES_RLS, CLA, EXEX, SVF, CAS, NTBL, CSCO_SA_RFRN_CNNT2) " +
+        "BRKG, TXAM, PRRS_CF, PRRS_RLS, LSRES_CF, LSRES_RLS, CLA, EXEX, SVF, CAS, NTBL, CSCO_SA_RFRN_CNNT2, REG_ID, REG_DATE) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())",
     insertFileInfo:
         "INSERT INTO TBL_ICR_FILE (IMG_ID, FILE_PATH, ORI_FILE_NAME, SVR_FILE_NAME, FILE_EXT, FILE_SIZE, CONTENT_TYPE, FILE_TYPE, REG_ID, REG_DATE) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, now())",

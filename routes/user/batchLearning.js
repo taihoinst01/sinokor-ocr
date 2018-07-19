@@ -55,6 +55,7 @@ router.post('/searchBatchLearnDataList', function (req, res) {   // 배치학습
 var fnSearchBatchLearningDataList = function (req, res) {
     // 조건절
     var condQuery = "";
+    var orderQuery = " ORDER BY REG_DATE DESC ";
     if (!commonUtil.isNull(req.body.addCond)) {
         if (req.body.addCond == "LEARN_N") condQuery = " AND CSCO_NM IS NULL AND CT_NM IS NULL ";
         else if (req.body.addCond == "LEARN_Y") condQuery = " AND CSCO_NM IS NOT NULL AND CT_NM IS NOT NULL ";
@@ -62,7 +63,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
     // LIMIT
     var limitQuery = "";
     if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) limitQuery = " LIMIT " + req.body.startNum + "," + req.body.moreNum;
-    var listQuery = selectBatchLearningDataListQuery + condQuery + limitQuery;
+    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery + limitQuery;
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
 };
 // [CALLBACK] 배치학습데이터리스트 조회
@@ -71,7 +72,6 @@ var callbackBatchLearningDataList = function (rows, req, res) {
 }
 // [POST] 이미지 업로드
 router.post('/imageUpload', upload.any(), function (req, res) {
-    console.log("image upload??? ");
     var files = req.files;
     var endCount = 0;
     var returnObj = [];
@@ -119,7 +119,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 
 // INSERT fileInfo
 var callbackInsertFileInfo = function (rows, req, res) {
-    console.log("upload finish..");
+    console.log("upload fileInfo finish..");
     res.send({ code: 200, rows: rows });
 }
 router.post('/insertFileInfo', function (req, res) {
@@ -157,18 +157,42 @@ router.post('/execBatchLearningData', function (req, res) {
 });
 
 // insert batchLearningData
+var callbackInsertBatchLearningData = function (rows, req, res) {
+    console.log("upload batchLearningData finish..");
+    res.send({ code: 200, rows: rows });
+};
 router.post('/insertBatchLearningData', function (req, res) {
-
-    // TODO : 데이터를 생성하여
     var dataObj = req.body.dataObj;
-    var pre = ""; // 생성 예제
-    var ppp = "";
+    console.log("insert dataObj " + JSON.stringify(dataObj));
+    var imgId = dataObj.imgId; // 필수값
+    var imgFileStNo = commonUtil.nvl(dataObj.IMG_FILE_ST_NO);
+    var imgFileEndNo = commonUtil.nvl(dataObj.IMG_FILE_END_NO);
+    var cscoNm = commonUtil.nvl(dataObj.CSCO_NM);
+    var ctNm = commonUtil.nvl(dataObj.CT_NM);
+    var insStDt = commonUtil.nvl(dataObj.INS_ST_DT);
+    var insEndDt = commonUtil.nvl(dataObj.INS_END_DT);
+    var curCd = commonUtil.nvl(dataObj.CUR_CD);
+    var pre = commonUtil.nvl2(dataObj.PRE, '0');
+    var com = commonUtil.nvl2(dataObj.COM, '0');
+    var brkg = commonUtil.nvl2(dataObj.BRKG, '0');
+    var txam = commonUtil.nvl2(dataObj.TXAM, '0');
+    var prrsCf = commonUtil.nvl2(dataObj.PRRS_CF, '0');
+    var prrsRls = commonUtil.nvl2(dataObj.PRRS_RLS, '0');
+    var lsresCf = commonUtil.nvl2(dataObj.LSRES_CF, '0');
+    var lsresRls = commonUtil.nvl2(dataObj.LSRES_RLS, '0');
+    var cla = commonUtil.nvl2(dataObj.CLA, '0');
+    var exex = commonUtil.nvl2(dataObj.EXEX, '0');
+    var svf = commonUtil.nvl2(dataObj.SVF, '0');
+    var cas = commonUtil.nvl2(dataObj.CAS, '0');
+    var ntbl = commonUtil.nvl2(dataObj.NTBL, '0');
+    var cscoSaRfrnCnnt2 = commonUtil.nvl(dataObj.CSCO_SA_RFRN_CNNT2);
+    var regId = req.session.userId;
     
-    // TODO : 배열로 변경하여 INSERT DB
-    var data = [pre, ppp];
-    // commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
+    var data = [imgId, imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, regId];
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
     
 });
+
 
 
 
