@@ -69,6 +69,24 @@ jQuery(function($){
 	 	}
 	});
 
+	// UI학습 양식분석상태  - input 클릭시 input 확대/축소
+		$(".box_table_st04 dt > .iclick input").click(function(){
+			$(this).addClass('on');
+		});
+		$(".box_table_st04 dt > .iclick input").bind("blur",function(){
+			$(this).removeClass('on');
+		});
+
+	// 버튼 선택시 class=on 추가제거
+	$('.button_st5').click(function(e){
+	 	var thiss = $(this);
+	 	if(thiss.hasClass('on')){
+	  		thiss.removeClass('on');
+	 	}else{
+	 		thiss.addClass('on');
+	 	}
+	});
+
 	//스크롤 하단시에 selectbox 위로 열림
 	$('.selects').click(function(e){
 	    var ys_h = e.pageY; 

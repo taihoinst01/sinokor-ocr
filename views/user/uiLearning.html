@@ -52,67 +52,114 @@
             <!-- 본문영역 -->
             <div id="content">
                 <h2 class="subtit subtit_st01 blind"><span>청약서입력</span></h2>
-                <div class="box_content box_st04">
-                    <!-- 썸네일 이미지 영역 -->
-                    <div class="box_st041">
-                        <div class="box_imgtmb" style="height:98%;">
-                            <ul id="imageBox"></ul>
-                        </div>
-                        <div class="box_imgtmbcontrol" style="height:2%;">
-                            <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
-                            <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
-                            <button type="button" id="thumb-tot" class="button_control button_control3">전체</button>
+
+                <!-- 양식이미지 -->
+                <div class="box_content box_content_bg">
+                    <h3 class="tits"><span>양식이미지</span></h3>
+
+                    <div class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                        <!--<img src="../css/sample01.jpg" alt="샘플이미지" />-->
+                        <ul id="imageBox"></ul>
+                    </div>
+
+                    <!-- 업로드 영역 -->
+                    <div id="img_content">
+                        <div class="st_infortext_01">
+                            <span id="uploadInfoText">파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
+                            <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
+                                <p class="attach_btn">
+                                    <input type="file" id="uploadFile" name="file" value="upload" />
+                                    <label id="uploadFileBtn" for="customer_file">업로드</label>
+                                </p>
+                            </form>
+                            <div id="ocrProgress">
+                                <div id="ocrBar"></div>
+                            </div>
                         </div>
                     </div>
-                    <!-- // 썸네일 이미지 영역 -->
-                    <!-- 메인 이미지 영역 -->
-                    <div class="box_st042">
-                        <h3><span>양식이미지</span></h3>
-                        <div id="img_content">
-                            <div class="st_infortext_01">
-                                <span id="uploadInfoText">파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
-                                <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
-                                    <p class="attach_btn">
-                                        <input type="file" id="uploadFile" name="file" value="upload" />
-                                        <label id="uploadFileBtn" for="customer_file">업로드</label>
-                                    </p>
-                                </form>
-                                <div id="ocrProgress">
-                                    <div id="ocrBar"></div>
+                    <!-- // 업로드 영역 -->
+
+
+                    <div class="box_imgtmb">
+                        <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
+                        <div id="touchSlider">
+                            <ul>
+                                <!--<li class="on">
+                <div class="box_img"><i><img src="../css/sample01.jpg" title="샘플이미지"></i></div>
+                <span>Filename_Filename_0001.jpg</span>
+            </li>-->
+                            </ul>
+                        </div>
+                        <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
+                        <!--<button type="button" id="thumb-tot" class="button_control button_control3">전체</button>-->
+                        <div id="count" class="count"><!--<span>1</span> / 3--></div>
+                    </div>
+                </div>
+                <!-- // 양식이미지 -->
+                <!-- 양식분석상세 -->
+                <div class="box_content st_last">
+                    <div class="box_content_bg">
+                        <h3 class="tits"><span>양식분석상세</span></h3>
+                        <div class="btn_rt">
+                            <button type="button" id="uiTrainBtn" class="button_st1">UI raining</button>
+                        </div>
+                        <div class="mCustomScrollbar box_scroll_st6" data-mcs-theme="dark-3">
+                            <div class="table_style02">
+                                <table>
+                                    <caption>양식 분석 상세 정보</caption>
+                                    <colgroup>
+                                        <col style="width:65%" />
+                                        <col style="width:35%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th scope="row">추출 텍스트</th>
+                                            <th scope="row">DB 컬럼</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div id="textResultTbl" class="box_table_st box_table_st04">
+                                    <!--<dl>
+                                        <dt>
+                                            <label class="iclick">
+                                                <input type="text" name="intxt_0" id="intxt_001" class="inputst_box01" value="Your Contract Ref Your Contract Ref Your Contract Ref Your Contract RefYour Contract Ref" />
+                                            </label>
+                                            <span>99.999%</span>
+                                        </dt>
+                                        <dd>
+                                            <div class="select_style">
+                                                <span class="ctrl"><span class="arrow"></span></span>
+                                                <button type="button" class="myValue">체크 테스트</button>
+                                                <ul class="aList">
+                                                    <li><a href="#none">체크 테스트</a></li>
+                                                </ul>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>
+                                            <label class="">
+                                                <input type="text" name="intxt_0" id="intxt_01" class="inputst_box01" value="Your Contract Ref" />
+                                            </label>
+                                            <span>99.999%</span>
+                                        </dt>
+                                        <dd>
+                                            <div class="select_style">
+                                                <span class="ctrl"><span class="arrow"></span></span>
+                                                <button type="button" class="myValue">계약번호</button>
+                                                <ul class="aList">
+                                                    <li><a href="#none">계약번호</a></li>
+                                                </ul>
+                                            </div>
+                                        </dd>
+                                    </dl>-->
+                                    
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- // 메인 이미지 영역 -->
                 </div>
-                <div class="box_content box_st05 box_stlast">
-                    <h3 class="tits"><span>양식 분석 상세</span><input type="button" id="uiTrainBtn" value="학습" style="width:30px; margin:0 5px 0 0; padding:0; float:right;" /></h3>
-                    <div class="mCustomScrollbar box_scroll_st6" data-mcs-theme="dark-3">
-                        <!-- 상세 정보 테이블 영역 -->
-                        <div class="table_style02">
-                            <table>
-                                <caption>양식 분석 상세 정보</caption>
-                                <colgroup>
-                                    <col style="width:50%" />
-                                    <col style="width:50%" />
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th scope="row">추출 텍스트</th>
-                                        <th scope="row">DB 컬럼</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                            <div id="textResultTbl" class="box_table_st box_table_st04">
-                                <dl>
-                                    <dt></dt>
-                                    <dd></dd>
-                                </dl>
-                            </div>
-                        </div>
-                        <!-- // 상세 정보 테이블 영역 -->
-                    </div>
-                </div>
+                <!-- // 양식분석상세 -->
             </div>
             <!-- // 본문영역 -->
         </div>
