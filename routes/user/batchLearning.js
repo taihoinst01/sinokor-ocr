@@ -120,6 +120,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 // INSERT fileInfo
 var callbackInsertFileInfo = function (rows, req, res) {
     console.log("upload finish..");
+    res.send({ code: 200, rows: rows });
 }
 router.post('/insertFileInfo', function (req, res) {
     console.log("insert FILE INFO : " + JSON.stringify(req.body.fileInfo));
@@ -133,22 +134,42 @@ router.post('/insertFileInfo', function (req, res) {
     var fileExt = fileInfo.fileExt;
     var fileSize = fileInfo.fileSize;
     var contentType = fileInfo.contentType;
-    //var regId = req.body.userId;
     var regId = req.session.userId;
 
     var data = [imgId, filePath, oriFileName, svrFileName, fileExt, fileSize, contentType, 'B', regId];
     console.log("입력 데이터 : " + JSON.stringify(data));
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertFileInfo, data, callbackInsertFileInfo, req, res);
-    
-    //for (var i = 0; i < fileInfo.length; i++) {
-    //    var xcoodi = batchLearningData[i].location.split(',')[0];
-    //    var ycoodi = batchLearningData[i].location.split(',')[1];
-    //    var text = batchLearningData[i].text;
-    //    var len = batchLearningData[i].text.length;
-    //    var data = [xcoodi, ycoodi, len, text];
-    //    //commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
-    //}
 });
+
+// RUN batchLearningData
+router.post('/execBatchLearningData', function (req, res) {
+    var arg = req.body.data;
+    typoSentenceEval(arg, function (result1) {
+        domainDictionaryEval(result1, function (result2) {
+            textClassificationEval(result2, function (result3) {
+                labelMappingEval(result3, function (result4) {
+                    console.log("labelMapping Result : " + JSON.stringify(result4));
+                    res.send(result4);
+                })
+            })
+        })
+    });
+});
+
+// insert batchLearningData
+router.post('/insertBatchLearningData', function (req, res) {
+
+    // TODO : 데이터를 생성하여
+    var dataObj = req.body.dataObj;
+    var pre = ""; // 생성 예제
+    var ppp = "";
+    
+    // TODO : 배열로 변경하여 INSERT DB
+    var data = [pre, ppp];
+    // commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
+    
+});
+
 
 
 
@@ -253,61 +274,7 @@ router.post('/multiUpload', upload.any(), function (req, res) {
     }
 });
 
-// insert batchLearningData
-router.post('/insertBatchLearningData', function (req, res) {
-    for (var i = 0; i < batchLearningData.length; i++) {
-        var xcoodi = batchLearningData[i].location.split(',')[0];
-        var ycoodi = batchLearningData[i].location.split(',')[1];
-        var text = batchLearningData[i].text;
-        var len = batchLearningData[i].text.length;
-        var data = [xcoodi, ycoodi, len, text];
-        //commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
-    }
-});
 
-// run batchLearningData
-router.post('/execBatchLearningData', function (req, res) {
-    var classificationResult;
-    var labelMappingResult;
-    //var arg = '"Partner of Choice"' + ' ' + '"Class of Business"' + ' ';
-    var arg = req.body.param;
-
-    var localCnnTextClassificationPath = "C:\\workspace\\cnn-text-classification\\";
-    var localLabelMappingPath = "C:\\workspace\\cnn-label-mapping\\";
-
-    var cnnTextClassificationPath = 'python ' + appRoot + '\\ml\\cnn-text-classification\\';
-    var labelMappingPath = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\';
-
-    var inputName = 'input_' + getConvertDate();
-    var outputName = 'output_' + getConvertDate();
-    // 오타수정 머신러닝 START
-    const defaults = {
-        encoding: 'utf8'
-    };
-    exec(cnnTextClassificationPath + 'eval.py ' + arg, defaults, function (err1, stdout1, stderr1) {
-        if (err1) {
-            console.log(err1);
-            res.send({ code: '500', message: err1 });
-        } else {
-            var classificationResult = "";
-            var text1, text2, text3 = "";
-            let temp1 = stdout1.split("^");
-            for (var i = 0, x = temp1.length; i < x; i++) {
-                let temp2 = temp1[i].split("||");
-                if (temp2[1] == "fixlabel") classificationResult += '"' + temp2[0] + '" ';
-            }
-            console.log("결과 : " + classificationResult);
-            labelMappingFunc(classificationResult);
-        }
-    });
-    function labelMappingFunc(classificationResult) {
-        exec(labelMappingPath + 'eval.py ' + classificationResult, defaults, function (err, stdout2, stderr) {
-            labelMappingResult = stdout2;
-            console.log("labelMappingResult : " + labelMappingResult); // TO-DO 그리드 변경되면 그리드에 출력
-            res.send(stdout2);
-        });
-    }
-});
 
 //오늘날짜 변환함수
 function getConvertDate() {

@@ -192,24 +192,13 @@ var imageUploadEvent = function () {
     var uploadPromise = new Promise(function (resolve, reject) {
         multiUploadForm.ajaxForm({
             beforeSubmit: function (data, frm, opt) {
-                $("#progressMsg").html("uploading image files...");
+                $("#progressMsg").html("Preparing to upload files...");
                 startProgressBar();
                 addProgressBar(1, 5);
                 return true;
             },
             success: function getData(responseText, statusText) {
-                //$("#progressMsg").html("progress image files...");
-                //addProgressBar(6, 50);
                 console.log("upload image data : " + JSON.stringify(responseText));
-                console.log("file info : " + JSON.stringify(responseText.fileInfo));
-                totCount = responseText.message.length;
-                console.log("count : " + totCount);
-                console.log("uploadPromise : process Image 이전");
-                for (var i = 0; i < totCount; i++) {
-                    insertFileInfo(responseText.fileInfo[i]);
-                    processImage(responseText.message[i]);
-                }
-                console.log("uploadPromise : process Image 이후");
                 resolve(responseText, statusText);
             },
             error: function (e) {
@@ -218,21 +207,20 @@ var imageUploadEvent = function () {
         });
     });
     uploadPromise.then(function (responseText, statusText) {
-
-        $("#progressMsg").html("upload process data...");
-        console.log("uploadPromise : then 이전");
+        $("#progressMsg").html("uploading image files...");
         addProgressBar(5, 40);
-        //endProgressBar();
-        console.log("uploadPromise : then 이후");
+        totCount = responseText.message.length;
+        for (var i = 0; i < totCount; i++) {
+            insertFileInfo(responseText.fileInfo[i], responseText.message[i]);
+        }
     });
     uploadPromise.then().catch(function (e) {
-        //endProgressBar();
         console.log(e);
     });
 }
 
 // STEP 2 : FILE INFO DB INSERT
-function insertFileInfo(fileInfo) {
+function insertFileInfo(fileInfo, fileName) {
     if (fileInfo) {
         var param = { fileInfo: fileInfo };
         $.ajax({
@@ -242,7 +230,8 @@ function insertFileInfo(fileInfo) {
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
-                console.log("fileInfo DB INSERT SUCCESS : " + data);
+                console.log("fileInfo DB INSERT SUCCESS : " + JSON.stringify(data));
+                processImage(fileInfo, fileName);
             },
             error: function (err) {
                 console.log(err);
@@ -252,17 +241,14 @@ function insertFileInfo(fileInfo) {
 }
                 
 // STEP 3 : FILE -> OCR API
-function processImage(fileName) {
+function processImage(fileInfo, fileName) {
     var subscriptionKey = "fedbc6bb74714bd78270dc8f70593122";
     var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
-
     var params = {
         "language": "unk",
         "detectOrientation": "true",
     };
-
     var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
-
     $.ajax({
         url: uriBase + "?" + $.param(params),
         beforeSend: function (jqXHR) {
@@ -275,8 +261,7 @@ function processImage(fileName) {
         console.log("processImage : done ");
         ocrCount++;
         addProgressBar(41, 70);
-        //appendOcrData(data.regions);
-        execBatchLearningData(data.regions);
+        execBatchLearningData(fileInfo, fileName, data.regions); // goto STEP 4
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
@@ -287,37 +272,31 @@ function processImage(fileName) {
 };
 
 // STEP 4 : OCR API -> CLASSIFICATION -> LABEL MAPPING
-function execBatchLearningData(regions) {
-    var lineText = [];
-    var paramText = "";
-    for (var i = 0, x = regions.length; i < x; i++) {
+function execBatchLearningData(fileInfo, fileName, regions) {
+    var data = [];
+    for (var i = 0; i < regions.length; i++) {
         for (var j = 0; j < regions[i].lines.length; j++) {
             var item = '';
             for (var k = 0; k < regions[i].lines[j].words.length; k++) {
                 item += regions[i].lines[j].words[k].text + ' ';
             }
-            lineText.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
         }
     }
-    for (var i = 0, x = lineText.length; i < x; i++) {
-        paramText += '"' + lineText[i].text + '" ';
-    }
-    var param = {
-        "param": paramText
-    }
+
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify(param),
+        //data: JSON.stringify(param),
+        data: JSON.stringify({ 'fileName': fileName, 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
         },
         success: function (data) {
-            appendGridData(data);
+            insertBatchLearningData(fileInfo, data);
             addProgressBar(71, 99);
             setTimeout(function () {
-                console.log("리스트 출력....");
                 alert("Finish batch Learning data");
                 searchBatchLearnDataList(addCond);
             }, 2000); // 프로그레스바 종료
@@ -329,8 +308,54 @@ function execBatchLearningData(regions) {
 }
 
 // STEP 5 : FILE PARSING RESULT DB INSERT
-function appendGridData(data) {
-    console.log("결과 appendGridData : " + JSON.stringify(data));
+function insertBatchLearningData(fileInfo, data) {
+    console.log("insertBatchLearningData fileInfo : " + JSON.stringify(fileInfo));
+    console.log("data[0] : " + JSON.stringify(data[0]));
+    var dataArray = {};
+
+    for (var i = 0, x = data.length; i < x; i++) {
+        var location = data[i]["location"];
+        var label = data[i]["label"];
+        var text = data[i]["text"];
+        var column = data[i]["column"] ? data[i]["column"] : "";
+        if (label == "fixlabel" || label == "entryrowlabel") {
+            for (var j = 0, y = data.length; j < y; j++) {
+                if (data[j].column == column + "_VALUE") {
+                    console.log("일치하는 값 : " + data[j]["column"] + "     :     " + data[j]["text"]);
+                    if (isNull(dataArray[column])) {
+                        dataArray[column] = data[j]["text"];
+                    } else {
+                        console.log("이미 중복된 값이 존재 : " + data[j]["column"] + "     :     " + data[j]["text"]);
+                        
+                    }
+                }
+            }
+        } 
+    }
+
+    console.log("결과 : " + JSON.stringify(dataArray));
+
+    return;
+
+    // TODO : JSON Object를 INSERT 처리함.
+    if (dataArray.length > 0) {
+        $.ajax({
+            url: '/batchLearning/insertBatchLearningData',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(dataArray),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+
+                console.log("성공 : " + data);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
+
     //var gridData = [];
     //$('#uploadDiv').hide();
     //$('#gridDiv').show();
@@ -419,7 +444,6 @@ var searchBatchLearnDataList = function (addCond) {
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") $("#tbody_batchList_before").empty().append(appendHtml);
             else $("#tbody_batchList_after").empty().append(appendHtml);
-            console.log("리스트 출력 종료 ");
             endProgressBar(); // end progressbar
             checkboxEvent(); // refresh checkbox event
         },
