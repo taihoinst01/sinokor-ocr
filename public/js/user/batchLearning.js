@@ -11,29 +11,14 @@ var startNum = 0;
 var moreNum = 20;
 
 $(function () {
-    //$("select[name=select_view_count]").on("change", function () {
-    //    alert(1);
-    //    //$(this).attr("title", `행표시 : ` + $(this).val());
-    //    searchBatchLearnDataList(addCond);
-    //});
-    idealformsEvent();
     _init();
+    viewServerFileTest();
 });
 
 // [Select Event]
 var selectViewCount = function (value) {
     $("#select_view_count").val(value);
     searchBatchLearnDataList(addCond);
-}
-
-var idealformsEvent = function () {
-    $("#select_view_count").on("change", function () {
-        alert(1);
-    });
-
-    //$("#select_view_count").change(function () {
-    //    alert(1);
-    //});
 }
 
 // [Checkbox Event]
@@ -72,6 +57,7 @@ var buttonEvent = function () {
     $("#tab_before").on("click", function () {
         $("#listCheckAll_after").prop("checked", false);
         addCond = "LEARN_N";
+        viewServerFileTest();
         searchBatchLearnDataList(addCond);
     });
     // 학습완료 보기
@@ -96,19 +82,14 @@ var buttonEvent = function () {
         fn_imageDelete();
     });
 
-    // 학습실행
-    $("#btn_proceedLearn").on("click", function () {
-        fn_proceedLearn();
-    });
-
-    // 수동학습
-    $("#btn_manualLearn").on("click", function () {
-        fn_manualLearn();
+    // 배치실행
+    $("#btn_batchTraining").on("click", function () {
+        fn_batchTraining();
     });
 
     // 최종학습
-    $("#btn_lastLearn").on("click", function () {
-        fn_lastLearn();
+    $("#btn_uiTraining").on("click", function () {
+        fn_uiTraining();
     });
 
     // popupButton
@@ -175,7 +156,7 @@ var imageUploadEvent = function () {
             beforeSubmit: function (data, frm, opt) {
                 $("#progressMsg").html("Preparing to upload files...");
                 startProgressBar();
-                addProgressBar(6, 15);
+                addProgressBar(6, 75);
                 return true;
             },
             success: function getData(responseText, statusText) {
@@ -189,18 +170,47 @@ var imageUploadEvent = function () {
     });
     uploadPromise.then(function (responseText, statusText) {
         $("#progressMsg").html("uploading image files...");
-        addProgressBar(16, 40);
-        totCount = responseText.message.length;
-        for (var i = 0; i < totCount; i++) {
-            processImage(responseText.fileInfo[i], responseText.message[i]);
+        // FILE INSERT
+        var fileInfo = responseText.fileInfo[i];
+        var fileName = responseText.message[i];
+        
+        var insertFile = function (fileInfo) {
+            if (fileInfo) {
+                var param = { fileInfo: fileInfo };
+                $.ajax({
+                    url: '/batchLearning/insertFileInfo',
+                    type: 'post',
+                    datatype: "json",
+                    data: JSON.stringify(param),
+                    contentType: 'application/json; charset=UTF-8',
+                    beforeSend: function () {
+                        addProgressBar(76, 100);
+                    },
+                    success: function (data) {
+                        console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
+                        endProgressBar();
+                        alert("파일 업로드가 완료되었습니다.");
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
         }
+        //totCount = responseText.message.length;
+        //for (var i = 0; i < totCount; i++) {
+        //    processImage(responseText.fileInfo[i], responseText.message[i]);
+        //}
+        
     });
     uploadPromise.then().catch(function (e) {
         console.log(e);
     });
 }
+
+
                
-// STEP 2 : FILE -> OCR API
+// [OCR]
 function processImage(fileInfo, fileName) {
     var subscriptionKey = "fedbc6bb74714bd78270dc8f70593122";
     var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
@@ -300,25 +310,7 @@ function insertBatchLearningData(fileInfo, data) {
         } 
     }
     console.log("결과 : " + JSON.stringify(dataObj));
-    // FILE INSERT
-    var insertFile = function (fileInfo) {
-        if (fileInfo) {
-            var param = { fileInfo: fileInfo };
-            $.ajax({
-                url: '/batchLearning/insertFileInfo',
-                type: 'post',
-                datatype: "json",
-                data: JSON.stringify(param),
-                contentType: 'application/json; charset=UTF-8',
-                success: function (data) {
-                    console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
-                },
-                error: function (err) {
-                    console.log(err);
-                }
-            });
-        }
-    }
+    
     // BatchLearning Data Insert
     if (dataObj) {
         var imgId = fileInfo.imgId;
@@ -347,30 +339,6 @@ function insertBatchLearningData(fileInfo, data) {
             }
         });
     }
-
-    //var gridData = [];
-    //$('#uploadDiv').hide();
-    //$('#gridDiv').show();
-
-    //if (ocrCount === 1) generateGrid(gridData);
-
-    //var temp1 = data.split("^");
-    //for (var i = 0, x = temp1.length; i < x; i++) {
-    //    var temp2 = temp1[i].split("||");
-    //    gridData.push({
-    //        _value: temp2[0],
-    //        _label: temp2[1]
-    //    });
-    //}
-    //grid.appendRow(gridData);
-
-    //if (totCount == ocrCount) { // 모든 OCR 분석 완료되면
-    //    $('#stepUl > li').eq(0).removeAttr('title');
-    //    $('.step_wrap').removeClass('s1');
-    //    $('#stepUl > li').eq(1).attr('title', '현재단계');
-    //    $('.step_wrap').addClass('s2');
-    //    $("#content").css("margin-left", 0);
-    //}
 }
 
 // [Function]
@@ -381,70 +349,123 @@ var searchBatchLearnDataList = function (addCond) {
         'moreNum': nvl2($("#select_view_count").val(), 20),
         'addCond' : nvl(addCond)
     };
-    
-    var appendHtml = "";
-    var checkboxHtml = "";
+    if (addCond == "LEARN_Y") {
+        var appendHtml = "";
+        var checkboxHtml = "";
+        $.ajax({
+            url: '/batchLearning/searchBatchLearnDataList',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                $("#progressMsg").html("retrieving learn data...");
+                startProgressBar(); // start progressbar
+                addProgressBar(1, 1); // proceed progressbar
+            },
+            success: function (data) {
+                if (addCond == "LEARN_N") $("#total_cnt_before").html(data.length);
+                else $("#total_cnt_after").html(data.length);
+                addProgressBar(2, 100); // proceed progressbar
+                if (data.length > 0) {
+                    $.each(data, function (index, entry) {
+                        // allow after or before checkbox name
+                        if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMG_ID}" class="stb00" name="listCheck_before" /></div></th>`;
+                        else checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMG_ID}" class="stb00" name="listCheck_after" /></div></th>`;
+
+                        appendHtml += `<tr>` + checkboxHtml +
+                            `<td>${entry.IMG_ID}</td>
+                            <td>${entry.PATH}</td>
+                            <td>${entry.IMG_FILE_ST_NO}</td>
+                            <td>${entry.IMG_FILE_END_NO}</td>
+                            <td>${entry.CSCO_NM}</td>
+                            <td>${entry.CT_NM}</td>
+                            <td>${entry.INS_ST_DT}</td>
+                            <td>${entry.INS_END_DT}</td>
+                            <td>${entry.CUR_CD}</td>
+                            <td>${NumberWithComma(entry.PRE)}</td>
+                            <td>${NumberWithComma(entry.COM)}</td>
+                            <td>${NumberWithComma(entry.BRKG)}</td>
+                            <td>${NumberWithComma(entry.TXAM)}</td>
+                            <td>${NumberWithComma(entry.PRRS_CF)}</td>
+                            <td>${NumberWithComma(entry.PRRS_RLS)}</td>
+                            <td>${NumberWithComma(entry.LSRES_CF)}</td>
+                            <td>${NumberWithComma(entry.LSRES_RLS)}</td>
+                            <td>${NumberWithComma(entry.CLA)}</td>
+                            <td>${NumberWithComma(entry.EXEX)}</td>
+                            <td>${NumberWithComma(entry.SVF)}</td>
+                            <td>${NumberWithComma(entry.CAS)}</td>
+                            <td>${entry.NTBL}</td>
+                            <td>${entry.CSCO_SA_RFRN_CNNT2}</td>
+                        </tr>`;
+                    });
+                } else {
+                    appendHtml += `<tr><td colspan="23">조회할 데이터가 없습니다.</td></tr>`;
+                }
+                //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
+                if (addCond == "LEARN_N") $("#tbody_batchList_before").empty().append(appendHtml);
+                else $("#tbody_batchList_after").empty().append(appendHtml);
+                endProgressBar(); // end progressbar
+                checkboxEvent(); // refresh checkbox event
+            },
+            error: function (err) {
+                endProgressBar(); // end progressbar
+                console.log(err);
+            }
+        });
+    }
+};
+
+// Read server image files
+function viewServerFileTest() {
+    var param = {};
     $.ajax({
-        url: '/batchLearning/searchBatchLearnDataList',
+        url: '/batchLearning/viewFile',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
-        beforeSend: function () {
-            $("#progressMsg").html("retrieving learn data...");
-            startProgressBar(); // start progressbar
-            addProgressBar(1, 1); // proceed progressbar
-        },
         success: function (data) {
-            if (addCond == "LEARN_N") $("#total_cnt_before").html(data.length);
-            else $("#total_cnt_after").html(data.length);
-            addProgressBar(2, 100); // proceed progressbar
-            if (data.length > 0) {
-                $.each(data, function (index, entry) {
-                    // allow after or before checkbox name
-                    if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMG_ID}" class="stb00" name="listCheck_before" /></div></th>`;
-                    else checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMG_ID}" class="stb00" name="listCheck_after" /></div></th>`;
-
-                    appendHtml += `<tr>` + checkboxHtml + 
-                        `<td>${entry.IMG_ID}</td>
-                        <td>${entry.IMG_FILE_ST_NO}</td>
-                        <td>${entry.IMG_FILE_END_NO}</td>
-                        <td>${entry.CSCO_NM}</td>
-                        <td>${entry.CT_NM}</td>
-                        <td>${entry.INS_ST_DT}</td>
-                        <td>${entry.INS_END_DT}</td>
-                        <td>${entry.CUR_CD}</td>
-                        <td>${NumberWithComma(entry.PRE)}</td>
-                        <td>${NumberWithComma(entry.COM)}</td>
-                        <td>${NumberWithComma(entry.BRKG)}</td>
-                        <td>${NumberWithComma(entry.TXAM)}</td>
-                        <td>${NumberWithComma(entry.PRRS_CF)}</td>
-                        <td>${NumberWithComma(entry.PRRS_RLS)}</td>
-                        <td>${NumberWithComma(entry.LSRES_CF)}</td>
-                        <td>${NumberWithComma(entry.LSRES_RLS)}</td>
-                        <td>${NumberWithComma(entry.CLA)}</td>
-                        <td>${NumberWithComma(entry.EXEX)}</td>
-                        <td>${NumberWithComma(entry.SVF)}</td>
-                        <td>${NumberWithComma(entry.CAS)}</td>
-                        <td>${entry.NTBL}</td>
-                        <td>${entry.CSCO_SA_RFRN_CNNT2}</td>
-                    </tr>`;
-                });
-            } else {
-                appendHtml += `<tr><td colspan="23">조회할 데이터가 없습니다.</td></tr>`;
+            var appendHtml = "";
+            //console.log("viewServerFile : " + JSON.stringify(data));
+            console.log("length : " + data.rows.length);
+            for (var i = 0, x = data.rows.length; i < x; i++) {
+                appendHtml += 
+                `<tr>
+                    <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${data.rows[i].FILE_NAME}" class="stb00" name="listCheck_before" /></div></th>
+                    <td style="text-align:left">${data.rows[i].FILE_NAME}</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>`;
+                /*
+                 *  */
             }
-            //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
-            if (addCond == "LEARN_N") $("#tbody_batchList_before").empty().append(appendHtml);
-            else $("#tbody_batchList_after").empty().append(appendHtml);
-            endProgressBar(); // end progressbar
-            checkboxEvent(); // refresh checkbox event
+            console.log("appendHtml :" + appendHtml);
+            $("#tbody_batchList_before").empty().append(appendHtml);
         },
         error: function (err) {
-            endProgressBar(); // end progressbar
             console.log(err);
         }
     });
-};
+}
 
 // 정답엑셀 업로드
 var fn_rightExcelUpload = function() {
@@ -471,19 +492,15 @@ var fn_imageDelete = function () {
     alert("체크된 갯수는 : " + chkSize);
 };
 
-// 학습실행
-var fn_proceedLearn = function () {
-    alert("학습 실행");
-};
 
 // 수동학습
-var fn_manualLearn = function () {
+var fn_batchTraining = function () {
     //var top = ($(window).scrollTop() + ($(window).height() - $('#layerPopup').height()) / 2);
     popupEvent.openPopup();
 };
 
 // 최종학습
-var fn_lastLearn = function () {
+var fn_uiTraining = function () {
 
 };
 

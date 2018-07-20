@@ -51,17 +51,27 @@ var dbcolumnsConfig = {
 
 var batchLearningConfig = {
     selectBatchLearningDataList: 
-        `SELECT IMG_ID, IMG_FILE_ST_NO, IMG_FILE_END_NO, CSCO_NM, CT_NM,  
-                DATE_FORMAT(INS_ST_DT, '%Y-%m-%d %H:%i:%s') AS INS_ST_DT, 
-                DATE_FORMAT(INS_END_DT, '%Y-%m-%d %H:%i:%s') AS INS_END_DT, 
-                CUR_CD, PRE, COM, BRKG, TXAM, PRRS_CF, PRRS_RLS, LSRES_CF, LSRES_RLS, CLA, EXEX, SVF, CAS, NTBL, CSCO_SA_RFRN_CNNT2
-	       FROM tbl_batch_learn_data WHERE 1=1 `,
+        `SELECT F.SEQNUM, F.IMG_ID, F.FILE_PATH, F.ORI_FILE_NAME, F.SVR_FILE_NAME, F.FILE_EXT, 
+                F.FILE_SIZE, F.CONTENT_TYPE, F.FILE_TYPE, F.FILE_WIDTH, F.FILE_HEIGHT,
+                A.IMG_FILE_ST_NO, A.IMG_FILE_END_NO, A.CSCO_NM, A.CT_NM,  
+                DATE_FORMAT(A.INS_ST_DT, '%Y-%m-%d %H:%i:%s') AS INS_ST_DT, 
+                DATE_FORMAT(A.INS_END_DT, '%Y-%m-%d %H:%i:%s') AS INS_END_DT, 
+                A.CUR_CD, A.PRE, A.COM, A.BRKG, A.TXAM, A.PRRS_CF, A.PRRS_RLS, A.LSRES_CF, 
+                A.LSRES_RLS, A.CLA, A.EXEX, A.SVF, A.CAS, A.NTBL, A.CSCO_SA_RFRN_CNNT2
+	       FROM tbl_icr_file F
+		        LEFT OUTER JOIN tbl_batch_learn_data A ON A.IMG_ID = F.IMG_ID
+	      WHERE 1=1 `,
     selectBatchLearningData:
-        `SELECT IMG_ID, IMG_FILE_ST_NO, IMG_FILE_END_NO, CSCO_NM, CT_NM,  
-                DATE_FORMAT(INS_ST_DT, '%Y-%m-%d %H:%i:%s') AS INS_ST_DT, 
-                DATE_FORMAT(INS_END_DT, '%Y-%m-%d %H:%i:%s') AS INS_END_DT, 
-                CUR_CD, PRE, COM, BRKG, TXAM, PRRS_CF, PRRS_RLS, LSRES_CF, LSRES_RLS, CLA, EXEX, SVF, CAS, NTBL, CSCO_SA_RFRN_CNNT2
-	       FROM tbl_batch_learn_data WHERE IMG_ID = ? `,
+        `SELECT F.SEQNUM, F.IMG_ID, F.FILE_PATH, F.ORI_FILE_NAME, F.SVR_FILE_NAME, F.FILE_EXT, 
+                F.FILE_SIZE, F.CONTENT_TYPE, F.FILE_TYPE, F.FILE_WIDTH, F.FILE_HEIGHT,
+                A.IMG_FILE_ST_NO, A.IMG_FILE_END_NO, A.CSCO_NM, A.CT_NM,  
+                DATE_FORMAT(A.INS_ST_DT, '%Y-%m-%d %H:%i:%s') AS INS_ST_DT, 
+                DATE_FORMAT(A.INS_END_DT, '%Y-%m-%d %H:%i:%s') AS INS_END_DT, 
+                A.CUR_CD, A.PRE, A.COM, A.BRKG, A.TXAM, A.PRRS_CF, A.PRRS_RLS, A.LSRES_CF, 
+                A.LSRES_RLS, A.CLA, A.EXEX, A.SVF, A.CAS, A.NTBL, A.CSCO_SA_RFRN_CNNT2
+	       FROM tbl_icr_file F
+		        LEFT OUTER JOIN tbl_batch_learn_data A ON A.IMG_ID = F.IMG_ID
+	      WHERE F.IMG_ID = ? `,
     selectFileData:
         `SELECT SEQNUM, IMG_ID, FILE_PATH, ORI_FILE_NAME, SVR_FILE_NAME, FILE_EXT, FILE_SIZE, CONTENT_TYPE, FILE_TYPE, FILE_WIDTH, FILE_HEIGHT, REG_ID, REG_DATE
            FROM tbl_icr_file
