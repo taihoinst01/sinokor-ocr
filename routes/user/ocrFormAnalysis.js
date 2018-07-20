@@ -4,7 +4,7 @@ var fs = require('fs');
 var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
-const gs = require('ghostscript4js')
+//const gs = require('ghostscript4js')
 var router = express.Router();
 
 // upload file setting
@@ -81,7 +81,7 @@ router.post('/deleteFile', function (req, res) {
 //pdf에서 img로 변환
 router.post('/pdf2img', function (req, res) {
     var inputFile = req.body.fileName;
-
+    /*
     try {
         const version = gs.version()
         //console.log(version)
@@ -92,7 +92,7 @@ router.post('/pdf2img', function (req, res) {
     } catch (err) {
         throw err;
     }
-
+    */
 });
 
 //엑셀 작업
