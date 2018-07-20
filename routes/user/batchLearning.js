@@ -878,45 +878,6 @@ function domainDictionaryTrain(mlData, inputData) {
     }
 }
 
-/*
-function domainDictionaryTrain(mlData, inputData) {
-    var param = [];
-    var count = [];
-    for (var i in mlData) {
-        for (var j in inputData) {
-            if (mlData[i].location == inputData[j].location) { // 같은 라인의 문장이면
-                var mlDataWords = mlData[i].text.toLowerCase().split(' ');
-                var inputDataWords = inputData[j].text.toLowerCase().split(' ');
-                var indexOfCnt = 0;               
-                for (var k in mlDataWords) {
-                    if (inputData[j].text.toLowerCase().indexOf(mlDataWords[k], indexOfCnt) == -1) {
-                        if (k == 0) {
-                            param.push([mlDataWords[k], '<<N>>', '<<N>>', mlDataWords[Number(k) + 1]]);
-                        } else if (k == mlDataWords.length - 1) {
-                            param.push([mlDataWords[k], mlDataWords[Number(k) - 1], '<<N>>', '<<N>>']);
-                        } else {
-                            param.push([mlDataWords[k], mlDataWords[Number(k) - 1], '<<N>>', mlDataWords[Number(k) + 1]]);
-                        }                        
-                    } else {
-                        indexOfCnt = inputData[j].text.toLowerCase().indexOf(mlDataWords[k], indexOfCnt) + mlDataWords[k].length;  
-                        param.push([mlDataWords[k], inputData[j].text.toLowerCase().substring(indexOfCnt)]);
-                    }       
-                    count.push(indexOfCnt);
-                }
-                console.log(param);
-                console.log(count);
-                var overlapCount = [];
-                for (var k in param) {               
-                    
-                }
-                //console.log(param);
-                break;
-            }
-        }
-    }
-}
-*/
-
 router.get("/textTrainTest", function (req, res) {
     var dataArray = [];
     dataArray = testDataPrepare();
