@@ -231,25 +231,59 @@ function appendOcrData(fileName, regions) {
 function detailTable(fileName) {
 
     $('#textResultTbl').html('');
+    var tblSortTag = '';
     var tblTag = '';
     for (var i = 0; i < lineText.length; i++) {
         if (lineText[i].fileName == fileName) {
             var item = lineText[i];
+            var sort = item.column;
+            var sortBool = true;
+            for (var sortN in sort) {
+                for (var dataN in item.data) {
+                    if (sort[sortN].ENKEYWORD == item.data[dataN].column) {
+                        tblSortTag += '<dl>';
+                        tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                        tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                        tblSortTag += '<input type="text" value="' + item.data[dataN].text + '" style="width:100%; border:0;" />';
+                        tblSortTag += '<input type="hidden" value="' + item.data[dataN].location + '" />';
+                        tblSortTag += '</label>';
+                        tblSortTag += '</dt>';
+                        tblSortTag += '<dd>';
+                        tblSortTag += '<div class="selects">';
+                        tblSortTag += '<ul class="selectBox">';
+                        tblSortTag += dbColumnsOption(item.data[dataN], item.column);
+                        tblSortTag += '</div>';
+                        tblSortTag += '</dd>';
+                        tblSortTag += '</dl>';
+                    }
+                }
+            }
+
             for (var j = 0; j < item.data.length; j++) {
-                tblTag += '<dl>'
-                tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
-                tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-                tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
-                tblTag += '<input type="hidden" value="' + item.data[j].location + '" />';
-                tblTag += '</label>';
-                tblTag += '</dt>';
-                tblTag += '<dd>';
-                tblTag += '<div class="selects">';
-                tblTag += '<ul class="selectBox">';
-                tblTag += dbColumnsOption(item.data[j], item.data);
-                tblTag += '</div>';
-                tblTag += '</dd>';
-                tblTag += '</dl>';
+
+                for (var sortN in sort) {
+                    if (item.data[j].column == sort[sortN].ENKEYWORD) {
+                        sortBool = false;
+                        break;
+                    }
+                }
+
+                if (sortBool == true) {
+                    tblTag += '<dl>';
+                    tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                    tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
+                    tblTag += '<input type="hidden" value="' + item.data[j].location + '" />';
+                    tblTag += '</label>';
+                    tblTag += '</dt>';
+                    tblTag += '<dd>';
+                    tblTag += '<div class="selects">';
+                    tblTag += '<ul class="selectBox">';
+                    tblTag += dbColumnsOption(item.data[j], item.column);
+                    tblTag += '</div>';
+                    tblTag += '</dd>';
+                    tblTag += '</dl>';
+                }
             }
             break;
         }
@@ -272,6 +306,7 @@ function detailTable(fileName) {
         }
         */
     }
+    $('#textResultTbl').append(tblSortTag);
     $('#textResultTbl').append(tblTag);
     // input 태그 마우스오버 말풍선 Tooltip 적용
     $('input[type=checkbox]').ezMark();
@@ -280,46 +315,57 @@ function detailTable(fileName) {
 }
 
 // DB 컬럼 option 렌더링
-function dbColumnsOption(data, allData) {
+function dbColumnsOption(data, column) {
     var optionTag = '';
     var selected = '';
-
-    var dbColumns = [];
-
-    for (var num in allData) {
-        var bool = true;
-
-        for (var dbNum in dbColumns) {
-            if (dbColumns[dbNum] == allData[num].column) {
-                bool = false;
-                break;
-            }
-        }
-
-        if (bool == true) {
-            dbColumns.push(allData[num].column);
-        }
-
-    }
 
     optionTag += '<li>';
     var isMatch = false;
 
     if (data.column != null) {
-        optionTag += '<a class="dbColumnText" href="javascript:void(0);">' + enLabelToKorLabel(data.column) + '</a>';
+        for (var cNum in column) {
+            if (data.column == column[cNum].ENKEYWORD) {
+
+                var gubun = '';
+
+                if (column[cNum].LABEL == "fixlabel" || column[cNum].LABEL == "entryrowlabel") {
+                    gubun = "::LABEL";
+                } else if (column[cNum].LABEL == "fixvalue" || column[cNum].LABEL == "entryvalue") {
+                    gubun = "::VALUE";
+                }
+
+                optionTag += '<a class="dbColumnText" href="javascript:void(0);">' + column[cNum].KOKEYWORD + gubun + '</a>';
+            }
+        }
     } else {
         optionTag += '<a class="dbColumnText" href="javascript:void(0);">none</a>';
     }
     optionTag += '<ul>';
-    for (var row of dbColumns) {
+    for (var row of column) {
+
+        var gubun = '';
+
+        if (row.LABEL == "fixlabel" || row.LABEL == "entryrowlabel") {
+            gubun = "::LABEL";
+        } else if (row.LABEL == "fixvalue" || row.LABEL == "entryvalue") {
+            gubun = "::VALUE";
+        }
+
         optionTag += '<li>';
-        optionTag += '<a href="javascript:void(0);"><span>' + enLabelToKorLabel(row) + '</span></a>';
+        optionTag += '<a href="javascript:void(0);"><span>' + row.KOKEYWORD + gubun +'</span></a>';
         optionTag += '<ul>';
         optionTag += '<li><a href="javascript:void(0);">키워드</a></li>';
         optionTag += '<li><a href="javascript:void(0);">가변값</a></li>';
         optionTag += '</ul>';
         optionTag += '</li>';
     }
+    optionTag += '<li>';
+    optionTag += '<a href="javascript:void(0);"><span>none</span></a>';
+    optionTag += '<ul>';
+    optionTag += '<li><a href="javascript:void(0);">키워드</a></li>';
+    optionTag += '<li><a href="javascript:void(0);">가변값</a></li>';
+    optionTag += '</ul>';
+    optionTag += '</li>';
 
     optionTag += '</ul>';
     optionTag += '</li>';
@@ -416,7 +462,7 @@ function dbSelectClickEvent() {
     $('.selectBox > li > ul > li > ul > li').click(function (e) {
         var firstCategory = $(this).parent().prev().children('span').text();
         var lastCategory = ($(this).children('a').text() == '키워드') ? '' : ' 값';
-        $(this).parent().parent().parent().prev().text(firstCategory + lastCategory);
+        $(this).parent().parent().parent().prev().text(firstCategory);
         $(this).parent().parent().children('ul').hide();
         $(this).parent().parent().children('ul').css('visibility', 'hidden');
         $(this).parent().parent().parent().parent().children('ul').hide();
@@ -425,146 +471,6 @@ function dbSelectClickEvent() {
         e.preventDefault();
         e.stopPropagation();
     });
-}
-
-function enLabelToKorLabel(text) {
-    var label = ''
-
-    switch (text) {
-        case 'CSCO_NM':
-            label = '거래사명 LABEL';
-            break;
-        case 'CT_NM':
-            label = '계약명';
-            break;
-        case 'INS_ST_DT':
-            label = '보험개시일';
-            break;
-        case 'INS_END_DT':
-            label = '보험종료일';
-            break;
-        case 'CUR_CD':
-            label = '화폐코드';
-            break;
-        case 'PRE':
-            label = '보험료';
-            break;
-        case 'COM':
-            label = '일반수수료';
-            break;
-        case 'BRKG':
-            label = '중개수수료';
-            break;
-        case 'BRKG_VALUE':
-            label = '중개수수료 값';
-            break;
-        case 'TXAM':
-            label = '세금';
-            break;
-        case 'PRRS_CF':
-            label = '보험료유보금적립액';
-            break;
-        case 'PRRS_CF_VALUE':
-            label = '보험료유보금적립액 값';
-            break;
-        case 'PRRS_CF\r\n_VALUE':
-            label = '보험료유보금적립액 값';
-            break;
-        case 'PRRS_RLS':
-            label = '보험료유보금해제액';
-            break;
-        case 'LSRES_CF':
-            label = '보험금유보금적립액';
-            break;
-        case 'LSRES_RLS':
-            label = '보험금유보금해제액';
-            break;
-        case 'CLA':
-            label = '보험금';
-            break;
-        case 'CLA_VALUE':
-            label = '보험금 값';
-            break;
-        case 'EXEX':
-            label = '부대비';
-            break;
-        case 'SVF':
-            label = '손해조사비';
-            break;
-        case 'CAS':
-            label = '즉시불보험금(CASH)';
-            break;
-        case 'NTBL':
-            label = '순평균';
-            break;
-        case 'NTBL_VALUE':
-            label = '순평균 값';
-            break;
-        case 'CSCO_SA_RFRN_CNNT2':
-            label = '참고';
-            break;
-        case 'CSCO_NM_VALUE':
-            label = '거래사명 값';
-            break;
-        case 'CT_NM_VALUE':
-            label = '계약명 값';
-            break;
-        case 'INS_ST_DT_VALUE':
-            label = '보험개시일 값';
-            break;
-        case 'INS_END_DT_VALUE':
-            label = '보험종료일 값';
-            break;
-        case 'CUR_CD_VALUE':
-            label = '화폐코드 값';
-            break;
-        case 'PRE_VALUE':
-            label = '보험료 값';
-            break;
-        case 'COM_VALUE':
-            label = '일반수수료 값';
-            break;
-        case 'BRKG_VALUE':
-            label = '중개수수료 값';
-            break;
-        case 'TXAM_VALUE':
-            label = '세금 값';
-            break;
-        case 'PRRS_CF_VALUE':
-            label = '보험료유보금적립액 값';
-            break;
-        case 'PRRS_RLS_VALUE':
-            label = '보험료유보금해제액 값';
-            break;
-        case 'LSRES_CF_VALUE':
-            label = '보험금유보금적립액 값';
-            break;
-        case 'LSRES_RLS_VALUE':
-            label = '보험금유보금해제액 값';
-            break;
-        case 'CLA_VALUE':
-            label = '보험금 값';
-            break;
-        case 'EXEX_VALUE':
-            label = '부대비 값';
-            break;
-        case 'SVF_VALUE':
-            label = '손해조사비 값';
-            break;
-        case 'CAS_VALUE':
-            label = '즉시불보험금(CASH) 값';
-            break;
-        case 'NTBL_VALUE':
-            label = '순평균 값';
-            break;
-        case 'CSCO_SA_RFRN_CNNT2_VALUE':
-            label = '참고n값';
-            break;
-        default:
-            label = text;
-    }
-
-    return label;
 }
 
 /*
