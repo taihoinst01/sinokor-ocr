@@ -119,13 +119,14 @@
                             <li><a href="#none" onclick="javascript: selectViewCount(1000);">행표시 : 1000</a></li>
                         </ul>
                     </div>
+                    <button type="button" id="btn_sync" class="button_st5 fl">Sync</button>
                     <!-- // Looks like select box-->
                     <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
                         <div class="fr">
                             <!--<p class="attach_btn5"><input type="file" id="excel_file" onchange="javascript:document.getElementById('fileSrch').value=this.value" /><label for="excel_file">Excel Upload</label></p>
-                                <p class="attach_btn5"><input type="file" id="document_file" onchange="javascript:document.getElementById('fileSrch').value=this.value" /><label for="document_file">Document Upload</label></p>-->
+                <p class="attach_btn5"><input type="file" id="document_file" onchange="javascript:document.getElementById('fileSrch').value=this.value" /><label for="document_file">Document Upload</label></p>-->
                             <p class="attach_btn5"><input type="file" id="excel_file" /><label for="excel_file">Excel Upload</label></p>
-                            <p class="attach_btn5"><input type="file" name="file" id="document_file" /><label for="document_file">Document Upload</label></p>
+                            <p class="attach_btn5"><input type="file" name="file" id="document_file" multiple /><label for="document_file">Document Upload</label></p>
 
                             <button type="button" id="btn_imageDelete" class="button_st5">Document Delete</button>
                             <button type="button" id="btn_batchTraining" class="button_st5">BATCH Training</button>
@@ -146,7 +147,8 @@
                                     <colgroup>
                                         <col style="width:50px" />
                                         <col style="width:150px" />
-                                        <col style="width:200px" />
+                                        <col style="width:150px" />
+                                        <col style="width:100px" />
                                         <col style="width:100px" />
                                         <col style="width:100px" />
                                         <col style="width:250px" />
@@ -174,6 +176,7 @@
                                             <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
                                             <th scope="row">이미지ID</th>
                                             <th scope="row">파일명</th>
+                                            <th scope="row">학습여부</th>
                                             <th scope="row">페이지번호 FROM</th>
                                             <th scope="row">페이지번호 TO</th>
                                             <th scope="row">거래사명</th>
@@ -223,7 +226,8 @@
                                     <colgroup>
                                         <col style="width:50px" />
                                         <col style="width:150px" />
-                                        <col style="width:200px" />
+                                        <col style="width:150px" />
+                                        <col style="width:100px" />
                                         <col style="width:100px" />
                                         <col style="width:100px" />
                                         <col style="width:250px" />
@@ -251,6 +255,7 @@
                                             <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll_after" name="listCheckAll_after" /></div></th>
                                             <th scope="row">이미지ID</th>
                                             <th scope="row">파일명</th>
+                                            <th scope="row">학습여부</th>
                                             <th scope="row">페이지번호 FROM</th>
                                             <th scope="row">페이지번호 TO</th>
                                             <th scope="row">거래사명</th>
