@@ -53,7 +53,7 @@ var batchLearningConfig = {
     selectBatchLearningDataList: 
         `SELECT F.SEQNUM, F.IMG_ID, F.FILE_PATH, F.ORI_FILE_NAME, F.SVR_FILE_NAME, F.FILE_EXT, 
                 F.FILE_SIZE, F.CONTENT_TYPE, F.FILE_TYPE, F.FILE_WIDTH, F.FILE_HEIGHT,
-                A.IMG_FILE_ST_NO, A.IMG_FILE_END_NO, A.CSCO_NM, A.CT_NM,  
+                A.STATUS, A.IMG_FILE_ST_NO, A.IMG_FILE_END_NO, A.CSCO_NM, A.CT_NM,  
                 DATE_FORMAT(A.INS_ST_DT, '%Y-%m-%d %H:%i:%s') AS INS_ST_DT, 
                 DATE_FORMAT(A.INS_END_DT, '%Y-%m-%d %H:%i:%s') AS INS_END_DT, 
                 A.CUR_CD, A.PRE, A.COM, A.BRKG, A.TXAM, A.PRRS_CF, A.PRRS_RLS, A.LSRES_CF, 
@@ -64,7 +64,7 @@ var batchLearningConfig = {
     selectBatchLearningData:
         `SELECT F.SEQNUM, F.IMG_ID, F.FILE_PATH, F.ORI_FILE_NAME, F.SVR_FILE_NAME, F.FILE_EXT, 
                 F.FILE_SIZE, F.CONTENT_TYPE, F.FILE_TYPE, F.FILE_WIDTH, F.FILE_HEIGHT,
-                A.IMG_FILE_ST_NO, A.IMG_FILE_END_NO, A.CSCO_NM, A.CT_NM,  
+                A.STATUS, A.IMG_FILE_ST_NO, A.IMG_FILE_END_NO, A.CSCO_NM, A.CT_NM,  
                 DATE_FORMAT(A.INS_ST_DT, '%Y-%m-%d %H:%i:%s') AS INS_ST_DT, 
                 DATE_FORMAT(A.INS_END_DT, '%Y-%m-%d %H:%i:%s') AS INS_END_DT, 
                 A.CUR_CD, A.PRE, A.COM, A.BRKG, A.TXAM, A.PRRS_CF, A.PRRS_RLS, A.LSRES_CF, 
@@ -77,10 +77,13 @@ var batchLearningConfig = {
            FROM tbl_icr_file
           WHERE IMG_ID = ?
           ORDER BY SEQNUM DESC`,
+    insertBatchLearningBaseData:
+        "INSERT INTO tbl_batch_learn_data (IMG_ID, STATUS, REG_ID, REG_DATE) " +
+        "VALUES (?, 'N', ?, now())",
     insertBatchLearningData:
-        "INSERT INTO tbl_batch_learn_data (IMG_ID, IMG_FILE_ST_NO, IMG_FILE_END_NO, CSCO_NM, CT_NM, INS_ST_DT, INS_END_DT, CUR_CD, PRE, COM, " +
+        "INSERT INTO tbl_batch_learn_data (IMG_ID, ORI_FILE_NAME, STATUS, IMG_FILE_ST_NO, IMG_FILE_END_NO, CSCO_NM, CT_NM, INS_ST_DT, INS_END_DT, CUR_CD, PRE, COM, " +
         "BRKG, TXAM, PRRS_CF, PRRS_RLS, LSRES_CF, LSRES_RLS, CLA, EXEX, SVF, CAS, NTBL, CSCO_SA_RFRN_CNNT2, REG_ID, REG_DATE) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+        "VALUES (?, ?, 'N', ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())",
     insertFileInfo:
         "INSERT INTO TBL_ICR_FILE (IMG_ID, FILE_PATH, ORI_FILE_NAME, SVR_FILE_NAME, FILE_EXT, FILE_SIZE, CONTENT_TYPE, FILE_TYPE, REG_ID, REG_DATE) " +

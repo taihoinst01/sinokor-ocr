@@ -18,7 +18,6 @@ var flash = require('connect-flash');
 var passport = require('passport')
     , LocalStrategy = require('passport-local').Strategy
     , RememberMeStrategy = require('passport-remember-me').Strategy;
-var bcrypt = require('bcrypt');
 var app = express();
 // routes
 var routes = require('./routes');

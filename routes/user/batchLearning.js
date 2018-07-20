@@ -59,32 +59,34 @@ router.post('/searchBatchLearnDataList', function (req, res) {   // 배치학습
 /***************************************************************
  * function
  * *************************************************************/
- // [List] 배치학습데이터리스트 조회 
+// [List] 배치학습데이터리스트 조회 
+var callbackBatchLearningDataList = function (rows, req, res) {
+    res.send(rows);
+}
 var fnSearchBatchLearningDataList = function (req, res) {
     // 조건절
     var condQuery = "";
-    var orderQuery = " ORDER BY REG_DATE DESC ";
+    var orderQuery = " ORDER BY A.REG_DATE DESC ";
     if (!commonUtil.isNull(req.body.addCond)) {
-        if (req.body.addCond == "LEARN_N") condQuery = " AND CSCO_NM IS NULL AND CT_NM IS NULL ";
-        else if (req.body.addCond == "LEARN_Y") condQuery = " AND CSCO_NM IS NOT NULL AND CT_NM IS NOT NULL ";
+        if (req.body.addCond == "LEARN_N") condQuery = " AND A.STATUS != 'Y' ";
+        else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.STATUS = 'Y' ";
     }
     // LIMIT
     var limitQuery = "";
     if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) limitQuery = " LIMIT " + req.body.startNum + "," + req.body.moreNum;
     var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery + limitQuery;
+
+    console.log("listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
 };
-// [CALLBACK] 배치학습데이터리스트 조회
-var callbackBatchLearningDataList = function (rows, req, res) {
-    res.send(rows);
-}
+
+
 // [POST] 이미지 업로드
 router.post('/imageUpload', upload.any(), function (req, res) {
     var files = req.files;
     var endCount = 0;
     var returnObj = [];
     var fileInfo = [];
-    console.log("파일 길이 : " + files.length);
     for (var i = 0; i < files.length; i++) {
         if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
             files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff') {
@@ -125,7 +127,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
     }
 });
 
-// INSERT fileInfo
+// [POST] INSERT fileInfo (파일정보)
 var callbackInsertFileInfo = function (rows, req, res) {
     console.log("upload fileInfo finish..");
     res.send({ code: 200, rows: rows });
@@ -149,6 +151,23 @@ router.post('/insertFileInfo', function (req, res) {
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertFileInfo, data, callbackInsertFileInfo, req, res);
 });
 
+// [POST] INSERT batchLearningBaseData (기본정보)
+var callbackInsertBatchLearningBaseData = function (rows, req, res) {
+    console.log("upload batchLearningBaseData finish..");
+    res.send({ code: 200, rows: rows });
+}
+router.post('/insertBatchLearningBaseData', function (req, res) {
+    console.log("insert BATCH LEARNING BASE DATA : " + JSON.stringify(req.body.fileInfo));
+    var fileInfo = req.body.fileInfo;
+    var imgId = fileInfo.imgId;
+    var regId = req.session.userId;
+    var data = [imgId, regId];
+    console.log("입력 데이터 : " + JSON.stringify(data));
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningBaseData, data, callbackInsertBatchLearningBaseData, req, res);
+});
+
+
+
 // RUN batchLearningData
 router.post('/execBatchLearningData', function (req, res) {
     var arg = req.body.data;
@@ -164,7 +183,24 @@ router.post('/execBatchLearningData', function (req, res) {
     });
 });
 
-// insert batchLearningData
+// [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
+var callbackInsertBatchLearningBaseData = function (rows, req, res) {
+    console.log("upload batchLearningBaseData finish..");
+    res.send({ code: 200, rows: rows });
+};
+router.post('/insertBatchLearningBaseData', function (req, res) {
+    var dataObj = req.body.dataObj;
+    console.log("insert dataObj " + JSON.stringify(dataObj));
+    var imgId = dataObj.imgId; 
+    var oriFileName = dataObj.oriFileName; 
+    var regId = req.session.userId;
+
+    var data = [imgId, imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, regId];
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
+
+});
+
+// [POST] insert batchLearningData (tbl_batch_learning_data 전체정보)
 var callbackInsertBatchLearningData = function (rows, req, res) {
     console.log("upload batchLearningData finish..");
     res.send({ code: 200, rows: rows });
@@ -201,6 +237,80 @@ router.post('/insertBatchLearningData', function (req, res) {
     
 });
 
+// [POST] syncFile
+router.post('/syncFile', function (req, res) {
+    const testFolder = 'C:\\workspace\\sinokor-ocr\\uploads\\';
+
+    const files = FileHound.create()
+        .paths(testFolder)
+        .ext('jpg', 'tif')
+        .find();
+
+    var resText = [];
+
+    files.then(function (result) {
+        var endCount = 0;
+        var returnObj = [];
+        var fileInfo = [];
+        for (var i = 0; i < result.length; i++) {
+            fs.readFile(result[i], 'utf-8', function (error, data) {
+                //console.log("data path : " + data.originalname);
+                //var ifile = appRoot + '\\' + data.path;
+                //var ofile = appRoot + '\\' + data.path.split('.')[0] + '.jpg';
+                // 파일 정보 추출
+                var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성
+                console.log("생성한 imgId와 길이 : " + imgId + " : " + imgId.length);
+                var fileObj = data; // 파일
+                var filePath = fileObj.path;    // 파일 경로
+                var oriFileName = fileObj.originalname; // 파일 원본명
+                var _lastDot = oriFileName.lastIndexOf('.');
+                var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
+                var fileSize = fileObj.size;  // 파일 크기
+                var contentType = fileObj.mimetype; // 컨텐트타입
+                var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
+
+                var fileParam = {
+                    imgId: imgId,
+                    filePath: filePath,
+                    oriFileName: oriFileName,
+                    convertFileName: oriFileName.split('.')[0] + '.jpg',
+                    fileExt: fileExt,
+                    fileSize: fileSize,
+                    contentType: contentType,
+                    svrFileName: svrFileName
+                };
+
+                console.log("fileParam : " + JSON.stringify(fileParam));
+                fileInfo.push(fileParam);
+                returnObj.push(oriFileName.split('.')[0] + '.jpg');
+                if (fileObj.originalname.split('.')[1].toLowerCase() === 'tif' || fileObj.originalname.split('.')[1].toLowerCase() === 'tiff') {
+                    exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
+                        if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
+                            res.send({ code: 200, message: returnObj, fileInfo: fileInfo });
+                        }
+                        endCount++;
+                    });
+                }
+            });
+        } 
+    });
+
+    //files.then(function (result) {
+    //    console.log("result : " + JSON.stringify(result));
+    //    for (var i = 0; i < result.length; i++) {
+    //        var splitText = result[i].split("uploads\\");
+    //        var obj = {};
+    //        obj.IMG_ID = splitText[1];
+    //        obj.FILE_NAME = result[i];
+    //        resText.push(obj);
+    //    }
+    //});
+
+    files.done(function () {
+        //res.render('user/batchLearning', { rows: resText, currentUser: req.user });
+        //res.send({ code: 200, rows: resText, currentUser: req.user });
+    });
+});
 
 
 
@@ -357,34 +467,7 @@ router.get('/fileTest', function (req, res) {
     res.send("test");
 });
 
-router.post('/viewFile', function (req, res) {
-    //function ocrFileList(req, res) {
-    const testFolder = 'C:\\workspace\\sinokor-ocr\\test_upload\\';
 
-    const files = FileHound.create()
-        .paths(testFolder)
-        .ext('jpg', 'tif')
-        .find();
-
-    var resText = [];
-
-    files.then(function (result) {
-        console.log("result : " + JSON.stringify(result));
-        for (var i = 0; i < result.length; i++) {
-            var splitText = result[i].split("uploads\\");
-
-            var obj = {};
-            obj.IMG_ID = splitText[1];
-            obj.FILE_NAME = result[i];
-            resText.push(obj);
-        }
-    });
-
-    files.done(function () {
-        //res.render('user/batchLearning', { rows: resText, currentUser: req.user });
-        res.send({ code: 200, rows: resText, currentUser: req.user });
-    });
-});
 
 //오타 검사 
 function typoSentenceEval(data, callback) {
