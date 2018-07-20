@@ -17,7 +17,14 @@ const FileHound = require('filehound');
 //var uuid = require('uuid');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
- 
+var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
+var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
+var selectLabel = queryConfig.uiLearningConfig.selectLabel;
+var insertTypo = queryConfig.uiLearningConfig.insertTypo;
+var insertDomainDic = queryConfig.uiLearningConfig.insertDomainDic;
+var selectTypo = queryConfig.uiLearningConfig.selectTypo;
+var updateTypo = queryConfig.uiLearningConfig.updateTypo;
+
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -343,8 +350,6 @@ router.get('/fileTest', function (req, res) {
         .ext('jpg','tif')
         .find();
 
-    console.log("test");
-
     files.then(function (res) {
         console.log(res);
     });
@@ -575,42 +580,53 @@ function testDataPrepare() {
     var obj = {};
     obj.location = "1018,240,411,87";
     obj.text = "APEX";
+    obj.label = "undefined";
 
     array.push(obj);
 
     var obj = {};
     obj.location = "1019,338,409,23";
     obj.text = "Partner of Choice";
+    obj.label = "undefined";
 
     array.push(obj);
 
     var obj = {};
     obj.location = "1562,509,178,25";
     obj.text = "Voucher No";
+    obj.label = "undefined";
 
     array.push(obj);
 
     var obj = {};
     obj.location = "206,848,111,24";
     obj.text = "Cedant";
+    obj.label = "fixlabel";
+    obj.column = "거래사명";
 
     array.push(obj);
 
     var obj = {};
     obj.location = "206,908,285,24";
     obj.text = "Class of Business";
+    obj.label = "fixlabel";
+    obj.column = "계약명";
 
     array.push(obj);
 
     var obj = {};
     obj.location = "574,847,492,32";
     obj.text = ": Solidarity- First Insurance 2018";
+    obj.label = "fixvalue";
+    obj.column = "거래사명 값";
 
     array.push(obj);
 
     var obj = {};
     obj.location = "574,907,568,32";
     obj.text = ": Marine Cargo Surplus 2018 - Inward";
+    obj.label = "fixvalue";
+    obj.column = "계약명 값";
 
     array.push(obj);
 
@@ -625,9 +641,9 @@ router.get('/trainTest', function (req, res) {
     var inputData = inputPrepare();
 
     //typoSentenceTrain(data);
-    domainDictionaryTrain(data, inputData);
+    domainDictionaryTrain(": Marine Cargo Surplus 2018 - Inward", "Cargo Q/S & S/P Inward");
     
-    res.send({});
+    res.send("test");
 });
 
 function trainPrepare() { // jhy용 test
@@ -689,12 +705,94 @@ function typoSentenceTrain(data) {
     }
 }
 
-/**
- * 
- * @param {any} mlData -> ml 완료한 데이터
- * @param {any} inputData -> 사용자 수정 데이터
- * @return boolean -> true : 정상 완료 , false : error
- */
+
+function domainDictionaryTrain(mlData, inputData) {
+    var originSplit = mlData.split(" ");
+    var textSplit = inputData.split(" ");
+
+    //domain dictionary train
+    var os = 0;
+    var osNext = 0;
+    var updText = "";
+    for (var j = 1; j < textSplit.length; j++) {
+        updText += textSplit[j] + ' ';
+    }
+    updText.slice(0, -1);
+
+    var domainText = [];
+    domainText.push(textSplit[0]);
+    domainText.push(updText);
+
+    for (var ts = 0; ts < domainText.length; ts++) {
+
+        for (os; os < originSplit.length; os++) {
+            if (ts == 1) {
+                var insDicCond = [];
+
+                //originword
+                insDicCond.push(originSplit[os]);
+
+                //frontword
+                if (os == 0) {
+                    insDicCond.push("<<N>>");
+                } else {
+                    insDicCond.push(originSplit[os - 1]);
+                }
+
+                //correctedword
+                if (osNext == os) {
+                    insDicCond.push(domainText[ts]);
+                } else {
+                    insDicCond.push("<<N>>");
+                }
+
+                //rearword
+                if (os == originSplit.length - 1) {
+                    insDicCond.push("<<N>>");
+                } else {
+                    insDicCond.push(originSplit[os + 1]);
+                }
+
+                //const insDomainDicRes = connection.query(insertDomainDic, insDicCond);
+                commonDB.queryNoRows(insertDomainDic, insDicCond, function () {});
+
+            } else if (domainText[ts].toLowerCase() != originSplit[os].toLowerCase()) {
+                var insDicCond = [];
+
+                //originword
+                insDicCond.push(originSplit[os]);
+
+                //frontword
+                if (os == 0) {
+                    insDicCond.push("<<N>>");
+                } else {
+                    insDicCond.push(originSplit[os - 1]);
+                }
+
+                //correctedword
+                insDicCond.push("<<N>>");
+
+                //rearword
+                if (os == originSplit.length - 1) {
+                    insDicCond.push("<<N>>");
+                } else {
+                    insDicCond.push(originSplit[os + 1]);
+                }
+
+                //const insDomainDicRes = connection.query(insertDomainDic, insDicCond);
+                commonDB.queryNoRows(insertDomainDic, insDicCond, function () { });
+
+            } else {
+                os++;
+                osNext = os;
+                break;
+            }
+        }
+
+    }
+}
+
+/*
 function domainDictionaryTrain(mlData, inputData) {
     var param = [];
     var count = [];
@@ -731,36 +829,48 @@ function domainDictionaryTrain(mlData, inputData) {
         }
     }
 }
+*/
 
-function textClassificationTrain(data) {
+router.get("/textTrainTest", function (req, res) {
+    var dataArray = [];
+    dataArray = testDataPrepare();
+
+    textClassificationTrain(dataArray, req, res);
+});
+
+
+function textClassificationTrain(data, req, res) {
     //text-classification DB insert
     for (var i in data) {
         var selectLabelCond = [];
         selectLabelCond.push(data[i].column);
-
-        const selectLabelRes = connection.query(selectLabel, selectLabelCond);
-
-        if (selectLabelRes.length == 0) {
-            data[i].textClassi = 'undefined';
-        } else {
-            data[i].textClassi = selectLabelRes[0].LABEL;
-            data[i].labelMapping = selectLabelRes[0].ENKEYWORD;
-        }
-
-        var insTextClassifiCond = [];
-        insTextClassifiCond.push(data[i].text);
-        insTextClassifiCond.push(data[i].textClassi);
-
-        const insTextClassifiRes = connection.query(insertTextClassification, insTextClassifiCond);
+        commonDB.queryParam(selectLabel, selectLabelCond, callbackSelectLabel, data[i]);
     }
-    
+
+    /*
     var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
     exec(exeTextString, defaults, function (err, stdout, stderr) {
         console.log("textTrain");
     });
+    */
 }
 
-function labelMappingTrain(data) {
+function callbackSelectLabel(rows, data) {
+    if (rows.length == 0) {
+        data.textClassi = 'undefined';
+    } else {
+        data.textClassi = rows[0].LABEL;
+        data.labelMapping = rows[0].ENKEYWORD;
+    }
+
+    var insTextClassifiCond = [];
+    insTextClassifiCond.push(data.text);
+    insTextClassifiCond.push(data.textClassi);
+
+    commonDB.queryParam(insertTextClassification, insTextClassifiCond, function () { }, data);
+}
+
+function labelMappingTrain(data, req, res) {
     //label-mapping DB insert
     for (var i in data) {
         if (data[i].textClassi == "fixlabel" || data[i].textClassi == "entryrowlabel") {
@@ -768,16 +878,23 @@ function labelMappingTrain(data) {
             insLabelMapCond.push(data[i].text);
             insLabelMapCond.push(data[i].labelMapping);
 
-            const insLabelMapRes = connection.query(insertLabelMapping, insLabelMapCond);
+            commonDB.queryParam(insertLabelMapping, insLabelMapCond, callbackInsLabelMap, data[i]);
         }
     }
 
     //label-mapping train
+    /*
     var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\train.py'
     exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
         console.log("labelTrain");
     });
+    */
 }
+
+function callbackInsLabelMap(rows, data) {
+
+}
+
 //---------------------------- // train test 영역 --------------------------------------------//
 
 module.exports = router;
