@@ -352,31 +352,34 @@ router.get('/fileTest', function (req, res) {
     res.send("test");
 });
 
-function ocrFileList(req, res) {
-    const testFolder = 'E:\\projectworks\\koreanre\\sinokor-ocr\\uploads\\';
+router.post('/viewFile', function (req, res) {
+    //function ocrFileList(req, res) {
+    const testFolder = 'C:\\workspace\\sinokor-ocr\\test_upload\\';
 
     const files = FileHound.create()
         .paths(testFolder)
         .ext('jpg', 'tif')
         .find();
-    
+
     var resText = [];
 
     files.then(function (result) {
+        console.log("result : " + JSON.stringify(result));
         for (var i = 0; i < result.length; i++) {
             var splitText = result[i].split("uploads\\");
 
             var obj = {};
             obj.IMG_ID = splitText[1];
+            obj.FILE_NAME = result[i];
             resText.push(obj);
         }
-
     });
 
     files.done(function () {
-        res.render('user/batchLearning', {rows: resText, currentUser: req.user });
+        //res.render('user/batchLearning', { rows: resText, currentUser: req.user });
+        res.send({ code: 200, rows: resText, currentUser: req.user });
     });
-}
+});
 
 //오타 검사 
 function typoSentenceEval(data, callback) {
