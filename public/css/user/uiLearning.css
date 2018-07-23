@@ -5,8 +5,11 @@
 .thumb-img { width: 95%; margin: 5%; cursor: pointer; }
 .main-img { width: 100%; max-height: 600px; }
 #uploadDiv { border: 1px solid black; height: 300px; margin: 200px 0 200px 0; text-align: center; padding: 100px; }
-#ocrProgress { background-color: grey; position: absolute; top: 50%; left: 50%; background: #36f; transform: translate(-50%, -50%); width: 200px; z-index: 1000; display: none }
+#loadingBackground { position: absolute; opacity: 0.6; background-color: lightgray; top: 0; left: 0; z-index: 9999; }
+#ocrProgress { background-color: grey; position: absolute; top: 40%; left: 50%; background: #36f; transform: translate(-50%, -50%); width: 200px; z-index: 1000; display: none }
 #ocrBar { width: 1%; height: 30px; background-color: #006;}
+#loadingTitle {position: absolute; top: 43%; left: 50%; font: bold 15px arial, verdana; transform: translate(-50%, -50%); }
+#loadingDetail {position: absolute; top: 46%; left: 50%; width: 200px; word-break:break-all; transform: translate(-50%, -50%); margin-top: 30px; }
 #mainImage { height: 700px; background-size: 100% 100%; background-repeat: no-repeat; }
 #imageZoom { background-repeat: no-repeat; display: none; }
 #redNemo, #redZoomNemo { display: none; border: 2px solid red; position: absolute; }
