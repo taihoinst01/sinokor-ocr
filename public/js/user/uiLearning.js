@@ -65,7 +65,7 @@ function uploadFileEvent() {
 
 // OCR API
 function processImage(fileName) {
-    var subscriptionKey = "fedbc6bb74714bd78270dc8f70593122";
+    var subscriptionKey = "7d51f1308c8848f49db9562d1dab7184";
     var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
 
     var params = {
