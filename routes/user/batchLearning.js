@@ -249,49 +249,55 @@ router.post('/syncFile', function (req, res) {
     var resText = [];
 
     files.then(function (result) {
+        console.log("result 길이 : " + result.length);
         var endCount = 0;
         var returnObj = [];
         var fileInfo = [];
         for (var i = 0; i < result.length; i++) {
-            fs.readFile(result[i], 'utf-8', function (error, data) {
-                //console.log("data path : " + data.originalname);
-                //var ifile = appRoot + '\\' + data.path;
-                //var ofile = appRoot + '\\' + data.path.split('.')[0] + '.jpg';
-                // 파일 정보 추출
-                var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성
-                console.log("생성한 imgId와 길이 : " + imgId + " : " + imgId.length);
-                var fileObj = data; // 파일
-                var filePath = fileObj.path;    // 파일 경로
-                var oriFileName = fileObj.originalname; // 파일 원본명
-                var _lastDot = oriFileName.lastIndexOf('.');
-                var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
-                var fileSize = fileObj.size;  // 파일 크기
-                var contentType = fileObj.mimetype; // 컨텐트타입
-                var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
+            
+            var data = fs.readFileSync(result[i], 'utf-8');
+            console.log("result[i] file name : " + result[i]);
+            console.log("file length : " + data.length);
+            //console.log("data path : " + data.originalname);
+            //var ifile = appRoot + '\\' + data.path;
+            //var ofile = appRoot + '\\' + data.path.split('.')[0] + '.jpg';
+            // 파일 정보 추출
+                
+            var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성
+            console.log("생성한 imgId와 길이 : " + imgId + " : " + imgId.length);
+            var fileObj = data; // 파일
+            var filePath = fileObj.path;    // 파일 경로
+            var oriFileName = fileObj.originalname; // 파일 원본명
+            console.log("filePath : " + filePath);
+            console.log("oriFileName : " + oriFileName);
+            var _lastDot = oriFileName.lastIndexOf('.');
+            var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
+            var fileSize = fileObj.size;  // 파일 크기
+            var contentType = fileObj.mimetype; // 컨텐트타입
+            var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
 
-                var fileParam = {
-                    imgId: imgId,
-                    filePath: filePath,
-                    oriFileName: oriFileName,
-                    convertFileName: oriFileName.split('.')[0] + '.jpg',
-                    fileExt: fileExt,
-                    fileSize: fileSize,
-                    contentType: contentType,
-                    svrFileName: svrFileName
-                };
+            var fileParam = {
+                imgId: imgId,
+                filePath: filePath,
+                oriFileName: oriFileName,
+                convertFileName: oriFileName.split('.')[0] + '.jpg',
+                fileExt: fileExt,
+                fileSize: fileSize,
+                contentType: contentType,
+                svrFileName: svrFileName
+            };
 
-                console.log("fileParam : " + JSON.stringify(fileParam));
-                fileInfo.push(fileParam);
-                returnObj.push(oriFileName.split('.')[0] + '.jpg');
-                if (fileObj.originalname.split('.')[1].toLowerCase() === 'tif' || fileObj.originalname.split('.')[1].toLowerCase() === 'tiff') {
-                    exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
-                        if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
-                            res.send({ code: 200, message: returnObj, fileInfo: fileInfo });
-                        }
-                        endCount++;
-                    });
-                }
-            });
+            console.log("fileParam : " + JSON.stringify(fileParam));
+            fileInfo.push(fileParam);
+            returnObj.push(oriFileName.split('.')[0] + '.jpg');
+            if (fileObj.originalname.split('.')[1].toLowerCase() === 'tif' || fileObj.originalname.split('.')[1].toLowerCase() === 'tiff') {
+                exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
+                    if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
+                        res.send({ code: 200, message: returnObj, fileInfo: fileInfo });
+                    }
+                    endCount++;
+                });
+            }
         } 
     });
 
