@@ -60,7 +60,7 @@ var batchLearningConfig = {
                 A.LSRES_RLS, A.CLA, A.EXEX, A.SVF, A.CAS, A.NTBL, A.CSCO_SA_RFRN_CNNT2
 	       FROM tbl_icr_file F
 		        LEFT OUTER JOIN tbl_batch_learn_data A ON A.IMG_ID = F.IMG_ID
-	      WHERE 1=1 `,
+	      WHERE A.STATUS != 'D' `,
     selectBatchLearningData:
         `SELECT F.SEQNUM, F.IMG_ID, F.FILE_PATH, F.ORI_FILE_NAME, F.SVR_FILE_NAME, F.FILE_EXT, 
                 F.FILE_SIZE, F.CONTENT_TYPE, F.FILE_TYPE, F.FILE_WIDTH, F.FILE_HEIGHT,
@@ -71,7 +71,11 @@ var batchLearningConfig = {
                 A.LSRES_RLS, A.CLA, A.EXEX, A.SVF, A.CAS, A.NTBL, A.CSCO_SA_RFRN_CNNT2
 	       FROM tbl_icr_file F
 		        LEFT OUTER JOIN tbl_batch_learn_data A ON A.IMG_ID = F.IMG_ID
-	      WHERE F.IMG_ID = ? `,
+	      WHERE F.IMG_ID = ?
+            AND A.STATUS != 'D' `,
+    selectFileNameList:
+        `SELECT FILE_PATH
+           FROM tbl_icr_file`,
     selectFileData:
         `SELECT SEQNUM, IMG_ID, FILE_PATH, ORI_FILE_NAME, SVR_FILE_NAME, FILE_EXT, FILE_SIZE, CONTENT_TYPE, FILE_TYPE, FILE_WIDTH, FILE_HEIGHT, REG_ID, REG_DATE
            FROM tbl_icr_file
@@ -95,7 +99,9 @@ var batchLearningConfig = {
     insertSymspell:
         "INSERT INTO tbl_icr_symspell(keyword, frequency) VALUES (?,1)",
     updataSymsepll:
-        "UPDATE tbl_icr_symspell SET frequency=frequency+1 WHERE keyword=?"
+        "UPDATE tbl_icr_symspell SET frequency=frequency+1 WHERE keyword=?",
+    deleteBatchLearningData:
+        "UPDATE tbl_batch_learn_data SET STATUS = 'D' WHERE IMG_ID IN "
 }
 
 var uiLearningConfig = {
