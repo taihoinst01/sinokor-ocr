@@ -34,6 +34,13 @@
     <!-- // UI 학습 전용 js -->
 </head>
 <body>
+    <div id="loadingBackground">
+        <div id="ocrProgress">
+            <div id="ocrBar"></div>
+        </div>
+        <b id="loadingTitle">작업중</b>
+        <span id="loadingDetail"></span>
+    </div>
     <div id="wrap">
         <!-- skip navi -->
         <div id="accessibility">
@@ -71,9 +78,6 @@
                                         <label id="uploadFileBtn" for="customer_file">업로드</label>
                                     </p>
                                 </form>
-                                <div id="ocrProgress">
-                                    <div id="ocrBar"></div>
-                                </div>
                             </div>
                         </div>
                         <!-- // 업로드 영역 -->
@@ -88,9 +92,9 @@
                         <div id="touchSlider">
                             <ul>
                                 <!--<li class="on">
-                <div class="box_img"><i><img src="../css/sample01.jpg" title="샘플이미지"></i></div>
-                <span>Filename_Filename_0001.jpg</span>
-            </li>-->
+                                    <div class="box_img"><i><img src="../css/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>-->
                             </ul>
                         </div>
                         <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
@@ -156,7 +160,7 @@
                                             </div>
                                         </dd>
                                     </dl>-->
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -167,6 +171,6 @@
             <!-- // 본문영역 -->
         </div>
         <!-- // Content -->
-    </div>
+    </div>   
 </body>
 </html>
