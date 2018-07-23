@@ -42,6 +42,7 @@ var insertTypo = queryConfig.uiLearningConfig.insertTypo;
 var insertDomainDic = queryConfig.uiLearningConfig.insertDomainDic;
 var selectTypo = queryConfig.uiLearningConfig.selectTypo;
 var updateTypo = queryConfig.uiLearningConfig.updateTypo;
+var selectColumn = queryConfig.uiLearningConfig.selectColumn;
 
 // web server to rest server file upload test router
 router.get('/dmzTest', function (req, res) {
@@ -128,7 +129,10 @@ router.post('/searchDBColumns', function (req, res) {
 
                 labelMappingEval(result3, function (result4) {
                     console.log(result4);
-                    res.send({ 'fileName': fileName, 'data': result4 });
+
+                    commonDB.reqQuery(selectColumn, function(rows, req, res) {
+                        res.send({ 'fileName': fileName, 'data': result4, 'column': rows});
+                    }, req, res);
                 })
             })
         })
@@ -571,5 +575,6 @@ function dataToArgs(data) {
 
     return args;
 }
+
 
 module.exports = router;
