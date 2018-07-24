@@ -44,63 +44,6 @@ var selectTypo = queryConfig.uiLearningConfig.selectTypo;
 var updateTypo = queryConfig.uiLearningConfig.updateTypo;
 var selectColumn = queryConfig.uiLearningConfig.selectColumn;
 
-// web server to rest server file upload test router
-router.get('/dmzTest', function (req, res) {
-	
-	var formData = {
-        file: {
-            value: fs.createReadStream('uploads/26.jpg'),
-            options: {
-                filename: '26.jpg',
-		        contentType: 'image/jpeg'
-            }
-        }
-    };
-
-    request.post({ url: 'https://sinokor-rest.azurewebsites.net/ocr/api', formData: formData}, function (err,httpRes,body){
-		var data = (JSON.parse(body));
-		//console.log(data);
-		res.send(data);
-	});
-	
-});
-
-// web server to rest server ml test router
-router.get('/dmzTest2', function (req, res) {
-
-    var formData = {
-        data: [
-            '1::1::test',
-            '12::12::안녕',
-            '123::123::test2'
-        ]
-    };
-
-    request.post('https://sinokor-rest.azurewebsites.net/ml/api', { json: true, body: formData }, function (err, httpRes, body) {
-
-        res.send(body);
-    });
-
-});
-
-// web server to rest server ml train test router
-router.get('/dmzTest3', function (req, res) {
-
-    var formData = {
-        data: [
-            '1::1::test::TRUE',
-			'12::12::안녕::TRUE',
-			'123::123::test2::FALSE'
-        ]
-    };
-
-    request.post('https://sinokor-rest.azurewebsites.net/ml/train', { json: true, body: formData }, function (err, httpRes, body) {
-
-        res.send(body);
-    });
-
-});
-
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
