@@ -76,59 +76,63 @@ var dbcolumnsConfig = {
 var batchLearningConfig = {
     selectBatchLearningDataList:
         `SELECT
-            F.SEQNUM, F.IMG_ID, F.FILE_PATH, F.ORI_FILE_NAME, F.SVR_FILE_NAME, F.FILE_EXT,
-            F.FILE_SIZE, F.CONTENT_TYPE, F.FILE_TYPE, F.FILE_WIDTH, F.FILE_HEIGHT,
-            A.STATUS, A.IMG_FILE_ST_NO, A.IMG_FILE_END_NO, A.CSCO_NM, A.CT_NM,
-            TO_DATE(A.INS_ST_DT, 'YYYY-MM-DD hh24:mi:ss') AS INS_ST_DT,
-            TO_DATE(A.INS_END_DT, 'YYYY-MM-DD hh24:mi:ss') AS INS_END_DT,
-            A.CUR_CD, A.PRE, A.COM, A.BRKG, A.TXAM, A.PRRS_CF, A.PRRS_RLS, A.LSRES_CF,
-            A.LSRES_RLS, A.CLA, A.EXEX, A.SVF, A.CAS, A.NTBL, A.CSCO_SA_RFRN_CNNT2
+            F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
+            F.fileSize, F.contentType, F.fileType, F.fileWidth, F.fileHeight,
+            A.status, A.imgFileStartNo, A.imgFileEndNo, A.csconm, A.ctnm,
+            TO_DATE(A.insstdt, 'YYYY-MM-DD hh24:mi:ss') AS insstdt,
+            TO_DATE(A.insenddt, 'YYYY-MM-DD hh24:mi:ss') AS insenddt,
+            A.curcd, A.pre, A.com, A.brkg, A.txam, A.prrscf, A.prrsrls, A.lsrescf,
+            A.lsresrls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.cscosarfrncnnt2
 	     FROM
-            TBL_OCR_FILE F
-		    LEFT OUTER JOIN tbl_batch_learn_data A ON A.IMG_ID = F.IMG_ID
-	     WHERE A.STATUS != 'D' `,
+            tbl_ocr_file F
+		    LEFT OUTER JOIN tbl_batch_learn_data A ON A.imgId = F.imgId
+	     WHERE A.status != 'D' `,
     selectBatchLearningData:
         `SELECT
-            F.SEQNUM, F.IMG_ID, F.FILE_PATH, F.ORI_FILE_NAME, F.SVR_FILE_NAME, F.FILE_EXT,
-            F.FILE_SIZE, F.CONTENT_TYPE, F.FILE_TYPE, F.FILE_WIDTH, F.FILE_HEIGHT,
-            A.STATUS, A.IMG_FILE_ST_NO, A.IMG_FILE_END_NO, A.CSCO_NM, A.CT_NM,
-            TO_DATE(A.INS_ST_DT, 'YYYY-MM-DD hh24:mi:ss') AS INS_ST_DT,
-            TO_DATE(A.INS_END_DT, 'YYYY-MM-DD hh24:mi:ss') AS INS_END_DT,
-            A.CUR_CD, A.PRE, A.COM, A.BRKG, A.TXAM, A.PRRS_CF, A.PRRS_RLS, A.LSRES_CF,
-            A.LSRES_RLS, A.CLA, A.EXEX, A.SVF, A.CAS, A.NTBL, A.CSCO_SA_RFRN_CNNT2
+            F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
+            F.fileSize, F.contentType, F.fileType, F.fileWidth, F.fileHeight,
+            A.status, A.imgFileStartNo, A.imgFileEndNo, A.csconm, A.ctnm,
+            TO_DATE(A.insstdt, 'YYYY-MM-DD hh24:mi:ss') AS insstdt,
+            TO_DATE(A.insenddt, 'YYYY-MM-DD hh24:mi:ss') AS insenddt,
+            A.curcd, A.pre, A.com, A.brkg, A.txam, A.prrscf, A.prrsrls, A.lsrescf,
+            A.lsresrls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.cscosarfrncnnt2
 	     FROM
-            TBL_OCR_FILE F
-		    LEFT OUTER JOIN tbl_batch_learn_data A ON A.IMG_ID = F.IMG_ID
+            tbl_ocr_file F
+		    LEFT OUTER JOIN tbl_batch_learn_data A ON A.imgId = F.imgId
 	     WHERE
-            F.IMG_ID = :imgId AND A.STATUS != 'D' `,
+            F.imgId = :imgId AND A.status != 'D' `,
     selectFileNameList:
-            `SELECT FILE_PATH
-             FROM tbl_icr_file `,
+            `SELECT 
+                filePath
+             FROM
+                tbl_ocr_file `,
     selectFileData:
         `SELECT
-            SEQNUM, IMG_ID, FILE_PATH, ORI_FILE_NAME, SVR_FILE_NAME, FILE_EXT, FILE_SIZE,
-            CONTENT_TYPE, FILE_TYPE, FILE_WIDTH, FILE_HEIGHT, REG_ID, REG_DATE
+            seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize,
+            contentType, fileType, fileWidth, fileHeight, regId, regDate
          FROM
              tbl_ocr_file
          WHERE
-            IMG_ID = :imgId
+            imgId = :imgId
          ORDER BY
-            SEQNUM DESC `,
+            seqNum desc `,
     insertBatchLearningBaseData:
         `INSERT INTO
-            tbl_batch_learn_data (IMG_ID, STATUS, REG_ID, REG_DATE)
+            tbl_batch_learn_data (imgId, status, regId, regDate)
          VALUES
             (:imgId, 'N', :regId, sysdate) `,
     insertBatchLearningData:
         `INSERT INTO
-            tbl_batch_learn_data (IMG_ID, ORI_FILE_NAME, STATUS, IMG_FILE_ST_NO, IMG_FILE_END_NO, CSCO_NM, CT_NM, INS_ST_DT, INS_END_DT,
-            CUR_CD, PRE, COM,BRKG, TXAM, PRRS_CF, PRRS_RLS, LSRES_CF, LSRES_RLS, CLA, EXEX, SVF, CAS, NTBL, CSCO_SA_RFRN_CNNT2, REG_ID, REG_DATE)
+            tbl_batch_learn_data (imgId, status, imgFileStartNo, imgFileEndNo, csconm, ctnm, insstdt, insenddt,
+            curcd, pre, com, brkg, txam, prrscf, prrsrls, lsrescf, lsresrls, cla, exex, svf, cas, ntbl, cscosarfrncnnt2, regId, regDate)
          VALUES
-            (?, ?, 'N', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, sysdate) `,
+            (:imgId, :originFileName, 'N', :imgFileStartNo, :imgFileEndNo, :csconm, :ctnm, :insstdt, :insenddt,
+            :curcd, :pre, :com, :brkg, :txam, :prrscf, :prrsrls, :lsrescf, :lsresrls, :cla, :exex, :svf, :cas, :ntbl, :cscosarfrncnnt2, :regId, sysdate) `,
     insertFileInfo:
         `INSERT INTO
-            TBL_OCR_FILE(IMG_ID, FILE_PATH, ORI_FILE_NAME, SVR_FILE_NAME, FILE_EXT, FILE_SIZE, CONTENT_TYPE, FILE_TYPE, REG_ID, REG_DATE)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, sysdate) `,
+            tbl_ocr_file(seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize, contentType, fileType, regId, regDate)
+         VALUES
+            (ocrfile_seq.nextval, :imgId, :filePath, :originFileName, :serverFileName, :fileExtension, :fileSize, :contentType, :fileType, :regId, sysdate) `,
     selectIsExistWordToSymspell:
         `SELECT
             keyword, frequency
@@ -138,9 +142,9 @@ var batchLearningConfig = {
             keyword = :keyWord `,
     insertSymspell:
         `INSERT INTO
-            tbl_ocr_symspell(keyword, frequency)
+            tbl_ocr_symspell(seqNum, keyword, frequency)
          VALUES
-            (:keyWord, 1) `,
+            (keyword_seq.nextval, :keyWord, 1) `,
     updataSymsepll:
         `UPDATE
             tbl_ocr_symspell
@@ -149,7 +153,11 @@ var batchLearningConfig = {
          WHERE
             keyword = :keyWord `,
     deleteBatchLearningData:
-        `UPDATE tbl_batch_learn_data SET STATUS = 'D' WHERE IMG_ID IN `
+        `UPDATE 
+            tbl_batch_learn_data
+         SET
+            status = 'D'
+         WHERE imgId IN `
 }
 
 var uiLearningConfig = {

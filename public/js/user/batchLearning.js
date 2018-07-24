@@ -416,33 +416,33 @@ var searchBatchLearnDataList = function (addCond) {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     // allow after or before checkbox name
-                    if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMG_ID}" class="stb00" name="listCheck_before" /></div></th>`;
-                    else checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMG_ID}" class="stb00" name="listCheck_after" /></div></th>`;
+                    if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="stb00" name="listCheck_before" /></div></th>`;
+                    else checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="stb00" name="listCheck_after" /></div></th>`;
                     appendHtml += `<tr>${checkboxHtml}
-                        <td>${nvl(entry.IMG_ID)}</td>
-                        <td>${nvl(entry.ORI_FILE_NAME)}</td>
+                        <td>${nvl(entry.IMGID)}</td>
+                        <td>${nvl(entry.ORIGINFILENAME)}</td>
                         <td>${nvl(entry.STATUS)}</td>
-                        <td>${nvl(entry.IMG_FILE_ST_NO)}</td>
-                        <td>${nvl(entry.IMG_FILE_END_NO)}</td>
-                        <td>${nvl(entry.CSCO_NM)}</td>
-                        <td>${nvl(entry.CT_NM)}</td>
-                        <td>${nvl(entry.INS_ST_DT)}</td>
-                        <td>${nvl(entry.INS_END_DT)}</td>
-                        <td>${nvl(entry.CUR_CD)}</td>
+                        <td>${nvl(entry.IMGFILESTNO)}</td>
+                        <td>${nvl(entry.IMGFILEENDNO)}</td>
+                        <td>${nvl(entry.CSCONM)}</td>
+                        <td>${nvl(entry.CTNM)}</td>
+                        <td>${nvl(entry.INSSTDT)}</td>
+                        <td>${nvl(entry.INSENDDT)}</td>
+                        <td>${nvl(entry.CURCD)}</td>
                         <td>${NumberWithComma(nvl2(entry.PRE, 0))}</td>
                         <td>${NumberWithComma(nvl2(entry.COM, 0))}</td>
                         <td>${NumberWithComma(nvl2(entry.BRKG, 0))}</td>
                         <td>${NumberWithComma(nvl2(entry.TXAM, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.PRRS_CF, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.PRRS_RLS, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.LSRES_CF, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.LSRES_RLS, 0))}</td>
+                        <td>${NumberWithComma(nvl2(entry.PRRSCF, 0))}</td>
+                        <td>${NumberWithComma(nvl2(entry.PRRSRLS, 0))}</td>
+                        <td>${NumberWithComma(nvl2(entry.LSRESCF, 0))}</td>
+                        <td>${NumberWithComma(nvl2(entry.LSRESRLS, 0))}</td>
                         <td>${NumberWithComma(nvl2(entry.CLA, 0))}</td>
                         <td>${NumberWithComma(nvl2(entry.EXEX, 0))}</td>
                         <td>${NumberWithComma(nvl2(entry.SVF, 0))}</td>
                         <td>${NumberWithComma(nvl2(entry.CAS, 0))}</td>
                         <td>${nvl(entry.NTBL)}</td>
-                        <td>${nvl(entry.CSCO_SA_RFRN_CNNT2)}</td>
+                        <td>${nvl(entry.CSCOSARFRNCNNT2)}</td>
                     </tr>`;
                 });
             } else {
