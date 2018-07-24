@@ -31,7 +31,7 @@ class DomainDicTrans():
             if (returnsentence != ''):
                 returnsentence = returnsentence + ' '
             corretedwords = dbConnection.selectDDT(sql, params)
-            if (corretedwords != None):
+            if (len(corretedwords) > 0):
                 if (corretedwords == '<<N>>'):
                     returnsentence = returnsentence[0:-1]
                 else:
