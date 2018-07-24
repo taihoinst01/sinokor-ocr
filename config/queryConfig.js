@@ -69,7 +69,7 @@ var dbcolumnsConfig = {
     selDBColumns:
         `SELECT
             seqNum, koKeyword, enKeyword
-        FROM
+         FROM
             "tbl_extraction_keyword `
 };
 
@@ -85,8 +85,12 @@ var batchLearningConfig = {
             A.lsresrls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.cscosarfrncnnt2
 	     FROM
             tbl_ocr_file F
-		    LEFT OUTER JOIN tbl_batch_learn_data A ON A.imgId = F.imgId
-	     WHERE A.status != 'D' `,
+		    LEFT OUTER JOIN 
+                tbl_batch_learn_data A
+            ON
+                A.imgId = F.imgId
+	     WHERE
+            A.status != 'D' `,
     selectBatchLearningData:
         `SELECT
             F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
@@ -98,14 +102,17 @@ var batchLearningConfig = {
             A.lsresrls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.cscosarfrncnnt2
 	     FROM
             tbl_ocr_file F
-		    LEFT OUTER JOIN tbl_batch_learn_data A ON A.imgId = F.imgId
+		    LEFT OUTER JOIN
+                tbl_batch_learn_data A
+            ON
+                A.imgId = F.imgId
 	     WHERE
             F.imgId = :imgId AND A.status != 'D' `,
     selectFileNameList:
-            `SELECT 
-                filePath
-             FROM
-                tbl_ocr_file `,
+        `SELECT 
+            filePath
+         FROM
+            tbl_ocr_file `,
     selectFileData:
         `SELECT
             seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize,

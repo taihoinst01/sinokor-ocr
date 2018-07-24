@@ -9,10 +9,24 @@ var queryConfig = commModule.queryConfig;
 module.exports = function (pool) {
 
     // Paing query 생성
-    var makePagingQuery = function (req) {
+    var makePagingQuery = function (req, targetQuery) {
     var startNum = req.body.startNum ? req.body.startNum : 0;
     var endNum = req.body.endNum ? req.body.endNum : commonUtil.MAX_ENTITY_IN_PAGE;
-    var query = " LIMIT " + startNum + " , " + endNum;
+    var query = `
+        SELECT
+            *
+        FROM
+            (
+            SELECT
+                rownum AS rnum, A.*
+            FROM
+                (`+ targetQuery +`) A
+            WHERE
+                rownum <= `+ endNum +`
+            )
+        WHERE
+            rnum > `+ startNum +`
+    `;
     return query;
     }
 

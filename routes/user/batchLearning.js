@@ -72,11 +72,13 @@ var fnSearchBatchLearningDataList = function (req, res) {
         else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.status = 'Y' ";
     }
     // LIMIT
-    var limitQuery = "";
-    //if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) limitQuery = " LIMIT " + req.body.startNum + "," + req.body.moreNum;
-    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery + limitQuery;
+    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery
 
-    console.log("listQuery : " + listQuery);
+    if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) {
+        listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
+    }
+
+    //console.log("listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
 };
 
@@ -94,7 +96,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
             var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
             // 파일 정보 추출
             var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성
-            console.log("생성한 imgId와 길이 : " + imgId + " : " + imgId.length);
+            //console.log("생성한 imgId와 길이 : " + imgId + " : " + imgId.length);
             var fileObj = files[i]; // 파일
             var filePath = fileObj.path;    // 파일 경로
             var oriFileName = fileObj.originalname; // 파일 원본명
@@ -116,7 +118,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
             };
             fileInfo.push(fileParam);
             returnObj.push(oriFileName.split('.')[0] + '.jpg');
-            console.log("upload ifile : " + ifile + " : oFile : " + ofile);
+            //console.log("upload ifile : " + ifile + " : oFile : " + ofile);
             exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
                 if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
                     res.send({ code: 200, message: returnObj, fileInfo: fileInfo });
@@ -129,7 +131,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 
 // [POST] INSERT fileInfo (파일정보)
 var callbackInsertFileInfo = function (rows, req, res) {
-    console.log("upload fileInfo finish..");
+    //console.log("upload fileInfo finish..");
     res.send({ code: 200, rows: rows });
 }
 router.post('/insertFileInfo', function (req, res) {
@@ -153,11 +155,11 @@ router.post('/insertFileInfo', function (req, res) {
 
 // [POST] INSERT batchLearningBaseData (기본정보)
 var callbackInsertBatchLearningBaseData = function (rows, req, res) {
-    console.log("upload batchLearningBaseData finish..");
+    //console.log("upload batchLearningBaseData finish..");
     res.send({ code: 200, rows: rows });
 }
 router.post('/insertBatchLearningBaseData', function (req, res) {
-    console.log("insert BATCH LEARNING BASE DATA : " + JSON.stringify(req.body.fileInfo));
+    //console.log("insert BATCH LEARNING BASE DATA : " + JSON.stringify(req.body.fileInfo));
     var fileInfo = req.body.fileInfo;
     var imgId = fileInfo.imgId;
     var regId = req.session.userId;
@@ -174,7 +176,7 @@ router.post('/execBatchLearningData', function (req, res) {
         domainDictionaryEval(result1, function (result2) {
             textClassificationEval(result2, function (result3) {
                 labelMappingEval(result3, function (result4) {
-                    console.log("labelMapping Result : " + JSON.stringify(result4));
+                    //console.log("labelMapping Result : " + JSON.stringify(result4));
                     res.send(result4);
                 })
             })
@@ -184,12 +186,12 @@ router.post('/execBatchLearningData', function (req, res) {
 
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
 var callbackInsertBatchLearningBaseData = function (rows, req, res) {
-    console.log("upload batchLearningBaseData finish..");
+    //console.log("upload batchLearningBaseData finish..");
     res.send({ code: 200, rows: rows });
 };
 router.post('/insertBatchLearningBaseData', function (req, res) {
     var dataObj = req.body.dataObj;
-    console.log("insert dataObj " + JSON.stringify(dataObj));
+    //console.log("insert dataObj " + JSON.stringify(dataObj));
     var imgId = dataObj.imgId; 
     var oriFileName = dataObj.oriFileName; 
     var regId = req.session.userId;
@@ -201,12 +203,12 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 
 // [POST] insert batchLearningData (tbl_batch_learning_data 전체정보)
 var callbackInsertBatchLearningData = function (rows, req, res) {
-    console.log("upload batchLearningData finish..");
+    //console.log("upload batchLearningData finish..");
     res.send({ code: 200, rows: rows });
 };
 router.post('/insertBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-    console.log("insert dataObj " + JSON.stringify(dataObj));
+    //console.log("insert dataObj " + JSON.stringify(dataObj));
     var imgId = dataObj.imgId; // 필수값
     var imgFileStNo = commonUtil.nvl(dataObj.IMG_FILE_ST_NO);
     var imgFileEndNo = commonUtil.nvl(dataObj.IMG_FILE_END_NO);
@@ -273,7 +275,7 @@ router.post('/syncFile', function (req, res) {
         // 디렉토리에만 존재하는 파일 저장
         function fileProcess(result) {
             if (result.length > 0) {
-                console.log("남은 result " + result.length + "개의 처리를 시작합니다. ");
+                //console.log("남은 result " + result.length + "개의 처리를 시작합니다. ");
                 var endCount = 0;
                 var returnObj = [];
                 var fileInfo = [];
@@ -322,7 +324,7 @@ router.post('/syncFile', function (req, res) {
 
 // [POST] 삭제처리 (UPDATE)
 var callbackDeleteBatchLearningData = function (rows, req, res) {
-    console.log("delete batchLearningData");
+    //console.log("delete batchLearningData");
     res.send({ code: 200, rows: rows });
 };
 router.post('/deleteBatchLearningData', function (req, res) {
@@ -347,8 +349,8 @@ router.get('/pyTest', function (req, res) {
     //var exeString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + arg;
     //var exeString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py';
     exec(exeString, defaults, function (err, stdout, stderr) {
-        console.log(stdout);
-        console.log(stderr);
+        //console.log(stdout);
+        //console.log(stderr);
         res.send(stdout);
     });
 
@@ -404,7 +406,7 @@ router.get('/fixvalueTest', function (req, res) {
                     }
 
                     excelArray[i].cell5 = fixlabel;
-                    console.log(excelArray[i]);
+                    //console.log(excelArray[i]);
                 }
             }
         })
@@ -462,7 +464,7 @@ router.get('/mlEvalTest', function (req, res) {
             textClassificationEval(result2, function (result3) {
                 
                 labelMappingEval(result3, function (result4) {
-                    console.log(result4);
+                    //console.log(result4);
                     res.send("test");
                 })
             })
@@ -479,7 +481,7 @@ router.get('/fileTest', function (req, res) {
         .find();
 
     files.then(function (res) {
-        console.log(res);
+        //console.log(res);
     });
 
     res.send("test");
@@ -494,7 +496,7 @@ function typoSentenceEval(data, callback) {
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\typo.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
-        console.log("typo Test : " + stdout);
+        //console.log("typo Test : " + stdout);
         var typoData = stdout.split(/\r\n/g);
 
         var typoDataLen = typoData.length;
