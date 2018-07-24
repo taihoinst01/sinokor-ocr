@@ -72,9 +72,11 @@ var fnSearchBatchLearningDataList = function (req, res) {
         else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.status = 'Y' ";
     }
     // LIMIT
-    var limitQuery = "";
-    //if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) limitQuery = " LIMIT " + req.body.startNum + "," + req.body.moreNum;
-    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery + limitQuery;
+    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery
+
+    if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) {
+        listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
+    }
 
     console.log("listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
