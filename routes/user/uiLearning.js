@@ -115,6 +115,57 @@ router.post('/', function (req, res) {
     res.render('user/uiLearning');
 });
 
+// typoSentence ML
+router.post('/typoSentence', function (req, res) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+
+    typoSentenceEval(data, function (result) {
+        res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
+    });
+});
+
+// typoSentence ML
+router.post('/domainDictionary', function (req, res) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+
+    domainDictionaryEval(data, function (result) {
+        res.send({ 'fileName': fileName, 'data': result, nextType: 'tc' });
+    });
+});
+
+// typoSentence ML
+router.post('/textClassification', function (req, res) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+
+    textClassificationEval(data, function (result) {
+        res.send({ 'fileName': fileName, 'data': result, nextType: 'lm' });
+    });
+});
+
+// typoSentence ML
+router.post('/labelMapping', function (req, res) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+
+    labelMappingEval(data, function (result) {
+        res.send({ 'fileName': fileName, 'data': result, nextType: 'sc' });
+    });
+});
+
+// DB Columns select
+router.post('/searchDBColumns', function (req, res) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+
+    commonDB.reqQuery(selectColumn, function (rows, req, res) {
+        res.send({ 'fileName': fileName, 'data': data, 'column': rows });
+    }, req, res);
+});
+
+/*
 // db컬럼명 조회
 router.post('/searchDBColumns', function (req, res) {
 
@@ -138,6 +189,7 @@ router.post('/searchDBColumns', function (req, res) {
         })
     });
 });
+*/
 
 // fileupload
 router.post('/uploadFile', upload.any(), function (req, res) {

@@ -42,13 +42,17 @@ function uploadFileEvent() {
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
             $('#uploadFileBtn , #uploadInfoText').hide();
+            $('#loadingTitle').html('파일 업로드 중..');
+            $('#loadingDetail').html('');
             startProgressBar();
-            addProgressBar(1, 40);
+            addProgressBar(1, 10);
             return true;
         },
         success: function (responseText, statusText) {
             //console.log(responseText);
-            addProgressBar(41, 60);
+            $('#loadingTitle').html('파일 업로드 완료');
+            $('#loadingDetail').html('');
+            addProgressBar(11, 20);
             if (responseText.message.length > 0) {
                 totCount = responseText.message.length;
                 for (var i = 0; i < responseText.message.length; i++) {
@@ -65,7 +69,7 @@ function uploadFileEvent() {
 
 // OCR API
 function processImage(fileName) {
-    var subscriptionKey = "fedbc6bb74714bd78270dc8f70593122";
+    var subscriptionKey = "7d51f1308c8848f49db9562d1dab7184";
     var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
 
     var params = {
@@ -75,6 +79,9 @@ function processImage(fileName) {
 
     var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
 
+    $('#loadingTitle').html('OCR 처리 중..');
+    $('#loadingDetail').html(sourceImageUrl);
+    addProgressBar(21, 30);
     $.ajax({
         url: uriBase + "?" + $.param(params),
         beforeSend: function (jqXHR) {
@@ -86,8 +93,10 @@ function processImage(fileName) {
     }).done(function (data) {
         ocrCount++;
         thumbImgs.push(fileName);
-        appendOcrData(fileName, data.regions);
-        addProgressBar(61, 80);
+        $('#loadingTitle').html('OCR 처리 완료');
+        $('#loadingDetail').html(sourceImageUrl);
+        addProgressBar(31, 40);
+        appendOcrData(fileName, data.regions);      
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
@@ -180,7 +189,11 @@ function appendOcrData(fileName, regions) {
             data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
         }
     }
-
+    executeML(fileName, data, 'ts');
+    /*
+    $('#loadingTitle').html('머신러닝 작동 중..');
+    $('#loadingDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0,200) + '...');
+    addProgressBar(41, 50);
     $.ajax({
         url: '/uiLearning/searchDBColumns',
         type: 'post',
@@ -210,16 +223,90 @@ function appendOcrData(fileName, regions) {
             if (totCount == searchDBColumnsCount) {
                 thumbImgEvent();
             }
-            addProgressBar(81, 100);
-            /* 몇 페이지 어디인지 표시
-            if (totCount == searchDBColumnsCount) {
-                $('.dialog_wrap').html('<div id="mainImage" style="height:700px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
-                var originalDiv = document.getElementById("mainImage");
-                originalDiv.style.backgroundImage = "url('../../uploads/" + thumbImgs[0] + "')";
-                detailTable(fileName);
-                thumbImgEvent();
+            $('#loadingTitle').html('머신러닝 작동 완료');
+            $('#loadingDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0, 200) + '...');
+            addProgressBar(91, 100);
+            // 몇 페이지 어디인지 표시
+            //if (totCount == searchDBColumnsCount) {
+            //    $('.dialog_wrap').html('<div id="mainImage" style="height:700px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
+            //    var originalDiv = document.getElementById("mainImage");
+            //    originalDiv.style.backgroundImage = "url('../../uploads/" + thumbImgs[0] + "')";
+            //    detailTable(fileName);
+            //    thumbImgEvent();
+            //}
+            //
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+    */
+}
+
+/**
+ * @param {any} type
+ * ts : typoSentence , dd : domainDictionary , tc : textClassification , lm : labelMapping , sc : searchDBColumns
+ */
+function executeML(fileName, data, type) {
+    $('#loadingDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0, 200) + '...');
+    var targetUrl;
+
+    if (type == 'ts') {
+        targetUrl = '/uiLearning/typoSentence';
+        $('#loadingTitle').html('오타 수정 처리 중..');
+        addProgressBar(41, 50);
+    } else if (type == 'dd') {
+        targetUrl = '/uiLearning/domainDictionary';
+        $('#loadingTitle').html('도메인 사전 처리 중..');
+        addProgressBar(51, 60);
+    } else if (type == 'tc') {
+        targetUrl = '/uiLearning/textClassification';
+        $('#loadingTitle').html('텍스트 분류 처리 중..');
+        addProgressBar(61, 70);
+    } else if (type == 'lm') {
+        targetUrl = '/uiLearning/labelMapping';
+        $('#loadingTitle').html('라벨 매핑 처리 중..');
+        addProgressBar(71, 80);
+    } else {
+        targetUrl = '/uiLearning/searchDBColumns';
+        $('#loadingTitle').html('DB 컬럼 조회 중..');
+        addProgressBar(81, 90);
+    }
+
+    $.ajax({
+        url: targetUrl,
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'fileName': fileName, 'data': data }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            if (data.nextType) {
+                executeML(data.fileName, data.data, data.nextType);
+            } else {
+                lineText.push(data);
+                searchDBColumnsCount++;
+
+                if (searchDBColumnsCount == 1) {
+                    var mainImgHtml = '';
+                    mainImgHtml += '<div id="mainImage">';
+                    mainImgHtml += '<div id="redNemo">';
+                    mainImgHtml += '</div>';
+                    mainImgHtml += '</div>';
+                    mainImgHtml += '<div id="imageZoom">';
+                    mainImgHtml += '<div id="redZoomNemo">';
+                    mainImgHtml += '</div>';
+                    mainImgHtml += '</div>';
+                    $('#img_content').html(mainImgHtml);
+                    $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+                    thumnImg();
+                    $('#imageBox > li').eq(0).addClass('on');
+                    detailTable(fileName);
+                }
+                if (totCount == searchDBColumnsCount) {
+                    thumbImgEvent();
+                    addProgressBar(91, 100);
+                }
             }
-            */
         },
         error: function (err) {
             console.log(err);

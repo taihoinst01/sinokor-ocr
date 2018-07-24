@@ -93,6 +93,10 @@ function pagination(curPage, totalCount) {
 
 // Progress Bar
 function startProgressBar() {
+    $('body').css('overflow', 'hidden');
+    $('#loadingBackground').css('width', $('body').width());
+    $('#loadingBackground').css('height', $('body').height());
+    $('#loadingBackground').show();
     $("#ocrProgress").fadeIn("fast");
 }
 function addProgressBar(fromVal, toVal) {
@@ -115,4 +119,6 @@ function addProgressBar(fromVal, toVal) {
 function endProgressBar() {
     $("#ocrProgress").fadeOut("fast");
     document.getElementById("ocrBar").style.width = 1;
+    $('body').css('overflow', 'auto');
+    $('#loadingBackground').hide();
 }

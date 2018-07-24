@@ -12,9 +12,9 @@ var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var router = express.Router();
 // DB
-var mysql = require('mysql');
-var dbConfig = require(appRoot + '/config/dbConfig');
-var pool = mysql.createPool(dbConfig);
+//var mysql = require('mysql');
+var oracledb = require('oracledb');
+var dbConfig = require('../config/dbConfig.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
@@ -131,8 +131,9 @@ passport.use(new LocalStrategy({
     passwordField: 'userPw',
     passReqToCallback: true
 }, function (req, userId, userPw, done) {
-    pool.getConnection(function (err, connection) {
-        connection.query(queryConfig.sessionConfig.loginQuery, userId, function (err, result) {
+    oracledb.getConnection(dbConfig, function (err, connection) {
+        connection.execute(queryConfig.sessionConfig.loginQuery, [userId],function (err, result) {
+            result = result.rows;
             if (err) {
                 console.log('err :' + err);
                 return done(false, null);
@@ -148,14 +149,14 @@ passport.use(new LocalStrategy({
                     if (commonUtil.isNull(userPw)) {
                         req.flash("errors", "비밀번호를 입력해주세요.");
                         return done(false, null);
-                    } else if (userPw != result[0].userPw) {
+                    } else if (userPw != result[0].USERPW) {
                         req.flash("errors", "비밀번호가 일치하지 않습니다.");
                         return done(false, null);
                     } else {
                         var sessionInfo = {
                             userId: userId,
-                            email: result[0].email,
-                            auth: result[0].auth
+                            email: result[0].EMAIL,
+                            auth: result[0].AUTH
                         };
                         return done(null, sessionInfo);
                     }

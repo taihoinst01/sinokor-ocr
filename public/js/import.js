@@ -12,9 +12,19 @@ var bodyParser = require('body-parser');
 var multer = require("multer");
 var exceljs = require('exceljs');
 // DB
-var mysql = require('mysql');
+//var mysql = require('mysql');
+var oracledb = require('oracledb');
+oracledb.autoCommit = true;
+oracledb.outFormat = oracledb.OBJECT;
 var dbConfig = require(appRoot + '/config/dbConfig');
-var pool = mysql.createPool(dbConfig);
+//var pool = mysql.createPool(dbConfig);
+oracledb.createPool(dbConfig, function (err, pool) {
+    if (err) {
+        console.log("ERROR: ", new Date(), ": createPool() callback: " + err.message);
+        return;
+    }
+    require('./common.db.js')(pool);
+});
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
@@ -32,9 +42,9 @@ exports.cookieParser = cookieParser;
 exports.bodyParser = bodyParser;
 exports.multer = multer;
 exports.exceljs = exceljs;
-exports.mysql = mysql;
+//exports.mysql = mysql;
+exports.oracledb = oracledb;
 exports.dbConfig = dbConfig;
-exports.pool = pool;
 exports.queryConfig = queryConfig;
 exports.commonDB = commonDB;
 exports.commonUtil = commonUtil;
