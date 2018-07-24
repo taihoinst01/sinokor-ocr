@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 import pymysql
+import cx_Oracle
 
 class MultiClassDataLoader(object):
     """
@@ -95,20 +96,12 @@ class MultiClassDataLoader(object):
         x_text = []
         y = []
 
-        conn = pymysql.connect(host='172.16.53.142',
-                               port=3307,
-                               user='root',
-                               password='1234',
-                               db='koreanreicr',
-                               charset='utf8')
-
+        conn = cx_Oracle.connect("koreanre/koreanre01@172.16.53.142:1521/koreanreocr")
         curs = conn.cursor()
 
         sql = "SELECT * FROM TBL_TEXT_CLASSIFICATION_TRAIN"
         curs.execute(sql)
-
         rows = curs.fetchall()
-        conn.close()
 
         classes = self.__classes()
         one_hot_vectors = np.eye(len(classes), dtype=int)
@@ -138,20 +131,12 @@ class MultiClassDataLoader(object):
     def __classes(self):
         self.__resolve_params()
 
-        conn = pymysql.connect(host='172.16.53.142',
-                               port=3307,
-                               user='root',
-                               password='1234',
-                               db='koreanreicr',
-                               charset='utf8')
-
+        conn = cx_Oracle.connect("koreanre/koreanre01@172.16.53.142:1521/koreanreocr")
         curs = conn.cursor()
 
         sql = "SELECT * FROM TBL_TEXT_CLASSIFICATION_CLS"
         curs.execute(sql)
-
         rows = curs.fetchall()
-        conn.close()
 
         if self.__classes_cache is None:
             self.__classes_cache = [ s[1] for s in rows]
