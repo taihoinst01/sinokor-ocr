@@ -10,6 +10,8 @@ var addCond = "LEARN_N"; // LEARN_N:학습미완료, LEARN_Y:학습완료, defau
 var startNum = 0;
 var moreNum = 20;
 
+
+
 $(function () {
     _init();
     //viewServerFileTest();
@@ -184,7 +186,7 @@ var insertBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
                 console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
                 endProgressBar();
                 if (lastYN) {
-                    alert("파일 업로드가 완료되었습니다.");
+                    alert("파일 등록이 완료되었습니다.");
                     searchBatchLearnDataList("LEARN_N");
                 }
             },
@@ -469,24 +471,32 @@ var fn_syncServerFile = function() {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         success: function (responseText, statusText) {
+            console.log("responseText : " + JSON.stringify(responseText));
             // FILE INSERT
-            var insertPromise = new Promise(function (resolve, reject) {
-                var totCount = responseText.message.length;
-                for (var i = 0; i < totCount; i++) {
-                    var lastYN = false;
-                    var fileInfo = responseText.fileInfo[i];
-                    var fileName = responseText.message[i];
-                    if (i == (totCount - 1)) lastYN = true;
-                    insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
-                    insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
-                }
-            });
-            insertPromise.then(function (responseText, statusText) {
-            });
-            insertPromise.then().catch(function (e) {
-                alert("파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + e);
-                console.log(e);
-            });
+            if (isNull(responseText.fileInfo)) {
+                alert("신규 등록할 파일이 존재하지 않습니다.");
+            } else {
+                var insertPromise = new Promise(function (resolve, reject) {
+                    var totCount = responseText.message.length;
+                    for (var i = 0; i < totCount; i++) {
+                        var lastYN = false;
+                        var fileInfo = responseText.fileInfo[i];
+                        var fileName = responseText.message[i];
+                        console.log("fileInfo " + i + " : " + JSON.stringify(fileInfo));
+                        console.log("fileName " + i + " : " + JSON.stringify(fileName));
+                        if (i == (totCount - 1)) lastYN = true;
+                        insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
+                        insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
+                    }
+                });
+                insertPromise.then(function (responseText, statusText) {
+                    alert("완료");
+                });
+                insertPromise.then().catch(function (e) {
+                    alert("파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + e);
+                    console.log(e);
+                });
+            }
         },
         error: function (err) {
             console.log(err);
@@ -506,17 +516,49 @@ var fn_imageUpload = function () {
 
 // 이미지 삭제
 var fn_imageDelete = function () {
+    var strImgId = "(";
     var chkSize = 0;
     if (addCond == "LEARN_N") {
         $('input[name="listCheck_before"]').each(function (index, element) {
-            if ($(this).is(":checked")) chkSize++;
+            if ($(this).is(":checked")) {
+                strImgId += "'" +  $(this).val() + "',";
+                chkSize++;
+            }
         });
     } else {
         $('input[name="listCheck_after"]').each(function (index, element) {
-            if ($(this).is(":checked")) chkSize++;
+            if ($(this).is(":checked")) {
+                strImgId += "'" + $(this).val() + "',";
+                chkSize++;
+            }
         });
     }
-    alert("체크된 갯수는 : " + chkSize);
+    strImgId = strImgId.slice(0, -1);
+    strImgId += ")";
+
+    console.log("조건 : " + strImgId);
+
+    if (chkSize > 0) {
+        if (confirm("삭제하시겠습니까?")) {
+            var param = { imgId: strImgId };
+            $.ajax({
+                url: '/batchLearning/deleteBatchLearningData',
+                type: 'post',
+                datatype: "json",
+                data: JSON.stringify(param),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (responseText, statusText) {
+                    alert("삭제 되었습니다.");
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+    } else {
+        alert("삭제할 파일이 선택되지 않았습니다.");
+        return;
+    }
 };
 
 

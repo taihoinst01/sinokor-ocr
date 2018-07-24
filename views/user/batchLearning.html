@@ -119,15 +119,12 @@
                             <li><a href="#none" onclick="javascript: selectViewCount(1000);">행표시 : 1000</a></li>
                         </ul>
                     </div>
-                    <button type="button" id="btn_sync" class="button_st5 fl">Sync</button>
+                    <button type="button" id="btn_sync" class="button_st1 ml5 fl">Sync</button>
                     <!-- // Looks like select box-->
                     <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
                         <div class="fr">
-                            <!--<p class="attach_btn5"><input type="file" id="excel_file" onchange="javascript:document.getElementById('fileSrch').value=this.value" /><label for="excel_file">Excel Upload</label></p>
-                <p class="attach_btn5"><input type="file" id="document_file" onchange="javascript:document.getElementById('fileSrch').value=this.value" /><label for="document_file">Document Upload</label></p>-->
-                            <p class="attach_btn5"><input type="file" id="excel_file" /><label for="excel_file">Excel Upload</label></p>
-                            <p class="attach_btn5"><input type="file" name="file" id="document_file" multiple /><label for="document_file">Document Upload</label></p>
-
+                            <p class="attach_btn fl"><input type="file" id="excel_file" name="excel_file" onchange="javascript:document.getElementById('fileSrch').value=this.value" /><label for="excel_file">Excel Upload</label></p>
+                            <p class="attach_btn fl"><input type="file" name="file" id="document_file" onchange="javascript:document.getElementById('fileSrch').value=this.value" multiple /><label for="document_file">Document Upload</label></p>
                             <button type="button" id="btn_imageDelete" class="button_st5">Document Delete</button>
                             <button type="button" id="btn_batchTraining" class="button_st5">BATCH Training</button>
                             <button type="button" id="btn_uiTraining" class="button_st5">UI Training</button>
