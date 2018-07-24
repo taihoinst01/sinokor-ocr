@@ -1,7 +1,7 @@
 from pymysql.err import DatabaseError
 import pymysql
 import pymysql.cursors
-
+import cx_Oracle
 
 class MySQL:
     def __init__(self):
