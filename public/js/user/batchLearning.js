@@ -285,7 +285,28 @@ function processImage(fileInfo, fileName) {
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
         alert(errorString);
         endProgressBar(); // 에러 발생 시 프로그레스바 종료
+        });
+
+    /*
+    // proxy call
+    $.ajax({
+        url: '/proxy/ocr',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ "fileName": fileName }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log("processImage : done ");
+        ocrCount++;
+        addProgressBar(41, 70);
+        execBatchLearningData(fileInfo, fileName, data.regions); // goto STEP 3
+        },
+        error: function (err) {
+            console.log(err);
+            endProgressBar(); // 에러 발생 시 프로그레스바 종료
+        }
     });
+    */
 };
 
 // STEP 3 : OCR API -> CLASSIFICATION -> LABEL MAPPING

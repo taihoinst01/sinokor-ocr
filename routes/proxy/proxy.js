@@ -27,7 +27,7 @@ router.post('/ocr', function (req, res) {
     };
 
     request.post({ url: proxyConfig.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
-        var data = (JSON.parse(body));
+        var data = JSON.parse(body);
         //console.log(data);
         res.send(data);
     });
