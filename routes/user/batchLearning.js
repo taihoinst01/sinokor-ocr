@@ -66,14 +66,14 @@ var callbackBatchLearningDataList = function (rows, req, res) {
 var fnSearchBatchLearningDataList = function (req, res) {
     // 조건절
     var condQuery = "";
-    var orderQuery = " ORDER BY A.REG_DATE DESC ";
+    var orderQuery = " ORDER BY A.regDate DESC ";
     if (!commonUtil.isNull(req.body.addCond)) {
-        if (req.body.addCond == "LEARN_N") condQuery = " AND A.STATUS != 'Y' ";
-        else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.STATUS = 'Y' ";
+        if (req.body.addCond == "LEARN_N") condQuery = " AND A.status != 'Y' ";
+        else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.status = 'Y' ";
     }
     // LIMIT
     var limitQuery = "";
-    if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) limitQuery = " LIMIT " + req.body.startNum + "," + req.body.moreNum;
+    //if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) limitQuery = " LIMIT " + req.body.startNum + "," + req.body.moreNum;
     var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery + limitQuery;
 
     console.log("listQuery : " + listQuery);
