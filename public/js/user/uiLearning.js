@@ -79,7 +79,7 @@ function processImage(fileName) {
 
     var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
 
-    $('#loadingTitle').html('OCR 작동 중..');
+    $('#loadingTitle').html('OCR 처리 중..');
     $('#loadingDetail').html(sourceImageUrl);
     addProgressBar(21, 30);
     $.ajax({
@@ -93,7 +93,7 @@ function processImage(fileName) {
     }).done(function (data) {
         ocrCount++;
         thumbImgs.push(fileName);
-        $('#loadingTitle').html('OCR 작동 완료');
+        $('#loadingTitle').html('OCR 처리 완료');
         $('#loadingDetail').html(sourceImageUrl);
         addProgressBar(31, 40);
         appendOcrData(fileName, data.regions);      
@@ -253,19 +253,19 @@ function executeML(fileName, data, type) {
 
     if (type == 'ts') {
         targetUrl = '/uiLearning/typoSentence';
-        $('#loadingTitle').html('오타 수정 ML 작동 중..');
+        $('#loadingTitle').html('오타 수정 처리 중..');
         addProgressBar(41, 50);
     } else if (type == 'dd') {
         targetUrl = '/uiLearning/domainDictionary';
-        $('#loadingTitle').html('도메인 사전 ML 작동 중..');
+        $('#loadingTitle').html('도메인 사전 처리 중..');
         addProgressBar(51, 60);
     } else if (type == 'tc') {
         targetUrl = '/uiLearning/textClassification';
-        $('#loadingTitle').html('텍스트 분류 ML 작동 중..');
+        $('#loadingTitle').html('텍스트 분류 처리 중..');
         addProgressBar(61, 70);
     } else if (type == 'lm') {
         targetUrl = '/uiLearning/labelMapping';
-        $('#loadingTitle').html('라벨 매핑 ML 작동 중..');
+        $('#loadingTitle').html('라벨 매핑 처리 중..');
         addProgressBar(71, 80);
     } else {
         targetUrl = '/uiLearning/searchDBColumns';
