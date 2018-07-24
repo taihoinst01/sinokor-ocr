@@ -133,7 +133,7 @@ var callbackInsertFileInfo = function (rows, req, res) {
     res.send({ code: 200, rows: rows });
 }
 router.post('/insertFileInfo', function (req, res) {
-    console.log("insert FILE INFO : " + JSON.stringify(req.body.fileInfo));
+    //console.log("insert FILE INFO : " + JSON.stringify(req.body.fileInfo));
     var fileInfo = req.body.fileInfo;
 
     var imgId = fileInfo.imgId;
@@ -238,7 +238,7 @@ router.post('/insertBatchLearningData', function (req, res) {
 
 // [POST] syncFile
 router.post('/syncFile', function (req, res) {
-    const testFolder = 'C:\\workspace\\sinokor-ocr\\uploads\\';
+    const testFolder = appRoot + '\\uploads\\';
 
     const files = FileHound.create()
         .paths(testFolder)

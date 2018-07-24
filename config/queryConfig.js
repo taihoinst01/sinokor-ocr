@@ -123,16 +123,16 @@ var batchLearningConfig = {
             (:imgId, 'N', :regId, sysdate) `,
     insertBatchLearningData:
         `INSERT INTO
-            tbl_batch_learn_data (imgId, originFileName, status, imgFileStartNo, imgFileEndNo, csconm, ctnm, insstdt, insenddt,
+            tbl_batch_learn_data (imgId, status, imgFileStartNo, imgFileEndNo, csconm, ctnm, insstdt, insenddt,
             curcd, pre, com, brkg, txam, prrscf, prrsrls, lsrescf, lsresrls, cla, exex, svf, cas, ntbl, cscosarfrncnnt2, regId, regDate)
          VALUES
             (:imgId, :originFileName, 'N', :imgFileStartNo, :imgFileEndNo, :csconm, :ctnm, :insstdt, :insenddt,
             :curcd, :pre, :com, :brkg, :txam, :prrscf, :prrsrls, :lsrescf, :lsresrls, :cla, :exex, :svf, :cas, :ntbl, :cscosarfrncnnt2, :regId, sysdate) `,
     insertFileInfo:
         `INSERT INTO
-            tbl_ocr_file(imgId, filePath, originFileName, saveFileName, fileExtension, fileSize, contentType, fileType, regId, regDate)
+            tbl_ocr_file(seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize, contentType, fileType, regId, regDate)
          VALUES
-            (:imgId, :filePath, :originFileName, :saveFileName, :fileExtension, :fileSize, :contentType, :fileType, :regId, :sysdate) `,
+            (ocrfile_seq.nextval, :imgId, :filePath, :originFileName, :serverFileName, :fileExtension, :fileSize, :contentType, :fileType, :regId, sysdate) `,
     selectIsExistWordToSymspell:
         `SELECT
             keyword, frequency
@@ -142,9 +142,9 @@ var batchLearningConfig = {
             keyword = :keyWord `,
     insertSymspell:
         `INSERT INTO
-            tbl_ocr_symspell(keyword, frequency)
+            tbl_ocr_symspell(seqNum, keyword, frequency)
          VALUES
-            (:keyWord, 1) `,
+            (keyword_seq.nextval, :keyWord, 1) `,
     updataSymsepll:
         `UPDATE
             tbl_ocr_symspell
