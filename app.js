@@ -78,5 +78,5 @@ app.use('/userManagement', userManagement);
 // server 
 app.set('port', process.env.PORT || 3000);
 var server = app.listen(app.get('port'), function () {
-    debug('Server Start!! port : ' + server.address().port);
+    console.log('Server Start!! port : ' + server.address().port);
 });
