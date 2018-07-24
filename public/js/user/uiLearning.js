@@ -103,9 +103,8 @@ function processImage(fileName) {
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
         alert(errorString);
     });
-};
-/* proxy 일 경우
-function processImage(fileName) {
+    /*
+    // proxy call
     $.ajax({
         url: '/proxy/ocr',
         type: 'post',
@@ -124,8 +123,8 @@ function processImage(fileName) {
             console.log(err);
         }
     });
-}
-*/
+    */
+};
 
 // 썸네일 이미지 페이지 이동 버튼 클릭 이벤트
 function thumbImgPagingEvent() {
