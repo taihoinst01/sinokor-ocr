@@ -609,22 +609,27 @@ function uiTrainAjax() {
 
     var dataArray = [];
 
-    var tr = $("#textResultTbl tbody").children();
+    var tr = $("#textResultTbl dl");
 
     //console.log(td.eq(0).text());
 
-    for (var i = 1; i < tr.length; i++) {
+    for (var i = 0; i < tr.length; i++) {
+        /*
         var td = tr.eq(i).children();
-
         var text = td.eq(0).children('input[type="text"]').val();
         var location = td.eq(0).children('input[type="hidden"]').val();
         var column = td.eq(1).children().find("a.dbColumnText").text();
+        */
+        var text = tr.eq(i).find('input[type="text"]').val();
+        var location = tr.eq(i).find('input[type="hidden"]').val();
+        var column = tr.eq(i).find('a.dbColumnText').text();
+        var columnSplit = column.split("::");
         //var textClassi = td.eq(1).children();
 
         var obj = {}
         obj.text = text;
         obj.location = location;
-        obj.column = column;
+        obj.column = columnSplit[0];
         //obj.textClassi = textClassi;
 
         dataArray.push(obj);
