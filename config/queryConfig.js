@@ -139,7 +139,7 @@ var batchLearningConfig = {
         `INSERT INTO
             tbl_ocr_file(seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize, contentType, fileType, regId, regDate)
          VALUES
-            (ocrfile_seq.nextval, :imgId, :filePath, :originFileName, :serverFileName, :fileExtension, :fileSize, :contentType, :fileType, :regId, sysdate) `,
+            (seq_ocr_file.nextval, :imgId, :filePath, :originFileName, :serverFileName, :fileExtension, :fileSize, :contentType, :fileType, :regId, sysdate) `,
     selectIsExistWordToSymspell:
         `SELECT
             keyword, frequency
@@ -151,7 +151,7 @@ var batchLearningConfig = {
         `INSERT INTO
             tbl_ocr_symspell(seqNum, keyword, frequency)
          VALUES
-            (keyword_seq.nextval, :keyWord, 1) `,
+            (seq_ocr_symspell.nextval, :keyWord, 1) `,
     updataSymsepll:
         `UPDATE
             tbl_ocr_symspell
@@ -170,25 +170,57 @@ var batchLearningConfig = {
 var uiLearningConfig = {
     insertTextClassification:
         `INSERT INTO
-            TBL_TEXT_CLASSIFICATION_TRAIN(TEXT, CLASS)
+            tbl_text_classification_train(seqNum, text, class, regDate)
          VALUES
-            (:text, :class) `,
+            (seq_text_classification_train.nextval, :text, :class, sysdate) `,
     insertLabelMapping:
-        `INSERT INTO TBL_LABEL_MAPPING_TRAIN(TEXT, CLASS) VALUES (:text, :class) `,
+        `INSERT INTO
+            tbl_label_mapping_train(seqNum, text, class, regDate)
+         VALUES
+            (seq_label_mapping_train.nextval, :text, :class, sysdate) `,
     selectLabel:
-        `SELECT KOKEYWORD, ENKEYWORD, LABEL FROM TBL_EXTRACTION_KEYWORD WHERE KOKEYWORD = :koKeyWord `,
+        `SELECT
+            koKeyWord, enKeyWord, label
+         FROM
+            tbl_extraction_keyword
+         WHERE
+            koKeyWord = :koKeyWord `,
     insertDomainDic:
-        `INSERT INTO TBL_OCR_DOMAIN_DIC_TRANS(ORIGINWORD, FRONTWORD, CORRECTEDWORDS, REARWORD) VALUES(:originWord, :frontWord, :correctedWords, :rearWord) `,
+        `INSERT INTO
+            tbl_ocr_domain_dic_trans(seqNum, originWord, frontWord, correctedWords, rearWord)
+         VALUES
+            (seq_ocr_domain_dic_trans.nextval, :originWord, :frontWord, :correctedWords, :rearWord) `,
     selectDomainDic:
-        `SELECT ORIGINWORD, FRONTWORD, CORRECTEDWORDS, REARWORD FROM TBL_OCR_DOMAIN_DIC_TRANS WHERE ORIGINWORD = :originWord AND FRONTWORD = :frontWord AND REARWORD = :rearWord `,
+        `SELECT
+            originWord, frontWord, correctedWords, rearWord
+         FROM
+            tbl_ocr_domain_dic_trans
+         WHERE
+            originWord = :originWord AND frontWord = :frontWord AND rearWord = :rearWord `,
     insertTypo:
-        `INSERT INTO TBL_OCR_SYMSPELL(KEYWORD, FREQUENCY) VALUES(:keyWord, 1) `,
+        `INSERT INTO
+            tbl_ocr_symspell(seqNum, keyword, frequency)
+         VALUES
+            (seq_ocr_symspell.nextval, :keyWord, 1) `,
     selectTypo:
-        `SELECT KEYWORD, FREQUENCY FROM TBL_OCR_SYMSPELL WHERE KEYWORD = :keyWord `,
+        `SELECT
+            keyword, frequency
+         FROM
+            tbl_ocr_symspell
+         WHERE
+            keyword = :keyWord `,
     updateTypo:
-        `UPDATE TBL_OCR_SYMSPELL SET FREQUENCY = FREQUENCY + 1 WHERE KEYWORD = :keyWord `,
+        `UPDATE
+            tbl_ocr_symspell
+         SET
+            frequency = frequency + 1
+         WHERE
+            keyword = :keyWord `,
     selectColumn:
-        `SELECT KOKEYWORD, ENKEYWORD, LABEL FROM TBL_EXTRACTION_KEYWORD `
+        `SELECT
+            koKeyWord, enKeyWord, label
+         FROM
+            tbl_extraction_keyword `
 }
 
 module.exports = {
