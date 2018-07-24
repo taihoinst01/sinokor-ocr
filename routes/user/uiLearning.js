@@ -19,14 +19,14 @@ const upload = multer({
 });
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commModule = require(appRoot + '/public/js/import.js');
-var MySql = require('sync-mysql');
+/*var MySql = require('sync-mysql');
 var connection = new MySql({
     host: 'localhost',
     port: 3307,
     user: 'root',
     password: '1234',
     database: 'koreanreicr'
-});
+});*/
 var commonUtil = commModule.commonUtil;
 var router = commModule.router;
 var queryConfig = commModule.queryConfig;
