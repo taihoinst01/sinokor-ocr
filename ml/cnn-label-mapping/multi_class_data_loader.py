@@ -95,7 +95,7 @@ class MultiClassDataLoader(object):
         x_text = []
         y = []
 
-		conn = cx_Oracle.connect("koreanre/koreanre01@172.16.53.142:1521/koreanreocr")
+        conn = cx_Oracle.connect("koreanre/koreanre01@172.16.53.142:1521/koreanreocr")
         curs = conn.cursor()
 
         sql = "SELECT * FROM TBL_LABEL_MAPPING_TRAIN"
