@@ -69,7 +69,7 @@ var dbcolumnsConfig = {
     selDBColumns:
         `SELECT
             seqNum, koKeyword, enKeyword
-        FROM
+         FROM
             "tbl_extraction_keyword `
 };
 
@@ -109,10 +109,10 @@ var batchLearningConfig = {
 	     WHERE
             F.imgId = :imgId AND A.status != 'D' `,
     selectFileNameList:
-            `SELECT 
-                filePath
-             FROM
-                tbl_ocr_file `,
+        `SELECT 
+            filePath
+         FROM
+            tbl_ocr_file `,
     selectFileData:
         `SELECT
             seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize,
