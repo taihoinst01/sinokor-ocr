@@ -5,6 +5,7 @@ import re
 import json
 import pymysql
 import cx_Oracle
+import configparser
 
 class SymSpell():
     """SymSpell: 1 million times faster through Symmetric Delete spelling correction algorithm.
@@ -52,6 +53,17 @@ class SymSpell():
         self._prefix_length = prefix_length
         self._count_threshold = count_threshold
         self._compact_mask = (0xffffffff >> 8) << 2
+
+        config = configparser.ConfigParser()
+        config.read('./ml/config.ini')
+
+        id = config['ORACLE']['ID']
+        pw = config['ORACLE']['PW']
+        sid = config['ORACLE']['SID']
+        ip = config['ORACLE']['IP']
+        port = config['ORACLE']['PORT']
+
+        self.connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
     def set_max_dictionary_edit_distance(self, max_dictionary_edit_distance=2):
         if max_dictionary_edit_distance < 0:
@@ -336,7 +348,7 @@ class SymSpell():
         # print('Loading dictionary...')
         myData = dict()
 
-        conn = cx_Oracle.connect("koreanre/koreanre01@172.16.53.142:1521/koreanreocr")
+        conn = cx_Oracle.connect(self.connInfo)
         curs = conn.cursor()
 
         sql = "SELECT * FROM TBL_OCR_SYMSPELL"

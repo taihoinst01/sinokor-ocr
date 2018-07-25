@@ -13,7 +13,7 @@ class DomainDicTrans():
         rearword = ''
         returnsentence = ''
         dbConnection = DBase.Oracle()
-        sql = "SELECT CORRECTEDWORDS FROM TBL_OCR_DOMAIN_DIC_TRANS WHERE ORIGINWORD = :1 AND FRONTWORD = :2  AND REARWORD = :3"
+        sql = "SELECT CORRECTEDWORDS FROM TBL_OCR_DOMAIN_DIC_TRANS WHERE ORIGINWORD = :orign AND FRONTWORD = :front  AND REARWORD = :rear"
         for i in range(len(phrase)):
             if i == 0:
                 frontword = '<<N>>'

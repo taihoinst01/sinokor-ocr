@@ -2,6 +2,7 @@ from pymysql.err import DatabaseError
 import pymysql
 import pymysql.cursors
 import cx_Oracle
+import configparser
 
 class MySQL:
     def __init__(self):
@@ -43,8 +44,20 @@ class MySQL:
 class Oracle:
     def __init__(self):
         self.conn = None
+
+        config = configparser.ConfigParser()
+        config.read('./ml/config.ini')
+
+        id = config['ORACLE']['ID']
+        pw = config['ORACLE']['PW']
+        sid = config['ORACLE']['SID']
+        ip = config['ORACLE']['IP']
+        port = config['ORACLE']['PORT']
+
+        connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
+
         try:
-            self.conn = cx_Oracle.connect("koreanre/koreanre01@172.16.53.142:1521/koreanreocr")
+            self.conn = cx_Oracle.connect(connInfo)
             self.conn.autocommit
         except cx_Oracle.DatabaseError as exc:
             print(exc)

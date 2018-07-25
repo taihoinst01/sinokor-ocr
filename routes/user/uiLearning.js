@@ -411,7 +411,7 @@ function typoSentenceEval(data, callback) {
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\typo.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
-        console.log("typo Test : " + stdout);
+        //console.log("typo Test : " + stdout);
         var typoData = stdout.split(/\r\n/g);
 
         var typoDataLen = typoData.length;
@@ -448,7 +448,7 @@ function domainDictionaryEval(data, callback) {
     var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\main.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
 
-        console.log(stdout);
+        //console.log(stdout);
 
         var ocrText = stdout.split(/\r\n/g);
         var ocrTextLen = ocrText.length;
@@ -514,7 +514,7 @@ function labelMappingEval(data, callback) {
     var exeTypoString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
 
-        console.log(stdout);
+        //console.log(stdout);
 
         var labelMapping = stdout.split("^");
 
