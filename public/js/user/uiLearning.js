@@ -103,6 +103,27 @@ function processImage(fileName) {
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
         alert(errorString);
     });
+    /*
+    // proxy call
+    $.ajax({
+        url: '/proxy/ocr',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ "fileName": fileName }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            ocrCount++;
+            thumbImgs.push(fileName);
+            $('#loadingTitle').html('OCR 처리 완료');
+            $('#loadingDetail').html(sourceImageUrl);
+            addProgressBar(31, 40);
+            appendOcrData(fileName, data.regions);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+    */
 };
 
 // 썸네일 이미지 페이지 이동 버튼 클릭 이벤트
