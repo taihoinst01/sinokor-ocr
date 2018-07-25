@@ -1,6 +1,7 @@
 from symspell import SymSpell
 import sys
 import cx_Oracle
+import configparser
 
 #오타 수정
 ss = SymSpell(max_dictionary_edit_distance=2)
@@ -14,7 +15,18 @@ textList = []
 
 #print(textList.__contains__("infinity"))
 
-conn = cx_Oracle.connect("koreanre/koreanre01@172.16.53.142:1521/koreanreocr")
+config = configparser.ConfigParser()
+config.read('./ml/config.ini')
+
+id = config['ORACLE']['ID']
+pw = config['ORACLE']['PW']
+sid = config['ORACLE']['SID']
+ip = config['ORACLE']['IP']
+port = config['ORACLE']['PORT']
+
+connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
+
+conn = cx_Oracle.connect(connInfo)
 curs = conn.cursor()
 
 sql = "SELECT KEYWORD FROM TBL_OCR_SYMSPELL"
