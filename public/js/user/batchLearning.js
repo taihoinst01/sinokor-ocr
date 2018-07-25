@@ -1,5 +1,4 @@
 ﻿//import { identifier } from "babel-types";
-
 "use strict";
 
 var totCount = 0; // 총 이미지 분석 개수
@@ -167,6 +166,37 @@ var popupEvent = (function () {
         closePopup: closePopup
     };
 }());
+
+// [excelUpload event]
+var excelUploadEvent = function () {
+    var multiUploadForm = $("#multiUploadForm");
+
+    $('#excel_file').on("change", function () {
+        startProgressBar();
+        addProgressBar(1, 5);
+        multiUploadForm.attr("action", "/batchLearning/excelUpload");
+        if ($(this).val() !== '') {
+            multiUploadForm.submit();
+        }
+    });
+    // FILE UPLOAD
+    multiUploadForm.ajaxForm({
+        beforeSubmit: function (data, frm, opt) {
+            $("#progressMsg").html("Preparing to upload files...");
+            startProgressBar();
+            addProgressBar(6, 99);
+            return true;
+        },
+        success: function getData(responseText, statusText) {
+            console.log("upload excel data : " + JSON.stringify(responseText));
+            $("#progressMsg").html("uploading excel files...");
+            endProgressBar();
+        },
+        error: function (e) {
+            console.log("File upload failed : " + e);
+        }
+    });
+}
 
 // [imageUpload event]
 // INSERT DB IMAGE
@@ -836,6 +866,7 @@ function _init() {
     buttonEvent();              // button event
     popupEvent.scrollPopup();   // popup event - scroll
     imageUploadEvent();         // image upload event
+    excelUploadEvent();         // excel upload event
 
     searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
 }

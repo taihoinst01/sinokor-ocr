@@ -13,6 +13,7 @@ var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 var PythonShell = require('python-shell');
 const FileHound = require('filehound');
+const xlsx = require('xlsx');
 
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
@@ -68,10 +69,12 @@ var fnSearchBatchLearningDataList = function (req, res) {
         else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.status = 'Y' ";
     }
     // LIMIT
-    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery + limitQuery;
+    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery;
     if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) {
         listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
     }
+
+    console.log("리스트 조회 쿼리 : " + listQuery);
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
 }
 
@@ -82,6 +85,7 @@ router.post('/searchBatchLearnData', function (req, res) {
 }); 
 var callbackBatchLearningData = function (rows, req, res) {
     var fileInfoList = [];
+    console.log("배치학습데이터 : " + rows.length);
     for (var i = 0, x = rows.length; i < x; i++) {
         var oriFileName = rows[i].oriFileName;
         var _lastDot = oriFileName.lastIndexOf('.');
@@ -91,7 +95,7 @@ var callbackBatchLearningData = function (rows, req, res) {
             filePath: rows[i].filePath,
             oriFileName: rows[i].oriFileName,
             svrFileName: rows[i].svrFileName,
-            convertFileName: rows[i].oriFileName.replace(rows[i].FILE_EXT, "jpg"),
+            convertFileName: rows[i].oriFileName.replace(rows[i].fileExt, "jpg"),
             fileExt: rows[i].fileExt,
             fileSize: rows[i].fileSize,
             contentType: rows[i].contentType ? rows[i].contentType : "",
@@ -133,6 +137,7 @@ var fnSearchBatchLearningData = function (req, res) {
     condition = condition.slice(0, -1);
     condition += ")";
     var query = selectBatchLearningDataListQuery + condition;
+    console.log("단건 조회 쿼리 : " + query);
     commonDB.reqQuery(query, callbackBatchLearningData, req, res);
 }
 
@@ -149,6 +154,22 @@ router.post('/deleteBatchLearningData', function (req, res) {
     condition += ")";
     var query = queryConfig.batchLearningConfig.deleteBatchLearningData + condition;
     commonDB.reqQuery(query, callbackDeleteBatchLearningData, req, res);
+});
+
+// [POST] 엑셀 업로드
+router.post('/excelUpload', upload.any(), function (req, res) {
+    var files = req.files;
+    for (var i = 0; i < files.length; i++) {
+        var fileObj = files[i];
+        var oriFileName = fileObj.originalname;
+        if (oriFileName.toLowerCase() == "filepath.xlsx") {
+            
+        } else if (oriFileName.toLowerCase() == "data.xlsx") {
+
+        } else {
+            res.send({ code: 300 }); // filepath.xlsx, data.xlsx 파일 외의 형식은 업로드 불가능 합니다.
+        }
+    }
 });
 
 // [POST] 이미지 업로드
