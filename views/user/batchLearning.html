@@ -123,8 +123,8 @@
                     <!-- // Looks like select box-->
                     <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
                         <div class="fr">
-                            <p class="attach_btn fl"><input type="file" id="excel_file" name="excel_file" onchange="javascript:document.getElementById('fileSrch').value=this.value" /><label for="excel_file">Excel Upload</label></p>
-                            <p class="attach_btn fl"><input type="file" name="file" id="document_file" onchange="javascript:document.getElementById('fileSrch').value=this.value" multiple /><label for="document_file">Document Upload</label></p>
+                            <p class="attach_btn fl"><input type="file" id="excel_file" name="excel_file" /><label for="excel_file">Excel Upload</label></p>
+                            <p class="attach_btn fl"><input type="file" id="document_file" name="file" multiple /><label for="document_file">Document Upload</label></p>
                             <button type="button" id="btn_imageDelete" class="button_st5">Document Delete</button>
                             <button type="button" id="btn_batchTraining" class="button_st5">BATCH Training</button>
                             <button type="button" id="btn_uiTraining" class="button_st5">UI Training</button>
@@ -314,5 +314,241 @@
         </div>
         <!-- // Content -->
     </div>
+
+    <!-- 팝업_수동학습레이어팝업 -->
+    <div id="layer1" class="poplayer">
+        <div class="bg"></div>
+        <div class="pop_layer">
+            <div class="pop_popup0 pop_popup01">
+                <div class="pop_header">
+                    <h1>학습 실행</h1>
+                </div>
+                <div class="pop_content">
+                    <div class="pop_box_120 box_txt_st01">
+                        <ul>
+                            <li>
+                                <div class="inputst_role">
+                                    <input type="radio" id="radio-choice-1" value="choice-1" class="custom" name="radio_batch" checked="checked" />
+                                    <label for="radio-choice-1">전체학습</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="inputst_role">
+                                    <input type="radio" id="radio-choice-2" value="choice-2" class="custom" name="radio_batch" />
+                                    <label for="radio-choice-2">선택한 파일 학습</label>
+                                </div>
+                            </li>
+                            <li style="display:none">
+                                <div class="inputst_role">
+                                    <input type="radio" id="radio-choice-3" value="choice-3" class="custom" name="radio_batch" />
+                                    <label for="radio-choice-3">학습 범위 지정</label>
+                                </div>
+                            </li>
+                            <ul style="display:none">
+                                <div class="box_day" style="display:none">
+                                    <ul>
+                                        <li>
+                                            <label for="intxt_01" " class="blind">학습범위지정 시작</label>
+                                            <input type="text" name="intxt_0" id="intxt_01" class="inputst_box01" value="" />
+                                        </li>
+                                        <li>-</li>
+                                        <li>
+                                            <label for="intxt_02" class="blind">학습범위지정 끝</label>
+                                            <input type="text" name="intxt_0" id="intxt_02" class="inputst_box01" value="" />
+                                        </li>
+                                    </ul>
+                                </div>
+                            </ul>
+                    </div>
+                </div>
+                <div class="pop_footer">
+                    <button type="button" id="btn_pop_batch_run" class="button_st1 cbtn">실 행</button>
+                    <button type="button" id="btn_pop_batch_close" class="button_st2 cbtn">취 소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- // 팝업_수동학습레이어팝업 -->
+    <!-- 팝업_수동학습레이어팝업 -->
+    <div id="layer2" class="poplayer">
+        <div class="bg"></div>
+        <div class="pop_layer">
+            <div class="pop_popup0">
+                <div class="pop_header">
+                    <h1>수동학습 레이어 팝업</h1>
+                </div>
+                <div class="pop_content">
+                    <div class="pop_box_11">
+                        <img src="../css/sample01.jpg" alt="샘플이미지" />
+                    </div>
+                    <div class="pop_box_12 box_txt_st01" style="overflow-y:scroll">
+                        <!-- TODO: 스크롤바-->
+                        <dl>
+                            <dt><label for="imgId">이미지 ID</label></dt>
+                            <dd>
+                                <input type="text" name="imgId" id="imgId" class="inputst_box01" value="" disabled="disabled" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="imgFileStNo">페이지번호 FROM</label></dt>
+                            <dd>
+                                <input type="text" name="imgFileStNo" id="imgFileStNo" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="imgFileEndNo">페이지번호 TO</label></dt>
+                            <dd>
+                                <input type="text" name="imgFileEndNo" id="imgFileEndNo" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="cscoNm">거래사명</label></dt>
+                            <dd>
+                                <input type="text" name="cscoNm" id="cscoNm" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="ctNm">계약명</label></dt>
+                            <dd>
+                                <input type="text" name="ctNm" id="ctNm" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="insStDt">보험개시일</label></dt>
+                            <dd>
+                                <input type="text" name="insStDt" id="insStDt" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="insEndDt">보험종료일</label></dt>
+                            <dd>
+                                <input type="text" name="insEndDt" id="insEndDt" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="curCd">화폐코드</label></dt>
+                            <dd>
+                                <input type="text" name="curCd" id="curCd" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+
+                        <dl>
+                            <dt><label for="pre">보험료</label></dt>
+                            <dd>
+                                <input type="text" name="pre" id="pre" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="com">일반수수료</label></dt>
+                            <dd>
+                                <input type="text" name="com" id="com" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="brkg">중개수수료</label></dt>
+                            <dd>
+                                <input type="text" name="brkg" id="brkg" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="txam">세금</label></dt>
+                            <dd>
+                                <input type="text" name="txam" id="txam" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="prrsCf">보험금유보금적립액</label></dt>
+                            <dd>
+                                <input type="text" name="prrsCf" id="prrsCf" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="prrsRls">보험료유보금해제액</label></dt>
+                            <dd>
+                                <input type="text" name="prrsRls" id="prrsRls" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="lsresCf">보험금유보금적립액</label></dt>
+                            <dd>
+                                <input type="text" name="lsresCf" id="lsresCf" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="lsresRls">보험금유보금해제액</label></dt>
+                            <dd>
+                                <input type="text" name="lsresRls" id="lsresRls" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="cla">보험금</label></dt>
+                            <dd>
+                                <input type="text" name="cla" id="cla" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="exex">부대비</label></dt>
+                            <dd>
+                                <input type="text" name="exex" id="exex" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="svf">손해조사비</label></dt>
+                            <dd>
+                                <input type="text" name="svf" id="svf" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="cas">즉시불보험금(CASH)</label></dt>
+                            <dd>
+                                <input type="text" name="cas" id="cas" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="ntbl">NET BALANCE</label></dt>
+                            <dd>
+                                <input type="text" name="ntbl" id="ntbl" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="cscoSaRfrnCnnt2">Your Reference</label></dt>
+                            <dd>
+                                <input type="text" name="cscoSaRfrnCnnt2" id="cscoSaRfrnCnnt2" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="regId">최초등록 ID</label></dt>
+                            <dd>
+                                <input type="text" name="regId" id="regId" class="inputst_box01" value="" disabled="disabled" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="regDate">최초등록일자</label></dt>
+                            <dd>
+                                <input type="text" name="regDate" id="regDate" class="inputst_box01" value="" disabled="disabled" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="updId">최종수정 ID</label></dt>
+                            <dd>
+                                <input type="text" name="updId" id="updId" class="inputst_box01" value="" disabled="disabled" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="updDate">최종수정일자</label></dt>
+                            <dd>
+                                <input type="text" name="updDate" id="updDate" class="inputst_box01" value="" disabled="disabled" />
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="pop_footer">
+                    <button type="button" id="btn_pop_ui_run" class="button_st1 cbtn">학습 진행</button>
+                    <button type="button" id="btn_pop_ui_close" class="button_st2 cbtn">취 소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- // 팝업_수동학습레이어팝업 -->
 </body>
 </html>
