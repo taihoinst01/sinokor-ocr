@@ -34,7 +34,10 @@ module.exports = function (pool) {
     var reqListQuery = function (sql, callbackFunc, totalCount, req, res) {
     pool.getConnection(function (err, connection) {
         connection.execute(sql, function (err, result) {
-            if (err) console.error("OracleDB err : ", err);
+            if (err) {
+                console.error("OracleDB err : ", err);
+                console.log(sql);
+            }
             result.rows[0].totalCount = totalCount;
             callbackFunc(result.rows ? result.rows : null, req, res);
             connection.release();
@@ -46,7 +49,10 @@ module.exports = function (pool) {
     var reqQueryParam = function (sql, param, callbackFunc, req, res) {
     pool.getConnection(function (err, connection) {
         connection.execute(sql, param, function (err, result) {
-            if (err) console.error("OracleDB err : ", err);
+            if (err) {
+                console.error("OracleDB err : ", err);
+                console.log(sql);
+            }
             callbackFunc(result.rows ? result.rows : null, req, res);
             connection.release();
         });
@@ -57,7 +63,10 @@ module.exports = function (pool) {
     var queryParam = function (sql, param, callbackFunc, origin) {
     pool.getConnection(function (err, connection) {
         connection.execute(sql, param, function (err, result) {
-            if (err) console.error("OracleDB err : ", err);
+            if (err) {
+                console.error("OracleDB err : ", err);
+                console.log(sql);
+            }
             callbackFunc(result.rows ? result.rows : null, origin);
             connection.release();
         });
@@ -68,7 +77,10 @@ module.exports = function (pool) {
     var reqQuery = function (sql, callbackFunc, req, res) {
     pool.getConnection(function (err, connection) {
         connection.execute(sql, function (err, result) {
-            if (err) console.error("OracleDB err : ", err);
+            if (err) {
+                console.error("OracleDB err : ", err);
+                console.log(sql);
+            }
             callbackFunc(result.rows ? result.rows: null, req, res);
             connection.release();
         });
@@ -79,7 +91,10 @@ module.exports = function (pool) {
     var queryNoRows = function (sql, param, callbackFunc) {
     pool.getConnection(function (err, connection) {
         connection.execute(sql, param, function (err) {
-            if (err) console.error("OracleDB err : ", err);
+            if (err) {
+                console.error("OracleDB err : ", err);
+                console.log(sql);
+            }
             callbackFunc();
             connection.release();
         });

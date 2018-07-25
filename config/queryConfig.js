@@ -170,7 +170,7 @@ var batchLearningConfig = {
                 brkg = :brkg, txam = :txam, prrsCf = :prrsCf, prrsRls = :prrsRls, lsresCf = :lsresCf,
                 lsresRls = :lsresRls, cla = :cla, exex = :exex, svf = :svf, cas = :cas, ntbl = :ntbl,
                 cscoSaRfrnCnnt2 = :cscoSaRfrnCnnt2, updId = :updId, updDate = sysdate
-            WHERE imgId = ?`,
+            WHERE imgId = :imgId`,
     deleteBatchLearningData:
         `UPDATE 
             tbl_batch_learn_data
