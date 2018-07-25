@@ -607,6 +607,11 @@ function uiTrainEvent() {
 
 function uiTrainAjax() {
 
+    if (lineText[0] == null) {
+        alert("학습할 데이터가 없습니다.");
+        return;
+    }
+
     var dataArray = [];
 
     var tr = $("#textResultTbl dl");
@@ -644,6 +649,8 @@ function uiTrainAjax() {
             }
         }
     }
+    startProgressBar();
+    addProgressBar(1, 20);
 
     $.ajax({
         url: '/uiLearning/uiTrain',
@@ -652,6 +659,7 @@ function uiTrainAjax() {
         data: JSON.stringify({ "data": dataArray }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
+            addProgressBar(21, 100);
             alert(data);
         },
         error: function (err) {

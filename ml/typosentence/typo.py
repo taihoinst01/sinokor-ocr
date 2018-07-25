@@ -6,7 +6,7 @@ import cx_Oracle
 ss = SymSpell(max_dictionary_edit_distance=2)
 ss.load_words_with_freq_from_json_and_build_dictionary()
 
-#textList = []
+textList = []
 #with open('frequency_dictionary_en_82_765.txt') as f:
 #    for line in f:
 #        line = line.split(" ")
