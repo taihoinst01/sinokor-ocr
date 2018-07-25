@@ -100,9 +100,32 @@ var buttonEvent = function () {
     });
 
     // popupButton
-    $("#btn_closeLayerPopup").on("click", function () {
+    //$("#btn_closeLayerPopup").on("click", function () {
+    //    popupEvent.closePopup();
+    //});
+    // [배치학습popup] 학습실행
+    $("#btn_pop_batch_run").on("click", function () {
+        fn_popBatchRun();
+    });
+    // [배치학습popup] close popup
+    $("#btn_pop_batch_close").on("click", function () {
         popupEvent.closePopup();
     });
+    $(".poplayer .bg").on("click", function () {
+        popupEvent.closePopup();
+    });
+
+    // [UI학습팝업] 저장
+    $("#btn_pop_ui_run").on("click", function () {
+        fn_updateUiTraining();
+    });
+    // [UI학습팝업] close popup
+    $("#btn_pop_ui_close").on("click", function () {
+        popupEvent.closePopup();
+    });
+    
+
+
 }
 
 // [popup event]
@@ -126,16 +149,18 @@ var popupEvent = (function () {
 
     // open popup
     var openPopup = function () {
-        var top = ($(window).scrollTop() + ($(window).height() - layerPopup.height()) - 10);
-        var left = ($(window).scrollLeft() + ($(window).width() - layerPopup.width()) / 2);
-        layerPopup.css("top", top);
-        layerPopup.css("left", left);
-        layerPopup.show();
+        //var top = ($(window).scrollTop() + ($(window).height() - layerPopup.height()) - 10);
+        //var left = ($(window).scrollLeft() + ($(window).width() - layerPopup.width()) / 2);
+        //layerPopup.css("top", top);
+        //layerPopup.css("left", left);
+        //layerPopup.show();
+        layer_open('layer1');
     }
 
     // close popup
     var closePopup = function () {
-        layerPopup.fadeOut();
+        //layerPopup.fadeOut();
+        $('.poplayer').fadeOut();
     }
 
     return {
@@ -209,56 +234,41 @@ var imageUploadEvent = function () {
             multiUploadForm.submit();
         }
     });
-    // STEP 1 : FILE UPLOAD
-    var uploadPromise = new Promise(function (resolve, reject) {
-        multiUploadForm.ajaxForm({
-            beforeSubmit: function (data, frm, opt) {
-                $("#progressMsg").html("Preparing to upload files...");
-                startProgressBar();
-                addProgressBar(6, 80);
-                return true;
-            },
-            success: function getData(responseText, statusText) {
-                console.log("upload image data : " + JSON.stringify(responseText));
-                resolve(responseText, statusText);
-            },
-            error: function (e) {
-                reject(e);
-            }
-        });
-    });
-    uploadPromise.then(function (responseText, statusText) {
-        $("#progressMsg").html("uploading image files...");
-        // FILE INSERT
-        var insertPromise = new Promise(function (resolve, reject) {
+    // FILE UPLOAD
+    multiUploadForm.ajaxForm({
+        beforeSubmit: function (data, frm, opt) {
+            $("#progressMsg").html("Preparing to upload files...");
+            startProgressBar();
+            addProgressBar(6, 80);
+            return true;
+        },
+        success: function getData(responseText, statusText) {
+            console.log("upload image data : " + JSON.stringify(responseText));
+            $("#progressMsg").html("uploading image files...");
+            // FILE INFO INSERT TO DB, BATCH LEARNING BASE DATA INSERT TO DB
             var totCount = responseText.message.length;
             for (var i = 0; i < totCount; i++) {
                 var lastYN = false;
                 var fileInfo = responseText.fileInfo[i];
                 var fileName = responseText.message[i];
+                console.log("fileInfo : " + JSON.stringify(fileInfo));
+                console.log("fileName : " + JSON.stringify(fileName));
                 if (i == (totCount - 1)) lastYN = true;
                 insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
                 insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
             }
-        });
-        insertPromise.then(function (responseText, statusText) {
-        });
-        insertPromise.then().catch(function (e) {
-            alert("파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + e);
-            console.log(e);
-        });
-    });
-    uploadPromise.then().catch(function (e) {
-        alert("파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + e);
-        console.log(e);
+        },
+        error: function (e) {
+            console.log("File upload failed : " + e);
+        }
     });
 }
-
-
-
                
-// [OCR]
-function processImage(fileInfo, fileName) {
+// [파일정보 -> OCR API]
+function processImage(fileInfo, fileName, lastYn) {
+    console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
+    console.log("processImage fileName : " + fileName);
+    console.log("processImage lastYn : " + lastYn);
     var subscriptionKey = "7d51f1308c8848f49db9562d1dab7184";
     var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
     var params = {
@@ -277,8 +287,7 @@ function processImage(fileInfo, fileName) {
     }).done(function (data) {
         console.log("processImage : done ");
         ocrCount++;
-        addProgressBar(41, 70);
-        execBatchLearningData(fileInfo, fileName, data.regions); // goto STEP 3
+        execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
@@ -288,8 +297,8 @@ function processImage(fileInfo, fileName) {
     });
 };
 
-// STEP 3 : OCR API -> CLASSIFICATION -> LABEL MAPPING
-function execBatchLearningData(fileInfo, fileName, regions) {
+// [OCR API -> CLASSIFICATION -> LABEL MAPPING]
+function execBatchLearningData(fileInfo, fileName, regions, lastYn) {
     var data = [];
     for (var i = 0; i < regions.length; i++) {
         for (var j = 0; j < regions[i].lines.length; j++) {
@@ -311,12 +320,14 @@ function execBatchLearningData(fileInfo, fileName, regions) {
         beforeSend: function () {
         },
         success: function (data) {
-            insertBatchLearningData(fileInfo, data);
-            addProgressBar(71, 99);
-            setTimeout(function () {
-                alert("완료되었습니다.");
-                searchBatchLearnDataList(addCond);
-            }, 1000); // 프로그레스바 종료
+            updateBatchLearningData(fileInfo, data, lastYn);
+            if (lastYn == "Y") {
+                addProgressBar(71, 99);
+                setTimeout(function () {
+                    alert("완료되었습니다.");
+                    searchBatchLearnDataList(addCond);
+                }, 1000);
+            }
         },
         error: function (err) {
             console.log(err);
@@ -324,9 +335,9 @@ function execBatchLearningData(fileInfo, fileName, regions) {
     });
 }
 
-// STEP 4 : INSERT FILE PARSING RESULT AND FILE INFO IN DB
-function insertBatchLearningData(fileInfo, data) {
-    console.log("insertBatchLearningData fileInfo : " + JSON.stringify(fileInfo));
+// [UPDATE PARSING RESULT, UPDATE FILE INFO DB]
+function updateBatchLearningData(fileInfo, data, lastYn) {
+    console.log("updateBatchLearningData fileInfo : " + JSON.stringify(fileInfo));
     console.log("data[0] : " + JSON.stringify(data[0]));
     var dataObj = {};
 
@@ -372,14 +383,13 @@ function insertBatchLearningData(fileInfo, data) {
         dataObj["imgId"] = imgId;
         var param = { dataObj: dataObj };
         $.ajax({
-            url: '/batchLearning/insertBatchLearningData',
+            url: '/batchLearning/updateBatchLearningData',
             type: 'post',
             datatype: "json",
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
-                insertFile(fileInfo); // BatchlearningData 저장에 성공하면 File 정보 insert
-                console.log("SUCCESS insertBatchLearningData : " + JSON.stringify(data));
+                console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
             },
             error: function (err) {
                 console.log(err);
@@ -389,7 +399,7 @@ function insertBatchLearningData(fileInfo, data) {
 }
 
 // [Function]
-// 배치학습데이터 조회
+// [List] 배치학습데이터 조회
 var searchBatchLearnDataList = function (addCond) {
     var param = {
         'startNum' : startNum,
@@ -461,6 +471,45 @@ var searchBatchLearnDataList = function (addCond) {
     });
 };
 
+// [Select] 배치학습데이터 조회
+var searchBatchLearnData = function (imgIdArray, flag) {
+    var param = {
+        imgIdArray : imgIdArray
+    };
+    $.ajax({
+        url: '/batchLearning/searchBatchLearnData',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsg").html("retrieving learn data...");
+            startProgressBar(); // start progressbar
+            addProgressBar(0, 99); // proceed progressbar
+        },
+        success: function (data) {
+            endProgressBar(); // end progressbar
+            console.log("fileInfoList : " + JSON.stringify(data));
+            if (flag == "PROCESS_IMAGE") {  // 배치학습 실행
+                for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
+                    var lastYn = "N";
+                    if (i == data.fileInfoList.length - 1) lastYn = "Y";
+                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn);
+                }
+            } else if (flag == "UI_TRAINING") {
+                fn_processUiTraining(data.fileInfoList);
+            } else {
+                alert("잘못된 요청입니다.");
+                return;
+            }
+        },
+        error: function (err) {
+            endProgressBar(); // end progressbar
+            console.log(err);
+        }
+    });
+}
+
 // syncServerFile (서버의 이미지가 DB에 등록이 안되어있다면 DB에 등록처리)
 var fn_syncServerFile = function() {
     var param = {};
@@ -516,31 +565,26 @@ var fn_imageUpload = function () {
 
 // 이미지 삭제
 var fn_imageDelete = function () {
-    var strImgId = "(";
+    var imgIdArray = [];
     var chkSize = 0;
     if (addCond == "LEARN_N") {
         $('input[name="listCheck_before"]').each(function (index, element) {
             if ($(this).is(":checked")) {
-                strImgId += "'" +  $(this).val() + "',";
+                imgIdArray.push($(this).val());
                 chkSize++;
             }
         });
     } else {
         $('input[name="listCheck_after"]').each(function (index, element) {
             if ($(this).is(":checked")) {
-                strImgId += "'" + $(this).val() + "',";
+                imgIdArray.push($(this).val());
                 chkSize++;
             }
         });
     }
-    strImgId = strImgId.slice(0, -1);
-    strImgId += ")";
-
-    console.log("조건 : " + strImgId);
-
     if (chkSize > 0) {
         if (confirm("삭제하시겠습니까?")) {
-            var param = { imgId: strImgId };
+            var param = { imgIdArray: imgIdArray };
             $.ajax({
                 url: '/batchLearning/deleteBatchLearningData',
                 type: 'post',
@@ -549,6 +593,7 @@ var fn_imageDelete = function () {
                 contentType: 'application/json; charset=UTF-8',
                 success: function (responseText, statusText) {
                     alert("삭제 되었습니다.");
+                    searchBatchLearnDataList(addCond);
                 },
                 error: function (err) {
                     console.log(err);
@@ -562,16 +607,204 @@ var fn_imageDelete = function () {
 };
 
 
-// 수동학습
+// 배치학습 실행
 var fn_batchTraining = function () {
     //var top = ($(window).scrollTop() + ($(window).height() - $('#layerPopup').height()) / 2);
     popupEvent.openPopup();
 };
+var fn_popBatchRun = function () {
+    var imgIdArray = [];
+    var radioValue = $("input[name='radio_batch']:checked").val();
 
-// 최종학습
-var fn_uiTraining = function () {
-
+    switch (radioValue) {
+        case "choice-1":        // 전체 학습
+            if (addCond == "LEARN_N") {
+                let chkCnt = 0;
+                $("input[name=listCheck_before]").each(function (index, entry) {
+                    chkCnt++;
+                    imgIdArray.push($(this).val());
+                });
+                if (chkCnt == 0) {
+                    alert("학습할 데이터가 없습니다.");
+                    return;
+                } else {
+                    console.log("선택된 파일들 img_id : " + imgIdArray);
+                    searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+                }
+            } else {
+                alert("Before Training 상태에서만 배치학습이 가능합니다.");
+                return;
+            }
+            break;
+        case "choice-2":        // 선택한 파일 학습
+            if (addCond == "LEARN_N") {
+                let chkCnt = 0;
+                $("input[name=listCheck_before]").each(function (index, entry) {
+                    if ($(this).is(":checked")) {
+                        chkCnt++;
+                        imgIdArray.push($(this).val());
+                    }
+                });
+                if (chkCnt == 0) {
+                    alert("선택된 학습이 없습니다.");
+                    return;
+                } else {
+                    console.log("선택된 파일들 img_id : " + imgIdArray);
+                    searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+                }
+            } else {
+                alert("Before Training 상태에서만 배치학습이 가능합니다.");
+                return;
+            }
+            break;
+        case "choice-3":        // 학습 범위 지정
+            alert("준비중 입니다.");
+            break;
+        default:
+            break;
+    }
 };
+
+// UI 학습 (학습결과 수정)
+var fn_uiTraining = function () {
+    var imgIdArray = [];
+    if (addCond == "LEARN_Y") {
+        let imgId = "";
+        let chkCnt = 0;
+        $("input[name=listCheck_after]").each(function (index, entry) {
+            if ($(this).is(":checked")) {
+                imgId = $(this).val();
+                chkCnt++;
+            }
+        });
+        if (chkCnt == 0) {
+            alert("선택된 파일이 없습니다.");
+            return;
+        } else if (chkCnt > 1) {
+            alert("한번에 하나의 파일만 UI학습이 가능합니다.");
+            return;
+        } else {
+            imgIdArray.push(imgId);
+            searchBatchLearnData(imgIdArray, "UI_TRAINING");
+        }
+    } else {
+        alert("After Training 상태에서만 UI학습이 가능합니다.");
+        return;
+    }
+};
+
+// UI학습 팝업 초기화
+var fn_initUiTraining = function () {
+    $("#imgId").val("");
+    $("#imgFileStNo").val("");
+    $("#imgFileEndNo").val("");
+    $("#cscoNm").val("");
+    $("#ctNm").val("");
+    $("#instStDt").val("");
+    $("#instEndDt").val("");
+    $("#curCd").val("");
+    $("#pre").val("");
+    $("#com").val("");
+    $("#brkg").val("");
+    $("#txam").val("");
+    $("#prrsCf").val("");
+    $("#prrsRls").val("");
+    $("#lsresCf").val("");
+    $("#lsresRls").val("");
+    $("#cla").val("");
+    $("#exex").val("");
+    $("#svf").val("");
+    $("#cas").val("");
+    $("#ntbl").val("");
+    $("#cscoSaRfrnCnnt2").val("");
+    $("#regId").val("");
+    $("#regDate").val("");
+    $("#updId").val("");
+    $("#updDate").val("");
+}
+// UI학습 팝업 값 대입
+var fn_processUiTraining = function (fileInfoList) {
+    fn_initUiTraining(); // 팝업 초기화
+
+    var fileInfo = fileInfoList[0]; // 동시에 한개의 fileInfoList만 조회하여 가져옴
+
+    console.log("file.info... : " + JSON.stringify(fileInfo));
+
+    $("#imgId").val(fileInfo["imgId"]);
+    $("#imgFileStNo").val(fileInfo["imgFileStNo"]);
+    $("#imgFileEndNo").val(fileInfo["imgFileEndNo"]);
+    $("#cscoNm").val(fileInfo["cscoNm"]);
+    $("#ctNm").val(fileInfo["ctNm"]);
+    $("#instStDt").val(fileInfo["instStDt"]);
+    $("#instEndDt").val(fileInfo["instEndDt"]);
+    $("#curCd").val(fileInfo["curCd"]);
+    $("#pre").val(fileInfo["pre"]);
+    $("#com").val(fileInfo["com"]);
+    $("#brkg").val(fileInfo["brkg"]);
+    $("#txam").val(fileInfo["txam"]);
+    $("#prrsCf").val(fileInfo["prrsCf"]);
+    $("#prrsRls").val(fileInfo["prrsRls"]);
+    $("#lsresCf").val(fileInfo["lsresCf"]);
+    $("#lsresRls").val(fileInfo["lsresRls"]);
+    $("#cla").val(fileInfo["cla"]);
+    $("#exex").val(fileInfo["exex"]);
+    $("#svf").val(fileInfo["svf"]);
+    $("#cas").val(fileInfo["cas"]);
+    $("#ntbl").val(fileInfo["ntbl"]);
+    $("#cscoSaRfrnCnnt2").val(fileInfo["cscoSaRfrnCnnt2"]);
+    $("#regId").val(fileInfo["regId"]);
+    $("#regDate").val(fileInfo["regDate"]);
+    $("#updId").val(fileInfo["updId"]);
+    $("#updDate").val(fileInfo["updDate"]);
+
+    layer_open('layer2');
+}
+
+// UI학습 팝업 실행
+var fn_updateUiTraining = function () {
+    var dataObj = {};
+    dataObj["IMG_ID"] = $("#imgId").val();
+    dataObj["IMG_FILE_ST_NO"] = $("#imgFileStNo").val();
+    dataObj["IMG_FILE_END_NO"] = $("#imgFileEndNo").val();
+    dataObj["CSCO_NM"] = $("#cscoNm").val();
+    dataObj["CT_NM"] = $("#ctNm").val();
+    dataObj["INS_ST_DT"] = $("#insStDt").val();
+    dataObj["INS_END_DT"] = $("#insEndDt").val();
+    dataObj["CUR_CD"] = $("#curCd").val();
+    dataObj["PRE"] = $("#pre").val();
+    dataObj["COM"] = $("#com").val();
+    dataObj["BRKG"] = $("#brkg").val();
+    dataObj["TXAM"] = $("#txam").val();
+    dataObj["PRRS_CF"] = $("#prrsCf").val();
+    dataObj["PRRS_RLS"] = $("#prrsRls").val();
+    dataObj["LSRES_CF"] = $("#lsresCf").val();
+    dataObj["LSRES_RLS"] = $("#lsresRls").val();
+    dataObj["CLA"] = $("#cla").val();
+    dataObj["EXEX"] = $("#exex").val();
+    dataObj["SVF"] = $("#svf").val();
+    dataObj["CAS"] = $("#cas").val();
+    dataObj["NTBL"] = $("#ntbl").val();
+    dataObj["CSCO_SA_RFRN_CNNT2"] = $("#cscoSaRfrnCnnt2").val();
+    
+    var param = { dataObj: dataObj };
+
+    $.ajax({
+        url: '/batchLearning/updateBatchLearningData',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
+            alert("UI학습이 완료되었습니다.");
+            searchBatchLearnDataList(addCond);
+            popupEvent.closePopup();
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
 
 // init
 function _init() {
@@ -589,6 +822,32 @@ function _init() {
 
     searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

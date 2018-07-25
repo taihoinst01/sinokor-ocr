@@ -17,6 +17,7 @@ const FileHound = require('filehound');
 //var uuid = require('uuid');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
+var selectBatchLearningDataQuery = queryConfig.batchLearningConfig.selectBatchLearningData;
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
 var selectLabel = queryConfig.uiLearningConfig.selectLabel;
@@ -51,15 +52,13 @@ router.get('/', function (req, res) {                           // 배치학습 
     if (req.isAuthenticated()) res.render('user/batchLearning', { currentUser: req.user });
     else res.redirect("/logout");
 });
-router.post('/searchBatchLearnDataList', function (req, res) {   // 배치학습데이터리스트 조회
+
+
+
+// [POST] 배치학습데이터리스트 조회 
+router.post('/searchBatchLearnDataList', function (req, res) {   
     if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
 }); 
-
-
-/***************************************************************
- * function
- * *************************************************************/
-// [List] 배치학습데이터리스트 조회 
 var callbackBatchLearningDataList = function (rows, req, res) {
     res.send(rows);
 }
@@ -78,8 +77,84 @@ var fnSearchBatchLearningDataList = function (req, res) {
 
     console.log("listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
-};
+}
 
+
+// [POST] 배치학습데이터 조회
+router.post('/searchBatchLearnData', function (req, res) {   
+    if (req.isAuthenticated()) fnSearchBatchLearningData(req, res);
+}); 
+var callbackBatchLearningData = function (rows, req, res) {
+    var fileInfoList = [];
+    for (var i = 0, x = rows.length; i < x; i++) {
+        var oriFileName = rows[i].ORI_FILE_NAME;
+        var _lastDot = oriFileName.lastIndexOf('.');
+        var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
+        var fileInfo = {
+            imgId: rows[i].IMG_ID,
+            filePath: rows[i].FILE_PATH,
+            oriFileName: rows[i].ORI_FILE_NAME,
+            svrFileName: rows[i].SVR_FILE_NAME,
+            convertFileName: rows[i].ORI_FILE_NAME.replace(rows[i].FILE_EXT, "jpg"),
+            fileExt: rows[i].FILE_EXT,
+            fileSize: rows[i].FILE_SIZE,
+            contentType: rows[i].CONTENT_TYPE ? rows[i].CONTENT_TYPE : "",
+            imgFileStNo: rows[i].IMG_FILE_ST_NO,
+            imgFileEndNo: rows[i].IMG_FILE_END_NO,
+            cscoNm: rows[i].CSCO_NM,
+            ctNm: rows[i].CT_NM,
+            instStDt: rows[i].INST_ST_DT,
+            instEndDt: rows[i].INST_END_DT,
+            curCd: rows[i].CUR_CD,
+            pre: rows[i].PRE,
+            com: rows[i].COM,
+            brkg: rows[i].BRKG,
+            txam: rows[i].TXAM,
+            prrsCf: rows[i].PRRS_CF,
+            prrsRls: rows[i].PRRS_RLS,
+            lsresCf: rows[i].LSRES_CF,
+            lsresRls: rows[i].LSRES_RLS,
+            cla: rows[i].CLA,
+            exex: rows[i].EXEX,
+            svf: rows[i].SVF,
+            cas: rows[i].CAS,
+            ntbl: rows[i].NTBL,
+            cscoSaRfrnCnnt2: rows[i].CSCO_SA_RFRN_CNNT2,
+            regId: rows[i].REG_ID,
+            regDate: rows[i].REG_DATE,
+            updId: rows[i].UPD_ID,
+            updDate: rows[i].UPD_DATE
+        };
+        fileInfoList.push(fileInfo);
+    }
+    res.send({ code: 200, fileInfoList: fileInfoList });
+}
+var fnSearchBatchLearningData = function (req, res) {
+    var condition = " AND F.IMG_ID IN (";
+    for (var i = 0, x = req.body.imgIdArray.length; i < x; i++) {
+        condition += "'" + req.body.imgIdArray[i] + "',";
+    }
+    condition = condition.slice(0, -1);
+    condition += ")";
+    var query = selectBatchLearningDataListQuery + condition;
+    commonDB.reqQuery(query, callbackBatchLearningData, req, res);
+}
+
+// [POST] delete batchlearningdata (UPDATE)
+var callbackDeleteBatchLearningData = function (rows, req, res) {
+    console.log("delete batchLearningData");
+    res.send({ code: 200, rows: rows });
+};
+router.post('/deleteBatchLearningData', function (req, res) {
+    var condition = " AND IMG_ID IN (";
+    for (var i = 0, x = req.body.imgIdArray.length; i < x; i++) {
+        condition += "'" + req.body.imgIdArray[i] + "',";
+    }
+    condition = condition.slice(0, -1);
+    condition += ")";
+    var query = queryConfig.batchLearningConfig.deleteBatchLearningData + condition;
+    commonDB.reqQuery(query, callbackDeleteBatchLearningData, req, res);
+});
 
 // [POST] 이미지 업로드
 router.post('/imageUpload', upload.any(), function (req, res) {
@@ -123,6 +198,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                 }
                 endCount++;
             });
+            console.log("완료?");
         }
     }
 });
@@ -199,15 +275,14 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 
 });
 
-// [POST] insert batchLearningData (tbl_batch_learning_data 전체정보)
-var callbackInsertBatchLearningData = function (rows, req, res) {
+// [POST] update batchLearningData (tbl_batch_learning_data 전체정보)
+var callbackUpdateBatchLearningData = function (rows, req, res) {
     console.log("upload batchLearningData finish..");
     res.send({ code: 200, rows: rows });
 };
-router.post('/insertBatchLearningData', function (req, res) {
+router.post('/updateBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-    console.log("insert dataObj " + JSON.stringify(dataObj));
-    var imgId = dataObj.imgId; // 필수값
+    console.log("update dataObj " + JSON.stringify(dataObj));
     var imgFileStNo = commonUtil.nvl(dataObj.IMG_FILE_ST_NO);
     var imgFileEndNo = commonUtil.nvl(dataObj.IMG_FILE_END_NO);
     var cscoNm = commonUtil.nvl(dataObj.CSCO_NM);
@@ -229,11 +304,11 @@ router.post('/insertBatchLearningData', function (req, res) {
     var cas = commonUtil.nvl2(dataObj.CAS, '0');
     var ntbl = commonUtil.nvl2(dataObj.NTBL, '0');
     var cscoSaRfrnCnnt2 = commonUtil.nvl(dataObj.CSCO_SA_RFRN_CNNT2);
-    var regId = req.session.userId;
+    var updId = req.session.userId;
+    var imgId = dataObj.IMG_ID; // 조건
     
-    var data = [imgId, imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, regId];
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
-    
+    var data = [imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, updId, imgId];
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData, data, callbackUpdateBatchLearningData, req, res);
 });
 
 // [POST] syncFile
@@ -320,16 +395,23 @@ router.post('/syncFile', function (req, res) {
     });
 });
 
-// [POST] 삭제처리 (UPDATE)
-var callbackDeleteBatchLearningData = function (rows, req, res) {
-    console.log("delete batchLearningData");
-    res.send({ code: 200, rows: rows });
-};
-router.post('/deleteBatchLearningData', function (req, res) {
-    var data = [];
-    var query = queryConfig.batchLearningConfig.deleteBatchLearningData + req.body.imgId;
-    commonDB.reqQueryParam(query, data, callbackDeleteBatchLearningData, req, res);
-});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

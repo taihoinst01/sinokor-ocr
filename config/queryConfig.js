@@ -68,7 +68,9 @@ var batchLearningConfig = {
                 DATE_FORMAT(A.INS_ST_DT, '%Y-%m-%d %H:%i:%s') AS INS_ST_DT, 
                 DATE_FORMAT(A.INS_END_DT, '%Y-%m-%d %H:%i:%s') AS INS_END_DT, 
                 A.CUR_CD, A.PRE, A.COM, A.BRKG, A.TXAM, A.PRRS_CF, A.PRRS_RLS, A.LSRES_CF, 
-                A.LSRES_RLS, A.CLA, A.EXEX, A.SVF, A.CAS, A.NTBL, A.CSCO_SA_RFRN_CNNT2
+                A.LSRES_RLS, A.CLA, A.EXEX, A.SVF, A.CAS, A.NTBL, A.CSCO_SA_RFRN_CNNT2,
+                A.REG_ID, DATE_FORMAT(A.REG_DATE, '%Y-%m-%d %H:%i:%s') AS REG_DATE,
+                A.UPD_ID, DATE_FORMAT(A.UPD_DATE, '%Y-%m-%d %H:%i:%s') AS UPD_DATE
 	       FROM tbl_icr_file F
 		        LEFT OUTER JOIN tbl_batch_learn_data A ON A.IMG_ID = F.IMG_ID
 	      WHERE F.IMG_ID = ?
@@ -88,7 +90,17 @@ var batchLearningConfig = {
         "INSERT INTO tbl_batch_learn_data (IMG_ID, ORI_FILE_NAME, STATUS, IMG_FILE_ST_NO, IMG_FILE_END_NO, CSCO_NM, CT_NM, INS_ST_DT, INS_END_DT, CUR_CD, PRE, COM, " +
         "BRKG, TXAM, PRRS_CF, PRRS_RLS, LSRES_CF, LSRES_RLS, CLA, EXEX, SVF, CAS, NTBL, CSCO_SA_RFRN_CNNT2, REG_ID, REG_DATE) " +
         "VALUES (?, ?, 'N', ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())",
+        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now()) ",
+    updateBatchLearningData:
+        "UPDATE tbl_batch_learn_data " +
+        "SET " +
+        "STATUS = 'Y', " +
+        "IMG_FILE_ST_NO = ?, IMG_FILE_END_NO = ?, CSCO_NM = ?, CT_NM = ?, " +
+        "INS_ST_DT = ?, INS_END_DT = ?, CUR_CD = ?, PRE = ?, COM = ?, " +
+        "BRKG = ?, TXAM = ?, PRRS_CF = ?, PRRS_RLS = ?, LSRES_CF = ?, " +
+        "LSRES_RLS = ?, CLA = ?, EXEX = ?, SVF = ?, CAS = ?, NTBL = ?, " +
+        "CSCO_SA_RFRN_CNNT2 = ?, UPD_ID = ?, UPD_DATE = now() " +
+        "WHERE IMG_ID = ?",
     insertFileInfo:
         "INSERT INTO TBL_ICR_FILE (IMG_ID, FILE_PATH, ORI_FILE_NAME, SVR_FILE_NAME, FILE_EXT, FILE_SIZE, CONTENT_TYPE, FILE_TYPE, REG_ID, REG_DATE) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, now())",
@@ -101,7 +113,7 @@ var batchLearningConfig = {
     updataSymsepll:
         "UPDATE tbl_icr_symspell SET frequency=frequency+1 WHERE keyword=?",
     deleteBatchLearningData:
-        "UPDATE tbl_batch_learn_data SET STATUS = 'D' WHERE IMG_ID IN "
+        "UPDATE tbl_batch_learn_data SET STATUS = 'D' WHERE 1=1 "
 }
 
 var uiLearningConfig = {
