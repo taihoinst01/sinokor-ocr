@@ -242,11 +242,7 @@ function textLabelTrain(data) {
         let conn;
 
         try {
-            conn = await oracledb.getConnection({
-                user: "koreanre",
-                password: "koreanre01",
-                connectString: "172.16.53.142/koreanreocr"
-            });
+            conn = await oracledb.getConnection(dbConfig);
 
             for (var i = 0; i < data.length; i++) {
                 if (data[i].originText != null) {
