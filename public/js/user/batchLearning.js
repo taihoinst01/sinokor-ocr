@@ -10,8 +10,6 @@ var addCond = "LEARN_N"; // LEARN_N:학습미완료, LEARN_Y:학습완료, defau
 var startNum = 0;
 var moreNum = 20;
 
-
-
 $(function () {
     _init();
     //viewServerFileTest();
@@ -649,7 +647,6 @@ var fn_popBatchRun = function () {
                     alert("학습할 데이터가 없습니다.");
                     return;
                 } else {
-                    console.log("선택된 파일들 img_id : " + imgIdArray);
                     searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
                 }
             } else {
@@ -670,7 +667,6 @@ var fn_popBatchRun = function () {
                     alert("선택된 학습이 없습니다.");
                     return;
                 } else {
-                    console.log("선택된 파일들 img_id : " + imgIdArray);
                     searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
                 }
             } else {
@@ -784,28 +780,28 @@ var fn_processUiTraining = function (fileInfoList) {
 // UI학습 팝업 실행
 var fn_updateUiTraining = function () {
     var dataObj = {};
-    dataObj["IMG_ID"] = $("#imgId").val();
-    dataObj["IMG_FILE_ST_NO"] = $("#imgFileStNo").val();
-    dataObj["IMG_FILE_END_NO"] = $("#imgFileEndNo").val();
-    dataObj["CSCO_NM"] = $("#cscoNm").val();
-    dataObj["CT_NM"] = $("#ctNm").val();
-    dataObj["INS_ST_DT"] = $("#insStDt").val();
-    dataObj["INS_END_DT"] = $("#insEndDt").val();
-    dataObj["CUR_CD"] = $("#curCd").val();
-    dataObj["PRE"] = $("#pre").val();
-    dataObj["COM"] = $("#com").val();
-    dataObj["BRKG"] = $("#brkg").val();
-    dataObj["TXAM"] = $("#txam").val();
-    dataObj["PRRS_CF"] = $("#prrsCf").val();
-    dataObj["PRRS_RLS"] = $("#prrsRls").val();
-    dataObj["LSRES_CF"] = $("#lsresCf").val();
-    dataObj["LSRES_RLS"] = $("#lsresRls").val();
-    dataObj["CLA"] = $("#cla").val();
-    dataObj["EXEX"] = $("#exex").val();
-    dataObj["SVF"] = $("#svf").val();
-    dataObj["CAS"] = $("#cas").val();
-    dataObj["NTBL"] = $("#ntbl").val();
-    dataObj["CSCO_SA_RFRN_CNNT2"] = $("#cscoSaRfrnCnnt2").val();
+    dataObj["imgId"] = $("#imgId").val();
+    dataObj["imgFileStartNo"] = $("#imgFileStartNo").val();
+    dataObj["imgFileEndNo"] = $("#imgFileEndNo").val();
+    dataObj["cscoNm"] = $("#cscoNm").val();
+    dataObj["ctNm"] = $("#ctNm").val();
+    dataObj["insStDt"] = $("#insStDt").val();
+    dataObj["insEndDt"] = $("#insEndDt").val();
+    dataObj["curCd"] = $("#curCd").val();
+    dataObj["pre"] = $("#pre").val();
+    dataObj["com"] = $("#com").val();
+    dataObj["brkg"] = $("#brkg").val();
+    dataObj["txam"] = $("#txam").val();
+    dataObj["prrsCf"] = $("#prrsCf").val();
+    dataObj["prrsRls"] = $("#prrsRls").val();
+    dataObj["lsresCf"] = $("#lsresCf").val();
+    dataObj["lsresRls"] = $("#lsresRls").val();
+    dataObj["cla"] = $("#cla").val();
+    dataObj["exex"] = $("#exex").val();
+    dataObj["svf"] = $("#svf").val();
+    dataObj["cas"] = $("#cas").val();
+    dataObj["ntbl"] = $("#ntbl").val();
+    dataObj["cscoSaRfrnCnnt2"] = $("#cscoSaRfrnCnnt2").val();
     
     var param = { dataObj: dataObj };
 
