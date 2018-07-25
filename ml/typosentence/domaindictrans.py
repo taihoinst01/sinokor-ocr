@@ -12,8 +12,8 @@ class DomainDicTrans():
         frontword = ''
         rearword = ''
         returnsentence = ''
-        dbConnection = DBase.MySQL()
-        sql = "SELECT CORRECTEDWORDS FROM TBL_OCR_DOMAIN_DIC_TRANS WHERE ORIGINWORD = %s AND FRONTWORD = %s  AND REARWORD = %s LIMIT 1"
+        dbConnection = DBase.Oracle()
+        sql = "SELECT CORRECTEDWORDS FROM TBL_OCR_DOMAIN_DIC_TRANS WHERE ORIGINWORD = :1 AND FRONTWORD = :2  AND REARWORD = :3"
         for i in range(len(phrase)):
             if i == 0:
                 frontword = '<<N>>'
@@ -30,8 +30,8 @@ class DomainDicTrans():
 
             if (returnsentence != ''):
                 returnsentence = returnsentence + ' '
-            corretedwords = dbConnection.selectDDT(sql, params).get('CORRECTEDWORDS')
-            if (corretedwords != None):
+            corretedwords = dbConnection.selectDDT(sql, params)
+            if (len(corretedwords) > 0):
                 if (corretedwords == '<<N>>'):
                     returnsentence = returnsentence[0:-1]
                 else:

@@ -79,7 +79,7 @@ function processImage(fileName) {
 
     var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
 
-    $('#loadingTitle').html('OCR 작동 중..');
+    $('#loadingTitle').html('OCR 처리 중..');
     $('#loadingDetail').html(sourceImageUrl);
     addProgressBar(21, 30);
     $.ajax({
@@ -93,7 +93,7 @@ function processImage(fileName) {
     }).done(function (data) {
         ocrCount++;
         thumbImgs.push(fileName);
-        $('#loadingTitle').html('OCR 작동 완료');
+        $('#loadingTitle').html('OCR 처리 완료');
         $('#loadingDetail').html(sourceImageUrl);
         addProgressBar(31, 40);
         appendOcrData(fileName, data.regions);      
@@ -103,6 +103,27 @@ function processImage(fileName) {
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
         alert(errorString);
     });
+    /*
+    // proxy call
+    $.ajax({
+        url: '/proxy/ocr',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ "fileName": fileName }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            ocrCount++;
+            thumbImgs.push(fileName);
+            $('#loadingTitle').html('OCR 처리 완료');
+            $('#loadingDetail').html(sourceImageUrl);
+            addProgressBar(31, 40);
+            appendOcrData(fileName, data.regions);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+    */
 };
 
 // 썸네일 이미지 페이지 이동 버튼 클릭 이벤트
@@ -253,19 +274,19 @@ function executeML(fileName, data, type) {
 
     if (type == 'ts') {
         targetUrl = '/uiLearning/typoSentence';
-        $('#loadingTitle').html('오타 수정 ML 작동 중..');
+        $('#loadingTitle').html('오타 수정 처리 중..');
         addProgressBar(41, 50);
     } else if (type == 'dd') {
         targetUrl = '/uiLearning/domainDictionary';
-        $('#loadingTitle').html('도메인 사전 ML 작동 중..');
+        $('#loadingTitle').html('도메인 사전 처리 중..');
         addProgressBar(51, 60);
     } else if (type == 'tc') {
         targetUrl = '/uiLearning/textClassification';
-        $('#loadingTitle').html('텍스트 분류 ML 작동 중..');
+        $('#loadingTitle').html('텍스트 분류 처리 중..');
         addProgressBar(61, 70);
     } else if (type == 'lm') {
         targetUrl = '/uiLearning/labelMapping';
-        $('#loadingTitle').html('라벨 매핑 ML 작동 중..');
+        $('#loadingTitle').html('라벨 매핑 처리 중..');
         addProgressBar(71, 80);
     } else {
         targetUrl = '/uiLearning/searchDBColumns';
@@ -607,24 +628,34 @@ function uiTrainEvent() {
 
 function uiTrainAjax() {
 
+    if (lineText[0] == null) {
+        alert("학습할 데이터가 없습니다.");
+        return;
+    }
+
     var dataArray = [];
 
-    var tr = $("#textResultTbl tbody").children();
+    var tr = $("#textResultTbl dl");
 
     //console.log(td.eq(0).text());
 
-    for (var i = 1; i < tr.length; i++) {
+    for (var i = 0; i < tr.length; i++) {
+        /*
         var td = tr.eq(i).children();
-
         var text = td.eq(0).children('input[type="text"]').val();
         var location = td.eq(0).children('input[type="hidden"]').val();
         var column = td.eq(1).children().find("a.dbColumnText").text();
+        */
+        var text = tr.eq(i).find('input[type="text"]').val();
+        var location = tr.eq(i).find('input[type="hidden"]').val();
+        var column = tr.eq(i).find('a.dbColumnText').text();
+        var columnSplit = column.split("::");
         //var textClassi = td.eq(1).children();
 
         var obj = {}
         obj.text = text;
         obj.location = location;
-        obj.column = column;
+        obj.column = columnSplit[0];
         //obj.textClassi = textClassi;
 
         dataArray.push(obj);
@@ -639,6 +670,8 @@ function uiTrainAjax() {
             }
         }
     }
+    startProgressBar();
+    addProgressBar(1, 20);
 
     $.ajax({
         url: '/uiLearning/uiTrain',
@@ -647,6 +680,7 @@ function uiTrainAjax() {
         data: JSON.stringify({ "data": dataArray }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
+            addProgressBar(21, 100);
             alert(data);
         },
         error: function (err) {

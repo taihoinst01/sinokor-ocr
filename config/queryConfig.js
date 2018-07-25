@@ -17,7 +17,6 @@
         "values (@x,@y,@text,@columnNo)"
 };*/
 
-
 var count = {
     startQuery: "SELECT COUNT(*) AS cnt FROM ( ",
     endQuery: " ) AS COUNTQUERY "
@@ -74,41 +73,40 @@ var dbcolumnsConfig = {
             "tbl_extraction_keyword `
 };
 
-
 var batchLearningConfig = {
     selectBatchLearningDataList:
-        `SELECT F.seqNum, F.imgId, F.filePath, F.oriFileName, F.svrFileName, F.fileExt, 
-                F.fileSize, F.contentType, F.fileType, F.fileWidth, F.fileHeight,
-                A.status, A.imgFileStNo, A.imgFileEndNo, A.cscoNm, A.ctNm,  
-                TO_DATE(A.insStDt, 'YYYY-MM-DD hh24:mi:ss') AS insStDt, 
-                TO_DATE(A.insEndDt, 'YYYY-MM-DD hh24:mi:ss') AS insEndDt, 
-                A.curCd, A.pre, A.com, A.brkg, A.txam, A.prrsCf, A.prrsRls, A.lsresCf, 
-                A.lsresRls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.csco_sa_rfrn_cnnt2
-	       FROM
+        `SELECT
+            F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
+            F.fileSize, F.contentType, F.fileType, F.fileWidth, F.fileHeight,
+            A.status, A.imgFileStartNo, A.imgFileEndNo, A.csconm, A.ctnm,
+            TO_DATE(A.insstdt, 'YYYY-MM-DD hh24:mi:ss') AS insstdt,
+            TO_DATE(A.insenddt, 'YYYY-MM-DD hh24:mi:ss') AS insenddt,
+            A.curcd, A.pre, A.com, A.brkg, A.txam, A.prrscf, A.prrsrls, A.lsrescf,
+            A.lsresrls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.cscosarfrncnnt2
+	     FROM
             tbl_ocr_file F
-            LEFT OUTER JOIN
+		    LEFT OUTER JOIN 
                 tbl_batch_learn_data A
             ON
                 A.imgId = F.imgId
-         WHERE
+	     WHERE
             A.status != 'D' `,
     selectBatchLearningData:
-        `SELECT F.seqNum, F.imgId, F.filePath, F.oriFileName, F.svrFileName, F.fileExt, 
-                F.fileSize, F.contentType, F.fileType, F.fileWidth, F.fileHeight,
-                A.status, A.imgFileStNo, A.imgFileEndNo, A.cscoNm, A.ctNm,  
-                TO_DATE(A.insStDt, 'YYYY-MM-DD hh24:mi:ss') AS insStDt, 
-                TO_DATE(A.insEndDt, 'YYYY-MM-DD hh24:mi:ss') AS insEndDt, , 
-                A.curCd, A.pre, A.com, A.brkg, A.txam, A.prrsCf, A.prrsRls, A.lsresCf, 
-                A.lsresRls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.csco_sa_rfrn_cnnt2,
-                A.regId, TO_DATE(A.regDate, 'YYYY-MM-DD hh24:mi:ss') AS regDate,
-                A.updId, TO_DATE(A.updDate, 'YYYY-MM-DD hh24:mi:ss') AS updDate,
-	       FROM
+        `SELECT
+            F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
+            F.fileSize, F.contentType, F.fileType, F.fileWidth, F.fileHeight,
+            A.status, A.imgFileStartNo, A.imgFileEndNo, A.csconm, A.ctnm,
+            TO_DATE(A.insstdt, 'YYYY-MM-DD hh24:mi:ss') AS insstdt,
+            TO_DATE(A.insenddt, 'YYYY-MM-DD hh24:mi:ss') AS insenddt,
+            A.curcd, A.pre, A.com, A.brkg, A.txam, A.prrscf, A.prrsrls, A.lsrescf,
+            A.lsresrls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.cscosarfrncnnt2
+	     FROM
             tbl_ocr_file F
-            LEFT OUTER JOIN
+		    LEFT OUTER JOIN
                 tbl_batch_learn_data A
             ON
                 A.imgId = F.imgId
-         WHERE
+	     WHERE
             F.imgId = :imgId AND A.status != 'D' `,
     selectFileNameList:
         `SELECT 
@@ -137,21 +135,11 @@ var batchLearningConfig = {
          VALUES
             (:imgId, :originFileName, 'N', :imgFileStartNo, :imgFileEndNo, :csconm, :ctnm, :insstdt, :insenddt,
             :curcd, :pre, :com, :brkg, :txam, :prrscf, :prrsrls, :lsrescf, :lsresrls, :cla, :exex, :svf, :cas, :ntbl, :cscosarfrncnnt2, :regId, sysdate) `,
-    updateBatchLearningData:
-        `UPDATE tbl_batch_learn_data
-            SET
-                STATUS = 'Y',
-                IMG_FILE_ST_NO = ?, IMG_FILE_END_NO = ?, CSCO_NM = ?, CT_NM = ?,
-                INS_ST_DT = ?, INS_END_DT = ?, CUR_CD = ?, PRE = ?, COM = ?,
-                BRKG = ?, TXAM = ?, PRRS_CF = ?, PRRS_RLS = ?, LSRES_CF = ?,
-                LSRES_RLS = ?, CLA = ?, EXEX = ?, SVF = ?, CAS = ?, NTBL = ?,
-                CSCO_SA_RFRN_CNNT2 = ?, UPD_ID = ?, UPD_DATE = sysdate
-            WHERE IMG_ID = ?`,
     insertFileInfo:
         `INSERT INTO
             tbl_ocr_file(seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize, contentType, fileType, regId, regDate)
          VALUES
-            (ocrfile_seq.nextval, :imgId, :filePath, :originFileName, :serverFileName, :fileExtension, :fileSize, :contentType, :fileType, :regId, sysdate) `,
+            (seq_ocr_file.nextval, :imgId, :filePath, :originFileName, :serverFileName, :fileExtension, :fileSize, :contentType, :fileType, :regId, sysdate) `,
     selectIsExistWordToSymspell:
         `SELECT
             keyword, frequency
@@ -163,7 +151,7 @@ var batchLearningConfig = {
         `INSERT INTO
             tbl_ocr_symspell(seqNum, keyword, frequency)
          VALUES
-            (keyword_seq.nextval, :keyWord, 1) `,
+            (seq_ocr_symspell.nextval, :keyWord, 1) `,
     updataSymsepll:
         `UPDATE
             tbl_ocr_symspell
@@ -176,31 +164,63 @@ var batchLearningConfig = {
             tbl_batch_learn_data
          SET
             status = 'D'
-         WHERE 1=1 `
+         WHERE imgId IN `
 }
 
 var uiLearningConfig = {
     insertTextClassification:
         `INSERT INTO
-            TBL_TEXT_CLASSIFICATION_TRAIN(TEXT, CLASS)
+            tbl_text_classification_train(seqNum, text, class, regDate)
          VALUES
-            (:text, :class) `,
+            (seq_text_classification_train.nextval, :text, :class, sysdate) `,
     insertLabelMapping:
-        `INSERT INTO TBL_LABEL_MAPPING_TRAIN(TEXT, CLASS) VALUES (:text, :class) `,
+        `INSERT INTO
+            tbl_label_mapping_train(seqNum, text, class, regDate)
+         VALUES
+            (seq_label_mapping_train.nextval, :text, :class, sysdate) `,
     selectLabel:
-        `SELECT KOKEYWORD, ENKEYWORD, LABEL FROM TBL_EXTRACTION_KEYWORD WHERE KOKEYWORD = :koKeyWord `,
+        `SELECT
+            koKeyWord, enKeyWord, label
+         FROM
+            tbl_extraction_keyword
+         WHERE
+            koKeyWord = :koKeyWord `,
     insertDomainDic:
-        `INSERT INTO TBL_OCR_DOMAIN_DIC_TRANS(ORIGINWORD, FRONTWORD, CORRECTEDWORDS, REARWORD) VALUES(:originWord, :frontWord, :correctedWords, :rearWord) `,
+        `INSERT INTO
+            tbl_ocr_domain_dic_trans(seqNum, originWord, frontWord, correctedWords, rearWord)
+         VALUES
+            (seq_ocr_domain_dic_trans.nextval, :originWord, :frontWord, :correctedWords, :rearWord) `,
     selectDomainDic:
-        `SELECT ORIGINWORD, FRONTWORD, CORRECTEDWORDS, REARWORD FROM TBL_OCR_DOMAIN_DIC_TRANS WHERE ORIGINWORD = :originWord AND FRONTWORD = :frontWord AND REARWORD = :rearWord `,
+        `SELECT
+            originWord, frontWord, correctedWords, rearWord
+         FROM
+            tbl_ocr_domain_dic_trans
+         WHERE
+            originWord = :originWord AND frontWord = :frontWord AND rearWord = :rearWord `,
     insertTypo:
-        `INSERT INTO TBL_OCR_SYMSPELL(KEYWORD, FREQUENCY) VALUES(:keyWord, 1) `,
+        `INSERT INTO
+            tbl_ocr_symspell(seqNum, keyword, frequency)
+         VALUES
+            (seq_ocr_symspell.nextval, :keyWord, 1) `,
     selectTypo:
-        `SELECT KEYWORD, FREQUENCY FROM TBL_OCR_SYMSPELL WHERE KEYWORD = :keyWord `,
+        `SELECT
+            keyword, frequency
+         FROM
+            tbl_ocr_symspell
+         WHERE
+            keyword = :keyWord `,
     updateTypo:
-        `UPDATE TBL_OCR_SYMSPELL SET FREQUENCY = FREQUENCY + 1 WHERE KEYWORD = :keyWord `,
+        `UPDATE
+            tbl_ocr_symspell
+         SET
+            frequency = frequency + 1
+         WHERE
+            keyword = :keyWord `,
     selectColumn:
-        `SELECT KOKEYWORD, ENKEYWORD, LABEL FROM TBL_EXTRACTION_KEYWORD `
+        `SELECT
+            koKeyWord, enKeyWord, label
+         FROM
+            tbl_extraction_keyword `
 }
 
 module.exports = {

@@ -1,11 +1,12 @@
 from symspell import SymSpell
 import sys
+import cx_Oracle
 
 #오타 수정
 ss = SymSpell(max_dictionary_edit_distance=2)
 ss.load_words_with_freq_from_json_and_build_dictionary()
 
-#textList = []
+textList = []
 #with open('frequency_dictionary_en_82_765.txt') as f:
 #    for line in f:
 #        line = line.split(" ")
@@ -13,20 +14,12 @@ ss.load_words_with_freq_from_json_and_build_dictionary()
 
 #print(textList.__contains__("infinity"))
 
-conn = pymysql.connect(host='172.16.53.142',
-                       port=3307,
-                       user='root',
-                       password='1234',
-                       db='koreanreicr',
-                       charset='utf8')
-
+conn = cx_Oracle.connect("koreanre/koreanre01@172.16.53.142:1521/koreanreocr")
 curs = conn.cursor()
 
-sql = "SELECT KEYWORD FROM TBL_ICR_SYMSPELL"
+sql = "SELECT KEYWORD FROM TBL_OCR_SYMSPELL"
 curs.execute(sql)
-
 rows = curs.fetchall()
-conn.close()
 
 for ins in rows:
     textList.append(ins[0])

@@ -4,6 +4,7 @@ import sys
 import re
 import json
 import pymysql
+import cx_Oracle
 
 class SymSpell():
     """SymSpell: 1 million times faster through Symmetric Delete spelling correction algorithm.
@@ -335,20 +336,12 @@ class SymSpell():
         # print('Loading dictionary...')
         myData = dict()
 
-        conn = pymysql.connect(host='172.16.53.142',
-                               port=3307,
-                               user='root',
-                               password='1234',
-                               db='koreanreicr',
-                               charset='utf8')
-
+        conn = cx_Oracle.connect("koreanre/koreanre01@172.16.53.142:1521/koreanreocr")
         curs = conn.cursor()
 
-        sql = "SELECT * FROM TBL_ICR_SYMSPELL"
+        sql = "SELECT * FROM TBL_OCR_SYMSPELL"
         curs.execute(sql)
-
         rows = curs.fetchall()
-        conn.close()
 
         for ins in rows:
             myData[ins[1]] = ins[2]

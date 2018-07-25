@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="config\propertiesConfig.js" />
     <Compile Include="config\queryConfig.js" />
     <Compile Include="config\dbConfig.js" />
     <Compile Include="design\design_201807030927\js\Chart.min.js" />
@@ -842,6 +843,7 @@
     <Compile Include="routes\admin\adminDashboard.js" />
     <Compile Include="routes\admin\userManagement.js" />
     <Compile Include="routes\index.js" />
+    <Compile Include="routes\proxy\proxy.js" />
     <Compile Include="routes\user\batchLearning.js" />
     <Compile Include="routes\user\adminLearning.js" />
     <Compile Include="routes\user\newDocLearning.js" />
@@ -3319,6 +3321,7 @@
     <Folder Include="public\publish\js\" />
     <Folder Include="routes\" />
     <Folder Include="routes\admin\" />
+    <Folder Include="routes\proxy\" />
     <Folder Include="routes\user\" />
     <Folder Include="uploads\" />
     <Folder Include="views\" />

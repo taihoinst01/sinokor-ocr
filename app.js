@@ -33,6 +33,8 @@ var newDocLearning = require('./routes/user/newDocLearning');
 //admin
 var adminDashboard = require('./routes/admin/adminDashboard');
 var userManagement = require('./routes/admin/userManagement');
+//proxy
+var proxy = require('./routes/proxy/proxy');
 
 // 
 app.use('/uploads', express.static(__dirname + '/uploads'));
@@ -75,8 +77,10 @@ app.use('/newDocLearning', newDocLearning);
 // admin
 app.use('/adminDashboard', adminDashboard);
 app.use('/userManagement', userManagement);
+//proxy
+app.use('/proxy', proxy);
 // server 
 app.set('port', process.env.PORT || 3000);
 var server = app.listen(app.get('port'), function () {
-    debug('Server Start!! port : ' + server.address().port);
+    console.log('Server Start!! port : ' + server.address().port);
 });

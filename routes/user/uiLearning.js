@@ -7,6 +7,8 @@ var appRoot = require('app-root-path').path;
 var execSync = require('child_process').execSync;
 var exec = require('child_process').exec;
 var request = require('request');
+var oracledb = require('oracledb');
+var dbConfig = require('../../config/dbConfig.js');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -19,14 +21,6 @@ const upload = multer({
 });
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commModule = require(appRoot + '/public/js/import.js');
-var MySql = require('sync-mysql');
-var connection = new MySql({
-    host: 'localhost',
-    port: 3307,
-    user: 'root',
-    password: '1234',
-    database: 'koreanreicr'
-});
 var commonUtil = commModule.commonUtil;
 var router = commModule.router;
 var queryConfig = commModule.queryConfig;
@@ -43,63 +37,6 @@ var insertDomainDic = queryConfig.uiLearningConfig.insertDomainDic;
 var selectTypo = queryConfig.uiLearningConfig.selectTypo;
 var updateTypo = queryConfig.uiLearningConfig.updateTypo;
 var selectColumn = queryConfig.uiLearningConfig.selectColumn;
-
-// web server to rest server file upload test router
-router.get('/dmzTest', function (req, res) {
-	
-	var formData = {
-        file: {
-            value: fs.createReadStream('uploads/26.jpg'),
-            options: {
-                filename: '26.jpg',
-		        contentType: 'image/jpeg'
-            }
-        }
-    };
-
-    request.post({ url: 'https://sinokor-rest.azurewebsites.net/ocr/api', formData: formData}, function (err,httpRes,body){
-		var data = (JSON.parse(body));
-		//console.log(data);
-		res.send(data);
-	});
-	
-});
-
-// web server to rest server ml test router
-router.get('/dmzTest2', function (req, res) {
-
-    var formData = {
-        data: [
-            '1::1::test',
-            '12::12::안녕',
-            '123::123::test2'
-        ]
-    };
-
-    request.post('https://sinokor-rest.azurewebsites.net/ml/api', { json: true, body: formData }, function (err, httpRes, body) {
-
-        res.send(body);
-    });
-
-});
-
-// web server to rest server ml train test router
-router.get('/dmzTest3', function (req, res) {
-
-    var formData = {
-        data: [
-            '1::1::test::TRUE',
-			'12::12::안녕::TRUE',
-			'123::123::test2::FALSE'
-        ]
-    };
-
-    request.post('https://sinokor-rest.azurewebsites.net/ml/train', { json: true, body: formData }, function (err, httpRes, body) {
-
-        res.send(body);
-    });
-
-});
 
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
@@ -274,165 +211,202 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 // uiTrain
 router.post('/uiTrain', function (req, res) {
     var data = req.body.data;
-    
-    for (var i = 0; i < data.length; i++) {
-        if (data[i].originText != null) {
-            console.log(data[i].originText);
-            var originSplit = data[i].originText.split(" ");
-            var textSplit = data[i].text.split(" ");
 
-            var textleng = Math.abs(data[i].originText.length - data[i].text.length);
-
-            if (textleng < 4) {
-                //typo train
-                for (var ty = 0; ty < textSplit.length; ty++) {
-                    if (originSplit[ty] != textSplit[ty]) {
-                        var selTypoCond = [];
-                        selTypoCond.push(textSplit[ty].toLowerCase());
-                        const selTypoRes = connection.query(selectTypo, selTypoCond);
-
-                        if (selTypoRes.length == 0 || selTypoRes == null) {
-                            //insert
-                            const insTypoRes = connection.query(insertTypo, selTypoCond);
-                        } else {
-                            //update
-                            var updTypoCond = [];
-                            updTypoCond.push(selTypoRes[0].KEYWORD);
-                            const updTypoRes = connection.query(updateTypo, updTypoCond);
-                        }
-                    }
-                }
-            } else {
-                //domain dictionary train
-                var os = 0;
-                var osNext = 0;
-                var updText = "";
-                for (var j = 1; j < textSplit.length; j++) {
-                    updText += textSplit[j] + ' ';
-                }
-                updText.slice(0, -1);
-
-                var domainText = [];
-                domainText.push(textSplit[0]);
-                domainText.push(updText);
-                
-                for (var ts = 0; ts < domainText.length; ts++) {
-
-                    for (os; os < originSplit.length; os++) {
-                        if (ts == 1) {
-                            var insDicCond = [];
-
-                            //originword
-                            insDicCond.push(originSplit[os]);
-
-                            //frontword
-                            if (os == 0) {
-                                insDicCond.push("<<N>>");
-                            } else {
-                                insDicCond.push(originSplit[os - 1]);
-                            }
-
-                            //correctedword
-                            if (osNext == os) {
-                                insDicCond.push(domainText[ts]);
-                            } else {
-                                insDicCond.push("<<N>>");
-                            }
-
-                            //rearword
-                            if (os == originSplit.length - 1) {
-                                insDicCond.push("<<N>>");
-                            } else {
-                                insDicCond.push(originSplit[os + 1]);
-                            }
-
-                            const insDomainDicRes = connection.query(insertDomainDic, insDicCond);
-
-                        } else if (domainText[ts].toLowerCase() != originSplit[os].toLowerCase()) {
-                            var insDicCond = [];
-
-                            //originword
-                            insDicCond.push(originSplit[os]);
-
-                            //frontword
-                            if (os == 0) {
-                                insDicCond.push("<<N>>");
-                            } else {
-                                insDicCond.push(originSplit[os - 1]);
-                            }
-
-                            //correctedword
-                            insDicCond.push("<<N>>");
-
-                            //rearword
-                            if (os == originSplit.length - 1) {
-                                insDicCond.push("<<N>>");
-                            } else {
-                                insDicCond.push(originSplit[os + 1]);
-                            }
-
-                            const insDomainDicRes = connection.query(insertDomainDic, insDicCond);
-
-                        } else {
-                            os++;
-                            osNext = os;
-                            break;
-                        }
-                    }
-
-                }
-            }
+    runTrain(data, function (result) {
+        if (result == "true") {
+            //text-classification train
+            var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
+            exec(exeTextString, defaults, function (err, stdout, stderr) {
+                //label-mapping train
+                var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\train.py'
+                exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
+                    res.send("ui 학습 완료");
+                });
+            });
         }
-    }
-
-    console.log("typo test");
-
-    //text-classification DB insert
-    for (var i in data) {
-        var selectLabelCond = [];
-        selectLabelCond.push(data[i].column);
-
-        const selectLabelRes = connection.query(selectLabel, selectLabelCond);
-
-        if (selectLabelRes.length == 0) {
-            data[i].textClassi = 'undefined';
-        } else {
-            data[i].textClassi = selectLabelRes[0].LABEL;
-            data[i].labelMapping = selectLabelRes[0].ENKEYWORD;
-        }
-
-        var insTextClassifiCond = [];
-        insTextClassifiCond.push(data[i].text);
-        insTextClassifiCond.push(data[i].textClassi);
-
-        const insTextClassifiRes = connection.query(insertTextClassification, insTextClassifiCond);
-    }
-
-    //text-classification train
-    var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
-    exec(exeTextString, defaults, function (err, stdout, stderr) {
-        console.log("text-classification");
-        console.log(stdout);
-
-        //label-mapping DB insert
-        for (var i in data) {
-            if (data[i].textClassi == "fixlabel" || data[i].textClassi == "entryrowlabel") {
-                var insLabelMapCond = [];
-                insLabelMapCond.push(data[i].text);
-                insLabelMapCond.push(data[i].labelMapping);
-
-                const insLabelMapRes = connection.query(insertLabelMapping, insLabelMapCond);
-            }
-        }
-
-        //label-mapping train
-        var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\train.py'
-        exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
-            res.send("ui 학습 완료");
-        });
-
     });
+
 });
+
+async function runTrain(data, callback) {
+    try {
+        let res = await textLabelTrain(data);
+        callback(res);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function textLabelTrain(data) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection({
+                user: "koreanre",
+                password: "koreanre01",
+                connectString: "172.16.53.142/koreanreocr"
+            });
+
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].originText != null) {
+                    //console.log(data[i].originText);
+                    var originSplit = data[i].originText.split(" ");
+                    var textSplit = data[i].text.split(" ");
+
+                    var textleng = Math.abs(data[i].originText.length - data[i].text.length);
+
+                    if (textleng < 4) {
+                        //typo train
+                        for (var ty = 0; ty < textSplit.length; ty++) {
+                            if (originSplit[ty] != textSplit[ty]) {
+                                var selTypoCond = [];
+                                selTypoCond.push(textSplit[ty].toLowerCase());
+                                let selTypoRes = await conn.execute(selectTypo, selTypoCond);
+
+                                if (selTypoRes.rows[0] == null) {
+                                    //insert
+                                    let insTypoRes = await conn.execute(insertTypo, selTypoCond);
+                                } else {
+                                    //update
+                                    var updTypoCond = [];
+                                    updTypoCond.push(selTypoRes.rows[0].KEYWORD);
+                                    let updTypoRes = await conn.execute(updateTypo, updTypoCond);
+                                }
+
+                            }
+                        }
+                    } else {
+                        //domain dictionary train
+                        var os = 0;
+                        var osNext = 0;
+                        var updText = "";
+                        for (var j = 1; j < textSplit.length; j++) {
+                            updText += textSplit[j] + ' ';
+                        }
+                        updText.slice(0, -1);
+
+                        var domainText = [];
+                        domainText.push(textSplit[0]);
+                        domainText.push(updText);
+
+                        for (var ts = 0; ts < domainText.length; ts++) {
+
+                            for (os; os < originSplit.length; os++) {
+                                if (ts == 1) {
+                                    var insDicCond = [];
+
+                                    //originword
+                                    insDicCond.push(originSplit[os]);
+
+                                    //frontword
+                                    if (os == 0) {
+                                        insDicCond.push("<<N>>");
+                                    } else {
+                                        insDicCond.push(originSplit[os - 1]);
+                                    }
+
+                                    //correctedword
+                                    if (osNext == os) {
+                                        insDicCond.push(domainText[ts]);
+                                    } else {
+                                        insDicCond.push("<<N>>");
+                                    }
+
+                                    //rearword
+                                    if (os == originSplit.length - 1) {
+                                        insDicCond.push("<<N>>");
+                                    } else {
+                                        insDicCond.push(originSplit[os + 1]);
+                                    }
+
+                                    let insDomainDicRes = await conn.execute(insertDomainDic, insDicCond);
+
+                                } else if (domainText[ts].toLowerCase() != originSplit[os].toLowerCase()) {
+                                    var insDicCond = [];
+
+                                    //originword
+                                    insDicCond.push(originSplit[os]);
+
+                                    //frontword
+                                    if (os == 0) {
+                                        insDicCond.push("<<N>>");
+                                    } else {
+                                        insDicCond.push(originSplit[os - 1]);
+                                    }
+
+                                    //correctedword
+                                    insDicCond.push("<<N>>");
+
+                                    //rearword
+                                    if (os == originSplit.length - 1) {
+                                        insDicCond.push("<<N>>");
+                                    } else {
+                                        insDicCond.push(originSplit[os + 1]);
+                                    }
+
+                                    let insDomainDicRes = await conn.execute(insertDomainDic, insDicCond);
+
+                                } else {
+                                    os++;
+                                    osNext = os;
+                                    break;
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
+
+            for (var i in data) {
+                var selectLabelCond = [];
+                selectLabelCond.push(data[i].column);
+
+                let result = await conn.execute(selectLabel, selectLabelCond);
+
+                if (result.rows[0] == null) {
+                    data[i].textClassi = 'undefined';
+                } else {
+                    data[i].textClassi = result.rows[0].LABEL;
+                    data[i].labelMapping = result.rows[0].ENKEYWORD;
+                }
+
+                var insTextClassifiCond = [];
+                insTextClassifiCond.push(data[i].text);
+                insTextClassifiCond.push(data[i].textClassi);
+
+                let insResult = await conn.execute(insertTextClassification, insTextClassifiCond);
+            }
+
+            for (var i in data) {
+                if (data[i].textClassi == "fixlabel" || data[i].textClassi == "entryrowlabel") {
+                    var insLabelMapCond = [];
+                    insLabelMapCond.push(data[i].text);
+                    insLabelMapCond.push(data[i].labelMapping);
+
+                    let insLabelMapRes = await conn.execute(insertLabelMapping, insLabelMapCond);
+
+                    //console.log(insLabelMapRes);
+                }
+            }
+
+            resolve("true");
+
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
 
 //오타 검사 
 function typoSentenceEval(data, callback) {
@@ -477,6 +451,8 @@ function domainDictionaryEval(data, callback) {
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\main.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
+
+        console.log(stdout);
 
         var ocrText = stdout.split(/\r\n/g);
         var ocrTextLen = ocrText.length;
