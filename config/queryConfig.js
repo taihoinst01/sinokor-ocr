@@ -179,33 +179,35 @@ var batchLearningConfig = {
             keyword = :keyWord `,
     updateBatchLearningData:
         `UPDATE tbl_batch_learn_data
-            SET
-                status = 'Y',
-                imgFileStartNo = :imgFileStartNo, imgFileEndNo = :imgFileEndNo, cscoNm = :cscoNm, ctNm = :ctNm,
-                insStDt = :insStDt, insEndDt = :insEndDt, curCd = :curCd, pre = :pre, com = :com,
-                brkg = :brkg, txam = :txam, prrsCf = :prrsCf, prrsRls = :prrsRls, lsresCf = :lsresCf,
-                lsresRls = :lsresRls, cla = :cla, exex = :exex, svf = :svf, cas = :cas, ntbl = :ntbl,
-                cscoSaRfrnCnnt2 = :cscoSaRfrnCnnt2, updId = :updId, updDate = sysdate
-            WHERE imgId = :imgId`,
+         SET
+            status = 'Y',
+            imgFileStartNo = :imgFileStartNo, imgFileEndNo = :imgFileEndNo, cscoNm = :cscoNm, ctNm = :ctNm,
+            insStDt = :insStDt, insEndDt = :insEndDt, curCd = :curCd, pre = :pre, com = :com,
+            brkg = :brkg, txam = :txam, prrsCf = :prrsCf, prrsRls = :prrsRls, lsresCf = :lsresCf,
+            lsresRls = :lsresRls, cla = :cla, exex = :exex, svf = :svf, cas = :cas, ntbl = :ntbl,
+            cscoSaRfrnCnnt2 = :cscoSaRfrnCnnt2, updId = :updId, updDate = sysdate
+         WHERE imgId = :imgId`,
     deleteBatchLearningData:
         `UPDATE 
             tbl_batch_learn_data
          SET
             status = 'D'
-         WHERE imgId IN `,
+         WHERE
+            imgId IN `,
     selectBatchAnswerFile: 
         `SELECT
             imgId, pageNum, filePath, totalCount
          FROM
             tbl_batch_answer_file 
-         WHERE filePath in `,
+         WHERE
+            filePath IN `,
     selectBatchAnswerDataToImgId:
         `SELECT
             imgId, imgFileStartNo, imgFileEndNo
          FROM
             TBL_BATCH_ANSWER_DATA
         WHERE
-            imgId in `
+            imgId IN `
 }
 
 var uiLearningConfig = {
