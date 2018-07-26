@@ -119,10 +119,15 @@
                             <li><a href="#none" onclick="javascript: selectViewCount(1000);">행표시 : 1000</a></li>
                         </ul>
                     </div>
-                    <button type="button" id="btn_sync" class="button_st1 ml5 fl">Sync</button>
+                    <button type="button" id="btn_sync" class="ml5 fl bgColor"><img src="publish/image/sync_btn.png"/></button>
                     <!-- // Looks like select box-->
                     <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
                         <div class="fr">
+                            <div class="fl mr10 outDIv">
+                                <div class="innerDiv">
+                                    <input type="checkbox" value="" class="fl" id="uiTrainingChk" name="" /><span class="fr ml5 mr10">UI Training</span>
+                                </div>
+                            </div>
                             <p class="attach_btn fl"><input type="file" id="excel_file" name="excel_file" /><label for="excel_file">Excel Upload</label></p>
                             <p class="attach_btn fl"><input type="file" id="document_file" name="file" multiple /><label for="document_file">Document Upload</label></p>
                             <button type="button" id="btn_imageDelete" class="button_st5">Document Delete</button>
@@ -550,8 +555,5 @@
         </div>
     </div>
     <!-- // 팝업_수동학습레이어팝업 -->
-    <script type="text/javascript">
-        layer_open('layer2');
-    </script>
 </body>
 </html>

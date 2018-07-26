@@ -200,6 +200,10 @@ input.noline{border:none !important;}*/
     margin-left: 5px !important;
 }
 
+.ml10 {
+    margin-left: 10px !important;
+}
+
 .mr10 {
     margin-right: 10px !important;
 }
@@ -4557,4 +4561,20 @@ h3.tits span {
 .mCS-inset-3-dark.mCSB_scrollTools .mCSB_dragger.mCSB_dragger_onDrag .mCSB_dragger_bar, .mCS-inset-3-dark.mCSB_scrollTools .mCSB_dragger:active .mCSB_dragger_bar {
     background-color: #fff;
     background-color: rgba(255,255,255,.9)
+}
+
+.bgColor {
+    background-color: #eaeaea;
+}
+
+.outDIv {
+    display: inline-table;
+    height: 52px;
+}
+
+.innerDiv {
+    height: 100%;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
 }
