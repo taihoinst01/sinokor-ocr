@@ -17,8 +17,8 @@ var propertiesConfig = {
         logfilepath: 'c:/logs',
         //product
         //logfilepath: 'c:/logs'
-        excelBatchFilePath: '\\excel\\filepath.xlsx',
-        excelBatchFileData: '\\excel\\data.xlsx'
+        excelBatchFilePath: '/excel/filepath.xlsx',
+        excelBatchFileData: '/excel/data.xlsx'
     }
 };
 

@@ -73,36 +73,28 @@ var buttonEvent = function () {
     $("#btn_sync").on("click", function () {
         fn_syncServerFile();
     });
-
-    // 정답엑셀 업로드
-    $("#btn_rightExcelUpload").on("click", function () {
-        fn_rightExcelUpload();
+    // 엑셀 업로드 (read file in server)
+    $("#btn_excelUpload").on("click", function () {
+        fn_excelUpload();
     });
-
     // 이미지 업로드
     $("#btn_imageUpload").on("click", function () {
         fn_imageUpload();
     });
-
     // 이미지 삭제
     $("#btn_imageDelete").on("click", function () {
         fn_imageDelete();
     });
-
     // 배치실행
     $("#btn_batchTraining").on("click", function () {
         fn_batchTraining();
     });
-
     // 최종학습
     $("#btn_uiTraining").on("click", function () {
         fn_uiTraining();
     });
 
     // popupButton
-    //$("#btn_closeLayerPopup").on("click", function () {
-    //    popupEvent.closePopup();
-    //});
     // [배치학습popup] 학습실행
     $("#btn_pop_batch_run").on("click", function () {
         fn_popBatchRun();
@@ -149,17 +141,11 @@ var popupEvent = (function () {
 
     // open popup
     var openPopup = function () {
-        //var top = ($(window).scrollTop() + ($(window).height() - layerPopup.height()) - 10);
-        //var left = ($(window).scrollLeft() + ($(window).width() - layerPopup.width()) / 2);
-        //layerPopup.css("top", top);
-        //layerPopup.css("left", left);
-        //layerPopup.show();
         layer_open('layer1');
     }
 
     // close popup
     var closePopup = function () {
-        //layerPopup.fadeOut();
         $('.poplayer').fadeOut();
     }
 
@@ -171,6 +157,35 @@ var popupEvent = (function () {
 }());
 
 // [excelUpload event]
+var fn_excelUpload = function () {
+    var param = {};
+    $.ajax({
+        url: '/batchLearning/excelUpload',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            addProgressBar(1, 99);
+        },
+        success: function (data) {
+            console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
+            if (data["code"] == "200") {
+                if (data["fileCnt"] > 0 || data["dataCnt"] > 0) {
+                    alert("엑셀 파일의 정답 데이터가 INSERT 되었습니다.")
+                } else {
+                    alert("INSERT 할 파일이 없습니다.");
+                }
+            } else {
+                alert("엑셀 파일 업로드 중 오류가 발생하였습니다.");
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+// excel upload (deprecate)
 var excelUploadEvent = function () {
     var multiUploadForm = $("#multiUploadForm");
 
@@ -205,7 +220,7 @@ function fileUpload() {
             } else if (responseText.type == 'image') {
                 console.log("upload image data : " + JSON.stringify(responseText));
                 $("#progressMsg").html("uploading image files...");
-                // FILE INFO INSERT TO DB, BATCH LEARNING BASE DATA INSERT TO DB
+                // FILE INFO, BATCH LEARNING BASE DATA INSERT TO DB
                 var totCount = responseText.message.length;
                 for (var i = 0; i < totCount; i++) {
                     var lastYN = false;
@@ -979,7 +994,7 @@ function _init() {
     buttonEvent();              // button event
     popupEvent.scrollPopup();   // popup event - scroll
     imageUploadEvent();         // image upload event
-	excelUploadEvent();         // excel upload event
+	//excelUploadEvent();         // excel upload event
 
     searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
 }
