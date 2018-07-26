@@ -39,7 +39,7 @@ module.exports = function (pool) {
                 console.log(sql);
             }
             result.rows[0].totalCount = totalCount;
-            callbackFunc(result.rows ? result.rows : 0, req, res);
+            callbackFunc(result.rows ? result.rows : null, req, res);
             connection.release();
         });
     });
@@ -53,7 +53,7 @@ module.exports = function (pool) {
                 console.error("OracleDB err : ", err);
                 console.log(sql);
             }
-            callbackFunc(result.rows ? result.rows : 0, req, res);
+            callbackFunc(result.rows ? result.rows : null, req, res);
             connection.release();
         });
     });
@@ -67,7 +67,7 @@ module.exports = function (pool) {
                 console.error("OracleDB err : ", err);
                 console.log(sql);
             }
-            callbackFunc(result.rows ? result.rows : 0, origin);
+            callbackFunc(result.rows ? result.rows : null, origin);
             connection.release();
         });
     });
@@ -81,7 +81,7 @@ module.exports = function (pool) {
                 console.error("OracleDB err : ", err);
                 console.log(sql);
             }
-            callbackFunc(result.rows ? result.rows: 0, req, res);
+            callbackFunc(result.rows ? result.rows: null, req, res);
             connection.release();
         });
     });

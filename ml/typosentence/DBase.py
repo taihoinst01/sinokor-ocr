@@ -1,6 +1,3 @@
-from pymysql.err import DatabaseError
-import pymysql
-import pymysql.cursors
 import cx_Oracle
 import configparser
 

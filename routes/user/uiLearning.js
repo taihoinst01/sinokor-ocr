@@ -9,6 +9,7 @@ var exec = require('child_process').exec;
 var request = require('request');
 var oracledb = require('oracledb');
 var dbConfig = require('../../config/dbConfig.js');
+var logger = require('../util/logger');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -56,10 +57,21 @@ router.post('/', function (req, res) {
 router.post('/typoSentence', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
-
-    typoSentenceEval(data, function (result) {
-        res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
+    
+    process.on('uncaughtException', function (err) {
+        console.log('uncaughtException : ' + err);
     });
+    
+    var aimain = require('../util/aiMain');
+    
+    try {
+        aimain.typoSentenceEval(data, function (result) {
+            res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
+        });
+    }
+    catch (exception) {
+        console.log(exception);
+    }
 });
 
 // typoSentence ML
@@ -411,6 +423,12 @@ function typoSentenceEval(data, callback) {
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\typo.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
+
+        if (err) {
+            logger.error.info(`typo ml modelexec error: ${stderr}`);
+            return;
+        }
+
         //console.log("typo Test : " + stdout);
         var typoData = stdout.split(/\r\n/g);
 
