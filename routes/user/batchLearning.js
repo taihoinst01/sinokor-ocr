@@ -100,7 +100,6 @@ var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
             }
         }
     }
-
     for (var i in rows) {
         if (imgIdArr.length == 0) {
             imgIdArr.push(rows[i].IMGID);

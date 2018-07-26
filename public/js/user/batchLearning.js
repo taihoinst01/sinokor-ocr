@@ -322,33 +322,48 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     }).done(function (data) {          
         ocrCount++;
         if (ocrCount == 1) {
-            ocrDataArr.push({
-                answerImgId: answerRows.IMGID,
-                fileInfo: fileInfo,
-                fileName: fileName,
-                regions: data.regions,
-                lastYn: lastYn
-            });
-        } else {
-            /*수정영역
-            for (var i in ocrDataArr) {
-                if (ocrDataArr[i].answerImgId == answerRows.IMGID) {
-                    var totRegions = (ocrDataArr[i].regions).concat(data.regions);
-                    ocrDataArr[i].regions = totRegions;
-                    break;
-                } else if (i == ocrDataArr.length - 1) {
+            for (var i in fileToPage) {
+                if (fileToPage[i].IMGID == answerRows.IMGID &&
+                    fileToPage[i].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                    answerRows.PAGENUM <= fileToPage[i].IMGFILEENDNO) {
                     ocrDataArr.push({
                         answerImgId: answerRows.IMGID,
                         fileInfo: fileInfo,
                         fileName: fileName,
                         regions: data.regions,
+                        fileToPage: fileToPage[i],
                         lastYn: lastYn
                     });
                 }
             }
-            */
+        } else {
+            for (var i in ocrDataArr) {
+                if (ocrDataArr[i].answerImgId == answerRows.IMGID &&
+                    ocrDataArr[i].fileToPage.IMGFILESTARTNO <= answerRows.PAGENUM &&
+                    answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
+                    var totRegions = (ocrDataArr[i].regions).concat(data.regions);
+                    ocrDataArr[i].regions = totRegions;
+                    break;
+                } else if (i == ocrDataArr.length - 1) {
+                    for (var j in fileToPage) {
+                        if (fileToPage[j].IMGID == answerRows.IMGID &&
+                            fileToPage[j].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                            answerRows.PAGENUM <= fileToPage[j].IMGFILEENDNO) {
+                            ocrDataArr.push({
+                                answerImgId: answerRows.IMGID,
+                                fileInfo: fileInfo,
+                                fileName: fileName,
+                                regions: data.regions,
+                                fileToPage: fileToPage[j],
+                                lastYn: lastYn
+                            });
+                        }
+                    }
+                }
+            }
+
         }
-        if (totCount == ocrCount) {           
+        if (totCount == ocrCount) {
             execBatchLearningData();
         }
         //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
