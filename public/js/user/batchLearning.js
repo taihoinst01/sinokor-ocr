@@ -437,7 +437,7 @@ var searchBatchLearnDataList = function (addCond) {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     // allow after or before checkbox name
-                    if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="stb00" name="listCheck_before" /></div></th>`;
+                    if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="sta00" name="listCheck_before" /></th>`;
                     else checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="stb00" name="listCheck_after" /></div></th>`;
                     appendHtml += `<tr>${checkboxHtml}
                         <td>${nvl(entry.IMGID)}</td>
@@ -474,6 +474,7 @@ var searchBatchLearnDataList = function (addCond) {
             else $("#tbody_batchList_after").empty().append(appendHtml);
             endProgressBar(); // end progressbar
             checkboxEvent(); // refresh checkbox event
+            $('input[type=checkbox]').ezMark();
         },
         error: function (err) {
             endProgressBar(); // end progressbar

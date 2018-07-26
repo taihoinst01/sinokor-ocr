@@ -10,8 +10,7 @@
     <meta name="MobileOptimized" content="320">
     <%include  ../common/commonLib.html%>
 
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-
+    <!--<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">-->
     <!-- tui-grid css import-->
     <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
     <!-- tui-grid css import-->
@@ -45,13 +44,13 @@
             display: none
         }
 
-        #layerPopup.closeButton {
-            position: absolute;
-            right: 95%;
-            top: 0;
-            border: 2px solid red;
-            cursor: pointer
-        }
+            #layerPopup.closeButton {
+                position: absolute;
+                right: 95%;
+                top: 0;
+                border: 2px solid red;
+                cursor: pointer
+            }
 
         #ocrProgress {
             background-color: grey;
@@ -170,7 +169,7 @@
                                     </colgroup>
                                     <thead>
                                         <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
+                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" class="sta00_all" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
                                             <th scope="row">이미지ID</th>
                                             <th scope="row">파일명</th>
                                             <th scope="row">학습여부</th>
@@ -249,7 +248,7 @@
                                     </colgroup>
                                     <thead>
                                         <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll_after" name="listCheckAll_after" /></div></th>
+                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" class="stb00_all" id="listCheckAll_after" name="listCheckAll_after" /></div></th>
                                             <th scope="row">이미지ID</th>
                                             <th scope="row">파일명</th>
                                             <th scope="row">학습여부</th>
@@ -314,5 +313,112 @@
         </div>
         <!-- // Content -->
     </div>
+
+    <!-- 팝업_학습실행팝업 -->
+    <div id="layer0" class="poplayer">
+        <div class="bg"></div>
+        <div class="pop_layer">
+            <div class="pop_popup0 pop_popup01">
+                <div class="pop_header">
+                    <h1>학습 실행</h1>
+                </div>
+                <div class="pop_content">
+                    <div class="pop_box_120 box_txt_st01">
+                        <ul>
+                            <li>
+                                <div class="inputst_role">
+                                    <input type="radio" id="radio-choice-1" value="choice-1" class="custom" name="radio-1" checked="checked" />
+                                    <label for="radio-choice-1">전체학습</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="inputst_role">
+                                    <input type="radio" id="radio-choice-2" value="choice-2" class="custom" name="radio-1" />
+                                    <label for="radio-choice-2">선택한 파일 학습</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="inputst_role">
+                                    <input type="radio" id="radio-choice-3" value="choice-3" class="custom" name="radio-1" />
+                                    <label for="radio-choice-3">학습 범위 지정</label>
+                                </div>
+                            </li>
+                            </ul>
+                                <div class="box_day" style="display:none">
+                                    <ul>
+                                        <li>
+                                            <label for="intxt_01" class="blind">학습범위지정 시작</label>
+                                            <input type="text" name="intxt_0" id="intxt_01" class="inputst_box01" value="" />
+                                        </li>
+                                        <li>-</li>
+                                        <li>
+                                            <label for="intxt_02" class="blind">학습범위지정 끝</label>
+                                            <input type="text" name="intxt_0" id="intxt_02" class="inputst_box01" value="" />
+                                        </li>
+                                    </ul>
+                                </div>
+                    </div>
+                </div>
+                <div class="pop_footer">
+                    <button type="button" class="button_st1 cbtn">실 행</button>
+                    <button type="button" class="button_st4 cbtn">취 소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- // 팝업_학습실행팝업 -->
+    <!-- 팝업_수동학습레이어팝업 -->
+    <div id="layer1" class="poplayer">
+        <div class="bg"></div>
+        <div class="pop_layer">
+            <div class="pop_popup0 pop_popup01 wh1360">
+                <div class="pop_header">
+                    <h1>수동학습 레이어 팝업</h1>
+                </div>
+                <div class="pop_content">
+                    <div class="pop_box_11">
+                        <img src="../publish/image/sample01.jpg" alt="샘플이미지" />
+                    </div>
+                    <div class="pop_box_12 box_txt_st01">
+                        <dl>
+                            <dt><label for="intxt_01">거래사명</label></dt>
+                            <dd>
+                                <input type="text" name="intxt_0" id="intxt_01" class="inputst_box01" value="Korean Reinsuance Company" disabled="disabled" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_02">계약명</label></dt>
+                            <dd>
+                                <input type="text" name="intxt_0" id="intxt_02" class="inputst_box01" value="Marine Cargo Quota Share" disabled="disabled" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_03">보험개시일</label></dt>
+                            <dd>
+                                <input type="text" name="intxt_0" id="intxt_03" class="inputst_box01" value="01-Jan-2012" disabled="disabled" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_04">보험종료일</label></dt>
+                            <dd>
+                                <input type="text" name="intxt_0" id="intxt_04" class="inputst_box01" value="31-Dec-2012" disabled="disabled" />
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="pop_footer">
+                    <button type="button" class="button_st1 cbtn">학습 진행</button>
+                    <button type="button" class="button_st4 cbtn">취 소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- // 팝업_수동학습레이어팝업 -->
+
+    <!-- 아래 스크립트는 임시 팝업용 -->
+    <script type="text/javascript">
+        layer_open('layer1');
+    </script>
+    <!-- // 아래 스크립트는 임시 팝업용 -->
 </body>
 </html>
