@@ -277,6 +277,7 @@ router.post('/excelUpload', upload.any(), function (req, res) {
             for (var j = 0, y = dataResult[i].length; j < y; j++) {
                 data.push(commonUtil.nvl(dataResult[i][j]));
             }
+            console.log("data.. : " + JSON.stringify(data));
             commonDB.queryNoRows(queryConfig.batchLearningConfig.insertBatchAnswerData, data, callbackBlank);
         } else {
             continue;
