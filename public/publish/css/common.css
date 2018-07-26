@@ -1259,7 +1259,7 @@ select:disabled + ul.idealSelect:before {
 .st_infortext_01 {
     display: inline-block;
     position: absolute;
-    top: 50%;
+    top: 850%;
     left: 50%;
     transform: translate(-50%, -50%);
     -moz-transform: translate(-50%, -50%);
