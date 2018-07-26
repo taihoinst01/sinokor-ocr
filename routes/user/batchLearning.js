@@ -206,13 +206,48 @@ router.post('/deleteBatchLearningData', function (req, res) {
 
 // [POST] 엑셀 업로드
 router.post('/excelUpload', upload.any(), function (req, res) {
-    var files = req.files;
-    for (var i = 0; i < files.length; i++) {
-        var fileObj = files[i];
-        var oriFileName = fileObj.originalname;
-        if (oriFileName.toLowerCase() == "filepath.xlsx") {
-            
-        } else if (oriFileName.toLowerCase() == "data.xlsx") {
+    // 엑셀 파일 확인
+    var pathExcel = appRoot + propertiesConfig.batchLearning.excelBatchFilePath + "filepath.xlsx";
+    var dataExcel = appRoot + propertiesConfig.batchLearning.excelBatchFileData + "data.xlsx";
+    var pathExcelWorkbook = xlsx.readFile(pathExcel);
+    var dataExcelWorkbook = xlsx.readFile(dataExcel);
+    var pathExcelSheet = pathExcelWorkbook.Sheets[pathExcelWorkbook.SheetNames[0]];
+    var dataExcelSheet = dataExcelWorkbook.Sheets[dataExcelWorkbook.SheetNames[0]];
+
+    var pathResult = [];
+    var pathRow;
+    var pathRowNum;
+    var pathColNum;
+    var pathRange = xlsx.utils.decode_range(pathExcelSheet['!ref']);
+    for (pathRowNum = pathRange.s.r; pathRowNum <= pathRange.e.r; pathRowNum++) {
+        pathRow = [];
+        for (pathColNum = pathRange.s.c; pathColNum <= pathRange.e.c; pathColNum++) {
+            var nextCell = pathExcelSheet[
+                xlsx.utils.encode_cell({ r: pathRowNum, c: pathColNum })
+            ];
+            if (typeof nextCell === 'undefined') {
+                pathRow.push(void 0);
+            } else pathRow.push(nextCell.w);
+        }
+        pathResult.push(pathRow);
+    }
+    var dataResult = [];
+    var dataRow;
+    var dataRowNum;
+    var dataColNum;
+    var dataRange = xlsx.utils.decode_range(dataExcelSheet['!ref']);
+    for (dataRowNum = dataRange.s.r; dataRowNum <= dataRange.e.r; dataRowNum++) {
+        dataRow = [];
+        for (dataColNum = dataRange.s.c; dataColNum <= dataRange.e.c; dataColNum++) {
+            var nextCell = dataExcelSheet[
+                xlsx.utils.encode_cell({ r: dataRowNum, c: dataColNum })
+            ];
+            if (typeof nextCell === 'undefined') {
+                dataRow.push(void 0);
+            } else dataRow.push(nextCell.w);
+        }
+        dataResult.push(dataRow);
+    }
 
     // insert filepath.xlsx 
     for (var i = 1, x = pathResult.length; i < x; i++) { // 첫번째 행은 무시
@@ -236,8 +271,13 @@ router.post('/excelUpload', upload.any(), function (req, res) {
             console.log("data.. : " + JSON.stringify(data));
             commonDB.queryNoRows(queryConfig.batchLearningConfig.insertBatchAnswerData, data, callbackBlank);
         } else {
-            res.send({ code: 300 , type: 'excel'}); // filepath.xlsx, data.xlsx 파일 외의 형식은 업로드 불가능 합니다.
+            continue;
         }
+    }
+    if (pathResult.length > 0 || dataResult.length > 0) {
+        res.send({ code: 200, pathCnt: pathResult.length, dataCnt: dataResult.length });
+    } else {
+        res.send({ code: 300, pathCnt: 0, dataCnt: 0 });
     }
 });
 
