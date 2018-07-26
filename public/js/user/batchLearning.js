@@ -305,10 +305,11 @@ var imageUploadEvent = function () {
 }
                
 // [파일정보 -> OCR API]
-function processImage(fileInfo, fileName, lastYn) {
+function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
     console.log("processImage fileName : " + fileName);
     console.log("processImage lastYn : " + lastYn);
+    console.log("processImage answerRows : " + JSON.stringify(answerRows));
     var subscriptionKey = "7d51f1308c8848f49db9562d1dab7184";
     var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
     var params = {
@@ -327,15 +328,51 @@ function processImage(fileInfo, fileName, lastYn) {
         },
         type: "POST",
         data: '{"url": ' + '"' + sourceImageUrl + '"}',
-    }).done(function (data) {       
+    }).done(function (data) {          
         ocrCount++;
-        ocrDataArr.push({
-            fileInfo: fileInfo,
-            fileName: fileName,
-            regions: data.regions,
-            lastYn: lastYn
-        });
-        if (totCount == ocrCount) {           
+        if (ocrCount == 1) {
+            for (var i in fileToPage) {
+                if (fileToPage[i].IMGID == answerRows.IMGID &&
+                    fileToPage[i].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                    answerRows.PAGENUM <= fileToPage[i].IMGFILEENDNO) {
+                    ocrDataArr.push({
+                        answerImgId: answerRows.IMGID,
+                        fileInfo: fileInfo,
+                        fileName: fileName,
+                        regions: data.regions,
+                        fileToPage: fileToPage[i],
+                        lastYn: lastYn
+                    });
+                }
+            }
+        } else {
+            for (var i in ocrDataArr) {
+                if (ocrDataArr[i].answerImgId == answerRows.IMGID &&
+                    ocrDataArr[i].fileToPage.IMGFILESTARTNO <= answerRows.PAGENUM &&
+                    answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
+                    var totRegions = (ocrDataArr[i].regions).concat(data.regions);
+                    ocrDataArr[i].regions = totRegions;
+                    break;
+                } else if (i == ocrDataArr.length - 1) {
+                    for (var j in fileToPage) {
+                        if (fileToPage[j].IMGID == answerRows.IMGID &&
+                            fileToPage[j].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                            answerRows.PAGENUM <= fileToPage[j].IMGFILEENDNO) {
+                            ocrDataArr.push({
+                                answerImgId: answerRows.IMGID,
+                                fileInfo: fileInfo,
+                                fileName: fileName,
+                                regions: data.regions,
+                                fileToPage: fileToPage[j],
+                                lastYn: lastYn
+                            });
+                        }
+                    }
+                }
+            }
+
+        }
+        if (totCount == ocrCount) {
             execBatchLearningData();
         }
         //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
@@ -401,7 +438,7 @@ function execBatchLearningData() {
             beforeSend: function () {
             },
             success: function (data) {
-                //console.log(data);
+                console.log(data);
                 batchCount++;
                 if (totCount = batchCount) {
                     $("#progressMsg").html("success...");
@@ -552,7 +589,7 @@ var searchBatchLearnDataList = function (addCond) {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     // allow after or before checkbox name
-                    if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="stb00" name="listCheck_before" /></div></th>`;
+                    if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="sta00" name="listCheck_before" /></th>`;
                     else checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="stb00" name="listCheck_after" /></div></th>`;
                     appendHtml += `<tr>${checkboxHtml}
                         <td>${nvl(entry.IMGID)}</td>
@@ -589,6 +626,7 @@ var searchBatchLearnDataList = function (addCond) {
             else $("#tbody_batchList_after").empty().append(appendHtml);
             endProgressBar(); // end progressbar
             checkboxEvent(); // refresh checkbox event
+            $('input[type=checkbox]').ezMark();
         },
         error: function (err) {
             endProgressBar(); // end progressbar
@@ -617,12 +655,14 @@ var searchBatchLearnData = function (imgIdArray, flag) {
         success: function (data) {
             $("#progressMsg").html("processing learn data...");
             addProgressBar(31, 50);
-            console.log("fileInfoList : " + JSON.stringify(data));
+            console.log("/batchLearning/searchBatchLearnData result :");
+            console.log(data);
+            
             if (flag == "PROCESS_IMAGE") {  // 배치학습 실행
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
                     var lastYn = "N";
                     if (i == data.fileInfoList.length - 1) lastYn = "Y";
-                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn);
+                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i], data.fileToPage);
                 }
             } else if (flag == "UI_TRAINING") {
                 fn_processUiTraining(data.fileInfoList);
@@ -630,6 +670,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
                 alert("잘못된 요청입니다.");
                 return;
             }
+            
         },
         error: function (err) {
             endProgressBar(); // end progressbar

@@ -27,6 +27,8 @@ var insertTypo = queryConfig.uiLearningConfig.insertTypo;
 var insertDomainDic = queryConfig.uiLearningConfig.insertDomainDic;
 var selectTypo = queryConfig.uiLearningConfig.selectTypo;
 var updateTypo = queryConfig.uiLearningConfig.updateTypo;
+var selectBatchAnswerFile = queryConfig.batchLearningConfig.selectBatchAnswerFile;
+var selectBatchAnswerDataToImgId = queryConfig.batchLearningConfig.selectBatchAnswerDataToImgId;
 
 const upload = multer({
     storage: multer.diskStorage({
@@ -63,7 +65,7 @@ var callbackBlank = function () { };
 router.post('/searchBatchLearnDataList', function (req, res) {   
     if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
 }); 
-var callbackBatchLearningDataList = function (rows, req, res) {
+var callbackBatchLearningDataList = function (rows, req, res) {    
     res.send(rows);
 }
 var fnSearchBatchLearningDataList = function (req, res) {
@@ -79,6 +81,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
     if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) {
         listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
     }
+  
 
 	console.log("리스트 조회 쿼리 : " + listQuery);
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
@@ -89,6 +92,42 @@ var fnSearchBatchLearningDataList = function (req, res) {
 router.post('/searchBatchLearnData', function (req, res) {   
     if (req.isAuthenticated()) fnSearchBatchLearningData(req, res);
 }); 
+var callbackSelectBatchAnswerDataToImgId = function (rows, req, res, fileInfoList, orderbyRows) {
+    res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows, fileToPage: rows });
+};
+var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
+    var orderbyRows = [];
+    var imgIdArr = [];
+    for (var i in fileInfoList) {
+        for (var j in rows) {
+            if (fileInfoList[i].filePath == rows[j].FILEPATH) {
+                orderbyRows.push(rows[j]);
+                break;
+            }
+        }
+    }
+    for (var i in rows) {
+        if (imgIdArr.length == 0) {
+            imgIdArr.push(rows[i].IMGID);
+            continue;
+        }
+        for (var j in imgIdArr) {          
+            if (rows[i].IMGID == imgIdArr[j]) {
+                break;
+            }
+            if (j == imgIdArr.length - 1) {
+                imgIdArr.push(rows[i].IMGID);
+            }
+        }
+    }
+    var condQuery = "(";
+    for (var i in imgIdArr) {
+        condQuery += "" + imgIdArr[i] + ((i == imgIdArr.length - 1) ? ")" : ",");
+    }
+    console.log(selectBatchAnswerDataToImgId + condQuery);
+    commonDB.reqQueryF2param(selectBatchAnswerDataToImgId + condQuery, callbackSelectBatchAnswerDataToImgId, req, res, fileInfoList, orderbyRows);
+    //res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows});
+};
 var callbackBatchLearningData = function (rows, req, res) {
     var fileInfoList = [];
 	console.log("배치학습데이터 : " + rows.length);
@@ -131,7 +170,17 @@ var callbackBatchLearningData = function (rows, req, res) {
         };
         fileInfoList.push(fileInfo);
     }
-    res.send({ code: 200, fileInfoList: fileInfoList });
+
+    // ANSWER
+    var condQuery = "(";
+    for (var i in rows) {
+        condQuery += "'" + rows[i].FILEPATH + ((i == rows.length - 1) ? "')" : "',");
+    }
+    var answerQuery = selectBatchAnswerFile + condQuery;
+    console.log("정답 파일 조회 쿼리 : " + answerQuery);
+    commonDB.reqQueryF1param(answerQuery, callbackSelectBatchAnswerFile, req, res, fileInfoList);
+
+    //res.send({ code: 200, fileInfoList: fileInfoList });
 }
 var fnSearchBatchLearningData = function (req, res) {
     var condition = " AND F.imgId IN (";
