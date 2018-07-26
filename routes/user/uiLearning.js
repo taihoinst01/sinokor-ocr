@@ -9,6 +9,7 @@ var exec = require('child_process').exec;
 var request = require('request');
 var oracledb = require('oracledb');
 var dbConfig = require('../../config/dbConfig.js');
+var logger = require('../util/logger');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -411,6 +412,12 @@ function typoSentenceEval(data, callback) {
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\typo.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
+
+        if (error) {
+            logger.error.info(`typo ml model exec error: ${error}`);
+            return;
+        }
+
         //console.log("typo Test : " + stdout);
         var typoData = stdout.split(/\r\n/g);
 

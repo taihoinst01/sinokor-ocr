@@ -10,6 +10,13 @@ var propertiesConfig = {
     },
     batchLearning: {
 
+    },
+
+    filepath: {
+        //develop
+        logfilepath: 'c:/logs'
+        //product
+        //logfilepath: 'c:/logs'
     }
 };
 
