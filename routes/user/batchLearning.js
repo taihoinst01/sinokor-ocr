@@ -12,7 +12,9 @@ var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 var PythonShell = require('python-shell');
+var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 const FileHound = require('filehound');
+const xlsx = require('xlsx');
 
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
@@ -24,6 +26,8 @@ var insertTypo = queryConfig.uiLearningConfig.insertTypo;
 var insertDomainDic = queryConfig.uiLearningConfig.insertDomainDic;
 var selectTypo = queryConfig.uiLearningConfig.selectTypo;
 var updateTypo = queryConfig.uiLearningConfig.updateTypo;
+var selectBatchAnswerFile = queryConfig.batchLearningConfig.selectBatchAnswerFile;
+var selectBatchAnswerDataToImgId = queryConfig.batchLearningConfig.selectBatchAnswerDataToImgId;
 
 const upload = multer({
     storage: multer.diskStorage({
@@ -51,12 +55,14 @@ router.get('/', function (req, res) {                           // 배치학습 
     if (req.isAuthenticated()) res.render('user/batchLearning', { currentUser: req.user });
     else res.redirect("/logout");
 });
+// BLANK CALLBACK
+var callbackBlank = function () { };
 
 // [POST] 배치학습데이터리스트 조회 
 router.post('/searchBatchLearnDataList', function (req, res) {   
     if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
 }); 
-var callbackBatchLearningDataList = function (rows, req, res) {
+var callbackBatchLearningDataList = function (rows, req, res) {    
     res.send(rows);
 }
 var fnSearchBatchLearningDataList = function (req, res) {
@@ -72,6 +78,9 @@ var fnSearchBatchLearningDataList = function (req, res) {
     if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) {
         listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
     }
+  
+
+	console.log("리스트 조회 쿼리 : " + listQuery);
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
 }
 
@@ -80,50 +89,96 @@ var fnSearchBatchLearningDataList = function (req, res) {
 router.post('/searchBatchLearnData', function (req, res) {   
     if (req.isAuthenticated()) fnSearchBatchLearningData(req, res);
 }); 
+var callbackSelectBatchAnswerDataToImgId = function (rows, req, res, fileInfoList, orderbyRows) {
+    res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows, fileToPage: rows });
+};
+var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
+    var orderbyRows = [];
+    var imgIdArr = [];
+    for (var i in fileInfoList) {
+        for (var j in rows) {
+            if (fileInfoList[i].filePath == rows[j].FILEPATH) {
+                orderbyRows.push(rows[j]);
+                break;
+            }
+        }
+    }
+
+    for (var i in rows) {
+        if (imgIdArr.length == 0) {
+            imgIdArr.push(rows[i].IMGID);
+            continue;
+        }
+        for (var j in imgIdArr) {          
+            if (rows[i].IMGID == imgIdArr[j]) {
+                break;
+            }
+            if (j == imgIdArr.length - 1) {
+                imgIdArr.push(rows[i].IMGID);
+            }
+        }
+    }
+    var condQuery = "(";
+    for (var i in imgIdArr) {
+        condQuery += "" + imgIdArr[i] + ((i == imgIdArr.length - 1) ? ")" : ",");
+    }
+    console.log(selectBatchAnswerDataToImgId + condQuery);
+    commonDB.reqQueryF2param(selectBatchAnswerDataToImgId + condQuery, callbackSelectBatchAnswerDataToImgId, req, res, fileInfoList, orderbyRows);
+    //res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows});
+};
 var callbackBatchLearningData = function (rows, req, res) {
     var fileInfoList = [];
+	console.log("배치학습데이터 : " + rows.length);
     for (var i = 0, x = rows.length; i < x; i++) {
         var oriFileName = rows[i].ORIGINFILENAME;
         var _lastDot = oriFileName.lastIndexOf('.');
         var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
         var fileInfo = {
-            imgId: rows[i].imgId,
-            filePath: rows[i].filePath,
+            imgId: rows[i].IMGID,
+            filePath: rows[i].FILEPATH,
             oriFileName: rows[i].ORIGINFILENAME,
-            svrFileName: rows[i].svrFileName,
+            svrFileName: rows[i].SERVERFILENAME,
             convertFileName: rows[i].ORIGINFILENAME.replace(rows[i].FILEEXTENSION, "jpg"),
-            fileExt: rows[i].fileExt,
-            fileSize: rows[i].fileSize,
-            contentType: rows[i].contentType ? rows[i].contentType : "",
-            imgFileStNo: rows[i].imgFileStNo,
-            imgFileEndNo: rows[i].imgFileEndNo,
-            cscoNm: rows[i].cscoNm,
-            ctNm: rows[i].ctNm,
-            insStDt: rows[i].insStDt,
-            insEndDt: rows[i].insEndDt,
-            curCd: rows[i].curCd,
-            pre: rows[i].pre,
-            com: rows[i].com,
-            brkg: rows[i].brkg,
-            txam: rows[i].txam,
-            prrsCf: rows[i].prrsCf,
-            prrsRls: rows[i].prrsRls,
-            lsresCf: rows[i].lsresCf,
-            lsresRls: rows[i].lsresRls,
-            cla: rows[i].cla,
-            exex: rows[i].exex,
-            svf: rows[i].svf,
-            cas: rows[i].cas,
-            ntbl: rows[i].ntbl,
-            cscoSaRfrnCnnt2: rows[i].cscoSaRfrnCnnt2,
-            regId: rows[i].regId,
-            regDate: rows[i].regDate,
-            updId: rows[i].updId,
-            updDate: rows[i].updDate
+            fileExt: rows[i].FILEEXTENSION,
+            fileSize: rows[i].FILESIZE,
+            contentType: rows[i].CONTENTTYPE ? rows[i].CONTENTTYPE : "",
+            imgFileStNo: rows[i].IMGFILESTARTNO,
+            imgFileEndNo: rows[i].IMGFILEENDNO,
+            cscoNm: rows[i].CSCONM,
+            ctNm: rows[i].CTNM,
+            insStDt: rows[i].INSSTDT,
+            insEndDt: rows[i].INSENDDT,
+            curCd: rows[i].CURCD,
+            pre: rows[i].PRE,
+            com: rows[i].COM,
+            brkg: rows[i].BRKG,
+            txam: rows[i].TXAM,
+            prrsCf: rows[i].PRRCF,
+            prrsRls: rows[i].PRRSRLS,
+            lsresCf: rows[i].LSRESCF,
+            lsresRls: rows[i].LSRESRLS,
+            cla: rows[i].CLA,
+            exex: rows[i].EXEX,
+            svf: rows[i].SVF,
+            cas: rows[i].CAS,
+            ntbl: rows[i].NTBL,
+            cscoSaRfrnCnnt2: rows[i].CSCOSARFRNCNNT2,
+            regId: rows[i].REGID,
+            regDate: rows[i].REGDATE
         };
         fileInfoList.push(fileInfo);
     }
-    res.send({ code: 200, fileInfoList: fileInfoList });
+
+    // ANSWER
+    var condQuery = "(";
+    for (var i in rows) {
+        condQuery += "'" + rows[i].FILEPATH + ((i == rows.length - 1) ? "')" : "',");
+    }
+    var answerQuery = selectBatchAnswerFile + condQuery;
+    console.log("정답 파일 조회 쿼리 : " + answerQuery);
+    commonDB.reqQueryF1param(answerQuery, callbackSelectBatchAnswerFile, req, res, fileInfoList);
+
+    //res.send({ code: 200, fileInfoList: fileInfoList });
 }
 var fnSearchBatchLearningData = function (req, res) {
     var condition = " AND F.imgId IN (";
@@ -133,6 +188,7 @@ var fnSearchBatchLearningData = function (req, res) {
     condition = condition.slice(0, -1);
     condition += ")";
     var query = selectBatchLearningDataListQuery + condition;
+	console.log("단건 조회 쿼리 : " + query);
     commonDB.reqQuery(query, callbackBatchLearningData, req, res);
 }
 
@@ -141,7 +197,7 @@ var callbackDeleteBatchLearningData = function (rows, req, res) {
     if (req.isAuthenticated()) res.send({ code: 200, rows: rows });
 };
 router.post('/deleteBatchLearningData', function (req, res) {
-    var condition = " AND IMG_ID IN (";
+    var condition = "(";
     for (var i = 0, x = req.body.imgIdArray.length; i < x; i++) {
         condition += "'" + req.body.imgIdArray[i] + "',";
     }
@@ -149,6 +205,84 @@ router.post('/deleteBatchLearningData', function (req, res) {
     condition += ")";
     var query = queryConfig.batchLearningConfig.deleteBatchLearningData + condition;
     commonDB.reqQuery(query, callbackDeleteBatchLearningData, req, res);
+});
+
+// [POST] 엑셀 업로드
+router.post('/excelUpload', upload.any(), function (req, res) {
+    // 엑셀 파일 확인
+    var pathExcel = appRoot + propertiesConfig.filepath.excelBatchFilePath;
+    var dataExcel = appRoot + propertiesConfig.filepath.excelBatchFileData;
+    console.log(dataExcel);
+    var pathExcelWorkbook = xlsx.readFile(pathExcel);
+    var dataExcelWorkbook = xlsx.readFile(dataExcel);
+    var pathExcelSheet = pathExcelWorkbook.Sheets[pathExcelWorkbook.SheetNames[0]];
+    var dataExcelSheet = dataExcelWorkbook.Sheets[dataExcelWorkbook.SheetNames[0]];
+
+    var pathResult = [];
+    var pathRow;
+    var pathRowNum;
+    var pathColNum;
+    var pathRange = xlsx.utils.decode_range(pathExcelSheet['!ref']);
+    for (pathRowNum = pathRange.s.r; pathRowNum <= pathRange.e.r; pathRowNum++) {
+        pathRow = [];
+        for (pathColNum = pathRange.s.c; pathColNum <= pathRange.e.c; pathColNum++) {
+            var nextCell = pathExcelSheet[
+                xlsx.utils.encode_cell({ r: pathRowNum, c: pathColNum })
+            ];
+            if (typeof nextCell === 'undefined') {
+                pathRow.push(void 0);
+            } else pathRow.push(nextCell.w);
+        }
+        pathResult.push(pathRow);
+    }
+    var dataResult = [];
+    var dataRow;
+    var dataRowNum;
+    var dataColNum;
+    var dataRange = xlsx.utils.decode_range(dataExcelSheet['!ref']);
+    for (dataRowNum = dataRange.s.r; dataRowNum <= dataRange.e.r; dataRowNum++) {
+        dataRow = [];
+        for (dataColNum = dataRange.s.c; dataColNum <= dataRange.e.c; dataColNum++) {
+            var nextCell = dataExcelSheet[
+                xlsx.utils.encode_cell({ r: dataRowNum, c: dataColNum })
+            ];
+            if (typeof nextCell === 'undefined') {
+                dataRow.push(void 0);
+            } else dataRow.push(nextCell.w);
+        }
+        dataResult.push(dataRow);
+    }
+
+    // insert filepath.xlsx 
+    for (var i = 1, x = pathResult.length; i < x; i++) { // 첫번째 행은 무시
+        if (!commonUtil.isNull(pathResult[i][0])) {
+            var data = [];
+            for (var j = 0, y = pathResult[i].length; j < y; j++) {
+                data.push(commonUtil.nvl(pathResult[i][j]));
+            }
+            commonDB.queryNoRows(queryConfig.batchLearningConfig.insertBatchAnswerFile, data, callbackBlank);
+        } else {
+            continue;
+        }
+    }
+    // insert data.xlsx
+    for (var i = 1, x = dataResult.length; i < x; i++) { // 첫번째 행은 무시
+        if (!commonUtil.isNull(dataResult[i][0])) {
+            var data = [];
+            for (var j = 0, y = dataResult[i].length; j < y; j++) {
+                data.push(commonUtil.nvl(dataResult[i][j]));
+            }
+            console.log("data.. : " + JSON.stringify(data));
+            commonDB.queryNoRows(queryConfig.batchLearningConfig.insertBatchAnswerData, data, callbackBlank);
+        } else {
+            continue;
+        }
+    }
+    if (pathResult.length > 0 || dataResult.length > 0) {
+        res.send({ code: 200, pathCnt: pathResult.length, dataCnt: dataResult.length });
+    } else {
+        res.send({ code: 300, pathCnt: 0, dataCnt: 0 });
+    }
 });
 
 // [POST] 이미지 업로드
@@ -189,7 +323,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
             //console.log("upload ifile : " + ifile + " : oFile : " + ofile);
             exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
                 if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
-                    res.send({ code: 200, message: returnObj, fileInfo: fileInfo });
+                    res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
                 }
                 endCount++;
             });

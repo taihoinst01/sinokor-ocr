@@ -119,11 +119,19 @@
                             <li><a href="#none" onclick="javascript: selectViewCount(1000);">행표시 : 1000</a></li>
                         </ul>
                     </div>
-                    <button type="button" id="btn_sync" class="button_st1 ml5 fl">Sync</button>
+                    <!--<button type="button" id="btn_sync" class="button_st1 ml5 fl">Sync</button>-->
+                    <button type="button" id="btn_sync" class="bgColor ml5 fl"><img src="publish/image/sync_btn.png" /></button>
                     <!-- // Looks like select box-->
                     <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
                         <div class="fr">
-                            <p class="attach_btn fl"><input type="file" id="excel_file" name="excel_file" /><label for="excel_file">Excel Upload</label></p>
+                            <!--<p class="attach_btn fl"><input type="file" id="excel_file" name="excel_file" /><label for="excel_file">Excel Upload</label></p>-->
+                            <button type="button" id="btn_excelUpload" class="button_st5">Excel Upload</button>
+                            <div class="fl mr10 outDIv">
+                                <div class="innerDiv">
+                                    <input type="checkbox" value="" class="fl" id="uiTrainingChk" name="" /><span class="fr ml5 mr10">UI Training</span>
+                                </div>
+                            </div>
+                            <button type="button" id="btn_excelUpload" class="button_st5">Excel Upload</button>
                             <p class="attach_btn fl"><input type="file" id="document_file" name="file" multiple /><label for="document_file">Document Upload</label></p>
                             <button type="button" id="btn_imageDelete" class="button_st5">Document Delete</button>
                             <button type="button" id="btn_batchTraining" class="button_st5">BATCH Training</button>
@@ -170,7 +178,7 @@
                                     </colgroup>
                                     <thead>
                                         <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
+                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
                                             <th scope="row">이미지ID</th>
                                             <th scope="row">파일명</th>
                                             <th scope="row">학습여부</th>
@@ -249,7 +257,7 @@
                                     </colgroup>
                                     <thead>
                                         <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll_after" name="listCheckAll_after" /></div></th>
+                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="stb00_all" value="" id="listCheckAll_after" name="listCheckAll_after" /></div></th>
                                             <th scope="row">이미지ID</th>
                                             <th scope="row">파일명</th>
                                             <th scope="row">학습여부</th>
@@ -379,7 +387,7 @@
                 </div>
                 <div class="pop_content">
                     <div class="pop_box_11">
-                        <img src="../css/sample01.jpg" id="uiImg" alt="샘플이미지" />
+                        <img src="publish/image/sample01.jpg" alt="샘플이미지" />
                     </div>
                     <div class="pop_box_12 box_txt_st01" style="overflow-y:scroll">
                         <!-- TODO: 스크롤바-->

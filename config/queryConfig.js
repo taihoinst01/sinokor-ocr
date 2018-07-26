@@ -142,6 +142,22 @@ var batchLearningConfig = {
             tbl_ocr_file(seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize, contentType, fileType, regId, regDate)
          VALUES
             (seq_ocr_file.nextval, :imgId, :filePath, :originFileName, :serverFileName, :fileExtension, :fileSize, :contentType, :fileType, :regId, sysdate) `,
+    insertBatchAnswerFile:
+        `INSERT INTO TBL_BATCH_ANSWER_FILE (IMGID,PAGENUM,FILEPATH,TOTALCOUNT) values (:imgId, :pageNum, :filePath, :totalCount) `,
+    insertBatchAnswerData:
+        `INSERT INTO TBL_BATCH_ANSWER_DATA (
+            IMGID, IMGFILESTARTNO, IMGFILEENDNO, ENTRYNO, STATEMENTDIV, CONTRACTNUM, OGCOMPANYCODE, OGCOMPANYNAME, BROKERCODE, BROKERNAME,
+            CTNM, INSSTDT, INSENDDT, UY, CURCD, PAIDPERCENT, PAIDSHARE, OSLPERCENT, OSLSHARE, GROSSPM, PM, PMPFEND, PMPFWOS, XOLPM,
+            RETURNPM, GROSSCN, CN, PROFITCN, BROKERAGE, TAX, OVERRIDINGCOM, CHARGE, PMRESERVERTD1, PFPMRESERVERTD1, PMRESERVERTD2, PFPMRESERVERTD2,
+            CLAIM, LOSSRECOVERY, CASHLOSS, CASHLOSSRD, LOSSRR, LOSSRR2, LOSSPFEND, LOSSPFWOA, INTEREST, TAXON, MISCELLANEOUS, PMBL,
+            CMBL, NTBL, CSCOSARFRNCNNT2
+        ) VALUES (
+            :imgId, :imgfilestartno, :imgfileendno, :entryno, :statementdiv, :contractnum, :ogcompanycode, :ogcompanyname, :brokercode, :brokername,
+            :ctnm, :insstdt, :insenddt, :uy, :curcd, :paidpercent, :paidshare, :oslpercent, :oslshare, :grosspm, :pm, :pmpfend, :pmpfwos, :xolpm,
+            :returnpm, :grosscn, :cn, :profitcn, :brokerage, :tax, :overridingcom, :charge, :pmreservertd1, :pfpmreservertd1, :pmreservertd2, :pfpmreservertd2,
+            :claim, :lossrecovery, :cashloss, :cashlossrd, :lossrr, :lossrr2, :losspfend, :losspfwoa, :interest, :taxon, :miscellaneous, :pmbl,
+            :cmbl, :ntbl, :cscosarfrncnnt2
+        ) `,
     selectIsExistWordToSymspell:
         `SELECT
             keyword, frequency
@@ -169,26 +185,27 @@ var batchLearningConfig = {
                 insStDt = :insStDt, insEndDt = :insEndDt, curCd = :curCd, pre = :pre, com = :com,
                 brkg = :brkg, txam = :txam, prrsCf = :prrsCf, prrsRls = :prrsRls, lsresCf = :lsresCf,
                 lsresRls = :lsresRls, cla = :cla, exex = :exex, svf = :svf, cas = :cas, ntbl = :ntbl,
-                cscoSaRfrnCnnt2 = :cscoSaRfrnCnnt2, regId = :regId, regDate = sysdate
-            WHERE imgId = ?`,
+                cscoSaRfrnCnnt2 = :cscoSaRfrnCnnt2, updId = :updId, updDate = sysdate
+            WHERE imgId = :imgId`,
     deleteBatchLearningData:
         `UPDATE 
             tbl_batch_learn_data
          SET
             status = 'D'
          WHERE imgId IN `,
-    compareBatchLearningData:
+    selectBatchAnswerFile: 
         `SELECT
-            IMGID, IMGFILESTARTNO, IMGFILEENDNO,ENTRYNO, STATEMENTDIV, CONTRACTNUM, OGCOMPANYCODE, OGCOMPANYNAME,
-            BROKERCODE, BROKERNAME, CTNM, INSSTDT, INSENDDT, UY, CURCD, PAIDPERCENT, PAIDSHARE, OSLPERCENT,
-            OSLSHARE, GROSSPM, PM, PMPFEND, PMPFWOS, XOLPM, RETURNPM, GROSSCN, CN, PROFITCN, BROKERAGE,
-            TAX, OVERRIDINGCOM, CHARGE, PMRESERVERTD1, PMRESERVERTD2, PFPMRESERVERTD2, CLAIM, LOSSRECOVERY,
-            CASHLOSS, CASHLOSSRD, LOSSRR, LOSSRR2, LOSSPFEND, LOSSPFWOA, INTEREST, TAXON, MISCELLANEOUS,
-            PMBL, CMBL, NTBL, CSCOSARFRNCNNT2
-         FROM 
-            tbl_batch_answer_data
-         where 
-            imgId = :imgId `
+            imgId, pageNum, filePath, totalCount
+         FROM
+            tbl_batch_answer_file 
+         WHERE filePath in `,
+    selectBatchAnswerDataToImgId:
+        `SELECT
+            imgId, imgFileStartNo, imgFileEndNo
+         FROM
+            TBL_BATCH_ANSWER_DATA
+        WHERE
+            imgId in `
 }
 
 var uiLearningConfig = {

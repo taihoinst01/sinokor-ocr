@@ -14,7 +14,7 @@ jQuery(function($){
 		});
 
 	// input 선택시 전체선택/해제
-	$("#sta00_all").change(function(){
+	$(".sta00_all").change(function(){
 	 	var chk = $(".sta00");
 	 	if(this.checked){
 		  	chk.prop("checked", true);
@@ -26,7 +26,7 @@ jQuery(function($){
 		  	$(".stck_tr").parents("tr").removeClass('on');
 	 	}
 	});
-	$("#stb00_all").change(function(){
+	$(".stb00_all").change(function(){
 	 	var chk = $(".stb00");
 	 	if(this.checked){
 	  	chk.prop("checked", true);
@@ -209,7 +209,7 @@ function layer_open(el){
 	if (temp.outerWidth() < $(document).width() ) temp.css('margin-left', '-'+temp.outerWidth()/2+'px');
 	else temp.css('left', '0px');
 	//	temp.find('a.cbtn').click(function(e){
-	$('a.cbtn').click(function(e){
+	$('.cbtn').click(function(e){
 		$(this).parents('.poplayer').fadeOut();
 		e.preventDefault();
 	});
@@ -243,7 +243,7 @@ $(document).ready(function(){
 });
 
 
-/* Input Cleckbox */
+/* Input Checkbox */
 (function($){$.fn.ezMark=function(options){options=options||{};var defaultOpt={checkboxCls:options.checkboxCls||'ez-checkbox',radioCls:options.radioCls||'ez-radio',checkedCls:options.checkedCls||'ez-checked',selectedCls:options.selectedCls||'ez-selected',hideCls:'ez-hide'};return this.each(function(){var $this=$(this);var wrapTag=$this.attr('type')=='checkbox'?'<div class="'+defaultOpt.checkboxCls+'">':'<div class="'+defaultOpt.radioCls+'">';if($this.attr('type')=='checkbox'){$this.addClass(defaultOpt.hideCls).wrap(wrapTag).change(function(){if($(this).is(':checked')){$(this).parent().addClass(defaultOpt.checkedCls);}
 else{$(this).parent().removeClass(defaultOpt.checkedCls);}});if($this.is(':checked')){$this.parent().addClass(defaultOpt.checkedCls);}}
 else if($this.attr('type')=='radio'){$this.addClass(defaultOpt.hideCls).wrap(wrapTag).change(function(){$('input[name="'+$(this).attr('name')+'"]').each(function(){if($(this).is(':checked')){$(this).parent().addClass(defaultOpt.selectedCls);}else{$(this).parent().removeClass(defaultOpt.selectedCls);}});});if($this.is(':checked')){$this.parent().addClass(defaultOpt.selectedCls);}}});}})(jQuery);
