@@ -1,11 +1,13 @@
 @charset 'euc-kr';
 /* @charset 'utf-8'; */
 @font-face {
+    /*
     font-family: 'notokr-regular';
     src: url('../font/notokr-regular.eot');
     src: url('../font/notokr-regular.eot?#iefix') format('embedded-opentype'), url('../font/notokr-regular.woff2') format('woff2'), url('../font/notokr-regular.woff') format('woff'), url('../font/notokr-regular.ttf') format('truetype'), url('../font/notokr-regular.svg#notokr-regular') format('svg');
     font-weight: normal;
     font-style: normal;
+    */
 }
 
 @font-face {
