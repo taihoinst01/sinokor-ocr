@@ -14,9 +14,10 @@ var propertiesConfig = {
 
     filepath: {
         //develop
-        logfilepath: 'c:/logs'
+        logfilepath: 'c:/logs',
         //product
         //logfilepath: 'c:/logs'
+        excelPath: '\\excel\\'
     }
 };
 
