@@ -68,7 +68,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
         else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.status = 'Y' ";
     }
     // LIMIT
-    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery + limitQuery;
+    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery;
     if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) {
         listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
     }
@@ -83,15 +83,15 @@ router.post('/searchBatchLearnData', function (req, res) {
 var callbackBatchLearningData = function (rows, req, res) {
     var fileInfoList = [];
     for (var i = 0, x = rows.length; i < x; i++) {
-        var oriFileName = rows[i].oriFileName;
+        var oriFileName = rows[i].ORIGINFILENAME;
         var _lastDot = oriFileName.lastIndexOf('.');
         var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
         var fileInfo = {
             imgId: rows[i].imgId,
             filePath: rows[i].filePath,
-            oriFileName: rows[i].oriFileName,
+            oriFileName: rows[i].ORIGINFILENAME,
             svrFileName: rows[i].svrFileName,
-            convertFileName: rows[i].oriFileName.replace(rows[i].FILE_EXT, "jpg"),
+            convertFileName: rows[i].ORIGINFILENAME.replace(rows[i].FILEEXTENSION, "jpg"),
             fileExt: rows[i].fileExt,
             fileSize: rows[i].fileSize,
             contentType: rows[i].contentType ? rows[i].contentType : "",
@@ -239,10 +239,14 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 router.post('/execBatchLearningData', function (req, res) {
     var arg = req.body.data;
     typoSentenceEval(arg, function (result1) {
+        console.log("typo ML");
         domainDictionaryEval(result1, function (result2) {
+            console.log("domain ML");
             textClassificationEval(result2, function (result3) {
+                console.log("text ML");
                 labelMappingEval(result3, function (result4) {
                     //console.log("labelMapping Result : " + JSON.stringify(result4));
+                    console.log("label ML");
                     res.send(result4);
                 })
             })
@@ -302,6 +306,11 @@ router.post('/updateBatchLearningData', function (req, res) {
     var data = [imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, updId, imgId];
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData, data, callbackUpdateBatchLearningData, req, res);
 });
+
+var callbackUpdateBatchLearningData = function (rows, req, res) {
+    console.log("UpdateBatchLearningData finish..");
+    res.send({ code: 200, rows: rows });
+}
 
 // [POST] syncFile
 router.post('/syncFile', function (req, res) {
@@ -386,6 +395,17 @@ router.post('/syncFile', function (req, res) {
     files.done(function () {
     });
 });
+
+router.post('/compareBatchLearningData', function (req, res) {
+    var dataObj = req.body.dataObj;
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.compareBatchLearningData, [dataObj.imgId], callbackcompareBatchLearningData, req, res);
+});
+
+var callbackcompareBatchLearningData = function (rows, req, res) {
+    console.log("compareBatchLearningData finish..");
+    res.send({ code: 200, rows: rows });
+}
+
 
 
 

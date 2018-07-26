@@ -286,6 +286,7 @@ function processImage(fileInfo, fileName, lastYn) {
         console.log("processImage : done ");
         ocrCount++;
         execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
+        console.log("execBatchLearningData Done?");
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
@@ -339,6 +340,7 @@ function execBatchLearningData(fileInfo, fileName, regions, lastYn) {
         beforeSend: function () {
         },
         success: function (data) {
+            /*
             updateBatchLearningData(fileInfo, data, lastYn);
             if (lastYn == "Y") {
                 addProgressBar(71, 99);
@@ -347,11 +349,99 @@ function execBatchLearningData(fileInfo, fileName, regions, lastYn) {
                     searchBatchLearnDataList(addCond);
                 }, 1000);
             }
+            */
+            addProgressBar(71, 90);
+            compareBatchLearningData(fileInfo, data, lastYn);
         },
         error: function (err) {
             console.log(err);
         }
     });
+}
+
+function compareBatchLearningData(fileInfo, data, lastYn) {
+    console.log("compareBatchLearningData fileInfo : " + JSON.stringify(fileInfo));
+    var dataObj = {};
+
+    for (var i = 0, x = data.length; i < x; i++) {
+        var location = nvl(data[i]["location"]);
+        var label = nvl(data[i]["label"]);
+        var text = nvl(data[i]["text"]);
+        var column = nvl(data[i]["column"]);
+        if (label == "fixlabel" || label == "entryrowlabel") {
+            for (var j = 0, y = data.length; j < y; j++) {
+                if (data[j].column == column + "_VALUE") {
+                    console.log("Find Label and Value : " + data[j]["column"] + " >> " + data[j]["text"]);
+                    if (isNull(dataObj[column])) {
+                        // DOUBLE 형태의 값은 공백 제거 처리
+                        if (column == "PRE" || column == "COM" || column == "BRKG" || column == "TXAM" ||
+                            column == "PRRS_CF" || column == "PRRS_RLS" || column == "LSRES_CF" ||
+                            column == "LSRES_RLS" || column == "CLA" || column == "EXEX" || column == "SVF" ||
+                            column == "CAS" || column == "NTBL") {
+                            dataObj[column] = data[j]["text"].replace(/(\s*)/g, "");
+                        } else {
+                            dataObj[column] = data[j]["text"];
+                        }
+                    } else {
+                        console.log("Alreaday exist Column(KEY) : " + data[j]["column"] + " >> " + data[j]["text"]);
+                    }
+                }
+            }
+        }
+    }
+    console.log("결과 : " + JSON.stringify(dataObj));
+
+    // BatchLearning Data Insert
+    if (dataObj) {
+        var fileNameSplit = fileInfo.oriFileName.split(".");
+        var imgId = fileNameSplit[0];
+
+        dataObj["imgId"] = imgId;
+        var param = { dataObj: dataObj };
+        $.ajax({
+            url: '/batchLearning/compareBatchLearningData',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (retData) {
+                console.log("SUCCESS compareBatchLearningData : " + JSON.stringify(retData));
+
+                if (retData.rows[0].IMGID == dataObj["imgId"]) {
+                    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
+                        uiPopUpTrain(data, fileInfo);
+                    }
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+}
+
+function uiPopUpTrain(data,fileInfo) {
+    $("#uiImg").attr("src", "./uploads/" + fileInfo.convertFileName);
+    $("#cscoNm").val(data["CSCO_NM"]);//거래사명
+    $("#ctNm").val(data["CT_NM"]);//계약명
+    $("#insStDt").val(data["INS_ST_DT"]);//보험개시일
+    $("#insEndDt").val(data["INS_END_DT"]);//보험종료일
+    $("#curCd").val(data["CUR_CD"]);//화폐코드
+    $("#pre").val(data["PRE"]);//보험료
+    $("#com").val(data["COM"]);//일반수수료
+    $("#brkg").val(data["BRKG"]);//중개수수료
+    $("#txam").val(data["TXAM"]);//세금
+    $("#prrsCf").val(data["PRRS_CF"]);//보험금유보금적립액
+    $("#prrsRls").val(data["PRRS_RLS"]);//보험료유보금해제액
+    $("#lsresCf").val(data["LSRES_CF"]);//보험금유보금적립액
+    $("#lsresRls").val(data["LSRES_RLS"]);//보험금유보금해제액
+    $("#cla").val(data["CLA"]);//보험금
+    $("#exex").val(data["EXEX"]);//부대비
+    $("#svf").val(data["SVF"]);//손해조사비
+    $("#cas").val(data["CAS"]);//즉시불보험금
+    $("#ntbl").val(data["NTBL"]);//NET BALANCE
+    $("#layer2").css("display", "block");
+    return;
 }
 
 // [UPDATE PARSING RESULT, UPDATE FILE INFO DB]

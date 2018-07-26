@@ -169,14 +169,26 @@ var batchLearningConfig = {
                 insStDt = :insStDt, insEndDt = :insEndDt, curCd = :curCd, pre = :pre, com = :com,
                 brkg = :brkg, txam = :txam, prrsCf = :prrsCf, prrsRls = :prrsRls, lsresCf = :lsresCf,
                 lsresRls = :lsresRls, cla = :cla, exex = :exex, svf = :svf, cas = :cas, ntbl = :ntbl,
-                cscoSaRfrnCnnt2 = :cscoSaRfrnCnnt2, updId = :updId, updDate = sysdate
+                cscoSaRfrnCnnt2 = :cscoSaRfrnCnnt2, regId = :regId, regDate = sysdate
             WHERE imgId = ?`,
     deleteBatchLearningData:
         `UPDATE 
             tbl_batch_learn_data
          SET
             status = 'D'
-         WHERE imgId IN `
+         WHERE imgId IN `,
+    compareBatchLearningData:
+        `SELECT
+            IMGID, IMGFILESTARTNO, IMGFILEENDNO,ENTRYNO, STATEMENTDIV, CONTRACTNUM, OGCOMPANYCODE, OGCOMPANYNAME,
+            BROKERCODE, BROKERNAME, CTNM, INSSTDT, INSENDDT, UY, CURCD, PAIDPERCENT, PAIDSHARE, OSLPERCENT,
+            OSLSHARE, GROSSPM, PM, PMPFEND, PMPFWOS, XOLPM, RETURNPM, GROSSCN, CN, PROFITCN, BROKERAGE,
+            TAX, OVERRIDINGCOM, CHARGE, PMRESERVERTD1, PMRESERVERTD2, PFPMRESERVERTD2, CLAIM, LOSSRECOVERY,
+            CASHLOSS, CASHLOSSRD, LOSSRR, LOSSRR2, LOSSPFEND, LOSSPFWOA, INTEREST, TAXON, MISCELLANEOUS,
+            PMBL, CMBL, NTBL, CSCOSARFRNCNNT2
+         FROM 
+            tbl_batch_answer_data
+         where 
+            imgId = :imgId `
 }
 
 var uiLearningConfig = {
