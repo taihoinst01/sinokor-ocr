@@ -11,12 +11,13 @@ var pool = mysql.createPool(dbConfig);
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
-var csvParser = require('papaparse');
 var PythonShell = require('python-shell');
 const FileHound = require('filehound');
-//var uuid = require('uuid');
+const xlsx = require('xlsx');
+
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
+var selectBatchLearningDataQuery = queryConfig.batchLearningConfig.selectBatchLearningData;
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
 var selectLabel = queryConfig.uiLearningConfig.selectLabel;
@@ -24,6 +25,8 @@ var insertTypo = queryConfig.uiLearningConfig.insertTypo;
 var insertDomainDic = queryConfig.uiLearningConfig.insertDomainDic;
 var selectTypo = queryConfig.uiLearningConfig.selectTypo;
 var updateTypo = queryConfig.uiLearningConfig.updateTypo;
+var selectBatchAnswerFile = queryConfig.batchLearningConfig.selectBatchAnswerFile;
+var selectBatchAnswerDataToImgId = queryConfig.batchLearningConfig.selectBatchAnswerDataToImgId;
 
 const upload = multer({
     storage: multer.diskStorage({
@@ -51,16 +54,12 @@ router.get('/', function (req, res) {                           // 배치학습 
     if (req.isAuthenticated()) res.render('user/batchLearning', { currentUser: req.user });
     else res.redirect("/logout");
 });
-router.post('/searchBatchLearnDataList', function (req, res) {   // 배치학습데이터리스트 조회
+
+// [POST] 배치학습데이터리스트 조회 
+router.post('/searchBatchLearnDataList', function (req, res) {   
     if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
 }); 
-
-
-/***************************************************************
- * function
- * *************************************************************/
-// [List] 배치학습데이터리스트 조회 
-var callbackBatchLearningDataList = function (rows, req, res) {
+var callbackBatchLearningDataList = function (rows, req, res) {    
     res.send(rows);
 }
 var fnSearchBatchLearningDataList = function (req, res) {
@@ -72,16 +71,154 @@ var fnSearchBatchLearningDataList = function (req, res) {
         else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.status = 'Y' ";
     }
     // LIMIT
-    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery
-
+    var listQuery = selectBatchLearningDataListQuery + condQuery + orderQuery;
     if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) {
         listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
     }
+  
 
-    //console.log("listQuery : " + listQuery);
+	console.log("리스트 조회 쿼리 : " + listQuery);
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
-};
+}
 
+
+// [POST] 배치학습데이터 조회
+router.post('/searchBatchLearnData', function (req, res) {   
+    if (req.isAuthenticated()) fnSearchBatchLearningData(req, res);
+}); 
+var callbackSelectBatchAnswerDataToImgId = function (rows, req, res, fileInfoList, orderbyRows) {
+    res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows, fileToPage: rows });
+};
+var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
+    var orderbyRows = [];
+    var imgIdArr = [];
+    for (var i in fileInfoList) {
+        for (var j in rows) {
+            if (fileInfoList[i].filePath == rows[j].FILEPATH) {
+                orderbyRows.push(rows[j]);
+                break;
+            }
+        }
+    }
+
+    for (var i in rows) {
+        if (imgIdArr.length == 0) {
+            imgIdArr.push(rows[i].IMGID);
+            continue;
+        }
+        for (var j in imgIdArr) {          
+            if (rows[i].IMGID == imgIdArr[j]) {
+                break;
+            }
+            if (j == imgIdArr.length - 1) {
+                imgIdArr.push(rows[i].IMGID);
+            }
+        }
+    }
+    var condQuery = "(";
+    for (var i in imgIdArr) {
+        condQuery += "" + imgIdArr[i] + ((i == imgIdArr.length - 1) ? ")" : ",");
+    }
+    console.log(selectBatchAnswerDataToImgId + condQuery);
+    commonDB.reqQueryF2param(selectBatchAnswerDataToImgId + condQuery, callbackSelectBatchAnswerDataToImgId, req, res, fileInfoList, orderbyRows);
+    //res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows});
+};
+var callbackBatchLearningData = function (rows, req, res) {
+    var fileInfoList = [];
+	console.log("배치학습데이터 : " + rows.length);
+    for (var i = 0, x = rows.length; i < x; i++) {
+        var oriFileName = rows[i].ORIGINFILENAME;
+        var _lastDot = oriFileName.lastIndexOf('.');
+        var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
+        var fileInfo = {
+            imgId: rows[i].IMGID,
+            filePath: rows[i].FILEPATH,
+            oriFileName: rows[i].ORIGINFILENAME,
+            svrFileName: rows[i].SERVERFILENAME,
+            convertFileName: rows[i].ORIGINFILENAME.replace(rows[i].FILEEXTENSION, "jpg"),
+            fileExt: rows[i].FILEEXTENSION,
+            fileSize: rows[i].FILESIZE,
+            contentType: rows[i].CONTENTTYPE ? rows[i].CONTENTTYPE : "",
+            imgFileStNo: rows[i].IMGFILESTARTNO,
+            imgFileEndNo: rows[i].IMGFILEENDNO,
+            cscoNm: rows[i].CSCONM,
+            ctNm: rows[i].CTNM,
+            insStDt: rows[i].INSSTDT,
+            insEndDt: rows[i].INSENDDT,
+            curCd: rows[i].CURCD,
+            pre: rows[i].PRE,
+            com: rows[i].COM,
+            brkg: rows[i].BRKG,
+            txam: rows[i].TXAM,
+            prrsCf: rows[i].PRRCF,
+            prrsRls: rows[i].PRRSRLS,
+            lsresCf: rows[i].LSRESCF,
+            lsresRls: rows[i].LSRESRLS,
+            cla: rows[i].CLA,
+            exex: rows[i].EXEX,
+            svf: rows[i].SVF,
+            cas: rows[i].CAS,
+            ntbl: rows[i].NTBL,
+            cscoSaRfrnCnnt2: rows[i].CSCOSARFRNCNNT2,
+            regId: rows[i].REGID,
+            regDate: rows[i].REGDATE
+        };
+        fileInfoList.push(fileInfo);
+    }
+
+    // ANSWER
+    var condQuery = "(";
+    for (var i in rows) {
+        condQuery += "'" + rows[i].FILEPATH + ((i == rows.length - 1) ? "')" : "',");
+    }
+    var answerQuery = selectBatchAnswerFile + condQuery;
+    console.log("정답 파일 조회 쿼리 : " + answerQuery);
+    commonDB.reqQueryF1param(answerQuery, callbackSelectBatchAnswerFile, req, res, fileInfoList);
+
+    //res.send({ code: 200, fileInfoList: fileInfoList });
+}
+var fnSearchBatchLearningData = function (req, res) {
+    var condition = " AND F.imgId IN (";
+    for (var i = 0, x = req.body.imgIdArray.length; i < x; i++) {
+        condition += "'" + req.body.imgIdArray[i] + "',";
+    }
+    condition = condition.slice(0, -1);
+    condition += ")";
+    var query = selectBatchLearningDataListQuery + condition;
+	console.log("단건 조회 쿼리 : " + query);
+    commonDB.reqQuery(query, callbackBatchLearningData, req, res);
+}
+
+// [POST] delete batchlearningdata (UPDATE)
+var callbackDeleteBatchLearningData = function (rows, req, res) {
+    if (req.isAuthenticated()) res.send({ code: 200, rows: rows });
+};
+router.post('/deleteBatchLearningData', function (req, res) {
+    var condition = "(";
+    for (var i = 0, x = req.body.imgIdArray.length; i < x; i++) {
+        condition += "'" + req.body.imgIdArray[i] + "',";
+    }
+    condition = condition.slice(0, -1);
+    condition += ")";
+    var query = queryConfig.batchLearningConfig.deleteBatchLearningData + condition;
+    commonDB.reqQuery(query, callbackDeleteBatchLearningData, req, res);
+});
+
+// [POST] 엑셀 업로드
+router.post('/excelUpload', upload.any(), function (req, res) {
+    var files = req.files;
+    for (var i = 0; i < files.length; i++) {
+        var fileObj = files[i];
+        var oriFileName = fileObj.originalname;
+        if (oriFileName.toLowerCase() == "filepath.xlsx") {
+            
+        } else if (oriFileName.toLowerCase() == "data.xlsx") {
+
+        } else {
+            res.send({ code: 300 , type: 'excel'}); // filepath.xlsx, data.xlsx 파일 외의 형식은 업로드 불가능 합니다.
+        }
+    }
+});
 
 // [POST] 이미지 업로드
 router.post('/imageUpload', upload.any(), function (req, res) {
@@ -121,7 +258,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
             //console.log("upload ifile : " + ifile + " : oFile : " + ofile);
             exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
                 if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
-                    res.send({ code: 200, message: returnObj, fileInfo: fileInfo });
+                    res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
                 }
                 endCount++;
             });
@@ -167,8 +304,6 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningBaseData, data, callbackInsertBatchLearningBaseData, req, res);
 });
 
-
-
 // RUN batchLearningData
 router.post('/execBatchLearningData', function (req, res) {
     var arg = req.body.data;
@@ -203,39 +338,38 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 
 // [POST] insert batchLearningData (tbl_batch_learning_data 전체정보)
 var callbackInsertBatchLearningData = function (rows, req, res) {
-    //console.log("upload batchLearningData finish..");
+    console.log("upload batchLearningData finish..");
     res.send({ code: 200, rows: rows });
 };
-router.post('/insertBatchLearningData', function (req, res) {
+router.post('/updateBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-    //console.log("insert dataObj " + JSON.stringify(dataObj));
-    var imgId = dataObj.imgId; // 필수값
-    var imgFileStNo = commonUtil.nvl(dataObj.IMG_FILE_ST_NO);
-    var imgFileEndNo = commonUtil.nvl(dataObj.IMG_FILE_END_NO);
-    var cscoNm = commonUtil.nvl(dataObj.CSCO_NM);
-    var ctNm = commonUtil.nvl(dataObj.CT_NM);
-    var insStDt = commonUtil.nvl(dataObj.INS_ST_DT);
-    var insEndDt = commonUtil.nvl(dataObj.INS_END_DT);
-    var curCd = commonUtil.nvl(dataObj.CUR_CD);
-    var pre = commonUtil.nvl2(dataObj.PRE, '0');
-    var com = commonUtil.nvl2(dataObj.COM, '0');
-    var brkg = commonUtil.nvl2(dataObj.BRKG, '0');
-    var txam = commonUtil.nvl2(dataObj.TXAM, '0');
-    var prrsCf = commonUtil.nvl2(dataObj.PRRS_CF, '0');
-    var prrsRls = commonUtil.nvl2(dataObj.PRRS_RLS, '0');
-    var lsresCf = commonUtil.nvl2(dataObj.LSRES_CF, '0');
-    var lsresRls = commonUtil.nvl2(dataObj.LSRES_RLS, '0');
-    var cla = commonUtil.nvl2(dataObj.CLA, '0');
-    var exex = commonUtil.nvl2(dataObj.EXEX, '0');
-    var svf = commonUtil.nvl2(dataObj.SVF, '0');
-    var cas = commonUtil.nvl2(dataObj.CAS, '0');
-    var ntbl = commonUtil.nvl2(dataObj.NTBL, '0');
-    var cscoSaRfrnCnnt2 = commonUtil.nvl(dataObj.CSCO_SA_RFRN_CNNT2);
-    var regId = req.session.userId;
+    console.log("update dataObj " + JSON.stringify(dataObj));
+    var imgFileStNo = commonUtil.nvl(dataObj.imgFileStNo);
+    var imgFileEndNo = commonUtil.nvl(dataObj.imgFileEndNo);
+    var cscoNm = commonUtil.nvl(dataObj.cscoNm);
+    var ctNm = commonUtil.nvl(dataObj.ctNm);
+    var insStDt = commonUtil.nvl(dataObj.insStDt);
+    var insEndDt = commonUtil.nvl(dataObj.insEndDt);
+    var curCd = commonUtil.nvl(dataObj.curCd);
+    var pre = commonUtil.nvl2(dataObj.pre, '0');
+    var com = commonUtil.nvl2(dataObj.com, '0');
+    var brkg = commonUtil.nvl2(dataObj.brkg, '0');
+    var txam = commonUtil.nvl2(dataObj.txam, '0');
+    var prrsCf = commonUtil.nvl2(dataObj.prrsCf, '0');
+    var prrsRls = commonUtil.nvl2(dataObj.prrsRls, '0');
+    var lsresCf = commonUtil.nvl2(dataObj.lsresCf, '0');
+    var lsresRls = commonUtil.nvl2(dataObj.lsresRls, '0');
+    var cla = commonUtil.nvl2(dataObj.cla, '0');
+    var exex = commonUtil.nvl2(dataObj.exex, '0');
+    var svf = commonUtil.nvl2(dataObj.svf, '0');
+    var cas = commonUtil.nvl2(dataObj.cas, '0');
+    var ntbl = commonUtil.nvl2(dataObj.ntbl, '0');
+    var cscoSaRfrnCnnt2 = commonUtil.nvl(dataObj.cscoSaRfrnCnnt2);
+    var updId = req.session.userId;
+    var imgId = dataObj.imgId; // 조건
     
-    var data = [imgId, imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, regId];
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
-    
+    var data = [imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, updId, imgId];
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData, data, callbackUpdateBatchLearningData, req, res);
 });
 
 // [POST] syncFile
@@ -322,16 +456,23 @@ router.post('/syncFile', function (req, res) {
     });
 });
 
-// [POST] 삭제처리 (UPDATE)
-var callbackDeleteBatchLearningData = function (rows, req, res) {
-    //console.log("delete batchLearningData");
-    res.send({ code: 200, rows: rows });
-};
-router.post('/deleteBatchLearningData', function (req, res) {
-    var data = [];
-    var query = queryConfig.batchLearningConfig.deleteBatchLearningData + req.body.imgId;
-    commonDB.reqQueryParam(query, data, callbackDeleteBatchLearningData, req, res);
-});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

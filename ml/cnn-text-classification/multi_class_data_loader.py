@@ -2,6 +2,7 @@ import numpy as np
 import csv
 import pymysql
 import cx_Oracle
+import configparser
 
 class MultiClassDataLoader(object):
     """
@@ -20,6 +21,16 @@ class MultiClassDataLoader(object):
         self.__class_data_file = None
         self.__classes_cache = None
 
+        config = configparser.ConfigParser()
+        config.read('./ml/config.ini')
+
+        id = config['ORACLE']['ID']
+        pw = config['ORACLE']['PW']
+        sid = config['ORACLE']['SID']
+        ip = config['ORACLE']['IP']
+        port = config['ORACLE']['PORT']
+
+        self.connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
     def define_flags(self):
         self.__flags.DEFINE_string("train_data_file", "./data/kkk.train", "Data source for the training data.")
@@ -96,7 +107,7 @@ class MultiClassDataLoader(object):
         x_text = []
         y = []
 
-        conn = cx_Oracle.connect("koreanre/koreanre01@172.16.53.142:1521/koreanreocr")
+        conn = cx_Oracle.connect(self.connInfo)
         curs = conn.cursor()
 
         sql = "SELECT * FROM TBL_TEXT_CLASSIFICATION_TRAIN"
@@ -131,7 +142,7 @@ class MultiClassDataLoader(object):
     def __classes(self):
         self.__resolve_params()
 
-        conn = cx_Oracle.connect("koreanre/koreanre01@172.16.53.142:1521/koreanreocr")
+        conn = cx_Oracle.connect(self.connInfo)
         curs = conn.cursor()
 
         sql = "SELECT * FROM TBL_TEXT_CLASSIFICATION_CLS"

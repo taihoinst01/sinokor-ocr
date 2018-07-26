@@ -99,7 +99,9 @@ var batchLearningConfig = {
             TO_DATE(A.insstdt, 'YYYY-MM-DD hh24:mi:ss') AS insstdt,
             TO_DATE(A.insenddt, 'YYYY-MM-DD hh24:mi:ss') AS insenddt,
             A.curcd, A.pre, A.com, A.brkg, A.txam, A.prrscf, A.prrsrls, A.lsrescf,
-            A.lsresrls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.cscosarfrncnnt2
+            A.lsresrls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.cscosarfrncnnt2,
+            A.regId, TO_DATE(A.regDate, 'YYYY-MM-DD hh24:mi:ss') AS regDate,
+            A.updId, TO_DATE(A.updDate, 'YYYY-MM-DD hh24:mi:ss') AS updDate,
 	     FROM
             tbl_ocr_file F
 		    LEFT OUTER JOIN
@@ -159,12 +161,35 @@ var batchLearningConfig = {
             frequency=frequency+1
          WHERE
             keyword = :keyWord `,
+    updateBatchLearningData:
+        `UPDATE tbl_batch_learn_data
+            SET
+                status = 'Y',
+                imgFileStartNo = :imgFileStartNo, imgFileEndNo = :imgFileEndNo, cscoNm = :cscoNm, ctNm = :ctNm,
+                insStDt = :insStDt, insEndDt = :insEndDt, curCd = :curCd, pre = :pre, com = :com,
+                brkg = :brkg, txam = :txam, prrsCf = :prrsCf, prrsRls = :prrsRls, lsresCf = :lsresCf,
+                lsresRls = :lsresRls, cla = :cla, exex = :exex, svf = :svf, cas = :cas, ntbl = :ntbl,
+                cscoSaRfrnCnnt2 = :cscoSaRfrnCnnt2, updId = :updId, updDate = sysdate
+            WHERE imgId = :imgId`,
     deleteBatchLearningData:
         `UPDATE 
             tbl_batch_learn_data
          SET
             status = 'D'
-         WHERE imgId IN `
+         WHERE imgId IN `,
+    selectBatchAnswerFile: 
+        `SELECT
+            imgId, pageNum, filePath, totalCount
+         FROM
+            tbl_batch_answer_file 
+         WHERE filePath in `,
+    selectBatchAnswerDataToImgId:
+        `SELECT
+            imgId, imgFileStartNo, imgFileEndNo
+         FROM
+            TBL_BATCH_ANSWER_DATA
+        WHERE
+            imgId in `
 }
 
 var uiLearningConfig = {

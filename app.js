@@ -35,6 +35,8 @@ var adminDashboard = require('./routes/admin/adminDashboard');
 var userManagement = require('./routes/admin/userManagement');
 //proxy
 var proxy = require('./routes/proxy/proxy');
+// etc
+var xlsx = require('xlsx');
 
 // 
 app.use('/uploads', express.static(__dirname + '/uploads'));
