@@ -57,10 +57,21 @@ router.post('/', function (req, res) {
 router.post('/typoSentence', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
-
-    typoSentenceEval(data, function (result) {
-        res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
+    
+    process.on('uncaughtException', function (err) {
+        console.log('uncaughtException : ' + err);
     });
+    
+    var aimain = require('../util/aiMain');
+    
+    try {
+        aimain.typoSentenceEval(data, function (result) {
+            res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
+        });
+    }
+    catch (exception) {
+        console.log(exception);
+    }
 });
 
 // typoSentence ML
@@ -413,8 +424,8 @@ function typoSentenceEval(data, callback) {
     var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\typo.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
 
-        if (error) {
-            logger.error.info(`typo ml model exec error: ${error}`);
+        if (err) {
+            logger.error.info(`typo ml modelexec error: ${stderr}`);
             return;
         }
 
