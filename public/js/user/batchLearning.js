@@ -296,10 +296,11 @@ var imageUploadEvent = function () {
 }
                
 // [파일정보 -> OCR API]
-function processImage(fileInfo, fileName, lastYn) {
+function processImage(fileInfo, fileName, lastYn, answerRows) {
     console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
     console.log("processImage fileName : " + fileName);
     console.log("processImage lastYn : " + lastYn);
+    console.log("processImage answerRows : " + JSON.stringify(answerRows));
     var subscriptionKey = "7d51f1308c8848f49db9562d1dab7184";
     var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
     var params = {
@@ -318,14 +319,33 @@ function processImage(fileInfo, fileName, lastYn) {
         },
         type: "POST",
         data: '{"url": ' + '"' + sourceImageUrl + '"}',
-    }).done(function (data) {       
+    }).done(function (data) {          
         ocrCount++;
-        ocrDataArr.push({
-            fileInfo: fileInfo,
-            fileName: fileName,
-            regions: data.regions,
-            lastYn: lastYn
-        });
+        if (ocrCount == 1) {
+            ocrDataArr.push({
+                answerImgId: answerRows.IMGID,
+                fileInfo: fileInfo,
+                fileName: fileName,
+                regions: data.regions,
+                lastYn: lastYn
+            });
+        } else {
+            for (var i in ocrDataArr) {
+                if (ocrDataArr[i].answerImgId == answerRows.IMGID) {
+                    var totRegions = (ocrDataArr[i].regions).concat(data.regions);
+                    ocrDataArr[i].regions = totRegions;
+                    break;
+                } else if (i == ocrDataArr.length - 1) {
+                    ocrDataArr.push({
+                        answerImgId: answerRows.IMGID,
+                        fileInfo: fileInfo,
+                        fileName: fileName,
+                        regions: data.regions,
+                        lastYn: lastYn
+                    });
+                }
+            }
+        }
         if (totCount == ocrCount) {           
             execBatchLearningData();
         }
@@ -392,7 +412,7 @@ function execBatchLearningData() {
             beforeSend: function () {
             },
             success: function (data) {
-                //console.log(data);
+                console.log(data);
                 batchCount++;
                 if (totCount = batchCount) {
                     $("#progressMsg").html("success...");
@@ -608,12 +628,14 @@ var searchBatchLearnData = function (imgIdArray, flag) {
         success: function (data) {
             $("#progressMsg").html("processing learn data...");
             addProgressBar(31, 50);
-            console.log("fileInfoList : " + JSON.stringify(data));
+            console.log("/batchLearning/searchBatchLearnData result :");
+            console.log(data);
+        
             if (flag == "PROCESS_IMAGE") {  // 배치학습 실행
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
                     var lastYn = "N";
                     if (i == data.fileInfoList.length - 1) lastYn = "Y";
-                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn);
+                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i]);
                 }
             } else if (flag == "UI_TRAINING") {
                 fn_processUiTraining(data.fileInfoList);

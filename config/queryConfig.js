@@ -176,7 +176,13 @@ var batchLearningConfig = {
             tbl_batch_learn_data
          SET
             status = 'D'
-         WHERE imgId IN `
+         WHERE imgId IN `,
+    selectBatchAnswerFile: 
+        `SELECT
+            imgId, pageNum, filePath, totalCount
+         FROM
+            tbl_batch_answer_file 
+         WHERE filePath in `
 }
 
 var uiLearningConfig = {
