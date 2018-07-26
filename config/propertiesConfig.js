@@ -9,7 +9,7 @@ var propertiesConfig = {
 
     },
     batchLearning: {
-
+        excelPath: '\\excel\\'
     }
 };
 

@@ -15,6 +15,11 @@ $(document).ready(function () {
             deleteCookie("ocr_userid");
         }
     });
+
+    //임시 자동로그인 -- 배포시 지울 것!
+    $("#userId").val("admin");
+    $('#userPw').val("123");
+    $('#sendLoginBtn').click();
 });
 
 function getCookie(cookieName) {

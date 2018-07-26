@@ -54,7 +54,6 @@ var checkboxEvent = function () {
 
 // [Button Event]
 var buttonEvent = function () {
-
     // 학습미완료 보기
     $("#tab_before").on("click", function () {
         $("#listCheckAll_after").prop("checked", false);
@@ -68,46 +67,37 @@ var buttonEvent = function () {
         addCond = "LEARN_Y";
         searchBatchLearnDataList(addCond);
     });
-
     // Sync (서버 File Syncronized)
     $("#btn_sync").on("click", function () {
         fn_syncServerFile();
     });
-
     // 정답엑셀 업로드
-    $("#btn_rightExcelUpload").on("click", function () {
-        fn_rightExcelUpload();
+    $("#btn_excel").on("click", function () {
+        fn_excelUpload();
     });
-
     // 이미지 업로드
     $("#btn_imageUpload").on("click", function () {
         fn_imageUpload();
     });
-
     // 이미지 삭제
     $("#btn_imageDelete").on("click", function () {
         fn_imageDelete();
     });
-
     // 배치실행
     $("#btn_batchTraining").on("click", function () {
         fn_batchTraining();
     });
-
     // 최종학습
     $("#btn_uiTraining").on("click", function () {
         fn_uiTraining();
     });
 
     // popupButton
-    //$("#btn_closeLayerPopup").on("click", function () {
-    //    popupEvent.closePopup();
-    //});
-    // [배치학습popup] 학습실행
+    // [배치학습팝업] 학습실행
     $("#btn_pop_batch_run").on("click", function () {
         fn_popBatchRun();
     });
-    // [배치학습popup] close popup
+    // [배치학습팝업] close popup
     $("#btn_pop_batch_close").on("click", function () {
         popupEvent.closePopup();
     });
@@ -123,9 +113,6 @@ var buttonEvent = function () {
     $("#btn_pop_ui_close").on("click", function () {
         popupEvent.closePopup();
     });
-    
-
-
 }
 
 // [popup event]
@@ -146,23 +133,14 @@ var popupEvent = (function () {
             //}, 10);
         }).scroll();
     }
-
     // open popup
     var openPopup = function () {
-        //var top = ($(window).scrollTop() + ($(window).height() - layerPopup.height()) - 10);
-        //var left = ($(window).scrollLeft() + ($(window).width() - layerPopup.width()) / 2);
-        //layerPopup.css("top", top);
-        //layerPopup.css("left", left);
-        //layerPopup.show();
         layer_open('layer1');
     }
-
     // close popup
     var closePopup = function () {
-        //layerPopup.fadeOut();
         $('.poplayer').fadeOut();
     }
-
     return {
         scrollPopup: scrollPopup,
         openPopup: openPopup,
@@ -171,6 +149,37 @@ var popupEvent = (function () {
 }());
 
 // [excelUpload event]
+var fn_excelUpload = function () {
+    var param = {};
+    $.ajax({
+        url: '/batchLearning/excelUpload',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            addProgressBar(1, 99);
+        },
+        success: function (data) {
+            if (data["code"] == 200) {
+                if (data["pathCnt"] > 0 || data["dataCnt"] > 0) {
+                    alert("filepath.xlsx, data.xlsx의 정답데이터가 정상적으로 INSERT 되었습니다.");
+                } else {
+                    alert("INSERT 할 데이터가 존재하지 않습니다.");
+                }
+            } else {
+                alert("INSERT 과정에서 문제가 있어 처리되지 않았습니다.");
+            }
+            console.log("SUCCESS fn_excelUpload : " + JSON.stringify(data));
+            endProgressBar();
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// excel file upload (deprecated)
 var excelUploadEvent = function () {
     var multiUploadForm = $("#multiUploadForm");
 
@@ -322,33 +331,48 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     }).done(function (data) {          
         ocrCount++;
         if (ocrCount == 1) {
-            ocrDataArr.push({
-                answerImgId: answerRows.IMGID,
-                fileInfo: fileInfo,
-                fileName: fileName,
-                regions: data.regions,
-                lastYn: lastYn
-            });
-        } else {
-            /*수정영역
-            for (var i in ocrDataArr) {
-                if (ocrDataArr[i].answerImgId == answerRows.IMGID) {
-                    var totRegions = (ocrDataArr[i].regions).concat(data.regions);
-                    ocrDataArr[i].regions = totRegions;
-                    break;
-                } else if (i == ocrDataArr.length - 1) {
+            for (var i in fileToPage) {
+                if (fileToPage[i].IMGID == answerRows.IMGID &&
+                    fileToPage[i].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                    answerRows.PAGENUM <= fileToPage[i].IMGFILEENDNO) {
                     ocrDataArr.push({
                         answerImgId: answerRows.IMGID,
                         fileInfo: fileInfo,
                         fileName: fileName,
                         regions: data.regions,
+                        fileToPage: fileToPage[i],
                         lastYn: lastYn
                     });
                 }
             }
-            */
+        } else {
+            for (var i in ocrDataArr) {
+                if (ocrDataArr[i].answerImgId == answerRows.IMGID &&
+                    ocrDataArr[i].fileToPage.IMGFILESTARTNO <= answerRows.PAGENUM &&
+                    answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
+                    var totRegions = (ocrDataArr[i].regions).concat(data.regions);
+                    ocrDataArr[i].regions = totRegions;
+                    break;
+                } else if (i == ocrDataArr.length - 1) {
+                    for (var j in fileToPage) {
+                        if (fileToPage[j].IMGID == answerRows.IMGID &&
+                            fileToPage[j].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                            answerRows.PAGENUM <= fileToPage[j].IMGFILEENDNO) {
+                            ocrDataArr.push({
+                                answerImgId: answerRows.IMGID,
+                                fileInfo: fileInfo,
+                                fileName: fileName,
+                                regions: data.regions,
+                                fileToPage: fileToPage[j],
+                                lastYn: lastYn
+                            });
+                        }
+                    }
+                }
+            }
+
         }
-        if (totCount == ocrCount) {           
+        if (totCount == ocrCount) {
             execBatchLearningData();
         }
         //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
