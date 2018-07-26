@@ -74,7 +74,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
         listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
     }
 
-    console.log("리스트 조회 쿼리 : " + listQuery);
+	console.log("리스트 조회 쿼리 : " + listQuery);
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
 }
 
@@ -85,45 +85,43 @@ router.post('/searchBatchLearnData', function (req, res) {
 }); 
 var callbackBatchLearningData = function (rows, req, res) {
     var fileInfoList = [];
-    console.log("배치학습데이터 : " + rows.length);
+	console.log("배치학습데이터 : " + rows.length);
     for (var i = 0, x = rows.length; i < x; i++) {
-        var oriFileName = rows[i].oriFileName;
+        var oriFileName = rows[i].ORIGINFILENAME;
         var _lastDot = oriFileName.lastIndexOf('.');
         var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
         var fileInfo = {
-            imgId: rows[i].imgId,
-            filePath: rows[i].filePath,
-            oriFileName: rows[i].oriFileName,
-            svrFileName: rows[i].svrFileName,
-            convertFileName: rows[i].oriFileName.replace(rows[i].fileExt, "jpg"),
-            fileExt: rows[i].fileExt,
-            fileSize: rows[i].fileSize,
-            contentType: rows[i].contentType ? rows[i].contentType : "",
-            imgFileStNo: rows[i].imgFileStNo,
-            imgFileEndNo: rows[i].imgFileEndNo,
-            cscoNm: rows[i].cscoNm,
-            ctNm: rows[i].ctNm,
-            insStDt: rows[i].insStDt,
-            insEndDt: rows[i].insEndDt,
-            curCd: rows[i].curCd,
-            pre: rows[i].pre,
-            com: rows[i].com,
-            brkg: rows[i].brkg,
-            txam: rows[i].txam,
-            prrsCf: rows[i].prrsCf,
-            prrsRls: rows[i].prrsRls,
-            lsresCf: rows[i].lsresCf,
-            lsresRls: rows[i].lsresRls,
-            cla: rows[i].cla,
-            exex: rows[i].exex,
-            svf: rows[i].svf,
-            cas: rows[i].cas,
-            ntbl: rows[i].ntbl,
-            cscoSaRfrnCnnt2: rows[i].cscoSaRfrnCnnt2,
-            regId: rows[i].regId,
-            regDate: rows[i].regDate,
-            updId: rows[i].updId,
-            updDate: rows[i].updDate
+            imgId: rows[i].IMGID,
+            filePath: rows[i].FILEPATH,
+            oriFileName: rows[i].ORIGINFILENAME,
+            svrFileName: rows[i].SERVERFILENAME,
+            convertFileName: rows[i].ORIGINFILENAME.replace(rows[i].FILEEXTENSION, "jpg"),
+            fileExt: rows[i].FILEEXTENSION,
+            fileSize: rows[i].FILESIZE,
+            contentType: rows[i].CONTENTTYPE ? rows[i].CONTENTTYPE : "",
+            imgFileStNo: rows[i].IMGFILESTARTNO,
+            imgFileEndNo: rows[i].IMGFILEENDNO,
+            cscoNm: rows[i].CSCONM,
+            ctNm: rows[i].CTNM,
+            insStDt: rows[i].INSSTDT,
+            insEndDt: rows[i].INSENDDT,
+            curCd: rows[i].CURCD,
+            pre: rows[i].PRE,
+            com: rows[i].COM,
+            brkg: rows[i].BRKG,
+            txam: rows[i].TXAM,
+            prrsCf: rows[i].PRRCF,
+            prrsRls: rows[i].PRRSRLS,
+            lsresCf: rows[i].LSRESCF,
+            lsresRls: rows[i].LSRESRLS,
+            cla: rows[i].CLA,
+            exex: rows[i].EXEX,
+            svf: rows[i].SVF,
+            cas: rows[i].CAS,
+            ntbl: rows[i].NTBL,
+            cscoSaRfrnCnnt2: rows[i].CSCOSARFRNCNNT2,
+            regId: rows[i].REGID,
+            regDate: rows[i].REGDATE
         };
         fileInfoList.push(fileInfo);
     }
@@ -137,7 +135,7 @@ var fnSearchBatchLearningData = function (req, res) {
     condition = condition.slice(0, -1);
     condition += ")";
     var query = selectBatchLearningDataListQuery + condition;
-    console.log("단건 조회 쿼리 : " + query);
+	console.log("단건 조회 쿼리 : " + query);
     commonDB.reqQuery(query, callbackBatchLearningData, req, res);
 }
 
@@ -146,7 +144,7 @@ var callbackDeleteBatchLearningData = function (rows, req, res) {
     if (req.isAuthenticated()) res.send({ code: 200, rows: rows });
 };
 router.post('/deleteBatchLearningData', function (req, res) {
-    var condition = " AND IMG_ID IN (";
+    var condition = "(";
     for (var i = 0, x = req.body.imgIdArray.length; i < x; i++) {
         condition += "'" + req.body.imgIdArray[i] + "',";
     }
@@ -167,7 +165,7 @@ router.post('/excelUpload', upload.any(), function (req, res) {
         } else if (oriFileName.toLowerCase() == "data.xlsx") {
 
         } else {
-            res.send({ code: 300 }); // filepath.xlsx, data.xlsx 파일 외의 형식은 업로드 불가능 합니다.
+            res.send({ code: 300 , type: 'excel'}); // filepath.xlsx, data.xlsx 파일 외의 형식은 업로드 불가능 합니다.
         }
     }
 });
@@ -210,7 +208,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
             //console.log("upload ifile : " + ifile + " : oFile : " + ofile);
             exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
                 if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
-                    res.send({ code: 200, message: returnObj, fileInfo: fileInfo });
+                    res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
                 }
                 endCount++;
             });
