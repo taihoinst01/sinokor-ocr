@@ -182,7 +182,14 @@ var batchLearningConfig = {
             imgId, pageNum, filePath, totalCount
          FROM
             tbl_batch_answer_file 
-         WHERE filePath in `
+         WHERE filePath in `,
+    selectBatchAnswerDataToImgId:
+        `SELECT
+            imgId, imgFileStartNo, imgFileEndNo
+         FROM
+            TBL_BATCH_ANSWER_DATA
+        WHERE
+            imgId in `
 }
 
 var uiLearningConfig = {

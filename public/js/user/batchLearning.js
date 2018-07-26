@@ -296,7 +296,7 @@ var imageUploadEvent = function () {
 }
                
 // [파일정보 -> OCR API]
-function processImage(fileInfo, fileName, lastYn, answerRows) {
+function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
     console.log("processImage fileName : " + fileName);
     console.log("processImage lastYn : " + lastYn);
@@ -330,6 +330,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows) {
                 lastYn: lastYn
             });
         } else {
+            /*수정영역
             for (var i in ocrDataArr) {
                 if (ocrDataArr[i].answerImgId == answerRows.IMGID) {
                     var totRegions = (ocrDataArr[i].regions).concat(data.regions);
@@ -345,6 +346,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows) {
                     });
                 }
             }
+            */
         }
         if (totCount == ocrCount) {           
             execBatchLearningData();
@@ -630,12 +632,12 @@ var searchBatchLearnData = function (imgIdArray, flag) {
             addProgressBar(31, 50);
             console.log("/batchLearning/searchBatchLearnData result :");
             console.log(data);
-        
+            
             if (flag == "PROCESS_IMAGE") {  // 배치학습 실행
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
                     var lastYn = "N";
                     if (i == data.fileInfoList.length - 1) lastYn = "Y";
-                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i]);
+                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i], data.fileToPage);
                 }
             } else if (flag == "UI_TRAINING") {
                 fn_processUiTraining(data.fileInfoList);
@@ -643,6 +645,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
                 alert("잘못된 요청입니다.");
                 return;
             }
+            
         },
         error: function (err) {
             endProgressBar(); // end progressbar
