@@ -12,6 +12,7 @@ var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 var PythonShell = require('python-shell');
+var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 const FileHound = require('filehound');
 const xlsx = require('xlsx');
 
@@ -54,6 +55,8 @@ router.get('/', function (req, res) {                           // 배치학습 
     if (req.isAuthenticated()) res.render('user/batchLearning', { currentUser: req.user });
     else res.redirect("/logout");
 });
+// BLANK CALLBACK
+var callbackBlank = function () { };
 
 // [POST] 배치학습데이터리스트 조회 
 router.post('/searchBatchLearnDataList', function (req, res) {   
@@ -207,8 +210,9 @@ router.post('/deleteBatchLearningData', function (req, res) {
 // [POST] 엑셀 업로드
 router.post('/excelUpload', upload.any(), function (req, res) {
     // 엑셀 파일 확인
-    var pathExcel = appRoot + propertiesConfig.batchLearning.excelBatchFilePath + "filepath.xlsx";
-    var dataExcel = appRoot + propertiesConfig.batchLearning.excelBatchFileData + "data.xlsx";
+    var pathExcel = appRoot + propertiesConfig.filepath.excelBatchFilePath;
+    var dataExcel = appRoot + propertiesConfig.filepath.excelBatchFileData;
+    console.log(dataExcel);
     var pathExcelWorkbook = xlsx.readFile(pathExcel);
     var dataExcelWorkbook = xlsx.readFile(dataExcel);
     var pathExcelSheet = pathExcelWorkbook.Sheets[pathExcelWorkbook.SheetNames[0]];
