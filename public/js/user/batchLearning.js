@@ -488,6 +488,7 @@ function execBatchLearningData() {
         beforeSend: function () {
         },
         success: function (data) {
+            /*
             updateBatchLearningData(fileInfo, data, lastYn);
             if (lastYn == "Y") {
                 addProgressBar(71, 99);
