@@ -1143,7 +1143,7 @@ select:disabled + ul.idealSelect:before {
 #content {
     min-width: 1650px;
     padding: 96px 22px 14px 32px;
-    margin-left: 164px;
+    margin-left: 155px;
 }
 
     #content h2 {
@@ -1164,6 +1164,35 @@ select:disabled + ul.idealSelect:before {
     width: -webkit-calc(50% - 16px);
     width: -moz-calc(50% - 16px);
     min-height: 962px;
+    padding: 0px;
+    margin: 0;
+}
+
+.box_content_R {
+    float: right;
+    display: table;
+    position: relative;
+    width: 48%;
+    width: calc(50% - 16px);
+    width: -webkit-calc(40% - 16px);
+    width: -moz-calc(50% - 16px);
+    /*min-height: 962px;*/
+    height: 800px;
+    padding: 0px;
+    margin: 0;
+
+}
+
+.box_content_L {
+    float: left;
+    display: table;
+    position: relative;
+    width: 48%;
+    width: calc(50% - 16px);
+    width: -webkit-calc(60% - 16px);
+    width: -moz-calc(50% - 16px);
+    /*min-height: 962px;*/
+    height: 823px;
     padding: 0px;
     margin: 0;
 }
@@ -1204,12 +1233,12 @@ select:disabled + ul.idealSelect:before {
             }
 
 .box_content.st_stsh {
-    min-height: 806px;
+    min-height: 686px;
     margin-bottom: 0px;
 }
 
     .box_content.st_stsh .box_st031 {
-        height: 347px;
+        height: 287px;
     }
 
     .box_content.st_stsh .box_st032 {
@@ -1217,7 +1246,7 @@ select:disabled + ul.idealSelect:before {
     }
 
     .box_content.st_stsh .imgtmb_b {
-        height: 530px;
+        height: 430px;
     }
 
     .box_content.st_stsh .btn_rt .checkbox-options {
@@ -1450,7 +1479,7 @@ select:disabled + ul.idealSelect:before {
 .imgtmb_b {
     position: relative;
     overflow: auto;
-    height: 674px;
+    height: 574px;
     text-align: center;
 }
 
@@ -1460,6 +1489,7 @@ select:disabled + ul.idealSelect:before {
 
 .box_stsearch {
     position: relative;
+    height: 91px;
     width: 100%;
     width: calc(100% - 46px);
     width: -webkit-calc(100% - 46px);
@@ -1599,7 +1629,7 @@ select:disabled + ul.idealSelect:before {
     position: relative;
     width: 100%;
     max-height: 130px;
-    padding: 20px 0;
+    padding: 10px 0;
     background: #605f5d
 }
 
@@ -1697,7 +1727,7 @@ select:disabled + ul.idealSelect:before {
     overflow: hidden;
     width: 110px;
     height: 20px;
-    margin: 28px auto 0;
+    margin: 14px auto 0;
     font-size: 16px;
     color: #333;
     text-align: center;
@@ -1969,13 +1999,13 @@ h3.tits span {
 
 .box_scroll_st3 {
     display: block;
-    height: 230px;
+    height: 180px;
     overflow: auto;
 }
 
 .box_scroll_st4 {
     display: block;
-    height: 298px;
+    height: 265px;
     overflow: auto;
 }
 
@@ -1987,7 +2017,7 @@ h3.tits span {
 
 .box_scroll_st6 {
     display: block;
-    height: 837px;
+    height: 761px;
     overflow: auto;
 }
 
@@ -2286,7 +2316,7 @@ h3.tits span {
     position: relative;
     width: 100%;
     height: 100%;
-    min-height: 866px;
+    min-height: 775px;
     background-color: #fff;
     border: 1px solid #ccc;
     -webkit-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
