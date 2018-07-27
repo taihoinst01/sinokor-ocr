@@ -324,8 +324,8 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     };
     var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
 
-    $("#progressMsg").html("processing ocr api...");
-    addProgressBar(51, 60);
+    //$("#progressMsg").html("processing ocr api...");
+    //addProgressBar(51, 60);
     $.ajax({
         url: uriBase + "?" + $.param(params),
         beforeSend: function (jqXHR) {
@@ -432,8 +432,8 @@ function execBatchLearningData() {
         dataArr.push(data);
     }
 
-    $("#progressMsg").html("processing machine learning...");
-    addProgressBar(61, 90);
+    //$("#progressMsg").html("processing machine learning...");
+    //addProgressBar(61, 90);
     for (var i in ocrDataArr) {
         $.ajax({
             url: '/batchLearning/execBatchLearningData',
@@ -447,8 +447,8 @@ function execBatchLearningData() {
                 console.log(data);
                 batchCount++;
                 if (totCount = batchCount) {
-                    $("#progressMsg").html("success...");
-                    addProgressBar(91, 100);
+                    //$("#progressMsg").html("success...");
+                    //addProgressBar(91, 100);
                 }
                 /*
                 updateBatchLearningData(fileInfo, data, lastYn);
@@ -769,13 +769,13 @@ var searchBatchLearnData = function (imgIdArray, flag) {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $('#btn_pop_batch_close').click();
-            $("#progressMsg").html("retrieving learn data...");
-            startProgressBar(); // start progressbar
-            addProgressBar(0, 30); // proceed progressbar
+            //$("#progressMsg").html("retrieving learn data...");
+            //startProgressBar(); // start progressbar
+            //addProgressBar(0, 30); // proceed progressbar
         },
         success: function (data) {
-            $("#progressMsg").html("processing learn data...");
-            addProgressBar(31, 50);
+            //$("#progressMsg").html("processing learn data...");
+            //addProgressBar(31, 50);
             console.log("/batchLearning/searchBatchLearnData result :");
             console.log(data);
             
