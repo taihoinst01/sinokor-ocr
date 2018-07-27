@@ -99,7 +99,7 @@ var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
     var imgIdArr = [];
     for (var i in fileInfoList) {
         for (var j in rows) {
-            if (fileInfoList[i].filePath == rows[j].FILEPATH) {
+            if (fileInfoList[i].oriFileName == rows[j].FILEPATH) {
                 orderbyRows.push(rows[j]);
                 break;
             }
@@ -174,7 +174,9 @@ var callbackBatchLearningData = function (rows, req, res) {
     // ANSWER
     var condQuery = "(";
     for (var i in rows) {
-        condQuery += "'" + rows[i].FILEPATH + ((i == rows.length - 1) ? "')" : "',");
+        var pathString = rows[i].FILEPATH;
+        var pathArr = pathString.split('\\');
+        condQuery += "'" + pathArr[pathArr.length - 1] + ((i == rows.length - 1) ? "')" : "',");
     }
     var answerQuery = selectBatchAnswerFile + condQuery;
     console.log("정답 파일 조회 쿼리 : " + answerQuery);

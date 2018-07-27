@@ -344,7 +344,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                     ocrDataArr.push({
                         answerImgId: answerRows.IMGID,
                         fileInfo: fileInfo,
-                        fileName: fileName,
+                        fileName: [fileName],
                         regions: data.regions,
                         fileToPage: fileToPage[i],
                         lastYn: lastYn
@@ -358,6 +358,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                     answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
                     var totRegions = (ocrDataArr[i].regions).concat(data.regions);
                     ocrDataArr[i].regions = totRegions;
+                    ocrDataArr[i].fileName.push(fileName);
                     break;
                 } else if (i == ocrDataArr.length - 1) {
                     for (var j in fileToPage) {
@@ -367,7 +368,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                             ocrDataArr.push({
                                 answerImgId: answerRows.IMGID,
                                 fileInfo: fileInfo,
-                                fileName: fileName,
+                                fileName: [fileName],
                                 regions: data.regions,
                                 fileToPage: fileToPage[j],
                                 lastYn: lastYn
@@ -378,8 +379,9 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
             }
 
         }
+        //console.log(ocrDataArr);
         if (totCount == ocrCount) {
-            execBatchLearningData();
+            //execBatchLearningData();
         }
         //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
     }).fail(function (jqXHR, textStatus, errorThrown) {
