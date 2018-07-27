@@ -10,14 +10,14 @@ router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 
-// invoiceCheck.html 보여주기
+// documentCheck.html 보여주기
 router.get('/', function (req, res) {
-    res.render('user/invoiceCheck');
+    res.render('user/documentCheck');
 });
 
-// invoiceCheck.html 보여주기
+// documentCheck.html 보여주기
 router.post('/', function (req, res) {
-    res.render('user/invoiceCheck');
+    res.render('user/documentCheck');
 });
 
 
