@@ -1,5 +1,6 @@
 var appRoot = require('app-root-path').path;
 var exec = require('child_process').exec;
+var commonUtil = require(appRoot + '/public/js/common.util.js');
 const defaults = {
     encoding: 'utf8',
 };
@@ -72,7 +73,7 @@ exports.domainDictionaryEval = function (data, callback) {
 
         if (ocrTextLen != null) {
             for (var i = 0; i < data.length; i++) {
-                if (data[i].text.toLowerCase() != ocrText[i].toLowerCase()) {
+                if (commonUtil.nvl(data[i].text).toLowerCase() != commonUtil.nvl(ocrText[i]).toLowerCase()) {
                     data[i].text = ocrText[i];
                 }
             }
@@ -103,8 +104,8 @@ exports.textClassificationEval = function(data, callback) {
             var objSplit = obj[key].split("||");
 
             for (var i = 0; i < data.length; i++) {
-                if (data[i].text.toLowerCase() == objSplit[0].toLowerCase()) {
-                    data[i].label = objSplit[1].replace(/\r\n/g, "");
+                if (commonUtil.nvl(data[i].text).toLowerCase() == objSplit[0].toLowerCase()) {
+                    data[i].label = commonUtil.nvl(objSplit[1]).replace(/\r\n/g, "");
                 }
             }
         }
@@ -147,11 +148,11 @@ exports.labelMappingEval = function(data, callback) {
             var objLabel = labelMapping[key].split("||");
 
             for (var i = 0; i < data.length; i++) {
-                if (data[i].text.toLowerCase() == objLabel[0].toLowerCase()) {
-                    data[i].column = objLabel[1].replace(/\r\n/g, '');
+                if (commonUtil.nvl(data[i].text).toLowerCase() == commonUtil.nvl(objLabel[0]).toLowerCase()) {
+                    data[i].column = commonUtil.nvl(objLabel[1]).replace(/\r\n/g, '');
                     var obj = {};
                     obj.text = objLabel[0];
-                    obj.column = objLabel[1].replace(/\r\n/g, '');
+                    obj.column = commonUtil.nvl(objLabel[1]).replace(/\r\n/g, '');
                     dataArray.push(obj);
                 }
             }
@@ -214,7 +215,7 @@ function dataToArgs(data) {
 
     var args = '';
     for (var i = 0; i < data.length; i++) {
-        args += '"' + data[i].text.toLowerCase() + '"' + ' ';
+        args += '"' + commonUtil.nvl(data[i].text).toLowerCase() + '"' + ' ';
     }
 
     return args;
