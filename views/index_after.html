@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>TIIZ OCR Service</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <!--[if lt IE 9]>
+    <script src="common/js/html5shiv.min.js"></script>
+    <script src="common/js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <%include  ../common/commonLib.html%>
+    <script type="text/javascript" src="js/common.client.js"></script>
+    <script src="/js/index.js"></script>
+</head>
+<body class="bg_login">
+    <div class="login_top">
+        <h1><span class="blind">KoreanRe ICR Service</span></h1>
+    </div>
+
+    <div class="box_login">
+        <div class="box_login_01">
+            <dl>
+                <dt><label for="userId">ID</label></dt>
+                <dd><input type="text" id="userId" name="userId" class="input_searchbox eng" value="" /></dd>
+            </dl>
+            <dl>
+                <dt><label for="password">Password</label></dt>
+                <dd><input type="password" id="userPw" name="userPw" maxlength="20" class="input_searchbox" value="" /></dd>
+            </dl>
+            <div class="txts_01 checkbox-options"><input type="checkbox" value="1" id="remember_me" name="remember_me" /><label for="st1"><span>ID 저장하기</span></label></div>
+            <button type="submit" class="btn btn_login" title="로그인" id="sendLoginBtn">로그인</button>
+        </div>
+    </div>
+
+    <div class="login-box">
+        <div class="login-logo"><span class="hc">로그인로고</span></div>
+        <div class="login-box-body">
+            <form action="login" method="post" id="loginfrm">
+                <div class="form-group has-feedback">
+                    <span class="fa fa-user form-control-feedback"></span>
+                    <input type="text" class="form-control" id="userId" name="userId" spellcheck="false" placeholder="아이디">
+                </div>
+                <div class="form-group has-feedback">
+                    <input type="password" class="form-control" id="" name="" placeholder="비밀번호">
+                    <span class="fa fa-lock form-control-feedback"></span>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8">
+                        <input type="checkbox" class="flat-red" id="" name=""> 아이디 저장
+                    </div>
+                </div>
+                <div class="row" style="text-align:center">
+                    <span id="errors" style="color:red;font-weight:bold;text-align:center"><%= messages.error %></span>
+                </div>
+                <div class="social-auth-links text-center"><button type="submit" class="btn btn_login" id="sendLoginBtn">로그인</button></div>
+            </form>
+
+            <p class="login_footer ">COPYRIGHTS <strong> ©TAIHOINST </strong> ALL RIGHTS RESERVED.</p>
+        </div>
+    </div>
+    <script>
+        //iCheck for checkbox and radio inputs
+        $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+            checkboxClass: 'icheckbox_minimal-blue',
+            radioClass: 'iradio_minimal-blue'
+        })
+        //Red color scheme for iCheck
+        $('input[type="checkbox"].minimal-red, input[type="radio"].minimal-red').iCheck({
+            checkboxClass: 'icheckbox_minimal-red',
+            radioClass: 'iradio_minimal-red'
+        })
+        //Flat red color scheme for iCheck
+        $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
+            checkboxClass: 'icheckbox_flat-green',
+            radioClass: 'iradio_flat-green'
+        })
+
+    </script>
+
+</body>
+</html >

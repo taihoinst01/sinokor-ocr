@@ -771,9 +771,9 @@ select:disabled + ul.idealSelect:before {
     left: 0px;
     overflow: hidden;
     width: 100%;
-    min-width: 1900px;
+    min-width: 1899px;
     height: 70px;
-    background-color: #2b2c26;
+    background-color: #0370b2;
     z-index: 2
 }
 
@@ -947,7 +947,8 @@ select:disabled + ul.idealSelect:before {
     line-height: 38px;
     color: #fff;
     text-align: center;
-    background: #9c9c9c
+    background: #2b2927;
+    border-bottom: 1px solid #3b3835;
 }
 
     .lnb_menu h3:first-child {
@@ -957,13 +958,13 @@ select:disabled + ul.idealSelect:before {
 .lnb_menu li a {
     position: relative;
     display: block;
-    height: 94px;
+    height: 36px;
     color: #6e6e6e;
     letter-spacing: -0.1em;
     text-align: center;
-    border-bottom: 1px solid #e2e3e5;
+    /*border-bottom: 1px solid #e2e3e5;*/
 }
-
+    /*
     .lnb_menu li a:before {
         content: '';
         width: 42px;
@@ -976,9 +977,9 @@ select:disabled + ul.idealSelect:before {
         box-shadow: 1px 2px 2px rgba(0,0,0,.2);
         background-position: 0px -450px;
     }
-
+    */
     .lnb_menu li a.lnb_menu02:before {
-        background-position: -50px -450px;
+        background-image: url(../image/btn_02.png);
     }
 
     .lnb_menu li a.lnb_menu03:before {
@@ -1002,8 +1003,8 @@ select:disabled + ul.idealSelect:before {
     }
 
 .lnb_menu li.on a {
-    border-bottom: 1px solid #0075bb;
-    background-color: #0075bb;
+
+    background-color: #555452;
 }
 
     .lnb_menu li.on a:before {
@@ -1047,11 +1048,11 @@ select:disabled + ul.idealSelect:before {
 
 .lnb_menu li a span {
     display: inline-block;
-    line-height: 28px;
-    font-size: 15px;
-    color: #3f3f3f;
-    font-weight: 600;
-    vertical-align: bottom;
+    line-height: 36px;
+    font-size: 14px;
+    color: #aaa9a9;
+    /*font-weight: 600;*/
+    /*vertical-align: bottom;*/
 }
 
 .lnb_menu.on h3 {
@@ -1117,32 +1118,32 @@ select:disabled + ul.idealSelect:before {
     #container .lnb_menu {
         position: absolute;
         display: table-cell;
-        width: 108px;
+        width: 164px;
         /*height: 100%;*/
-        background-color: #fff;
+        background-color: #2b2927;
         border-right: 1px solid #e2e3e5;
         z-index: 0;
     }
-    /*
+    
         #container .lnb_menu:after {
             content: '';
             position: fixed;
             top: 0;
             display: table-cell;
-            width: 108px;
+            width: 164px;
             height: 100%;
-            background-color: #fff;
+            background-color: #2b2927;
             border-right: 1px solid #e2e3e5;
             -webkit-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
             -moz-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
             box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
             z-index: -1;
         }
-    */
+    
 #content {
     min-width: 1650px;
     padding: 96px 22px 14px 32px;
-    margin-left: 108px;
+    margin-left: 164px;
 }
 
     #content h2 {
@@ -1734,7 +1735,7 @@ h3.tits {
     font-family: 'notokr-medium', sans-serif;
 }
 
-    h3.tits:before {
+/*h3.tits:before {
         display: inline-block;
         content: '';
         width: 24px;
@@ -1744,7 +1745,7 @@ h3.tits {
         background-color: #4fb3cd;
         border-radius: 34px;
         background-position: -129px -549px;
-    }
+    }*/
 
 .box_st03 h4 {
     font-size: 14px;
@@ -4575,3 +4576,4 @@ h3.tits span {
     vertical-align: middle;
     text-align: center;
 }
+
