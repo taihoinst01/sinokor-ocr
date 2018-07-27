@@ -372,6 +372,7 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 // RUN batchLearningData
 router.post('/execBatchLearningData', function (req, res) {
     var arg = req.body.data;
+    console.log("ML START!");
     typoSentenceEval(arg, function (result1) {
         console.log("typo ML");
         domainDictionaryEval(result1, function (result2) {
