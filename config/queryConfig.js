@@ -210,7 +210,10 @@ var batchLearningConfig = {
         `SELECT
             imgId, pageNum, filePath, totalCount
          FROM
-            tbl_batch_answer_file 
+          (SELECT
+            imgId, pageNum, SUBSTR(filePath, INSTR(filePath, '/', -1) + 1, LENGTH(filePath)) AS filePath, totalCount
+          FROM
+            tbl_batch_answer_file )
          WHERE filePath in `,
     selectBatchAnswerDataToImgId:
         `SELECT
