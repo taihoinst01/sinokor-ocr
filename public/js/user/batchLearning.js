@@ -324,8 +324,8 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     };
     var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
 
-    $("#progressMsg").html("processing ocr api...");
-    addProgressBar(51, 60);
+    //$("#progressMsg").html("processing ocr api...");
+    //addProgressBar(51, 60);
     $.ajax({
         url: uriBase + "?" + $.param(params),
         beforeSend: function (jqXHR) {
@@ -344,7 +344,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                     ocrDataArr.push({
                         answerImgId: answerRows.IMGID,
                         fileInfo: fileInfo,
-                        fileName: fileName,
+                        fileName: [fileName],
                         regions: data.regions,
                         fileToPage: fileToPage[i],
                         lastYn: lastYn
@@ -358,6 +358,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                     answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
                     var totRegions = (ocrDataArr[i].regions).concat(data.regions);
                     ocrDataArr[i].regions = totRegions;
+                    ocrDataArr[i].fileName.push(fileName);
                     break;
                 } else if (i == ocrDataArr.length - 1) {
                     for (var j in fileToPage) {
@@ -367,7 +368,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                             ocrDataArr.push({
                                 answerImgId: answerRows.IMGID,
                                 fileInfo: fileInfo,
-                                fileName: fileName,
+                                fileName: [fileName],
                                 regions: data.regions,
                                 fileToPage: fileToPage[j],
                                 lastYn: lastYn
@@ -378,8 +379,9 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
             }
 
         }
+        //console.log(ocrDataArr);
         if (totCount == ocrCount) {
-            execBatchLearningData();
+            //execBatchLearningData();
         }
         //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
     }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -432,8 +434,8 @@ function execBatchLearningData() {
         dataArr.push(data);
     }
 
-    $("#progressMsg").html("processing machine learning...");
-    addProgressBar(61, 90);
+    //$("#progressMsg").html("processing machine learning...");
+    //addProgressBar(61, 90);
     for (var i in ocrDataArr) {
         $.ajax({
             url: '/batchLearning/execBatchLearningData',
@@ -447,8 +449,8 @@ function execBatchLearningData() {
                 console.log(data);
                 batchCount++;
                 if (totCount = batchCount) {
-                    $("#progressMsg").html("success...");
-                    addProgressBar(91, 100);
+                    //$("#progressMsg").html("success...");
+                    //addProgressBar(91, 100);
                 }
                 /*
                 updateBatchLearningData(fileInfo, data, lastYn);
@@ -488,6 +490,7 @@ function execBatchLearningData() {
         beforeSend: function () {
         },
         success: function (data) {
+            /*
             updateBatchLearningData(fileInfo, data, lastYn);
             if (lastYn == "Y") {
                 addProgressBar(71, 99);
@@ -502,6 +505,91 @@ function execBatchLearningData() {
         }
     });
     */
+}
+
+function compareBatchLearningData(fileInfo, data, lastYn) {
+    console.log("compareBatchLearningData fileInfo : " + JSON.stringify(fileInfo));
+    var dataObj = {};
+
+    for (var i = 0, x = data.length; i < x; i++) {
+        var location = nvl(data[i]["location"]);
+        var label = nvl(data[i]["label"]);
+        var text = nvl(data[i]["text"]);
+        var column = nvl(data[i]["column"]);
+        if (label == "fixlabel" || label == "entryrowlabel") {
+            for (var j = 0, y = data.length; j < y; j++) {
+                if (data[j].column == column + "_VALUE") {
+                    console.log("Find Label and Value : " + data[j]["column"] + " >> " + data[j]["text"]);
+                    if (isNull(dataObj[column])) {
+                        // DOUBLE 형태의 값은 공백 제거 처리
+                        if (column == "PRE" || column == "COM" || column == "BRKG" || column == "TXAM" ||
+                            column == "PRRS_CF" || column == "PRRS_RLS" || column == "LSRES_CF" ||
+                            column == "LSRES_RLS" || column == "CLA" || column == "EXEX" || column == "SVF" ||
+                            column == "CAS" || column == "NTBL") {
+                            dataObj[column] = data[j]["text"].replace(/(\s*)/g, "");
+                        } else {
+                            dataObj[column] = data[j]["text"];
+                        }
+                    } else {
+                        console.log("Alreaday exist Column(KEY) : " + data[j]["column"] + " >> " + data[j]["text"]);
+                    }
+                }
+            }
+        }
+    }
+    console.log("결과 : " + JSON.stringify(dataObj));
+
+    // BatchLearning Data Insert
+    if (dataObj) {
+        var fileNameSplit = fileInfo.oriFileName.split(".");
+        var imgId = fileNameSplit[0];
+
+        dataObj["imgId"] = imgId;
+        var param = { dataObj: dataObj };
+        $.ajax({
+            url: '/batchLearning/compareBatchLearningData',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (retData) {
+                console.log("SUCCESS compareBatchLearningData : " + JSON.stringify(retData));
+
+                if (retData.rows[0].IMGID == dataObj["imgId"]) {
+                    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
+                        uiPopUpTrain(data, fileInfo);
+                    }
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+}
+
+function uiPopUpTrain(data, fileInfo) {
+    $("#uiImg").attr("src", "./uploads/" + fileInfo.convertFileName);
+    $("#cscoNm").val(data["CSCO_NM"]);//거래사명
+    $("#ctNm").val(data["CT_NM"]);//계약명
+    $("#insStDt").val(data["INS_ST_DT"]);//보험개시일
+    $("#insEndDt").val(data["INS_END_DT"]);//보험종료일
+    $("#curCd").val(data["CUR_CD"]);//화폐코드
+    $("#pre").val(data["PRE"]);//보험료
+    $("#com").val(data["COM"]);//일반수수료
+    $("#brkg").val(data["BRKG"]);//중개수수료
+    $("#txam").val(data["TXAM"]);//세금
+    $("#prrsCf").val(data["PRRS_CF"]);//보험금유보금적립액
+    $("#prrsRls").val(data["PRRS_RLS"]);//보험료유보금해제액
+    $("#lsresCf").val(data["LSRES_CF"]);//보험금유보금적립액
+    $("#lsresRls").val(data["LSRES_RLS"]);//보험금유보금해제액
+    $("#cla").val(data["CLA"]);//보험금
+    $("#exex").val(data["EXEX"]);//부대비
+    $("#svf").val(data["SVF"]);//손해조사비
+    $("#cas").val(data["CAS"]);//즉시불보험금
+    $("#ntbl").val(data["NTBL"]);//NET BALANCE
+    $("#layer2").css("display", "block");
+    return;
 }
 
 // [UPDATE PARSING RESULT, UPDATE FILE INFO DB]
@@ -597,35 +685,64 @@ var searchBatchLearnDataList = function (addCond) {
                     // allow after or before checkbox name
                     if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="sta00" name="listCheck_before" /></th>`;
                     else checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="stb00" name="listCheck_after" /></div></th>`;
-                    appendHtml += `<tr>${checkboxHtml}
+                    appendHtml += `
+                        <tr>
+                        ${checkboxHtml}
                         <td>${nvl(entry.IMGID)}</td>
                         <td>${nvl(entry.ORIGINFILENAME)}</td>
                         <td>${nvl(entry.STATUS)}</td>
-                        <td>${nvl(entry.IMGFILESTNO)}</td>
-                        <td>${nvl(entry.IMGFILEENDNO)}</td>
-                        <td>${nvl(entry.CSCONM)}</td>
+                        <td>${nvl(entry.ENTRYNO)}</td>
+                        <td>${nvl(entry.STATEMENTDIV)}</td>
+                        <td>${nvl(entry.CONTRACTNUM)}</td>
+                        <td>${nvl(entry.OGCOMPANYCODE)}</td>
+                        <td>${nvl(entry.OGCOMPANYNAME)}</td>
+                        <td>${nvl(entry.BROKERCODE)}</td>
+                        <td>${nvl(entry.BROKERNAME)}</td>
                         <td>${nvl(entry.CTNM)}</td>
                         <td>${nvl(entry.INSSTDT)}</td>
                         <td>${nvl(entry.INSENDDT)}</td>
+                        <td>${nvl(entry.UY)}</td>
                         <td>${nvl(entry.CURCD)}</td>
-                        <td>${NumberWithComma(nvl2(entry.PRE, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.COM, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.BRKG, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.TXAM, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.PRRSCF, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.PRRSRLS, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.LSRESCF, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.LSRESRLS, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.CLA, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.EXEX, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.SVF, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.CAS, 0))}</td>
+                        <td>${nvl(entry.PAIDPERCENT)}</td>
+                        <td>${nvl(entry.PAIDSHARE)}</td>
+                        <td>${nvl(entry.OSLPERCENT)}</td>
+                        <td>${nvl(entry.OSLSHARE)}</td>
+                        <td>${nvl(entry.GROSSPM)}</td>
+                        <td>${nvl(entry.PM)}</td>
+                        <td>${nvl(entry.PMPFEND)}</td>
+                        <td>${nvl(entry.PMPFWOS)}</td>
+                        <td>${nvl(entry.XOLPM)}</td>
+                        <td>${nvl(entry.RETURNPM)}</td>
+                        <td>${nvl(entry.GROSSCN)}</td>
+                        <td>${nvl(entry.CN)}</td>
+                        <td>${nvl(entry.PROFITCN)}</td>
+                        <td>${nvl(entry.BROKERAGE)}</td>
+                        <td>${nvl(entry.TAX)}</td>
+                        <td>${nvl(entry.OVERRIDINGCOM)}</td>
+                        <td>${nvl(entry.CHARGE)}</td>
+                        <td>${nvl(entry.PMRESERVERTD)}</td>
+                        <td>${nvl(entry.PFPMRESERVERTD)}</td>
+                        <td>${nvl(entry.PMRESERVERTD2)}</td>
+                        <td>${nvl(entry.PFPMRESERVERTD2)}</td>
+                        <td>${nvl(entry.CLAIM)}</td>
+                        <td>${nvl(entry.LOSSRECOVERY)}</td>
+                        <td>${nvl(entry.CASHLOSS)}</td>
+                        <td>${nvl(entry.CASHLOSSRD)}</td>
+                        <td>${nvl(entry.LOSSRR)}</td>
+                        <td>${nvl(entry.LOSSRR2)}</td>
+                        <td>${nvl(entry.LOSSPFEND)}</td>
+                        <td>${nvl(entry.LOSSPFWOA)}</td>
+                        <td>${nvl(entry.INTEREST)}</td>
+                        <td>${nvl(entry.TAXON)}</td>
+                        <td>${nvl(entry.MISCELLANEOUS)}</td>
+                        <td>${nvl(entry.PMBL)}</td>
+                        <td>${nvl(entry.CMBL)}</td>
                         <td>${nvl(entry.NTBL)}</td>
                         <td>${nvl(entry.CSCOSARFRNCNNT2)}</td>
                     </tr>`;
                 });
             } else {
-                appendHtml += `<tr><td colspan="25">조회할 데이터가 없습니다.</td></tr>`;
+                appendHtml += `<tr><td colspan="52">조회할 데이터가 없습니다.</td></tr>`;
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") $("#tbody_batchList_before").empty().append(appendHtml);
@@ -654,13 +771,13 @@ var searchBatchLearnData = function (imgIdArray, flag) {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $('#btn_pop_batch_close').click();
-            $("#progressMsg").html("retrieving learn data...");
-            startProgressBar(); // start progressbar
-            addProgressBar(0, 30); // proceed progressbar
+            //$("#progressMsg").html("retrieving learn data...");
+            //startProgressBar(); // start progressbar
+            //addProgressBar(0, 30); // proceed progressbar
         },
         success: function (data) {
-            $("#progressMsg").html("processing learn data...");
-            addProgressBar(31, 50);
+            //$("#progressMsg").html("processing learn data...");
+            //addProgressBar(31, 50);
             console.log("/batchLearning/searchBatchLearnData result :");
             console.log(data);
             
