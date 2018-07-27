@@ -683,35 +683,64 @@ var searchBatchLearnDataList = function (addCond) {
                     // allow after or before checkbox name
                     if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="sta00" name="listCheck_before" /></th>`;
                     else checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="stb00" name="listCheck_after" /></div></th>`;
-                    appendHtml += `<tr>${checkboxHtml}
+                    appendHtml += `
+                        <tr>
+                        ${checkboxHtml}
                         <td>${nvl(entry.IMGID)}</td>
                         <td>${nvl(entry.ORIGINFILENAME)}</td>
                         <td>${nvl(entry.STATUS)}</td>
-                        <td>${nvl(entry.IMGFILESTNO)}</td>
-                        <td>${nvl(entry.IMGFILEENDNO)}</td>
-                        <td>${nvl(entry.CSCONM)}</td>
+                        <td>${nvl(entry.ENTRYNO)}</td>
+                        <td>${nvl(entry.STATEMENTDIV)}</td>
+                        <td>${nvl(entry.CONTRACTNUM)}</td>
+                        <td>${nvl(entry.OGCOMPANYCODE)}</td>
+                        <td>${nvl(entry.OGCOMPANYNAME)}</td>
+                        <td>${nvl(entry.BROKERCODE)}</td>
+                        <td>${nvl(entry.BROKERNAME)}</td>
                         <td>${nvl(entry.CTNM)}</td>
                         <td>${nvl(entry.INSSTDT)}</td>
                         <td>${nvl(entry.INSENDDT)}</td>
+                        <td>${nvl(entry.UY)}</td>
                         <td>${nvl(entry.CURCD)}</td>
-                        <td>${NumberWithComma(nvl2(entry.PRE, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.COM, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.BRKG, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.TXAM, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.PRRSCF, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.PRRSRLS, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.LSRESCF, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.LSRESRLS, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.CLA, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.EXEX, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.SVF, 0))}</td>
-                        <td>${NumberWithComma(nvl2(entry.CAS, 0))}</td>
+                        <td>${nvl(entry.PAIDPERCENT)}</td>
+                        <td>${nvl(entry.PAIDSHARE)}</td>
+                        <td>${nvl(entry.OSLPERCENT)}</td>
+                        <td>${nvl(entry.OSLSHARE)}</td>
+                        <td>${nvl(entry.GROSSPM)}</td>
+                        <td>${nvl(entry.PM)}</td>
+                        <td>${nvl(entry.PMPFEND)}</td>
+                        <td>${nvl(entry.PMPFWOS)}</td>
+                        <td>${nvl(entry.XOLPM)}</td>
+                        <td>${nvl(entry.RETURNPM)}</td>
+                        <td>${nvl(entry.GROSSCN)}</td>
+                        <td>${nvl(entry.CN)}</td>
+                        <td>${nvl(entry.PROFITCN)}</td>
+                        <td>${nvl(entry.BROKERAGE)}</td>
+                        <td>${nvl(entry.TAX)}</td>
+                        <td>${nvl(entry.OVERRIDINGCOM)}</td>
+                        <td>${nvl(entry.CHARGE)}</td>
+                        <td>${nvl(entry.PMRESERVERTD)}</td>
+                        <td>${nvl(entry.PFPMRESERVERTD)}</td>
+                        <td>${nvl(entry.PMRESERVERTD2)}</td>
+                        <td>${nvl(entry.PFPMRESERVERTD2)}</td>
+                        <td>${nvl(entry.CLAIM)}</td>
+                        <td>${nvl(entry.LOSSRECOVERY)}</td>
+                        <td>${nvl(entry.CASHLOSS)}</td>
+                        <td>${nvl(entry.CASHLOSSRD)}</td>
+                        <td>${nvl(entry.LOSSRR)}</td>
+                        <td>${nvl(entry.LOSSRR2)}</td>
+                        <td>${nvl(entry.LOSSPFEND)}</td>
+                        <td>${nvl(entry.LOSSPFWOA)}</td>
+                        <td>${nvl(entry.INTEREST)}</td>
+                        <td>${nvl(entry.TAXON)}</td>
+                        <td>${nvl(entry.MISCELLANEOUS)}</td>
+                        <td>${nvl(entry.PMBL)}</td>
+                        <td>${nvl(entry.CMBL)}</td>
                         <td>${nvl(entry.NTBL)}</td>
                         <td>${nvl(entry.CSCOSARFRNCNNT2)}</td>
                     </tr>`;
                 });
             } else {
-                appendHtml += `<tr><td colspan="25">조회할 데이터가 없습니다.</td></tr>`;
+                appendHtml += `<tr><td colspan="52">조회할 데이터가 없습니다.</td></tr>`;
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") $("#tbody_batchList_before").empty().append(appendHtml);
