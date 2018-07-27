@@ -13,6 +13,38 @@ jQuery(function($){
 			$(this).parent('li').addClass('on');
 		});
 
+    // 양식이미지용 문서 슬라이딩 좌우버튼 
+    //좌측버튼
+    $('.button_control1').click(function () {
+        $('.box_imgtmb li').each(function () {
+            var onCheck = $(this).hasClass('on');
+            if (onCheck == true) {
+                if ($(this).prev().length != 0) {
+                    var imgSrc = $(this).prev().find('img')[0].src;
+                    $('.imgtmb_b').find('img')[0].src = imgSrc;
+                    $(this).removeClass('on');
+                    $(this).prev().addClass('on');
+                }
+                return false;
+            }
+        });
+    });
+
+    //우측버튼
+    $(".button_control2").click(function () {
+        $('.box_imgtmb li').each(function () {
+            var onCheck = $(this).hasClass("on");
+            if (onCheck == true) {
+                if ($(this).next().length != 0) {
+                    var imgSrc = $(this).next().find('img')[0].src;
+                    $('.imgtmb_b').find('img')[0].src = imgSrc;
+                    $(this).removeClass('on');
+                    $(this).next().addClass('on');
+                }
+                return false;
+            }
+        });
+    });
 	// input 선택시 전체선택/해제
 	$(".sta00_all").change(function(){
 	 	var chk = $(".sta00");

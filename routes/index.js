@@ -166,7 +166,7 @@ passport.use(new LocalStrategy({
     });
 }));
 
-// Auto login
+// Auto login (deprecate : 2018-07-05)
 /* Fake, in-memory database of remember me tokens */
 var tokens = {}
 function consumeRememberMeToken(token, fn) {

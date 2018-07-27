@@ -30,6 +30,7 @@ var batchLearning = require('./routes/user/batchLearning');
 var uiLearning = require('./routes/user/uiLearning');
 var ocrHistorySearch = require('./routes/user/ocrHistorySearch');
 var newDocLearning = require('./routes/user/newDocLearning');
+var documentCheck = require('./routes/user/documentCheck');
 //admin
 var adminDashboard = require('./routes/admin/adminDashboard');
 var userManagement = require('./routes/admin/userManagement');
@@ -76,6 +77,7 @@ app.use('/batchLearning', batchLearning);
 app.use('/uiLearning', uiLearning);
 app.use('/ocrHistorySearch', ocrHistorySearch);
 app.use('/newDocLearning', newDocLearning);
+app.use('/documentCheck', documentCheck);
 // admin
 app.use('/adminDashboard', adminDashboard);
 app.use('/userManagement', userManagement);
