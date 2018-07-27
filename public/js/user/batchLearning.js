@@ -440,19 +440,18 @@ function convertOcrData() {
 // [OCR API -> CLASSIFICATION -> LABEL MAPPING]
 function execBatchLearning() {     
     var dataArr = convertOcrData();
-    var isUiTraining = $('#uiTrainingChk').is(':checked');
 
     for (var i in ocrDataArr) {
-        execBatchLearningData(ocrDataArr[i], dataArr[i], isUiTraining);
+        execBatchLearningData(ocrDataArr[i], dataArr[i]);
     }
 }
 
-function execBatchLearningData(ocrData, data, isUiTraining) {
+function execBatchLearningData(ocrData, data) {
     //$("#progressMsg").html("processing machine learning...");
     //addProgressBar(61, 90);
     batchCount++;
-    compareBatchLearningData(ocrData, '', isUiTraining);
-    /*
+    //compareBatchLearningData(ocrData, '');
+    
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
         type: 'post',
@@ -465,6 +464,7 @@ function execBatchLearningData(ocrData, data, isUiTraining) {
         success: function (data) {
             //console.log(data);
             batchCount++;
+            compareBatchLearningData(ocrData, data)
             //compareBatchLearningData(fileInfo, data, isUiTraining);
             //updateBatchLearningData(fileName, data);
             
@@ -479,11 +479,11 @@ function execBatchLearningData(ocrData, data, isUiTraining) {
             console.log(err);
         }
     });
-*/
+
 }
 
 function compareBatchLearningData(ocrData, data, isUiTraining) {
-    var data = JSON.parse('[{"location":"300,51,370,44","text":"123123123213123","label":"entryrowlabel","column":"PRRS_CF"},{"location":"252,57,480,46","text":"abcdqwjlvasmlkfsdafasd","label":"entryrowlabel","column":"PRRS_CF"},{"location":"1018,240,411,87","text":"APEX","label":""},{"location":"1019,338,409,23","text":"Partner of Choice","label":""},{"location":"1562,509,178,25","text":"Voucher No","label":""},{"location":"1562,578,206,25","text":"Voucher Date","label":""},{"location":"206,691,274,27","text":"4153 Korean Re","label":""},{"location":"208,756,525,34","text":"Proportional Treaty Statement","label":""},{"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","label":""},{"location":"1840,575,169,25","text":"01105/2018","label":""},{"location":"206,848,111,24","text":"decant","label":"entryrowlabel","column":"PRRS_CF"},{"location":"206,908,285,24","text":"Class of Business","label":"fixlabel","column":"CT_NM"},{"location":"210,963,272,26","text":"Period of Quarter","label":"fixlabel","column":"INS_ST_DT"},{"location":"207,1017,252,31","text":"Period of Treaty","label":"fixlabel","column":"CUR_CD"},{"location":"206,1066,227,24","text":"Our Reference","label":"fixlabel","column":"CSCO_SA_RFRN_CNNT2"},{"location":"226,1174,145,31","text":"Currency","label":"entryrowlabel","column":"CUR_CD"},{"location":"227,1243,139,24","text":"Premium","label":"entryrowlabel","column":"PRE"},{"location":"226,1303,197,24","text":"Commission","label":"entryrowlabel","column":"COM"},{"location":"226,1366,107,24","text":"Claims","label":"entryrowlabel","column":"CLA"},{"location":"227,1426,126,24","text":"Reserve","label":"entryrowlabel","column":"PRRS_CF"},{"location":"227,1489,123,24","text":"Release","label":"entryrowlabel","column":"PRRS_RLS"},{"location":"227,1549,117,24","text":"Interest","label":"entryrowlabel","column":"EXEX"},{"location":"227,1609,161,31","text":"Brokerage","label":"entryrowlabel","column":"BRKG"},{"location":"233,1678,134,24","text":"Portfolio","label":"entryrowlabel","column":"SVF"},{"location":"227,1781,124,24","text":"Balance","label":"entryrowlabel","column":"NTBL"},{"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","label":""},{"location":"574,907,568,32","text":": Marine Cargo Surplus 2018 - Inward","label":""},{"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","label":"fixvalue","column":"INS_ST_DT_VALUE"},{"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018","label":"fixvalue","column":"CUR_CD_VALUE"},{"location":"574,1065,304,25","text":": APEX/BORD/2727","label":""},{"location":"629,1173,171,25","text":"jody 1.00","label":"entryvalue","column":"CUR_CD_VALUE"},{"location":"639,1239,83,25","text":"25.53","label":"entryvalue","column":"PRE_VALUE"},{"location":"639,1299,64,25","text":"5.74","label":"entryvalue","column":"COM_VALUE"},{"location":"639,1362,64,25","text":"0.00","label":"entryvalue","column":"CLA_VALUE"},{"location":"639,1422,64,25","text":"7.66","label":"entryvalue","column":"PRRS_CF_VALUE"},{"location":"639,1485,64,25","text":"0.00","label":"entryvalue","column":"PRRS_RLS_VALUE"},{"location":"639,1545,64,25","text":"0.00","label":"entryvalue","column":"EXEX_VALUE"},{"location":"639,1605,64,25","text":"0.64","label":"entryvalue","column":"BRKG_VALUE"},{"location":"648,1677,64,25","text":"0.00","label":"entryvalue","column":"SVF_VALUE"},{"location":"641,1774,81,25","text":"11 .49","label":"entryvalue","column":"NTBL_VALUE"},{"location":"1706,1908,356,29","text":"APEX INSURANCE","label":"undefined"}]');
+    //var data = JSON.parse('[{"location":"300,51,370,44","text":"123123123213123","label":"entryrowlabel","column":"PRRS_CF"},{"location":"252,57,480,46","text":"abcdqwjlvasmlkfsdafasd","label":"entryrowlabel","column":"PRRS_CF"},{"location":"1018,240,411,87","text":"APEX","label":""},{"location":"1019,338,409,23","text":"Partner of Choice","label":""},{"location":"1562,509,178,25","text":"Voucher No","label":""},{"location":"1562,578,206,25","text":"Voucher Date","label":""},{"location":"206,691,274,27","text":"4153 Korean Re","label":""},{"location":"208,756,525,34","text":"Proportional Treaty Statement","label":""},{"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","label":""},{"location":"1840,575,169,25","text":"01105/2018","label":""},{"location":"206,848,111,24","text":"decant","label":"entryrowlabel","column":"PRRS_CF"},{"location":"206,908,285,24","text":"Class of Business","label":"fixlabel","column":"CT_NM"},{"location":"210,963,272,26","text":"Period of Quarter","label":"fixlabel","column":"INS_ST_DT"},{"location":"207,1017,252,31","text":"Period of Treaty","label":"fixlabel","column":"CUR_CD"},{"location":"206,1066,227,24","text":"Our Reference","label":"fixlabel","column":"CSCO_SA_RFRN_CNNT2"},{"location":"226,1174,145,31","text":"Currency","label":"entryrowlabel","column":"CUR_CD"},{"location":"227,1243,139,24","text":"Premium","label":"entryrowlabel","column":"PRE"},{"location":"226,1303,197,24","text":"Commission","label":"entryrowlabel","column":"COM"},{"location":"226,1366,107,24","text":"Claims","label":"entryrowlabel","column":"CLA"},{"location":"227,1426,126,24","text":"Reserve","label":"entryrowlabel","column":"PRRS_CF"},{"location":"227,1489,123,24","text":"Release","label":"entryrowlabel","column":"PRRS_RLS"},{"location":"227,1549,117,24","text":"Interest","label":"entryrowlabel","column":"EXEX"},{"location":"227,1609,161,31","text":"Brokerage","label":"entryrowlabel","column":"BRKG"},{"location":"233,1678,134,24","text":"Portfolio","label":"entryrowlabel","column":"SVF"},{"location":"227,1781,124,24","text":"Balance","label":"entryrowlabel","column":"NTBL"},{"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","label":""},{"location":"574,907,568,32","text":": Marine Cargo Surplus 2018 - Inward","label":""},{"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","label":"fixvalue","column":"INS_ST_DT_VALUE"},{"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018","label":"fixvalue","column":"CUR_CD_VALUE"},{"location":"574,1065,304,25","text":": APEX/BORD/2727","label":""},{"location":"629,1173,171,25","text":"jody 1.00","label":"entryvalue","column":"CUR_CD_VALUE"},{"location":"639,1239,83,25","text":"25.53","label":"entryvalue","column":"PRE_VALUE"},{"location":"639,1299,64,25","text":"5.74","label":"entryvalue","column":"COM_VALUE"},{"location":"639,1362,64,25","text":"0.00","label":"entryvalue","column":"CLA_VALUE"},{"location":"639,1422,64,25","text":"7.66","label":"entryvalue","column":"PRRS_CF_VALUE"},{"location":"639,1485,64,25","text":"0.00","label":"entryvalue","column":"PRRS_RLS_VALUE"},{"location":"639,1545,64,25","text":"0.00","label":"entryvalue","column":"EXEX_VALUE"},{"location":"639,1605,64,25","text":"0.64","label":"entryvalue","column":"BRKG_VALUE"},{"location":"648,1677,64,25","text":"0.00","label":"entryvalue","column":"SVF_VALUE"},{"location":"641,1774,81,25","text":"11 .49","label":"entryvalue","column":"NTBL_VALUE"},{"location":"1706,1908,356,29","text":"APEX INSURANCE","label":"undefined"}]');
     var dataObj = {};
 
     for (var i = 0, x = data.length; i < x; i++) {
