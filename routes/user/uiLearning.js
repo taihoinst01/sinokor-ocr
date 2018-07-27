@@ -28,6 +28,7 @@ var queryConfig = commModule.queryConfig;
 const defaults = {
     encoding: 'utf8',
 };
+var aimain = require('../util/aiMain');
 var router = express.Router();
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
@@ -62,8 +63,6 @@ router.post('/typoSentence', function (req, res) {
         console.log('uncaughtException : ' + err);
     });
     
-    var aimain = require('../util/aiMain');
-    
     try {
         aimain.typoSentenceEval(data, function (result) {
             res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
@@ -74,34 +73,60 @@ router.post('/typoSentence', function (req, res) {
     }
 });
 
-// typoSentence ML
+// domainDictionary ML
 router.post('/domainDictionary', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
 
-    domainDictionaryEval(data, function (result) {
-        res.send({ 'fileName': fileName, 'data': result, nextType: 'tc' });
+    process.on('uncaughtException', function (err) {
+        console.log('uncaughtException : ' + err);
     });
+
+    try {
+        aimain.domainDictionaryEval(data, function (result) {
+            res.send({ 'fileName': fileName, 'data': result, nextType: 'tc' });
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
+
+
 });
 
-// typoSentence ML
+// textClassification ML
 router.post('/textClassification', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
 
-    textClassificationEval(data, function (result) {
-        res.send({ 'fileName': fileName, 'data': result, nextType: 'lm' });
+    process.on('uncaughtException', function (err) {
+        console.log('uncaughtException : ' + err);
     });
+
+    try {
+        aimain.textClassificationEval(data, function (result) {
+            res.send({ 'fileName': fileName, 'data': result, nextType: 'lm' });
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
 });
 
-// typoSentence ML
+// labelMapping ML
 router.post('/labelMapping', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
 
-    labelMappingEval(data, function (result) {
-        res.send({ 'fileName': fileName, 'data': result, nextType: 'sc' });
+    process.on('uncaughtException', function (err) {
+        console.log('uncaughtException : ' + err);
     });
+
+    try {
+        aimain.labelMappingEval(data, function (result) {
+            res.send({ 'fileName': fileName, 'data': result, nextType: 'sc' });
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
 });
 
 // DB Columns select
