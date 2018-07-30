@@ -389,6 +389,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
         }
         //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
     }).fail(function (jqXHR, textStatus, errorThrown) {
+        insertCommError(jqXHR, 'ocr');
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
@@ -417,6 +418,23 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     });
     */
 };
+
+function insertCommError(jqXHR, type) {
+    $.ajax({
+        url: '/batchLearning/insertCommError',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'jqXHR': jqXHR, type: type }),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+        },
+        success: function (data) {
+        },
+        error: function (err) {
+            //console.log(err);
+        }
+    });
+}
 
 function convertOcrData() {
     var convertArr = [];

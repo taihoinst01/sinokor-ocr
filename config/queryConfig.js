@@ -292,6 +292,14 @@ var uiLearningConfig = {
             tbl_extraction_keyword `
 }
 
+var commonConfig = {
+    insertCommError:
+        `INSERT INTO 
+            tbl_comm_error
+         VALUES
+            (seq_comm_error.nextval, :userId, sysdate, :errorType, :errorCode) `
+}
+
 module.exports = {
     count: count,
     sessionConfig: sessionConfig,
@@ -299,5 +307,6 @@ module.exports = {
     userMngConfig: userMngConfig,
     dbcolumnsConfig: dbcolumnsConfig,
     batchLearningConfig: batchLearningConfig,
-    uiLearningConfig: uiLearningConfig
+    uiLearningConfig: uiLearningConfig,
+    commonConfig: commonConfig
 }
