@@ -848,6 +848,7 @@
     <Compile Include="routes\user\uiLearning.js" />
     <Compile Include="routes\user\userDashboard.js" />
     <Compile Include="routes\util\aiMain.js" />
+    <Compile Include="routes\util\common.js" />
     <Compile Include="routes\util\logger.js" />
     <Content Include="excel\template.xlsx" />
     <Content Include="excel\template2.xlsx" />

@@ -421,10 +421,10 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
 
 function insertCommError(jqXHR, type) {
     $.ajax({
-        url: '/batchLearning/insertCommError',
+        url: '/common/insertCommError',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'jqXHR': jqXHR, type: type }),
+        data: JSON.stringify({ 'error': jqXHR, type: type }),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
         },

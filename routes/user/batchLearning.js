@@ -60,24 +60,6 @@ router.get('/', function (req, res) {                           // 배치학습 
 // BLANK CALLBACK
 var callbackBlank = function () { };
 
-// [POST] TBL_COMM_ERROR INSERT
-var callIInsertCommError = function (rows, req, res) {
-    res.send({ code: 200 });
-};
-router.post('/insertCommError', function (req, res) {
-    var e = req.body.jqXHR;
-    var type = req.body.type;
-    var param = [];
-
-    param.push(req.session.userId);
-    if (type == 'ocr') {
-        param.push(1001);
-        param.push(e.status);
-    }
-
-    commonDB.reqQueryParam(queryConfig.commonConfig.insertCommError, param, callIInsertCommError, req, res);
-});
-
 // [POST] 배치학습데이터리스트 조회 
 router.post('/searchBatchLearnDataList', function (req, res) {   
     if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
