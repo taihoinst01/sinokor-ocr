@@ -6,6 +6,7 @@ var totCount = 0; // 총 이미지 분석 개수
 var ocrCount = 0; // ocr 수행 횟수
 var batchCount = 0; // ml 학습 횟수
 var grid;
+var isFullMatch = true; // UI training 체크 중 모든 컬럼 매치 유무
 
 var ocrDataArr = []; //ocr 학습한 데이터 배열
 
@@ -438,11 +439,16 @@ function convertOcrData() {
 }
 
 // [OCR API -> CLASSIFICATION -> LABEL MAPPING]
-function execBatchLearning() {     
+function execBatchLearning() {
     var dataArr = convertOcrData();
 
     for (var i in ocrDataArr) {
-        execBatchLearningData(ocrDataArr[i], dataArr[i]);
+        if (isFullMatch) {
+            execBatchLearningData(ocrDataArr[i], dataArr[i]);
+        } else {
+            $('#layer2').show(); // ui 학습레이어 띄우기
+            break;
+        }
     }
 }
 
@@ -540,9 +546,11 @@ function compareBatchLearningData(ocrData, data) {
             datatype: "json",
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
+            async: false,
             success: function (retData) {
                 console.log(retData);
                 if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
+                    isFullMatch = (dataObj.length != 53) ? false : true;
                     //ui팝업 로직
                     //if (retData.rows[0].IMGID == dataObj["imgId"]) {
                     //    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
@@ -550,6 +558,7 @@ function compareBatchLearningData(ocrData, data) {
                     //    }
                     //}
                 } else {// UI Training 체크박스 체크 없으면
+                    isFullMatch = true;
                     updateBatchLearningData(dataObj, ocrData.fileInfo, data);
                 }               
                 
