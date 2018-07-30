@@ -30,11 +30,14 @@ var batchLearning = require('./routes/user/batchLearning');
 var uiLearning = require('./routes/user/uiLearning');
 var ocrHistorySearch = require('./routes/user/ocrHistorySearch');
 var newDocLearning = require('./routes/user/newDocLearning');
+var documentCheck = require('./routes/user/documentCheck');
 //admin
 var adminDashboard = require('./routes/admin/adminDashboard');
 var userManagement = require('./routes/admin/userManagement');
 //proxy
 var proxy = require('./routes/proxy/proxy');
+//util
+var common = require('./routes/util/common');
 // etc
 var xlsx = require('xlsx');
 
@@ -76,11 +79,14 @@ app.use('/batchLearning', batchLearning);
 app.use('/uiLearning', uiLearning);
 app.use('/ocrHistorySearch', ocrHistorySearch);
 app.use('/newDocLearning', newDocLearning);
+app.use('/documentCheck', documentCheck);
 // admin
 app.use('/adminDashboard', adminDashboard);
 app.use('/userManagement', userManagement);
 //proxy
 app.use('/proxy', proxy);
+//util
+app.use('/common', common);
 // server 
 app.set('port', process.env.PORT || 3000);
 var server = app.listen(app.get('port'), function () {

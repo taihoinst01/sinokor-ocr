@@ -11,6 +11,8 @@ var pool = mysql.createPool(dbConfig);
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
+var logger = require('../util/logger');
+var aimain = require('../util/aiMain');
 var PythonShell = require('python-shell');
 var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 const FileHound = require('filehound');
@@ -97,7 +99,7 @@ var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
     var imgIdArr = [];
     for (var i in fileInfoList) {
         for (var j in rows) {
-            if (fileInfoList[i].filePath == rows[j].FILEPATH) {
+            if (fileInfoList[i].oriFileName == rows[j].FILEPATH) {
                 orderbyRows.push(rows[j]);
                 break;
             }
@@ -118,9 +120,14 @@ var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
             }
         }
     }
-    var condQuery = "(";
-    for (var i in imgIdArr) {
-        condQuery += "" + imgIdArr[i] + ((i == imgIdArr.length - 1) ? ")" : ",");
+    var condQuery = "";
+    if (imgIdArr.length > 0) {
+        condQuery = "(";
+        for (var i in imgIdArr) {
+            condQuery += "" + imgIdArr[i] + ((i == imgIdArr.length - 1) ? ")" : ",");
+        }
+    } else {
+        condQuery = "(null)";
     }
     console.log(selectBatchAnswerDataToImgId + condQuery);
     commonDB.reqQueryF2param(selectBatchAnswerDataToImgId + condQuery, callbackSelectBatchAnswerDataToImgId, req, res, fileInfoList, orderbyRows);
@@ -172,7 +179,9 @@ var callbackBatchLearningData = function (rows, req, res) {
     // ANSWER
     var condQuery = "(";
     for (var i in rows) {
-        condQuery += "'" + rows[i].FILEPATH + ((i == rows.length - 1) ? "')" : "',");
+        var pathString = rows[i].FILEPATH;
+        var pathArr = pathString.split('\\');
+        condQuery += "'" + pathArr[pathArr.length - 1] + ((i == rows.length - 1) ? "')" : "',");
     }
     var answerQuery = selectBatchAnswerFile + condQuery;
     console.log("정답 파일 조회 쿼리 : " + answerQuery);
@@ -372,13 +381,14 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 // RUN batchLearningData
 router.post('/execBatchLearningData', function (req, res) {
     var arg = req.body.data;
-    typoSentenceEval(arg, function (result1) {
+
+    aimain.typoSentenceEval(arg, function (result1) {
         console.log("typo ML");
-        domainDictionaryEval(result1, function (result2) {
+        aimain.domainDictionaryEval(result1, function (result2) {
             console.log("domain ML");
-            textClassificationEval(result2, function (result3) {
+            aimain.textClassificationEval(result2, function (result3) {
                 console.log("text ML");
-                labelMappingEval(result3, function (result4) {
+                aimain.labelMappingEval(result3, function (result4) {
                     //console.log("labelMapping Result : " + JSON.stringify(result4));
                     console.log("label ML");
                     res.send(result4);
@@ -411,34 +421,75 @@ var callbackInsertBatchLearningData = function (rows, req, res) {
     res.send({ code: 200, rows: rows });
 };
 router.post('/updateBatchLearningData', function (req, res) {
-    var dataObj = req.body.dataObj;
-    console.log("update dataObj " + JSON.stringify(dataObj));
-    var imgFileStNo = commonUtil.nvl(dataObj.imgFileStNo);
-    var imgFileEndNo = commonUtil.nvl(dataObj.imgFileEndNo);
-    var cscoNm = commonUtil.nvl(dataObj.cscoNm);
-    var ctNm = commonUtil.nvl(dataObj.ctNm);
-    var insStDt = commonUtil.nvl(dataObj.insStDt);
-    var insEndDt = commonUtil.nvl(dataObj.insEndDt);
-    var curCd = commonUtil.nvl(dataObj.curCd);
-    var pre = commonUtil.nvl2(dataObj.pre, '0');
-    var com = commonUtil.nvl2(dataObj.com, '0');
-    var brkg = commonUtil.nvl2(dataObj.brkg, '0');
-    var txam = commonUtil.nvl2(dataObj.txam, '0');
-    var prrsCf = commonUtil.nvl2(dataObj.prrsCf, '0');
-    var prrsRls = commonUtil.nvl2(dataObj.prrsRls, '0');
-    var lsresCf = commonUtil.nvl2(dataObj.lsresCf, '0');
-    var lsresRls = commonUtil.nvl2(dataObj.lsresRls, '0');
-    var cla = commonUtil.nvl2(dataObj.cla, '0');
-    var exex = commonUtil.nvl2(dataObj.exex, '0');
-    var svf = commonUtil.nvl2(dataObj.svf, '0');
-    var cas = commonUtil.nvl2(dataObj.cas, '0');
-    var ntbl = commonUtil.nvl2(dataObj.ntbl, '0');
-    var cscoSaRfrnCnnt2 = commonUtil.nvl(dataObj.cscoSaRfrnCnnt2);
-    var updId = req.session.userId;
-    var imgId = dataObj.imgId; // 조건
-    
-    var data = [imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, updId, imgId];
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData, data, callbackUpdateBatchLearningData, req, res);
+    var data = req.body.data;
+    var fileInfos = req.body.fileInfos;
+    var status = '';
+    var keyCount = 0; // 컬럼 개수
+    for (var key in data) keyCount++;
+    if (keyCount == 48 ){ // 모든 컬럼 있으면
+        status = 'Y';
+    } else {
+        status = 'N';
+    }
+
+    var data = [
+        status,
+        commonUtil.nvl(data.entryNo),
+        commonUtil.nvl(data.statementDiv),
+        commonUtil.nvl(data.contractNum),
+        commonUtil.nvl(data.ogCompanyCode),
+        commonUtil.nvl(data.ogCompanyName),
+        commonUtil.nvl(data.brokerCode),
+        commonUtil.nvl(data.brokerName),
+        commonUtil.nvl(data.ctnm),
+        commonUtil.nvl(data.insstdt),
+        commonUtil.nvl(data.insenddt),
+        commonUtil.nvl(data.uy),
+        commonUtil.nvl(data.curcd),
+        commonUtil.nvl2(data.paidPercent, 0),
+        commonUtil.nvl2(data.paidShare, 0),
+        commonUtil.nvl2(data.oslPercent, 0),
+        commonUtil.nvl2(data.oslShare, 0),
+        commonUtil.nvl2(data.grosspm, 0),
+        commonUtil.nvl2(data.pm, 0),
+        commonUtil.nvl2(data.pmPFEnd, 0),
+        commonUtil.nvl2(data.pmPFWos, 0),
+        commonUtil.nvl2(data.xolPm, 0),
+        commonUtil.nvl2(data.returnPm, 0),
+        commonUtil.nvl2(data.grosscn, 0),
+        commonUtil.nvl2(data.cn, 0),
+        commonUtil.nvl2(data.profitcn, 0),
+        commonUtil.nvl2(data.brokerAge, 0),
+        commonUtil.nvl2(data.tax, 0),
+        commonUtil.nvl2(data.overridingCom, 0),
+        commonUtil.nvl2(data.charge, 0),
+        commonUtil.nvl2(data.pmReserveRTD, 0),
+        commonUtil.nvl2(data.pfPmReserveRTD, 0),
+        commonUtil.nvl2(data.pmReserveRTD1, 0),
+        commonUtil.nvl2(data.pfPmReserveRTD2, 0),
+        commonUtil.nvl2(data.claim, 0),
+        commonUtil.nvl2(data.lossRecovery, 0),
+        commonUtil.nvl2(data.cashLoss, 0),
+        commonUtil.nvl2(data.cashLossRD, 0),
+        commonUtil.nvl2(data.lossRR, 0),
+        commonUtil.nvl2(data.lossRR2, 0),
+        commonUtil.nvl2(data.lossPFEnd, 0),
+        commonUtil.nvl2(data.lossPFWoa, 0),
+        commonUtil.nvl2(data.interest, 0),
+        commonUtil.nvl2(data.taxOn, 0),
+        commonUtil.nvl2(data.miscellaneous, 0),
+        commonUtil.nvl2(data.pmbl, 0),
+        commonUtil.nvl2(data.cmbl, 0),
+        commonUtil.nvl2(data.ntbl, 0),
+        commonUtil.nvl2(data.cscosarfrncnnt2, 0),
+    ];
+    var condImgIdQuery = '('
+    for (var i in fileInfos) {
+        condImgIdQuery += "'";
+        condImgIdQuery += fileInfos[i].imgId;
+        condImgIdQuery += (i != fileInfos.length - 1) ? "'," : "')";
+    }
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, data, callbackUpdateBatchLearningData, req, res);
 });
 
 var callbackUpdateBatchLearningData = function (rows, req, res) {
@@ -532,7 +583,9 @@ router.post('/syncFile', function (req, res) {
 
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.compareBatchLearningData, [dataObj.imgId], callbackcompareBatchLearningData, req, res);
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.compareBatchLearningData, [
+        dataObj.fileToPage.IMGID, dataObj.fileToPage.IMGFILESTARTNO, dataObj.fileToPage.IMGFILEENDNO
+    ], callbackcompareBatchLearningData, req, res);
 });
 
 var callbackcompareBatchLearningData = function (rows, req, res) {
@@ -712,199 +765,6 @@ router.get('/fileTest', function (req, res) {
 
     res.send("test");
 });
-
-
-
-//오타 검사 
-function typoSentenceEval(data, callback) {
-
-    var args = dataToArgs(data);
-
-    var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\typo.py ' + args;
-    exec(exeTypoString, defaults, function (err, stdout, stderr) {
-        //console.log("typo Test : " + stdout);
-        var typoData = stdout.split(/\r\n/g);
-
-        var typoDataLen = typoData.length;
-
-        while (typoDataLen--) {
-            if (typoData[typoDataLen] == "") {
-                typoData.splice(typoDataLen, 1);
-            }
-        }
-
-        for (var i = 0; i < typoData.length; i++) {
-            var typoSplit = typoData[i].split("^");
-            var typoText = typoSplit[0];
-            var typoOriWord = typoSplit[1];
-            var typoUpdWord = typoSplit[2];
-
-            for (var j = 0; j < data.length; j++) {
-                if (data[j].text.toLowerCase() == typoText && typoOriWord.match(/:|-|[1234567890]/g) == null) {
-                    var updWord = typoUpdWord.split(":");
-                    data[j].text = data[j].text.toLowerCase().replace(typoOriWord, updWord[0]);
-                }
-            }
-        }
-        callback(data);
-    });
-    
-}
-
-//domain dictionary eval
-function domainDictionaryEval(data, callback) {
-
-    var args = dataToArgs(data);
-
-    var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\main.py ' + args;
-    exec(exeTypoString, defaults, function (err, stdout, stderr) {
-
-        var ocrText = stdout.split(/\r\n/g);
-        var ocrTextLen = ocrText.length;
-
-        while (ocrTextLen--) {
-            if (ocrText[ocrTextLen] == "") {
-                ocrText.splice(ocrTextLen, 1);
-            }
-        }
-
-        if (ocrTextLen != null) {
-            for (var i = 0; i < data.length; i++) {
-                if (commonUtil.nvl(data[i].text).toLowerCase() != commonUtil.nvl(ocrText[i]).toLowerCase()) {
-                    data[i].text = ocrText[i];
-                }
-            }
-        }       
-        
-        callback(data);
-    });
-}
-
-//text classification eval
-function textClassificationEval(data, callback) {
-
-    var args = dataToArgs(data);
-
-    var exeTypoString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\eval.py ' + args;
-    exec(exeTypoString, defaults, function (err, stdout, stderr) {
-
-        var obj = stdout.split("^");
-
-        var label = [];
-
-        for (var key in obj) {
-            var objSplit = obj[key].split("||");
-
-            for (var i = 0; i < data.length; i++) {
-                if (commonUtil.nvl(data[i].text).toLowerCase() == objSplit[0].toLowerCase()) {
-                    data[i].label = commonUtil.nvl(objSplit[1]).replace(/\r\n/g,"");
-                }
-            }
-        }
-
-        callback(data);
-
-    });
-}
-
-//label mapping eval
-function labelMappingEval(data, callback) {
-
-    var labelData = [];
-
-    for (var num in data) {
-        if (data[num].label == "fixlabel" || data[num].label == "entryrowlabel") {
-            labelData.push(data[num]);
-        }
-    }
-
-    var args = dataToArgs(labelData);
-
-    var exeTypoString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\eval.py ' + args;
-    exec(exeTypoString, defaults, function (err, stdout, stderr) {
-
-        var labelMapping = stdout.split("^");
-
-        var dataArray = [];
-
-        for (var key in labelMapping) {
-
-            var objLabel = labelMapping[key].split("||");
-
-            for (var i = 0; i < data.length; i++) {
-                if (commonUtil.nvl(data[i].text).toLowerCase() == commonUtil.nvl(objLabel[0]).toLowerCase()) {
-                    data[i].column = commonUtil.nvl(objLabel[1]).replace(/\r\n/g, '');
-                    var obj = {};
-                    obj.text = objLabel[0];
-                    obj.column = commonUtil.nvl(objLabel[1]).replace(/\r\n/g, '');
-                    dataArray.push(obj);
-                }
-            }
-        }
-
-        for (var i = 0; i < data.length; i++) {
-            if (data[i].label == "fixvalue" || data[i].label == "entryvalue") {
-
-                var splitLocation = data[i].location.split(",");
-
-                var xCoodi = splitLocation[0];
-                var yCoodi = splitLocation[1];
-                var minDis = 100000;
-                var columnText = '';
-
-                for (var j = 0; j < data.length; j++) {
-                    if (data[j].label == "fixlabel" || data[j].label == "entryrowlabel") {
-                        var jSplitLocation = data[j].location.split(",");
-
-                        var xNum = jSplitLocation[0];
-                        var yNum = jSplitLocation[1];
-
-                        var diffX = xCoodi - xNum;
-                        var diffY = yCoodi - yNum;
-
-                        //점 최소 거리
-                        //var dis = Math.sqrt(Math.abs(diffX * diffX) + Math.abs(diffY * diffY));
-
-                        //y좌표 최소 거리
-                        var dis = Math.abs(yCoodi - yNum);
-
-                        if (minDis > dis) {
-                            minDis = dis;
-                            columnText = data[j].column.replace(/\r\n/g, '');
-                        }
-                    }
-                }
-                data[i].column = columnText + "_VALUE";
-
-                //dataText += ',"' + data[i].text + '":"' + data[i].column + '"'; 
-
-                var obj = {};
-                obj.text = data[i].text;
-                obj.column = data[i].column;
-
-                //console.log(obj);
-
-                dataArray.push(obj);
-
-            }
-        }
-
-        callback(data);
-
-    });
-}
-
-function dataToArgs(data) {
-
-    var args = '';
-    for (var i = 0; i < data.length; i++) {
-        //data[i].text = data[i].text.replace(": ", "");
-        args += '"' + commonUtil.nvl(data[i].text).toLowerCase() + '"' + ' ';
-
-    }
-
-    return args;
-}
 
 function testDataPrepare() {
     var array = [];

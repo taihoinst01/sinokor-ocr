@@ -78,11 +78,13 @@ var batchLearningConfig = {
         `SELECT
             F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
             F.fileSize, F.contentType, F.fileType, F.fileWidth, F.fileHeight,
-            A.status, A.imgFileStartNo, A.imgFileEndNo, A.csconm, A.ctnm,
-            TO_DATE(A.insstdt, 'YYYY-MM-DD hh24:mi:ss') AS insstdt,
-            TO_DATE(A.insenddt, 'YYYY-MM-DD hh24:mi:ss') AS insenddt,
-            A.curcd, A.pre, A.com, A.brkg, A.txam, A.prrscf, A.prrsrls, A.lsrescf,
-            A.lsresrls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.cscosarfrncnnt2
+            A.status, A.entryNo, A.statementDiv, A.contractNum, A.ogCompanyCode, A.ogCompanyName, A.brokerCode,
+            A.brokerName, A.ctnm, A.insstdt, A.insenddt, A.uy, A.curcd, A.paidPercent, A.paidShare, A.oslPercent,
+            A.oslShare, A.grosspm, A.pm, A.pmPFEnd, A.pmPFWos, A.xolPm, A.returnPm, A.grosscn, A.cn, A.profitcn,
+            A.brokerAge, A.tax, A.overridingCom, A.charge, A.pmReserveRTD, A.pfPmReserveRTD,A.pmReserveRTD2,
+            A.pfPmReserveRTD2, A.claim, A.lossRecovery, A.cashLoss, A.cashLossRD, A.lossRR, A.lossRR2, A.lossPFEnd,
+            A.lossPFWoa, A.interest, A.taxOn, A.miscellaneous, A.pmbl, A.cmbl, A.ntbl, A.cscosarfrncnnt2,          
+            A.regId, A.regDate
 	     FROM
             tbl_ocr_file F
 		    LEFT OUTER JOIN 
@@ -95,13 +97,13 @@ var batchLearningConfig = {
         `SELECT
             F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
             F.fileSize, F.contentType, F.fileType, F.fileWidth, F.fileHeight,
-            A.status, A.imgFileStartNo, A.imgFileEndNo, A.csconm, A.ctnm,
-            TO_DATE(A.insstdt, 'YYYY-MM-DD hh24:mi:ss') AS insstdt,
-            TO_DATE(A.insenddt, 'YYYY-MM-DD hh24:mi:ss') AS insenddt,
-            A.curcd, A.pre, A.com, A.brkg, A.txam, A.prrscf, A.prrsrls, A.lsrescf,
-            A.lsresrls, A.cla, A.exex, A.svf, A.cas, A.ntbl, A.cscosarfrncnnt2,
-            A.regId, TO_DATE(A.regDate, 'YYYY-MM-DD hh24:mi:ss') AS regDate,
-            A.updId, TO_DATE(A.updDate, 'YYYY-MM-DD hh24:mi:ss') AS updDate,
+            A.status, A.entryNo, A.statementDiv, A.contractNum, A.ogCompanyCode, A.ogCompanyName, A.brokerCode,
+            A.brokerName, A.ctnm, A.insstdt, A.insenddt, A.uy, A.curcd, A.paidPercent, A.paidShare, A.oslPercent,
+            A.oslShare, A.grosspm, A.pm, A.pmPFEnd, A.pmPFWos, A.xolPm, A.returnPm, A.grosscn, A.cn, A.profitcn,
+            A.brokerAge, A.tax, A.overridingCom, A.charge, A.pmReserveRTD, A.pfPmReserveRTD,A.pmReserveRTD2,
+            A.pfPmReserveRTD2, A.claim, A.lossRecovery, A.cashLoss, A.cashLossRD, A.lossRR, A.lossRR2, A.lossPFEnd,
+            A.lossPFWoa, A.interest, A.taxOn, A.miscellaneous, A.pmbl, A.cmbl, A.ntbl, A.cscosarfrncnnt2,          
+            A.regId, A.regDate
 	     FROM
             tbl_ocr_file F
 		    LEFT OUTER JOIN
@@ -132,11 +134,17 @@ var batchLearningConfig = {
             (:imgId, 'N', :regId, sysdate) `,
     insertBatchLearningData:
         `INSERT INTO
-            tbl_batch_learn_data (imgId, status, imgFileStartNo, imgFileEndNo, csconm, ctnm, insstdt, insenddt,
-            curcd, pre, com, brkg, txam, prrscf, prrsrls, lsrescf, lsresrls, cla, exex, svf, cas, ntbl, cscosarfrncnnt2, regId, regDate)
+            tbl_batch_learn_data (imgId, status, entryNo, statementDiv, contractNum, ogCompanyCode, ogCompanyName, brokerCode,
+            brokerName, ctnm, insstdt, insenddt, uy, curcd, paidPercent, paidShare, oslPercent, oslShare, grosspm, pm, pmPFEnd,
+            pmPFWos, xolPm, returnPm, grosscn, cn, profitcn, brokerAge, tax, overridingCom, charge, pmReserveRTD, pfPmReserveRTD,
+            pmReserveRTD2, pfPmReserveRTD2, claim, lossRecovery, cashLoss, cashLossRD, lossRR, lossRR2, lossPFEnd, lossPFWoa,
+            interest, taxOn, miscellaneous, pmbl, cmbl, ntbl, cscosarfrncnnt2, regId, regDate)
          VALUES
-            (:imgId, :originFileName, 'N', :imgFileStartNo, :imgFileEndNo, :csconm, :ctnm, :insstdt, :insenddt,
-            :curcd, :pre, :com, :brkg, :txam, :prrscf, :prrsrls, :lsrescf, :lsresrls, :cla, :exex, :svf, :cas, :ntbl, :cscosarfrncnnt2, :regId, sysdate) `,
+            (:imgId, 'N', :entryNo, :statementDiv, :contractNum, :ogCompanyCode, :ogCompanyName, :brokerCode,
+            :brokerName, :ctnm, :insstdt, :insenddt, :uy, :curcd, :paidPercent, :paidShare, :oslPercent, :oslShare, :grosspm, :pm, :pmPFEnd,
+            :pmPFWos, :xolPm, :returnPm, :grosscn, :cn, :profitcn, :brokerAge, :tax, :overridingCom, :charge, :pmReserveRTD, :pfPmReserveRTD,
+            :pmReserveRTD2, :pfPmReserveRTD2, :claim, :lossRecovery, :cashLoss, :cashLossRD, :lossRR, :lossRR2, :lossPFEnd, :lossPFWoa,
+            :interest, :taxOn, :miscellaneous, :pmbl, :cmbl, :ntbl, :cscosarfrncnnt2, :regId, sysdate) `,
     insertFileInfo:
         `INSERT INTO
             tbl_ocr_file(seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize, contentType, fileType, regId, regDate)
@@ -180,13 +188,18 @@ var batchLearningConfig = {
     updateBatchLearningData:
         `UPDATE tbl_batch_learn_data
             SET
-                status = 'Y',
-                imgFileStartNo = :imgFileStartNo, imgFileEndNo = :imgFileEndNo, cscoNm = :cscoNm, ctNm = :ctNm,
-                insStDt = :insStDt, insEndDt = :insEndDt, curCd = :curCd, pre = :pre, com = :com,
-                brkg = :brkg, txam = :txam, prrsCf = :prrsCf, prrsRls = :prrsRls, lsresCf = :lsresCf,
-                lsresRls = :lsresRls, cla = :cla, exex = :exex, svf = :svf, cas = :cas, ntbl = :ntbl,
-                cscoSaRfrnCnnt2 = :cscoSaRfrnCnnt2, updId = :updId, updDate = sysdate
-            WHERE imgId = :imgId`,
+                status = :status,
+                entryNo = :entryNo, statementDiv = :statementDiv, contractNum = :contractNum, ogCompanyCode = :ogCompanyCode,
+                ogCompanyName = :ogCompanyName, brokerCode = :brokerCode, brokerName = :brokerName, ctnm = :ctnm, insstdt = :insstdt,
+                insenddt = :insenddt, uy = :uy, curcd = :curcd, paidPercent = :paidPercent, paidShare = :paidShare, oslPercent = :oslPercent,
+                oslShare = :oslShare, grosspm = :grosspm, pm = :pm, pmPFEnd = :pmPFEnd, pmPFWos = :pmPFWos, xolPm = :xolPm, returnPm = :returnPm,
+                grosscn = :grosscn, cn = :cn, profitcn = :profitcn, brokerAge = :brokerAge, tax = :tax, overridingCom = :overridingCom,
+                charge = :charge, pmReserveRTD = :pmReserveRTD, pfPmReserveRTD = :pfPmReserveRTD, pmReserveRTD2 = :pmReserveRTD2,
+                pfPmReserveRTD2 = :pfPmReserveRTD2, claim = :claim, lossRecovery = :lossRecovery, cashLoss = :cashLoss, cashLossRD = :cashLossRD,
+                lossRR = :lossRR, lossRR2 = :lossRR2, lossPFEnd = :lossPFEnd, lossPFWoa = :lossPFWoa, interest = :interest, taxOn = :taxOn,
+                miscellaneous = :miscellaneous, pmbl = :pmbl, cmbl = :cmbl, ntbl = :ntbl, cscosarfrncnnt2 = :cscosarfrncnnt2
+            WHERE
+                imgId IN `,
     deleteBatchLearningData:
         `UPDATE 
             tbl_batch_learn_data
@@ -197,7 +210,10 @@ var batchLearningConfig = {
         `SELECT
             imgId, pageNum, filePath, totalCount
          FROM
-            tbl_batch_answer_file 
+          (SELECT
+            imgId, pageNum, SUBSTR(filePath, INSTR(filePath, '/', -1) + 1, LENGTH(filePath)) AS filePath, totalCount
+          FROM
+            tbl_batch_answer_file )
          WHERE filePath in `,
     selectBatchAnswerDataToImgId:
         `SELECT
@@ -217,7 +233,7 @@ var batchLearningConfig = {
          FROM 
             tbl_batch_answer_data
          where 
-            imgId = :imgId `
+            imgId = :imgId AND imgFileStartNo = :imgFileStartNo And imgFileEndNo = :imgFileEndNo `
 }
 
 var uiLearningConfig = {
@@ -276,6 +292,14 @@ var uiLearningConfig = {
             tbl_extraction_keyword `
 }
 
+var commonConfig = {
+    insertCommError:
+        `INSERT INTO 
+            tbl_comm_error
+         VALUES
+            (seq_comm_error.nextval, :userId, sysdate, :errorType, :errorCode) `
+}
+
 module.exports = {
     count: count,
     sessionConfig: sessionConfig,
@@ -283,5 +307,6 @@ module.exports = {
     userMngConfig: userMngConfig,
     dbcolumnsConfig: dbcolumnsConfig,
     batchLearningConfig: batchLearningConfig,
-    uiLearningConfig: uiLearningConfig
+    uiLearningConfig: uiLearningConfig,
+    commonConfig: commonConfig
 }
