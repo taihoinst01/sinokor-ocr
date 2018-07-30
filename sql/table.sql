@@ -19,6 +19,27 @@ CREATE TABLE TBL_OCR_SYMSPELL(
   frequency NUMBER
 );
 
+CREATE SEQUENCE SEQ_OCR_TYPO_CORRECT
+START WITH 1 INCREMENT BY 1 NOCACHE;
+
+CREATE TABLE TBL_OCR_TYPO_CORRECT(
+	seqNum NUMBER PRIMARY KEY,
+    userId VARCHAR2(100),
+    originWord VARCHAR2(100),
+    correctedWord VARCHAR2(100),
+    regDate DATE DEFAULT SYSDATE,
+    convertedImageFileName VARCHAR2(100),
+    correctorType VARCHAR2(1)
+);
+
+COMMENT ON COLUMN TBL_OCR_TYPO_CORRECT.seqNum IS '시퀀스';
+COMMENT ON COLUMN TBL_OCR_TYPO_CORRECT.userId IS '유저아이디';
+COMMENT ON COLUMN TBL_OCR_TYPO_CORRECT.originWord IS '수정전 단어';
+COMMENT ON COLUMN TBL_OCR_TYPO_CORRECT.correctedWord IS '수정후 단어';
+COMMENT ON COLUMN TBL_OCR_TYPO_CORRECT.regDate IS '등록일';
+COMMENT ON COLUMN TBL_OCR_TYPO_CORRECT.convertedImageFileName IS 'MS OCR SERVICE에 요청한 파일명';
+COMMENT ON COLUMN TBL_OCR_TYPO_CORRECT.correctorType IS '교정자 타입(M:머신러닝, U:사용자)';
+
 -- label mapping 분류 시퀀스 생성
 create sequence seq_label_mapping_cls start with 1 increment by 1 nocache;
 
@@ -119,6 +140,27 @@ create tableTBL_OCR_DOMAIN_DIC_TRANS(
  rearWord VARCHAR2(50)
 );
 
+CREATE SEQUENCE SEQ_OCR_DOMAIN_TRANS
+START WITH 1 INCREMENT BY 1 NOCACHE;
+
+CREATE TABLE TBL_OCR_DOMAIN_TRANS(
+	seqNum NUMBER PRIMARY KEY,
+    userId VARCHAR2(100),
+    originSentence VARCHAR2(500),
+    correctedSentence VARCHAR2(500),
+    regDate DATE DEFAULT SYSDATE,
+    convertedImageFileName VARCHAR2(100),
+    correctorType VARCHAR2(1)
+);
+
+COMMENT ON COLUMN TBL_OCR_DOMAIN_TRANS.seqNum IS '시퀀스';
+COMMENT ON COLUMN TBL_OCR_DOMAIN_TRANS.userId IS '유저아이디';
+COMMENT ON COLUMN TBL_OCR_DOMAIN_TRANS.originSentence IS '수정전 단어';
+COMMENT ON COLUMN TBL_OCR_DOMAIN_TRANS.correctedSentence IS '수정후 단어';
+COMMENT ON COLUMN TBL_OCR_DOMAIN_TRANS.regDate IS '등록일';
+COMMENT ON COLUMN TBL_OCR_DOMAIN_TRANS.convertedImageFileName IS 'MS OCR SERVICE에 요청한 파일명';
+COMMENT ON COLUMN TBL_OCR_DOMAIN_TRANS.correctorType IS '교정자 타입(M:머신러닝, U:사용자)';
+
 -- ocr 파일 시퀀스 생성
 create sequence seq_ocr_file start with 1 increment by 1 nocache;
 
@@ -138,6 +180,30 @@ create table TBL_OCR_FILE(
  regId VARCHAR2(100),
  regDate TIMESTAMP
 );
+
+-- OCR RESPONSE
+CREATE SEQUENCE SEQ_OCR_SERVICE_RESPONSE
+START WITH 1 INCREMENT BY 1 NOCACHE;
+
+CREATE TABLE TBL_OCR_SERVICE_RESPONSE (
+  seqNum NUMBER PRIMARY KEY,
+  userId VARCHAR2(100),
+  uploadFileName VARCHAR2(100),
+  convertedImageFileStart VARCHAR2(100),
+  convertedImageFileEnd VARCHAR2(100),
+  requestType VARCHAR2(1),
+  regDate DATE DEFAULT SYSDATE,
+  responseJson VARCHAR2(4000)
+);
+
+COMMENT ON COLUMN TBL_OCR_SERVICE_RESPONSE.seqNum IS '시퀀스';
+COMMENT ON COLUMN TBL_OCR_SERVICE_RESPONSE.userId IS '유저아이디';
+COMMENT ON COLUMN TBL_OCR_SERVICE_RESPONSE.uploadFileName IS '업로드 파일명';
+COMMENT ON COLUMN TBL_OCR_SERVICE_RESPONSE.convertedImageFileStart IS '편환파일명';
+COMMENT ON COLUMN TBL_OCR_SERVICE_RESPONSE.convertedImageFileEnd IS '변환파일의 마지막 파일명';
+COMMENT ON COLUMN TBL_OCR_SERVICE_RESPONSE.requestType IS '요청 타입(L:학습용,R:계약 등록용)';
+COMMENT ON COLUMN TBL_OCR_SERVICE_RESPONSE.regDate IS '등록일';
+COMMENT ON COLUMN TBL_OCR_SERVICE_RESPONSE.responseJson IS 'ms ocr json';
 
 -- 배치학습 정답 데이터 시퀀스 생성
 create sequence seq_batch_answer_data start with 1 increment by 1 nocache;
@@ -196,3 +262,22 @@ cmbl NUMBER,
 ntbl NUMBER,
 cscosarfrncnnt2 VARCHAR2(500)
 );
+
+CREATE SEQUENCE SEQ_COMM_ERROR
+START WITH 1 INCREMENT BY 1 NOCACHE;
+
+CREATE TABLE TBL_COMM_ERROR(
+	seqNum NUMBER PRIMARY KEY,
+    userId VARCHAR2(100),
+    regDate DATE DEFAULT SYSDATE,
+    errorType NUMBER,
+    errorCode NUMBER
+);
+
+COMMENT ON COLUMN TBL_COMM_ERROR.seqNum IS '시퀀스';
+COMMENT ON COLUMN TBL_COMM_ERROR.userId IS '유저아이디';
+COMMENT ON COLUMN TBL_COMM_ERROR.regDate IS '등록일';
+COMMENT ON COLUMN TBL_COMM_ERROR.errorType IS '1001:OCR REQ실패, 1002: typo correct실패, 1003:domain dic trans 실패';
+COMMENT ON COLUMN TBL_COMM_ERROR.errorCode IS '400:InvalidImageUrl,InvalidImageFormat,InvalidImageSize,NotSupportedLanguage';
+
+
