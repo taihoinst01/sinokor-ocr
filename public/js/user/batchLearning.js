@@ -7,6 +7,7 @@ var ocrCount = 0; // ocr 수행 횟수
 var batchCount = 0; // ml 학습 횟수
 var grid;
 var isFullMatch = true; // UI training 체크 중 모든 컬럼 매치 유무
+var modifyData = []; // UI 수정할 데이터 
 
 var ocrDataArr = []; //ocr 학습한 데이터 배열
 
@@ -443,13 +444,23 @@ function execBatchLearning() {
     var dataArr = convertOcrData();
 
     for (var i in ocrDataArr) {
+        execBatchLearningData(ocrDataArr[i], dataArr[i]);
         if (isFullMatch) {
-            execBatchLearningData(ocrDataArr[i], dataArr[i]);
-        } else {
-            $('#layer2').show(); // ui 학습레이어 띄우기
+        } else {            
+            popUpLayer2(ocrDataArr[i]);
             break;
         }
     }
+}
+
+// UI레이어 작업 함수
+function popUpLayer2(ocrData) {
+    var data = modifyData;
+    console.log('---------------------------------------');
+    console.log(ocrData);
+    console.log(data)
+
+    $('#layer2').show(); // ui 학습레이어 띄우기
 }
 
 function execBatchLearningData(ocrData, data) {
@@ -468,6 +479,7 @@ function execBatchLearningData(ocrData, data) {
         beforeSend: function () {
         },
         success: function (data) {
+            modifyData = data;
             //console.log(data);
             batchCount++;
             compareBatchLearningData(ocrData, data)
