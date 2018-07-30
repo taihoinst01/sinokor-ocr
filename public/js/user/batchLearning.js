@@ -15,6 +15,8 @@ var addCond = "LEARN_N"; // LEARN_N:학습미완료, LEARN_Y:학습완료, defau
 var startNum = 0;
 var moreNum = 20;
 
+var ocrPopData;
+
 $(function () {
     _init();
     //viewServerFileTest();
@@ -112,7 +114,8 @@ var buttonEvent = function () {
 
     // [UI학습팝업] 저장
     $("#btn_pop_ui_run").on("click", function () {
-        fn_updateUiTraining();
+        //fn_updateUiTraining();
+        fn_updateUiTrainingTEST();
     });
     // [UI학습팝업] close popup
     $("#btn_pop_ui_close").on("click", function () {
@@ -911,7 +914,15 @@ var searchBatchLearnData = function (imgIdArray, flag) {
                 }
             } else if (flag == "UI_TRAINING") {
                 fn_processUiTraining(data.fileInfoList);
-            } else {
+            } else if (flag == "UI_TRAINING_test") {
+                for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
+                    var lastYn = "N";
+                    if (i == data.fileInfoList.length - 1) lastYn = "Y";
+                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i], data.fileToPage);
+                }
+            }
+
+            else {
                 alert("잘못된 요청입니다.");
                 return;
             }
@@ -1082,6 +1093,18 @@ var fn_popBatchRun = function () {
 // UI 학습 (학습결과 수정)
 var fn_uiTraining = function () {
     var imgIdArray = [];
+    let imgId = "";
+    let chkCnt = 0;
+    //테스트용
+    $("input[name=listCheck_before]").each(function (index, entry) {
+        if ($(this).is(":checked")) {
+            imgId = $(this).val();
+            chkCnt++;
+        }
+    });
+    imgIdArray.push(imgId);
+    processImage_TEST("26.jpg");
+    /*
     if (addCond == "LEARN_Y") {
         let imgId = "";
         let chkCnt = 0;
@@ -1105,6 +1128,7 @@ var fn_uiTraining = function () {
         alert("After Training 상태에서만 UI학습이 가능합니다.");
         return;
     }
+    */
 };
 
 // UI학습 팝업 초기화
@@ -1363,7 +1387,235 @@ function generateGrid(gridData) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 이하는 legacy source2
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- 
+
+// OCR API TEST
+function processImage_TEST(fileName) {
+    var subscriptionKey = "7d51f1308c8848f49db9562d1dab7184";
+    var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
+
+    var params = {
+        "language": "unk",
+        "detectOrientation": "true",
+    };
+
+    var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
+
+    $('#loadingTitle').html('OCR 처리 중..');
+    $('#loadingDetail').html(sourceImageUrl);
+
+    $.ajax({
+        url: uriBase + "?" + $.param(params),
+        beforeSend: function (jqXHR) {
+            jqXHR.setRequestHeader("Content-Type", "application/json");
+            jqXHR.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
+        },
+        type: "POST",
+        data: '{"url": ' + '"' + sourceImageUrl + '"}',
+    }).done(function (data) {
+        console.log('ocr api test');
+        appendOcrDataTEST(fileName, data.regions);
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
+        errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
+            jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
+        alert(errorString);
+    });
+};
+
+function appendOcrDataTEST(fileName, regions) {
+    var data = [];
+    for (var i = 0; i < regions.length; i++) {
+        for (var j = 0; j < regions[i].lines.length; j++) {
+            var item = '';
+            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
+                item += regions[i].lines[j].words[k].text + ' ';
+            }
+            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+        }
+    }
+
+    $.ajax({
+        url: '/batchLearning/execBatchLearningData',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'fileName': fileName, 'data': data }),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+        },
+        success: function (data) {
+            console.log(data);
+            uiTrainPopupTEST(fileName, data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+function uiTrainPopupTEST(fileName, ocrData) {
+    ocrPopData = ocrData;
+
+    $("#uiImg").attr("src", "./uploads/" + fileName);
+    for (var num in ocrData) {
+        if (ocrData[num].column == "CSCO_NM_VALUE") {
+            $("#cscoNm").val(ocrData[num].text);
+        } else if (ocrData[num].column == "CT_NM_VALUE") {
+            $("#ctNm").val(ocrData[num].text);
+        } else if (ocrData[num].column == "INS_ST_DT_VALUE") {
+            $("#insStDt").val(ocrData[num].text);
+        } else if (ocrData[num].column == "INS_END_DT_VALUE") {
+            $("#insEndDt").val(ocrData[num].text);
+        } else if (ocrData[num].column == "CUR_CD_VALUE") {
+            $("#curCd").val(ocrData[num].text);
+        } else if (ocrData[num].column == "PRE_VALUE") {
+            $("#pre").val(ocrData[num].text);
+        } else if (ocrData[num].column == "COM_VALUE") {
+            $("#com").val(ocrData[num].text);
+        } else if (ocrData[num].column == "BRKG_VALUE") {
+            $("#brkg").val(ocrData[num].text);
+        } else if (ocrData[num].column == "TXAM_VALUE") {
+            $("#txam").val(ocrData[num].text);
+        } else if (ocrData[num].column == "PRRS_CF_VALUE") {
+            $("#prrsCf").val(ocrData[num].text);
+        } else if (ocrData[num].column == "PRRS_RLS_VALUE") {
+            $("#prrsRls").val(ocrData[num].text);
+        } else if (ocrData[num].column == "CLA_VALUE") {
+            $("#cla").val(ocrData[num].text);
+        } else if (ocrData[num].column == "EXEX_VALUE") {
+            $("#exex").val(ocrData[num].text);
+        } else if (ocrData[num].column == "SVF_VALUE") {
+            $("#svf").val(ocrData[num].text);
+        } else if (ocrData[num].column == "CAS_VALUE") {
+            $("#cas").val(ocrData[num].text);
+        } else if (ocrData[num].column == "NTBL_VALUE") {
+            $("#ntbl").val(ocrData[num].text);
+        } else if (ocrData[num].column == "CSCO_SA_RFRN_CNNT2_VALUE") {
+            $("#cscoSaRfrnCnnt2").val(ocrData[num].text);
+        } else {
+
+        }
+    }
+
+    layer_open('layer2');
+}
+
+var fn_updateUiTrainingTEST = function () {
+    var dataObj = {};
+    //dataObj["imgId"] = $("#imgId").val();
+    //dataObj["imgFileStartNo"] = $("#imgFileStartNo").val();
+    //dataObj["imgFileEndNo"] = $("#imgFileEndNo").val();
+    dataObj["cscoNm"] = $("#cscoNm").val();
+    dataObj["ctNm"] = $("#ctNm").val();
+    dataObj["insStDt"] = $("#insStDt").val();
+    dataObj["insEndDt"] = $("#insEndDt").val();
+    dataObj["curCd"] = $("#curCd").val();
+    dataObj["pre"] = $("#pre").val();
+    dataObj["com"] = $("#com").val();
+    dataObj["brkg"] = $("#brkg").val();
+    dataObj["txam"] = $("#txam").val();
+    dataObj["prrsCf"] = $("#prrsCf").val();
+    dataObj["prrsRls"] = $("#prrsRls").val();
+    dataObj["lsresCf"] = $("#lsresCf").val();
+    dataObj["lsresRls"] = $("#lsresRls").val();
+    dataObj["cla"] = $("#cla").val();
+    dataObj["exex"] = $("#exex").val();
+    dataObj["svf"] = $("#svf").val();
+    dataObj["cas"] = $("#cas").val();
+    dataObj["ntbl"] = $("#ntbl").val();
+    dataObj["cscoSaRfrnCnnt2"] = $("#cscoSaRfrnCnnt2").val();
+
+    for (var num in ocrPopData) {
+        if (ocrPopData[num].column == "CSCO_NM_VALUE") {
+            if (ocrPopData[num].text != $("#cscoNm").val()) {
+                ocrPopData[num].transText = $("#cscoNm").val();     
+            }
+        } else if (ocrPopData[num].column == "CT_NM_VALUE") {
+            if (ocrPopData[num].text != $("#ctNm").val()) {
+                ocrPopData[num].transText = $("#ctNm").val();
+            }
+        } else if (ocrPopData[num].column == "INS_ST_DT_VALUE") {
+            if (ocrPopData[num].text != $("#insStDt").val()) {
+                ocrPopData[num].transText = $("#insStDt").val();
+            }
+        } else if (ocrPopData[num].column == "INS_END_DT_VALUE") {
+            if (ocrPopData[num].text != $("#insEndDt").val()) {
+                ocrPopData[num].transText = $("#insEndDt").val();
+            }
+        } else if (ocrPopData[num].column == "CUR_CD_VALUE") {
+            if (ocrPopData[num].text != $("#curCd").val()) {
+                ocrPopData[num].transText = $("#curCd").val();
+            }
+        } else if (ocrPopData[num].column == "PRE_VALUE") {
+            if (ocrPopData[num].text != $("#pre").val()) {
+                ocrPopData[num].transText = $("#pre").val();
+            }
+        } else if (ocrPopData[num].column == "COM_VALUE") {
+            if (ocrPopData[num].text != $("#com").val()) {
+                ocrPopData[num].transText = $("#com").val();
+            }
+        } else if (ocrPopData[num].column == "BRKG_VALUE") {
+            if (ocrPopData[num].text != $("#brkg").val()) {
+                ocrPopData[num].transText = $("#brkg").val();
+            }
+        } else if (ocrPopData[num].column == "TXAM_VALUE") {
+            if (ocrPopData[num].text != $("#txam").val()) {
+                ocrPopData[num].transText = $("#txam").val();
+            }
+        } else if (ocrPopData[num].column == "PRRS_CF_VALUE") {
+            if (ocrPopData[num].text != $("#prrsCf").val()) {
+                ocrPopData[num].transText = $("#prrsCf").val();
+            }
+        } else if (ocrPopData[num].column == "PRRS_RLS_VALUE") {
+            if (ocrPopData[num].text != $("#prrsRls").val()) {
+                ocrPopData[num].transText = $("#prrsRls").val();
+            }
+        } else if (ocrPopData[num].column == "CLA_VALUE") {
+            if (ocrPopData[num].text != $("#cla").val()) {
+                ocrPopData[num].transText = $("#cla").val();
+            }
+        } else if (ocrPopData[num].column == "EXEX_VALUE") {
+            if (ocrPopData[num].text != $("#exex").val()) {
+                ocrPopData[num].transText = $("#exex").val();
+            }
+        } else if (ocrPopData[num].column == "SVF_VALUE") {
+            if (ocrPopData[num].text != $("#svf").val()) {
+                ocrPopData[num].transText = $("#svf").val();
+            }
+        } else if (ocrPopData[num].column == "CAS_VALUE") {
+            if (ocrPopData[num].text != $("#cas").val()) {
+                ocrPopData[num].transText = $("#cas").val();
+            }
+        } else if (ocrPopData[num].column == "NTBL_VALUE") {
+            if (ocrPopData[num].text != $("#ntbl").val()) {
+                ocrPopData[num].transText = $("#ntbl").val();
+            }
+        } else if (ocrPopData[num].column == "CSCO_SA_RFRN_CNNT2_VALUE") {
+            if (ocrPopData[num].text != $("#cscoSaRfrnCnnt2").val()) {
+                ocrPopData[num].transText = $("#cscoSaRfrnCnnt2").val();
+            }
+        }
+    }
+
+    var param = { "dataObj": ocrPopData };
+
+    $.ajax({
+        url: '/batchLearning/uiTrainBatchLearningData',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
+            alert("UI학습이 완료되었습니다.");
+            searchBatchLearnDataList(addCond);
+            popupEvent.closePopup();
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
 // OCR 데이터 렌더링
 function appendOcrData(regions) {
     var lineText = [];

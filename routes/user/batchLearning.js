@@ -17,6 +17,7 @@ var PythonShell = require('python-shell');
 var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 const FileHound = require('filehound');
 const xlsx = require('xlsx');
+var oracledb = require('oracledb');
 
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
@@ -591,6 +592,288 @@ router.post('/compareBatchLearningData', function (req, res) {
 var callbackcompareBatchLearningData = function (rows, req, res) {
     console.log("compareBatchLearningData finish..");
     res.send({ code: 200, rows: rows });
+}
+
+router.post('/uiTrainBatchLearningData', function (req, res) {
+    var dataObj = req.body.dataObj;
+
+    //console.log(dataObj);
+
+    runTypoDomainTrain(dataObj, function (result1) {
+        if (result1 == "ture") {
+            //text-classification train
+            var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
+            exec(exeTextString, defaults, function (err, stdout, stderr) {
+                console.log(stdout);
+                //label-mapping train
+                var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\train.py'
+                exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
+                    console.log(stdout1);
+                    res.send("ui 학습 완료");
+                });
+            });
+
+        } else {
+            res.send("학습 실패");
+        }
+    });
+
+});
+
+async function runTypoDomainTrain(data, callbackTypoDomainTrain) {
+    let res;
+    try {
+        res = await typoDomainTrain(data);
+        console.log(res);
+        callbackTypoDomainTrain(res);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function typoDomainTrain(data) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].transText != null) {
+                    //console.log(data[i].originText);
+                    var originSplit = data[i].text.split(" ");
+                    var textSplit = data[i].transText.split(" ");
+
+                    var textleng = Math.abs(data[i].text.length - data[i].transText.length);
+
+                    if (textleng < 4) {
+                        //typo train
+                        for (var ty = 0; ty < textSplit.length; ty++) {
+                            if (originSplit[ty] != textSplit[ty]) {
+                                var selTypoCond = [];
+                                selTypoCond.push(textSplit[ty].toLowerCase());
+                                let selTypoRes = await conn.execute(selectTypo, selTypoCond);
+
+                                if (selTypoRes.rows[0] == null) {
+                                    //insert
+                                    let insTypoRes = await conn.execute(insertTypo, selTypoCond);
+                                } else {
+                                    //update
+                                    var updTypoCond = [];
+                                    updTypoCond.push(selTypoRes.rows[0].KEYWORD);
+                                    let updTypoRes = await conn.execute(updateTypo, updTypoCond);
+                                }
+
+                            }
+                        }
+                    } else {
+                        //domain dictionary train
+                        var os = 0;
+                        var osNext = 0;
+                        var updText = "";
+                        for (var j = 1; j < textSplit.length; j++) {
+                            updText += textSplit[j] + ' ';
+                        }
+                        updText.slice(0, -1);
+
+                        var domainText = [];
+                        domainText.push(textSplit[0]);
+                        domainText.push(updText);
+
+                        for (var ts = 0; ts < domainText.length; ts++) {
+
+                            for (os; os < originSplit.length; os++) {
+                                if (ts == 1) {
+                                    var insDicCond = [];
+
+                                    //originword
+                                    insDicCond.push(originSplit[os]);
+
+                                    //frontword
+                                    if (os == 0) {
+                                        insDicCond.push("<<N>>");
+                                    } else {
+                                        insDicCond.push(originSplit[os - 1]);
+                                    }
+
+                                    //correctedword
+                                    if (osNext == os) {
+                                        insDicCond.push(domainText[ts]);
+                                    } else {
+                                        insDicCond.push("<<N>>");
+                                    }
+
+                                    //rearword
+                                    if (os == originSplit.length - 1) {
+                                        insDicCond.push("<<N>>");
+                                    } else {
+                                        insDicCond.push(originSplit[os + 1]);
+                                    }
+
+                                    let insDomainDicRes = await conn.execute(insertDomainDic, insDicCond);
+
+                                } else if (domainText[ts].toLowerCase() != originSplit[os].toLowerCase()) {
+                                    var insDicCond = [];
+
+                                    //originword
+                                    insDicCond.push(originSplit[os]);
+
+                                    //frontword
+                                    if (os == 0) {
+                                        insDicCond.push("<<N>>");
+                                    } else {
+                                        insDicCond.push(originSplit[os - 1]);
+                                    }
+
+                                    //correctedword
+                                    insDicCond.push("<<N>>");
+
+                                    //rearword
+                                    if (os == originSplit.length - 1) {
+                                        insDicCond.push("<<N>>");
+                                    } else {
+                                        insDicCond.push(originSplit[os + 1]);
+                                    }
+
+                                    let insDomainDicRes = await conn.execute(insertDomainDic, insDicCond);
+
+                                } else {
+                                    os++;
+                                    osNext = os;
+                                    break;
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            for (var i in data) {
+
+                if (data[i].column == null) {
+                    data[i].label = 'undefined';
+                }
+
+                var insTextClassifiCond = [];
+                insTextClassifiCond.push(data[i].text);
+                insTextClassifiCond.push(data[i].label);
+
+                let insResult = await conn.execute(insertTextClassification, insTextClassifiCond);
+            }
+
+            resolve("true");
+
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
+
+async function runClassificationTrain(data, callbackClassificationTrain) {
+    try {
+        let res = await textClassificationTrain(data);
+        console.log(res);
+        callbackClassificationTrain(res);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function textClassificationTrain(data) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            for (var i in data) {
+                var selectLabelCond = [];
+                selectLabelCond.push(data[i].column);
+
+                let result = await conn.execute(selectLabel, selectLabelCond);
+
+                if (result.rows[0] == null) {
+                    data[i].textClassi = 'undefined';
+                } else {
+                    data[i].textClassi = result.rows[0].LABEL;
+                    data[i].labelMapping = result.rows[0].ENKEYWORD;
+                }
+
+                var insTextClassifiCond = [];
+                insTextClassifiCond.push(data[i].text);
+                insTextClassifiCond.push(data[i].textClassi);
+
+                let insResult = await conn.execute(insertTextClassification, insTextClassifiCond);
+            }
+            console.log("textClassification");
+            resolve("true");
+
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
+
+async function runMappingTrain(data, callbackLabelMappingTrain) {
+    try {
+        let res = await labelMappingTrain(data);
+        console.log(res);
+        callbackLabelMappingTrain(res);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function labelMappingTrain(data) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            for (var i in data) {
+                if (data[i].textClassi == "fixlabel" || data[i].textClassi == "entryrowlabel") {
+                    var insLabelMapCond = [];
+                    insLabelMapCond.push(data[i].text);
+                    insLabelMapCond.push(data[i].labelMapping);
+
+                    let insLabelMapRes = await conn.execute(insertLabelMapping, insLabelMapCond);
+
+                    console.log(insLabelMapRes);
+                }
+            }
+            console.log("labelMapping");
+            resolve("true");
+
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
 }
 
 
