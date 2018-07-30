@@ -120,9 +120,14 @@ var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
             }
         }
     }
-    var condQuery = "(";
-    for (var i in imgIdArr) {
-        condQuery += "" + imgIdArr[i] + ((i == imgIdArr.length - 1) ? ")" : ",");
+    var condQuery = "";
+    if (imgIdArr.length > 0) {
+        condQuery = "(";
+        for (var i in imgIdArr) {
+            condQuery += "" + imgIdArr[i] + ((i == imgIdArr.length - 1) ? ")" : ",");
+        }
+    } else {
+        condQuery = "(null)";
     }
     console.log(selectBatchAnswerDataToImgId + condQuery);
     commonDB.reqQueryF2param(selectBatchAnswerDataToImgId + condQuery, callbackSelectBatchAnswerDataToImgId, req, res, fileInfoList, orderbyRows);

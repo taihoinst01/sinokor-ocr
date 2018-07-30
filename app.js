@@ -36,6 +36,8 @@ var adminDashboard = require('./routes/admin/adminDashboard');
 var userManagement = require('./routes/admin/userManagement');
 //proxy
 var proxy = require('./routes/proxy/proxy');
+//util
+var common = require('./routes/util/common');
 // etc
 var xlsx = require('xlsx');
 
@@ -83,6 +85,8 @@ app.use('/adminDashboard', adminDashboard);
 app.use('/userManagement', userManagement);
 //proxy
 app.use('/proxy', proxy);
+//util
+app.use('/common', common);
 // server 
 app.set('port', process.env.PORT || 3000);
 var server = app.listen(app.get('port'), function () {
