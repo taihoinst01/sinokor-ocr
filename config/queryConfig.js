@@ -188,7 +188,7 @@ var batchLearningConfig = {
     updateBatchLearningData:
         `UPDATE tbl_batch_learn_data
             SET
-                status = 'Y',
+                status = :status,
                 entryNo = :entryNo, statementDiv = :statementDiv, contractNum = :contractNum, ogCompanyCode = :ogCompanyCode,
                 ogCompanyName = :ogCompanyName, brokerCode = :brokerCode, brokerName = :brokerName, ctnm = :ctnm, insstdt = :insstdt,
                 insenddt = :insenddt, uy = :uy, curcd = :curcd, paidPercent = :paidPercent, paidShare = :paidShare, oslPercent = :oslPercent,
@@ -199,7 +199,7 @@ var batchLearningConfig = {
                 lossRR = :lossRR, lossRR2 = :lossRR2, lossPFEnd = :lossPFEnd, lossPFWoa = :lossPFWoa, interest = :interest, taxOn = :taxOn,
                 miscellaneous = :miscellaneous, pmbl = :pmbl, cmbl = :cmbl, ntbl = :ntbl, cscosarfrncnnt2 = :cscosarfrncnnt2
             WHERE
-                imgId = :imgId `,
+                imgId IN `,
     deleteBatchLearningData:
         `UPDATE 
             tbl_batch_learn_data
@@ -233,7 +233,7 @@ var batchLearningConfig = {
          FROM 
             tbl_batch_answer_data
          where 
-            imgId = :imgId `
+            imgId = :imgId AND imgFileStartNo = :imgFileStartNo And imgFileEndNo = :imgFileEndNo `
 }
 
 var uiLearningConfig = {
@@ -292,6 +292,14 @@ var uiLearningConfig = {
             tbl_extraction_keyword `
 }
 
+var commonConfig = {
+    insertCommError:
+        `INSERT INTO 
+            tbl_comm_error
+         VALUES
+            (seq_comm_error.nextval, :userId, sysdate, :errorType, :errorCode) `
+}
+
 module.exports = {
     count: count,
     sessionConfig: sessionConfig,
@@ -299,5 +307,6 @@ module.exports = {
     userMngConfig: userMngConfig,
     dbcolumnsConfig: dbcolumnsConfig,
     batchLearningConfig: batchLearningConfig,
-    uiLearningConfig: uiLearningConfig
+    uiLearningConfig: uiLearningConfig,
+    commonConfig: commonConfig
 }

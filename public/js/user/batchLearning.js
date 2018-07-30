@@ -4,7 +4,10 @@
 
 var totCount = 0; // 총 이미지 분석 개수
 var ocrCount = 0; // ocr 수행 횟수
+var batchCount = 0; // ml 학습 횟수
 var grid;
+var isFullMatch = true; // UI training 체크 중 모든 컬럼 매치 유무
+var modifyData = []; // UI 수정할 데이터 
 
 var ocrDataArr = []; //ocr 학습한 데이터 배열
 
@@ -346,7 +349,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                     answerRows.PAGENUM <= fileToPage[i].IMGFILEENDNO) {
                     ocrDataArr.push({
                         answerImgId: answerRows.IMGID,
-                        fileInfo: fileInfo,
+                        fileInfo: [fileInfo],
                         fileName: [fileName],
                         regions: data.regions,
                         fileToPage: fileToPage[i],
@@ -362,6 +365,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                     var totRegions = (ocrDataArr[i].regions).concat(data.regions);
                     ocrDataArr[i].regions = totRegions;
                     ocrDataArr[i].fileName.push(fileName);
+                    ocrDataArr[i].fileInfo.push(fileInfo);
                     break;
                 } else if (i == ocrDataArr.length - 1) {
                     for (var j in fileToPage) {
@@ -370,7 +374,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                             answerRows.PAGENUM <= fileToPage[j].IMGFILEENDNO) {
                             ocrDataArr.push({
                                 answerImgId: answerRows.IMGID,
-                                fileInfo: fileInfo,
+                                fileInfo: [fileInfo],
                                 fileName: [fileName],
                                 regions: data.regions,
                                 fileToPage: fileToPage[j],
@@ -384,10 +388,11 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
         }
         //console.log(ocrDataArr);
         if (totCount == ocrCount) {
-            //execBatchLearningData();
+            execBatchLearning();
         }
         //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
     }).fail(function (jqXHR, textStatus, errorThrown) {
+        insertCommError(jqXHR, 'ocr');
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
@@ -417,10 +422,25 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     */
 };
 
-// [OCR API -> CLASSIFICATION -> LABEL MAPPING]
-function execBatchLearningData() {
-    var batchCount = 0; // ml 학습 횟수
-    var dataArr = [];
+function insertCommError(jqXHR, type) {
+    $.ajax({
+        url: '/common/insertCommError',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'error': jqXHR, type: type }),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+        },
+        success: function (data) {
+        },
+        error: function (err) {
+            //console.log(err);
+        }
+    });
+}
+
+function convertOcrData() {
+    var convertArr = [];
     for (var i in ocrDataArr) {
         var data = [];
         for (var j in ocrDataArr[i].regions) {
@@ -434,84 +454,75 @@ function execBatchLearningData() {
                 data.push({ 'location': linesItem.boundingBox, 'text': item.trim() });
             }
         }
-        dataArr.push(data);
+        convertArr.push(data);
     }
 
-    //$("#progressMsg").html("processing machine learning...");
-    //addProgressBar(61, 90);
+    return convertArr;
+}
+
+// [OCR API -> CLASSIFICATION -> LABEL MAPPING]
+function execBatchLearning() {
+    var dataArr = convertOcrData();
+
     for (var i in ocrDataArr) {
-        $.ajax({
-            url: '/batchLearning/execBatchLearningData',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify({ 'fileName': ocrDataArr[i].fileName, 'data': dataArr[i] }),
-            contentType: 'application/json; charset=UTF-8',
-            beforeSend: function () {
-            },
-            success: function (data) {
-                console.log(data);
-                batchCount++;
-                if (totCount = batchCount) {
-                    //$("#progressMsg").html("success...");
-                    //addProgressBar(91, 100);
-                }
-                /*
-                updateBatchLearningData(fileInfo, data, lastYn);
-                if (lastYn == "Y") {
-                    addProgressBar(71, 99);
-                    setTimeout(function () {
-                        alert("완료되었습니다.");
-                        searchBatchLearnDataList(addCond);
-                    }, 1000);
-                }
-                */
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    }
-    /*
-    var data = [];
-    for (var i = 0; i < regions.length; i++) {
-        for (var j = 0; j < regions[i].lines.length; j++) {
-            var item = '';
-            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
-                item += regions[i].lines[j].words[k].text + ' ';
-            }
-            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+        execBatchLearningData(ocrDataArr[i], dataArr[i]);
+        if (isFullMatch) {
+        } else {            
+            popUpLayer2(ocrDataArr[i]);
+            break;
         }
     }
+}
 
+// UI레이어 작업 함수
+function popUpLayer2(ocrData) {
+    var data = modifyData;
+    console.log('---------------------------------------');
+    console.log(ocrData);
+    console.log(data)
+
+    $('#layer2').show(); // ui 학습레이어 띄우기
+}
+
+function execBatchLearningData(ocrData, data) {
+    //$("#progressMsg").html("processing machine learning...");
+    //addProgressBar(61, 90);
+    batchCount++;
+    //compareBatchLearningData(ocrData, '');
+    
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
         type: 'post',
         datatype: "json",
-        //data: JSON.stringify(param),
-        data: JSON.stringify({ 'fileName': fileName, 'data': data }),
+        data: JSON.stringify({ 'data': data }),
         contentType: 'application/json; charset=UTF-8',
+        async: false,
         beforeSend: function () {
         },
         success: function (data) {
-            /*
-            updateBatchLearningData(fileInfo, data, lastYn);
-            if (lastYn == "Y") {
-                addProgressBar(71, 99);
-                setTimeout(function () {
-                    alert("완료되었습니다.");
-                    searchBatchLearnDataList(addCond);
-                }, 1000);
-            }
+            modifyData = data;
+            //console.log(data);
+            batchCount++;
+            compareBatchLearningData(ocrData, data)
+            //compareBatchLearningData(fileInfo, data, isUiTraining);
+            //updateBatchLearningData(fileName, data);
+            
+            //if (totCount = batchCount) {
+                //$("#progressMsg").html("success...");
+                //addProgressBar(91, 100);               
+            //}
+            
+            
         },
         error: function (err) {
             console.log(err);
         }
     });
-    */
+    
 }
 
-function compareBatchLearningData(fileInfo, data, lastYn) {
-    console.log("compareBatchLearningData fileInfo : " + JSON.stringify(fileInfo));
+function compareBatchLearningData(ocrData, data) {
+    //var data = JSON.parse('[{"location":"300,51,370,44","text":"123123123213123","label":"entryrowlabel","column":"PRRS_CF"},{"location":"252,57,480,46","text":"abcdqwjlvasmlkfsdafasd","label":"entryrowlabel","column":"PRRS_CF"},{"location":"1018,240,411,87","text":"APEX","label":""},{"location":"1019,338,409,23","text":"Partner of Choice","label":""},{"location":"1562,509,178,25","text":"Voucher No","label":""},{"location":"1562,578,206,25","text":"Voucher Date","label":""},{"location":"206,691,274,27","text":"4153 Korean Re","label":""},{"location":"208,756,525,34","text":"Proportional Treaty Statement","label":""},{"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","label":""},{"location":"1840,575,169,25","text":"01105/2018","label":""},{"location":"206,848,111,24","text":"decant","label":"entryrowlabel","column":"PRRS_CF"},{"location":"206,908,285,24","text":"Class of Business","label":"fixlabel","column":"CT_NM"},{"location":"210,963,272,26","text":"Period of Quarter","label":"fixlabel","column":"INS_ST_DT"},{"location":"207,1017,252,31","text":"Period of Treaty","label":"fixlabel","column":"CUR_CD"},{"location":"206,1066,227,24","text":"Our Reference","label":"fixlabel","column":"CSCO_SA_RFRN_CNNT2"},{"location":"226,1174,145,31","text":"Currency","label":"entryrowlabel","column":"CUR_CD"},{"location":"227,1243,139,24","text":"Premium","label":"entryrowlabel","column":"PRE"},{"location":"226,1303,197,24","text":"Commission","label":"entryrowlabel","column":"COM"},{"location":"226,1366,107,24","text":"Claims","label":"entryrowlabel","column":"CLA"},{"location":"227,1426,126,24","text":"Reserve","label":"entryrowlabel","column":"PRRS_CF"},{"location":"227,1489,123,24","text":"Release","label":"entryrowlabel","column":"PRRS_RLS"},{"location":"227,1549,117,24","text":"Interest","label":"entryrowlabel","column":"EXEX"},{"location":"227,1609,161,31","text":"Brokerage","label":"entryrowlabel","column":"BRKG"},{"location":"233,1678,134,24","text":"Portfolio","label":"entryrowlabel","column":"SVF"},{"location":"227,1781,124,24","text":"Balance","label":"entryrowlabel","column":"NTBL"},{"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","label":""},{"location":"574,907,568,32","text":": Marine Cargo Surplus 2018 - Inward","label":""},{"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","label":"fixvalue","column":"INS_ST_DT_VALUE"},{"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018","label":"fixvalue","column":"CUR_CD_VALUE"},{"location":"574,1065,304,25","text":": APEX/BORD/2727","label":""},{"location":"629,1173,171,25","text":"jody 1.00","label":"entryvalue","column":"CUR_CD_VALUE"},{"location":"639,1239,83,25","text":"25.53","label":"entryvalue","column":"PRE_VALUE"},{"location":"639,1299,64,25","text":"5.74","label":"entryvalue","column":"COM_VALUE"},{"location":"639,1362,64,25","text":"0.00","label":"entryvalue","column":"CLA_VALUE"},{"location":"639,1422,64,25","text":"7.66","label":"entryvalue","column":"PRRS_CF_VALUE"},{"location":"639,1485,64,25","text":"0.00","label":"entryvalue","column":"PRRS_RLS_VALUE"},{"location":"639,1545,64,25","text":"0.00","label":"entryvalue","column":"EXEX_VALUE"},{"location":"639,1605,64,25","text":"0.64","label":"entryvalue","column":"BRKG_VALUE"},{"location":"648,1677,64,25","text":"0.00","label":"entryvalue","column":"SVF_VALUE"},{"location":"641,1774,81,25","text":"11 .49","label":"entryvalue","column":"NTBL_VALUE"},{"location":"1706,1908,356,29","text":"APEX INSURANCE","label":"undefined"}]');
     var dataObj = {};
 
     for (var i = 0, x = data.length; i < x; i++) {
@@ -519,12 +530,25 @@ function compareBatchLearningData(fileInfo, data, lastYn) {
         var label = nvl(data[i]["label"]);
         var text = nvl(data[i]["text"]);
         var column = nvl(data[i]["column"]);
-        if (label == "fixlabel" || label == "entryrowlabel") {
+
+        if (label == "fixlabel" || label == "entryrowlabel") { //라벨 이면
             for (var j = 0, y = data.length; j < y; j++) {
-                if (data[j].column == column + "_VALUE") {
+                if (data[j].column == column + "_VALUE") {// 해당 라벨에 대한 값이면
                     console.log("Find Label and Value : " + data[j]["column"] + " >> " + data[j]["text"]);
                     if (isNull(dataObj[column])) {
-                        // DOUBLE 형태의 값은 공백 제거 처리
+                        // 양식 변경전이랑 비교해야하기 때문에 ml에서 나온 값은 출재사명(거래사명),계약명,개시일, 종료일만을 담아서 보냄. 추후 수정 필요 -- 07.27 hyj
+                        if (column == "CSCO_NM" ) {
+                            dataObj["csconm"] = data[j]["text"];
+                        } else if (column == "CT_NM") {
+                            dataObj["ctnm"] = data[j]["text"];
+                        } else if (column == "INS_ST_DT") {
+                            dataObj["insstdt"] = data[j]["text"];
+                        } else if (column == "INS_END_DT") {
+                            dataObj["inenddt"] = data[j]["text"];
+                        }
+
+                        // DOUBLE 형태의 값은 공백 제거 처리                       
+                        /*
                         if (column == "PRE" || column == "COM" || column == "BRKG" || column == "TXAM" ||
                             column == "PRRS_CF" || column == "PRRS_RLS" || column == "LSRES_CF" ||
                             column == "LSRES_RLS" || column == "CLA" || column == "EXEX" || column == "SVF" ||
@@ -533,6 +557,7 @@ function compareBatchLearningData(fileInfo, data, lastYn) {
                         } else {
                             dataObj[column] = data[j]["text"];
                         }
+                        */
                     } else {
                         console.log("Alreaday exist Column(KEY) : " + data[j]["column"] + " >> " + data[j]["text"]);
                     }
@@ -540,14 +565,13 @@ function compareBatchLearningData(fileInfo, data, lastYn) {
             }
         }
     }
-    console.log("결과 : " + JSON.stringify(dataObj));
-
+    //console.log("결과 : ");
+    //console.log(dataObj);
+    
     // BatchLearning Data Insert
     if (dataObj) {
-        var fileNameSplit = fileInfo.oriFileName.split(".");
-        var imgId = fileNameSplit[0];
-
-        dataObj["imgId"] = imgId;
+        dataObj["fileToPage"] = ocrData.fileToPage;
+       
         var param = { dataObj: dataObj };
         $.ajax({
             url: '/batchLearning/compareBatchLearningData',
@@ -555,20 +579,29 @@ function compareBatchLearningData(fileInfo, data, lastYn) {
             datatype: "json",
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
+            async: false,
             success: function (retData) {
-                console.log("SUCCESS compareBatchLearningData : " + JSON.stringify(retData));
-
-                if (retData.rows[0].IMGID == dataObj["imgId"]) {
-                    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
-                        uiPopUpTrain(data, fileInfo);
-                    }
-                }
+                console.log(retData);
+                if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
+                    isFullMatch = (dataObj.length != 53) ? false : true;
+                    //ui팝업 로직
+                    //if (retData.rows[0].IMGID == dataObj["imgId"]) {
+                    //    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
+                    //        uiPopUpTrain(data, fileInfo);
+                    //    }
+                    //}
+                } else {// UI Training 체크박스 체크 없으면
+                    isFullMatch = true;
+                    updateBatchLearningData(dataObj, ocrData.fileInfo, data);
+                }               
+                
             },
             error: function (err) {
                 console.log(err);
             }
         });
     }
+    
 }
 
 function uiPopUpTrain(data, fileInfo) {
@@ -595,12 +628,99 @@ function uiPopUpTrain(data, fileInfo) {
     return;
 }
 
-// [UPDATE PARSING RESULT, UPDATE FILE INFO DB]
-function updateBatchLearningData(fileInfo, data, lastYn) {
-    console.log("updateBatchLearningData fileInfo : " + JSON.stringify(fileInfo));
-    console.log("data[0] : " + JSON.stringify(data[0]));
-    var dataObj = {};
+function updateBatchLearningData(dataObj, fileInfo, mlData) {
+    $.ajax({
+        url: '/batchLearning/updateBatchLearningData',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ data: dataObj, fileInfos: fileInfo}),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
+            comparedMLAndAnswer(dataObj, mlData, fileInfo);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
 
+// ML 데이터와 정답 데이터를 비교해여 색상 표시
+function comparedMLAndAnswer(dataObj, mlData, fileInfo) {
+    console.log(dataObj);
+    console.log(mlData);
+    $('input[name="listCheck_before"]').each(function (index, element) {
+        for (var i in fileInfo) {
+            if ($(this).val() == fileInfo[i].imgId) {
+                var targetTdNumArr = [];
+                for (var j in mlData) {
+                    // 라벨 맵핑에서 컬럼명 정해지면 이부분 수정 필요 -- 07.30 hyj
+                    if (!dataObj.entryNo) targetTdNumArr.push(3);
+                    if (!dataObj.statementDiv) targetTdNumArr.push(4);
+                    if (!dataObj.contractNum) targetTdNumArr.push(5);
+                    if (!dataObj.ogCompanyCode) targetTdNumArr.push(6);
+                    if (!dataObj.ogCompanyName) targetTdNumArr.push(7);
+                    if (!dataObj.brokerCode) targetTdNumArr.push(8);
+                    if (!dataObj.brokerName) targetTdNumArr.push(9);
+                    if (!dataObj.ctnm) targetTdNumArr.push(10);
+                    if (!(mlData[j].column == 'INS_ST_DT_VALUE' && dataObj.insstdt == mlData[j].text)) targetTdNumArr.push(11);
+                    if (!dataObj.insenddt) targetTdNumArr.push(12);
+                    if (!dataObj.uy) targetTdNumArr.push(13);
+                    if (!dataObj.curcd) targetTdNumArr.push(14);
+                    if (!dataObj.paidPercent) targetTdNumArr.push(15);
+                    if (!dataObj.paidShare) targetTdNumArr.push(16);
+                    if (!dataObj.oslPercent) targetTdNumArr.push(17);
+                    if (!dataObj.oslShare) targetTdNumArr.push(18);
+                    if (!dataObj.grosspm) targetTdNumArr.push(19);
+                    if (!dataObj.pm) targetTdNumArr.push(20);
+                    if (!dataObj.pmPFEnd) targetTdNumArr.push(21);
+                    if (!dataObj.pmPFWos) targetTdNumArr.push(22);
+                    if (!dataObj.xolPm) targetTdNumArr.push(23);
+                    if (!dataObj.returnPm) targetTdNumArr.push(24);
+                    if (!dataObj.grosscn) targetTdNumArr.push(25);
+                    if (!dataObj.cn) targetTdNumArr.push(26);
+                    if (!dataObj.profitcn) targetTdNumArr.push(27);
+                    if (!dataObj.brokerAge) targetTdNumArr.push(28);
+                    if (!dataObj.tax) targetTdNumArr.push(29);
+                    if (!dataObj.overridingCom) targetTdNumArr.push(30);
+                    if (!dataObj.charge) targetTdNumArr.push(31);
+                    if (!dataObj.pmReserveRTD) targetTdNumArr.push(32);
+                    if (!dataObj.pfPmReserveRTD) targetTdNumArr.push(33);
+                    if (!dataObj.pmReserveRTD1) targetTdNumArr.push(34);
+                    if (!dataObj.pfPmReserveRTD2) targetTdNumArr.push(35);
+                    if (!dataObj.claim) targetTdNumArr.push(36);
+                    if (!dataObj.lossRecovery) targetTdNumArr.push(37);
+                    if (!dataObj.cashLoss) targetTdNumArr.push(38);
+                    if (!dataObj.cashLossRD) targetTdNumArr.push(39);
+                    if (!dataObj.lossRR) targetTdNumArr.push(40);
+                    if (!dataObj.lossRR2) targetTdNumArr.push(41);
+                    if (!dataObj.lossPFEnd) targetTdNumArr.push(42);
+                    if (!dataObj.lossPFWoa) targetTdNumArr.push(43);
+                    if (!dataObj.interest) targetTdNumArr.push(44);
+                    if (!dataObj.taxOn) targetTdNumArr.push(45);
+                    if (!dataObj.miscellaneous) targetTdNumArr.push(46);
+                    if (!dataObj.pmbl) targetTdNumArr.push(47);
+                    if (!dataObj.cmbl) targetTdNumArr.push(48);
+                    if (!dataObj.ntbl) targetTdNumArr.push(49);
+                    if (!dataObj.cscosarfrncnnt2) targetTdNumArr.push(50);
+                }
+                for (var j in targetTdNumArr) {
+                    $(this).parent().parent().parent().parent().children('td').eq(targetTdNumArr[j]).css('background-color', 'red');
+                }
+                break;
+            }
+        }
+    });
+}
+
+/*
+// [UPDATE PARSING RESULT, UPDATE FILE INFO DB]
+function updateBatchLearningData(fileNames, data) {
+    console.log("updateBatchLearningData fileNames : " + fileNames);
+    console.log("data : ");
+    console.log(data);
+    var dataObj = {};
+    
     for (var i = 0, x = data.length; i < x; i++) {
         var location = nvl(data[i]["location"]);
         var label = nvl(data[i]["label"]);
@@ -657,6 +777,7 @@ function updateBatchLearningData(fileInfo, data, lastYn) {
         });
     }
 }
+*/
 
 // [Function]
 // [List] 배치학습데이터 조회
@@ -680,6 +801,7 @@ var searchBatchLearnDataList = function (addCond) {
             addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
+            //console.log(data);
             if (addCond == "LEARN_N") $("#total_cnt_before").html(data.length);
             else $("#total_cnt_after").html(data.length);
             addProgressBar(2, 100); // proceed progressbar
@@ -689,7 +811,7 @@ var searchBatchLearnDataList = function (addCond) {
                     if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="sta00" name="listCheck_before" /></th>`;
                     else checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="stb00" name="listCheck_after" /></div></th>`;
                     appendHtml += `
-                        <tr>
+                    <tr>
                         ${checkboxHtml}
                         <td>${nvl(entry.IMGID)}</td>
                         <td>${nvl(entry.ORIGINFILENAME)}</td>

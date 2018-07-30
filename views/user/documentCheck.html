@@ -1,0 +1,298 @@
+﻿<!doctype html>
+<html lang="kr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <title alt="문서 조회">KoreanRe OCR Service - 문서 조회</title>
+
+    <%include  ../common/commonLib.html%>
+
+    <!-- 공통 js -->
+    <script type="text/javascript" src="js/common.client.js"></script>
+    <!-- // 공통 js -->
+    <!-- 계산서 조회 학습 전용 js -->
+    <script type="text/javascript" src="js/user/documentCheck.js"></script>
+    <!-- // 계산서 조회 전용 js -->
+</head>
+<body>  
+    <div id="wrap">
+
+        <!-- skip navi -->
+        <%include  ../common/header.html%>
+        <!-- //skip navi -->
+        <!-- Content -->
+        <div id="container">
+            <!-- LNB -->
+            <%include  ../common/leftSideBar.html%>
+            <!-- // LNB -->
+            <!-- 본문영역 -->
+            <div id="content">
+                <h2 class="subtit subtit_st01 blind"><span>계산서조회</span></h2>
+
+                <!-- 조회조건 목록  -->
+                <div class="box_stsearch">
+                    <h3 class="tits"><span>조회조건</span></h3>
+
+                    <div class="box_txt_st01 st00_sh">
+                        <dl>
+                            <dt>
+                                <label for="intxt_01">
+                                    문서번호&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scrtest: <a onclick="javascript:screenTest('base')">1</a>&nbsp;<a onclick="javascript:screenTest('dtl')">2</a>&nbsp;<a onclick="javascript:screenTest('image')">3</a>
+                                </label>
+                            </dt>
+                            <dd>
+                                <input type="text" name="docNum" id="docNum" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label>소속팀</label></dt>
+                            <dd>
+                                <div class="select_style w100">
+                                    <input type="hidden" id="select_faoTeam" value="" />
+                                    <span class="ctrl"><span class="arrow"></span></span>
+                                    <button type="button" class="myValue">전 체</button>
+                                    <ul class="aList">
+                                        <li><a href="#none" onclick="javascript: selectFaoTeam('t')">테스트팀</a></li>
+                                    </ul>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label>소속파트</label></dt>
+                            <dd>
+                                <div class="select_style w100">
+                                    <input type="hidden" id="select_faoPart" value="" />
+                                    <span class="ctrl"><span class="arrow"></span></span>
+                                    <button type="button" class="myValue">전 체</button>
+                                    <ul class="aList">
+                                        <li><a href="#none" onclick="javascript: selectFaoPart('tt')">테스트파트</a></li>
+                                    </ul>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_02">문서담당자</label></dt>
+                            <dd>
+                                <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="" placeholder="홍길동" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_03">마감년월</label></dt>
+                            <dd>
+                                <input type="text" name="deadLineDt" id="deadLineDt" class="inputst_box01" value="" placeholder="201801" />
+                            </dd>
+                        </dl>
+
+                        <dl>
+                            <dt><label>문서등록일자</label></dt>
+                            <dd>
+                                <div class="clearfix inputst_box01">
+                                    <span class="dset">
+                                        <input type="text" class="datepicker inpType" name="searchStartDate" id="searchStartDate" readonly />
+                                        <a href="#none" class="btncalendar dateclick">달력</a>
+                                    </span>
+                                    <span class="demi">-</span>
+                                    <span class="dset dset2">
+                                        <input type="text" class="datepicker inpType" name="searchEndDate" id="searchEndDate" readonly />
+                                        <a href="#none" class="btncalendar dateclick">달력</a>
+                                    </span>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_01">결제상태</label></dt>
+                            <dd>
+                                <div class="checkbox-options">
+                                    <input type="checkbox" value="P" id="st1" name="approvalState" checked /><label for="st1"><span>진행</span></label>
+                                    <input type="checkbox" value="C" id="st2" name="approvalState" checked /><label for="st2"><span>완료</span></label>
+                                    <input type="checkbox" value="R" id="st3" name="approvalState" checked /><label for="st3"><span>반려</span></label>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <div class="btn_rt">
+                        <button type="button" id="btn_search" class="button_st3">조회</button>
+                    </div>
+                </div>
+                <!-- // 조회조건 목록 -->
+
+                <div class="box_content st_stsh">
+                    <!-- 기본결재리스트 영역 -->
+                    <div id="div_base" class="box_st03 box_st031 box_content_bg"  style="display:none">
+                        <h3 class="tits"><span>결재리스트(기본)</span></h3>
+
+                        <div class="table_style02">
+                            <table>
+                                <caption>결재리스트(기본) 타이틀 정보</caption>
+                                <colgroup>
+                                    <col style="width:50px" />
+                                    <col style="width:140px" />
+                                    <col style="width:60px" />
+                                    <col style="width:80px" />
+                                    <col style="width:90px" />
+                                    <col style="width:90px" />
+                                    <col style="width:246px" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta00_all" name="st_ck01" /></div></th>
+                                        <th scope="row">문서번호</th>
+                                        <th scope="row">페이지수</th>
+                                        <th scope="row">마감년월</th>
+                                        <th scope="row">결제상신자</th>
+                                        <th scope="row">문서담당자</th>
+                                        <th scope="row">메모</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+
+                        <div class="table_style02">
+                            <div class="mCustomScrollbar box_scroll_st3" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                                <table class="">
+                                    <caption>결재리스트(기본) 정보</caption>
+                                    <colgroup>
+                                        <col style="width:50px" />
+                                        <col style="width:140px" />
+                                        <col style="width:60px" />
+                                        <col style="width:80px" />
+                                        <col style="width:90px" />
+                                        <col style="width:90px" />
+                                        <col style="width:230px" />
+                                    </colgroup>
+                                    <tbody id="tbody_baseList">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 버튼 영역 -->
+                        <div class="fr mt10">
+                            <button type="button" id="btn_baseList_approval" class="button_st1">승인</button>
+                            <button type="button" id="btn_baseList_return" class="button_st2">반려</button>
+                            <button type="button" id="btn_baseList_forward" class="button_st2">전달</button>
+                        </div>
+                        <!-- // 버튼 영역 -->
+                    </div>
+                    <!-- // 기본결재리스트 영역 -->
+
+                    <!--  상세결재리스트 영역 -->
+                    <div id="div_dtl" class="box_st03 box_st031 box_content_bg"  style="display:none">
+                        <h3 class="tits"><span>결재리스트(상세)</span></h3>
+
+                        <div class="table_style02">
+                            <div class="mCustomScrollbar box_scroll_st4" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                                <table>
+                                    <caption>최근 작업한 파일 정보</caption>
+                                    <colgroup>
+                                        <col style="width:150px" />
+                                        <col style="width:180px" />
+                                        <col style="width:180px" />
+                                        <col style="width:120px" />
+                                        <col style="width:120px" />
+                                        <col style="width:120px" />
+                                        <col style="width:120px" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th scope="row">페이지번호(from-to)</th>
+                                            <th scope="row">계약번호</th>
+                                            <th scope="row">계약명</th>
+                                            <th scope="row">UY</th>
+                                            <th scope="row">화페코드</th>
+                                            <th scope="row">NET BALANCE</th>
+                                            <th scope="row">IBNR</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody_dtlList">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- // 상세결재리스트 영역 -->
+
+                </div>
+
+                <!-- 양식이미지 -->
+                <div id="div_image" class="box_content box_content_bg st_stsh st_last" style="display:none">
+                    <h3 class="tits"><span>양식이미지</span></h3>
+
+                    <div class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                        <img src="publish/image/sample01.jpg" alt="샘플이미지" />
+                    </div>
+
+                    <div class="box_imgtmb">
+                        <button type="button" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
+                        <div id="touchSlider">
+                            <ul>
+                                <li class="on">
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <button type="button" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
+                        <div id="count" class="count"><span>1</span> / 3</div>
+                    </div>
+                </div>
+                <!-- // 양식이미지 -->
+
+            </div>
+            <!-- // 본문영역 -->
+
+        </div>
+        <!-- // Content -->
+
+    </div>
+</body>
+</html>
