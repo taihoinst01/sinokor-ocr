@@ -12,12 +12,14 @@ router.get('/favicon.ico', function (req, res) {
 
 // documentCheck.html 보여주기
 router.get('/', function (req, res) {
-    res.render('user/documentCheck');
+    if (req.isAuthenticated()) res.render('user/documentCheck');
+    else res.redirect("/logout");
 });
 
 // documentCheck.html 보여주기
 router.post('/', function (req, res) {
-    res.render('user/documentCheck');
+    if (req.isAuthenticated()) res.render('user/documentCheck');
+    else res.redirect("/logout");
 });
 
 

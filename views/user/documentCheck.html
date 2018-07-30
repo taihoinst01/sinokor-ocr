@@ -15,42 +15,8 @@
     <script type="text/javascript" src="js/common.client.js"></script>
     <!-- // 공통 js -->
     <!-- 계산서 조회 학습 전용 js -->
-    <script type="text/javascript" src="js/user/invoiceCheck.js"></script>
+    <script type="text/javascript" src="js/user/documentCheck.js"></script>
     <!-- // 계산서 조회 전용 js -->
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            //datepicker 한국어로 사용하기 위한 언어설정
-            $.datepicker.setDefaults($.datepicker.regional['ko']);
-
-            // Datepicker
-            $(".datepicker").datepicker({
-                showButtonPanel: true,
-                dateFormat: "yy-mm-dd",
-                onClose: function (selectedDate) {
-
-                    var eleId = $(this).attr("id");
-                    var optionName = "";
-
-                    if (eleId.indexOf("StartDate") > 0) {
-                        eleId = eleId.replace("StartDate", "EndDate");
-                        optionName = "minDate";
-                    } else {
-                        eleId = eleId.replace("EndDate", "StartDate");
-                        optionName = "maxDate";
-                    }
-
-                    $("#" + eleId).datepicker("option", optionName, selectedDate);
-                    $(".searchDate").find(".chkbox2").removeClass("on");
-                }
-            });
-
-            //$(".dateclick").dateclick();		// DateClick
-            $(".searchDate").schDate();	// searchDate
-
-        });
-    </script>
 </head>
 <body>  
     <div id="wrap">
@@ -73,19 +39,24 @@
 
                     <div class="box_txt_st01 st00_sh">
                         <dl>
-                            <dt><label for="intxt_01">문서번호</label></dt>
+                            <dt>
+                                <label for="intxt_01">
+                                    문서번호&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scrtest: <a onclick="javascript:screenTest('base')">1</a>&nbsp;<a onclick="javascript:screenTest('dtl')">2</a>&nbsp;<a onclick="javascript:screenTest('image')">3</a>
+                                </label>
+                            </dt>
                             <dd>
-                                <input type="text" name="intxt_00" id="intxt_01" class="inputst_box01" value="ICR2018071000000123" />
+                                <input type="text" name="docNum" id="docNum" class="inputst_box01" value="" />
                             </dd>
                         </dl>
                         <dl>
                             <dt><label>소속팀</label></dt>
                             <dd>
                                 <div class="select_style w100">
+                                    <input type="hidden" id="select_faoTeam" value="" />
                                     <span class="ctrl"><span class="arrow"></span></span>
                                     <button type="button" class="myValue">전 체</button>
                                     <ul class="aList">
-                                        <li><a href="#none">소속팀</a></li>
+                                        <li><a href="#none" onclick="javascript: selectFaoTeam('t')">테스트팀</a></li>
                                     </ul>
                                 </div>
                             </dd>
@@ -94,10 +65,11 @@
                             <dt><label>소속파트</label></dt>
                             <dd>
                                 <div class="select_style w100">
+                                    <input type="hidden" id="select_faoPart" value="" />
                                     <span class="ctrl"><span class="arrow"></span></span>
                                     <button type="button" class="myValue">전 체</button>
                                     <ul class="aList">
-                                        <li><a href="#none">소속파트</a></li>
+                                        <li><a href="#none" onclick="javascript: selectFaoPart('tt')">테스트파트</a></li>
                                     </ul>
                                 </div>
                             </dd>
@@ -105,13 +77,13 @@
                         <dl>
                             <dt><label for="intxt_02">문서담당자</label></dt>
                             <dd>
-                                <input type="text" name="intxt_00" id="intxt_02" class="inputst_box01" value="루루루키" />
+                                <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="" placeholder="홍길동" />
                             </dd>
                         </dl>
                         <dl>
                             <dt><label for="intxt_03">마감년월</label></dt>
                             <dd>
-                                <input type="text" name="intxt_00" id="intxt_03" class="inputst_box01" value="201807" />
+                                <input type="text" name="deadLineDt" id="deadLineDt" class="inputst_box01" value="" placeholder="201801" />
                             </dd>
                         </dl>
 
@@ -135,24 +107,23 @@
                             <dt><label for="intxt_01">결제상태</label></dt>
                             <dd>
                                 <div class="checkbox-options">
-                                    <input type="checkbox" value="2" id="st1" name="st1" /><label for="st1"><span>진행</span></label>
-                                    <input type="checkbox" value="2" id="st2" name="st2" /><label for="st2"><span>완료</span></label>
-                                    <input type="checkbox" value="2" id="st3" name="st3" /><label for="st3"><span>반려</span></label>
+                                    <input type="checkbox" value="P" id="st1" name="approvalState" checked /><label for="st1"><span>진행</span></label>
+                                    <input type="checkbox" value="C" id="st2" name="approvalState" checked /><label for="st2"><span>완료</span></label>
+                                    <input type="checkbox" value="R" id="st3" name="approvalState" checked /><label for="st3"><span>반려</span></label>
                                 </div>
                             </dd>
                         </dl>
                     </div>
 
                     <div class="btn_rt">
-                        <button type="button" class="button_st3">조회</button>
+                        <button type="button" id="btn_search" class="button_st3">조회</button>
                     </div>
                 </div>
                 <!-- // 조회조건 목록 -->
 
                 <div class="box_content st_stsh">
-
                     <!-- 기본결재리스트 영역 -->
-                    <div class="box_st03 box_st031 box_content_bg">
+                    <div id="div_base" class="box_st03 box_st031 box_content_bg"  style="display:none">
                         <h3 class="tits"><span>결재리스트(기본)</span></h3>
 
                         <div class="table_style02">
@@ -194,79 +165,7 @@
                                         <col style="width:90px" />
                                         <col style="width:230px" />
                                     </colgroup>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>27</td>
-                                            <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="intxt_001" class="inputst_box01" value="" /></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta02" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>27</td>
-                                            <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td><label for="intxt_002" class="blind">메모1</label><input type="text" name="intxt_0" id="intxt_002" class="inputst_box01" value="" /></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta03" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>27</td>
-                                            <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td><label for="intxt_003" class="blind">메모3</label><input type="text" name="intxt_0" id="intxt_003" class="inputst_box01" value="" /></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta04" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>27</td>
-                                            <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td><label for="intxt_004" class="blind">메모4</label><input type="text" name="intxt_0" id="intxt_004" class="inputst_box01" value="" /></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta05" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>27</td>
-                                            <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td><label for="intxt_005" class="blind">메모5</label><input type="text" name="intxt_0" id="intxt_005" class="inputst_box01" value="" /></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta06" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>27</td>
-                                            <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td><label for="intxt_006" class="blind">메모6</label><input type="text" name="intxt_0" id="intxt_006" class="inputst_box01" value="" /></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>27</td>
-                                            <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td><label for="intxt_007" class="blind">메모7</label><input type="text" name="intxt_0" id="intxt_007" class="inputst_box01" value="" /></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta07" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>27</td>
-                                            <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td><label for="intxt_008" class="blind">메모8</label><input type="text" name="intxt_0" id="intxt_008" class="inputst_box01" value="" /></td>
-                                        </tr>
+                                    <tbody id="tbody_baseList">
                                     </tbody>
                                 </table>
                             </div>
@@ -274,15 +173,16 @@
 
                         <!-- 버튼 영역 -->
                         <div class="fr mt10">
-                            <button type="button" class="button_st1">승인</button>
-                            <button type="button" class="button_st2">반려</button>
-                            <button type="button" class="button_st2">전달</button>
+                            <button type="button" id="btn_baseList_approval" class="button_st1">승인</button>
+                            <button type="button" id="btn_baseList_return" class="button_st2">반려</button>
+                            <button type="button" id="btn_baseList_forward" class="button_st2">전달</button>
                         </div>
                         <!-- // 버튼 영역 -->
                     </div>
                     <!-- // 기본결재리스트 영역 -->
+
                     <!--  상세결재리스트 영역 -->
-                    <div class="box_st03 box_st031 box_content_bg">
+                    <div id="div_dtl" class="box_st03 box_st031 box_content_bg"  style="display:none">
                         <h3 class="tits"><span>결재리스트(상세)</span></h3>
 
                         <div class="table_style02">
@@ -309,124 +209,7 @@
                                             <th scope="row">IBNR</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td><a href="#none" class="tip" title="1.여기는 말풍선 들어가는 샘플 항목입니다.">ICR2018071000000123</a></td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">1 ~ 4</th>
-                                            <td>ICR2018071000000123</td>
-                                            <td>Orent-Energy XOL</td>
-                                            <td>2016</td>
-                                            <td>EUR</td>
-                                            <td>240.00</td>
-                                            <td>0.00</td>
-                                        </tr>
+                                    <tbody id="tbody_dtlList">
                                     </tbody>
                                 </table>
                             </div>
@@ -437,7 +220,7 @@
                 </div>
 
                 <!-- 양식이미지 -->
-                <div class="box_content box_content_bg st_stsh st_last">
+                <div id="div_image" class="box_content box_content_bg st_stsh st_last" style="display:none">
                     <h3 class="tits"><span>양식이미지</span></h3>
 
                     <div class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
