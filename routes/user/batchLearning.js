@@ -66,7 +66,7 @@ router.post('/searchBatchLearnDataList', function (req, res) {
     if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
 }); 
 var callbackBatchLearningDataList = function (rows, req, res) {    
-    res.send(rows);
+    if (req.isAuthenticated()) res.send(rows);
 }
 var fnSearchBatchLearningDataList = function (req, res) {
     // 조건절

@@ -89,37 +89,26 @@
                 cursor: pointer
             }
 
-        #ocrProgress {
-            background-color: grey;
-            position: absolute;
-            top: 50%;
-            left: 60%;
-            background: #edf2f6;
-            transform: translate(-50%, -50%);
-            width: 420px;
-            z-index: 1000;
-            display: none
-        }
-
-        #progressMsg {
-            width: 100%;
-            height: 20px;
-            background-color: #edf2f6;
-            text-align: center;
-        }
-
-        #ocrBar {
-            width: 1%;
-            height: 30px;
-            background-color: #9eaec5;
-        }
+        
     </style>
+
 </head>
 <body>
+    <div id="mask"></div>
     <div id="wrap">
         <div id="ocrProgress">
-            <div id="progressMsg"></div>
-            <div id="ocrBar"></div>
+            <div id="ocrBarBg">
+                <div id="ocrBar">
+                    <span>1%</span>
+                </div>
+            </div>
+            <!-- 호출하는 ajax에 따라 로딩바 이벤트를 호출 할 때 아래 progressMsg, progressMsg2 메시지도 수정-->
+            <div id="progressMsg">
+                <!-- 로딩바 바로 아래 메시지 -->
+            </div>
+            <div id="progressMsg2">
+                <!-- 로딩바 아래아래 메시지-->
+            </div>
         </div>
         <!-- skip navi -->
         <div id="accessibility">
@@ -242,25 +231,27 @@
                                     <thead>
                                         <tr>
                                             <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
-                                            <th scope="row">이미지ID</th>
+                                            <!--머신러닝 거쳐오는 값들-->
                                             <th scope="row">파일명</th>
                                             <th scope="row">학습여부</th>
-                                            <th scope="row">Entry No</th>
+                                            <th scope="row">출재사명</th>
+                                            <th scope="row">UY</th>
+                                            <th scope="row">계약명 원본</th>
+                                            <th scope="row">계약명 요약</th>
+                                            <th scope="row">OSL(100%)</th>
+                                            <th scope="row">OSL(Our Share)</th>
+                                            <!--DB에서 가져오는 값들-->
+                                            <th scope="row">이미지ID</th>
                                             <th scope="row">계산서 구분</th>
                                             <th scope="row">계약번호</th>
                                             <th scope="row">출재사코드</th>
-                                            <th scope="row">출재사명</th>
                                             <th scope="row">중개사코드</th>
                                             <th scope="row">중개사명</th>
-                                            <th scope="row">계약명</th>
                                             <th scope="row">보험개시일</th>
                                             <th scope="row">보험종료일</th>
-                                            <th scope="row">UY</th>
                                             <th scope="row">화폐코드</th>
                                             <th scope="row">Paid(100%)</th>
                                             <th scope="row">Paid(Our Share)</th>
-                                            <th scope="row">OSL(100%)</th>
-                                            <th scope="row">OSL(Our Share)</th>
                                             <th scope="row">GROSS PREMIUM</th>
                                             <th scope="row">PREMIUM</th>
                                             <th scope="row">PREMIUM P/F ENT</th>
@@ -375,25 +366,27 @@
                                     <thead>
                                         <tr>
                                             <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="stb00_all" value="" id="listCheckAll_after" name="listCheckAll_after" /></div></th>
-                                            <th scope="row">이미지ID</th>
+                                            <!--머신러닝 거쳐오는 값들-->
                                             <th scope="row">파일명</th>
                                             <th scope="row">학습여부</th>
-                                            <th scope="row">Entry No</th>
+                                            <th scope="row">출재사명</th>
+                                            <th scope="row">UY</th>
+                                            <th scope="row">계약명 원본</th>
+                                            <th scope="row">계약명 요약</th>
+                                            <th scope="row">OSL(100%)</th>
+                                            <th scope="row">OSL(Our Share)</th>
+                                            <!--DB에서 가져오는 값들-->
+                                            <th scope="row">이미지ID</th>
                                             <th scope="row">계산서 구분</th>
                                             <th scope="row">계약번호</th>
                                             <th scope="row">출재사코드</th>
-                                            <th scope="row">출재사명</th>
                                             <th scope="row">중개사코드</th>
                                             <th scope="row">중개사명</th>
-                                            <th scope="row">계약명</th>
                                             <th scope="row">보험개시일</th>
                                             <th scope="row">보험종료일</th>
-                                            <th scope="row">UY</th>
                                             <th scope="row">화폐코드</th>
                                             <th scope="row">Paid(100%)</th>
                                             <th scope="row">Paid(Our Share)</th>
-                                            <th scope="row">OSL(100%)</th>
-                                            <th scope="row">OSL(Our Share)</th>
                                             <th scope="row">GROSS PREMIUM</th>
                                             <th scope="row">PREMIUM</th>
                                             <th scope="row">PREMIUM P/F ENT</th>
@@ -717,8 +710,10 @@
     <!-- // 팝업_수동학습레이어팝업 -->
     <!--
     <script type="text/javascript">
-        layer_open('layer2');
+        layer_open('layer1');
     </script>
+
     -->
+
 </body>
 </html>

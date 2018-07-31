@@ -176,19 +176,36 @@ function pagination(curPage, totalCount) {
     }
 }
 
+function wrapWindowByMask() {
+    //화면의 높이와 너비를 구한다.
+    var maskHeight = $(document).height();
+    var maskWidth = $(window).width();
+
+    //마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
+    $('#mask').css({ 'width': maskWidth, 'height': maskHeight });
+
+    //애니메이션 효과 - 일단 1초동안 까맣게 됐다가 80% 불투명도로 간다.
+    //$('#mask').fadeIn(1000);      
+    $('#mask').fadeTo("slow", 0.6);
+}
+
 // Progress Bar
 function startProgressBar() {
     $('body').css('overflow', 'hidden');
+    
     $('#loadingBackground').css('width', $('body').width());
     $('#loadingBackground').css('height', $('body').height());
     $('#loadingBackground').show();
+    wrapWindowByMask();
     $("#ocrProgress").fadeIn("fast");
 }
 function addProgressBar(fromVal, toVal) {
     var elem = document.getElementById("ocrBar");
     var width = fromVal;
+    var percentNum = $('#ocrBar span');
     elem.style.width = fromVal + '%';
-    var id = setInterval(frame, 10);
+    percentNum.html(fromVal + '%');
+    var id = setInterval(frame, 0.1);
     function frame() {
         if (width >= 100) {
             endProgressBar();
@@ -198,6 +215,7 @@ function addProgressBar(fromVal, toVal) {
         } else {
             width++;
             elem.style.width = width + '%';
+            percentNum.html(width + '%');
         }
     }
 }
@@ -205,5 +223,6 @@ function endProgressBar() {
     $("#ocrProgress").fadeOut("fast");
     document.getElementById("ocrBar").style.width = 1;
     $('body').css('overflow', 'auto');
+    $('#mask').fadeOut("fast");
     $('#loadingBackground').hide();
 }

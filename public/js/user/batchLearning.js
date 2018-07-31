@@ -321,83 +321,78 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     console.log("processImage fileName : " + fileName);
     console.log("processImage lastYn : " + lastYn);
     console.log("processImage answerRows : " + JSON.stringify(answerRows));
-    var subscriptionKey = "7d51f1308c8848f49db9562d1dab7184";
-    var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
-    var params = {
-        "language": "unk",
-        "detectOrientation": "true",
-    };
-    var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
 
     //$("#progressMsg").html("processing ocr api...");
     //addProgressBar(51, 60);
     $.ajax({
-        url: uriBase + "?" + $.param(params),
+        url: '/common/ocr',
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader("Content-Type", "application/json");
-            jqXHR.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
         },
         type: "POST",
-        data: '{"url": ' + '"' + sourceImageUrl + '"}',
+        data: JSON.stringify({ 'fileName': fileName }),
     }).done(function (data) {          
         ocrCount++;
-        if (ocrCount == 1) {
-            for (var i in fileToPage) {
-                if (fileToPage[i].IMGID == answerRows.IMGID &&
-                    fileToPage[i].IMGFILESTARTNO <= answerRows.PAGENUM &&
-                    answerRows.PAGENUM <= fileToPage[i].IMGFILEENDNO) {
-                    ocrDataArr.push({
-                        answerImgId: answerRows.IMGID,
-                        fileInfo: [fileInfo],
-                        fileName: [fileName],
-                        regions: data.regions,
-                        fileToPage: fileToPage[i],
-                        lastYn: lastYn
-                    });
+        if (!data.code) { // 에러가 아니면
+            if (ocrCount == 1) {
+                for (var i in fileToPage) {
+                    if (fileToPage[i].IMGID == answerRows.IMGID &&
+                        fileToPage[i].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                        answerRows.PAGENUM <= fileToPage[i].IMGFILEENDNO) {
+                        ocrDataArr.push({
+                            answerImgId: answerRows.IMGID,
+                            fileInfo: [fileInfo],
+                            fileName: [fileName],
+                            regions: data.regions,
+                            fileToPage: fileToPage[i],
+                            lastYn: lastYn
+                        });
+                    }
                 }
-            }
-        } else {
-            for (var i in ocrDataArr) {
-                if (ocrDataArr[i].answerImgId == answerRows.IMGID &&
-                    ocrDataArr[i].fileToPage.IMGFILESTARTNO <= answerRows.PAGENUM &&
-                    answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
-                    var totRegions = (ocrDataArr[i].regions).concat(data.regions);
-                    ocrDataArr[i].regions = totRegions;
-                    ocrDataArr[i].fileName.push(fileName);
-                    ocrDataArr[i].fileInfo.push(fileInfo);
-                    break;
-                } else if (i == ocrDataArr.length - 1) {
-                    for (var j in fileToPage) {
-                        if (fileToPage[j].IMGID == answerRows.IMGID &&
-                            fileToPage[j].IMGFILESTARTNO <= answerRows.PAGENUM &&
-                            answerRows.PAGENUM <= fileToPage[j].IMGFILEENDNO) {
-                            ocrDataArr.push({
-                                answerImgId: answerRows.IMGID,
-                                fileInfo: [fileInfo],
-                                fileName: [fileName],
-                                regions: data.regions,
-                                fileToPage: fileToPage[j],
-                                lastYn: lastYn
-                            });
+            } else {
+                for (var i in ocrDataArr) {
+                    if (ocrDataArr[i].answerImgId == answerRows.IMGID &&
+                        ocrDataArr[i].fileToPage.IMGFILESTARTNO <= answerRows.PAGENUM &&
+                        answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
+                        var totRegions = (ocrDataArr[i].regions).concat(data.regions);
+                        ocrDataArr[i].regions = totRegions;
+                        ocrDataArr[i].fileName.push(fileName);
+                        ocrDataArr[i].fileInfo.push(fileInfo);
+                        break;
+                    } else if (i == ocrDataArr.length - 1) {
+                        for (var j in fileToPage) {
+                            if (fileToPage[j].IMGID == answerRows.IMGID &&
+                                fileToPage[j].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                                answerRows.PAGENUM <= fileToPage[j].IMGFILEENDNO) {
+                                ocrDataArr.push({
+                                    answerImgId: answerRows.IMGID,
+                                    fileInfo: [fileInfo],
+                                    fileName: [fileName],
+                                    regions: data.regions,
+                                    fileToPage: fileToPage[j],
+                                    lastYn: lastYn
+                                });
+                            }
                         }
                     }
                 }
-            }
 
+            }
+            //console.log(ocrDataArr);
+            if (totCount == ocrCount) {
+                execBatchLearning();
+            }
+            //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
+        } else if (data.error) { //ocr 이외 에러이면
+            endProgressBar();
+            alert(data.error);
+        } else { // ocr 에러 이면
+            insertCommError(data.code, 'ocr');
+            endProgressBar();
+            alert(data.message);
         }
-        //console.log(ocrDataArr);
-        if (totCount == ocrCount) {
-            execBatchLearning();
-        }
-        //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
     }).fail(function (jqXHR, textStatus, errorThrown) {
-        insertCommError(jqXHR, 'ocr');
-        var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
-        errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
-            jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
-        alert(errorString);
-        endProgressBar(); // 에러 발생 시 프로그레스바 종료
-        });
+    });
 
     /*
     // proxy call
@@ -421,12 +416,13 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     */
 };
 
-function insertCommError(jqXHR, type) {
+
+function insertCommError(eCode, type) {
     $.ajax({
         url: '/common/insertCommError',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'error': jqXHR, type: type }),
+        data: JSON.stringify({ 'eCode': eCode, type: type }),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
         },
@@ -437,6 +433,7 @@ function insertCommError(jqXHR, type) {
         }
     });
 }
+
 
 function convertOcrData() {
     var convertArr = [];
@@ -848,7 +845,7 @@ var searchBatchLearnDataList = function (addCond) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
-            $("#progressMsg").html("retrieving learn data...");
+            $("#progressMsg").html("retrieving learn data...");            
             startProgressBar(); // start progressbar
             addProgressBar(1, 1); // proceed progressbar
         },
@@ -865,57 +862,59 @@ var searchBatchLearnDataList = function (addCond) {
                     appendHtml += `
                     <tr>
                         ${checkboxHtml}
-                        <td>${nvl(entry.IMGID)}</td>
-                        <td>${nvl(entry.ORIGINFILENAME)}</td>
-                        <td>${nvl(entry.STATUS)}</td>
-                        <td>${nvl(entry.ENTRYNO)}</td>
-                        <td>${nvl(entry.STATEMENTDIV)}</td>
-                        <td>${nvl(entry.CONTRACTNUM)}</td>
-                        <td>${nvl(entry.OGCOMPANYCODE)}</td>
-                        <td>${nvl(entry.OGCOMPANYNAME)}</td>
-                        <td>${nvl(entry.BROKERCODE)}</td>
-                        <td>${nvl(entry.BROKERNAME)}</td>
-                        <td>${nvl(entry.CTNM)}</td>
-                        <td>${nvl(entry.INSSTDT)}</td>
-                        <td>${nvl(entry.INSENDDT)}</td>
-                        <td>${nvl(entry.UY)}</td>
-                        <td>${nvl(entry.CURCD)}</td>
-                        <td>${nvl(entry.PAIDPERCENT)}</td>
-                        <td>${nvl(entry.PAIDSHARE)}</td>
-                        <td>${nvl(entry.OSLPERCENT)}</td>
-                        <td>${nvl(entry.OSLSHARE)}</td>
-                        <td>${nvl(entry.GROSSPM)}</td>
-                        <td>${nvl(entry.PM)}</td>
-                        <td>${nvl(entry.PMPFEND)}</td>
-                        <td>${nvl(entry.PMPFWOS)}</td>
-                        <td>${nvl(entry.XOLPM)}</td>
-                        <td>${nvl(entry.RETURNPM)}</td>
-                        <td>${nvl(entry.GROSSCN)}</td>
-                        <td>${nvl(entry.CN)}</td>
-                        <td>${nvl(entry.PROFITCN)}</td>
-                        <td>${nvl(entry.BROKERAGE)}</td>
-                        <td>${nvl(entry.TAX)}</td>
-                        <td>${nvl(entry.OVERRIDINGCOM)}</td>
-                        <td>${nvl(entry.CHARGE)}</td>
-                        <td>${nvl(entry.PMRESERVERTD)}</td>
-                        <td>${nvl(entry.PFPMRESERVERTD)}</td>
-                        <td>${nvl(entry.PMRESERVERTD2)}</td>
-                        <td>${nvl(entry.PFPMRESERVERTD2)}</td>
-                        <td>${nvl(entry.CLAIM)}</td>
-                        <td>${nvl(entry.LOSSRECOVERY)}</td>
-                        <td>${nvl(entry.CASHLOSS)}</td>
-                        <td>${nvl(entry.CASHLOSSRD)}</td>
-                        <td>${nvl(entry.LOSSRR)}</td>
-                        <td>${nvl(entry.LOSSRR2)}</td>
-                        <td>${nvl(entry.LOSSPFEND)}</td>
-                        <td>${nvl(entry.LOSSPFWOA)}</td>
-                        <td>${nvl(entry.INTEREST)}</td>
-                        <td>${nvl(entry.TAXON)}</td>
-                        <td>${nvl(entry.MISCELLANEOUS)}</td>
-                        <td>${nvl(entry.PMBL)}</td>
-                        <td>${nvl(entry.CMBL)}</td>
-                        <td>${nvl(entry.NTBL)}</td>
-                        <td>${nvl(entry.CSCOSARFRNCNNT2)}</td>
+                        <td>${nvl(entry.ORIGINFILENAME)}</td> <!--파일명-->
+                        <td>${nvl(entry.STATUS)}</td> <!--학습여부-->
+                        <td>${nvl(entry.OGCOMPANYNAME)}</td> <!--출재사명-->
+                        <td>${nvl(entry.UY)}</td> <!--UY-->
+                        <td>${nvl(entry.OGCONTRACTNAME)}</td> <!--계약명원본-->
+                        <td>${nvl(entry.CONTRACTNAMESUMMARY)}</td> <!--계약명요약-->
+                        <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
+                        <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
+
+
+                        <td>${nvl(entry.IMGID)}</td> <!--이미지ID-->
+                        <td>${nvl(entry.STATEMENTDIV)}</td> <!--계산서 구분-->
+                        <td>${nvl(entry.CONTRACTNUM)}</td> <!--계약번호-->
+                        <td>${nvl(entry.OGCOMPANYCODE)}</td> <!--출재사코드-->
+                        <td>${nvl(entry.BROKERCODE)}</td> <!--중개사코드-->
+                        <td>${nvl(entry.BROKERNAME)}</td> <!--중개사명-->
+                        <td>${nvl(entry.INSSTDT)}</td> <!--보험개시일-->
+                        <td>${nvl(entry.INSENDDT)}</td> <!--보험종료일-->
+                        <td>${nvl(entry.CURCD)}</td> <!--화폐코드-->
+                        <td>${nvl(entry.PAIDPERCENT)}</td> <!--Paid(100%)-->
+                        <td>${nvl(entry.PAIDSHARE)}</td> <!--Paid(Our Share)-->
+                        <td>${nvl(entry.GROSSPM)}</td> <!--GROSS PREMIUM-->
+                        <td>${nvl(entry.PM)}</td> <!--PREMIUM-->
+                        <td>${nvl(entry.PMPFEND)}</td> <!--PREMIUM P/F ENT-->
+                        <td>${nvl(entry.PMPFWOS)}</td> <!--PREMIUM P/F WOS-->
+                        <td>${nvl(entry.XOLPM)}</td> <!--XOL PREMIUM-->
+                        <td>${nvl(entry.RETURNPM)}</td> <!--RETURN PREMIUM-->
+                        <td>${nvl(entry.GROSSCN)}</td> <!--GROSS COMMISION-->
+                        <td>${nvl(entry.CN)}</td> <!--COMMISSION-->
+                        <td>${nvl(entry.PROFITCN)}</td> <!--PROFIT COMMISION-->
+                        <td>${nvl(entry.BROKERAGE)}</td> <!--BROKERAGE-->
+                        <td>${nvl(entry.TAX)}</td> <!--TEX-->
+                        <td>${nvl(entry.OVERRIDINGCOM)}</td> <!-- OVERIDING COM-->
+                        <td>${nvl(entry.CHARGE)}</td> <!--CHARGE-->
+                        <td>${nvl(entry.PMRESERVERTD)}</td> <!--PREMIUM RESERVE RTD-->
+                        <td>${nvl(entry.PFPMRESERVERTD)}</td> <!--P/F PREMIUM RESERVE RTD-->
+                        <td>${nvl(entry.PMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
+                        <td>${nvl(entry.PFPMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
+                        <td>${nvl(entry.CLAIM)}</td> <!--CLAIM -->
+                        <td>${nvl(entry.LOSSRECOVERY)}</td> <!--LOSS RECOVERY -->
+                        <td>${nvl(entry.CASHLOSS)}</td> <!--CASH LOSS -->
+                        <td>${nvl(entry.CASHLOSSRD)}</td> <!--CASH LOSS REFUND -->
+                        <td>${nvl(entry.LOSSRR)}</td> <!--LOSS RESERVE RTD -->
+                        <td>${nvl(entry.LOSSRR2)}</td> <!--LOSS RESERVE RLD -->
+                        <td>${nvl(entry.LOSSPFEND)}</td> <!--LOSS P/F ENT -->
+                        <td>${nvl(entry.LOSSPFWOA)}</td> <!--LOSS P/F WOA -->
+                        <td>${nvl(entry.INTEREST)}</td> <!--INTEREST -->
+                        <td>${nvl(entry.TAXON)}</td> <!--TAX ON -->
+                        <td>${nvl(entry.MISCELLANEOUS)}</td> <!--MISCELLANEOUS -->
+                        <td>${nvl(entry.PMBL)}</td> <!--PREMIUM BALANCE -->
+                        <td>${nvl(entry.CMBL)}</td> <!--CLAM BALANCE -->
+                        <td>${nvl(entry.NTBL)}</td> <!--NET BALANCE -->
+                        <td>${nvl(entry.CSCOSARFRNCNNT2)}</td> <!--YOUR REF -->
                     </tr>`;
                 });
             } else {

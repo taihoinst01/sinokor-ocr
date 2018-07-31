@@ -828,6 +828,7 @@
     <Compile Include="public\js\interact.min.js" />
     <Compile Include="public\js\user\batchLearning.js" />
     <Compile Include="public\js\user\adminLearning.js" />
+    <Compile Include="public\js\user\documentCheck.js" />
     <Compile Include="public\js\user\newDocLearning.js" />
     <Compile Include="public\js\user\ocrFormAnalysis.js" />
     <Compile Include="public\js\user\ocrHistorySearch.js" />
@@ -842,6 +843,7 @@
     <Compile Include="routes\proxy\proxy.js" />
     <Compile Include="routes\user\batchLearning.js" />
     <Compile Include="routes\user\adminLearning.js" />
+    <Compile Include="routes\user\documentCheck.js" />
     <Compile Include="routes\user\newDocLearning.js" />
     <Compile Include="routes\user\ocrFormAnalysis.js" />
     <Compile Include="routes\user\ocrHistorySearch.js" />
@@ -850,6 +852,8 @@
     <Compile Include="routes\util\aiMain.js" />
     <Compile Include="routes\util\common.js" />
     <Compile Include="routes\util\logger.js" />
+    <Content Include="excel\data.xlsx" />
+    <Content Include="excel\filepath.xlsx" />
     <Content Include="excel\template.xlsx" />
     <Content Include="excel\template2.xlsx" />
     <Content Include="ml\cnn-label-mapping\.gitignore" />
@@ -3314,8 +3318,10 @@
     <Content Include="views\common\leftSideBar_before.html" />
     <Content Include="views\common\leftSideBar.html" />
     <Content Include="views\index.html" />
+    <Content Include="views\index_after.html" />
     <Content Include="views\user\batchLearning.html" />
     <Content Include="views\user\adminLearning.html" />
+    <Content Include="views\user\documentCheck.html" />
     <Content Include="views\user\newDocLearning.html" />
     <Content Include="views\user\ocrFormAnalysis.html" />
     <Content Include="views\user\ocrHistorySearch.html" />
