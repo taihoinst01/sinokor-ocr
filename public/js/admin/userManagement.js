@@ -15,7 +15,7 @@ $(function () {
     // 페이징 초기화
     $("#pagination").html(pagination(curPage, $("#totalCount").val()));
 
-    searchUser(1);
+    //searchUser(1);
 })
 
 /**

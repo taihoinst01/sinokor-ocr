@@ -23,17 +23,22 @@ var app = express();
 var routes = require('./routes');
 var index = require('./routes/index');
 //user
-var userDashboard = require('./routes/user/userDashboard');
-var ocrFormAnalysis = require('./routes/user/ocrFormAnalysis');
-var adminLearning = require('./routes/user/adminLearning');
-var batchLearning = require('./routes/user/batchLearning');
+var invoiceRegistration = require('./routes/user/invoiceRegistration');
+var myApproval = require('./routes/user/myApproval');
 var uiLearning = require('./routes/user/uiLearning');
+var batchLearning = require('./routes/user/batchLearning');
+var documentCheck = require('./routes/user/documentCheck');
+var invoiceProcessingStatus = require('./routes/user/invoiceProcessingStatus');
+
+var adminLearning = require('./routes/user/adminLearning');
+var ocrFormAnalysis = require('./routes/user/ocrFormAnalysis');
 var ocrHistorySearch = require('./routes/user/ocrHistorySearch');
 var newDocLearning = require('./routes/user/newDocLearning');
-var documentCheck = require('./routes/user/documentCheck');
+
 //admin
 var adminDashboard = require('./routes/admin/adminDashboard');
 var userManagement = require('./routes/admin/userManagement');
+
 //proxy
 var proxy = require('./routes/proxy/proxy');
 //util
@@ -72,17 +77,21 @@ app.use(passport.session());
 // routes
 app.use('/', routes);
 // user
-app.use('/userDashboard', userDashboard);
-app.use('/ocrFormAnalysis', ocrFormAnalysis);
-app.use('/adminLearning', adminLearning);
-app.use('/batchLearning', batchLearning);
+app.use('/invoiceRegistration', invoiceRegistration);
+app.use('/myApproval', myApproval);
 app.use('/uiLearning', uiLearning);
+app.use('/batchLearning', batchLearning);
+app.use('/documentCheck', documentCheck);
+app.use('/invoiceProcessingStatus', invoiceProcessingStatus);
+
+app.use('/adminLearning', adminLearning);
+app.use('/ocrFormAnalysis', ocrFormAnalysis);
 app.use('/ocrHistorySearch', ocrHistorySearch);
 app.use('/newDocLearning', newDocLearning);
-app.use('/documentCheck', documentCheck);
 // admin
 app.use('/adminDashboard', adminDashboard);
 app.use('/userManagement', userManagement);
+
 //proxy
 app.use('/proxy', proxy);
 //util
