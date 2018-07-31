@@ -462,11 +462,9 @@ function execBatchLearning() {
 
     for (var i in ocrDataArr) {
         if (ocrDataArr[i].exeML != "Y") {
-            console.log("exeBatch1:" + i);
             execBatchLearningData(ocrDataArr[i], dataArr[i]);
             if (isFullMatch) {
             } else {            
-                console.log("exeBatch2:" + i);
                 popUpLayer2(ocrDataArr[i]);
                 break;
             }
@@ -486,7 +484,7 @@ function popUpLayer2(ocrData) {
     fn_initUiTraining(); // 팝업 초기화
     console.log("popupTest");
     layer_open('layer2'); // ui 학습레이어 띄우기
-    $("#layer2").css("display", "block");
+    $("#layer2.poplayer").css("display", "block");
 
     //$("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);
     $("#uiImg").attr("src", "./uploads/26.jpg");
@@ -1352,7 +1350,7 @@ var fn_batchUiTraining = function () {
             console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
             alert("UI학습이 완료되었습니다.");
             execBatchLearning();
-            $("#layer2").css("display", "none");
+            $("#layer2.poplayer").css("display", "none");
             //popupEvent.closePopup();
         },
         error: function (err) {
