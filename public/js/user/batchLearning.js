@@ -322,83 +322,78 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     console.log("processImage fileName : " + fileName);
     console.log("processImage lastYn : " + lastYn);
     console.log("processImage answerRows : " + JSON.stringify(answerRows));
-    var subscriptionKey = "7d51f1308c8848f49db9562d1dab7184";
-    var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
-    var params = {
-        "language": "unk",
-        "detectOrientation": "true",
-    };
-    var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
 
     //$("#progressMsg").html("processing ocr api...");
     //addProgressBar(51, 60);
     $.ajax({
-        url: uriBase + "?" + $.param(params),
+        url: '/common/ocr',
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader("Content-Type", "application/json");
-            jqXHR.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
         },
         type: "POST",
-        data: '{"url": ' + '"' + sourceImageUrl + '"}',
+        data: JSON.stringify({ 'fileName': fileName }),
     }).done(function (data) {          
         ocrCount++;
-        if (ocrCount == 1) {
-            for (var i in fileToPage) {
-                if (fileToPage[i].IMGID == answerRows.IMGID &&
-                    fileToPage[i].IMGFILESTARTNO <= answerRows.PAGENUM &&
-                    answerRows.PAGENUM <= fileToPage[i].IMGFILEENDNO) {
-                    ocrDataArr.push({
-                        answerImgId: answerRows.IMGID,
-                        fileInfo: [fileInfo],
-                        fileName: [fileName],
-                        regions: data.regions,
-                        fileToPage: fileToPage[i],
-                        lastYn: lastYn
-                    });
+        if (!data.code) { // 에러가 아니면
+            if (ocrCount == 1) {
+                for (var i in fileToPage) {
+                    if (fileToPage[i].IMGID == answerRows.IMGID &&
+                        fileToPage[i].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                        answerRows.PAGENUM <= fileToPage[i].IMGFILEENDNO) {
+                        ocrDataArr.push({
+                            answerImgId: answerRows.IMGID,
+                            fileInfo: [fileInfo],
+                            fileName: [fileName],
+                            regions: data.regions,
+                            fileToPage: fileToPage[i],
+                            lastYn: lastYn
+                        });
+                    }
                 }
-            }
-        } else {
-            for (var i in ocrDataArr) {
-                if (ocrDataArr[i].answerImgId == answerRows.IMGID &&
-                    ocrDataArr[i].fileToPage.IMGFILESTARTNO <= answerRows.PAGENUM &&
-                    answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
-                    var totRegions = (ocrDataArr[i].regions).concat(data.regions);
-                    ocrDataArr[i].regions = totRegions;
-                    ocrDataArr[i].fileName.push(fileName);
-                    ocrDataArr[i].fileInfo.push(fileInfo);
-                    break;
-                } else if (i == ocrDataArr.length - 1) {
-                    for (var j in fileToPage) {
-                        if (fileToPage[j].IMGID == answerRows.IMGID &&
-                            fileToPage[j].IMGFILESTARTNO <= answerRows.PAGENUM &&
-                            answerRows.PAGENUM <= fileToPage[j].IMGFILEENDNO) {
-                            ocrDataArr.push({
-                                answerImgId: answerRows.IMGID,
-                                fileInfo: [fileInfo],
-                                fileName: [fileName],
-                                regions: data.regions,
-                                fileToPage: fileToPage[j],
-                                lastYn: lastYn
-                            });
+            } else {
+                for (var i in ocrDataArr) {
+                    if (ocrDataArr[i].answerImgId == answerRows.IMGID &&
+                        ocrDataArr[i].fileToPage.IMGFILESTARTNO <= answerRows.PAGENUM &&
+                        answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
+                        var totRegions = (ocrDataArr[i].regions).concat(data.regions);
+                        ocrDataArr[i].regions = totRegions;
+                        ocrDataArr[i].fileName.push(fileName);
+                        ocrDataArr[i].fileInfo.push(fileInfo);
+                        break;
+                    } else if (i == ocrDataArr.length - 1) {
+                        for (var j in fileToPage) {
+                            if (fileToPage[j].IMGID == answerRows.IMGID &&
+                                fileToPage[j].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                                answerRows.PAGENUM <= fileToPage[j].IMGFILEENDNO) {
+                                ocrDataArr.push({
+                                    answerImgId: answerRows.IMGID,
+                                    fileInfo: [fileInfo],
+                                    fileName: [fileName],
+                                    regions: data.regions,
+                                    fileToPage: fileToPage[j],
+                                    lastYn: lastYn
+                                });
+                            }
                         }
                     }
                 }
-            }
 
+            }
+            //console.log(ocrDataArr);
+            if (totCount == ocrCount) {
+                execBatchLearning();
+            }
+            //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
+        } else if (data.error) { //ocr 이외 에러이면
+            endProgressBar();
+            alert(data.error);
+        } else { // ocr 에러 이면
+            insertCommError(data.code, 'ocr');
+            endProgressBar();
+            alert(data.message);
         }
-        //console.log(ocrDataArr);
-        if (totCount == ocrCount) {
-            execBatchLearning();
-        }
-        //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
     }).fail(function (jqXHR, textStatus, errorThrown) {
-        insertCommError(jqXHR, 'ocr');
-        var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
-        errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
-            jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
-        alert(errorString);
-        endProgressBar(); // 에러 발생 시 프로그레스바 종료
-        });
+    });
 
     /*
     // proxy call
@@ -422,12 +417,13 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     */
 };
 
-function insertCommError(jqXHR, type) {
+
+function insertCommError(eCode, type) {
     $.ajax({
         url: '/common/insertCommError',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'error': jqXHR, type: type }),
+        data: JSON.stringify({ 'eCode': eCode, type: type }),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
         },
@@ -438,6 +434,7 @@ function insertCommError(jqXHR, type) {
         }
     });
 }
+
 
 function convertOcrData() {
     var convertArr = [];
