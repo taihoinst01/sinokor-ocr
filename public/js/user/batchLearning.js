@@ -810,57 +810,59 @@ var searchBatchLearnDataList = function (addCond) {
                     appendHtml += `
                     <tr>
                         ${checkboxHtml}
-                        <td>${nvl(entry.IMGID)}</td>
-                        <td>${nvl(entry.ORIGINFILENAME)}</td>
-                        <td>${nvl(entry.STATUS)}</td>
-                        <td>${nvl(entry.ENTRYNO)}</td>
-                        <td>${nvl(entry.STATEMENTDIV)}</td>
-                        <td>${nvl(entry.CONTRACTNUM)}</td>
-                        <td>${nvl(entry.OGCOMPANYCODE)}</td>
-                        <td>${nvl(entry.OGCOMPANYNAME)}</td>
-                        <td>${nvl(entry.BROKERCODE)}</td>
-                        <td>${nvl(entry.BROKERNAME)}</td>
-                        <td>${nvl(entry.CTNM)}</td>
-                        <td>${nvl(entry.INSSTDT)}</td>
-                        <td>${nvl(entry.INSENDDT)}</td>
-                        <td>${nvl(entry.UY)}</td>
-                        <td>${nvl(entry.CURCD)}</td>
-                        <td>${nvl(entry.PAIDPERCENT)}</td>
-                        <td>${nvl(entry.PAIDSHARE)}</td>
-                        <td>${nvl(entry.OSLPERCENT)}</td>
-                        <td>${nvl(entry.OSLSHARE)}</td>
-                        <td>${nvl(entry.GROSSPM)}</td>
-                        <td>${nvl(entry.PM)}</td>
-                        <td>${nvl(entry.PMPFEND)}</td>
-                        <td>${nvl(entry.PMPFWOS)}</td>
-                        <td>${nvl(entry.XOLPM)}</td>
-                        <td>${nvl(entry.RETURNPM)}</td>
-                        <td>${nvl(entry.GROSSCN)}</td>
-                        <td>${nvl(entry.CN)}</td>
-                        <td>${nvl(entry.PROFITCN)}</td>
-                        <td>${nvl(entry.BROKERAGE)}</td>
-                        <td>${nvl(entry.TAX)}</td>
-                        <td>${nvl(entry.OVERRIDINGCOM)}</td>
-                        <td>${nvl(entry.CHARGE)}</td>
-                        <td>${nvl(entry.PMRESERVERTD)}</td>
-                        <td>${nvl(entry.PFPMRESERVERTD)}</td>
-                        <td>${nvl(entry.PMRESERVERTD2)}</td>
-                        <td>${nvl(entry.PFPMRESERVERTD2)}</td>
-                        <td>${nvl(entry.CLAIM)}</td>
-                        <td>${nvl(entry.LOSSRECOVERY)}</td>
-                        <td>${nvl(entry.CASHLOSS)}</td>
-                        <td>${nvl(entry.CASHLOSSRD)}</td>
-                        <td>${nvl(entry.LOSSRR)}</td>
-                        <td>${nvl(entry.LOSSRR2)}</td>
-                        <td>${nvl(entry.LOSSPFEND)}</td>
-                        <td>${nvl(entry.LOSSPFWOA)}</td>
-                        <td>${nvl(entry.INTEREST)}</td>
-                        <td>${nvl(entry.TAXON)}</td>
-                        <td>${nvl(entry.MISCELLANEOUS)}</td>
-                        <td>${nvl(entry.PMBL)}</td>
-                        <td>${nvl(entry.CMBL)}</td>
-                        <td>${nvl(entry.NTBL)}</td>
-                        <td>${nvl(entry.CSCOSARFRNCNNT2)}</td>
+                        <td>${nvl(entry.ORIGINFILENAME)}</td> <!--파일명-->
+                        <td>${nvl(entry.STATUS)}</td> <!--학습여부-->
+                        <td>${nvl(entry.OGCOMPANYNAME)}</td> <!--출재사명-->
+                        <td>${nvl(entry.UY)}</td> <!--UY-->
+                        <td>${nvl(entry.OGCONTRACTNAME)}</td> <!--계약명원본-->
+                        <td>${nvl(entry.CONTRACTNAMESUMMARY)}</td> <!--계약명요약-->
+                        <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
+                        <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
+
+
+                        <td>${nvl(entry.IMGID)}</td> <!--이미지ID-->
+                        <td>${nvl(entry.STATEMENTDIV)}</td> <!--계산서 구분-->
+                        <td>${nvl(entry.CONTRACTNUM)}</td> <!--계약번호-->
+                        <td>${nvl(entry.OGCOMPANYCODE)}</td> <!--출재사코드-->
+                        <td>${nvl(entry.BROKERCODE)}</td> <!--중개사코드-->
+                        <td>${nvl(entry.BROKERNAME)}</td> <!--중개사명-->
+                        <td>${nvl(entry.INSSTDT)}</td> <!--보험개시일-->
+                        <td>${nvl(entry.INSENDDT)}</td> <!--보험종료일-->
+                        <td>${nvl(entry.CURCD)}</td> <!--화폐코드-->
+                        <td>${nvl(entry.PAIDPERCENT)}</td> <!--Paid(100%)-->
+                        <td>${nvl(entry.PAIDSHARE)}</td> <!--Paid(Our Share)-->
+                        <td>${nvl(entry.GROSSPM)}</td> <!--GROSS PREMIUM-->
+                        <td>${nvl(entry.PM)}</td> <!--PREMIUM-->
+                        <td>${nvl(entry.PMPFEND)}</td> <!--PREMIUM P/F ENT-->
+                        <td>${nvl(entry.PMPFWOS)}</td> <!--PREMIUM P/F WOS-->
+                        <td>${nvl(entry.XOLPM)}</td> <!--XOL PREMIUM-->
+                        <td>${nvl(entry.RETURNPM)}</td> <!--RETURN PREMIUM-->
+                        <td>${nvl(entry.GROSSCN)}</td> <!--GROSS COMMISION-->
+                        <td>${nvl(entry.CN)}</td> <!--COMMISSION-->
+                        <td>${nvl(entry.PROFITCN)}</td> <!--PROFIT COMMISION-->
+                        <td>${nvl(entry.BROKERAGE)}</td> <!--BROKERAGE-->
+                        <td>${nvl(entry.TAX)}</td> <!--TEX-->
+                        <td>${nvl(entry.OVERRIDINGCOM)}</td> <!-- OVERIDING COM-->
+                        <td>${nvl(entry.CHARGE)}</td> <!--CHARGE-->
+                        <td>${nvl(entry.PMRESERVERTD)}</td> <!--PREMIUM RESERVE RTD-->
+                        <td>${nvl(entry.PFPMRESERVERTD)}</td> <!--P/F PREMIUM RESERVE RTD-->
+                        <td>${nvl(entry.PMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
+                        <td>${nvl(entry.PFPMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
+                        <td>${nvl(entry.CLAIM)}</td> <!--CLAIM -->
+                        <td>${nvl(entry.LOSSRECOVERY)}</td> <!--LOSS RECOVERY -->
+                        <td>${nvl(entry.CASHLOSS)}</td> <!--CASH LOSS -->
+                        <td>${nvl(entry.CASHLOSSRD)}</td> <!--CASH LOSS REFUND -->
+                        <td>${nvl(entry.LOSSRR)}</td> <!--LOSS RESERVE RTD -->
+                        <td>${nvl(entry.LOSSRR2)}</td> <!--LOSS RESERVE RLD -->
+                        <td>${nvl(entry.LOSSPFEND)}</td> <!--LOSS P/F ENT -->
+                        <td>${nvl(entry.LOSSPFWOA)}</td> <!--LOSS P/F WOA -->
+                        <td>${nvl(entry.INTEREST)}</td> <!--INTEREST -->
+                        <td>${nvl(entry.TAXON)}</td> <!--TAX ON -->
+                        <td>${nvl(entry.MISCELLANEOUS)}</td> <!--MISCELLANEOUS -->
+                        <td>${nvl(entry.PMBL)}</td> <!--PREMIUM BALANCE -->
+                        <td>${nvl(entry.CMBL)}</td> <!--CLAM BALANCE -->
+                        <td>${nvl(entry.NTBL)}</td> <!--NET BALANCE -->
+                        <td>${nvl(entry.CSCOSARFRNCNNT2)}</td> <!--YOUR REF -->
                     </tr>`;
                 });
             } else {
