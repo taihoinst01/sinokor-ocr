@@ -72,7 +72,7 @@ function uploadFileEvent() {
 function processImage(fileName) {
 
     $('#loadingTitle').html('OCR 처리 중..');
-    $('#loadingDetail').html(sourceImageUrl);
+    $('#loadingDetail').html(fileName);
     addProgressBar(21, 30);
     $.ajax({
         url: '/common/ocr',
@@ -84,9 +84,10 @@ function processImage(fileName) {
     }).done(function (data) {
         ocrCount++;
         if (!data.code) { // 에러가 아니면
+            //console.log(data);
             thumbImgs.push(fileName);
             $('#loadingTitle').html('OCR 처리 완료');
-            $('#loadingDetail').html(sourceImageUrl);
+            $('#loadingDetail').html(fileName);
             addProgressBar(31, 40);
             appendOcrData(fileName, data.regions);
         } else if (data.error) { //ocr 이외 에러이면
@@ -109,11 +110,21 @@ function processImage(fileName) {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             ocrCount++;
-            thumbImgs.push(fileName);
-            $('#loadingTitle').html('OCR 처리 완료');
-            $('#loadingDetail').html(sourceImageUrl);
-            addProgressBar(31, 40);
-            appendOcrData(fileName, data.regions);
+            if (!data.code) { // 에러가 아니면
+                //console.log(data);
+                thumbImgs.push(fileName);
+                $('#loadingTitle').html('OCR 처리 완료');
+                $('#loadingDetail').html(fileName);
+                addProgressBar(31, 40);
+                appendOcrData(fileName, data.regions);
+            } else if (data.error) { //ocr 이외 에러이면
+                endProgressBar();
+                alert(data.error);
+            } else { // ocr 에러 이면
+                insertCommError(data.code, 'ocr');
+                endProgressBar();
+                alert(data.message);
+            }
         },
         error: function (err) {
             console.log(err);

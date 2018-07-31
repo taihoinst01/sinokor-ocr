@@ -829,11 +829,19 @@
     <Compile Include="public\js\user\batchLearning.js" />
     <Compile Include="public\js\user\adminLearning.js" />
     <Compile Include="public\js\user\documentCheck.js" />
+    <Compile Include="public\js\user\invoiceProcessingStatus.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="public\js\user\invoiceRegistration.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="public\js\user\myApproval.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="public\js\user\newDocLearning.js" />
     <Compile Include="public\js\user\ocrFormAnalysis.js" />
     <Compile Include="public\js\user\ocrHistorySearch.js" />
     <Compile Include="public\js\user\uiLearning.js" />
-    <Compile Include="public\js\user\userDashboard.js" />
     <Compile Include="public\publish\js\jquery-1.9.1.min.js" />
     <Compile Include="public\publish\js\jquery-ui.js" />
     <Compile Include="public\publish\js\jquerys.js" />
@@ -841,14 +849,22 @@
     <Compile Include="routes\admin\userManagement.js" />
     <Compile Include="routes\index.js" />
     <Compile Include="routes\proxy\proxy.js" />
+    <Compile Include="routes\user\invoiceProcessingStatus.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="routes\user\batchLearning.js" />
     <Compile Include="routes\user\adminLearning.js" />
     <Compile Include="routes\user\documentCheck.js" />
+    <Compile Include="routes\user\invoiceRegistration.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="routes\user\myApproval.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="routes\user\newDocLearning.js" />
     <Compile Include="routes\user\ocrFormAnalysis.js" />
     <Compile Include="routes\user\ocrHistorySearch.js" />
     <Compile Include="routes\user\uiLearning.js" />
-    <Compile Include="routes\user\userDashboard.js" />
     <Compile Include="routes\util\aiMain.js" />
     <Compile Include="routes\util\common.js" />
     <Compile Include="routes\util\logger.js" />
@@ -885,6 +901,7 @@
     <Content Include="ml\cnn-text-classification\word_data_processor.py" />
     <Content Include="ml\cnn-text-classification\__pycache__\data_helpers.cpython-35.pyc" />
     <Content Include="ml\cnn-text-classification\__pycache__\multi_class_data_loader.cpython-35.pyc" />
+    <Content Include="ml\config.ini" />
     <Content Include="ml\data\inout\input_2018064171352295" />
     <Content Include="ml\data\nmt_data\output_test" />
     <Content Include="ml\data\nmt_data\test.vi" />
@@ -3319,16 +3336,24 @@
     <Content Include="views\common\leftSideBar.html" />
     <Content Include="views\index.html" />
     <Content Include="views\index_after.html" />
+    <Content Include="views\user\invoiceProcessingStatus.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\user\batchLearning.html" />
     <Content Include="views\user\adminLearning.html" />
     <Content Include="views\user\documentCheck.html" />
+    <Content Include="views\user\invoiceRegistration.html">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="views\user\myApproval.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\user\newDocLearning.html" />
     <Content Include="views\user\ocrFormAnalysis.html" />
     <Content Include="views\user\ocrHistorySearch.html" />
     <Content Include="views\user\ocrImgJson.html" />
     <Content Include="views\user\uiLearning_before.html" />
     <Content Include="views\user\uiLearning.html" />
-    <Content Include="views\user\userDashboard.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config" />
   </ItemGroup>

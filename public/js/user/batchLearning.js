@@ -15,7 +15,7 @@ var addCond = "LEARN_N"; // LEARN_N:학습미완료, LEARN_Y:학습완료, defau
 var startNum = 0;
 var moreNum = 20;
 
-var ocrPopData;
+var ocrPopData; //UI Popup DATA
 
 $(function () {
     _init();
@@ -114,8 +114,7 @@ var buttonEvent = function () {
 
     // [UI학습팝업] 저장
     $("#btn_pop_ui_run").on("click", function () {
-        //fn_updateUiTraining();
-        fn_updateUiTrainingTEST();
+        fn_batchUiTraining();
     });
     // [UI학습팝업] close popup
     $("#btn_pop_ui_close").on("click", function () {
@@ -462,11 +461,15 @@ function execBatchLearning() {
     var dataArr = convertOcrData();
 
     for (var i in ocrDataArr) {
-        execBatchLearningData(ocrDataArr[i], dataArr[i]);
-        if (isFullMatch) {
-        } else {            
-            popUpLayer2(ocrDataArr[i]);
-            break;
+        if (ocrDataArr[i].exeML != "Y") {
+            console.log("exeBatch1:" + i);
+            execBatchLearningData(ocrDataArr[i], dataArr[i]);
+            if (isFullMatch) {
+            } else {            
+                console.log("exeBatch2:" + i);
+                popUpLayer2(ocrDataArr[i]);
+                break;
+            }
         }
     }
 }
@@ -478,7 +481,55 @@ function popUpLayer2(ocrData) {
     console.log(ocrData);
     console.log(data)
 
-    $('#layer2').show(); // ui 학습레이어 띄우기
+    ocrPopData = data;
+
+    fn_initUiTraining(); // 팝업 초기화
+    console.log("popupTest");
+    layer_open('layer2'); // ui 학습레이어 띄우기
+    $("#layer2").css("display", "block");
+
+    //$("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);
+    $("#uiImg").attr("src", "./uploads/26.jpg");
+    for (var num in data) {
+        if (data[num].column == "CSCO_NM_VALUE") {
+            $("#cscoNm").val(data[num].text);
+        } else if (data[num].column == "CT_NM_VALUE") {
+            $("#ctNm").val(data[num].text);
+        } else if (data[num].column == "INS_ST_DT_VALUE") {
+            $("#insStDt").val(data[num].text);
+        } else if (data[num].column == "INS_END_DT_VALUE") {
+            $("#insEndDt").val(data[num].text);
+        } else if (data[num].column == "CUR_CD_VALUE") {
+            $("#curCd").val(data[num].text);
+        } else if (data[num].column == "PRE_VALUE") {
+            $("#pre").val(data[num].text);
+        } else if (data[num].column == "COM_VALUE") {
+            $("#com").val(data[num].text);
+        } else if (data[num].column == "BRKG_VALUE") {
+            $("#brkg").val(data[num].text);
+        } else if (data[num].column == "TXAM_VALUE") {
+            $("#txam").val(data[num].text);
+        } else if (data[num].column == "PRRS_CF_VALUE") {
+            $("#prrsCf").val(data[num].text);
+        } else if (data[num].column == "PRRS_RLS_VALUE") {
+            $("#prrsRls").val(data[num].text);
+        } else if (data[num].column == "CLA_VALUE") {
+            $("#cla").val(data[num].text);
+        } else if (data[num].column == "EXEX_VALUE") {
+            $("#exex").val(data[num].text);
+        } else if (data[num].column == "SVF_VALUE") {
+            $("#svf").val(data[num].text);
+        } else if (data[num].column == "CAS_VALUE") {
+            $("#cas").val(data[num].text);
+        } else if (data[num].column == "NTBL_VALUE") {
+            $("#ntbl").val(data[num].text);
+        } else if (data[num].column == "CSCO_SA_RFRN_CNNT2_VALUE") {
+            $("#cscoSaRfrnCnnt2").val(data[num].text);
+        } else {
+
+        }
+    }
+    
 }
 
 function execBatchLearningData(ocrData, data) {
@@ -580,6 +631,7 @@ function compareBatchLearningData(ocrData, data) {
             success: function (retData) {
                 console.log(retData);
                 if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
+                    ocrData.exeML = "Y";
                     isFullMatch = (dataObj.length != 53) ? false : true;
                     //ui팝업 로직
                     //if (retData.rows[0].IMGID == dataObj["imgId"]) {
@@ -913,15 +965,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
                 }
             } else if (flag == "UI_TRAINING") {
                 fn_processUiTraining(data.fileInfoList);
-            } else if (flag == "UI_TRAINING_test") {
-                for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
-                    var lastYn = "N";
-                    if (i == data.fileInfoList.length - 1) lastYn = "Y";
-                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i], data.fileToPage);
-                }
-            }
-
-            else {
+            } else {
                 alert("잘못된 요청입니다.");
                 return;
             }
@@ -1095,6 +1139,7 @@ var fn_uiTraining = function () {
     let imgId = "";
     let chkCnt = 0;
     //테스트용
+    /*
     $("input[name=listCheck_before]").each(function (index, entry) {
         if ($(this).is(":checked")) {
             imgId = $(this).val();
@@ -1103,7 +1148,7 @@ var fn_uiTraining = function () {
     });
     imgIdArray.push(imgId);
     processImage_TEST("26.jpg");
-    /*
+    */
     if (addCond == "LEARN_Y") {
         let imgId = "";
         let chkCnt = 0;
@@ -1127,7 +1172,7 @@ var fn_uiTraining = function () {
         alert("After Training 상태에서만 UI학습이 가능합니다.");
         return;
     }
-    */
+
 };
 
 // UI학습 팝업 초기화
@@ -1198,11 +1243,11 @@ var fn_processUiTraining = function (fileInfoList) {
 }
 
 // UI학습 팝업 실행
-var fn_updateUiTraining = function () {
+var fn_batchUiTraining = function () {
     var dataObj = {};
-    dataObj["imgId"] = $("#imgId").val();
-    dataObj["imgFileStartNo"] = $("#imgFileStartNo").val();
-    dataObj["imgFileEndNo"] = $("#imgFileEndNo").val();
+    //dataObj["imgId"] = $("#imgId").val();
+    //dataObj["imgFileStartNo"] = $("#imgFileStartNo").val();
+    //dataObj["imgFileEndNo"] = $("#imgFileEndNo").val();
     dataObj["cscoNm"] = $("#cscoNm").val();
     dataObj["ctNm"] = $("#ctNm").val();
     dataObj["insStDt"] = $("#insStDt").val();
@@ -1222,11 +1267,83 @@ var fn_updateUiTraining = function () {
     dataObj["cas"] = $("#cas").val();
     dataObj["ntbl"] = $("#ntbl").val();
     dataObj["cscoSaRfrnCnnt2"] = $("#cscoSaRfrnCnnt2").val();
-    
-    var param = { dataObj: dataObj };
+
+    for (var num in ocrPopData) {
+        if (ocrPopData[num].column == "CSCO_NM_VALUE") {
+            if (ocrPopData[num].text != $("#cscoNm").val()) {
+                ocrPopData[num].transText = $("#cscoNm").val();
+            }
+        } else if (ocrPopData[num].column == "CT_NM_VALUE") {
+            if (ocrPopData[num].text != $("#ctNm").val()) {
+                ocrPopData[num].transText = $("#ctNm").val();
+            }
+        } else if (ocrPopData[num].column == "INS_ST_DT_VALUE") {
+            if (ocrPopData[num].text != $("#insStDt").val()) {
+                ocrPopData[num].transText = $("#insStDt").val();
+            }
+        } else if (ocrPopData[num].column == "INS_END_DT_VALUE") {
+            if (ocrPopData[num].text != $("#insEndDt").val()) {
+                ocrPopData[num].transText = $("#insEndDt").val();
+            }
+        } else if (ocrPopData[num].column == "CUR_CD_VALUE") {
+            if (ocrPopData[num].text != $("#curCd").val()) {
+                ocrPopData[num].transText = $("#curCd").val();
+            }
+        } else if (ocrPopData[num].column == "PRE_VALUE") {
+            if (ocrPopData[num].text != $("#pre").val()) {
+                ocrPopData[num].transText = $("#pre").val();
+            }
+        } else if (ocrPopData[num].column == "COM_VALUE") {
+            if (ocrPopData[num].text != $("#com").val()) {
+                ocrPopData[num].transText = $("#com").val();
+            }
+        } else if (ocrPopData[num].column == "BRKG_VALUE") {
+            if (ocrPopData[num].text != $("#brkg").val()) {
+                ocrPopData[num].transText = $("#brkg").val();
+            }
+        } else if (ocrPopData[num].column == "TXAM_VALUE") {
+            if (ocrPopData[num].text != $("#txam").val()) {
+                ocrPopData[num].transText = $("#txam").val();
+            }
+        } else if (ocrPopData[num].column == "PRRS_CF_VALUE") {
+            if (ocrPopData[num].text != $("#prrsCf").val()) {
+                ocrPopData[num].transText = $("#prrsCf").val();
+            }
+        } else if (ocrPopData[num].column == "PRRS_RLS_VALUE") {
+            if (ocrPopData[num].text != $("#prrsRls").val()) {
+                ocrPopData[num].transText = $("#prrsRls").val();
+            }
+        } else if (ocrPopData[num].column == "CLA_VALUE") {
+            if (ocrPopData[num].text != $("#cla").val()) {
+                ocrPopData[num].transText = $("#cla").val();
+            }
+        } else if (ocrPopData[num].column == "EXEX_VALUE") {
+            if (ocrPopData[num].text != $("#exex").val()) {
+                ocrPopData[num].transText = $("#exex").val();
+            }
+        } else if (ocrPopData[num].column == "SVF_VALUE") {
+            if (ocrPopData[num].text != $("#svf").val()) {
+                ocrPopData[num].transText = $("#svf").val();
+            }
+        } else if (ocrPopData[num].column == "CAS_VALUE") {
+            if (ocrPopData[num].text != $("#cas").val()) {
+                ocrPopData[num].transText = $("#cas").val();
+            }
+        } else if (ocrPopData[num].column == "NTBL_VALUE") {
+            if (ocrPopData[num].text != $("#ntbl").val()) {
+                ocrPopData[num].transText = $("#ntbl").val();
+            }
+        } else if (ocrPopData[num].column == "CSCO_SA_RFRN_CNNT2_VALUE") {
+            if (ocrPopData[num].text != $("#cscoSaRfrnCnnt2").val()) {
+                ocrPopData[num].transText = $("#cscoSaRfrnCnnt2").val();
+            }
+        }
+    }
+
+    var param = { "dataObj": ocrPopData };
 
     $.ajax({
-        url: '/batchLearning/updateBatchLearningData',
+        url: '/batchLearning/uiTrainBatchLearningData',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
@@ -1234,8 +1351,9 @@ var fn_updateUiTraining = function () {
         success: function (data) {
             console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
             alert("UI학습이 완료되었습니다.");
-            searchBatchLearnDataList(addCond);
-            popupEvent.closePopup();
+            execBatchLearning();
+            $("#layer2").css("display", "none");
+            //popupEvent.closePopup();
         },
         error: function (err) {
             console.log(err);
@@ -1444,170 +1562,6 @@ function appendOcrDataTEST(fileName, regions) {
         success: function (data) {
             console.log(data);
             uiTrainPopupTEST(fileName, data);
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
-}
-
-function uiTrainPopupTEST(fileName, ocrData) {
-    ocrPopData = ocrData;
-
-    $("#uiImg").attr("src", "./uploads/" + fileName);
-    for (var num in ocrData) {
-        if (ocrData[num].column == "CSCO_NM_VALUE") {
-            $("#cscoNm").val(ocrData[num].text);
-        } else if (ocrData[num].column == "CT_NM_VALUE") {
-            $("#ctNm").val(ocrData[num].text);
-        } else if (ocrData[num].column == "INS_ST_DT_VALUE") {
-            $("#insStDt").val(ocrData[num].text);
-        } else if (ocrData[num].column == "INS_END_DT_VALUE") {
-            $("#insEndDt").val(ocrData[num].text);
-        } else if (ocrData[num].column == "CUR_CD_VALUE") {
-            $("#curCd").val(ocrData[num].text);
-        } else if (ocrData[num].column == "PRE_VALUE") {
-            $("#pre").val(ocrData[num].text);
-        } else if (ocrData[num].column == "COM_VALUE") {
-            $("#com").val(ocrData[num].text);
-        } else if (ocrData[num].column == "BRKG_VALUE") {
-            $("#brkg").val(ocrData[num].text);
-        } else if (ocrData[num].column == "TXAM_VALUE") {
-            $("#txam").val(ocrData[num].text);
-        } else if (ocrData[num].column == "PRRS_CF_VALUE") {
-            $("#prrsCf").val(ocrData[num].text);
-        } else if (ocrData[num].column == "PRRS_RLS_VALUE") {
-            $("#prrsRls").val(ocrData[num].text);
-        } else if (ocrData[num].column == "CLA_VALUE") {
-            $("#cla").val(ocrData[num].text);
-        } else if (ocrData[num].column == "EXEX_VALUE") {
-            $("#exex").val(ocrData[num].text);
-        } else if (ocrData[num].column == "SVF_VALUE") {
-            $("#svf").val(ocrData[num].text);
-        } else if (ocrData[num].column == "CAS_VALUE") {
-            $("#cas").val(ocrData[num].text);
-        } else if (ocrData[num].column == "NTBL_VALUE") {
-            $("#ntbl").val(ocrData[num].text);
-        } else if (ocrData[num].column == "CSCO_SA_RFRN_CNNT2_VALUE") {
-            $("#cscoSaRfrnCnnt2").val(ocrData[num].text);
-        } else {
-
-        }
-    }
-
-    layer_open('layer2');
-}
-
-var fn_updateUiTrainingTEST = function () {
-    var dataObj = {};
-    //dataObj["imgId"] = $("#imgId").val();
-    //dataObj["imgFileStartNo"] = $("#imgFileStartNo").val();
-    //dataObj["imgFileEndNo"] = $("#imgFileEndNo").val();
-    dataObj["cscoNm"] = $("#cscoNm").val();
-    dataObj["ctNm"] = $("#ctNm").val();
-    dataObj["insStDt"] = $("#insStDt").val();
-    dataObj["insEndDt"] = $("#insEndDt").val();
-    dataObj["curCd"] = $("#curCd").val();
-    dataObj["pre"] = $("#pre").val();
-    dataObj["com"] = $("#com").val();
-    dataObj["brkg"] = $("#brkg").val();
-    dataObj["txam"] = $("#txam").val();
-    dataObj["prrsCf"] = $("#prrsCf").val();
-    dataObj["prrsRls"] = $("#prrsRls").val();
-    dataObj["lsresCf"] = $("#lsresCf").val();
-    dataObj["lsresRls"] = $("#lsresRls").val();
-    dataObj["cla"] = $("#cla").val();
-    dataObj["exex"] = $("#exex").val();
-    dataObj["svf"] = $("#svf").val();
-    dataObj["cas"] = $("#cas").val();
-    dataObj["ntbl"] = $("#ntbl").val();
-    dataObj["cscoSaRfrnCnnt2"] = $("#cscoSaRfrnCnnt2").val();
-
-    for (var num in ocrPopData) {
-        if (ocrPopData[num].column == "CSCO_NM_VALUE") {
-            if (ocrPopData[num].text != $("#cscoNm").val()) {
-                ocrPopData[num].transText = $("#cscoNm").val();     
-            }
-        } else if (ocrPopData[num].column == "CT_NM_VALUE") {
-            if (ocrPopData[num].text != $("#ctNm").val()) {
-                ocrPopData[num].transText = $("#ctNm").val();
-            }
-        } else if (ocrPopData[num].column == "INS_ST_DT_VALUE") {
-            if (ocrPopData[num].text != $("#insStDt").val()) {
-                ocrPopData[num].transText = $("#insStDt").val();
-            }
-        } else if (ocrPopData[num].column == "INS_END_DT_VALUE") {
-            if (ocrPopData[num].text != $("#insEndDt").val()) {
-                ocrPopData[num].transText = $("#insEndDt").val();
-            }
-        } else if (ocrPopData[num].column == "CUR_CD_VALUE") {
-            if (ocrPopData[num].text != $("#curCd").val()) {
-                ocrPopData[num].transText = $("#curCd").val();
-            }
-        } else if (ocrPopData[num].column == "PRE_VALUE") {
-            if (ocrPopData[num].text != $("#pre").val()) {
-                ocrPopData[num].transText = $("#pre").val();
-            }
-        } else if (ocrPopData[num].column == "COM_VALUE") {
-            if (ocrPopData[num].text != $("#com").val()) {
-                ocrPopData[num].transText = $("#com").val();
-            }
-        } else if (ocrPopData[num].column == "BRKG_VALUE") {
-            if (ocrPopData[num].text != $("#brkg").val()) {
-                ocrPopData[num].transText = $("#brkg").val();
-            }
-        } else if (ocrPopData[num].column == "TXAM_VALUE") {
-            if (ocrPopData[num].text != $("#txam").val()) {
-                ocrPopData[num].transText = $("#txam").val();
-            }
-        } else if (ocrPopData[num].column == "PRRS_CF_VALUE") {
-            if (ocrPopData[num].text != $("#prrsCf").val()) {
-                ocrPopData[num].transText = $("#prrsCf").val();
-            }
-        } else if (ocrPopData[num].column == "PRRS_RLS_VALUE") {
-            if (ocrPopData[num].text != $("#prrsRls").val()) {
-                ocrPopData[num].transText = $("#prrsRls").val();
-            }
-        } else if (ocrPopData[num].column == "CLA_VALUE") {
-            if (ocrPopData[num].text != $("#cla").val()) {
-                ocrPopData[num].transText = $("#cla").val();
-            }
-        } else if (ocrPopData[num].column == "EXEX_VALUE") {
-            if (ocrPopData[num].text != $("#exex").val()) {
-                ocrPopData[num].transText = $("#exex").val();
-            }
-        } else if (ocrPopData[num].column == "SVF_VALUE") {
-            if (ocrPopData[num].text != $("#svf").val()) {
-                ocrPopData[num].transText = $("#svf").val();
-            }
-        } else if (ocrPopData[num].column == "CAS_VALUE") {
-            if (ocrPopData[num].text != $("#cas").val()) {
-                ocrPopData[num].transText = $("#cas").val();
-            }
-        } else if (ocrPopData[num].column == "NTBL_VALUE") {
-            if (ocrPopData[num].text != $("#ntbl").val()) {
-                ocrPopData[num].transText = $("#ntbl").val();
-            }
-        } else if (ocrPopData[num].column == "CSCO_SA_RFRN_CNNT2_VALUE") {
-            if (ocrPopData[num].text != $("#cscoSaRfrnCnnt2").val()) {
-                ocrPopData[num].transText = $("#cscoSaRfrnCnnt2").val();
-            }
-        }
-    }
-
-    var param = { "dataObj": ocrPopData };
-
-    $.ajax({
-        url: '/batchLearning/uiTrainBatchLearningData',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify(param),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
-            alert("UI학습이 완료되었습니다.");
-            searchBatchLearnDataList(addCond);
-            popupEvent.closePopup();
         },
         error: function (err) {
             console.log(err);

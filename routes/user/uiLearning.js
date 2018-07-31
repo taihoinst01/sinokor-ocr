@@ -46,12 +46,14 @@ router.get('/favicon.ico', function (req, res) {
 
 // uiLearning.html 보여주기 (get)
 router.get('/', function (req, res) {
-    res.render('user/uiLearning');
+    if (req.isAuthenticated()) res.render('user/uiLearning', { currentUser: req.user });
+    else res.redirect("/logout");
 });
 
 // userDashbaord.html 보여주기 (post)
 router.post('/', function (req, res) {
-    res.render('user/uiLearning');
+    if (req.isAuthenticated()) res.render('user/uiLearning', { currentUser: req.user });
+    else res.redirect("/logout");
 });
 
 // typoSentence ML

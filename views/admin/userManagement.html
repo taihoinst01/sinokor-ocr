@@ -1,14 +1,23 @@
-﻿<!DOCTYPE html>
-<html>
+﻿<!doctype html>
+<html lang="kr">
 <head>
-    <title>TIIZ OCR Service</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
 
-    <%include  ../common/commonLib_before.html%>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title alt="사용자 관리">KoreanRe OCR Service - 사용자 관리</title>
 
+    <%include  ../common/commonLib.html%>
+
+    <!-- 공통 js -->
     <script type="text/javascript" src="js/common.client.js"></script>
+    <!-- // 공통 js -->
+    <!-- 문서 조회 학습 전용 js -->
     <script type="text/javascript" src="js/admin/userManagement.js"></script>
+    <!-- // 문서 조회 전용 js -->
+
     <style>
         #ocrProgress {
             background-color: grey;
@@ -36,240 +45,346 @@
         }
     </style>
 </head>
-<body class="hold-transition skin-blue sidebar-mini">
-    <div class="main">
-        <div class="wrapper">
-            <div id="ocrProgress">
-                <div id="progressMsg"></div>
-                <div id="ocrBar"></div>
-            </div>
-            <!-- Header -->
-            <%include  ../common/header_before.html%>
-            <!-- //Header -->
-            <!-- Left Menu Side -->
-            <%include ../common/leftSideBar_before.html%>
-            <!--// Left Menu Side -->
-            <!-- Content Wrapper -->
-            <div class="content-wrapper">
-                <section class="content-header">
-                    <h1>사용자 관리</h1>
-                </section>
+<body>
+    <div id="wrap">
+        <div id="ocrProgress">
+            <div id="progressMsg"></div>
+            <div id="ocrBar"></div>
+        </div>
+        <!-- skip navi -->
+        <%include  ../common/header.html%>
+        <!-- //skip navi -->
+        <!-- Content -->
+        <div id="container">
+            <!-- LNB -->
+            <%include  ../common/leftSideBar.html%>
+            <!-- // LNB -->
+            <!-- 본문영역 -->
+            <div id="content">
+                <h2 class="subtit subtit_st01 blind"><span>사용자관리</span></h2>
 
-                <section class="content">
-                    <div class="box">
-                        <div class="box-body">
-                            <div class="row search_op">
-                                <div class="form-group col-lg-5">
-                                    <input type="text" class="form-control" id="searchUserId" placeholder="사용자 아이디를 입력해주세요" spellcheck="false" autocomplete='off'>
-                                </div>
-                                <div class="form-group col-lg-2">
-                                    <button type="button" class="btn btn_01" id="btn_search">검색</button>
-                                </div>
-                            </div>
-                            <div class="row mt20">
-                                <h4 class="col-lg-6">사용자 목록</h4>
-                                <div class="col-lg-6">
-                                    <button type="button" class="btn btn-default fr" data-toggle="modal" data-target="#userAdd">사용자 추가</button>
-                                </div>
-                            </div>
+                <!-- 부서구분 목록  -->
+                <div class="box_stsearch">
+                    <h3 class="tits"><span>부서구분</span></h3>
 
-                            <!-- 사용자관리 테이블 -->
-                            <input type="hidden" id="totalCount" value="" />
-                            <div class="Tbl_wrap">
-                                <table class="Tbl" summary="사용자관리">
-                                    <colgroup>
-                                        <col width="10%" />
-                                        <col width="10%" />
-                                        <col width="10%" />
-                                        <col width="10%" />
-                                        <col width="15%" />
-                                        <col width="15%" />
-                                        <col width="15%" />
-                                        <col width="8%" />
-                                        <col width="7%" />
-                                    </colgroup>
-                                    <thead>
-                                        <tr>
-                                            <th>회원번호</th>
-                                            <th>아이디</th>
-                                            <th>비밀번호</th>
-                                            <th>권한</th>
-                                            <th>이메일</th>
-                                            <th>가입날짜</th>
-                                            <th>마지막 접속 날짜</th>
-                                            <th>OCR 서비스 <br />사용 건 수</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tbody_user"></tbody>
-                                </table>
-                                <div class="pagination_wrap">
-                                    <ul id="pagination" class="pagination pagination-sm no-margin"></ul>
+                    <div class="box_txt_st01 st00_sh">
+                        <dl>
+                            <dd>
+                                <div class="select_style wh300">
+                                    <span class="ctrl"><span class="arrow"></span></span>
+                                    <button type="button" class="myValue">부서구분</button>
+                                    <ul class="aList">
+                                        <li><a href="#none">글로벌사업팀</a></li>
+                                    </ul>
                                 </div>
-                            </div>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <div class="btn_rt">
+                        <button type="button" class="button_st3">조회</button>
+                    </div>
+                </div>
+                <!-- // 부서구분 목록 -->
+                <!-- 사용자관리 목록  -->
+                <div class="box_stsearch titcolor01">
+                    <h3 class="tits"><span>사용자관리</span></h3>
+
+                    <div class="table_style02">
+                        <table>
+                            <caption>사용자관리 타이틀</caption>
+                            <colgroup>
+                                <col style="width:5%" />
+                                <col style="width:12%" />
+                                <col style="width:12%" />
+                                <col style="width:22%" />
+                                <col style="width:12%" />
+                                <col style="width:12%" />
+                                <col style="width:12%" />
+                                <col style="width:13%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="row">번호</th>
+                                    <th scope="row">사번</th>
+                                    <th scope="row">사원명</th>
+                                    <th scope="row">비고</th>
+                                    <th scope="row">스캔결재자</th>
+                                    <th scope="row">중간결재자</th>
+                                    <th scope="row">최종결재자</th>
+                                    <th scope="row">상위결재자</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div class="mCustomScrollbar box_scroll_st5" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                            <table>
+                                <caption>사용자관리 정보</caption>
+                                <colgroup>
+                                    <col style="width:5%" />
+                                    <col style="width:12%" />
+                                    <col style="width:12%" />
+                                    <col style="width:23%" />
+                                    <col style="width:12%" />
+                                    <col style="width:12%" />
+                                    <col style="width:12%" />
+                                    <col style="width:12%" />
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td><a href="#none" class="tip" title="사번:ICR201807">ICR201807</a></td>
+                                        <td>Orent-Energy XOL</td>
+                                        <td>20180701</td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">2</th>
+                                        <td>G190267</td>
+                                        <td>문소라</td>
+                                        <td>20180701</td>
+                                        <td></td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">3</th>
+                                        <td>G190267</td>
+                                        <td>이문세</td>
+                                        <td>20180701</td>
+                                        <td></td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">4</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Y</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">5</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Y</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">6</th>
+                                        <td>K211207</td>
+                                        <td>최창민</td>
+                                        <td>20180701</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Y</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">7</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Y</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">8</th>
+                                        <td>K211207</td>
+                                        <td>김이중</td>
+                                        <td>20180701</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Y</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">9</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Y</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">10</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Y</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">11</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">12</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">13</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">14</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">15</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">16</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">17</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">18</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">19</th>
+                                        <td>K211207</td>
+                                        <td>강문상</td>
+                                        <td>20180701</td>
+                                        <td>Y</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                </section>
-            </div>
-            <!--// Content Wrapper -->
-            <!-- Header -->
-            <%include  ../common/footer.html%>
-            <!-- //Header -->
-        </div>
-    </div>
-    <!-- 사용자 추가-->
-    <div class="modal fade" id="userAdd" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" style="min-height: 300px; max-height: 400px;">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title">사용자 추가</h4>
                 </div>
-                <div class="modal-body">
-                    <form name="insUserForm" id="insUserForm" action="/userManagement/insertUser" method="post">
-                        <table class="Tbl">
-                            <colgroup>
-                                <col width="50%" />
-                                <col width="50%" />
-                            </colgroup>
-                            <thead>
+                <!-- // 사용자관리 목록 -->
+                <!-- 사용자관리 목록  -->
+                <div class="box_stsearch titcolor01 mb0">
+                    <h3 class="tits"><span>사용자관리</span></h3>
 
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        아이디
-                                    </td>
-                                    <td>
-                                        <input type="text" name="userId" id="userId" class="form-control" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        비밀번호
-                                    </td>
-                                    <td>
-                                        <input type="password" name="userPw" id="userPw" class="form-control" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        비밀번호 확인
-                                    </td>
-                                    <td>
-                                        <input type="password" name="userPwConfirm" id="userPwConfirm" class="form-control" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        이메일
-                                    </td>
-                                    <td>
-                                        <input type="text" name="email" id="email" class="form-control" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        권한
-                                    </td>
-                                    <td>
-                                        <select class="form-control" name="auth" id="auth">
-                                            <option value="user">사용자</option>
-                                            <option value="admin">관리자</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <div class="btn_wrap">
-                        <button type="button" class="btn btn_01" id="insUserBtn">저장</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal" id="insUserCancelBtn">취소</button>
+                    <div class="box_txt_st01 st00_us">
+                        <dl>
+                            <dt><label for="intxt_01">사번</label></dt>
+                            <dd>
+                                <input type="text" name="intxt_00" id="intxt_01" class="inputst_box01" value="ICR2018071000000123" disabled="disabled" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_02">사원명</label></dt>
+                            <dd>
+                                <input type="text" name="intxt_00" id="intxt_02" class="inputst_box01" value="루루루키" disabled="disabled" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_03">Password</label></dt>
+                            <dd>
+                                <input type="password" name="intxt_00" id="intxt_03" class="inputst_box01" value="201807" disabled="disabled" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label>상위결재자</label></dt>
+                            <dd>
+                                <div class="select_style w100">
+                                    <span class="ctrl"><span class="arrow"></span></span>
+                                    <button type="button" class="myValue">전 체</button>
+                                    <ul class="aList">
+                                        <li><a href="#none">김이최</a></li>
+                                        <li><a href="#none">이소속</a></li>
+                                    </ul>
+                                </div>
+                            </dd>
+                        </dl>
+
+                        <dl>
+                            <dt><label for="">결재자</label></dt>
+                            <dd>
+                                <div class="checkbox-options">
+                                    <input type="checkbox" value="2" id="st1" name="st1" /><label for="st1"><span>스캔결재자</span></label>
+                                    <input type="checkbox" value="2" id="st2" name="st2" /><label for="st2"><span>중간결재자</span></label>
+                                    <input type="checkbox" value="2" id="st3" name="st3" /><label for="st3"><span>최종결재자</span></label>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <div class="btn_rt">
+                        <button type="button" class="button_st1">수정</button>
                     </div>
                 </div>
+                <!-- // 사용자관리 목록 -->
+
             </div>
+            <!-- // 본문영역 -->
+
         </div>
     </div>
-    <!-- //사용자 추가-->
-
-    <!-- 비밀번호 수정-->
-    <div class="modal fade" id="userUpdate" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" style="min-height: 300px; max-height: 400px;">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title">비밀번호 수정</h4>
-                </div>
-                <div class="modal-body">
-                    <form name="updatePwForm" id="updatePwForm" action="/userManagement/updatePw" method="post">
-                        <table class="Tbl">
-                            <colgroup>
-                                <col width="50%" />
-                                <col width="50%" />
-                            </colgroup>
-                            <thead>
-
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        회원번호
-                                    </td>
-                                    <td>
-                                        <input type="text" name="seqNumUpdate" id="seqNumUpdate" class="form-control" readonly="readonly"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        비밀번호
-                                    </td>
-                                    <td>
-                                        <input type="password" name="userPwUpdate" id="userPwUpdate" class="form-control" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        비밀번호 확인
-                                    </td>
-                                    <td>
-                                        <input type="password" name="userPwUpdateConfirm" id="userPwUpdateConfirm" class="form-control" />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <div class="btn_wrap">
-                        <button type="button" class="btn btn_01" id="updatePwBtn">저장</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal" id="updatePwCancelBtn">취소</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- //비밀번호 수정-->
-
-
-    <script>
-        //iCheck for checkbox and radio inputs
-        $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
-            checkboxClass: 'icheckbox_minimal-blue',
-            radioClass: 'iradio_minimal-blue'
-        })
-        //Red color scheme for iCheck
-        $('input[type="checkbox"].minimal-red, input[type="radio"].minimal-red').iCheck({
-            checkboxClass: 'icheckbox_minimal-red',
-            radioClass: 'iradio_minimal-red'
-        })
-        //Flat red color scheme for iCheck
-        $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
-            checkboxClass: 'icheckbox_flat-green',
-            radioClass: 'iradio_flat-green'
-        })
-
-    </script>
 </body>
 </html>

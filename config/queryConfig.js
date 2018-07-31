@@ -19,13 +19,15 @@
 
 var count = {
     startQuery: "SELECT COUNT(*) AS cnt FROM ( ",
-    endQuery: " ) AS COUNTQUERY "
+    endQuery: " ) "
 }
 
 var sessionConfig = {
     loginQuery:
         `SELECT
-            *
+            SEQNUM, USERID, USERPW, AUTH, EMAIL, OCRUSECOUNT,
+            TO_CHAR(JOINDATE, 'yyyy-mm-dd hh:mi:ss') AS JOINDATE, 
+            TO_CHAR(LASTLOGINDATE, 'yyyy-mm-dd hh:mi:ss') AS LASTLOGINDATE
          FROM
             tbl_ocr_comm_user
          WHERE
@@ -73,12 +75,12 @@ var dbcolumnsConfig = {
             "tbl_extraction_keyword `
 };
 
-var documentConfig = {
-    selectDocumentList:
+var myApprovalConfig = {
+    selectApprovalList:
         `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO 
             FROM TBL_DOCUMENT
            WHERE 1=1 `,
-    selectDocumentDtlList:
+    selectApprovalDtlList:
         `SELECT A.SEQNUM, 
                 A.DOCNUM, A.PAGECNT, A.APPROVALSTATE, A.DEADLINEDT, A.REGDT, A.FAOTEAM, A.FAOPART, A.APPROVALREPORTER, A.DOCUMENTMANAGER, A.MEMO,
                 B.SEQNUM AS SEQNUM_DTL,
@@ -91,13 +93,15 @@ var documentConfig = {
            FROM TBL_DOCUMENT_DTL B
      LEFT OUTER JOIN TBL_DOCUMENT A ON A.DOCNUM = B.DOCNUM
           WHERE 1=1 `,
-    selectDocumentImageList:
+    selectApprovalImageList:
         `SELECT A.SEQNUM, A.IMGID, A.FILEPATH, A.ORIGINFILENAME, A.SERVERFILENAME, A.FILEEXTENSION, 
                 A.FILESIZE, A.CONTENTTYPE, A.FILETYPE, A.FILEWIDTH, A.FILEHEIGHT, A.REGID, A.REGDATE 
            FROM TBL_OCR_FILE A
             LEFT OUTER JOIN TBL_DOCUMENT_DTL B
               ON B.IMGID = A.IMGID `
 }
+
+var documentConfig = {};
 
 var batchLearningConfig = {
     selectBatchLearningDataList:
@@ -333,6 +337,7 @@ module.exports = {
     userMngConfig: userMngConfig,
     dbcolumnsConfig: dbcolumnsConfig,
     documentConfig: documentConfig,
+    myApprovalConfig: myApprovalConfig,
     batchLearningConfig: batchLearningConfig,
     uiLearningConfig: uiLearningConfig,
     commonConfig: commonConfig
