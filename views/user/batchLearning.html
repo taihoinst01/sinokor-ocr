@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title alt="배치학습"> OCR Service Web - 배치 학습</title>
+    <title alt="일괄학습"> OCR Service Web - 일괄 학습</title>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -32,7 +32,43 @@
     <script src="js/import/toast-ui-grid/tui-grid/dist/tui-grid.js"></script>
     <!--<link rel="stylesheet" type="text/css" href="js/import/toast-ui-grid/tui-grid/dist/tui-grid.css" />-->
     <!-- // tui-grid js import-->
+    <!-- 공통 js -->
+    <script type="text/javascript" src="js/common.client.js"></script>
+    <!-- // 공통 js -->
     <script type="text/javascript" src="js/user/batchLearning.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //datepicker 한국어로 사용하기 위한 언어설정
+            $.datepicker.setDefaults($.datepicker.regional['ko']);
+
+            // Datepicker
+            $(".datepicker").datepicker({
+                showButtonPanel: true,
+                dateFormat: "yy-mm-dd",
+                onClose: function (selectedDate) {
+
+                    var eleId = $(this).attr("id");
+                    var optionName = "";
+
+                    if (eleId.indexOf("StartDate") > 0) {
+                        eleId = eleId.replace("StartDate", "EndDate");
+                        optionName = "minDate";
+                    } else {
+                        eleId = eleId.replace("EndDate", "StartDate");
+                        optionName = "maxDate";
+                    }
+
+                    $("#" + eleId).datepicker("option", optionName, selectedDate);
+                    $(".searchDate").find(".chkbox2").removeClass("on");
+                }
+            });
+
+            //$(".dateclick").dateclick();		// DateClick
+            $(".searchDate").schDate();	// searchDate
+
+        });
+    </script>
     <style>
         #layerPopup {
             background-color: #fff;
@@ -45,13 +81,13 @@
             display: none
         }
 
-        #layerPopup.closeButton {
-            position: absolute;
-            right: 95%;
-            top: 0;
-            border: 2px solid red;
-            cursor: pointer
-        }
+            #layerPopup.closeButton {
+                position: absolute;
+                right: 95%;
+                top: 0;
+                border: 2px solid red;
+                cursor: pointer
+            }
 
         #ocrProgress {
             background-color: grey;
@@ -101,7 +137,7 @@
             <!-- // LNB -->
             <!-- 본문영역 -->
             <div id="content">
-                
+
                 <!-- TEP 상단영역 -->
                 <div class="tep_tit">
                     <ul class="bt_tep">
@@ -128,13 +164,13 @@
                             <!--<button type="button" id="btn_excelUpload" class="button_st5">Excel Upload</button>-->
                             <div class="fl mr10 outDIv">
                                 <div class="innerDiv">
-                                    <input type="checkbox" value="" class="fl" id="uiTrainingChk" name="" /><span class="fr ml5 mr10">UI Training</span>
+                                    <input type="checkbox" value="" class="fl" id="uiTrainingChk" name="" /><span>UI Training</span>
                                 </div>
                             </div>
-                            <button type="button" id="btn_excelUpload" class="button_st5">Excel Upload</button>
+                            <button type="button" id="btn_excelUpload" class="button_st5 button_st5_01 fl">Excel Upload</button>
                             <p class="attach_btn fl"><input type="file" id="document_file" name="file" multiple /><label for="document_file">Document Upload</label></p>
                             <button type="button" id="btn_imageDelete" class="button_st5">Document Delete</button>
-                            <button type="button" id="btn_batchTraining"* class="button_st5">BATCH Training</button>
+                            <button type="button" id="btn_batchTraining" * class="button_st5">Batch Training</button>
                             <button type="button" id="btn_uiTraining" class="button_st5">UI Training</button>
                         </div>
                     </form>
@@ -454,27 +490,40 @@
                                     <label for="radio-choice-2">선택한 파일 학습</label>
                                 </div>
                             </li>
-                            <li style="display:none">
+                            <li>
                                 <div class="inputst_role">
                                     <input type="radio" id="radio-choice-3" value="choice-3" class="custom" name="radio_batch" />
                                     <label for="radio-choice-3">학습 범위 지정</label>
                                 </div>
                             </li>
-                            <ul style="display:none">
-                                <div class="box_day" style="display:none">
-                                    <ul>
-                                        <li>
-                                            <label for="intxt_01" " class="blind">학습범위지정 시작</label>
-                                            <input type="text" name="intxt_0" id="intxt_01" class="inputst_box01" value="" />
-                                        </li>
-                                        <li>-</li>
-                                        <li>
-                                            <label for="intxt_02" class="blind">학습범위지정 끝</label>
-                                            <input type="text" name="intxt_0" id="intxt_02" class="inputst_box01" value="" />
-                                        </li>
-                                    </ul>
-                                </div>
-                            </ul>
+                            <div class="clearfix inputst_box01 box_day" style="display:none">
+                                <span class="dset">
+                                    <input type="text" class="datepicker inpType" name="searchStartDate" id="searchStartDate" readonly />
+                                    <a href="#none" class="btncalendar dateclick">달력</a>
+                                </span>
+                                <span class="demi">-</span>
+                                <span class="dset dset2">
+                                    <input type="text" class="datepicker inpType" name="searchEndDate" id="searchEndDate" readonly />
+                                    <a href="#none" class="btncalendar dateclick">달력</a>
+                                </span>
+                            </div>
+                            <!--
+                                 <div class="box_day" style="display:none">
+                                     <ul>
+                                         <li>
+                                             <label for="intxt_01" " class="blind">학습범위지정 시작</label>
+                                             <input type="text" class="datepicker inpType" name="searchStartDate" id="searchStartDate" readonly />
+                                             <a href="#none" class="btncalendar dateclick">달력</a>
+                                         </li>
+                                         <li>-</li>
+                                         <li>
+                                             <label for="intxt_02" class="blind">학습범위지정 끝</label>
+                                             <input type="text" class="datepicker inpType" name="searchEndDate" id="searchEndDate" readonly />
+                                             <a href="#none" class="btncalendar dateclick">달력</a>
+                                         </li>
+                                     </ul>
+                                 </div>
+                            -->
                     </div>
                 </div>
                 <div class="pop_footer">
@@ -666,5 +715,12 @@
         </div>
     </div>
     <!-- // 팝업_수동학습레이어팝업 -->
+    <!--
+    <script type="text/javascript">
+        layer_open('layer1');
+    </script>
+
+    -->
+
 </body>
 </html>

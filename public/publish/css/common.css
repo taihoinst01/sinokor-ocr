@@ -202,6 +202,23 @@ input.noline{border:none !important;}*/
     margin-left: 5px !important;
 }
 
+.ml10 {
+    margin-left: 10px !important;
+}
+
+.ml15 {
+    margin-left: 15px !important;
+}
+
+
+.ml20 {
+    margin-left: 20px !important;
+}
+
+.ml25 {
+    margin-left: 25px !important;
+}
+
 .mr10 {
     margin-right: 10px !important;
 }
@@ -212,6 +229,9 @@ input.noline{border:none !important;}*/
 
 .mb0 {
     margin-bottom: 0px !important;
+}
+.mb40 {
+    margin-bottom: 40px !important;
 }
 
 .pl7 {
@@ -278,6 +298,7 @@ input.noline{border:none !important;}*/
 .login_top h1,
 #header h1,
 .box_content.box_st02 h3:before,
+thead .ez-checkbox,
 .ez-checkbox,
 .ez-checked,
 .button_fileadd,
@@ -473,11 +494,11 @@ input[type='checkbox'] {
 .ez-checkbox {
     width: 22px;
     margin-right: 0px;
-    background-position: -100px -150px;
+    background-position: -100px -148px;
 }
 
 .ez-checked {
-    background-position: -130px -150px;
+    background-position: -130px -148px;
 }
 
 .checkbox-options {
@@ -778,10 +799,10 @@ select:disabled + ul.idealSelect:before {
 }
 
     #header h1 {
-        width: 275px;
+        width: 290px;
         height: 60px;
         margin: 6px 0 0 12px;
-        background-position: 0px -600px;
+        background-position: 0px -270px;
     }
 
 .gnb_box {
@@ -942,17 +963,19 @@ select:disabled + ul.idealSelect:before {
 }
 
 .lnb_menu h3 {
+    font-size: 12px;
     position: relative;
-    height: 40px;
+    height: 50px;
     line-height: 38px;
     color: #fff;
-    text-align: center;
+    /*text-align: center;*/
     background: #2b2927;
     border-bottom: 1px solid #3b3835;
+    margin-left: 6px;
 }
 
     .lnb_menu h3:first-child {
-        margin-top: 70px;
+        margin-top: 80px;
     }
 
 .lnb_menu li a {
@@ -960,42 +983,45 @@ select:disabled + ul.idealSelect:before {
     display: block;
     height: 36px;
     color: #6e6e6e;
-    letter-spacing: -0.1em;
-    text-align: center;
+    /*letter-spacing: -0.1em;*/
+    border-left: 3px solid transparent;
+    /*text-align: center;*/
     /*border-bottom: 1px solid #e2e3e5;*/
 }
-    /*
+
     .lnb_menu li a:before {
         content: '';
-        width: 42px;
-        height: 42px;
-        margin: 12px 16px 0;
-        border-radius: 42px;
-        background-color: #edf2f6;
-        -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,.1);
-        -moz-box-shadow: 1px 2px 2px rgba(0,0,0,.2);
-        box-shadow: 1px 2px 2px rgba(0,0,0,.2);
-        background-position: 0px -450px;
+        width: 15px;
+        height: 17px;
+        margin-left:10px;
     }
-    */
+
+    .lnb_menu li a.lnb_menu01:before {
+        background-position: -9px -456px;
+    }
+
     .lnb_menu li a.lnb_menu02:before {
-        background-image: url(../image/btn_02.png);
+        background-position: -60px -459px;
     }
 
     .lnb_menu li a.lnb_menu03:before {
-        background-position: -99px -450px;
+        background-position: -111px -460px;
     }
 
     .lnb_menu li a.lnb_menu04:before {
-        background-position: -149px -450px;
+        background-position: -163px -456px;
     }
 
     .lnb_menu li a.lnb_menu05:before {
-        background-position: -200px -450px;
+        background-position: -214px -461px;
+    }
+    
+    .lnb_menu li a.lnb_menu06:before {
+        background-position: -265px -461px;
     }
 
     .lnb_menu li a.lnb_menu11:before {
-        background-position: -250px -450px;
+        background-position: -317px -458px;
     }
 
     .lnb_menu li a.lnb_menu12:before {
@@ -1003,23 +1029,25 @@ select:disabled + ul.idealSelect:before {
     }
 
 .lnb_menu li.on a {
-
     background-color: #555452;
+    border-left-width: 4px;
+    border-left-color: #3c8dbc;
+    border-left-style: solid;
 }
-
+    /*
     .lnb_menu li.on a:before {
         background-color: #fff;
         -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,.2);
         -moz-box-shadow: 0px 2px 2px rgba(0,0,0,.2);
         box-shadow: 0px 2px 2px rgba(0,0,0,.2);
     }
-
+    */
     .lnb_menu li.on a span {
         color: #fff;
     }
 
     .lnb_menu li.on a.lnb_menu01:before {
-        background-position: 0px -400px;
+        background-position: -11px -406px;
     }
 
     .lnb_menu li.on a.lnb_menu02:before {
@@ -1027,19 +1055,22 @@ select:disabled + ul.idealSelect:before {
     }
 
     .lnb_menu li.on a.lnb_menu03:before {
-        background-position: -99px -400px;
+        background-position: -111px -410px;
     }
 
     .lnb_menu li.on a.lnb_menu04:before {
-        background-position: -149px -400px;
+        background-position: -163px -406px;
     }
 
     .lnb_menu li.on a.lnb_menu05:before {
-        background-position: -200px -400px;
+        background-position: -215px -411px;
+    }
+    .lnb_menu li.on a.lnb_menu06:before {
+        background-position: -266px -411px;
     }
 
     .lnb_menu li.on a.lnb_menu11:before {
-        background-position: -250px -400px;
+        background-position: -317px -408px;
     }
 
     .lnb_menu li.on a.lnb_menu12:before {
@@ -1051,6 +1082,7 @@ select:disabled + ul.idealSelect:before {
     line-height: 36px;
     font-size: 14px;
     color: #aaa9a9;
+    margin-left: 15px;
     /*font-weight: 600;*/
     /*vertical-align: bottom;*/
 }
@@ -1109,7 +1141,10 @@ select:disabled + ul.idealSelect:before {
     background-position: -300px -450px;
 }
 
-
+.lnb_menu li a img {
+    margin-left:16px;
+    width:11px;
+}
 /* container */
 #container {
     height: 100%;
@@ -1119,15 +1154,15 @@ select:disabled + ul.idealSelect:before {
         position: absolute;
         display: table-cell;
         width: 164px;
-        /*height: 100%;*/
+        height: 100%;
         background-color: #2b2927;
         border-right: 1px solid #e2e3e5;
         z-index: 0;
     }
-    
+
         #container .lnb_menu:after {
             content: '';
-            position: fixed;
+            /*position: fixed;*/
             top: 0;
             display: table-cell;
             width: 164px;
@@ -1233,12 +1268,12 @@ select:disabled + ul.idealSelect:before {
             }
 
 .box_content.st_stsh {
-    min-height: 686px;
+    min-height: 682px;
     margin-bottom: 0px;
 }
 
     .box_content.st_stsh .box_st031 {
-        height: 287px;
+        height: 285px;
     }
 
     .box_content.st_stsh .box_st032 {
@@ -2019,6 +2054,7 @@ h3.tits span {
     display: block;
     height: 761px;
     overflow: auto;
+    padding: 0px 17px;
 }
 
 .box_fileadd {
@@ -2303,6 +2339,7 @@ h3.tits span {
             background: #fff;
             border: 1px solid #ccc;
             border-bottom: 1px solid #fff;
+            font-weight: bold;
         }
 
     .tep_tit .selects,
@@ -2572,16 +2609,21 @@ h3.tits span {
     height: 40px;
     padding: 7px 20px 8px;
     margin: 0;
-    font-size: 12px;
-    color: #fff;
-    background: #4f5468;
+    font-size: 14px;
+    color: #666;
+    background: transparent;
     border-radius: 5px;
     cursor: pointer;
+    border: 1px solid #666;
 }
 
     .button_st5.on {
         color: #fff;
         background: #0075bb;
+    }
+    .button_st5:hover {
+        background-color: #0370b2;
+        color:#fff;
     }
 
 .button_st6 {
@@ -2640,20 +2682,25 @@ h3.tits span {
     .attach_btn label {
         display: block;
         min-width: 60px;
-        height: 25px;
+        height: 23px;
         line-height: 25px;
         padding: 7px 20px 8px;
         margin: 0;
         font-size: 14px;
-        color: #fff;
+        color: #666;
         text-align: center;
-        background: #4f5468;
+        background: transparent;
         border-radius: 5px;
         cursor: pointer;
+        border: 1px solid #666
     }
-
+    .attach_btn label:hover {
+        background-color:#0370b2;
+        color:#fff;
+    }
     .attach_btn.fl {
         padding-right: 5px;
+        padding-left: 5px;
     }
 
 #canvas-holder {
@@ -2741,6 +2788,7 @@ h3.tits span {
     left: 50%;
     width: auto;
     height: auto;
+    /*height:700px;*/
     background: #fff;
     overflow: hidden;
     z-index: 1000;
@@ -2756,15 +2804,15 @@ h3.tits span {
 
     .pop_popup0 .pop_header {
         display: block;
-        height: 55px;
-        background: #4b8ddb
+        height: 30px;
+        background: transparent
     }
 
         .pop_popup0 .pop_header h1 {
             line-height: 55px;
             padding: 0 0 0 26px;
             font-size: 22px;
-            color: #fff;
+            color: #000;
             font-weight: 300;
             font-family: 'notokr-medium', sans-serif;
         }
@@ -2779,7 +2827,7 @@ h3.tits span {
             position: relative;
             float: left;
             width: 874px;
-            height: 800px;
+            height: 580px;
             border: 1px solid #dadada;
         }
 
@@ -2788,7 +2836,7 @@ h3.tits span {
                 top: 50%;
                 left: 50%;
                 max-width: 100%;
-                max-height: 800px;
+                max-height: 100%;
                 margin: 0 auto;
                 transform: translate(-50%, -50%);
                 -moz-transform: translate(-50%, -50%);
@@ -2799,7 +2847,7 @@ h3.tits span {
             float: left;
             display: block;
             width: 360px;
-            height: 760px;
+            height: 540.3px;
             padding: 20px;
             margin-left: 25px;
             border: 1px solid #dadada;
@@ -2807,7 +2855,7 @@ h3.tits span {
 
     .pop_popup0 .pop_footer {
         clear: both;
-        padding: 26px 26px 20px;
+        padding: 12px 31px 20px;
         text-align: right;
     }
 
@@ -4597,7 +4645,7 @@ h3.tits span {
 }
 
 .outDIv {
-    height: 52px;
+    height: 46px;
     display: inline-table;
 }
 
@@ -4607,3 +4655,20 @@ h3.tits span {
     text-align: center;
 }
 
+.menuIcon01 {
+    background-image:url(../image/btn_01.png)
+}
+
+.innerDiv span {
+    margin-right: 10px !important;
+    margin-left: 5px !important;
+    font-size: 14px;
+    float:right;
+}
+thead .ez-checkbox {
+    background-position: -71px -148px;
+}
+
+thead .ez-checked {
+    background-position: -130px -148px;
+}

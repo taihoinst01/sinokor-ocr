@@ -847,6 +847,9 @@
     <Compile Include="routes\user\ocrHistorySearch.js" />
     <Compile Include="routes\user\uiLearning.js" />
     <Compile Include="routes\user\userDashboard.js" />
+    <Compile Include="routes\util\aiMain.js" />
+    <Compile Include="routes\util\common.js" />
+    <Compile Include="routes\util\logger.js" />
     <Content Include="excel\template.xlsx" />
     <Content Include="excel\template2.xlsx" />
     <Content Include="ml\cnn-label-mapping\.gitignore" />
@@ -3291,6 +3294,7 @@
     <Folder Include="routes\admin\" />
     <Folder Include="routes\proxy\" />
     <Folder Include="routes\user\" />
+    <Folder Include="routes\util\" />
     <Folder Include="uploads\" />
     <Folder Include="views\" />
     <Folder Include="views\admin\" />
