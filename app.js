@@ -23,7 +23,7 @@ var app = express();
 var routes = require('./routes');
 var index = require('./routes/index');
 //user
-var userDashboard = require('./routes/user/userDashboard');
+var myApproval = require('./routes/user/myApproval');
 var ocrFormAnalysis = require('./routes/user/ocrFormAnalysis');
 var adminLearning = require('./routes/user/adminLearning');
 var batchLearning = require('./routes/user/batchLearning');
@@ -72,14 +72,14 @@ app.use(passport.session());
 // routes
 app.use('/', routes);
 // user
-app.use('/userDashboard', userDashboard);
+app.use('/myApproval', myApproval);
 app.use('/ocrFormAnalysis', ocrFormAnalysis);
 app.use('/adminLearning', adminLearning);
 app.use('/batchLearning', batchLearning);
 app.use('/uiLearning', uiLearning);
 app.use('/ocrHistorySearch', ocrHistorySearch);
 app.use('/newDocLearning', newDocLearning);
-app.use('/documentCheck', documentCheck);
+//app.use('/documentCheck', documentCheck);
 // admin
 app.use('/adminDashboard', adminDashboard);
 app.use('/userManagement', userManagement);

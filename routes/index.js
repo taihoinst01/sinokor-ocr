@@ -36,7 +36,7 @@ router.get('/', function (req, res) {
         var sess = req.session;
         if (req.isAuthenticated()) {
             //res.locals.currentUser = req.user;
-            res.render('user/userDashboard', { currentUser: req.user });
+            res.render('user/myApproval', { currentUser: req.user });
         } else {
             res.render("index", {
                 messages: { error: req.flash('errors') }
@@ -156,7 +156,8 @@ passport.use(new LocalStrategy({
                         var sessionInfo = {
                             userId: userId,
                             email: result[0].EMAIL,
-                            auth: result[0].AUTH
+                            auth: result[0].AUTH,
+                            lastLoginDate: result[0].LASTLOGINDATE
                         };
                         return done(null, sessionInfo);
                     }
