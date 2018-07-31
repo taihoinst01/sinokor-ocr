@@ -28,6 +28,9 @@ var checkboxEvent = function () {
 var buttonEvent = function () {
     // 문서 리스트 조회
     $("#btn_search").on("click", function () {
+        $("#div_base").hide();
+        $("#div_dtl").hide();
+        $("#div_image").hide();
         fn_search();
     });
     // 승인

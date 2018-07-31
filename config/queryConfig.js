@@ -19,7 +19,7 @@
 
 var count = {
     startQuery: "SELECT COUNT(*) AS cnt FROM ( ",
-    endQuery: " ) AS COUNTQUERY "
+    endQuery: " ) "
 }
 
 var sessionConfig = {

@@ -13,16 +13,16 @@ router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 
-// documentCheck.html 보여주기
+// invoiceRegistration.html 보여주기
 router.get('/', function (req, res) {
     console.log("check");
-    if (req.isAuthenticated()) res.render('user/documentCheck', { currentUser: req.user });
+    if (req.isAuthenticated()) res.render('user/invoiceRegistration', { currentUser: req.user });
     else res.redirect("/logout");
 });
 
-// documentCheck.html 보여주기
+// invoiceRegistration.html 보여주기
 router.post('/', function (req, res) {
-    if (req.isAuthenticated()) res.render('user/documentCheck', { currentUser: req.user });
+    if (req.isAuthenticated()) res.render('user/invoiceRegistration', { currentUser: req.user });
     else res.redirect("/logout");
 });
 

@@ -829,6 +829,12 @@
     <Compile Include="public\js\user\batchLearning.js" />
     <Compile Include="public\js\user\adminLearning.js" />
     <Compile Include="public\js\user\documentCheck.js" />
+    <Compile Include="public\js\user\invoiceProcessingStatus.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="public\js\user\invoiceRegistration.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="public\js\user\myApproval.js">
       <SubType>Code</SubType>
     </Compile>
@@ -843,9 +849,15 @@
     <Compile Include="routes\admin\userManagement.js" />
     <Compile Include="routes\index.js" />
     <Compile Include="routes\proxy\proxy.js" />
+    <Compile Include="routes\user\invoiceProcessingStatus.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="routes\user\batchLearning.js" />
     <Compile Include="routes\user\adminLearning.js" />
     <Compile Include="routes\user\documentCheck.js" />
+    <Compile Include="routes\user\invoiceRegistration.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="routes\user\myApproval.js">
       <SubType>Code</SubType>
     </Compile>
@@ -3324,9 +3336,15 @@
     <Content Include="views\common\leftSideBar.html" />
     <Content Include="views\index.html" />
     <Content Include="views\index_after.html" />
+    <Content Include="views\user\invoiceProcessingStatus.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\user\batchLearning.html" />
     <Content Include="views\user\adminLearning.html" />
     <Content Include="views\user\documentCheck.html" />
+    <Content Include="views\user\invoiceRegistration.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\user\myApproval.html">
       <SubType>Code</SubType>
     </Content>
