@@ -796,7 +796,7 @@ var searchBatchLearnDataList = function (addCond) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
-            $("#progressMsg").html("retrieving learn data...");
+            $("#progressMsg").html("retrieving learn data...");            
             startProgressBar(); // start progressbar
             addProgressBar(1, 1); // proceed progressbar
         },
