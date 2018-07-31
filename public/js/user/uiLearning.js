@@ -69,39 +69,34 @@ function uploadFileEvent() {
 
 // OCR API
 function processImage(fileName) {
-    var subscriptionKey = "7d51f1308c8848f49db9562d1dab7184";
-    var uriBase = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr";
-
-    var params = {
-        "language": "unk",
-        "detectOrientation": "true",
-    };
-
-    var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
 
     $('#loadingTitle').html('OCR 처리 중..');
     $('#loadingDetail').html(sourceImageUrl);
     addProgressBar(21, 30);
     $.ajax({
-        url: uriBase + "?" + $.param(params),
+        url: '/common/ocr',
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader("Content-Type", "application/json");
-            jqXHR.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
         },
         type: "POST",
-        data: '{"url": ' + '"' + sourceImageUrl + '"}',
+        data: JSON.stringify({ 'fileName': fileName }),
     }).done(function (data) {
         ocrCount++;
-        thumbImgs.push(fileName);
-        $('#loadingTitle').html('OCR 처리 완료');
-        $('#loadingDetail').html(sourceImageUrl);
-        addProgressBar(31, 40);
-        appendOcrData(fileName, data.regions);      
+        if (!data.code) { // 에러가 아니면
+            thumbImgs.push(fileName);
+            $('#loadingTitle').html('OCR 처리 완료');
+            $('#loadingDetail').html(sourceImageUrl);
+            addProgressBar(31, 40);
+            appendOcrData(fileName, data.regions);
+        } else if (data.error) { //ocr 이외 에러이면
+            endProgressBar();
+            alert(data.error);
+        } else { // ocr 에러 이면
+            insertCommError(data.code, 'ocr');
+            endProgressBar();
+            alert(data.message);
+        }
     }).fail(function (jqXHR, textStatus, errorThrown) {
-        var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
-        errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
-            jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
-        alert(errorString);
     });
     /*
     // proxy call
@@ -125,6 +120,23 @@ function processImage(fileName) {
     });
     */
 };
+
+function insertCommError(eCode, type) {
+    $.ajax({
+        url: '/common/insertCommError',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'eCode': eCode, type: type }),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+        },
+        success: function (data) {
+        },
+        error: function (err) {
+            //console.log(err);
+        }
+    });
+}
 
 // 썸네일 이미지 페이지 이동 버튼 클릭 이벤트
 function thumbImgPagingEvent() {
