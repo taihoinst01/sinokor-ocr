@@ -314,6 +314,7 @@ thead .ez-checkbox,
 .lnb_menu li a:before,
 .st_infortext_01:before,
 h3.tits:before,
+.st_infortext_01 span:after,
 .box_st04 h3:before,
 .button_control:before,
 .button_st6:before,
@@ -1239,12 +1240,14 @@ select:disabled + ul.idealSelect:before {
     -moz-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
     box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
 }
-
-    .box_content_bg .btn_rt {
-        position: absolute;
-        top: 8px;
-        right: 22px
-    }
+#uploadForm {
+    border: 3px dashed #b6b6b6;
+}
+.box_content_bg .btn_rt {
+    position: absolute;
+    top: 8px;
+    right: 22px
+}
 
 .box_content.st_last {
     float: right;
@@ -1324,13 +1327,13 @@ select:disabled + ul.idealSelect:before {
 .st_infortext_01 {
     display: inline-block;
     position: absolute;
-    top: 850%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     -moz-transform: translate(-50%, -50%);
     -webkit-transform: translate(-50%, -50%);
 }
-
+    /*
     .st_infortext_01:before {
         content: '';
         display: block;
@@ -1340,14 +1343,22 @@ select:disabled + ul.idealSelect:before {
         margin: 0 auto 30px;
         background-position: -290px -600px;
     }
-
+    */
     .st_infortext_01 span {
         display: block;
-        font-size: 14px;
+        font-size: 24px;
         color: #7a7a7a;
         line-height: 20px;
         text-align: center;
     }
+        .st_infortext_01 span:after {
+            content: '';
+            display: inline-block;
+            width: 14px;
+            height: 13px;
+            background-position: -114px 0px;
+            margin-left: 10px;
+        }
 
     .st_infortext_01 button,
     .st_infortext_01 .attach_btn {
@@ -4724,4 +4735,20 @@ thead .ez-checked {
     font-weight: bold;
     font-size: 22px;
     margin-left: 15px;
+}
+
+#uploadFileBtn {
+    display: block;
+    /* min-width: 60px; */
+    /* height: 23px; */
+    /* line-height: 25px; */
+    padding: 7px 29px 8px;
+    margin: 0;
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
+    background: #0370b2;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 0;
 }

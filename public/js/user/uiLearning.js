@@ -41,24 +41,25 @@ function uploadFileEvent() {
 
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
-            $('#uploadFileBtn , #uploadInfoText').hide();
-            $('#loadingTitle').html('파일 업로드 중..');
-            $('#loadingDetail').html('');
-            startProgressBar();
-            addProgressBar(1, 10);
+            $("#progressMsg").html("이미지 업로드중..");
+            startProgressBar(); // start progressbar
+            addProgressBar(1, 1); // proceed progressbar
             return true;
         },
         success: function (responseText, statusText) {
             //console.log(responseText);
-            $('#loadingTitle').html('파일 업로드 완료');
-            $('#loadingDetail').html('');
-            addProgressBar(11, 20);
+            var $uploadForm = $('#uploadForm');
+            var $uploadSucessForm = $('#uploadSucessForm');
+            addProgressBar(2, 100);
+            $uploadForm.hide();
+            $uploadSucessForm.show();
             if (responseText.message.length > 0) {
                 totCount = responseText.message.length;
                 for (var i = 0; i < responseText.message.length; i++) {
                     processImage(responseText.message[i]);
                 }
             }
+            endProgressBar();
         },
         error: function (e) {
             endProgressBar();
