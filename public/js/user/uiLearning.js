@@ -71,7 +71,7 @@ function uploadFileEvent() {
 function processImage(fileName) {
 
     $('#loadingTitle').html('OCR 처리 중..');
-    $('#loadingDetail').html(sourceImageUrl);
+    $('#loadingDetail').html(fileName);
     addProgressBar(21, 30);
     $.ajax({
         url: '/common/ocr',
@@ -83,9 +83,10 @@ function processImage(fileName) {
     }).done(function (data) {
         ocrCount++;
         if (!data.code) { // 에러가 아니면
+            //console.log(data);
             thumbImgs.push(fileName);
             $('#loadingTitle').html('OCR 처리 완료');
-            $('#loadingDetail').html(sourceImageUrl);
+            $('#loadingDetail').html(fileName);
             addProgressBar(31, 40);
             appendOcrData(fileName, data.regions);
         } else if (data.error) { //ocr 이외 에러이면

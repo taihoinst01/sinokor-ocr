@@ -57,7 +57,7 @@ router.post('/ocr', function (req, res) {
                 if ((JSON.parse(body)).code) { // ocr api error
                     res.send({ code: (JSON.parse(body)).code, message: (JSON.parse(body)).message });                   
                 } else { // 성공
-                    res.send(body);
+                    res.send(JSON.parse(body));
                 }
             }
         });

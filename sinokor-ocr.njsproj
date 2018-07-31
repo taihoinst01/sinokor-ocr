@@ -885,6 +885,7 @@
     <Content Include="ml\cnn-text-classification\word_data_processor.py" />
     <Content Include="ml\cnn-text-classification\__pycache__\data_helpers.cpython-35.pyc" />
     <Content Include="ml\cnn-text-classification\__pycache__\multi_class_data_loader.cpython-35.pyc" />
+    <Content Include="ml\config.ini" />
     <Content Include="ml\data\inout\input_2018064171352295" />
     <Content Include="ml\data\nmt_data\output_test" />
     <Content Include="ml\data\nmt_data\test.vi" />
