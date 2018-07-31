@@ -144,7 +144,7 @@ var fn_search = function () {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
-            $("#progressMsg").html("retrieving document list...");
+            $("#progressMsgTitle").html("retrieving document list...");
             startProgressBar(); // start progressbar
             addProgressBar(1, 1); // proceed progressbar
         },
@@ -194,7 +194,7 @@ var fn_search_dtl = function (seqNum, docNum) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
-            $("#progressMsg").html("retrieving document detail list...");
+            $("#progressMsgTitle").html("retrieving document detail list...");
             startProgressBar(); // start progressbar
             addProgressBar(1, 1); // proceed progressbar
         },
@@ -243,7 +243,7 @@ var fn_search_image = function (imgId) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
-            $("#progressMsg").html("retrieving document image list...");
+            $("#progressMsgTitle").html("retrieving document image list...");
             startProgressBar(); // start progressbar
             addProgressBar(1, 1); // proceed progressbar
         },

@@ -4699,7 +4699,7 @@ thead .ez-checked {
     border-radius: 6px;
 }
 
-#progressMsg, #progressMsg2 {
+#progressMsgTitle, #progressMsgDetail {
     width: 100%;
     height: 20px;
     background-color: transparent;
