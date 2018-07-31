@@ -600,7 +600,7 @@ router.post('/uiTrainBatchLearningData', function (req, res) {
     //console.log(dataObj);
 
     runTypoDomainTrain(dataObj, function (result1) {
-        if (result1 == "ture") {
+        if (result1 == "true") {
             //text-classification train
             var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
             exec(exeTextString, defaults, function (err, stdout, stderr) {

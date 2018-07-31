@@ -11,7 +11,10 @@ var propertiesConfig = {
     batchLearning: {
 
     },
-
+    ocr: {
+        uri: 'https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr',
+        subscriptionKey: 'fedbc6bb74714bd78270dc8f70593122',
+    },
     filepath: {
         //develop
         logfilepath: 'c:/logs',
