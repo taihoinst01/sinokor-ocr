@@ -965,15 +965,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
                 }
             } else if (flag == "UI_TRAINING") {
                 fn_processUiTraining(data.fileInfoList);
-            } else if (flag == "UI_TRAINING_test") {
-                for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
-                    var lastYn = "N";
-                    if (i == data.fileInfoList.length - 1) lastYn = "Y";
-                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i], data.fileToPage);
-                }
-            }
-
-            else {
+            } else {
                 alert("잘못된 요청입니다.");
                 return;
             }
@@ -1147,6 +1139,7 @@ var fn_uiTraining = function () {
     let imgId = "";
     let chkCnt = 0;
     //테스트용
+    /*
     $("input[name=listCheck_before]").each(function (index, entry) {
         if ($(this).is(":checked")) {
             imgId = $(this).val();
@@ -1155,7 +1148,7 @@ var fn_uiTraining = function () {
     });
     imgIdArray.push(imgId);
     processImage_TEST("26.jpg");
-    /*
+    */
     if (addCond == "LEARN_Y") {
         let imgId = "";
         let chkCnt = 0;
@@ -1179,7 +1172,7 @@ var fn_uiTraining = function () {
         alert("After Training 상태에서만 UI학습이 가능합니다.");
         return;
     }
-    */
+
 };
 
 // UI학습 팝업 초기화
