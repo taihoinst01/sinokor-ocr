@@ -42,7 +42,7 @@ function searchUser(curPage) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
-            $("#progressMsg").html("사용자를 조회 중 입니다.");
+            $("#progressMsgTitle").html("사용자를 조회 중 입니다.");
             startProgressBar(); // 프로그레스바 시작
             addProgressBar(1, 1); // 프로그레스바 진행
         },
