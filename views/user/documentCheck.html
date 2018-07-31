@@ -17,10 +17,40 @@
     <!-- 계산서 조회 학습 전용 js -->
     <script type="text/javascript" src="js/user/documentCheck.js"></script>
     <!-- // 계산서 조회 전용 js -->
+
+    <style>
+        #ocrProgress {
+            background-color: grey;
+            position: absolute;
+            top: 50%;
+            left: 60%;
+            background: #edf2f6;
+            transform: translate(-50%, -50%);
+            width: 420px;
+            z-index: 1000;
+            display: none
+        }
+
+        #progressMsg {
+            width: 100%;
+            height: 20px;
+            background-color: #edf2f6;
+            text-align: center;
+        }
+
+        #ocrBar {
+            width: 1%;
+            height: 30px;
+            background-color: #9eaec5;
+        }
+    </style>
 </head>
 <body>  
     <div id="wrap">
-
+        <div id="ocrProgress">
+            <div id="progressMsg"></div>
+            <div id="ocrBar"></div>
+        </div>
         <!-- skip navi -->
         <%include  ../common/header.html%>
         <!-- //skip navi -->
@@ -56,7 +86,9 @@
                                     <span class="ctrl"><span class="arrow"></span></span>
                                     <button type="button" class="myValue">전 체</button>
                                     <ul class="aList">
-                                        <li><a href="#none" onclick="javascript: selectFaoTeam('t')">테스트팀</a></li>
+                                        <li><a href="#none" onclick="javascript: selectFaoTeam('A')">테스트팀A</a></li>
+                                        <li><a href="#none" onclick="javascript: selectFaoTeam('B')">테스트팀B</a></li>
+                                        <li><a href="#none" onclick="javascript: selectFaoTeam('C')">테스트팀C</a></li>
                                     </ul>
                                 </div>
                             </dd>
@@ -69,7 +101,9 @@
                                     <span class="ctrl"><span class="arrow"></span></span>
                                     <button type="button" class="myValue">전 체</button>
                                     <ul class="aList">
-                                        <li><a href="#none" onclick="javascript: selectFaoPart('tt')">테스트파트</a></li>
+                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
                                     </ul>
                                 </div>
                             </dd>
@@ -123,8 +157,8 @@
 
                 <div class="box_content st_stsh">
                     <!-- 기본결재리스트 영역 -->
-                    <div id="div_base" class="box_st03 box_st031 box_content_bg"  style="display:none">
-                        <h3 class="tits"><span>결재리스트(기본)</span></h3>
+                    <div id="div_base" class="box_st03 box_st031 box_content_bg" style="display:none">
+                        <h3 class="tits"><span id="span_document">결재리스트(기본)</span></h3>
 
                         <div class="table_style02">
                             <table>
@@ -140,7 +174,7 @@
                                 </colgroup>
                                 <thead>
                                     <tr>
-                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta00_all" name="st_ck01" /></div></th>
+                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll" name="listCheckAll" /></div></th>
                                         <th scope="row">문서번호</th>
                                         <th scope="row">페이지수</th>
                                         <th scope="row">마감년월</th>
@@ -165,8 +199,7 @@
                                         <col style="width:90px" />
                                         <col style="width:230px" />
                                     </colgroup>
-                                    <tbody id="tbody_baseList">
-                                    </tbody>
+                                    <tbody id="tbody_baseList"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -180,10 +213,9 @@
                         <!-- // 버튼 영역 -->
                     </div>
                     <!-- // 기본결재리스트 영역 -->
-
                     <!--  상세결재리스트 영역 -->
-                    <div id="div_dtl" class="box_st03 box_st031 box_content_bg"  style="display:none">
-                        <h3 class="tits"><span>결재리스트(상세)</span></h3>
+                    <div id="div_dtl" class="box_st03 box_st031 box_content_bg" style="display:none">
+                        <h3 class="tits"><span id="span_document_dtl">결재리스트(상세)</span></h3>
 
                         <div class="table_style02">
                             <div class="mCustomScrollbar box_scroll_st4" data-mcs-axis="yx" data-mcs-theme="dark-3">
@@ -206,11 +238,11 @@
                                             <th scope="row">UY</th>
                                             <th scope="row">화페코드</th>
                                             <th scope="row">NET BALANCE</th>
-                                            <th scope="row">IBNR</th>
+                                            <th scope="row">ENTRY NO</th>
+                                            <!--<th scope="row">IBNR</th>-->
                                         </tr>
                                     </thead>
-                                    <tbody id="tbody_dtlList">
-                                    </tbody>
+                                    <tbody id="tbody_dtlList"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -223,14 +255,14 @@
                 <div id="div_image" class="box_content box_content_bg st_stsh st_last" style="display:none">
                     <h3 class="tits"><span>양식이미지</span></h3>
 
-                    <div class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                    <div id="div_view_image" class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
                         <img src="publish/image/sample01.jpg" alt="샘플이미지" />
                     </div>
 
                     <div class="box_imgtmb">
                         <button type="button" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
                         <div id="touchSlider">
-                            <ul>
+                            <ul id="ul_image">
                                 <li class="on">
                                     <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
                                     <span>Filename_Filename_0001.jpg</span>
@@ -282,7 +314,7 @@
                             </ul>
                         </div>
                         <button type="button" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
-                        <div id="count" class="count"><span>1</span> / 3</div>
+                        <div id="count" class="count"><span>1</span> / 1</div>
                     </div>
                 </div>
                 <!-- // 양식이미지 -->
