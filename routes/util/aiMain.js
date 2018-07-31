@@ -1,6 +1,7 @@
 var appRoot = require('app-root-path').path;
 var exec = require('child_process').exec;
 var commonUtil = require(appRoot + '/public/js/common.util.js');
+var logger = require('./logger');
 const defaults = {
     encoding: 'utf8',
 };
