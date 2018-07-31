@@ -1052,7 +1052,7 @@ select:disabled + ul.idealSelect:before {
     }
 
     .lnb_menu li.on a.lnb_menu02:before {
-        background-position: -50px -400px;
+        background-position: -61px -410px;
     }
 
     .lnb_menu li.on a.lnb_menu03:before {
@@ -1535,7 +1535,7 @@ select:disabled + ul.idealSelect:before {
 
 .box_stsearch {
     position: relative;
-    height: 91px;
+    
     width: 100%;
     width: calc(100% - 46px);
     width: -webkit-calc(100% - 46px);
@@ -2057,7 +2057,7 @@ h3.tits span {
 
 .box_scroll_st5 {
     display: block;
-    height: 560px;
+    height: 435px;
     overflow: auto;
 }
 
