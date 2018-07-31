@@ -25,12 +25,13 @@ var router = express.Router();
 /***************************************************************
  * Router
  * *************************************************************/
-// [POST] OCR API
+
+// [POST] OCR API (request binary data)
 router.post('/ocr', function (req, res) {
     var filename = req.body.fileName;
 
     fs.readFile('./uploads/' + filename, function (err, data) {
-        if (err) res.send({ error: '파일이 없습니다.' });
+        if (err) res.send({ error: '파일이 없습니다.' }); // fs error
 
         var base64 = new Buffer(data, 'binary').toString('base64');
         var binaryString = new Buffer(base64, 'base64').toString('binary');
