@@ -73,6 +73,32 @@ var dbcolumnsConfig = {
             "tbl_extraction_keyword `
 };
 
+var documentConfig = {
+    selectDocumentList:
+        `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO 
+            FROM TBL_DOCUMENT
+           WHERE 1=1 `,
+    selectDocumentDtlList:
+        `SELECT A.SEQNUM, 
+                A.DOCNUM, A.PAGECNT, A.APPROVALSTATE, A.DEADLINEDT, A.REGDT, A.FAOTEAM, A.FAOPART, A.APPROVALREPORTER, A.DOCUMENTMANAGER, A.MEMO,
+                B.SEQNUM AS SEQNUM_DTL,
+                B.IMGID, B.IMGFILESTARTNO, B.IMGFILEENDNO, B.ENTRYNO, B.STATEMENTDIV, B.CONTRACTNUM, B.OGCOMPANYCODE, B.OGCOMPANYNAME, 
+                B.BROKERCODE, B.BROKERNAME, B.CTNM, B.INSSTDT, B.INSENDDT, B.UY, B.CURCD, B.PAIDPERCENT, B.PAIDSHARE, B.OSLPERCENT, 
+                B.OSLSHARE, B.GROSSPM, B.PM, B.PMPFEND, B.PMPFWOS, B.XOLPM, B.RETURNPM, B.GROSSCN, B.CN, B.PROFITCN, B.BROKERAGE, B.TAX, 
+                B.OVERRIDINGCOM, B.CHARGE, B.PMRESERVERTD1, B.PFPMRESERVERTD1, B.PMRESERVERTD2, B.PFPMRESERVERTD2, B.CLAIM, B.LOSSRECOVERY, 
+                B.CASHLOSS, B.CASHLOSSRD, B.LOSSRR, B.LOSSRR2, B.LOSSPFEND, B.LOSSPFWOA, B.INTEREST, B.TAXON, B.MISCELLANEOUS, B.PMBL, B.CMBL, B.NTBL, 
+                B.CSCOSARFRNCNNT2 
+           FROM TBL_DOCUMENT_DTL B
+     LEFT OUTER JOIN TBL_DOCUMENT A ON A.DOCNUM = B.DOCNUM
+          WHERE 1=1 `,
+    selectDocumentImageList:
+        `SELECT A.SEQNUM, A.IMGID, A.FILEPATH, A.ORIGINFILENAME, A.SERVERFILENAME, A.FILEEXTENSION, 
+                A.FILESIZE, A.CONTENTTYPE, A.FILETYPE, A.FILEWIDTH, A.FILEHEIGHT, A.REGID, A.REGDATE 
+           FROM TBL_OCR_FILE A
+            LEFT OUTER JOIN TBL_DOCUMENT_DTL B
+              ON B.IMGID = A.IMGID `
+}
+
 var batchLearningConfig = {
     selectBatchLearningDataList:
         `SELECT
@@ -306,6 +332,7 @@ module.exports = {
     //queryConfig: queryConfig,
     userMngConfig: userMngConfig,
     dbcolumnsConfig: dbcolumnsConfig,
+    documentConfig: documentConfig,
     batchLearningConfig: batchLearningConfig,
     uiLearningConfig: uiLearningConfig,
     commonConfig: commonConfig
