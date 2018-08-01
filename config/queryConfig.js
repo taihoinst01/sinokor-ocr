@@ -44,25 +44,24 @@ var sessionConfig = {
 var userMngConfig = {
     selUserList:
         `SELECT
-            seqNum, userId, auth, email, TO_DATE(joinDate,'YYYY-MM-DD') AS joinDate,
-            "TO_DATE(lastLoginDate,'YYYY-MM-DD hh24:mi:ss') AS lastLoginDate, ocrUseCount
+            A.SEQNUM, A.USERID, A.AUTH, A.EMAIL, A.NOTE, A.SCANAPPROVAL, A.MIDDLEAPPROVAL, A.LASTAPPROVAL, A.OCRUSECOUNT,
+            (SELECT B.USERID FROM tbl_ocr_comm_user B WHERE B.SEQNUM = A.HIGHAPPROVALID) AS HIGHAPPROVALID,
+            TO_CHAR(A.JOINDATE,'YYYY-MM-DD') AS JOINDATE,
+            TO_CHAR(A.LASTLOGINDATE,'YYYY-MM-DD hh24:mi:ss') AS LASTLOGINDATE
          FROM
-            tbl_ocr_comm_user `,
+            tbl_ocr_comm_user A `,
     insertUser:
         `INSERT INTO
-            tbl_ocr_comm_user (userId, userPw, auth, email, joinDate, ocrUseCount)
+            tbl_ocr_comm_user (seqNum, userId, userPw, auth, email, note, scanApproval, middleApproval, lastApproval, highApprovalId, joinDate, ocrUseCount)
          VALUES
-            (:userId, :userPw, :auth, :email, sysdate, 0) `,
+            (SEQ_OCR_COMM_USER.nextval, :userId, :userPw, 'USER', :email, :note, :scanApproval, :middleApproval, :lastApproval, :highApprovalId, sysdate, 0) `,
+    updateUser:
+        `UPDATE
+            tbl_ocr_comm_user
+         SET `,
     deleteUser:
         `DELETE FROM
             tbl_ocr_comm_user
-         WHERE
-            seqNum = :seqNum `,
-    updatePw:
-        `UPDATE
-            tbl_ocr_comm_user
-         SET
-            userPw = :userPw
          WHERE
             seqNum = :seqNum `
 };

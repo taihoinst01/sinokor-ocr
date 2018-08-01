@@ -19,7 +19,7 @@
     <!-- // 문서 조회 전용 js -->
 
     <style>
-        #ocrProgress {
+        /*#ocrProgress {
             background-color: grey;
             position: absolute;
             top: 50%;
@@ -42,7 +42,7 @@
             width: 1%;
             height: 30px;
             background-color: #9eaec5;
-        }
+        }*/
     </style>
 </head>
 <body>
@@ -82,7 +82,7 @@
                     </div>
 
                     <div class="btn_rt">
-                        <button type="button" class="button_st3">조회</button>
+                        <button type="button" id="btn_search" class="button_st3">조회</button>
                     </div>
                 </div>
                 <!-- // 부서구분 목록 -->
@@ -95,24 +95,30 @@
                             <caption>사용자관리 타이틀</caption>
                             <colgroup>
                                 <col style="width:5%" />
+                                <col style="width:11%" />
+                                <col style="width:11%" />
+                                <col style="width:18%" />
+                                <col style="width:7%" />
+                                <col style="width:7%" />
+                                <col style="width:7%" />
                                 <col style="width:12%" />
-                                <col style="width:12%" />
-                                <col style="width:22%" />
-                                <col style="width:12%" />
-                                <col style="width:12%" />
-                                <col style="width:12%" />
-                                <col style="width:13%" />
+                                <col style="width:10%" />
+                                <col style="width:6%" />
+                                <col style="width:6%" />
                             </colgroup>
                             <thead>
                                 <tr>
                                     <th scope="row">번호</th>
                                     <th scope="row">사번</th>
-                                    <th scope="row">사원명</th>
+                                    <th scope="row">이메일</th>
                                     <th scope="row">비고</th>
                                     <th scope="row">스캔결재자</th>
                                     <th scope="row">중간결재자</th>
                                     <th scope="row">최종결재자</th>
-                                    <th scope="row">상위결재자</th>
+                                    <th scope="row">상위결재자ID</th>
+                                    <th scope="row">최종접속일</th>
+                                    <th scope="row">OCR이용횟수</th>
+                                    <th scope="row">삭제</th>
                                 </tr>
                             </thead>
                         </table>
@@ -121,206 +127,18 @@
                                 <caption>사용자관리 정보</caption>
                                 <colgroup>
                                     <col style="width:5%" />
+                                    <col style="width:11%" />
+                                    <col style="width:11%" />
+                                    <col style="width:18%" />
+                                    <col style="width:7%" />
+                                    <col style="width:7%" />
+                                    <col style="width:7%" />
                                     <col style="width:12%" />
-                                    <col style="width:12%" />
-                                    <col style="width:23%" />
-                                    <col style="width:12%" />
-                                    <col style="width:12%" />
-                                    <col style="width:12%" />
-                                    <col style="width:12%" />
+                                    <col style="width:10%" />
+                                    <col style="width:6%" />
+                                    <col style="width:6%" />
                                 </colgroup>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td><a href="#none" class="tip" title="사번:ICR201807">ICR201807</a></td>
-                                        <td>Orent-Energy XOL</td>
-                                        <td>20180701</td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>G190267</td>
-                                        <td>문소라</td>
-                                        <td>20180701</td>
-                                        <td></td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td>G190267</td>
-                                        <td>이문세</td>
-                                        <td>20180701</td>
-                                        <td></td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">4</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>Y</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">5</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>Y</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">6</th>
-                                        <td>K211207</td>
-                                        <td>최창민</td>
-                                        <td>20180701</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>Y</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">7</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>Y</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">8</th>
-                                        <td>K211207</td>
-                                        <td>김이중</td>
-                                        <td>20180701</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>Y</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">9</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>Y</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">10</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>Y</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">11</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">12</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">13</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">14</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">15</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">16</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">17</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">18</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">19</th>
-                                        <td>K211207</td>
-                                        <td>강문상</td>
-                                        <td>20180701</td>
-                                        <td>Y</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
+                                <tbody id="tbody_user"></tbody>
                             </table>
                         </div>
                     </div>
@@ -334,31 +152,36 @@
                         <dl>
                             <dt><label for="intxt_01">사번</label></dt>
                             <dd>
-                                <input type="text" name="intxt_00" id="intxt_01" class="inputst_box01" value="ICR2018071000000123" disabled="disabled" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="intxt_02">사원명</label></dt>
-                            <dd>
-                                <input type="text" name="intxt_00" id="intxt_02" class="inputst_box01" value="루루루키" disabled="disabled" />
+                                <input type="hidden" name="seqNum" id="seqNum" />
+                                <input type="text" name="userId" id="userId" class="inputst_box01" maxlength="30" value="" />
                             </dd>
                         </dl>
                         <dl>
                             <dt><label for="intxt_03">Password</label></dt>
                             <dd>
-                                <input type="password" name="intxt_00" id="intxt_03" class="inputst_box01" value="201807" disabled="disabled" />
+                                <input type="password" name="userPw" id="userPw" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_01">이메일</label></dt>
+                            <dd>
+                                <input type="text" name="email" id="email" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_01">비고</label></dt>
+                            <dd>
+                                <input type="text" name="note" id="note" class="inputst_box01" value="" />
                             </dd>
                         </dl>
                         <dl>
                             <dt><label>상위결재자</label></dt>
                             <dd>
+                                <input type="hidden" id="highApprovalId" value="" />
                                 <div class="select_style w100">
                                     <span class="ctrl"><span class="arrow"></span></span>
                                     <button type="button" class="myValue">전 체</button>
-                                    <ul class="aList">
-                                        <li><a href="#none">김이최</a></li>
-                                        <li><a href="#none">이소속</a></li>
-                                    </ul>
+                                    <ul id="ul_highApproval" class="aList"></ul>
                                 </div>
                             </dd>
                         </dl>
@@ -367,16 +190,17 @@
                             <dt><label for="">결재자</label></dt>
                             <dd>
                                 <div class="checkbox-options">
-                                    <input type="checkbox" value="2" id="st1" name="st1" /><label for="st1"><span>스캔결재자</span></label>
-                                    <input type="checkbox" value="2" id="st2" name="st2" /><label for="st2"><span>중간결재자</span></label>
-                                    <input type="checkbox" value="2" id="st3" name="st3" /><label for="st3"><span>최종결재자</span></label>
+                                    <input type="checkbox" value="1" id="approval1" name="approval" /><label for="approval1"><span>스캔결재자</span></label>
+                                    <input type="checkbox" value="2" id="approval2" name="approval" /><label for="approval2"><span>중간결재자</span></label>
+                                    <input type="checkbox" value="3" id="approval3" name="approval" /><label for="approval3"><span>최종결재자</span></label>
                                 </div>
                             </dd>
                         </dl>
                     </div>
 
                     <div class="btn_rt">
-                        <button type="button" class="button_st1">수정</button>
+                        <button type="button" class="button_st1" id="btn_insert">등록</button>
+                        <button type="button" class="button_st1" id="btn_update" style="display:none">수정</button>
                     </div>
                 </div>
                 <!-- // 사용자관리 목록 -->
