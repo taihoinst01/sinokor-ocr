@@ -212,6 +212,21 @@ exports.labelMappingEval = function(data, callback) {
     });
 }
 
+exports.statementClassificationEval = function (data, callback) {
+    var returnObj = {};
+    for (var i in data) {
+        if (data[i].text == 'Solidarity- First Insurance 2018' || data[i].text == 'Solidarity- First Insurance 2017'
+        || data[i].text == 'Solidarity- First Takaful 2016') { // 계산서 이면
+            returnObj.isStatement = 1;
+            returnObj.mlData = data;
+        } else { // 계산서 아니면
+            returnObj.isStatement = 0;
+            returnObj.mlData = data;
+        }
+    }
+
+    callback(returnObj);
+};
 
 function dataToArgs(data) {
 
