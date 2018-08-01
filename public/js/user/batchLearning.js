@@ -212,7 +212,7 @@ function fileUpload() {
 
     multiUploadForm.ajaxForm({
         beforeSubmit: function (data, frm, opt) {
-            $("#progressMsg").html("Preparing to upload files...");
+            $("#progressMsgTitle").html("Preparing to upload files...");
             startProgressBar();
             addProgressBar(6, 99);
             return true;
@@ -220,11 +220,11 @@ function fileUpload() {
         success: function getData(responseText, statusText) {
             if (responseText.type == 'excel') {
                 console.log("upload excel data : " + JSON.stringify(responseText));
-                $("#progressMsg").html("uploading excel files...");
+                $("#progressMsgTitle").html("uploading excel files...");
                 endProgressBar();
             } else if (responseText.type == 'image') {
                 console.log("upload image data : " + JSON.stringify(responseText));
-                $("#progressMsg").html("uploading image files...");
+                $("#progressMsgTitle").html("uploading image files...");
                 // FILE INFO, BATCH LEARNING BASE DATA INSERT TO DB
                 var totCount = responseText.message.length;
                 for (var i = 0; i < totCount; i++) {
@@ -322,7 +322,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     console.log("processImage lastYn : " + lastYn);
     console.log("processImage answerRows : " + JSON.stringify(answerRows));
 
-    //$("#progressMsg").html("processing ocr api...");
+    //$("#progressMsgTitle").html("processing ocr api...");
     //addProgressBar(51, 60);
     $.ajax({
         url: '/common/ocr',
@@ -462,11 +462,9 @@ function execBatchLearning() {
 
     for (var i in ocrDataArr) {
         if (ocrDataArr[i].exeML != "Y") {
-            console.log("exeBatch1:" + i);
             execBatchLearningData(ocrDataArr[i], dataArr[i]);
             if (isFullMatch) {
             } else {            
-                console.log("exeBatch2:" + i);
                 popUpLayer2(ocrDataArr[i]);
                 break;
             }
@@ -486,7 +484,7 @@ function popUpLayer2(ocrData) {
     fn_initUiTraining(); // 팝업 초기화
     console.log("popupTest");
     layer_open('layer2'); // ui 학습레이어 띄우기
-    $("#layer2").css("display", "block");
+    $("#layer2.poplayer").css("display", "block");
 
     //$("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);
     $("#uiImg").attr("src", "./uploads/26.jpg");
@@ -533,7 +531,7 @@ function popUpLayer2(ocrData) {
 }
 
 function execBatchLearningData(ocrData, data) {
-    //$("#progressMsg").html("processing machine learning...");
+    //$("#progressMsgTitle").html("processing machine learning...");
     //addProgressBar(61, 90);
     batchCount++;
     //compareBatchLearningData(ocrData, '');
@@ -556,7 +554,7 @@ function execBatchLearningData(ocrData, data) {
             //updateBatchLearningData(fileName, data);
             
             //if (totCount = batchCount) {
-                //$("#progressMsg").html("success...");
+                //$("#progressMsgTitle").html("success...");
                 //addProgressBar(91, 100);               
             //}
             
@@ -845,7 +843,7 @@ var searchBatchLearnDataList = function (addCond) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
-            $("#progressMsg").html("retrieving learn data...");            
+            $("#progressMsgTitle").html("retrieving learn data...");            
             startProgressBar(); // start progressbar
             addProgressBar(1, 1); // proceed progressbar
         },
@@ -947,12 +945,12 @@ var searchBatchLearnData = function (imgIdArray, flag) {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $('#btn_pop_batch_close').click();
-            //$("#progressMsg").html("retrieving learn data...");
+            //$("#progressMsgTitle").html("retrieving learn data...");
             //startProgressBar(); // start progressbar
             //addProgressBar(0, 30); // proceed progressbar
         },
         success: function (data) {
-            //$("#progressMsg").html("processing learn data...");
+            //$("#progressMsgTitle").html("processing learn data...");
             //addProgressBar(31, 50);
             console.log("/batchLearning/searchBatchLearnData result :");
             console.log(data);
@@ -1352,7 +1350,7 @@ var fn_batchUiTraining = function () {
             console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
             alert("UI학습이 완료되었습니다.");
             execBatchLearning();
-            $("#layer2").css("display", "none");
+            $("#layer2.poplayer").css("display", "none");
             //popupEvent.closePopup();
         },
         error: function (err) {
@@ -1434,7 +1432,7 @@ function multiUploadEvent() {
 
     $('#multiUploadForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
-            $("#progressMsg").html("이미지를 분석 중 입니다.");
+            $("#progressMsgTitle").html("이미지를 분석 중 입니다.");
             startProgressBar(); // 프로그레스바 시작
             addProgressBar(1, 5); // 프로그레스바 진행
             return true;

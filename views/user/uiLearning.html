@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
     <!-- // file upload css -->
 
-    <link rel="stylesheet" href="css/user/uiLearning.css">
     <link rel="stylesheet" href="css/dropdown.css">
 
     <!-- multiFileUpload & form async js -->
@@ -34,14 +33,25 @@
     <!-- // UI 학습 전용 js -->
 </head>
 <body>
-    <div id="loadingBackground">
-        <div id="ocrProgress">
-            <div id="ocrBar"></div>
-        </div>
-        <b id="loadingTitle">작업중</b>
-        <span id="loadingDetail"></span>
-    </div>
+    <div id="mask"></div>
+ 
     <div id="wrap">
+        <!--로딩바-->
+        <div id="ocrProgress">
+            <div id="ocrBarBg">
+                <div id="ocrBar">
+                    <span>1%</span>
+                </div>
+            </div>
+            <!-- 호출하는 ajax에 따라 로딩바 이벤트를 호출 할 때 아래 progressMsgTitle, progressMsgDetail 메시지도 수정-->
+            <div id="progressMsgTitle">
+                <!-- 로딩바 바로 아래 메시지 -->
+            </div>
+            <div id="progressMsgDetail">
+                <!-- 로딩바 아래아래 메시지-->
+            </div>
+        </div>
+        <!--로딩바-->
         <!-- skip navi -->
         <div id="accessibility">
             <ul>
@@ -60,75 +70,76 @@
             <div id="content">
                 <h2 class="subtit subtit_st01 blind"><span>청약서입력</span></h2>
 
-                <!-- 양식이미지 -->
-                <div class="box_content_L box_content_bg">
-                    <h3 class="tits"><span>양식이미지</span></h3>
-
-                    <div class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
-                        <!--<img src="publish/image/sample03.png" alt="샘플이미지" />-->
-                        <ul id="imageBox"></ul>
-
-                        <!-- 업로드 영역 -->
-                        <div id="img_content">
-                            <div class="st_infortext_01">
-                                <span id="uploadInfoText">파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
-                                <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
-                                    <p class="attach_btn">
-                                        <input type="file" id="uploadFile" name="file" value="upload" />
-                                        <label id="uploadFileBtn" for="customer_file">업로드</label>
-                                    </p>
-                                </form>
-                            </div>
+                <!-- 양식이미지 업로드폼-->
+                <div id="uploadForm" class="box_content_L">
+                    <div id="img_content">
+                        <div class="st_infortext_01">
+                            <span id="uploadInfoText">Drag & Drop files here</span>
+                            <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
+                                <p class="attach_btn">
+                                    <input type="file" id="uploadFile" name="file" value="upload" />
+                                    <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
+                                </p>
+                            </form>
                         </div>
-                        <!-- // 업로드 영역 -->
-
                     </div>
+                </div>
+                <!-- 양식이미지 업로드폼-->
+                <!-- 양식이미지 -->
+                <div id="uploadSucessForm" style="display:none">
+                    <div class="box_content_L box_content_bg">
+                        <h3 class="tits"><span>양식이미지</span></h3>
+
+                        <div class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                            <!--<img src="publish/image/sample03.png" alt="샘플이미지" />-->
+                            <ul id="imageBox"></ul>
+                        </div>
 
 
 
 
-                    <div class="box_imgtmb">
-                        <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
-                        <div id="touchSlider">
-                            <ul>
-                                <!--
+                        <div class="box_imgtmb">
+                            <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
+                            <div id="touchSlider">
+                                <ul>
+                                    <!--
                                 <li class="on">
                                     <div class="box_img"><i><img src="publish/image/sample03.png" title="샘플이미지"></i></div>
                                     <span>Filename_Filename_0001.jpg</span>
                                 </li>
                                 -->
-                            </ul>
+                                </ul>
+                            </div>
+                            <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
+                            <!--<button type="button" id="thumb-tot" class="button_control button_control3">전체</button>-->
+                            <div id="count" class="count"><!--<span>1</span> / 3--></div>
                         </div>
-                        <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
-                        <!--<button type="button" id="thumb-tot" class="button_control button_control3">전체</button>-->
-                        <div id="count" class="count"><!--<span>1</span> / 3--></div>
                     </div>
-                </div>
-                <!-- // 양식이미지 -->
-                <!-- 양식분석상세 -->
-                <div class="box_content_R st_last">
-                    <div class="box_content_bg">
-                        <h3 class="tits"><span>양식분석상세</span></h3>
-                        <div class="btn_rt">
-                            <button type="button" id="uiTrainBtn" class="button_st1">UI Training</button>
-                        </div>
-                        <div class="mCustomScrollbar box_scroll_st6" data-mcs-theme="dark-3">
-                            <div class="table_style02">
-                                <table>
-                                    <caption>양식 분석 상세 정보</caption>
-                                    <colgroup>
-                                        <col style="width:65%" />
-                                        <col style="width:35%" />
-                                    </colgroup>
-                                    <thead>
-                                        <tr>
-                                            <th scope="row">추출 텍스트</th>
-                                            <th scope="row">DB 컬럼</th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                                <div id="textResultTbl" class="box_table_st box_table_st04">
-                                    <!--
+                    <!-- // 양식이미지 -->
+                    <!-- 양식분석상세 -->
+                    <div class="box_content_R st_last">
+                        <div class="box_content_bg">
+                            <h3 class="tits"><span>양식분석상세</span></h3>
+                            <div class="btn_rt">
+                                <button type="button" id="uiTrainBtn" class="button_st1">UI Training</button>
+                            </div>
+                            <div class="mCustomScrollbar box_scroll_st6" data-mcs-theme="dark-3">
+                                <div class="table_style02">
+                                    <table>
+                                        <caption>양식 분석 상세 정보</caption>
+                                        <colgroup>
+                                            <col style="width:65%" />
+                                            <col style="width:35%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th scope="row">추출 텍스트</th>
+                                                <th scope="row">DB 컬럼</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div id="textResultTbl" class="box_table_st box_table_st04">
+                                        <!--
                                     <dl>
                                         <dt>
                                             <label class="iclick">
@@ -164,12 +175,13 @@
                                         </dd>
                                     </dl>
                                     -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <!-- // 양식분석상세 -->
                 </div>
-                <!-- // 양식분석상세 -->
             </div>
             <!-- // 본문영역 -->
         </div>

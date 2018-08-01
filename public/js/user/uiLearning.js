@@ -41,24 +41,29 @@ function uploadFileEvent() {
 
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
-            $('#uploadFileBtn , #uploadInfoText').hide();
-            $('#loadingTitle').html('파일 업로드 중..');
-            $('#loadingDetail').html('');
-            startProgressBar();
-            addProgressBar(1, 10);
+            $("#progressMsgTitle").html('파일 업로드 중..');
+            $("#progressMsgDetail").html('');
+            startProgressBar(); // start progressbar
+            addProgressBar(1, 10); // proceed progressbar
             return true;
         },
         success: function (responseText, statusText) {
             //console.log(responseText);
-            $('#loadingTitle').html('파일 업로드 완료');
-            $('#loadingDetail').html('');
+            var $uploadForm = $('#uploadForm');
+            var $uploadSucessForm = $('#uploadSucessForm');
+
+            $("#progressMsgTitle").html('파일 업로드 완료..');
+            $("#progressMsgDetail").html('');
             addProgressBar(11, 20);
+            $uploadForm.hide();
+            $uploadSucessForm.show();
             if (responseText.message.length > 0) {
                 totCount = responseText.message.length;
                 for (var i = 0; i < responseText.message.length; i++) {
                     processImage(responseText.message[i]);
                 }
             }
+            //endProgressBar();
         },
         error: function (e) {
             endProgressBar();
@@ -70,8 +75,8 @@ function uploadFileEvent() {
 // OCR API
 function processImage(fileName) {
 
-    $('#loadingTitle').html('OCR 처리 중..');
-    $('#loadingDetail').html(fileName);
+    $('#progressMsgTitle').html('OCR 처리 중..');
+    $('#progressMsgDetail').html(fileName);
     addProgressBar(21, 30);
     $.ajax({
         url: '/common/ocr',
@@ -85,8 +90,8 @@ function processImage(fileName) {
         if (!data.code) { // 에러가 아니면
             //console.log(data);
             thumbImgs.push(fileName);
-            $('#loadingTitle').html('OCR 처리 완료');
-            $('#loadingDetail').html(fileName);
+            $('#progressMsgTitle').html('OCR 처리 완료');
+            $('#progressMsgDetail').html(fileName);
             addProgressBar(31, 40);
             appendOcrData(fileName, data.regions);
         } else if (data.error) { //ocr 이외 에러이면
@@ -292,12 +297,12 @@ function appendOcrData(fileName, regions) {
  * ts : typoSentence , dd : domainDictionary , tc : textClassification , lm : labelMapping , sc : searchDBColumns
  */
 function executeML(fileName, data, type) {
-    $('#loadingDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0, 200) + '...');
+    $('#progressMsgDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0, 200) + '...');
     var targetUrl;
 
     if (type == 'ts') {
         targetUrl = '/uiLearning/typoSentence';
-        $('#loadingTitle').html('오타 수정 처리 중..');
+        $('#progressMsgTitle').html('오타 수정 처리 중..');
         addProgressBar(41, 50);
     } else if (type == 'dd') {
         targetUrl = '/uiLearning/domainDictionary';
