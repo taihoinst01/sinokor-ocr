@@ -5,26 +5,44 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
-    <link rel="stylesheet" href="/common/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/common/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/common/css/AdminLTE.min.css">
-    <link rel="stylesheet" href="/common/css/skin-blue.min.css">
-    <link rel="stylesheet" href="/common/css/default.css">
+    <%include  common/commonLib.html%>
     <!--[if lt IE 9]>
     <script src="common/js/html5shiv.min.js"></script>
     <script src="common/js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <script src="/common/js/jquery.min.js"></script>
-    <script src="/common/js/bootstrap.min.js"></script>
-    <script src="/common/js/adminlte.min.js"></script>
-    <script src="/common/js/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <script src="/common/js/jquery.validate.min.js"></script>
-    <script src="/common/js/icheck.min.js"></script>
     <script type="text/javascript" src="js/common.client.js"></script>
+    <script src="/common/js/jquery.validate.min.js"></script>
     <script src="/js/index.js"></script>
 </head>
-<body class="hold-transition login-page">
-    <div class="login-box">
+<body class="bg_login">
+    <div class="box_basic01">
+        <div class="login_top">
+            <h1><span class="blind">KoreanRe ICR Service</span></h1>
+        </div>
+
+        <div class="box_login">
+            <form action="login" method="post" id="loginfrm">
+                <div class="box_login_01">
+                    <dl>
+                        <dt><label for="userId">ID</label></dt>
+                        <dd><input type="text" id="userId" name="userId" class="input_searchbox eng" spellcheck="false" placeholder="아이디" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="password">Password</label></dt>
+                        <dd><input type="password" id="userPw" name="userPw" class="input_searchbox" placeholder="비밀번호" /></dd>
+                    </dl>
+                    <div class="row" style="text-align:center">
+                        <span id="errors" style="color:red;font-weight:bold;text-align:center"><%= messages.error %></span>
+                    </div>
+                    <div class="txts_01 checkbox-options"><input type="checkbox" id="remember_me" name="remember_me" /><label for="remember_me"><span>ID 저장하기</span></label></div>
+                    <button type="submit" class="button_login" id="sendLoginBtn" title="login">로그인</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- // Login -->
+
+    <!--<div class="login-box">
         <div class="login-logo"><span class="hc">로그인로고</span></div>
         <div class="login-box-body">
             <form action="login" method="post" id="loginfrm">
@@ -45,29 +63,10 @@
                     <span id="errors" style="color:red;font-weight:bold;text-align:center"><%= messages.error %></span>
                 </div>
                 <div class="social-auth-links text-center"><button type="submit" class="btn btn_login" id="sendLoginBtn">로그인</button></div>
-            </form> 
+            </form>
 
             <p class="login_footer ">COPYRIGHTS <strong> ©TAIHOINST </strong> ALL RIGHTS RESERVED.</p>
         </div>
-    </div>
-    <script>
-        //iCheck for checkbox and radio inputs
-        $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
-            checkboxClass: 'icheckbox_minimal-blue',
-            radioClass: 'iradio_minimal-blue'
-        })
-        //Red color scheme for iCheck
-        $('input[type="checkbox"].minimal-red, input[type="radio"].minimal-red').iCheck({
-            checkboxClass: 'icheckbox_minimal-red',
-            radioClass: 'iradio_minimal-red'
-        })
-        //Flat red color scheme for iCheck
-        $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
-            checkboxClass: 'icheckbox_flat-green',
-            radioClass: 'iradio_flat-green'
-        })
-
-    </script>
-
+    </div>-->
 </body>
-</html >
+</html>
