@@ -8,6 +8,7 @@ var batchCount = 0; // ml 학습 횟수
 var grid;
 var isFullMatch = true; // UI training 체크 중 모든 컬럼 매치 유무
 var modifyData = []; // UI 수정할 데이터 
+var isStatement = 0;
 
 var ocrDataArr = []; //ocr 학습한 데이터 배열
 
@@ -463,7 +464,7 @@ function execBatchLearning() {
     for (var i in ocrDataArr) {
         if (ocrDataArr[i].exeML != "Y") {
             execBatchLearningData(ocrDataArr[i], dataArr[i]);
-            if (isFullMatch) {
+            if (isFullMatch || isStatement == 0) {
             } else {            
                 popUpLayer2(ocrDataArr[i]);
                 break;
@@ -546,10 +547,11 @@ function execBatchLearningData(ocrData, data) {
         beforeSend: function () {
         },
         success: function (data) {
-            modifyData = data;
             //console.log(data);
+            isStatement = data.isStatement;
+            modifyData = data.mlData;
             batchCount++;
-            compareBatchLearningData(ocrData, data)
+            compareBatchLearningData(ocrData, data.mlData)
             //compareBatchLearningData(fileInfo, data, isUiTraining);
             //updateBatchLearningData(fileName, data);
             

@@ -392,7 +392,10 @@ router.post('/execBatchLearningData', function (req, res) {
                 aimain.labelMappingEval(result3, function (result4) {
                     //console.log("labelMapping Result : " + JSON.stringify(result4));
                     console.log("label ML");
-                    res.send(result4);
+                    aimain.statementClassificationEval(result4, function (result5) {
+                        console.log("statement ML");
+                        res.send(result5);
+                    })
                 })
             })
         })
