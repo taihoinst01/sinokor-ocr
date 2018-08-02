@@ -5,7 +5,9 @@ $(document).ready(function () {
 
     if (!isNull(cookieUserId)) {
         $("#userId").val(cookieUserId);
-        $("#remember_me").iCheck("check");
+        //$("#remember_me").iCheck("check");
+        $("#remember_me").prop("checked", true);
+        $("#remember_me").parent().addClass('ez-checked');
     } else {
         $("#userId").val("");
     }
@@ -19,7 +21,7 @@ $(document).ready(function () {
     //임시 자동로그인
     $('#userId').val('admin');
     $('#userPw').val('123');
-    $('#sendLoginBtn').click();
+    setTimeout(function () { $('#sendLoginBtn').click(); }, 1000);
 });
 
 function getCookie(cookieName) {

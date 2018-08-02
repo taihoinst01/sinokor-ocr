@@ -40,7 +40,7 @@ html, body {
 }
 
     body.bg_login {
-        background-image: url(bg_login.png)
+        background: #2f332a;
     }
 
 img,

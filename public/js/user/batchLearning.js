@@ -8,7 +8,7 @@ var batchCount = 0; // ml 학습 횟수
 var grid;
 var isFullMatch = true; // UI training 체크 중 모든 컬럼 매치 유무
 var modifyData = []; // UI 수정할 데이터 
-var isStatement = 0;
+var isStatement = 0; // 계산서 인지 아닌지 판단 유무 (0: 계산서 x , 1: 계산서 o)
 
 var ocrDataArr = []; //ocr 학습한 데이터 배열
 
@@ -464,7 +464,7 @@ function execBatchLearning() {
     for (var i in ocrDataArr) {
         if (ocrDataArr[i].exeML != "Y") {
             execBatchLearningData(ocrDataArr[i], dataArr[i]);
-            if (isFullMatch || isStatement == 0) {
+            if (isFullMatch || isStatement == 0) { // 모든 컬럼 매핑이 되었거나 계산서가 아닌 경우
             } else {            
                 popUpLayer2(ocrDataArr[i]);
                 break;
