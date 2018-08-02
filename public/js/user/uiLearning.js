@@ -381,6 +381,11 @@ function executeML(totData) {
                     $('#imageBox > li').eq(0).addClass('on');
                     $('#docName').html(data.docCategory.DOCNAME);
                     $('#docPredictionScore').html(data.docCategory.score + '%');
+                    if (data.docCategory.score >= 90) {
+                        $('#docPredictionScore').css('color', 'dodgerblue');
+                    } else {
+                        $('#docPredictionScore').css('color', 'darkred');
+                    }
                     detailTable(fileName);
                     docComparePopup(0);
                 }

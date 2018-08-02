@@ -24,4 +24,4 @@ button[disabled] { opacity: 0.5; cursor: default; }
 .float-left { float: left; }
 .float-right { float: right; }
 #docName { color: dodgerblue; }
-#docPredictionScore { color: darkred; font-size: 15px; }
+#docPredictionScore { font-size: 15px; }
