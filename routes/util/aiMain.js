@@ -232,6 +232,14 @@ exports.labelMappingEval = function(data, callback) {
     });
 }
 
+exports.billClassificationEval = function (data, callback) {
+
+}
+
+exports.labelClassificationEval = function (data, callback) {
+
+}
+
 function dataToArgs(data) {
 
     var args = '';

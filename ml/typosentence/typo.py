@@ -39,7 +39,11 @@ for ins in rows:
 
 for originword in sys.argv[1:]:
     for word in originword.split():
+        word = word.encode("euc_kr", "replace")
+        word = word.decode("euc_kr")
         if(textList.__contains__(word) == False):
             suggestion_list = ss.lookup(phrase=word, verbosity=1, max_edit_distance=2)
             for suggestion in suggestion_list:
+                originword = originword.encode("euc_kr", "replace")
+                originword = originword.decode("euc_kr")
                 print(originword + '^' + word + '^' + str(suggestion))
