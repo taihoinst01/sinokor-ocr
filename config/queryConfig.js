@@ -329,6 +329,16 @@ var commonConfig = {
             (seq_comm_error.nextval, :userId, sysdate, :errorType, :errorCode) `
 }
 
+var mlConfig = {
+    selectDocCategory:
+        `SELECT
+            seqNum, docName, docType, sampleImagePath
+         FROM
+            tbl_document_category
+         WHERE
+            docType = :docType `
+}
+
 module.exports = {
     count: count,
     sessionConfig: sessionConfig,
@@ -339,5 +349,6 @@ module.exports = {
     myApprovalConfig: myApprovalConfig,
     batchLearningConfig: batchLearningConfig,
     uiLearningConfig: uiLearningConfig,
-    commonConfig: commonConfig
+    commonConfig: commonConfig,
+    mlConfig: mlConfig
 }

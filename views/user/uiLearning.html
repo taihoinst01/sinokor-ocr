@@ -17,17 +17,19 @@
 
     <link rel="stylesheet" href="css/dropdown.css">
 
+    <!-- UI 학습 전용 js -->
+    <link rel="stylesheet" href="css/user/uiLearning.css">
+    <!-- // UI 학습 전용 js -->
+
     <!-- multiFileUpload & form async js -->
     <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
     <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
     <!-- // multiFileUpload & form async js -->
-
     <!-- 공통 js -->
     <script type="text/javascript" src="js/common.client.js"></script>
     <!-- // 공통 js -->
-
     <!-- UI 학습 전용 js -->
     <script type="text/javascript" src="js/user/uiLearning.js"></script>
     <!-- // UI 학습 전용 js -->
@@ -72,17 +74,17 @@
 
                 <!-- 양식이미지 업로드폼-->
                 <div id="uploadForm" class="box_content_L">
-                    
-                        <div class="st_infortext_01">
-                            <span id="uploadInfoText">Drag & Drop files here</span>
-                            <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
-                                <p class="attach_btn">
-                                    <input type="file" id="uploadFile" name="file" value="upload" />
-                                    <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
-                                </p>
-                            </form>
-                        </div>
-                    
+
+                    <div class="st_infortext_01">
+                        <span id="uploadInfoText">Drag & Drop files here</span>
+                        <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
+                            <p class="attach_btn">
+                                <input type="file" id="uploadFile" name="file" value="upload" />
+                                <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
+                            </p>
+                        </form>
+                    </div>
+
                 </div>
                 <!-- 양식이미지 업로드폼-->
                 <!-- 양식이미지 -->
@@ -109,29 +111,30 @@
 
 
 
-                            <div class="box_imgtmb">
-                                <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
-                                <div id="touchSlider">
-                                    <ul>
-                                        <!--
-                <li class="on">
-                    <div class="box_img"><i><img src="publish/image/sample03.png" title="샘플이미지"></i></div>
-                    <span>Filename_Filename_0001.jpg</span>
-                </li>
-                -->
-                                    </ul>
-                                </div>
-                                <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
-                                <!--<button type="button" id="thumb-tot" class="button_control button_control3">전체</button>-->
-                                <div id="count" class="count"><!--<span>1</span> / 3--></div>
+                        <div class="box_imgtmb">
+                            <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
+                            <div id="touchSlider">
+                                <ul>
+                                    <!--
+                                <li class="on">
+                                    <div class="box_img"><i><img src="publish/image/sample03.png" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                -->
+                                </ul>
                             </div>
+                            <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
+                            <!--<button type="button" id="thumb-tot" class="button_control button_control3">전체</button>-->
+                            <div id="count" class="count"><!--<span>1</span> / 3--></div>
                         </div>
+                    </div>
                     <!-- // 양식이미지 -->
                     <!-- 양식분석상세 -->
                     <div class="box_content_R st_last">
                         <div class="box_content_bg">
-                            <h3 class="tits"><span>양식분석상세</span></h3>
+                            <h3 class="tits"><pre>문서 양식 예측   <b id="docName"></b>   <b id="docPredictionScore"></b></pre></h3>
                             <div class="btn_rt">
+                                <button type="button" id="docCompareBtn" class="button_st1">doc Popup</button>
                                 <button type="button" id="uiTrainBtn" class="button_st1">UI Training</button>
                             </div>
                             <div class="mCustomScrollbar box_scroll_st6" data-mcs-theme="dark-3">
@@ -197,6 +200,30 @@
             <!-- // 본문영역 -->
         </div>
         <!-- // Content -->
+        <!-- 팝업_문서비교레이어팝업 -->
+        <div id="layer1" class="poplayer">
+            <div class="bg"></div>
+            <div class="pop_layer">
+                <div class="pop_popup0 doc_popup">
+                    <div class="pop_header">
+                        <h1>문서 비교</h1>
+                    </div>
+                    <div class="pop_content">
+                        <div class="imgbox float-left">
+                            <img id="originImg" />
+                        </div>
+                        <div class="imgbox float-right">
+                            <img id="searchImg" />
+                        </div>
+                    </div>
+                    <div class="pop_footer">
+                        <button type="button" id="btn_pop_doc_run" class="button_st1">확 인</button>
+                        <button type="button" id="btn_pop_doc_close" class="button_st2 cbtn">취 소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- // 팝업_문서비교레이어팝업 -->
     </div>   
 </body>
 </html>
