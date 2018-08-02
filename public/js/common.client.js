@@ -226,3 +226,45 @@ function endProgressBar() {
     $('#mask').fadeOut("fast");
     $('#loadingBackground').hide();
 }
+
+$("#predictionPercent").on('change', function () {
+    var predictionPercent = $('#predictionPercent')
+    var predictionPercentValue = $('#predictionPercent').html();
+
+    if (predictionPercentValue >= 90 && predictionPercentValue <= 100) {
+        predictionPercent.css('color', 'red');
+    } else if (predictionPercentValue >= 80) {
+        predictionPercent.css('color', 'orange');
+    } else if (predictionPercentValue >= 70) {
+        predictionPercent.css('color', 'yellow');
+    } else if (predictionPercentValue >= 60) {
+        predictionPercent.css('color', 'green');
+    } else if (predictionPercentValue >= 50) {
+        predictionPercent.css('color', 'yellow');
+    } else {
+        predictionPercent.css('color', 'purple');
+    }
+});
+
+// 개별학습 예측문서 퍼센트값에 따른 색상 변화
+function changePercentColor(val) {
+    var predictionPercent = $('#predictionPercent');
+    predictionPercent.html(val);
+    if (val >= 90 && val <= 100) {
+        predictionPercent.css('color', 'red');
+    } else if (val >= 80) {
+        predictionPercent.css('color', 'orange');
+    } else if (val >= 70) {
+        predictionPercent.css('color', 'yellow');
+    } else if (val >= 60) {
+        predictionPercent.css('color', 'green');
+    } else if (val >= 50) {
+        predictionPercent.css('color', 'yellow');
+    } else {
+        predictionPercent.css('color', 'purple');
+    }
+}
+
+function changeTest() {
+    changePercentColor($('#changeTest').val());
+}

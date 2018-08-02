@@ -170,7 +170,8 @@ function thumbImgPagingEvent() {
 function thumnImg() {
     for (var i in thumbImgs) {
         if ($('#imageBox > li').length < thumnbImgPerPage) {
-            var imageTag = '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a></li>';
+            var imageTag = '<li><div class="box_img"><i><img src="../../uploads/' + thumbImgs[i] + '"></i>'
+                + ' </div ><span>' + thumbImgs[i] +'</span></li >';
             $('#imageBox').append(imageTag);
         } else {
             break;

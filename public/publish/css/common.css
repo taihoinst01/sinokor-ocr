@@ -318,6 +318,7 @@ h3.tits:before,
 .box_st04 h3:before,
 .button_control:before,
 .button_st6:before,
+.tits02_btn01:before,
 #content h2:before {
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat;
@@ -1282,6 +1283,9 @@ select:disabled + ul.idealSelect:before {
     .box_content.st_stsh .box_st032 {
         height: 347px;
     }
+    .box_content.st_stsh .box_st034 {
+        height: 277px !important;
+    }
 
     .box_content.st_stsh .imgtmb_b {
         height: 430px;
@@ -1679,6 +1683,13 @@ select:disabled + ul.idealSelect:before {
     background: #605f5d
 }
 
+    .box_imgtmb .ui_touchSlider {
+        display: block;
+        overflow: hidden;
+        width: 660px;
+        height: 140px;
+        margin: 0 auto
+    }
     .box_imgtmb #touchSlider {
         display: block;
         overflow: hidden;
@@ -1686,7 +1697,6 @@ select:disabled + ul.idealSelect:before {
         height: 130px;
         margin: 0 auto
     }
-
     .box_imgtmb ul li {
         float: left;
         width: 110px;
@@ -4813,4 +4823,66 @@ thead .ez-checked {
     -moz-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
     box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
     clear:both;
+}
+.tits01 {
+    padding: 14px 0;
+    margin: 0 18px 10px;
+    font-size: 14px;
+    font-family: 'notokr-medium', sans-serif;
+}
+
+.tits02 {
+    padding: 0px 17px;
+    margin-bottom: 10px;
+}
+
+.tits02 .tits02_ipt {
+    width: 45%;
+    background-color: gainsboro;
+}
+
+.tits02_btn01 {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    padding: 11px;
+    background-color: gray;
+    margin-left: 10px;
+}
+
+.tits02_btn01:before {
+    content: '';
+    background-position: -120px -550px;
+    width: 20px;
+    height: 20px;
+}
+
+.tits02_btn02 {
+    float: right;
+    width: 130px;
+}
+
+#mainImage {
+    height: 700px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+#imageZoom {
+    background-repeat: no-repeat;
+    display: none;
+}
+
+#redNemo, #redZoomNemo {
+    display: none;
+    border: 2px solid red;
+    position: absolute;
+}
+
+button[disabled] {
+    opacity: 0.5;
+    cursor: default;
+}
+.dcmtChkImg {
+    min-height: 674px !important;
 }

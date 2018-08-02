@@ -17,40 +17,26 @@
     <!-- 계산서 조회 학습 전용 js -->
     <script type="text/javascript" src="js/user/myApproval.js"></script>
     <!-- // 계산서 조회 전용 js -->
-
-    <style>
-        #ocrProgress {
-            background-color: grey;
-            position: absolute;
-            top: 50%;
-            left: 60%;
-            background: #edf2f6;
-            transform: translate(-50%, -50%);
-            width: 420px;
-            z-index: 1000;
-            display: none
-        }
-
-        #progressMsgTitle {
-            width: 100%;
-            height: 20px;
-            background-color: #edf2f6;
-            text-align: center;
-        }
-
-        #ocrBar {
-            width: 1%;
-            height: 30px;
-            background-color: #9eaec5;
-        }
-    </style>
 </head>
 <body>
+    <div id="mask"></div>
     <div id="wrap">
+        <!--로딩바-->
         <div id="ocrProgress">
-            <div id="progressMsgTitle"></div>
-            <div id="ocrBar"></div>
+            <div id="ocrBarBg">
+                <div id="ocrBar">
+                    <span>1%</span>
+                </div>
+            </div>
+            <!-- 호출하는 ajax에 따라 로딩바 이벤트를 호출 할 때 아래 progressMsgTitle, progressMsgDetail 메시지도 수정-->
+            <div id="progressMsgTitle">
+                <!-- 로딩바 바로 아래 메시지 -->
+            </div>
+            <div id="progressMsgDetail">
+                <!-- 로딩바 아래아래 메시지-->
+            </div>
         </div>
+        <!-- //로딩바-->
         <!-- skip navi -->
         <%include  ../common/header.html%>
         <!-- //skip navi -->
@@ -188,32 +174,32 @@
                             </div>
                         </div>
 
-                            <div class="table_style02">
-                                <div class="mCustomScrollbar box_scroll_st3" data-mcs-axis="yx" data-mcs-theme="dark-3">
-                                    <table class="">
-                                        <caption>결재리스트(기본) 정보</caption>
-                                        <colgroup>
-                                            <col style="width:50px" />
-                                            <col style="width:140px" />
-                                            <col style="width:60px" />
-                                            <col style="width:80px" />
-                                            <col style="width:90px" />
-                                            <col style="width:90px" />
-                                            <col style="width:230px" />
-                                        </colgroup>
-                                        <tbody id="tbody_baseList"></tbody>
-                                    </table>
-                                </div>
+                        <div class="table_style02">
+                            <div class="mCustomScrollbar box_scroll_st3" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                                <table class="">
+                                    <caption>결재리스트(기본) 정보</caption>
+                                    <colgroup>
+                                        <col style="width:50px" />
+                                        <col style="width:140px" />
+                                        <col style="width:60px" />
+                                        <col style="width:80px" />
+                                        <col style="width:90px" />
+                                        <col style="width:90px" />
+                                        <col style="width:230px" />
+                                    </colgroup>
+                                    <tbody id="tbody_baseList"></tbody>
+                                </table>
                             </div>
-
-                            <!-- 버튼 영역 -->
-                            <div class="fr mt10">
-                                <button type="button" id="btn_baseList_approval" class="button_st1">승인</button>
-                                <button type="button" id="btn_baseList_return" class="button_st2">반려</button>
-                                <button type="button" id="btn_baseList_forward" class="button_st2">전달</button>
-                            </div>
-                            <!-- // 버튼 영역 -->
                         </div>
+
+                        <!-- 버튼 영역 -->
+                        <div class="fr mt10">
+                            <button type="button" id="btn_baseList_approval" class="button_st1">승인</button>
+                            <button type="button" id="btn_baseList_return" class="button_st2">반려</button>
+                            <button type="button" id="btn_baseList_forward" class="button_st2">전달</button>
+                        </div>
+                        <!-- // 버튼 영역 -->
+                    </div>
                     <!-- // 기본결재리스트 영역 -->
                     <!--  상세결재리스트 영역 -->
                     <div id="div_dtl" class="box_st03 box_st031 box_content_bg" style="display:none">
