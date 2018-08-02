@@ -72,17 +72,17 @@
 
                 <!-- 양식이미지 업로드폼-->
                 <div id="uploadForm" class="box_content_L">
-                    
-                        <div class="st_infortext_01">
-                            <span id="uploadInfoText">Drag & Drop files here</span>
-                            <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
-                                <p class="attach_btn">
-                                    <input type="file" id="uploadFile" name="file" value="upload" />
-                                    <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
-                                </p>
-                            </form>
-                        </div>
-                    
+
+                    <div class="st_infortext_01">
+                        <span id="uploadInfoText">Drag & Drop files here</span>
+                        <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
+                            <p class="attach_btn">
+                                <input type="file" id="uploadFile" name="file" value="upload" />
+                                <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
+                            </p>
+                        </form>
+                    </div>
+
                 </div>
                 <!-- 양식이미지 업로드폼-->
                 <!-- 양식이미지 -->
@@ -109,23 +109,23 @@
 
 
 
-                            <div class="box_imgtmb">
-                                <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
-                                <div id="touchSlider">
-                                    <ul>
-                                        <!--
-                <li class="on">
-                    <div class="box_img"><i><img src="publish/image/sample03.png" title="샘플이미지"></i></div>
-                    <span>Filename_Filename_0001.jpg</span>
-                </li>
-                -->
-                                    </ul>
-                                </div>
-                                <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
-                                <!--<button type="button" id="thumb-tot" class="button_control button_control3">전체</button>-->
-                                <div id="count" class="count"><!--<span>1</span> / 3--></div>
+                        <div class="box_imgtmb">
+                            <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
+                            <div id="touchSlider">
+                                <ul>
+                                    <!--
+                                <li class="on">
+                                    <div class="box_img"><i><img src="publish/image/sample03.png" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                -->
+                                </ul>
                             </div>
+                            <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
+                            <!--<button type="button" id="thumb-tot" class="button_control button_control3">전체</button>-->
+                            <div id="count" class="count"><!--<span>1</span> / 3--></div>
                         </div>
+                    </div>
                     <!-- // 양식이미지 -->
                     <!-- 양식분석상세 -->
                     <div class="box_content_R st_last">
@@ -198,6 +198,30 @@
             <!-- // 본문영역 -->
         </div>
         <!-- // Content -->
+        <!-- 팝업_수동학습레이어팝업 -->
+        <div id="layer1" class="poplayer">
+            <div class="bg"></div>
+            <div class="pop_layer">
+                <div class="pop_popup0" style="width: 1000px;">
+                    <div class="pop_header">
+                        <h1>문서 비교</h1>
+                    </div>
+                    <div class="pop_content">
+                        <div class="imgbox" style="float:left; border: 1px solid #dadada;">
+                            <img id="originImg" src="../../uploads/26.jpg" style="width:450px; height: 600px;"/>
+                        </div>
+                        <div class="imgbox" style="float:right; border: 1px solid #dadada;">
+                            <img id="searchImg" src="../../sample/apex.jpg" style="width:450px; height: 600px;"/>
+                        </div>
+                    </div>
+                    <div class="pop_footer">
+                        <button type="button" id="btn_pop_batch_run" class="button_st1 cbtn">확 인</button>
+                        <button type="button" id="btn_pop_batch_close" class="button_st2 cbtn">취 소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- // 팝업_수동학습레이어팝업 -->
     </div>   
 </body>
 </html>

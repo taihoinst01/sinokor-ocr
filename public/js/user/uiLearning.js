@@ -14,7 +14,7 @@ $(function () {
     uploadFileEvent();
     thumbImgPagingEvent();
     uiTrainEvent();
-
+    popUpCloseEvent();
 });
 
 // 초기 작업
@@ -22,6 +22,12 @@ function init() {
     $('.button_control').attr('disabled', true);
 }
 
+// 팝업 취소 이벤트
+function popUpCloseEvent() {
+    $('#btn_pop_batch_close').click(function () {
+        $('.poplayer').fadeOut();
+    });
+}
 // 파일 업로드 이벤트
 function uploadFileEvent() {
     $('#uploadFile').change(function () {
@@ -391,8 +397,9 @@ function executeML(totData) {
 function docComparePopup(imgIndex) {
     $('#docCompareBtn').click = null;
     $('#docCompareBtn').click(function () {
-        console.log('./uploads/'+lineText[imgIndex].fileName);
-        console.log(lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+        $('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
+        $('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+        layer_open('layer1');
     });
 }
 

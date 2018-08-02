@@ -48,6 +48,7 @@ var xlsx = require('xlsx');
 
 // 
 app.use('/uploads', express.static(__dirname + '/uploads'));
+app.use('/sample', express.static(__dirname + '/sample'));
 app.use('/excel', express.static(__dirname + '/excel'));
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
