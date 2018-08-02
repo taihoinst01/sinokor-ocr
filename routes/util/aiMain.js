@@ -1,6 +1,8 @@
 var appRoot = require('app-root-path').path;
 var exec = require('child_process').exec;
 var commonUtil = require(appRoot + '/public/js/common.util.js');
+var commonDB = require(appRoot + '/public/js/common.db.js');
+var queryConfig = require(appRoot + '/config/queryConfig.js');
 var logger = require('./logger.js');
 
 const defaults = {
@@ -117,6 +119,24 @@ exports.textClassificationEval = function(data, callback) {
     });
 }
 
+exports.statementClassificationEval = function (data, callback) {
+    var returnObj = {};
+    var number = 0;
+    for (var i in data) {
+        if (data[i].text.trim() == 'APEX') { // APEX 계산서 이면
+            number = 1;
+            break;
+        } else { // 그 외
+            number = 999;
+        }
+    }
+    returnObj.data = data;
+    commonDB.queryParam(queryConfig.mlConfig.selectDocCategory, [number], function (rows, returnObj) {
+        if (rows.length > 0) returnObj.docCategory = rows[0];
+        callback(returnObj);
+    }, returnObj);
+};
+
 //label mapping eval
 exports.labelMappingEval = function(data, callback) {
 
@@ -211,22 +231,6 @@ exports.labelMappingEval = function(data, callback) {
 
     });
 }
-
-exports.statementClassificationEval = function (data, callback) {
-    var returnObj = {};
-    for (var i in data) {
-        if (data[i].text == 'Solidarity- First Insurance 2018' || data[i].text == 'Solidarity- First Insurance 2017'
-        || data[i].text == 'Solidarity- First Takaful 2016') { // 계산서 이면
-            returnObj.isStatement = 1;
-            returnObj.mlData = data;
-        } else { // 계산서 아니면
-            returnObj.isStatement = 0;
-            returnObj.mlData = data;
-        }
-    }
-
-    callback(returnObj);
-};
 
 function dataToArgs(data) {
 
