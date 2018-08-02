@@ -74,11 +74,12 @@ function fn_searchUser() {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $("#progressMsgTitle").html("사용자를 조회 중 입니다.");
+            $("#progressMsgDetail").html("..........");
             startProgressBar(); // 프로그레스바 시작
             addProgressBar(1, 1); // 프로그레스바 진행
         },
         success: function (data) {
-            addProgressBar(2, 100); // 프로그레스바 진행
+            addProgressBar(2, 99); // 프로그레스바 진행
             console.log("data.. : " + JSON.stringify(data));
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
@@ -123,6 +124,7 @@ function fn_chooseUser(seqNum) {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $("#progressMsgTitle").html("사용자를 조회 중 입니다.");
+            $("#progressMsgDetail").html("..........");
             startProgressBar(); // 프로그레스바 시작
             addProgressBar(1, 1); // 프로그레스바 진행
         },

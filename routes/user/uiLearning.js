@@ -106,7 +106,25 @@ router.post('/textClassification', function (req, res) {
 
     try {
         aimain.textClassificationEval(data, function (result) {
-            res.send({ 'fileName': fileName, 'data': result, nextType: 'lm' });
+            res.send({ 'fileName': fileName, 'data': result, nextType: 'st' });
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
+});
+
+// statement classifiction ML
+router.post('/statementClassification', function (req, res) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+
+    process.on('uncaughtException', function (err) {
+        console.log('uncaughtException : ' + err);
+    });
+
+    try {
+        aimain.statementClassificationEval(data, function (result) {
+            res.send({ 'fileName': fileName, 'data': result.data, 'docCategory': result.docCategory, nextType: 'lm' });
         });
     } catch (exception) {
         console.log(exception);
@@ -117,6 +135,7 @@ router.post('/textClassification', function (req, res) {
 router.post('/labelMapping', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
+    var docCategory = (req.body.docCategory) ? req.body.docCategory : null;
 
     process.on('uncaughtException', function (err) {
         console.log('uncaughtException : ' + err);
@@ -124,7 +143,7 @@ router.post('/labelMapping', function (req, res) {
 
     try {
         aimain.labelMappingEval(data, function (result) {
-            res.send({ 'fileName': fileName, 'data': result, nextType: 'sc' });
+            res.send({ 'fileName': fileName, 'data': result, 'docCategory': docCategory, nextType: 'sc' });
         });
     } catch (exception) {
         console.log(exception);
@@ -135,9 +154,10 @@ router.post('/labelMapping', function (req, res) {
 router.post('/searchDBColumns', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
+    var docCategory = (req.body.docCategory) ? req.body.docCategory : null;
 
     commonDB.reqQuery(selectColumn, function (rows, req, res) {
-        res.send({ 'fileName': fileName, 'data': data, 'column': rows });
+        res.send({ 'fileName': fileName, 'data': data, 'docCategory': docCategory, 'column': rows });
     }, req, res);
 });
 

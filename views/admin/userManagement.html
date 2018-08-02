@@ -19,38 +19,27 @@
     <!-- // 문서 조회 전용 js -->
 
     <style>
-        /*#ocrProgress {
-            background-color: grey;
-            position: absolute;
-            top: 50%;
-            left: 60%;
-            background: #edf2f6;
-            transform: translate(-50%, -50%);
-            width: 420px;
-            z-index: 1000;
-            display: none
-        }
-
-        #progressMsgTitle {
-            width: 100%;
-            height: 20px;
-            background-color: #edf2f6;
-            text-align: center;
-        }
-
-        #ocrBar {
-            width: 1%;
-            height: 30px;
-            background-color: #9eaec5;
-        }*/
     </style>
 </head>
 <body>
+    <div id="mask"></div>
     <div id="wrap">
+        <!--로딩바-->
         <div id="ocrProgress">
-            <div id="progressMsgTitle"></div>
-            <div id="ocrBar"></div>
+            <div id="ocrBarBg">
+                <div id="ocrBar">
+                    <span>1%</span>
+                </div>
+            </div>
+            <!-- 호출하는 ajax에 따라 로딩바 이벤트를 호출 할 때 아래 progressMsgTitle, progressMsgDetail 메시지도 수정-->
+            <div id="progressMsgTitle">
+                <!-- 로딩바 바로 아래 메시지 -->
+            </div>
+            <div id="progressMsgDetail">
+                <!-- 로딩바 아래아래 메시지-->
+            </div>
         </div>
+        <!--로딩바-->
         <!-- skip navi -->
         <%include  ../common/header.html%>
         <!-- //skip navi -->

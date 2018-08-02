@@ -14,12 +14,21 @@ $(function () {
     uploadFileEvent();
     thumbImgPagingEvent();
     uiTrainEvent();
-
+    popUpRunEvent();
 });
 
 // 초기 작업
 function init() {
     $('.button_control').attr('disabled', true);
+}
+
+// 팝업 확인 이벤트
+function popUpRunEvent() {
+    $('#btn_pop_doc_run').click(function (e) {
+
+        e.stopPropagation();
+        e.preventDefault();
+    });
 }
 
 // 파일 업로드 이벤트
@@ -239,7 +248,12 @@ function appendOcrData(fileName, regions) {
             data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
         }
     }
-    executeML(fileName, data, 'ts');
+    var param = {
+        'fileName': fileName,
+        'data': data,
+        'nextType': 'ts'
+    };
+    executeML(param);
     /*
     $('#progressMsgTitle').html('머신러닝 작동 중..');
     $('#loadingDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0,200) + '...');
@@ -295,12 +309,22 @@ function appendOcrData(fileName, regions) {
 
 /**
  * @param {any} type
- * ts : typoSentence , dd : domainDictionary , tc : textClassification , lm : labelMapping , sc : searchDBColumns
+ * ts : typoSentence , dd : domainDictionary , tc : textClassification , lm : labelMapping , st : statementClassification , sc : searchDBColumns
  */
-function executeML(fileName, data, type) {
-    $('#progressMsgDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0, 200) + '...');
-    var targetUrl;
+function executeML(totData) {
+    $('#progressMsgDetail').html(JSON.stringify(totData).substring(0, 200) + '...');
+    var fileName = totData.fileName;
+    var data = totData.data;
+    var type = totData.nextType;
+    var docCategory = (totData.docCategory) ? totData.docCategory : null
 
+    var targetUrl;
+    var param;
+    if (!docCategory) {
+        param = { 'fileName': fileName, 'data': data };
+    } else {
+        param = { 'fileName': fileName, 'data': data, 'docCategory': docCategory };
+    }
     if (type == 'ts') {
         targetUrl = '/uiLearning/typoSentence';
         $('#progressMsgTitle').html('오타 수정 처리 중..');
@@ -313,10 +337,14 @@ function executeML(fileName, data, type) {
         targetUrl = '/uiLearning/textClassification';
         $('#progressMsgTitle').html('텍스트 분류 처리 중..');
         addProgressBar(61, 70);
+    } else if (type == 'st') {
+        targetUrl = '/uiLearning/statementClassification';
+        $('#progressMsgTitle').html('계산서 분류 처리 중..');
+        addProgressBar(71, 75);
     } else if (type == 'lm') {
         targetUrl = '/uiLearning/labelMapping';
         $('#progressMsgTitle').html('라벨 매핑 처리 중..');
-        addProgressBar(71, 80);
+        addProgressBar(76, 80);
     } else {
         targetUrl = '/uiLearning/searchDBColumns';
         $('#progressMsgTitle').html('DB 컬럼 조회 중..');
@@ -327,14 +355,16 @@ function executeML(fileName, data, type) {
         url: targetUrl,
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'fileName': fileName, 'data': data }),
+        data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
+            //console.log(data);
+            if (data.column) searchDBColumnsCount++;
             if (data.nextType) {
-                executeML(data.fileName, data.data, data.nextType);
+                executeML(data);
             } else {
-                lineText.push(data);
-                searchDBColumnsCount++;
+                //console.log(data);
+                lineText.push(data);                
 
                 if (searchDBColumnsCount == 1) {
                     var mainImgHtml = '';
@@ -350,7 +380,10 @@ function executeML(fileName, data, type) {
                     $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
                     thumnImg();
                     $('#imageBox > li').eq(0).addClass('on');
+                    $('#docName').html(data.docCategory.DOCNAME);
+                    $('#docPredictionScore').html(data.docCategory.score + '%');
                     detailTable(fileName);
+                    docComparePopup(0);
                 }
                 if (totCount == searchDBColumnsCount) {
                     thumbImgEvent();
@@ -361,6 +394,18 @@ function executeML(fileName, data, type) {
         error: function (err) {
             console.log(err);
         }
+    });
+}
+
+//문서 비교 popup 버튼 클릭 이벤트
+function docComparePopup(imgIndex) {
+    $('#docCompareBtn').unbind('click');
+    $('#docCompareBtn').click(function (e) {
+        $('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
+        $('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+        layer_open('layer1');
+        e.preventDefault();
+        e.stopPropagation();
     });
 }
 

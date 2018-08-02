@@ -1,6 +1,8 @@
 var appRoot = require('app-root-path').path;
 var exec = require('child_process').exec;
 var commonUtil = require(appRoot + '/public/js/common.util.js');
+var commonDB = require(appRoot + '/public/js/common.db.js');
+var queryConfig = require(appRoot + '/config/queryConfig.js');
 var logger = require('./logger.js');
 
 const defaults = {
@@ -117,6 +119,35 @@ exports.textClassificationEval = function(data, callback) {
     });
 }
 
+// 계산서 분류 머신러닝 -- 임시
+exports.statementClassificationEval = function (data, callback) {
+    var returnObj = {};
+    var number = 0;
+    var score = 0; // 예측스코어
+
+    // 머신러닝이 담당할 부분 START
+    for (var i in data) {
+        if (data[i].text.trim() == 'APEX') { // APEX 계산서 이면
+            number = 1;
+            score = 98.8;
+            break;
+        } else { // 그 외
+            number = 999;
+            score = 97.4;
+        }
+    }
+    // 머신러닝이 담당할 부분 END
+
+    returnObj.data = data;
+    commonDB.queryParam2(queryConfig.mlConfig.selectDocCategory, [number], function (rows, returnObj, score) {
+        if (rows.length > 0) {
+            returnObj.docCategory = rows[0];
+            returnObj.docCategory.score = score; // 예측 스코어
+        }
+        callback(returnObj);
+    }, returnObj, score);
+};
+
 //label mapping eval
 exports.labelMappingEval = function(data, callback) {
 
@@ -212,21 +243,13 @@ exports.labelMappingEval = function(data, callback) {
     });
 }
 
-exports.statementClassificationEval = function (data, callback) {
-    var returnObj = {};
-    for (var i in data) {
-        if (data[i].text == 'Solidarity- First Insurance 2018' || data[i].text == 'Solidarity- First Insurance 2017'
-        || data[i].text == 'Solidarity- First Takaful 2016') { // 계산서 이면
-            returnObj.isStatement = 1;
-            returnObj.mlData = data;
-        } else { // 계산서 아니면
-            returnObj.isStatement = 0;
-            returnObj.mlData = data;
-        }
-    }
+exports.billClassificationEval = function (data, callback) {
 
-    callback(returnObj);
-};
+}
+
+exports.labelClassificationEval = function (data, callback) {
+
+}
 
 function dataToArgs(data) {
 
