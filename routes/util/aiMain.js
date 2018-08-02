@@ -124,6 +124,8 @@ exports.statementClassificationEval = function (data, callback) {
     var returnObj = {};
     var number = 0;
     var score = 0; // 예측스코어
+
+    // 머신러닝이 담당할 부분 START
     for (var i in data) {
         if (data[i].text.trim() == 'APEX') { // APEX 계산서 이면
             number = 1;
@@ -134,6 +136,8 @@ exports.statementClassificationEval = function (data, callback) {
             score = 97.4;
         }
     }
+    // 머신러닝이 담당할 부분 END
+
     returnObj.data = data;
     commonDB.queryParam2(queryConfig.mlConfig.selectDocCategory, [number], function (rows, returnObj, score) {
         if (rows.length > 0) {
