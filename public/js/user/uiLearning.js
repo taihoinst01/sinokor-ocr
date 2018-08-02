@@ -380,7 +380,7 @@ function executeML(totData) {
                     thumnImg();
                     $('#imageBox > li').eq(0).addClass('on');
                     $('#docName').html(data.docCategory.DOCNAME);
-                    $('#docPredictionScore').html(data.docCategory.score);
+                    $('#docPredictionScore').html(data.docCategory.score + '%');
                     detailTable(fileName);
                     docComparePopup(0);
                 }

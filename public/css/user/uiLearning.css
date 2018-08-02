@@ -23,3 +23,5 @@ button[disabled] { opacity: 0.5; cursor: default; }
 .imgbox > img { width:450px; height: 600px; }
 .float-left { float: left; }
 .float-right { float: right; }
+#docName { color: dodgerblue; }
+#docPredictionScore { color: darkred; font-size: 15px; }
