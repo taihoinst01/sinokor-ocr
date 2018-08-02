@@ -18,39 +18,26 @@
     <script type="text/javascript" src="js/user/invoiceRegistration.js"></script>
     <!-- // 문서 조회 전용 js -->
 
-    <style>
-        #ocrProgress {
-            background-color: grey;
-            position: absolute;
-            top: 50%;
-            left: 60%;
-            background: #edf2f6;
-            transform: translate(-50%, -50%);
-            width: 420px;
-            z-index: 1000;
-            display: none
-        }
-
-        #progressMsgTitle {
-            width: 100%;
-            height: 20px;
-            background-color: #edf2f6;
-            text-align: center;
-        }
-
-        #ocrBar {
-            width: 1%;
-            height: 30px;
-            background-color: #9eaec5;
-        }
-    </style>
 </head>
 <body>
+    <div id="mask"></div>
     <div id="wrap">
+        <!--로딩바-->
         <div id="ocrProgress">
-            <div id="progressMsgTitle"></div>
-            <div id="ocrBar"></div>
+            <div id="ocrBarBg">
+                <div id="ocrBar">
+                    <span>1%</span>
+                </div>
+            </div>
+            <!-- 호출하는 ajax에 따라 로딩바 이벤트를 호출 할 때 아래 progressMsgTitle, progressMsgDetail 메시지도 수정-->
+            <div id="progressMsgTitle">
+                <!-- 로딩바 바로 아래 메시지 -->
+            </div>
+            <div id="progressMsgDetail">
+                <!-- 로딩바 아래아래 메시지-->
+            </div>
         </div>
+        <!--로딩바-->
         <!-- skip navi -->
         <%include  ../common/header.html%>
         <!-- //skip navi -->
@@ -61,9 +48,375 @@
             <!-- // LNB -->
             <!-- 본문영역 -->
             <div id="content">
-                <h2 class="subtit subtit_st01 blind"><span>계산서 등록</span></h2>
 
-                <span>계산서 등록</span>
+                <div class="box_content st_stsh">
+                    <!-- 양식이미지 업로드폼-->
+                    <div id="uploadForm" class="box_content_T_01">
+
+                        <div class="st_infortext_01">
+                            <span id="uploadInfoText">Drag & Drop files here</span>
+                            <form id="uploadFileForm" action="" method="post" enctype="multipart/form-data">
+                                <p class="attach_btn">
+                                    <input type="file" id="uploadFile" name="file" value="upload" />
+                                    <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
+                                </p>
+                            </form>
+                        </div>
+
+                    </div>
+                    <!-- // 양식이미지 업로드폼-->
+                    <!-- 조회조건 목록  -->
+                    <div class="box_content_T_02">
+                        <h3 class="tits"><span>조회조건</span></h3>
+
+                        <div class="box_txt_st01 st00_sh">
+                            <dl>
+                                <dt>
+                                    <label for="intxt_01">
+                                        문서번호
+                                    </label>
+                                </dt>
+                                <dd>
+                                    <input type="text" name="" id="" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+
+                            <dl>
+                                <dt><label for="intxt_02">문서담당자</label></dt>
+                                <dd>
+                                    <input type="text" name="" id="" class="inputst_box01" value="" placeholder="홍길동" />
+                                </dd>
+                            </dl>
+                        </div>
+
+                        <div class="btn_rt">
+                            <button type="button" id="" class="button_st3">조회</button>
+                        </div>
+                    </div>
+                    <!-- // 조회조건 목록 -->
+                    <!-- 문서 기본정보 영역 -->
+                    <div id="div_base" class="box_content_T_03">
+                        <h3 class="tits"><span id="">문서 기본정보</span></h3>
+
+                        <div class="table_style02">
+                            <table>
+                                <caption>결재리스트(기본) 타이틀 정보</caption>
+                                <colgroup>
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="width:10%" />
+                                    <col style="width:20%" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll" name="listCheckAll" /></div></th>
+                                        <th scope="row">문서번호</th>
+                                        <th scope="row">페이지수</th>
+                                        <th scope="row">문서담당자</th>
+                                        <th scope="row">소속팀</th>
+                                        <th scope="row">소속파트</th>
+                                        <th scope="row">계약담당자</th>
+                                        <th scope="row">마감년월</th>
+                                        <th scope="row">MEMO</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+
+                        <div class="table_style02">
+                            <div class="mCustomScrollbar box_scroll_st3" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                                <table class="">
+                                    <caption>결재리스트(기본) 정보</caption>
+                                    <colgroup>
+                                        <col style="width:10%" />
+                                        <col style="width:10%" />
+                                        <col style="width:10%" />
+                                        <col style="width:10%" />
+                                        <col style="width:10%" />
+                                        <col style="width:10%" />
+                                        <col style="width:10%" />
+                                        <col style="width:10%" />
+                                        <col style="width:20%" />
+                                    </colgroup>
+                                    <tbody id="">
+                                        <!--
+                                        <tr>
+                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
+                                            <td>ICR2018071000000123</td>
+                                            <td>27</td>
+                                            <td>201807</td>
+                                            <td>리키타츠너</td>
+                                            <td>이라르</td>
+                                            <td>이라르</td>
+                                            <td>이라르</td>
+                                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="intxt_001" class="inputst_box01" value="" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
+                                            <td>ICR2018071000000123</td>
+                                            <td>27</td>
+                                            <td>201807</td>
+                                            <td>리키타츠너</td>
+                                            <td>이라르</td>
+                                            <td>이라르</td>
+                                            <td>이라르</td>
+                                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="intxt_001" class="inputst_box01" value="" /></td>
+                                        </tr>
+                                        -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 버튼 영역 -->
+                        <div class="fr mt10">
+                            <button type="button" id="" class="button_st1">저장</button>
+                            <button type="button" id="" class="button_st2">재처리</button>
+                            <button type="button" id="" class="button_st2">삭제</button>
+                        </div>
+                        <!-- // 버튼 영역 -->
+                    </div>
+                    <!-- // 문서 기본정보 영역 -->
+                </div>
+                <!-- 양식이미지 -->
+                <div id="div_image" class="box_content box_content_bg st_stsh st_last">
+                    <h3 class="tits"><span>양식이미지</span></h3>
+
+                    <div id="div_view_image" class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                        <!--<img src="publish/image/sample01.jpg" alt="샘플이미지" />-->
+                    </div>
+
+                    <div class="box_imgtmb">
+                        <button type="button" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
+                        <div id="touchSlider">
+                            <ul id="ul_image">
+                                <!--
+                                <li class="on">
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                                <li>
+                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                    <span>@@Filename_Filename_0001.jpg</span>
+                                </li>
+                                -->
+                            </ul>
+                        </div>
+                        <button type="button" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
+                        <div id="count" class="count"><!--<span>1</span> / 1--></div>
+                    </div>
+                </div>
+                <!-- // 양식이미지 -->
+                <!-- 인식결과 영역 -->
+                <div id="div_base" class="box_content_T_05">
+                    <h3 class="tits"><span id="span_document">인식 결과</span></h3>
+
+                    <div class="table_style02">
+                        <div class="mCustomScrollbar box_scroll_st3" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                            <table>
+                                <caption>인식 결과</caption>
+                                <colgroup>
+                                    <col style="width:50px" />
+                                    <col style="width:140px" />
+                                    <col style="width:60px" />
+                                    <col style="width:80px" />
+                                    <col style="width:90px" />
+                                    <col style="width:90px" />
+                                    <col style="width:123px" />
+                                    <col style="width:123px" />
+                                    <col style="width:50px" />
+                                    <col style="width:140px" />
+                                    <col style="width:60px" />
+                                    <col style="width:80px" />
+                                    <col style="width:90px" />
+                                    <col style="width:90px" />
+                                    <col style="width:123px" />
+                                    <col style="width:123px" />
+                                    <col style="width:50px" />
+                                    <col style="width:140px" />
+                                    <col style="width:60px" />
+                                    <col style="width:80px" />
+                                    <col style="width:90px" />
+                                    <col style="width:90px" />
+                                    <col style="width:123px" />
+                                    <col style="width:123px" />
+                                    <col style="width:50px" />
+                                    <col style="width:140px" />
+                                    <col style="width:60px" />
+                                    <col style="width:80px" />
+                                    <col style="width:90px" />
+                                    <col style="width:90px" />
+                                    <col style="width:123px" />
+                                    <col style="width:123px" />
+                                    <col style="width:50px" />
+                                    <col style="width:140px" />
+                                    <col style="width:60px" />
+                                    <col style="width:80px" />
+                                    <col style="width:90px" />
+                                    <col style="width:90px" />
+                                    <col style="width:123px" />
+                                    <col style="width:123px" />
+                                    <col style="width:90px" />
+                                    <col style="width:90px" />
+                                    <col style="width:123px" />
+                                    <col style="width:123px" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll" name="listCheckAll" /></div></th>
+                                        <th scope="row">페이지번호 from</th>
+                                        <th scope="row">페이지번호 to</th>
+                                        <th scope="row">출재사명</th>
+                                        <th scope="row">계약명</th>
+                                        <th scope="row">UY</th>
+                                        <th scope="row">계약번호</th>
+                                        <th scope="row">화폐코드</th>
+                                        <th scope="row">PAID<br />(100%)</th>
+                                        <th scope="row">PAID<br />(Our Share)</th>
+                                        <th scope="row">OSL<br />(100%)</th>
+                                        <th scope="row">OSL<br />(Our Share)</th>
+                                        <th scope="row">GROSS PREMIUM</th>
+                                        <th scope="row">PREMIUM</th>
+                                        <th scope="row">PREMIUM P/F ENT</th>
+                                        <th scope="row">v</th>
+                                        <th scope="row">XOL PREMIUM</th>
+                                        <th scope="row">RETURN PREMIUM</th>
+                                        <th scope="row">GROSS COMMISSION</th>
+                                        <th scope="row">COMMISSION</th>
+                                        <th scope="row">PROFIT COMMISSION</th>
+                                        <th scope="row">BROKERAGE</th>
+                                        <th scope="row">TAX</th>
+                                        <th scope="row">OVERRIDING COM</th>
+                                        <th scope="row">CHARGE</th>
+                                        <th scope="row">PREMUIM RESERVE RTD</th>
+                                        <th scope="row">P/F PREMIUM RESERVE RTD</th>
+                                        <th scope="row">PREMIUM RESERVE RLD</th>
+                                        <th scope="row">P/F PREMIUM RESERVE RLD</th>
+                                        <th scope="row">CLAIM</th>
+                                        <th scope="row">LOSS RECOVERY</th>
+                                        <th scope="row">CASH LOSS</th>
+                                        <th scope="row">CASH LOSS REFUND</th>
+                                        <th scope="row">LOSS RESERVE RTD</th>
+                                        <th scope="row">LOSS RESERVE RLD</th>
+                                        <th scope="row">LOSS P/F ENT</th>
+                                        <th scope="row">LOSS P/F WOA</th>
+                                        <th scope="row">INTEREST</th>
+                                        <th scope="row">TAX ON INTEREST</th>
+                                        <th scope="row">MISCELLANEOUS</th>
+                                        <th scope="row">PREMIUM BALANCE</th>
+                                        <th scope="row">CLAIM BALANCE</th>
+                                        <th scope="row">NET BALANCE</th>
+                                        <th scope="row">Your Refernece</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!--
+                                    <tr>
+                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
+                                        <td>ICR2018071000000123</td>
+                                        <td>27</td>
+                                        <td>201807</td>
+                                        <td>리키타츠너</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>ICR2018071000000123</td>
+                                        <td>27</td>
+                                        <td>201807</td>
+                                        <td>리키타츠너</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>ICR2018071000000123</td>
+                                        <td>27</td>
+                                        <td>201807</td>
+                                        <td>리키타츠너</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>ICR2018071000000123</td>
+                                        <td>27</td>
+                                        <td>201807</td>
+                                        <td>리키타츠너</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>ICR2018071000000123</td>
+                                        <td>27</td>
+                                        <td>201807</td>
+                                        <td>리키타츠너</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                        <td>이라르</td>
+                                    </tr>
+                                    -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 버튼 영역 -->
+                    <div class="fr mt10">
+                        <button type="button" id="" class="button_st1">계약번호 추출</button>
+                        <button type="button" id="" class="button_st2">전달/결재상신</button>
+                        <button type="button" id="" class="button_st2">재학습</button>
+                    </div>
+                    <!-- // 버튼 영역 -->
+                </div>
+                <!-- // 기본결재리스트 영역 -->
             </div>
             <!-- // Content -->
 
