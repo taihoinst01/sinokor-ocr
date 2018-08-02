@@ -348,13 +348,13 @@ function executeML(totData) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
+            //console.log(data);
+            if (data.column) searchDBColumnsCount++;
             if (data.nextType) {
                 executeML(data);
             } else {
                 //console.log(data);
-                lineText.push(data);
-                searchDBColumnsCount++;
+                lineText.push(data);                
 
                 if (searchDBColumnsCount == 1) {
                     var mainImgHtml = '';
@@ -370,7 +370,10 @@ function executeML(totData) {
                     $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
                     thumnImg();
                     $('#imageBox > li').eq(0).addClass('on');
+                    $('#docName').html(data.docCategory.DOCNAME);
+                    $('#docPredictionScore').html(data.docCategory.score);
                     detailTable(fileName);
+                    docComparePopup(0);
                 }
                 if (totCount == searchDBColumnsCount) {
                     thumbImgEvent();
@@ -381,6 +384,15 @@ function executeML(totData) {
         error: function (err) {
             console.log(err);
         }
+    });
+}
+
+//문서 비교 popup 버튼 클릭 이벤트
+function docComparePopup(imgIndex) {
+    $('#docCompareBtn').click = null;
+    $('#docCompareBtn').click(function () {
+        console.log('./uploads/'+lineText[imgIndex].fileName);
+        console.log(lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
     });
 }
 
