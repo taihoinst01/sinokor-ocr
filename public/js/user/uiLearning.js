@@ -15,6 +15,7 @@ $(function () {
     thumbImgPagingEvent();
     uiTrainEvent();
     popUpCloseEvent();
+    popUpRunEvent();
 });
 
 // 초기 작업
@@ -22,9 +23,17 @@ function init() {
     $('.button_control').attr('disabled', true);
 }
 
+// 팝업 확인 이벤트
+function popUpRunEvent() {
+    $('#btn_pop_doc_run').click(function () {
+        alert('준비 중');
+        return false;
+    });
+}
+
 // 팝업 취소 이벤트
 function popUpCloseEvent() {
-    $('#btn_pop_batch_close').click(function () {
+    $('#btn_pop_doc_close').click(function () {
         $('.poplayer').fadeOut();
     });
 }

@@ -17,17 +17,19 @@
 
     <link rel="stylesheet" href="css/dropdown.css">
 
+    <!-- UI 학습 전용 js -->
+    <link rel="stylesheet" href="css/user/uiLearning.css">
+    <!-- // UI 학습 전용 js -->
+
     <!-- multiFileUpload & form async js -->
     <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
     <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
     <!-- // multiFileUpload & form async js -->
-
     <!-- 공통 js -->
     <script type="text/javascript" src="js/common.client.js"></script>
     <!-- // 공통 js -->
-
     <!-- UI 학습 전용 js -->
     <script type="text/javascript" src="js/user/uiLearning.js"></script>
     <!-- // UI 학습 전용 js -->
@@ -199,24 +201,24 @@
         </div>
         <!-- // Content -->
         <!-- 팝업_수동학습레이어팝업 -->
-        <div id="layer1" class="poplayer">
+        <div id="layer1" class="poplayer" style="display:inline;">
             <div class="bg"></div>
             <div class="pop_layer">
-                <div class="pop_popup0" style="width: 1000px;">
+                <div class="pop_popup0 doc_popup">
                     <div class="pop_header">
                         <h1>문서 비교</h1>
                     </div>
                     <div class="pop_content">
-                        <div class="imgbox" style="float:left; border: 1px solid #dadada;">
-                            <img id="originImg" src="../../uploads/26.jpg" style="width:450px; height: 600px;"/>
+                        <div class="imgbox float-left">
+                            <img id="originImg" />
                         </div>
-                        <div class="imgbox" style="float:right; border: 1px solid #dadada;">
-                            <img id="searchImg" src="../../sample/apex.jpg" style="width:450px; height: 600px;"/>
+                        <div class="imgbox float-right">
+                            <img id="searchImg" />
                         </div>
                     </div>
                     <div class="pop_footer">
-                        <button type="button" id="btn_pop_batch_run" class="button_st1 cbtn">확 인</button>
-                        <button type="button" id="btn_pop_batch_close" class="button_st2 cbtn">취 소</button>
+                        <button type="button" id="btn_pop_doc_run" class="button_st1 cbtn">확 인</button>
+                        <button type="button" id="btn_pop_doc_close" class="button_st2 cbtn">취 소</button>
                     </div>
                 </div>
             </div>
