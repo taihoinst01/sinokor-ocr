@@ -117,7 +117,7 @@ function processImage(fileName) {
             if (!data.code) { // 에러가 아니면
                 //console.log(data);
                 thumbImgs.push(fileName);
-                $('#loadingTitle').html('OCR 처리 완료');
+                $('#progressMsgTitle').html('OCR 처리 완료');
                 $('#loadingDetail').html(fileName);
                 addProgressBar(31, 40);
                 appendOcrData(fileName, data.regions);
@@ -240,7 +240,7 @@ function appendOcrData(fileName, regions) {
     }
     executeML(fileName, data, 'ts');
     /*
-    $('#loadingTitle').html('머신러닝 작동 중..');
+    $('#progressMsgTitle').html('머신러닝 작동 중..');
     $('#loadingDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0,200) + '...');
     addProgressBar(41, 50);
     $.ajax({
@@ -272,7 +272,7 @@ function appendOcrData(fileName, regions) {
             if (totCount == searchDBColumnsCount) {
                 thumbImgEvent();
             }
-            $('#loadingTitle').html('머신러닝 작동 완료');
+            $('#progressMsgTitle').html('머신러닝 작동 완료');
             $('#loadingDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0, 200) + '...');
             addProgressBar(91, 100);
             // 몇 페이지 어디인지 표시
@@ -306,19 +306,19 @@ function executeML(fileName, data, type) {
         addProgressBar(41, 50);
     } else if (type == 'dd') {
         targetUrl = '/uiLearning/domainDictionary';
-        $('#loadingTitle').html('도메인 사전 처리 중..');
+        $('#progressMsgTitle').html('도메인 사전 처리 중..');
         addProgressBar(51, 60);
     } else if (type == 'tc') {
         targetUrl = '/uiLearning/textClassification';
-        $('#loadingTitle').html('텍스트 분류 처리 중..');
+        $('#progressMsgTitle').html('텍스트 분류 처리 중..');
         addProgressBar(61, 70);
     } else if (type == 'lm') {
         targetUrl = '/uiLearning/labelMapping';
-        $('#loadingTitle').html('라벨 매핑 처리 중..');
+        $('#progressMsgTitle').html('라벨 매핑 처리 중..');
         addProgressBar(71, 80);
     } else {
         targetUrl = '/uiLearning/searchDBColumns';
-        $('#loadingTitle').html('DB 컬럼 조회 중..');
+        $('#progressMsgTitle').html('DB 컬럼 조회 중..');
         addProgressBar(81, 90);
     }
 

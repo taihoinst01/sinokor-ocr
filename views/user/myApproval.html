@@ -161,35 +161,9 @@
                         <h3 class="tits"><span id="span_document">결재리스트(기본)</span></h3>
 
                         <div class="table_style02">
-                            <table>
-                                <caption>결재리스트(기본) 타이틀 정보</caption>
-                                <colgroup>
-                                    <col style="width:50px" />
-                                    <col style="width:140px" />
-                                    <col style="width:60px" />
-                                    <col style="width:80px" />
-                                    <col style="width:90px" />
-                                    <col style="width:90px" />
-                                    <col style="width:246px" />
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll" name="listCheckAll" /></div></th>
-                                        <th scope="row">문서번호</th>
-                                        <th scope="row">페이지수</th>
-                                        <th scope="row">마감년월</th>
-                                        <th scope="row">결제상신자</th>
-                                        <th scope="row">문서담당자</th>
-                                        <th scope="row">메모</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-
-                        <div class="table_style02">
                             <div class="mCustomScrollbar box_scroll_st3" data-mcs-axis="yx" data-mcs-theme="dark-3">
-                                <table class="">
-                                    <caption>결재리스트(기본) 정보</caption>
+                                <table>
+                                    <caption>결재리스트(기본) 타이틀 정보</caption>
                                     <colgroup>
                                         <col style="width:50px" />
                                         <col style="width:140px" />
@@ -197,21 +171,49 @@
                                         <col style="width:80px" />
                                         <col style="width:90px" />
                                         <col style="width:90px" />
-                                        <col style="width:230px" />
+                                        <col style="width:246px" />
                                     </colgroup>
-                                    <tbody id="tbody_baseList"></tbody>
+                                    <thead>
+                                        <tr>
+                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll" name="listCheckAll" /></div></th>
+                                            <th scope="row">문서번호</th>
+                                            <th scope="row">페이지수</th>
+                                            <th scope="row">마감년월</th>
+                                            <th scope="row">결제상신자</th>
+                                            <th scope="row">문서담당자</th>
+                                            <th scope="row">메모</th>
+                                        </tr>
+                                    </thead>
                                 </table>
                             </div>
                         </div>
 
-                        <!-- 버튼 영역 -->
-                        <div class="fr mt10">
-                            <button type="button" id="btn_baseList_approval" class="button_st1">승인</button>
-                            <button type="button" id="btn_baseList_return" class="button_st2">반려</button>
-                            <button type="button" id="btn_baseList_forward" class="button_st2">전달</button>
+                            <div class="table_style02">
+                                <div class="mCustomScrollbar box_scroll_st3" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                                    <table class="">
+                                        <caption>결재리스트(기본) 정보</caption>
+                                        <colgroup>
+                                            <col style="width:50px" />
+                                            <col style="width:140px" />
+                                            <col style="width:60px" />
+                                            <col style="width:80px" />
+                                            <col style="width:90px" />
+                                            <col style="width:90px" />
+                                            <col style="width:230px" />
+                                        </colgroup>
+                                        <tbody id="tbody_baseList"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 버튼 영역 -->
+                            <div class="fr mt10">
+                                <button type="button" id="btn_baseList_approval" class="button_st1">승인</button>
+                                <button type="button" id="btn_baseList_return" class="button_st2">반려</button>
+                                <button type="button" id="btn_baseList_forward" class="button_st2">전달</button>
+                            </div>
+                            <!-- // 버튼 영역 -->
                         </div>
-                        <!-- // 버튼 영역 -->
-                    </div>
                     <!-- // 기본결재리스트 영역 -->
                     <!--  상세결재리스트 영역 -->
                     <div id="div_dtl" class="box_st03 box_st031 box_content_bg" style="display:none">

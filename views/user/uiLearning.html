@@ -72,7 +72,7 @@
 
                 <!-- 양식이미지 업로드폼-->
                 <div id="uploadForm" class="box_content_L">
-                    <div id="img_content">
+                    
                         <div class="st_infortext_01">
                             <span id="uploadInfoText">Drag & Drop files here</span>
                             <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
@@ -82,7 +82,7 @@
                                 </p>
                             </form>
                         </div>
-                    </div>
+                    
                 </div>
                 <!-- 양식이미지 업로드폼-->
                 <!-- 양식이미지 -->
@@ -93,28 +93,39 @@
                         <div class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
                             <!--<img src="publish/image/sample03.png" alt="샘플이미지" />-->
                             <ul id="imageBox"></ul>
-                        </div>
-
-
-
-
-                        <div class="box_imgtmb">
-                            <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
-                            <div id="touchSlider">
-                                <ul>
-                                    <!--
-                                <li class="on">
-                                    <div class="box_img"><i><img src="publish/image/sample03.png" title="샘플이미지"></i></div>
-                                    <span>Filename_Filename_0001.jpg</span>
-                                </li>
-                                -->
-                                </ul>
+                            <div id="img_content">
+                                <div class="st_infortext_01">
+                                    <span id="uploadInfoText">파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
+                                    <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
+                                        <p class="attach_btn">
+                                            <input type="file" id="uploadFile" name="file" value="upload" />
+                                            <label id="uploadFileBtn" for="customer_file">업로드</label>
+                                        </p>
+                                    </form>
+                                </div>
                             </div>
-                            <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
-                            <!--<button type="button" id="thumb-tot" class="button_control button_control3">전체</button>-->
-                            <div id="count" class="count"><!--<span>1</span> / 3--></div>
                         </div>
-                    </div>
+
+
+
+
+                            <div class="box_imgtmb">
+                                <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
+                                <div id="touchSlider">
+                                    <ul>
+                                        <!--
+                <li class="on">
+                    <div class="box_img"><i><img src="publish/image/sample03.png" title="샘플이미지"></i></div>
+                    <span>Filename_Filename_0001.jpg</span>
+                </li>
+                -->
+                                    </ul>
+                                </div>
+                                <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
+                                <!--<button type="button" id="thumb-tot" class="button_control button_control3">전체</button>-->
+                                <div id="count" class="count"><!--<span>1</span> / 3--></div>
+                            </div>
+                        </div>
                     <!-- // 양식이미지 -->
                     <!-- 양식분석상세 -->
                     <div class="box_content_R st_last">

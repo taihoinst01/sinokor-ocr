@@ -1517,7 +1517,7 @@ function processImage_TEST(fileName) {
 
     var sourceImageUrl = 'http://kr-ocr.azurewebsites.net/uploads/' + fileName;
 
-    $('#loadingTitle').html('OCR 처리 중..');
+    $('#progressMsgTitle').html('OCR 처리 중..');
     $('#loadingDetail').html(sourceImageUrl);
 
     $.ajax({
