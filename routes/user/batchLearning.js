@@ -383,6 +383,7 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 router.post('/execBatchLearningData', function (req, res) {
     var arg = req.body.data;
 
+    /*
     aimain.typoSentenceEval(arg, function (result1) {
         console.log("typo ML");
         aimain.domainDictionaryEval(result1, function (result2) {
@@ -400,6 +401,17 @@ router.post('/execBatchLearningData', function (req, res) {
             })
         })
     });
+    */
+    console.log("bill ML");
+    aimain.billClassificationEval(arg, function (result1) {
+        console.log(result1);
+
+        aimain.labelClassificationEval(result1, function (result2) {
+            res.send(result2);
+        })
+        
+    });
+
 });
 
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
@@ -425,7 +437,8 @@ var callbackInsertBatchLearningData = function (rows, req, res) {
     res.send({ code: 200, rows: rows });
 };
 router.post('/updateBatchLearningData', function (req, res) {
-    var data = req.body.data;
+    var data = req.body.mldata.data;
+    var billInfo = req.body.mldata.docCategory;
     var fileInfos = req.body.fileInfos;
     var status = '';
     var keyCount = 0; // 컬럼 개수
@@ -436,64 +449,157 @@ router.post('/updateBatchLearningData', function (req, res) {
         status = 'N';
     }
 
-    var data = [
-        status,
-        commonUtil.nvl(data.entryNo),
-        commonUtil.nvl(data.statementDiv),
-        commonUtil.nvl(data.contractNum),
-        commonUtil.nvl(data.ogCompanyCode),
-        commonUtil.nvl(data.ogCompanyName),
-        commonUtil.nvl(data.brokerCode),
-        commonUtil.nvl(data.brokerName),
-        commonUtil.nvl(data.ctnm),
-        commonUtil.nvl(data.insstdt),
-        commonUtil.nvl(data.insenddt),
-        commonUtil.nvl(data.uy),
-        commonUtil.nvl(data.curcd),
-        commonUtil.nvl2(data.paidPercent, 0),
-        commonUtil.nvl2(data.paidShare, 0),
-        commonUtil.nvl2(data.oslPercent, 0),
-        commonUtil.nvl2(data.oslShare, 0),
-        commonUtil.nvl2(data.grosspm, 0),
-        commonUtil.nvl2(data.pm, 0),
-        commonUtil.nvl2(data.pmPFEnd, 0),
-        commonUtil.nvl2(data.pmPFWos, 0),
-        commonUtil.nvl2(data.xolPm, 0),
-        commonUtil.nvl2(data.returnPm, 0),
-        commonUtil.nvl2(data.grosscn, 0),
-        commonUtil.nvl2(data.cn, 0),
-        commonUtil.nvl2(data.profitcn, 0),
-        commonUtil.nvl2(data.brokerAge, 0),
-        commonUtil.nvl2(data.tax, 0),
-        commonUtil.nvl2(data.overridingCom, 0),
-        commonUtil.nvl2(data.charge, 0),
-        commonUtil.nvl2(data.pmReserveRTD, 0),
-        commonUtil.nvl2(data.pfPmReserveRTD, 0),
-        commonUtil.nvl2(data.pmReserveRTD1, 0),
-        commonUtil.nvl2(data.pfPmReserveRTD2, 0),
-        commonUtil.nvl2(data.claim, 0),
-        commonUtil.nvl2(data.lossRecovery, 0),
-        commonUtil.nvl2(data.cashLoss, 0),
-        commonUtil.nvl2(data.cashLossRD, 0),
-        commonUtil.nvl2(data.lossRR, 0),
-        commonUtil.nvl2(data.lossRR2, 0),
-        commonUtil.nvl2(data.lossPFEnd, 0),
-        commonUtil.nvl2(data.lossPFWoa, 0),
-        commonUtil.nvl2(data.interest, 0),
-        commonUtil.nvl2(data.taxOn, 0),
-        commonUtil.nvl2(data.miscellaneous, 0),
-        commonUtil.nvl2(data.pmbl, 0),
-        commonUtil.nvl2(data.cmbl, 0),
-        commonUtil.nvl2(data.ntbl, 0),
-        commonUtil.nvl2(data.cscosarfrncnnt2, 0),
+    var dataCod = {};
+
+    dataCod.STATEMENTDIV = billInfo.DOCNAME;
+
+    for (var i in data) {
+        if (data[i].column == "CTOGCOMPANYNAMENM") {
+            dataCod.CTOGCOMPANYNAMENM = data[i].text;
+        } else if (data[i].column == "CTNM") {
+            dataCod.CTNM = data[i].text;
+        } else if (data[i].column == "UY") {
+            dataCod.UY = data[i].text;
+        } else if (data[i].column == "CONTRACTNUM") {
+            dataCod.CONTRACTNUM = data[i].text;
+        } else if (data[i].column == "CURCD") {
+            dataCod.CURCD = data[i].text;
+        } else if (data[i].column == "PAIDPERCENT") {
+            dataCod.PAIDPERCENT = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "PAIDSHARE") {
+            dataCod.PAIDSHARE = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "OSLPERCENT") {
+            dataCod.OSLPERCENT = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "OSLSHARE") {
+            dataCod.OSLSHARE = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "GROSSPM") {
+            dataCod.GROSSPM = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "PM") {
+            dataCod.PM = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "PMPFEND") {
+            dataCod.PMPFEND = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "PMPFWOS") {
+            dataCod.PMPFWOS = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "XOLPM") {
+            dataCod.XOLPM = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "RETURNPM") {
+            dataCod.RETURNPM = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "GROSSCN") {
+            dataCod.GROSSCN = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "CN") {
+            dataCod.CN = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "PROFITCN") {
+            dataCod.PROFITCN = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "BROKERAGE") {
+            dataCod.BROKERAGE = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "TAX") {
+            dataCod.TAX = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "OVERRIDINGCOM") {
+            dataCod.OVERRIDINGCOM = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "CHARGE") {
+            dataCod.CHARGE = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "PMRESERVERTD") {
+            dataCod.PMRESERVERTD = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "PFPMRESERVERTD") {
+            dataCod.PFPMRESERVERTD = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "PMRESERVERLD") {
+            dataCod.PMRESERVERLD = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "PFPMRESERVERLD") {
+            dataCod.PFPMRESERVERLD = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "CLAIM") {
+            dataCod.CLAIM = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "LOSSRECOVERY") {
+            dataCod.LOSSRECOVERY = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "CASHLOSS") {
+            dataCod.CASHLOSS = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "CASHLOSSRD") {
+            dataCod.CASHLOSSRD = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "LOSSRR") {
+            dataCod.LOSSRR = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "LOSSRR2") {
+            dataCod.LOSSRR2 = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "LOSSPFEND") {
+            dataCod.LOSSPFEND = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "LOSSPFWOA") {
+            dataCod.LOSSPFWOA = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "INTEREST") {
+            dataCod.INTEREST = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "TAXON") {
+            dataCod.TAXON = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "MISCELLANEOUS") {
+            dataCod.MISCELLANEOUS = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "PMBL") {
+            dataCod.PMBL = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "CMBL") {
+            dataCod.CMBL = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "NTBL") {
+            dataCod.NTBL = data[i].text.replace(/ |,/g, '');
+        } else if (data[i].column == "CSCOSARFRNCNNT2") {
+            dataCod.CSCOSARFRNCNNT2 = data[i].text;
+        }
+    }
+
+    var dataArr = [
+        "N",
+        commonUtil.nvl(dataCod.entryNo),
+        commonUtil.nvl(dataCod.STATEMENTDIV),
+        commonUtil.nvl(dataCod.CONTRACTNUM),
+        commonUtil.nvl(dataCod.ogCompanyCode),
+        commonUtil.nvl(dataCod.CTOGCOMPANYNAMENM),
+        commonUtil.nvl(dataCod.brokerCode),
+        commonUtil.nvl(dataCod.brokerName),
+        commonUtil.nvl(dataCod.CTNM),
+        commonUtil.nvl(dataCod.insstdt),
+        commonUtil.nvl(dataCod.insenddt),
+        commonUtil.nvl(dataCod.UY),
+        commonUtil.nvl(dataCod.CURCD),
+        commonUtil.nvl2(dataCod.PAIDPERCENT, 0),
+        commonUtil.nvl2(dataCod.PAIDSHARE, 0),
+        commonUtil.nvl2(dataCod.OSLPERCENT, 0),
+        commonUtil.nvl2(dataCod.OSLSHARE, 0),
+        commonUtil.nvl2(dataCod.GROSSPM, 0),
+        commonUtil.nvl2(dataCod.PM, 0),
+        commonUtil.nvl2(dataCod.PMPFEND, 0),
+        commonUtil.nvl2(dataCod.PMPFWOS, 0),
+        commonUtil.nvl2(dataCod.XOLPM, 0),
+        commonUtil.nvl2(dataCod.RETURNPM, 0),
+        commonUtil.nvl2(dataCod.GROSSCN, 0),
+        commonUtil.nvl2(dataCod.CN, 0),
+        commonUtil.nvl2(dataCod.PROFITCN, 0),
+        commonUtil.nvl2(dataCod.BROKERAGE, 0),
+        commonUtil.nvl2(dataCod.TAX, 0),
+        commonUtil.nvl2(dataCod.OVERRIDINGCOM, 0),
+        commonUtil.nvl2(dataCod.CHARGE, 0),
+        commonUtil.nvl2(dataCod.PMRESERVERTD, 0),
+        commonUtil.nvl2(dataCod.PFPMRESERVERTD, 0),
+        commonUtil.nvl2(dataCod.PMRESERVERLD, 0),
+        commonUtil.nvl2(dataCod.PFPMRESERVERLD, 0),
+        commonUtil.nvl2(dataCod.CLAIM, 0),
+        commonUtil.nvl2(dataCod.LOSSRECOVERY, 0),
+        commonUtil.nvl2(dataCod.CASHLOSS, 0),
+        commonUtil.nvl2(dataCod.CASHLOSSRD, 0),
+        commonUtil.nvl2(dataCod.LOSSRR, 0),
+        commonUtil.nvl2(dataCod.LOSSRR2, 0),
+        commonUtil.nvl2(dataCod.LOSSPFEND, 0),
+        commonUtil.nvl2(dataCod.LOSSPFWOA, 0),
+        commonUtil.nvl2(dataCod.INTEREST, 0),
+        commonUtil.nvl2(dataCod.TAXON, 0),
+        commonUtil.nvl2(dataCod.MISCELLANEOUS, 0),
+        commonUtil.nvl2(dataCod.PMBL, 0),
+        commonUtil.nvl2(dataCod.CMBL, 0),
+        commonUtil.nvl2(dataCod.NTBL, 0),
+        commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0),
     ];
+
+
+
     var condImgIdQuery = '('
     for (var i in fileInfos) {
         condImgIdQuery += "'";
         condImgIdQuery += fileInfos[i].imgId;
         condImgIdQuery += (i != fileInfos.length - 1) ? "'," : "')";
     }
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, data, callbackUpdateBatchLearningData, req, res);
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, dataArr, callbackUpdateBatchLearningData, req, res);
 });
 
 var callbackUpdateBatchLearningData = function (rows, req, res) {

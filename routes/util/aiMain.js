@@ -244,11 +244,61 @@ exports.labelMappingEval = function(data, callback) {
 }
 
 exports.billClassificationEval = function (data, callback) {
+    var returnObj = {};
+    var args = dataToAllLocationArgs(data);
 
+    var exeTypoString = 'python ' + appRoot + '\\ml\\cnn-bill-classification\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+        if (err) {
+            logger.error.info(`billClassificationEval ml model exec error: ${stderr}`);
+            return;
+        }
+
+        var bill = stdout.split("||");
+
+        var billNum = bill[1].replace(/\r\n/g, '');
+
+        returnObj.data = data;
+        commonDB.queryParam(queryConfig.mlConfig.selectDocCategory, [billNum], function (rows, returnObj) {
+            if (rows.length > 0) returnObj.docCategory = rows[0];
+            callback(returnObj);
+        }, returnObj);
+
+    });
 }
 
 exports.labelClassificationEval = function (data, callback) {
+    var args = dataToLocationArgs(data.data);
+    var rData = data.data;
 
+    var exeTypoString = 'python ' + appRoot + '\\ml\\cnn-label-classification\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+        if (err) {
+            logger.error.info(`labelClassificationEval ml model exec error: ${stderr}`);
+            return;
+        }
+
+        var outData = stdout.split("^");
+
+        for (var i in outData) {
+            var sData = outData[i].split("||");
+
+            var textData = sData[0].split(" ");//xÁÂÇ¥ yÁÂÇ¥ text
+            var colData = sData[1];//column
+
+            for (var j in rData) {
+                var loc = rData[j].location.split(",");
+
+                if (textData[0] == loc[0] && textData[1] == loc[1]) {
+                    rData[j].column = colData;
+                }
+            }
+        }
+
+        data.data = rData;
+
+        callback(data);
+    });
 }
 
 function dataToArgs(data) {
@@ -257,6 +307,34 @@ function dataToArgs(data) {
     for (var i = 0; i < data.length; i++) {
         args += '"' + commonUtil.nvl(data[i].text).toLowerCase() + '"' + ' ';
     }
+
+    return args;
+}
+
+function dataToLocationArgs(data) {
+    var args = '';
+
+    for (var i in data) {
+        var loc = data[i].location.split(",");
+        var text = data[i].text;
+
+        args += '"' + loc[0] + ' ' + loc[1] + ' ' + commonUtil.nvl(text).toLowerCase() + '"' + ' ';
+    }
+
+    return args;
+}
+
+function dataToAllLocationArgs(data) {
+    var args = '"';
+
+    for (var i in data) {
+        var loc = data[i].location.split(",");
+        var text = data[i].text;
+
+        args += loc[0] + ' ' + loc[1] + ' ' + text + ' ';
+    }
+
+    args += '"';
 
     return args;
 }

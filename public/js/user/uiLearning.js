@@ -14,12 +14,21 @@ $(function () {
     uploadFileEvent();
     thumbImgPagingEvent();
     uiTrainEvent();
-    popUpRunEvent();
+    popUpEvent();
+    changeDocPopRadio();
 });
 
 // 초기 작업
 function init() {
     $('.button_control').attr('disabled', true);
+    layer_open('layer1');
+}
+
+// 팝업 이벤트 모음
+function popUpEvent() {
+    popUpRunEvent();
+    popUpSearchDocCategory();
+    popUpInsertDocCategory();
 }
 
 // 팝업 확인 이벤트
@@ -28,6 +37,55 @@ function popUpRunEvent() {
 
         e.stopPropagation();
         e.preventDefault();
+    });
+}
+
+//팝업 문서 양식 LIKE 조회
+function popUpSearchDocCategory() {
+    $('#searchDocCategoryBtn').click(function () {
+        if ($('.ez-selected').children('input').val() == 'choice-1') {
+            var keyword = $('#searchDocCategoryKeyword').val();
+            $.ajax({
+                url: '/uiLearning/selectLikeDocCategory',
+                type: 'post',
+                datatype: 'json',
+                data: JSON.stringify({ 'keyword': keyword }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        } else {
+        }
+    });
+}
+
+//팝업 문서 양식 등록
+function popUpInsertDocCategory() {
+    $('#insertDocCategoryBtn').click(function () {
+        if ($('.ez-selected').children('input').val() == 'choice-2') {
+            var docName = $('#newDocName').val();
+            var sampleImagePath = $('#originImg').attr('src').split('/')[2] + '/' + $('#originImg').attr('src').split('/')[3];
+            $.ajax({
+                url: '/uiLearning/insertDocCategory',
+                type: 'post',
+                datatype: 'json',
+                data: JSON.stringify({ 'docName': docName, 'sampleImagePath': sampleImagePath }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    if (data.code == 200) {
+                        alert(data.message);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        } else {
+        }
     });
 }
 
@@ -50,8 +108,8 @@ function uploadFileEvent() {
 
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
-            $("#progressMsgTitle").html('파일 업로드 중..');
-            $("#progressMsgDetail").html('');
+            $('#progressMsgTitle').html('파일 업로드 중..');
+            $('#progressMsgDetail').html('');
             startProgressBar(); // start progressbar
             addProgressBar(1, 10); // proceed progressbar
             return true;
@@ -61,8 +119,8 @@ function uploadFileEvent() {
             var $uploadForm = $('#uploadForm');
             var $uploadSucessForm = $('#uploadSucessForm');
 
-            $("#progressMsgTitle").html('파일 업로드 완료..');
-            $("#progressMsgDetail").html('');
+            $('#progressMsgTitle').html('파일 업로드 완료..');
+            $('#progressMsgDetail').html('');
             addProgressBar(11, 20);
             $uploadForm.hide();
             $uploadSucessForm.show();
@@ -90,10 +148,10 @@ function processImage(fileName) {
     $.ajax({
         url: '/common/ocr',
         beforeSend: function (jqXHR) {
-            jqXHR.setRequestHeader("Content-Type", "application/json");
+            jqXHR.setRequestHeader('Content-Type', 'application/json');
         },
-        type: "POST",
-        data: JSON.stringify({ 'fileName': fileName }),
+        type: 'POST',
+        data: JSON.stringify({ 'fileName' : fileName })
     }).done(function (data) {
         ocrCount++;
         if (!data.code) { // 에러가 아니면
@@ -150,7 +208,7 @@ function insertCommError(eCode, type) {
     $.ajax({
         url: '/common/insertCommError',
         type: 'post',
-        datatype: "json",
+        datatype: 'json',
         data: JSON.stringify({ 'eCode': eCode, type: type }),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
@@ -354,7 +412,7 @@ function executeML(totData) {
     $.ajax({
         url: targetUrl,
         type: 'post',
-        datatype: "json",
+        datatype: 'json',
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
@@ -766,4 +824,17 @@ function uiTrainAjax() {
             console.log(err);
         }
     });
+}
+
+// 문서 양식 조회 팝업 라디오 이벤트
+function changeDocPopRadio() {
+    $('#orgDocSearchRadio').click(function () {
+        $('#orgDocSearch').show();
+        $('#newDocRegistration').hide();
+    })
+
+    $('#newDocRegistrationRadio').click(function () {
+        $('#newDocRegistration').show();
+        $('#orgDocSearch').hide();
+    })
 }
