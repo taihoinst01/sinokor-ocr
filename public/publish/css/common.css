@@ -319,6 +319,7 @@ h3.tits:before,
 .button_control:before,
 .button_st6:before,
 .tits11_btn01:before,
+.ipt83:before,
 #content h2:before {
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat;
@@ -4939,9 +4940,9 @@ button[disabled] {
     padding: 9px 15px 11px;
     margin: 0;
     font-size: 15px;
-    color: #d8dfe8;
+    color: #616363;
     background: #fff;
-    border: 1px solid #d8dfe8;
+    border: 1px solid #acacac;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -4982,6 +4983,7 @@ button[disabled] {
 .ui_doc_pop_div01 {
     display: table;
     width: 100%;
+    margin-bottom: 10px;
 }
     .ui_doc_pop_div01 span {
         display: table-cell;
@@ -4993,6 +4995,20 @@ button[disabled] {
     width: 100%;
 }
 
-.width80 {
-    width: 80% !important;
+.ipt83 {
+    width: 83% !important;
+}
+
+    .ipt83:before {
+        content: '';
+        width: 15px;
+        height: 15px;
+        background-position:
+    }
+
+.doc_popup .pop_content {
+    padding: 0px 26px 26px 26px !important;
+}
+.doc_popup {
+    height: 720px !important;
 }
