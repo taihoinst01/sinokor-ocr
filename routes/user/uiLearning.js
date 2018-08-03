@@ -267,6 +267,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     */
 });
 
+// 기존문서 양식 LIKE 검색
 var callbackSelectLikeDocCategory = function (rows, req, res) {
     res.send(rows);
 };
@@ -276,14 +277,22 @@ router.post('/selectLikeDocCategory', function (req, res) {
     commonDB.reqQueryParam(queryConfig.uiLearningConfig.selectLikeDocCategory, [keyword], callbackSelectLikeDocCategory, req, res);
 });
 
+// 신규문서 양식 등록
 var callbackInsertDocCategory = function (rows, req, res) {
     res.send({ code: 200, message: 'document Category insert success' });
 };
-router.post('/insertDocCategory', function (req, res) {
+var callbackSelectMaxDocType = function (rows, req, res) {
     var docName = req.body.docName;
     var sampleImagePath = req.body.sampleImagePath;
+    var docType = rows[0].DOCTYPE;
+    if (docType == 998) { // unk 가 999이므로 피하기 위함
+        docType++;
+    }
+    commonDB.reqQueryParam(queryConfig.uiLearningConfig.insertDocCategory, [docName, (docType + 1), sampleImagePath], callbackInsertDocCategory, req, res);
+};
+router.post('/insertDocCategory', function (req, res) {
 
-    commonDB.reqQueryParam(queryConfig.uiLearningConfig.insertDocCategory, [docName, sampleImagePath], callbackInsertDocCategory, req, res);
+    commonDB.reqQuery(queryConfig.uiLearningConfig.selectMaxDocType, callbackSelectMaxDocType, req, res);
 });
 
 // uiTrain

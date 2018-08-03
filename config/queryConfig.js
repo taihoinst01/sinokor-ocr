@@ -326,11 +326,18 @@ var uiLearningConfig = {
             tbl_document_category
          WHERE
             docName LIKE :docName `,
+    selectMaxDocType:
+        `SELECT
+            MAX(docType) AS docType
+         FROM
+            tbl_document_category
+         WHERE
+            docType != 999 `,
     insertDocCategory:
         `INSERT INTO
             tbl_document_category
          VALUES
-            (seq_document_category.nextval, :docName, (SELECT MAX(docType)+1 FROM tbl_document_category WHERE docType != 999), :sampleImagePath) `
+            (seq_document_category.nextval, :docName, :docType, :sampleImagePath) `
 }
 
 var commonConfig = {
