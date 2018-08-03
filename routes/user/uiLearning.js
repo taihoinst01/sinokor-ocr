@@ -273,7 +273,7 @@ var callbackSelectLikeDocCategory = function (rows, req, res) {
 router.post('/selectLikeDocCategory', function (req, res) {
     var keyword = '%' + req.body.keyword + '%';
 
-    commonDB.reqQueryParam(queryConfig.mlConfig.selectLikeDocCategory, [keyword], callbackSelectLikeDocCategory, req, res);
+    commonDB.reqQueryParam(queryConfig.uiLearningConfig.selectLikeDocCategory, [keyword], callbackSelectLikeDocCategory, req, res);
 });
 
 var callbackInsertDocCategory = function (rows, req, res) {
@@ -283,7 +283,7 @@ router.post('/insertDocCategory', function (req, res) {
     var docName = req.body.docName;
     var sampleImagePath = req.body.sampleImagePath;
 
-    commonDB.reqQueryParam(queryConfig.mlConfig.insertDocCategory, [docName, sampleImagePath], callbackInsertDocCategory, req, res);
+    commonDB.reqQueryParam(queryConfig.uiLearningConfig.insertDocCategory, [docName, sampleImagePath], callbackInsertDocCategory, req, res);
 });
 
 // uiTrain

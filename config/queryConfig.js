@@ -318,7 +318,19 @@ var uiLearningConfig = {
         `SELECT
             koKeyWord, enKeyWord, label
          FROM
-            tbl_extraction_keyword `
+            tbl_extraction_keyword `,
+    selectLikeDocCategory:
+        `SELECT
+            seqNum, docName, docType, sampleImagePath
+         FROM
+            tbl_document_category
+         WHERE
+            docName LIKE :docName `,
+    insertDocCategory:
+        `INSERT INTO
+            tbl_document_category
+         VALUES
+            (seq_document_category.nextval, :docName, (SELECT MAX(docType)+1 FROM tbl_document_category WHERE docType != 999), :sampleImagePath) `
 }
 
 var commonConfig = {
@@ -336,19 +348,7 @@ var mlConfig = {
          FROM
             tbl_document_category
          WHERE
-            docType = :docType `,
-    selectLikeDocCategory:
-        `SELECT
-            seqNum, docName, docType, sampleImagePath
-         FROM
-            tbl_document_category
-         WHERE
-            docName LIKE :docName `,
-    insertDocCategory:
-        `INSERT INTO
-            tbl_document_category
-         VALUES
-            (seq_document_category.nextval, :docName, (SELECT MAX(docType)+1 FROM tbl_document_category WHERE docType != 999), :sampleImagePath) `
+            docType = :docType `
 }
 
 module.exports = {
