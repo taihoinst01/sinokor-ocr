@@ -46,8 +46,8 @@ function popUpSearchDocCategory() {
         $.ajax({
             url: '/uiLearning/selectLikeDocCategory',
             type: 'post',
-            datatype: "json",
-            data: JSON.stringify({ "keyword": keyword }),
+            datatype: 'json',
+            data: JSON.stringify({ 'keyword': keyword }),
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
             },
@@ -66,8 +66,8 @@ function popUpInsertDocCategory() {
         $.ajax({
             url: '/uiLearning/insertDocCategory',
             type: 'post',
-            datatype: "json",
-            data: JSON.stringify({ "docName": docName, 'sampleImagePath': sampleImagePath }),
+            datatype: 'json',
+            data: JSON.stringify({ 'docName': docName, 'sampleImagePath': sampleImagePath }),
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
                 if (data.code == 200) {
@@ -100,8 +100,8 @@ function uploadFileEvent() {
 
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
-            $("#progressMsgTitle").html('파일 업로드 중..');
-            $("#progressMsgDetail").html('');
+            $('#progressMsgTitle').html('파일 업로드 중..');
+            $('#progressMsgDetail').html('');
             startProgressBar(); // start progressbar
             addProgressBar(1, 10); // proceed progressbar
             return true;
@@ -111,8 +111,8 @@ function uploadFileEvent() {
             var $uploadForm = $('#uploadForm');
             var $uploadSucessForm = $('#uploadSucessForm');
 
-            $("#progressMsgTitle").html('파일 업로드 완료..');
-            $("#progressMsgDetail").html('');
+            $('#progressMsgTitle').html('파일 업로드 완료..');
+            $('#progressMsgDetail').html('');
             addProgressBar(11, 20);
             $uploadForm.hide();
             $uploadSucessForm.show();
@@ -140,9 +140,9 @@ function processImage(fileName) {
     $.ajax({
         url: '/common/ocr',
         beforeSend: function (jqXHR) {
-            jqXHR.setRequestHeader("Content-Type", "application/json");
+            jqXHR.setRequestHeader('Content-Type", "application/json');
         },
-        type: "POST",
+        type: 'POST',
         data: JSON.stringify({ 'fileName': fileName }),
     }).done(function (data) {
         ocrCount++;
@@ -200,7 +200,7 @@ function insertCommError(eCode, type) {
     $.ajax({
         url: '/common/insertCommError',
         type: 'post',
-        datatype: "json",
+        datatype: 'json',
         data: JSON.stringify({ 'eCode': eCode, type: type }),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
@@ -404,7 +404,7 @@ function executeML(totData) {
     $.ajax({
         url: targetUrl,
         type: 'post',
-        datatype: "json",
+        datatype: 'json',
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
