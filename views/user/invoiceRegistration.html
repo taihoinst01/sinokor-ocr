@@ -11,6 +11,19 @@
 
     <%include  ../common/commonLib.html%>
 
+    <!-- file upload css -->
+    <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
+    <!-- // file upload css -->
+
+    <link rel="stylesheet" href="css/dropdown.css">
+
+    <!-- multiFileUpload & form async js -->
+    <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
+    <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
+    <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
+    <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
+    <!-- // multiFileUpload & form async js -->
+
     <!-- 공통 js -->
     <script type="text/javascript" src="js/common.client.js"></script>
     <!-- // 공통 js -->
@@ -55,12 +68,12 @@
 
                         <div class="st_infortext_01">
                             <span id="uploadInfoText">Drag & Drop files here</span>
-                            <form id="uploadFileForm" action="" method="post" enctype="multipart/form-data">
-                                <p class="attach_btn">
-                                    <input type="file" id="uploadFile" name="file" value="upload" />
-                                    <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
-                                </p>
-                            </form>
+                            <form id="uploadFileForm" action="/invoiceRegistration/uploadFile" method="post" enctype="multipart/form-data">
+                                    <p class="attach_btn">
+                                        <input type="file" id="uploadFile" name="file" value="upload" />
+                                        <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
+                                    </p>
+                                </form>
                         </div>
 
                     </div>
@@ -85,7 +98,7 @@
                                 <dt><label for="intxt_02">문서담당자</label></dt>
                                 <dd>
                                     <input type="text" name="" id="" class="inputst_box01" value="" placeholder="홍길동" />
-                                </dd>
+                                `</dd>
                             </dl>
                         </div>
 
@@ -189,65 +202,16 @@
 
                     <div id="div_view_image" class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
                         <!--<img src="publish/image/sample01.jpg" alt="샘플이미지" />-->
+                        <ul id="imageBox"></ul>
                     </div>
 
                     <div class="box_imgtmb">
-                        <button type="button" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
+                        <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
                         <div id="touchSlider">
                             <ul id="ul_image">
-                                <!--
-                                <li class="on">
-                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                                    <span>Filename_Filename_0001.jpg</span>
-                                </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                                    <span>Filename_Filename_0001.jpg</span>
-                                </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
-                                    <span>Filename_Filename_0001.jpg</span>
-                                </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                                    <span>Filename_Filename_0001.jpg</span>
-                                </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
-                                    <span>Filename_Filename_0001.jpg</span>
-                                </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                                    <span>Filename_Filename_0001.jpg</span>
-                                </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                                    <span>@@Filename_Filename_0001.jpg</span>
-                                </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                                    <span>@@Filename_Filename_0001.jpg</span>
-                                </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                                    <span>@@Filename_Filename_0001.jpg</span>
-                                </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
-                                    <span>@@Filename_Filename_0001.jpg</span>
-                                </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                                    <span>@@Filename_Filename_0001.jpg</span>
-                                </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                                    <span>@@Filename_Filename_0001.jpg</span>
-                                </li>
-                                -->
                             </ul>
                         </div>
-                        <button type="button" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
+                        <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
                         <div id="count" class="count"><!--<span>1</span> / 1--></div>
                     </div>
                 </div>
