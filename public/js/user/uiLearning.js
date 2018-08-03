@@ -20,7 +20,7 @@ $(function () {
 // 초기 작업
 function init() {
     $('.button_control').attr('disabled', true);
-    layer_open('layer1');
+    //layer_open('layer1');
 }
 
 // 팝업 이벤트 모음
