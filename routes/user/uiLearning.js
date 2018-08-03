@@ -267,6 +267,26 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     */
 });
 
+var callbackSelectLikeDocCategory = function (rows, req, res) {
+    res.send(rows);
+};
+router.post('/selectLikeDocCategory', function (req, res) {
+    var keyword = '%' + req.body.keyword + '%';
+
+    commonDB.reqQueryParam(queryConfig.mlConfig.selectLikeDocCategory, [keyword], callbackSelectLikeDocCategory, req, res);
+});
+
+var callbackInsertDocCategory = function (rows, req, res) {
+    res.send({ code: 200, message: 'document insert success' });
+};
+router.post('/insertDocCategory', function (req, res) {
+    var docName = req.body.docName;
+    var docType = req.body.docType;
+    var sampleImagePath = req.body.sampleImagePath;
+
+    commonDB.reqQueryParam(queryConfig.mlConfig.insertDocCategory, [keyword, docType, sampleImagePath], callbackInsertDocCategory, req, res);
+});
+
 // uiTrain
 router.post('/uiTrain', function (req, res) {
     var data = req.body.data;
