@@ -15,6 +15,7 @@ $(function () {
     thumbImgPagingEvent();
     uiTrainEvent();
     popUpEvent();
+    changeDocPopRadio();
 });
 
 // 초기 작업
@@ -816,4 +817,17 @@ function uiTrainAjax() {
             console.log(err);
         }
     });
+}
+
+// 문서 양식 조회 팝업 라디오 이벤트
+function changeDocPopRadio() {
+    $('#orgDocSearchRadio').click(function () {
+        $('#orgDocSearch').show();
+        $('#newDocRegistration').hide();
+    })
+
+    $('#newDocRegistrationRadio').click(function () {
+        $('#newDocRegistration').show();
+        $('#orgDocSearch').hide();
+    })
 }
