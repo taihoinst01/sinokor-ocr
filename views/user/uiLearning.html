@@ -20,7 +20,6 @@
     <!-- UI 학습 전용 js -->
     <link rel="stylesheet" href="css/user/uiLearning.css">
     <!-- // UI 학습 전용 js -->
-
     <!-- multiFileUpload & form async js -->
     <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
@@ -36,7 +35,7 @@
 </head>
 <body>
     <div id="mask"></div>
- 
+
     <div id="wrap">
         <!--로딩바-->
         <div id="ocrProgress">
@@ -94,34 +93,31 @@
 
                         <div class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
                             <!--<img src="publish/image/sample03.png" alt="샘플이미지" />-->
-                            <ul id="imageBox"></ul>
                             <div id="img_content">
-                                <div class="st_infortext_01">
-                                    <span id="uploadInfoText">파일을 드래그 하시거나 아래 버튼을 눌러 파일을 <br />업로드 해주세요.</span>
-                                    <form id="uploadFileForm" action="/uiLearning/uploadFile" method="post" enctype="multipart/form-data">
-                                        <p class="attach_btn">
-                                            <input type="file" id="uploadFile" name="file" value="upload" />
-                                            <label id="uploadFileBtn" for="customer_file">업로드</label>
-                                        </p>
-                                    </form>
-                                </div>
                             </div>
                         </div>
-
-
-
 
                         <div class="box_imgtmb">
                             <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
                             <div id="touchSlider">
-                                <ul>
+                                <ul id="imageBox">
                                     <!--
-                                <li class="on">
+                                    <li class="on">
+                                        <div class="box_img"><i><img src="publish/image/sample03.png" title="샘플이미지"></i></div>
+                                        <span>Filename_Filename_0001.jpg</span>
+                                    </li>
+                                    -->
+                                </ul>
+                                <!--
+                                <ul>
+
+                                    <li class="on">
                                     <div class="box_img"><i><img src="publish/image/sample03.png" title="샘플이미지"></i></div>
                                     <span>Filename_Filename_0001.jpg</span>
-                                </li>
-                                -->
+                                    </li>
+
                                 </ul>
+                                -->
                             </div>
                             <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
                             <!--<button type="button" id="thumb-tot" class="button_control button_control3">전체</button>-->
@@ -132,9 +128,11 @@
                     <!-- 양식분석상세 -->
                     <div class="box_content_R st_last">
                         <div class="box_content_bg">
-                            <h3 class="tits"><pre>문서 양식 예측   <b id="docName"></b>   <b id="docPredictionScore"></b></pre></h3>
+                            <h3 class="tits11">
+                                <span>문서 양식 예측<b id="docName">APEX 계산서</b>   <b id="docPredictionScore">70.9999%</b></span>
+                            </h3>
+                            <button type="button" id="docCompareBtn" class="tits11_btn01"></button>
                             <div class="btn_rt">
-                                <button type="button" id="docCompareBtn" class="button_st1">doc Popup</button>
                                 <button type="button" id="uiTrainBtn" class="button_st1">UI Training</button>
                             </div>
                             <div class="mCustomScrollbar box_scroll_st6" data-mcs-theme="dark-3">
@@ -154,41 +152,41 @@
                                     </table>
                                     <div id="textResultTbl" class="box_table_st box_table_st04">
                                         <!--
-                                    <dl>
-                                        <dt>
-                                            <label class="iclick">
-                                                <input type="text" name="intxt_0" id="intxt_001" class="inputst_box01" value="Your Contract Ref Your Contract Ref Your Contract Ref Your Contract RefYour Contract Ref" />
-                                            </label>
-                                            <span>99.999%</span>
-                                        </dt>
-                                        <dd>
-                                            <div class="select_style">
-                                                <span class="ctrl"><span class="arrow"></span></span>
-                                                <button type="button" class="myValue">체크 테스트</button>
-                                                <ul class="aList">
-                                                    <li><a href="#none">체크 테스트</a></li>
-                                                </ul>
-                                            </div>
-                                        </dd>
-                                    </dl>
-                                    <dl>
-                                        <dt>
-                                            <label class="">
-                                                <input type="text" name="intxt_0" id="intxt_01" class="inputst_box01" value="Your Contract Ref" />
-                                            </label>
-                                            <span>99.999%</span>
-                                        </dt>
-                                        <dd>
-                                            <div class="select_style">
-                                                <span class="ctrl"><span class="arrow"></span></span>
-                                                <button type="button" class="myValue">계약번호</button>
-                                                <ul class="aList">
-                                                    <li><a href="#none">계약번호</a></li>
-                                                </ul>
-                                            </div>
-                                        </dd>
-                                    </dl>
-                                    -->
+                                        <dl>
+                                            <dt>
+                                                <label class="iclick">
+                                                    <input type="text" name="intxt_0" id="intxt_001" class="inputst_box01" value="Your Contract Ref Your Contract Ref Your Contract Ref Your Contract RefYour Contract Ref" />
+                                                </label>
+                                                <span>99.999%</span>
+                                            </dt>
+                                            <dd>
+                                                <div class="select_style">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">체크 테스트</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none">체크 테스트</a></li>
+                                                    </ul>
+                                                </div>
+                                            </dd>
+                                        </dl>
+                                        <dl>
+                                            <dt>
+                                                <label class="">
+                                                    <input type="text" name="intxt_0" id="intxt_01" class="inputst_box01" value="Your Contract Ref" />
+                                                </label>
+                                                <span>99.999%</span>
+                                            </dt>
+                                            <dd>
+                                                <div class="select_style">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">계약번호</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none">계약번호</a></li>
+                                                    </ul>
+                                                </div>
+                                            </dd>
+                                        </dl>
+                                        -->
                                     </div>
                                 </div>
                             </div>
@@ -224,6 +222,6 @@
             </div>
         </div>
         <!-- // 팝업_문서비교레이어팝업 -->
-    </div>   
+    </div>
 </body>
 </html>

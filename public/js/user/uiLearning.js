@@ -14,12 +14,20 @@ $(function () {
     uploadFileEvent();
     thumbImgPagingEvent();
     uiTrainEvent();
-    popUpRunEvent();
+    popUpEvent();
 });
 
 // 초기 작업
 function init() {
     $('.button_control').attr('disabled', true);
+    //layer_open('layer1');
+}
+
+// 팝업 이벤트 모음
+function popUpEvent() {
+    popUpRunEvent();
+    popUpSearchDocCategory();
+    popUpInsertDocCategory();
 }
 
 // 팝업 확인 이벤트
@@ -28,6 +36,48 @@ function popUpRunEvent() {
 
         e.stopPropagation();
         e.preventDefault();
+    });
+}
+
+//팝업 문서 양식 LIKE 조회
+function popUpSearchDocCategory() {
+    var keyword = $('#searchDocCategoryKeyword').val();
+    $('#searchDocCategoryBtn').click(function () {
+        $.ajax({
+            url: '/uiLearning/selectLikeDocCategory',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({ "keyword": keyword }),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
+}
+
+//팝업 문서 양식 등록
+function popUpInsertDocCategory() {
+    var docName = $('#docName').val();
+    var sampleImagePath = '';
+    $('#insertDocCategoryBtn').click(function () {
+        $.ajax({
+            url: '/uiLearning/insertDocCategory',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({ "docName": docName, 'sampleImagePath': sampleImagePath }),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                if (data.code == 200) {
+                    alert('문서 양식등록 성공');
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
     });
 }
 

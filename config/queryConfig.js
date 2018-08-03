@@ -336,7 +336,19 @@ var mlConfig = {
          FROM
             tbl_document_category
          WHERE
-            docType = :docType `
+            docType = :docType `,
+    selectLikeDocCategory:
+        `SELECT
+            seqNum, docName, docType, sampleImagePath
+         FROM
+            tbl_document_category
+         WHERE
+            docName LIKE :docName `,
+    insertDocCategory:
+        `INSERT INTO
+            tbl_document_category
+         VALUES
+            (seq_document_category.nextval, :docName, :docType, :sampleImagePath) `
 }
 
 module.exports = {
