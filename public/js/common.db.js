@@ -73,6 +73,20 @@ module.exports = function (pool) {
     });
     };
 
+    // 쿼리 요청 (파라미터 포함, req & res 미포함, 함수 파라미터 둘 포함)
+    var queryParam2 = function (sql, param, callbackFunc, origin, two) {
+        pool.getConnection(function (err, connection) {
+            connection.execute(sql, param, function (err, result) {
+                if (err) {
+                    console.error("OracleDB err : ", err);
+                    console.log(sql);
+                }
+                callbackFunc(result.rows ? result.rows : null, origin, two);
+                connection.release();
+            });
+        });
+    };
+
     // 일반 쿼리 요청
     var reqQuery = function (sql, callbackFunc, req, res) {
     pool.getConnection(function (err, connection) {
@@ -136,5 +150,6 @@ module.exports = function (pool) {
     module.exports.reqQueryF1param = reqQueryF1param;
     module.exports.reqQueryF2param = reqQueryF2param;
     module.exports.queryParam = queryParam;
+    module.exports.queryParam2 = queryParam2;
     module.exports.queryNoRows = queryNoRows;  
 }

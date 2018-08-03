@@ -16,6 +16,10 @@ var selectFaoTeam = function (val) {
 var selectFaoPart = function (val) {
     $("#select_faoPart").val(val);
 };
+// [셀렉트박스] 문서담당자 클릭
+var selectDocManager = function (val) {
+    $("#select_docManager").val(val);
+};
 // [이벤트] 체크박스
 var checkboxEvent = function () {
     // all checkbox

@@ -14,12 +14,21 @@ $(function () {
     uploadFileEvent();
     thumbImgPagingEvent();
     uiTrainEvent();
-
+    popUpRunEvent();
 });
 
 // 초기 작업
 function init() {
     $('.button_control').attr('disabled', true);
+}
+
+// 팝업 확인 이벤트
+function popUpRunEvent() {
+    $('#btn_pop_doc_run').click(function (e) {
+
+        e.stopPropagation();
+        e.preventDefault();
+    });
 }
 
 // 파일 업로드 이벤트
@@ -170,7 +179,8 @@ function thumbImgPagingEvent() {
 function thumnImg() {
     for (var i in thumbImgs) {
         if ($('#imageBox > li').length < thumnbImgPerPage) {
-            var imageTag = '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a></li>';
+            var imageTag = '<li><div class="box_img"><i><img src="../../uploads/' + thumbImgs[i] + '"></i>'
+                + ' </div ><span>' + thumbImgs[i] +'</span></li >';
             $('#imageBox').append(imageTag);
         } else {
             break;
@@ -348,13 +358,13 @@ function executeML(totData) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
+            //console.log(data);
+            if (data.column) searchDBColumnsCount++;
             if (data.nextType) {
                 executeML(data);
             } else {
                 //console.log(data);
-                lineText.push(data);
-                searchDBColumnsCount++;
+                lineText.push(data);                
 
                 if (searchDBColumnsCount == 1) {
                     var mainImgHtml = '';
@@ -370,7 +380,15 @@ function executeML(totData) {
                     $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
                     thumnImg();
                     $('#imageBox > li').eq(0).addClass('on');
+                    $('#docName').html(data.docCategory.DOCNAME);
+                    $('#docPredictionScore').html(data.docCategory.score + '%');
+                    if (data.docCategory.score >= 90) {
+                        $('#docPredictionScore').css('color', 'dodgerblue');
+                    } else {
+                        $('#docPredictionScore').css('color', 'darkred');
+                    }
                     detailTable(fileName);
+                    docComparePopup(0);
                 }
                 if (totCount == searchDBColumnsCount) {
                     thumbImgEvent();
@@ -381,6 +399,18 @@ function executeML(totData) {
         error: function (err) {
             console.log(err);
         }
+    });
+}
+
+//문서 비교 popup 버튼 클릭 이벤트
+function docComparePopup(imgIndex) {
+    $('#docCompareBtn').unbind('click');
+    $('#docCompareBtn').click(function (e) {
+        $('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
+        $('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+        layer_open('layer1');
+        e.preventDefault();
+        e.stopPropagation();
     });
 }
 
