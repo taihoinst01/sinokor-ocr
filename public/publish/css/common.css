@@ -318,7 +318,7 @@ h3.tits:before,
 .box_st04 h3:before,
 .button_control:before,
 .button_st6:before,
-.tits02_btn01:before,
+.tits11_btn01:before,
 #content h2:before {
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat;
@@ -4841,16 +4841,17 @@ thead .ez-checked {
     background-color: gainsboro;
 }
 
-.tits02_btn01 {
-    width: 40px;
-    height: 40px;
+.tits11_btn01 {
+    width: 30px;
+    height: 30px;
     border-radius: 5px;
-    padding: 11px;
+    padding: 6px;
     background-color: gray;
     margin-left: 10px;
+    vertical-align: sub;
 }
 
-.tits02_btn01:before {
+.tits11_btn01:before {
     content: '';
     background-position: -120px -550px;
     width: 20px;
@@ -4885,4 +4886,15 @@ button[disabled] {
 }
 .dcmtChkImg {
     min-height: 674px !important;
+}
+
+.tits11 {
+    padding: 14px 0;
+    margin: 0px 10px;
+    font-size: 17px;
+    font-family: 'notokr-medium', sans-serif;
+    display: inline-block;
+}
+.tits11 b {
+    margin-left: 10px;
 }
