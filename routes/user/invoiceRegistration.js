@@ -159,7 +159,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     commonDB.insertFileInfo(fileInfo, "ocr_file"); // 파일 정보 DB INSERT
     commonDB.insertFileInfo(fileDtlArr, "ocr_file_dtl"); // 세부 파일 정보 DB INSERT
 
-    res.send({ code: 200, message: returnObj });
+    res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlArr });
 });
 
 /****************************************************************************************

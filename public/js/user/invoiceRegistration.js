@@ -1,6 +1,10 @@
 ﻿//import { identifier } from "babel-types";
 "use strict";
 
+// uploadFile info
+var gbl_fileInfo = [];      // 파일(tif) 정보
+var gbl_fileDtlInfo = [];   // 파일(변환 jpg) 정보
+
 // ML global function
 var lineText = []; // line별로 가공된 ocr데이터 배열
 var totCount = 0; // 전체 분석 문서 개수
@@ -57,6 +61,12 @@ var uploadFileEvent = function() {
             addProgressBar(11, 20);
             //$uploadForm.hide();
             $uploadSucessForm.show();
+
+            // 업로드한 파일 정보 저장
+            gbl_fileInfo = responseText.fileInfo;
+            gbl_fileDtlInfo = responseText.fileDtlInfo;
+
+            // 파일 ml 처리
             if (responseText.message.length > 0) {
                 totCount = responseText.message.length;
                 for (var i = 0; i < responseText.message.length; i++) {
@@ -368,13 +378,17 @@ var executeML = function(fileName, data, type) {
 var fn_processData = function() {
     //console.log("line text : " + JSON.stringify(lineText));
     // TODO: 파일명 외의 파일 정보 필요
+    console.log("fn_processData fileInfo : " + JSON.stringify(gbl_fileInfo));
+    console.log("fn_processData fileDtlInfo : " + JSON.stringify(gbl_fileDtlInfo));
+    console.log("fn_processData fileInfo : " + gbl_fileInfo.length);
+    console.log("fn_processData fileDtlInfo : " + gbl_fileDtlInfo.length);
 
     for (var i = 0, arr; arr = lineText[i]; i++) {
-        console.log("document : " + JSON.stringify(arr));
+        //console.log("document : " + JSON.stringify(arr));
         // TODO : 파일 정보를 1 record로 생성한다.
         //
         for (var x = 0, item; item = arr.data[x]; x++) {
-            console.log("make document dtl: " + JSON.stringify(item));
+            //console.log("make document dtl: " + JSON.stringify(item));
             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
             //
         }
