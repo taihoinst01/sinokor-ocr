@@ -277,14 +277,13 @@ router.post('/selectLikeDocCategory', function (req, res) {
 });
 
 var callbackInsertDocCategory = function (rows, req, res) {
-    res.send({ code: 200, message: 'document insert success' });
+    res.send({ code: 200, message: 'document Category insert success' });
 };
 router.post('/insertDocCategory', function (req, res) {
     var docName = req.body.docName;
-    var docType = req.body.docType;
     var sampleImagePath = req.body.sampleImagePath;
 
-    commonDB.reqQueryParam(queryConfig.mlConfig.insertDocCategory, [keyword, docType, sampleImagePath], callbackInsertDocCategory, req, res);
+    commonDB.reqQueryParam(queryConfig.mlConfig.insertDocCategory, [docName, sampleImagePath], callbackInsertDocCategory, req, res);
 });
 
 // uiTrain

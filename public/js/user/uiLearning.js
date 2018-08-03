@@ -71,7 +71,7 @@ function popUpInsertDocCategory() {
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
                 if (data.code == 200) {
-                    alert('문서 양식등록 성공');
+                    alert(data.message);
                 }
             },
             error: function (err) {
