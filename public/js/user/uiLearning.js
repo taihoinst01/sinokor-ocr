@@ -42,43 +42,50 @@ function popUpRunEvent() {
 
 //팝업 문서 양식 LIKE 조회
 function popUpSearchDocCategory() {
-    var keyword = $('#searchDocCategoryKeyword').val();
     $('#searchDocCategoryBtn').click(function () {
-        $.ajax({
-            url: '/uiLearning/selectLikeDocCategory',
-            type: 'post',
-            datatype: 'json',
-            data: JSON.stringify({ 'keyword': keyword }),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
+        if ($('.ez-selected').children('input').val() == 'choice-1') {
+            var keyword = $('#searchDocCategoryKeyword').val();
+            $.ajax({
+                url: '/uiLearning/selectLikeDocCategory',
+                type: 'post',
+                datatype: 'json',
+                data: JSON.stringify({ 'keyword': keyword }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        } else {
+        }
     });
 }
 
 //팝업 문서 양식 등록
 function popUpInsertDocCategory() {
-    var docName = $('#docName').val();
-    var sampleImagePath = '';
     $('#insertDocCategoryBtn').click(function () {
-        $.ajax({
-            url: '/uiLearning/insertDocCategory',
-            type: 'post',
-            datatype: 'json',
-            data: JSON.stringify({ 'docName': docName, 'sampleImagePath': sampleImagePath }),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-                if (data.code == 200) {
-                    alert(data.message);
+        if ($('.ez-selected').children('input').val() == 'choice-2') {
+            var docName = $('#newDocName').val();
+            var sampleImagePath = $('#originImg').attr('src').split('/')[2] + '/' + $('#originImg').attr('src').split('/')[3];
+            $.ajax({
+                url: '/uiLearning/insertDocCategory',
+                type: 'post',
+                datatype: 'json',
+                data: JSON.stringify({ 'docName': docName, 'sampleImagePath': sampleImagePath }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    if (data.code == 200) {
+                        alert(data.message);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
                 }
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
+            });
+        } else {
+        }
     });
 }
 
