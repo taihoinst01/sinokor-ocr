@@ -2825,17 +2825,18 @@ h3.tits span {
 
     .pop_popup0 .pop_header {
         display: block;
-        height: 30px;
+        /*height: 42px;*/
         background: transparent
     }
 
         .pop_popup0 .pop_header h1 {
-            line-height: 55px;
+            line-height: 42px;
             padding: 0 0 0 26px;
-            font-size: 22px;
-            color: #000;
+            font-size: 18px;
+            color: #fff;
             font-weight: 300;
             font-family: 'notokr-medium', sans-serif;
+            background-color: #0370b2;
         }
 
     .pop_popup0 .pop_content {
@@ -2886,14 +2887,13 @@ h3.tits span {
 
     .pop_popup01 .pop_header {
         height: 48px;
-        padding: 26px 26px 0;
         background: #fff
     }
 
         .pop_popup01 .pop_header h1 {
-            line-height: 30px;
-            padding: 0 0 15px;
-            color: #333;
+            line-height: 35px;
+            
+            color: #fff;
             border-bottom: 1px solid #CCC;
         }
 
@@ -4897,4 +4897,102 @@ button[disabled] {
 }
 .tits11 b {
     margin-left: 10px;
+}
+.tits22 {
+    border-bottom: 1px solid #d8dfe8;
+    margin: 10px 26px;
+    padding-bottom: 10px;
+}
+.tits22 label {
+    margin-right:15px;
+}
+
+.tits22 .inputst_role label {
+    vertical-align: middle !important;
+}
+
+.tits22 .inputst_role input[type="radio"] {
+    height: 13px !important;
+}
+
+.inputst_role {
+    display: inline-table !important;
+}
+
+.ui_doc_pop_btn1 {
+    display: inline-block;
+    min-width: 80px;
+    height: 41px;
+    padding: 9px 15px 11px;
+    margin: 0;
+    font-size: 15px;
+    color: #fff;
+    background: #0370b2;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.ui_doc_pop_btn2 {
+    display: inline-block;
+    min-width: 80px;
+    height: 41px;
+    padding: 9px 15px 11px;
+    margin: 0;
+    font-size: 15px;
+    color: #d8dfe8;
+    background: #fff;
+    border: 1px solid #d8dfe8;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.ui_doc_pop_btn3 {
+    display: inline-block;
+    min-width: 80px;
+    height: 41px;
+    padding: 9px 15px 11px;
+    margin: 0;
+    font-size: 15px;
+    color: #fff;
+    background: #2f2e2a;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 13px;
+}
+.ui_doc_pop_ipt {
+    width: 670px !important;
+    margin-right: 15px !important;
+    display: inline-table;
+}
+.ui_doc_pop_ipt2 {
+    width: 660px !important;
+    margin-right: 15px !important;
+    display: inline-table;
+}
+.inputst_role2 {
+    display: inline-table;
+}
+
+.ui_doc_pop_div {
+    width: 48%;
+}
+.ui_doc_pop_div00 {
+    width: 100%;
+}
+.ui_doc_pop_div01 {
+    display: table;
+    width: 100%;
+}
+    .ui_doc_pop_div01 span {
+        display: table-cell;
+        width: 130px;
+        vertical-align: middle;
+    }
+
+.ui_doc_pop_div01 input[type=text] {
+    width: 100%;
+}
+
+.width80 {
+    width: 80% !important;
 }
