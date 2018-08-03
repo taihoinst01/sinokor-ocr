@@ -140,10 +140,10 @@ function processImage(fileName) {
     $.ajax({
         url: '/common/ocr',
         beforeSend: function (jqXHR) {
-            jqXHR.setRequestHeader('Content-Type", "application/json');
+            jqXHR.setRequestHeader('Content-Type', 'application/json');
         },
         type: 'POST',
-        data: JSON.stringify({ 'fileName': fileName }),
+        data: JSON.stringify({ 'fileName' : fileName })
     }).done(function (data) {
         ocrCount++;
         if (!data.code) { // 에러가 아니면

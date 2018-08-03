@@ -28,9 +28,9 @@ var router = express.Router();
 
 // [POST] OCR API (request binary data)
 router.post('/ocr', function (req, res) {
-    var filename = req.body.fileName;
+    var fileName = req.body.fileName;
 
-    fs.readFile('./uploads/' + filename, function (err, data) {
+    fs.readFile('./uploads/' + fileName, function (err, data) {
         if (err) res.send({ error: '파일이 없습니다.' }); // fs error
 
         var base64 = new Buffer(data, 'binary').toString('base64');
