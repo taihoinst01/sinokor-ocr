@@ -273,7 +273,10 @@ exports.labelClassificationEval = function (data, callback) {
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\cnn-label-classification\\eval.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
-        console.log("stdout : " + stdout);
+        if (err) {
+            logger.error.info(`labelClassificationEval ml model exec error: ${stderr}`);
+            return;
+        }
 
         var outData = stdout.split("^");
 
