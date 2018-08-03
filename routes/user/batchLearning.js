@@ -451,7 +451,7 @@ router.post('/updateBatchLearningData', function (req, res) {
 
     var dataCod = {};
 
-    dataCod.STATEMENTDIV = billInfo.DOCTYPE;
+    dataCod.STATEMENTDIV = billInfo.DOCNAME;
 
     for (var i in data) {
         if (data[i].column == "CTOGCOMPANYNAMENM") {
@@ -465,75 +465,75 @@ router.post('/updateBatchLearningData', function (req, res) {
         } else if (data[i].column == "CURCD") {
             dataCod.CURCD = data[i].text;
         } else if (data[i].column == "PAIDPERCENT") {
-            dataCod.PAIDPERCENT = data[i].text;
+            dataCod.PAIDPERCENT = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "PAIDSHARE") {
-            dataCod.PAIDSHARE = data[i].text;
+            dataCod.PAIDSHARE = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "OSLPERCENT") {
-            dataCod.OSLPERCENT = data[i].text;
+            dataCod.OSLPERCENT = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "OSLSHARE") {
-            dataCod.OSLSHARE = data[i].text;
+            dataCod.OSLSHARE = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "GROSSPM") {
-            dataCod.GROSSPM = data[i].text;
+            dataCod.GROSSPM = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "PM") {
-            dataCod.PM = data[i].text;
+            dataCod.PM = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "PMPFEND") {
-            dataCod.PMPFEND = data[i].text;
+            dataCod.PMPFEND = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "PMPFWOS") {
-            dataCod.PMPFWOS = data[i].text;
+            dataCod.PMPFWOS = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "XOLPM") {
-            dataCod.XOLPM = data[i].text;
+            dataCod.XOLPM = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "RETURNPM") {
-            dataCod.RETURNPM = data[i].text;
+            dataCod.RETURNPM = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "GROSSCN") {
-            dataCod.GROSSCN = data[i].text;
+            dataCod.GROSSCN = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "CN") {
-            dataCod.CN = data[i].text;
+            dataCod.CN = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "PROFITCN") {
-            dataCod.PROFITCN = data[i].text;
+            dataCod.PROFITCN = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "BROKERAGE") {
-            dataCod.BROKERAGE = data[i].text;
+            dataCod.BROKERAGE = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "TAX") {
-            dataCod.TAX = data[i].text;
+            dataCod.TAX = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "OVERRIDINGCOM") {
-            dataCod.OVERRIDINGCOM = data[i].text;
+            dataCod.OVERRIDINGCOM = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "CHARGE") {
-            dataCod.CHARGE = data[i].text;
+            dataCod.CHARGE = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "PMRESERVERTD") {
-            dataCod.PMRESERVERTD = data[i].text;
+            dataCod.PMRESERVERTD = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "PFPMRESERVERTD") {
-            dataCod.PFPMRESERVERTD = data[i].text;
+            dataCod.PFPMRESERVERTD = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "PMRESERVERLD") {
-            dataCod.PMRESERVERLD = data[i].text;
+            dataCod.PMRESERVERLD = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "PFPMRESERVERLD") {
-            dataCod.PFPMRESERVERLD = data[i].text;
+            dataCod.PFPMRESERVERLD = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "CLAIM") {
-            dataCod.CLAIM = data[i].text;
+            dataCod.CLAIM = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "LOSSRECOVERY") {
-            dataCod.LOSSRECOVERY = data[i].text;
+            dataCod.LOSSRECOVERY = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "CASHLOSS") {
-            dataCod.CASHLOSS = data[i].text;
+            dataCod.CASHLOSS = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "CASHLOSSRD") {
-            dataCod.CASHLOSSRD = data[i].text;
+            dataCod.CASHLOSSRD = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "LOSSRR") {
-            dataCod.LOSSRR = data[i].text;
+            dataCod.LOSSRR = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "LOSSRR2") {
-            dataCod.LOSSRR2 = data[i].text;
+            dataCod.LOSSRR2 = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "LOSSPFEND") {
-            dataCod.LOSSPFEND = data[i].text;
+            dataCod.LOSSPFEND = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "LOSSPFWOA") {
-            dataCod.LOSSPFWOA = data[i].text;
+            dataCod.LOSSPFWOA = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "INTEREST") {
-            dataCod.INTEREST = data[i].text;
+            dataCod.INTEREST = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "TAXON") {
-            dataCod.TAXON = data[i].text;
+            dataCod.TAXON = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "MISCELLANEOUS") {
-            dataCod.MISCELLANEOUS = data[i].text;
+            dataCod.MISCELLANEOUS = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "PMBL") {
-            dataCod.PMBL = data[i].text;
+            dataCod.PMBL = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "CMBL") {
-            dataCod.CMBL = data[i].text;
+            dataCod.CMBL = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "NTBL") {
-            dataCod.NTBL = data[i].text.replace(" ","");
+            dataCod.NTBL = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "CSCOSARFRNCNNT2") {
             dataCod.CSCOSARFRNCNNT2 = data[i].text;
         }

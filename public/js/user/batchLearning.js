@@ -627,6 +627,7 @@ function compareBatchLearningData(ocrData, data) {
             contentType: 'application/json; charset=UTF-8',
             async: false,
             success: function (retData) {
+                console.log("----- retData -----");
                 console.log(retData);
                 if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
                     ocrData.exeML = "Y";
@@ -639,7 +640,7 @@ function compareBatchLearningData(ocrData, data) {
                     //}
                 } else {// UI Training 체크박스 체크 없으면
                     isFullMatch = true;
-                    updateBatchLearningData(dataObj, ocrData.fileInfo, data);
+                    updateBatchLearningData(retData, ocrData.fileInfo, data);
                 }               
                 
             },
@@ -675,7 +676,7 @@ function uiPopUpTrain(data, fileInfo) {
     return;
 }
 
-function updateBatchLearningData(dataObj, fileInfo, mlData) {
+function updateBatchLearningData(retData, fileInfo, mlData) {
 
 
 
@@ -688,7 +689,7 @@ function updateBatchLearningData(dataObj, fileInfo, mlData) {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
-            comparedMLAndAnswer(dataObj, mlData, fileInfo);
+            comparedMLAndAnswer(retData, mlData, fileInfo);
         },
         error: function (err) {
             console.log(err);
@@ -697,8 +698,8 @@ function updateBatchLearningData(dataObj, fileInfo, mlData) {
 }
 
 // ML 데이터와 정답 데이터를 비교해여 색상 표시
-function comparedMLAndAnswer(dataObj, mlData, fileInfo) {
-    console.log(dataObj);
+function comparedMLAndAnswer(retData, mlData, fileInfo) {
+    console.log(retData);
     console.log(mlData);
     $('input[name="listCheck_before"]').each(function (index, element) {
         for (var i in fileInfo) {
@@ -706,54 +707,54 @@ function comparedMLAndAnswer(dataObj, mlData, fileInfo) {
                 var targetTdNumArr = [];
                 for (var j in mlData) {
                     // 라벨 맵핑에서 컬럼명 정해지면 이부분 수정 필요 -- 07.30 hyj
-                    if (!dataObj.entryNo) targetTdNumArr.push(3);
-                    if (!dataObj.statementDiv) targetTdNumArr.push(4);
-                    if (!dataObj.contractNum) targetTdNumArr.push(5);
-                    if (!dataObj.ogCompanyCode) targetTdNumArr.push(6);
-                    if (!dataObj.ogCompanyName) targetTdNumArr.push(7);
-                    if (!dataObj.brokerCode) targetTdNumArr.push(8);
-                    if (!dataObj.brokerName) targetTdNumArr.push(9);
-                    if (!dataObj.ctnm) targetTdNumArr.push(10);
-                    if (!(mlData[j].column == 'INS_ST_DT_VALUE' && dataObj.insstdt == mlData[j].text)) targetTdNumArr.push(11);
-                    if (!dataObj.insenddt) targetTdNumArr.push(12);
-                    if (!dataObj.uy) targetTdNumArr.push(13);
-                    if (!dataObj.curcd) targetTdNumArr.push(14);
-                    if (!dataObj.paidPercent) targetTdNumArr.push(15);
-                    if (!dataObj.paidShare) targetTdNumArr.push(16);
-                    if (!dataObj.oslPercent) targetTdNumArr.push(17);
-                    if (!dataObj.oslShare) targetTdNumArr.push(18);
-                    if (!dataObj.grosspm) targetTdNumArr.push(19);
-                    if (!dataObj.pm) targetTdNumArr.push(20);
-                    if (!dataObj.pmPFEnd) targetTdNumArr.push(21);
-                    if (!dataObj.pmPFWos) targetTdNumArr.push(22);
-                    if (!dataObj.xolPm) targetTdNumArr.push(23);
-                    if (!dataObj.returnPm) targetTdNumArr.push(24);
-                    if (!dataObj.grosscn) targetTdNumArr.push(25);
-                    if (!dataObj.cn) targetTdNumArr.push(26);
-                    if (!dataObj.profitcn) targetTdNumArr.push(27);
-                    if (!dataObj.brokerAge) targetTdNumArr.push(28);
-                    if (!dataObj.tax) targetTdNumArr.push(29);
-                    if (!dataObj.overridingCom) targetTdNumArr.push(30);
-                    if (!dataObj.charge) targetTdNumArr.push(31);
-                    if (!dataObj.pmReserveRTD) targetTdNumArr.push(32);
-                    if (!dataObj.pfPmReserveRTD) targetTdNumArr.push(33);
-                    if (!dataObj.pmReserveRTD1) targetTdNumArr.push(34);
-                    if (!dataObj.pfPmReserveRTD2) targetTdNumArr.push(35);
-                    if (!dataObj.claim) targetTdNumArr.push(36);
-                    if (!dataObj.lossRecovery) targetTdNumArr.push(37);
-                    if (!dataObj.cashLoss) targetTdNumArr.push(38);
-                    if (!dataObj.cashLossRD) targetTdNumArr.push(39);
-                    if (!dataObj.lossRR) targetTdNumArr.push(40);
-                    if (!dataObj.lossRR2) targetTdNumArr.push(41);
-                    if (!dataObj.lossPFEnd) targetTdNumArr.push(42);
-                    if (!dataObj.lossPFWoa) targetTdNumArr.push(43);
-                    if (!dataObj.interest) targetTdNumArr.push(44);
-                    if (!dataObj.taxOn) targetTdNumArr.push(45);
-                    if (!dataObj.miscellaneous) targetTdNumArr.push(46);
-                    if (!dataObj.pmbl) targetTdNumArr.push(47);
-                    if (!dataObj.cmbl) targetTdNumArr.push(48);
-                    if (!dataObj.ntbl) targetTdNumArr.push(49);
-                    if (!dataObj.cscosarfrncnnt2) targetTdNumArr.push(50);
+                    if (!retData.entryNo) targetTdNumArr.push(3);
+                    if (!retData.statementDiv) targetTdNumArr.push(4);
+                    if (!retData.contractNum) targetTdNumArr.push(5);
+                    if (!retData.ogCompanyCode) targetTdNumArr.push(6);
+                    if (!retData.ogCompanyName) targetTdNumArr.push(7);
+                    if (!retData.brokerCode) targetTdNumArr.push(8);
+                    if (!retData.brokerName) targetTdNumArr.push(9);
+                    if (!retData.ctnm) targetTdNumArr.push(10);
+                    if (!(mlData[j].column == 'INS_ST_DT_VALUE' && retData.insstdt == mlData[j].text)) targetTdNumArr.push(11);
+                    if (!retData.insenddt) targetTdNumArr.push(12);
+                    if (!retData.uy) targetTdNumArr.push(13);
+                    if (!retData.curcd) targetTdNumArr.push(14);
+                    if (!retData.paidPercent) targetTdNumArr.push(15);
+                    if (!retData.paidShare) targetTdNumArr.push(16);
+                    if (!retData.oslPercent) targetTdNumArr.push(17);
+                    if (!retData.oslShare) targetTdNumArr.push(18);
+                    if (!retData.grosspm) targetTdNumArr.push(19);
+                    if (!retData.pm) targetTdNumArr.push(20);
+                    if (!retData.pmPFEnd) targetTdNumArr.push(21);
+                    if (!retData.pmPFWos) targetTdNumArr.push(22);
+                    if (!retData.xolPm) targetTdNumArr.push(23);
+                    if (!retData.returnPm) targetTdNumArr.push(24);
+                    if (!retData.grosscn) targetTdNumArr.push(25);
+                    if (!retData.cn) targetTdNumArr.push(26);
+                    if (!retData.profitcn) targetTdNumArr.push(27);
+                    if (!retData.brokerAge) targetTdNumArr.push(28);
+                    if (!retData.tax) targetTdNumArr.push(29);
+                    if (!retData.overridingCom) targetTdNumArr.push(30);
+                    if (!retData.charge) targetTdNumArr.push(31);
+                    if (!retData.pmReserveRTD) targetTdNumArr.push(32);
+                    if (!retData.pfPmReserveRTD) targetTdNumArr.push(33);
+                    if (!retData.pmReserveRTD1) targetTdNumArr.push(34);
+                    if (!retData.pfPmReserveRTD2) targetTdNumArr.push(35);
+                    if (!retData.claim) targetTdNumArr.push(36);
+                    if (!retData.lossRecovery) targetTdNumArr.push(37);
+                    if (!retData.cashLoss) targetTdNumArr.push(38);
+                    if (!retData.cashLossRD) targetTdNumArr.push(39);
+                    if (!retData.lossRR) targetTdNumArr.push(40);
+                    if (!retData.lossRR2) targetTdNumArr.push(41);
+                    if (!retData.lossPFEnd) targetTdNumArr.push(42);
+                    if (!retData.lossPFWoa) targetTdNumArr.push(43);
+                    if (!retData.interest) targetTdNumArr.push(44);
+                    if (!retData.taxOn) targetTdNumArr.push(45);
+                    if (!retData.miscellaneous) targetTdNumArr.push(46);
+                    if (!retData.pmbl) targetTdNumArr.push(47);
+                    if (!retData.cmbl) targetTdNumArr.push(48);
+                    if (!retData.ntbl) targetTdNumArr.push(49);
+                    if (!retData.cscosarfrncnnt2) targetTdNumArr.push(50);
                 }
                 for (var j in targetTdNumArr) {
                     $(this).parent().parent().parent().parent().children('td').eq(targetTdNumArr[j]).css('background-color', 'red');

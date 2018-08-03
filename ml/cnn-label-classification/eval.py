@@ -111,7 +111,7 @@ for item in predictions_human_readable:
     # print(item)
     ocrText = item[0].encode("euc_kr","replace")
     ocrText = ocrText.decode("euc_kr")
-    retText += item[0] + "||" + item[1] + "^"
+    retText += ocrText + "||" + item[1] + "^"
 
 print(retText[:-1])
 # print(json.dumps(dicText))
