@@ -33,9 +33,16 @@ router.post('/ocr', function (req, res) {
     fs.readFile('./uploads/' + fileName, function (err, data) {
         if (err) res.send({ error: '파일이 없습니다.' }); // fs error
 
-        var base64 = new Buffer(data, 'binary').toString('base64');
-        var binaryString = new Buffer(base64, 'base64').toString('binary');
-        var buffer = new Buffer(binaryString, "binary");
+        var buffer;
+        try {
+            var base64 = new Buffer(data, 'binary').toString('base64');
+            var binaryString = new Buffer(base64, 'base64').toString('binary');
+            buffer = new Buffer(binaryString, "binary");
+        } catch (e) {
+            res.send({ error: '파일 읽기 도중 버퍼 에러가 발생했습니다.' });
+        } finally {
+            if (!buffer) res.send({ error: '파일 버퍼가 비어있습니다.' });
+        }
 
         var params = {
             'language': 'unk',
