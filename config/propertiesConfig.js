@@ -18,10 +18,12 @@ var propertiesConfig = {
     filepath: {
         //develop
         logfilepath: 'c:/logs',
+        //realExcelPath: 'C:\\Users\\Taiho\\Desktop\\labeled_data',
         //product
         //logfilepath: 'c:/logs'
         excelBatchFilePath: '/excel/filepath.xlsx',
-        excelBatchFileData: '/excel/data.xlsx'
+        excelBatchFileData: '/excel/data.xlsx',
+        realExcelPath: '/image/labeled_data'
     }
 };
 
