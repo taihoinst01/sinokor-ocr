@@ -5161,3 +5161,15 @@ button[disabled] {
 .box_content_K01 {
     min-height: 542px !important;
 }
+
+.pop_layer_K01 {
+    margin-left: -820px !important;
+}
+
+.popTable_K01 {
+    border-collapse: collapse;
+}
+
+    .popTable_K01 th, .popTable_K01 td {
+        border: 1px solid black;
+    }
