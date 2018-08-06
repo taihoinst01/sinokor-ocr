@@ -865,7 +865,7 @@ var searchBatchLearnDataList = function (addCond) {
                     appendHtml += `
                     <tr>
                         ${checkboxHtml}
-                        <td>${nvl(entry.ORIGINFILENAME)}</td> <!--파일명-->
+                        <td><a href="javascript:void(0);">${nvl(entry.ORIGINFILENAME)}</a></td> <!--파일명-->
                         <td>${nvl(entry.STATUS)}</td> <!--학습여부-->
                         <td>${nvl(entry.OGCOMPANYNAME)}</td> <!--출재사명-->
                         <td>${nvl(entry.UY)}</td> <!--UY-->
@@ -873,8 +873,6 @@ var searchBatchLearnDataList = function (addCond) {
                         <td>${nvl(entry.CONTRACTNAMESUMMARY)}</td> <!--계약명요약-->
                         <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
                         <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
-
-
                         <td>${nvl(entry.IMGID)}</td> <!--이미지ID-->
                         <td>${nvl(entry.STATEMENTDIV)}</td> <!--계산서 구분-->
                         <td>${nvl(entry.CONTRACTNUM)}</td> <!--계약번호-->
@@ -929,6 +927,7 @@ var searchBatchLearnDataList = function (addCond) {
             endProgressBar(); // end progressbar
             checkboxEvent(); // refresh checkbox event
             $('input[type=checkbox]').ezMark();
+            imgPopupEvent();
         },
         error: function (err) {
             endProgressBar(); // end progressbar
@@ -936,6 +935,13 @@ var searchBatchLearnDataList = function (addCond) {
         }
     });
 };
+
+function imgPopupEvent() {
+    $('#tbody_batchList_before td > a').click(function () {
+        $('#viewImage').attr('src', '../../uploads/' + $(this).text().split('.')[0] + '.jpg');
+        layer_open('layer3');
+    });
+}
 
 // [Select] 배치학습데이터 조회
 var searchBatchLearnData = function (imgIdArray, flag) {
