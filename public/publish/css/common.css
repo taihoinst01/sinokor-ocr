@@ -320,6 +320,9 @@ h3.tits:before,
 .button_st6:before,
 .tits11_btn01:before,
 .ipt83:before,
+.button_control11:before,
+.button_control12:before,
+.searchIcon:before,
 #content h2:before {
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat;
@@ -427,8 +430,10 @@ input[type='password'].inputst_box01 {
     }
 
     .inputst_role input[type="radio"] {
-        height: 23px;
-        width: 23px;
+        /*
+            height: 23px;
+            width: 23px;
+        */
         margin-right: 4px;
         cursor: pointer;
     }
@@ -4997,6 +5002,7 @@ button[disabled] {
 
 .ipt83 {
     width: 83% !important;
+    padding: 6px 6px 6px 30px !important;
 }
 
     .ipt83:before {
@@ -5011,4 +5017,93 @@ button[disabled] {
 }
 .doc_popup {
     height: 720px !important;
+}
+.box_scroll_st99 {
+    display: block;
+    height: 771px;
+    overflow: auto;
+    padding: 0px 17px;
+}
+#uploadSucessForm #touchSlider {
+    height: 140px !important;
+}
+#docSearchResultMask {
+    width: 550px;
+    height: 480px;
+    opacity: 0.3;
+    position: absolute;
+    left: 624px;
+    top: 217px;
+    z-index: 260;
+    background-color: #000;
+    display: none;
+}
+.button_control11 {
+    top: 410px !important;
+    left: 623px !important;
+    z-index: 500;
+    opacity: 0.8 !important;
+    position: absolute;
+    display: inline-block;
+    width: 64px;
+    height: 84px;
+    padding: 20px;
+    background: #605f5d;
+    cursor: pointer;
+}
+    .button_control11:before {
+        background-position: -260px -100px;
+        content: '';
+        display: block;
+        width: 24px;
+        height: 44px;
+    }
+.button_control12 {
+    top: 410px !important;
+    right: 26px !important;
+    z-index: 500;
+    opacity: 0.8 !important;
+    position: absolute;
+    display: inline-block;
+    width: 64px;
+    height: 84px;
+    padding: 20px;
+    background: #605f5d;
+    cursor: pointer;
+}
+
+    .button_control12:before {
+        background-position: -285px -100px;
+        content: '';
+        display: block;
+        width: 24px;
+        height: 44px;
+    }
+
+.docSearchResultImg_count {
+    position: absolute;
+    display: inline-block;
+    top: 670px !important;
+    right: 275px !important;
+    z-index: 500;
+    display: none;
+}
+    .docSearchResultImg_count #countCurrent {
+        color: #0075bb;
+    }
+.docSearchResultImg_count span {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.searchIcon:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 123px;
+    left: 625px;
+    cursor: text;
+    width: 22px;
+    height: 22px;
+    background-position: -214px -546px;
 }
