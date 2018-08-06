@@ -32,10 +32,12 @@ const defaults = {
 
 
 
+/****************************************************************************************
+ * ROUTER
+ ****************************************************************************************/
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
-
 // invoiceRegistration.html 보여주기
 router.get('/', function (req, res) {
     console.log("check");
@@ -49,36 +51,99 @@ router.post('/', function (req, res) {
     else res.redirect("/logout");
 });
 
-// fileupload
+/****************************************************************************************
+ * FILE UPLOAD
+ ****************************************************************************************/
 router.post('/uploadFile', upload.any(), function (req, res) {
     var files = req.files;
     var endCount = 0;
+    var fileInfo = [];
+    var fileDtlInfo = [];
     var returnObj = [];
     var convertType = '';
+    var userId = req.session.userId;
 
     for (var i = 0; i < files.length; i++) {
+        var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성 - 규칙 생기면 변경 필요
+
         if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
             files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff') {
             var ifile = appRoot + '\\' + files[i].path;
             var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
+
+            // 파일 정보 추출
+            var fileObj = files[i];                             // 파일
+            var filePath = fileObj.path;                        // 파일 경로
+            var oriFileName = fileObj.originalname;             // 파일 원본명
+            var _lastDot = oriFileName.lastIndexOf('.');
+            var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
+            var fileSize = fileObj.size;                        // 파일 크기
+            var contentType = fileObj.mimetype;                 // 컨텐트타입
+            var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
+
+            var fileParam = {
+                imgId: imgId,
+                filePath: filePath,
+                oriFileName: oriFileName,
+                convertFileName: '',
+                svrFileName: svrFileName,
+                fileExt: fileExt,
+                fileSize: fileSize,
+                contentType: contentType,
+                regId: userId
+            };
+            fileInfo.push(fileParam);
+
+            var fileDtlArr = []; 
+
             execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 ' + ifile + ' ' + ofile);
             if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
                 var j = 0;
                 var isStop = false;
                 while (!isStop) {
                     try { // 하나의 파일 안의 여러 페이지면
-                        var stat = fs.statSync(appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg');
+                        var convertFilePath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg';
+                        var convertFileName = files[i].path.split('.')[0] + '-' + j + '.jpg';
+                        var _lastDotDtl = convertFileName.lastIndexOf('.');
+                        var stat = fs.statSync(convertFilePath);
                         if (stat) {
+                            var fileDtlParam = {
+                                imgId: imgId,
+                                filePath: convertFilePath,
+                                oriFileName: convertFileName,
+                                convertFileName: '',
+                                svrFileName: Math.random().toString(26).slice(2),
+                                fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(), 
+                                fileSize: stat.size,
+                                contentType: 'image/jpeg',
+                                regId: userId
+                            };  
                             returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
+                            fileDtlArr.push(fileDtlParam);
                         } else {
                             isStop = true;
                             break;
                         }
                     } catch (err) { // 하나의 파일 안의 한 페이지면
                         try {
-                            var stat2 = fs.statSync(appRoot + '\\' + files[i].path.split('.')[0] + '.jpg');
+                            var convertFilePath = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
+                            var convertFileName = files[i].path.split('.')[0] + '.jpg';
+                            var _lastDotDtl = convertFileName.lastIndexOf('.');
+                            var stat2 = fs.statSync(convertFilePath);
                             if (stat2) {
+                                var fileDtlParam = {
+                                    imgId: imgId,
+                                    filePath: convertFilePath,
+                                    oriFileName: convertFileName,
+                                    convertFileName: '',
+                                    svrFileName: Math.random().toString(26).slice(2),
+                                    fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
+                                    fileSize: stat2.size,
+                                    contentType: 'image/jpeg',
+                                    regId: userId
+                                };  
                                 returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
+                                fileDtlArr.push(fileDtlParam);
                                 break;
                             }
                         } catch (e) {
@@ -91,9 +156,15 @@ router.post('/uploadFile', upload.any(), function (req, res) {
             endCount++;
         }
     }
-    res.send({ code: 200, message: returnObj });
+    commonDB.insertFileInfo(fileInfo, "ocr_file"); // 파일 정보 DB INSERT
+    commonDB.insertFileInfo(fileDtlArr, "ocr_file_dtl"); // 세부 파일 정보 DB INSERT
+
+    res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlArr });
 });
 
+/****************************************************************************************
+ * ML
+ ****************************************************************************************/
 // typoSentence ML
 router.post('/typoSentence', function (req, res) {
     var fileName = req.body.fileName;

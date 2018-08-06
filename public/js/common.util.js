@@ -126,7 +126,6 @@ function getAddDate(dateVal, separator) {
     return leadingZeros(y, 4) + separator + leadingZeros(m, 2) + separator + leadingZeros(d + dateVal, 2);
 }
 
-
 module.exports = {
     MAX_PAGE_IN_SET: MAX_PAGE_IN_SET,
     MAX_ENTITY_IN_PAGE: MAX_ENTITY_IN_PAGE,

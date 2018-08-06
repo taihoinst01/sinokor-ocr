@@ -2186,6 +2186,7 @@
     <Content Include="public\css\sub.css" />
     <Content Include="public\css\test.css" />
     <Content Include="public\css\user\ocrFormAnalysis.css" />
+    <Content Include="public\css\user\batchLearning.css" />
     <Content Include="public\css\user\uiLearning.css" />
     <Content Include="public\fonts\NanumBrush.ttf" />
     <Content Include="public\fonts\NanumGothic.eot" />
