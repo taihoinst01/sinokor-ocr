@@ -61,6 +61,25 @@ router.get('/', function (req, res) {                           // 배치학습 
 // BLANK CALLBACK
 var callbackBlank = function () { };
 
+
+
+// [POST] 배치학습데이터 이미지 데이터 조회 
+router.post('/viewImageData', function (req, res) {
+    if (req.isAuthenticated()) fnViewImageData(req, res);
+});
+var callbackViewImageData = function (rows, req, res) {
+    console.log("rows : " + JSON.stringify(rows));
+    if (req.isAuthenticated()) res.send(rows);
+}
+var fnViewImageData = function (req, res) {
+    console.log("filePath : " + req.body.filePath);
+    var data = [req.body.filePath];
+    var query = queryConfig.batchLearningConfig.selectViewImageData;
+    commonDB.reqQueryParam(query, data, callbackViewImageData, req, res);
+}
+
+
+
 // [POST] 배치학습데이터리스트 조회 
 router.post('/searchBatchLearnDataList', function (req, res) {   
     if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
