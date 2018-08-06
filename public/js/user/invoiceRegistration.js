@@ -30,6 +30,8 @@ $(function () {
 var uploadFileEvent = function() {
     $('#uploadFile').change(function () {
         if ($(this).val() !== '') {
+            gbl_fileInfo = [];
+            gbl_fileDtlInfo = [];
             lineText = [];
             $('#ul_image').html('');
             totCount = 0;
@@ -309,24 +311,30 @@ var executeML = function(fileName, data, type) {
     $('#progressMsgDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0, 200) + '...');
     var targetUrl;
 
+    console.log(`다음 순서는 type = ${type} 입니다.`);
+
     if (type == 'ts') {
-        targetUrl = '/uiLearning/typoSentence';
+        targetUrl = '/invoiceRegistration/typoSentence';
         $('#progressMsgTitle').html('오타 수정 처리 중..');
         addProgressBar(41, 50);
     } else if (type == 'dd') {
-        targetUrl = '/uiLearning/domainDictionary';
+        targetUrl = '/invoiceRegistration/domainDictionary';
         $('#progressMsgTitle').html('도메인 사전 처리 중..');
         addProgressBar(51, 60);
     } else if (type == 'tc') {
-        targetUrl = '/uiLearning/textClassification';
+        targetUrl = '/invoiceRegistration/textClassification';
         $('#progressMsgTitle').html('텍스트 분류 처리 중..');
         addProgressBar(61, 70);
+    } else if (type == 'st') {
+        targetUrl = '/invoiceRegistration/statementClassification';
+        $('#progressMsgTitle').html('계산서 분류 처리 중..');
+        addProgressBar(71, 75);
     } else if (type == 'lm') {
-        targetUrl = '/uiLearning/labelMapping';
+        targetUrl = '/invoiceRegistration/labelMapping';
         $('#progressMsgTitle').html('라벨 매핑 처리 중..');
-        addProgressBar(71, 80);
+        addProgressBar(76, 80);
     } else {
-        targetUrl = '/uiLearning/searchDBColumns';
+        targetUrl = '/invoiceRegistration/searchDBColumns';
         $('#progressMsgTitle').html('DB 컬럼 조회 중..');
         addProgressBar(81, 90);
     }
@@ -383,14 +391,105 @@ var fn_processData = function() {
     console.log("fn_processData fileInfo : " + gbl_fileInfo.length);
     console.log("fn_processData fileDtlInfo : " + gbl_fileDtlInfo.length);
 
+    //thumbImgs: 26.jpg
+    //fn_processData fileInfo: [{
+    //    "imgId": "qgg5s4da5v", "filePath": "uploads\\26.tif", "oriFileName": "26.tif",
+    //    "convertFileName": "", "svrFileName": "42f7hdkgi7i", "fileExt": "tif", "fileSize": 99390, "contentType": "image/tiff", "regId": "admin"
+    //}]
+    //fn_processData fileDtlInfo: [{
+    //    "imgId": "qgg5s4da5v", "filePath": "C:\\workspace\\sinokor-ocr\\uploads\\26.jpg",
+    //    "oriFileName": "uploads\\26.jpg", "convertFileName": "", "svrFileName": "agfb7cp2oekd",
+    //    "fileExt": "oads\\26.jpg", "fileSize": 230103, "contentType": "image/jpeg", "regId": "admin"
+    //}]
+
+    var baseHtml = "";
+    var dtlHtml = "";
+    var fileLen = gbl_fileInfo.length;
+    var fileDtlLen = gbl_fileDtlInfo.length;
+
     for (var i = 0, arr; arr = lineText[i]; i++) {
-        //console.log("document : " + JSON.stringify(arr));
+        console.log("document : " + JSON.stringify(arr));
         // TODO : 파일 정보를 1 record로 생성한다.
-        //
+        var baseHtml = `<tr>
+                            <td><input type="checkbox" id="base_chk_${arr.imgId}" name="base_chk" /></td>
+                            <td>${arr.imgId}</td>
+                            <td>${gbl_fileDtlInfo.length}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><input type="text" id="base_memo_${arr.imgId}" name="base_memo" value="" /></td>
+                        </tr>`;
+
         for (var x = 0, item; item = arr.data[x]; x++) {
-            //console.log("make document dtl: " + JSON.stringify(item));
+            console.log("make document dtl: " + JSON.stringify(item));
+
+            var location = nvl(item["location"]);
+            var text = nvl(item["text"]);
+            var label = nvl(item["label"]);
+            var column = nvl(item["column"]);
+
+            if (label == "fixlabel" || label == "entryrowlabel") { //라벨 이면
+                for (var j = 0, y = dataVal.length; j < y; j++) {
+                    if (dataVal[j].column == column + "_VALUE") {// 해당 라벨에 대한 값이면
+                        console.log("Find Label and Value : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
+                        if (isNull(dataObj[column])) {
+
+                        } else {
+                            console.log("Alreaday exist Column(KEY) : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
+                        }
+                    }
+                }
+            }
+
             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
-            //
+            var dtlHtml = `<tr>
+                                <td><input type="checkbox" id="dtl_chk_${item.imgId}" name="dtl_chk" /></td>
+                                <td>${item.imgId}</td>
+                                <td></td> 
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>`;
         }
     }
 
