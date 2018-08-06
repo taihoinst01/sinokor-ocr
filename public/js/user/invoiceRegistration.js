@@ -1,6 +1,11 @@
 ﻿//import { identifier } from "babel-types";
 "use strict";
 
+// uploadFile info
+var gbl_fileInfo = [];      // 파일(tif) 정보
+var gbl_fileDtlInfo = [];   // 파일(변환 jpg) 정보
+
+// ML global function
 var lineText = []; // line별로 가공된 ocr데이터 배열
 var totCount = 0; // 전체 분석 문서 개수
 var ocrCount = 0; // ocr 수행 횟수
@@ -15,10 +20,18 @@ $(function () {
     _init();
 });
 
-// 파일 업로드 이벤트
+/****************************************************************************************
+ * BUTTON EVENT
+ ****************************************************************************************/
+
+/****************************************************************************************
+ * FILE UPLOAD EVENT
+ ****************************************************************************************/
 var uploadFileEvent = function() {
     $('#uploadFile').change(function () {
         if ($(this).val() !== '') {
+            gbl_fileInfo = [];
+            gbl_fileDtlInfo = [];
             lineText = [];
             $('#ul_image').html('');
             totCount = 0;
@@ -48,8 +61,14 @@ var uploadFileEvent = function() {
             $("#progressMsgTitle").html('파일 업로드 완료..');
             $("#progressMsgDetail").html('');
             addProgressBar(11, 20);
-            $uploadForm.hide();
+            //$uploadForm.hide();
             $uploadSucessForm.show();
+
+            // 업로드한 파일 정보 저장
+            gbl_fileInfo = responseText.fileInfo;
+            gbl_fileDtlInfo = responseText.fileDtlInfo;
+
+            // 파일 ml 처리
             if (responseText.message.length > 0) {
                 totCount = responseText.message.length;
                 for (var i = 0; i < responseText.message.length; i++) {
@@ -65,6 +84,177 @@ var uploadFileEvent = function() {
     });
 }
 
+/****************************************************************************************
+ * SCREEN EVENT
+ ****************************************************************************************/
+// 썸네일 이미지 페이지 이동 버튼 클릭 이벤트
+var thumbImgPagingEvent = function () {
+    $('#thumb-prev').click(function () {
+        thumnImgPageCount--;
+        thumbImgPaging(thumnImgPageCount);
+    });
+    $('#thumb-next').click(function () {
+        thumnImgPageCount++;
+        thumbImgPaging(thumnImgPageCount);
+    });
+}
+
+// 초기 썸네일 이미지 렌더링
+var thumnImg = function () {
+    console.log("thumbImgs : " + thumbImgs);
+    for (var i in thumbImgs) {
+        if ($('#ul_image > li').length < thumnbImgPerPage) {
+            //var imageTag = '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a></li>';
+            var imageTag = `<li><a href="#none" class="imgtmb thumb-img"><img src="../../uploads/${thumbImgs[i]}" style="width: 48px;" /></a></li>`;
+            $('#ul_image').append(imageTag);
+        } else {
+            break;
+        }
+    }
+    $('#thumb-tot').attr('disabled', false);
+    if (thumbImgs.length > thumnbImgPerPage) {
+        $('#thumb-prev').attr('disabled', true);
+        $('#thumb-next').attr('disabled', false);
+    } else {
+        $('#thumb-prev').attr('disabled', true);
+        $('#thumb-next').attr('disabled', true);
+    }
+    thumbImgEvent();
+    //console.log(thumbImgs);
+}
+
+// 썸네일 이미지 페이징
+var thumbImgPaging = function (pageCount) {
+    $('#imageBox').html('');
+    var startImgCnt = thumnbImgPerPage * pageCount - thumnbImgPerPage;
+    var endImgCnt = thumnbImgPerPage * pageCount;
+
+    if (startImgCnt == 0) {
+        $('#thumb-prev').attr('disabled', true);
+    } else {
+        $('#thumb-prev').attr('disabled', false);
+    }
+
+    if (endImgCnt >= thumbImgs.length) {
+        endImgCnt = thumbImgs.length;
+        $('#thumb-next').attr('disabled', true);
+    } else {
+        $('#thumb-next').attr('disabled', false);
+    }
+
+    var imageTag = '';
+    for (var i = startImgCnt; i < endImgCnt; i++) {
+        imageTag += '<li>';
+        imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a>';
+        imageTag += '</li>';
+    }
+    $('#imageBox').append(imageTag);
+    thumbImgEvent();
+}
+
+// 썸네일 이미지 클릭 이벤트
+var thumbImgEvent = function () {
+    $('.thumb-img').click(function () {
+        $('#imageBox > li').removeClass('on');
+        $(this).parent().addClass('on');
+        //$('#mainImage').css('background-image', $(this).css('background-image'));
+        $('#mainImage').css('background-image', $(this).children().prop('src'));
+        //detailTable($(this).css('background-image').split('/')[4].split('")')[0]);
+        detailTable($(this).children().prop('src').split('/')[4].split('")')[0]);
+    });
+}
+
+// 마우스 오버 이벤트
+function hoverSquare(e) {
+    $('#mainImage').css('height', '500px');
+    $('#imageZoom').css('height', '300px').css('background-image', $('#mainImage').css('background-image')).show();
+
+    // 사각형 좌표값
+    var location = $(e).find('input[type=hidden]').val().split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+
+    // 해당 텍스트 x y좌표 원본 이미지에서 찾기
+    $('#imageZoom').css('background-position', '-' + (x - 5) + 'px -' + (y - 5) + 'px');
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
+    // 선택한 글씨에 빨간 네모 그리기
+    $('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 10) + 'px');
+    $('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 10) + 'px');
+    $('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
+    $('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
+    $('#redNemo').show();
+    $('#redZoomNemo').css('width', textWidth + 10);
+    $('#redZoomNemo').css('height', textHeight + 10);
+    $('#redZoomNemo').show();
+}
+
+// 마우스 아웃 이벤트
+function moutSquare(e) {
+    $('#redNemo').hide();
+    $('#redZoomNemo').hide();
+    $('#imageZoom').hide();
+    $('#mainImage').css('height', '700px');
+}
+
+function dbSelectClickEvent() {
+    $('.selectBox > li').click(function (e) {
+        if ($(this).children('ul').css('display') == 'none') {
+            $('.selectBox > li').removeClass('on');
+            $('.selectBox > li > ul').hide();
+            $('.selectBox > li > ul').css('visibility', 'hidden').css('z-index', '0');
+            $(this).addClass('on');
+            $(this).children('ul').show();
+            $(this).children('ul').css('visibility', 'visible').css('z-index', '1');
+            $('.box_table_st').css('height', Number($('.box_table_st').height() + $(this).children('ul').height()) + 'px');
+        } else {
+            $(this).children('ul').hide();
+            $(this).children('ul').css('visibility', 'hidden').css('z-index', '0');
+            $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).children('ul').height()) + 'px');
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    $('.selectBox > li > ul > li').click(function (e) {
+        if ($(this).children('ul').css('display') == 'none') {
+            $('.selectBox > li > ul > li > ul').hide();
+            $('.selectBox > li > ul > li > ul').css('visibility', 'hidden');
+            $(this).children('ul').show();
+            $(this).children('ul').css('visibility', 'visible').css('z-index', '2');
+        } else {
+            $(this).children('ul').hide();
+            $(this).children('ul').css('visibility', 'hidden');
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    $('.selectBox > li > ul > li > ul > li').click(function (e) {
+        var firstCategory = $(this).parent().prev().children('span').text();
+        var lastCategory = ($(this).children('a').text() == '키워드') ? '' : ' 값';
+        $(this).parent().parent().parent().prev().text(firstCategory);
+        $(this).parent().parent().children('ul').hide();
+        $(this).parent().parent().children('ul').css('visibility', 'hidden');
+        $(this).parent().parent().parent().parent().children('ul').hide();
+        $(this).parent().parent().parent().parent().children('ul').css('visibility', 'hidden').css('z-index', '0');
+        $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).parent().parent().parent().parent().children('ul').height()) + 'px')
+        e.preventDefault();
+        e.stopPropagation();
+    });
+}
+
+
+/****************************************************************************************
+ * ML
+ ****************************************************************************************/
 // OCR API
 var processImage = function(fileName) {
     $('#progressMsgTitle').html('OCR 처리 중..');
@@ -98,96 +288,6 @@ var processImage = function(fileName) {
     });
 }
 
-var insertCommError = function(eCode, type) {
-    $.ajax({
-        url: '/common/insertCommError',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify({ 'eCode': eCode, type: type }),
-        contentType: 'application/json; charset=UTF-8',
-        beforeSend: function () {
-        },
-        success: function (data) {
-        },
-        error: function (err) {
-            //console.log(err);
-        }
-    });
-}
-
-// 썸네일 이미지 페이지 이동 버튼 클릭 이벤트
-var thumbImgPagingEvent = function() {
-    $('#thumb-prev').click(function () {
-        thumnImgPageCount--;
-        thumbImgPaging(thumnImgPageCount);
-    });
-    $('#thumb-next').click(function () {
-        thumnImgPageCount++;
-        thumbImgPaging(thumnImgPageCount);
-    });
-}
-
-// 초기 썸네일 이미지 렌더링
-var thumnImg = function () {
-    console.log("thumbImgs : " + thumbImgs);
-    for (var i in thumbImgs) {
-        if ($('#imageBox > li').length < thumnbImgPerPage) {
-            var imageTag = '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a></li>';
-            $('#imageBox').append(imageTag);
-        } else {
-            break;
-        }
-    }
-    $('#thumb-tot').attr('disabled', false);
-    if (thumbImgs.length > thumnbImgPerPage) {
-        $('#thumb-prev').attr('disabled', true);
-        $('#thumb-next').attr('disabled', false);
-    } else {
-        $('#thumb-prev').attr('disabled', true);
-        $('#thumb-next').attr('disabled', true);
-    }
-    //console.log(thumbImgs);
-}
-
-// 썸네일 이미지 페이징
-var thumbImgPaging = function(pageCount) {
-    $('#imageBox').html('');
-    var startImgCnt = thumnbImgPerPage * pageCount - thumnbImgPerPage;
-    var endImgCnt = thumnbImgPerPage * pageCount;
-
-    if (startImgCnt == 0) {
-        $('#thumb-prev').attr('disabled', true);
-    } else {
-        $('#thumb-prev').attr('disabled', false);
-    }
-
-    if (endImgCnt >= thumbImgs.length) {
-        endImgCnt = thumbImgs.length;
-        $('#thumb-next').attr('disabled', true);
-    } else {
-        $('#thumb-next').attr('disabled', false);
-    }
-
-    var imageTag = '';
-    for (var i = startImgCnt; i < endImgCnt; i++) {
-        imageTag += '<li>';
-        imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a>';
-        imageTag += '</li>';
-    }
-    $('#imageBox').append(imageTag);
-    thumbImgEvent();
-}
-
-// 썸네일 이미지 클릭 이벤트
-var thumbImgEvent = function() {
-    $('.thumb-img').click(function () {
-        $('#imageBox > li').removeClass('on');
-        $(this).parent().addClass('on');
-        $('#mainImage').css('background-image', $(this).css('background-image'));
-        detailTable($(this).css('background-image').split('/')[4].split('")')[0]);
-    });
-}
-
 // OCR 데이터 line별 가공 & 상세 테이블 렌더링 & DB컬럼 조회
 var appendOcrData = function(fileName, regions) {
     var data = [];
@@ -211,24 +311,30 @@ var executeML = function(fileName, data, type) {
     $('#progressMsgDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0, 200) + '...');
     var targetUrl;
 
+    console.log(`다음 순서는 type = ${type} 입니다.`);
+
     if (type == 'ts') {
-        targetUrl = '/uiLearning/typoSentence';
+        targetUrl = '/invoiceRegistration/typoSentence';
         $('#progressMsgTitle').html('오타 수정 처리 중..');
         addProgressBar(41, 50);
     } else if (type == 'dd') {
-        targetUrl = '/uiLearning/domainDictionary';
+        targetUrl = '/invoiceRegistration/domainDictionary';
         $('#progressMsgTitle').html('도메인 사전 처리 중..');
         addProgressBar(51, 60);
     } else if (type == 'tc') {
-        targetUrl = '/uiLearning/textClassification';
+        targetUrl = '/invoiceRegistration/textClassification';
         $('#progressMsgTitle').html('텍스트 분류 처리 중..');
         addProgressBar(61, 70);
+    } else if (type == 'st') {
+        targetUrl = '/invoiceRegistration/statementClassification';
+        $('#progressMsgTitle').html('계산서 분류 처리 중..');
+        addProgressBar(71, 75);
     } else if (type == 'lm') {
-        targetUrl = '/uiLearning/labelMapping';
+        targetUrl = '/invoiceRegistration/labelMapping';
         $('#progressMsgTitle').html('라벨 매핑 처리 중..');
-        addProgressBar(71, 80);
+        addProgressBar(76, 80);
     } else {
-        targetUrl = '/uiLearning/searchDBColumns';
+        targetUrl = '/invoiceRegistration/searchDBColumns';
         $('#progressMsgTitle').html('DB 컬럼 조회 중..');
         addProgressBar(81, 90);
     }
@@ -261,9 +367,8 @@ var executeML = function(fileName, data, type) {
                     $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
                     thumnImg();
                     $('#imageBox > li').eq(0).addClass('on');
-                    detailTable(fileName);
-                    console.log(`data : ${JSON.stringify(data)}`);
-
+                    //detailTable(fileName);
+                    fn_processData(); // ML 데이터 처리 (insert DB, show UI)
                 }
                 if (totCount == searchDBColumnsCount) {
                     thumbImgEvent();
@@ -277,91 +382,124 @@ var executeML = function(fileName, data, type) {
     });
 }
 
-// 상세 테이블 렌더링
-function detailTable(fileName) {
+// ML 데이터 처리 (insert DB, show UI)
+var fn_processData = function() {
+    //console.log("line text : " + JSON.stringify(lineText));
+    // TODO: 파일명 외의 파일 정보 필요
+    console.log("fn_processData fileInfo : " + JSON.stringify(gbl_fileInfo));
+    console.log("fn_processData fileDtlInfo : " + JSON.stringify(gbl_fileDtlInfo));
+    console.log("fn_processData fileInfo : " + gbl_fileInfo.length);
+    console.log("fn_processData fileDtlInfo : " + gbl_fileDtlInfo.length);
 
-    $('#textResultTbl').html('');
-    var tblSortTag = '';
-    var tblTag = '';
-    for (var i = 0; i < lineText.length; i++) {
-        if (lineText[i].fileName == fileName) {
-            var item = lineText[i];
-            var sort = item.column;
-            var sortBool = true;
-            for (var sortN in sort) {
-                for (var dataN in item.data) {
-                    if (sort[sortN].ENKEYWORD == item.data[dataN].column) {
-                        tblSortTag += '<dl>';
-                        tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
-                        tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-                        tblSortTag += '<input type="text" value="' + item.data[dataN].text + '" style="width:100%; border:0;" />';
-                        tblSortTag += '<input type="hidden" value="' + item.data[dataN].location + '" />';
-                        tblSortTag += '</label>';
-                        tblSortTag += '</dt>';
-                        tblSortTag += '<dd>';
-                        tblSortTag += '<div class="selects">';
-                        tblSortTag += '<ul class="selectBox">';
-                        tblSortTag += dbColumnsOption(item.data[dataN], item.column);
-                        tblSortTag += '</div>';
-                        tblSortTag += '</dd>';
-                        tblSortTag += '</dl>';
+    //thumbImgs: 26.jpg
+    //fn_processData fileInfo: [{
+    //    "imgId": "qgg5s4da5v", "filePath": "uploads\\26.tif", "oriFileName": "26.tif",
+    //    "convertFileName": "", "svrFileName": "42f7hdkgi7i", "fileExt": "tif", "fileSize": 99390, "contentType": "image/tiff", "regId": "admin"
+    //}]
+    //fn_processData fileDtlInfo: [{
+    //    "imgId": "qgg5s4da5v", "filePath": "C:\\workspace\\sinokor-ocr\\uploads\\26.jpg",
+    //    "oriFileName": "uploads\\26.jpg", "convertFileName": "", "svrFileName": "agfb7cp2oekd",
+    //    "fileExt": "oads\\26.jpg", "fileSize": 230103, "contentType": "image/jpeg", "regId": "admin"
+    //}]
+
+    var baseHtml = "";
+    var dtlHtml = "";
+    var fileLen = gbl_fileInfo.length;
+    var fileDtlLen = gbl_fileDtlInfo.length;
+
+    for (var i = 0, arr; arr = lineText[i]; i++) {
+        console.log("document : " + JSON.stringify(arr));
+        // TODO : 파일 정보를 1 record로 생성한다.
+        var baseHtml = `<tr>
+                            <td><input type="checkbox" id="base_chk_${arr.imgId}" name="base_chk" /></td>
+                            <td>${arr.imgId}</td>
+                            <td>${gbl_fileDtlInfo.length}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><input type="text" id="base_memo_${arr.imgId}" name="base_memo" value="" /></td>
+                        </tr>`;
+
+        for (var x = 0, item; item = arr.data[x]; x++) {
+            console.log("make document dtl: " + JSON.stringify(item));
+
+            var location = nvl(item["location"]);
+            var text = nvl(item["text"]);
+            var label = nvl(item["label"]);
+            var column = nvl(item["column"]);
+
+            if (label == "fixlabel" || label == "entryrowlabel") { //라벨 이면
+                for (var j = 0, y = dataVal.length; j < y; j++) {
+                    if (dataVal[j].column == column + "_VALUE") {// 해당 라벨에 대한 값이면
+                        console.log("Find Label and Value : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
+                        if (isNull(dataObj[column])) {
+
+                        } else {
+                            console.log("Alreaday exist Column(KEY) : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
+                        }
                     }
                 }
             }
 
-            for (var j = 0; j < item.data.length; j++) {
-
-                for (var sortN in sort) {
-                    if (item.data[j].column == sort[sortN].ENKEYWORD) {
-                        sortBool = false;
-                        break;
-                    }
-                }
-
-                if (sortBool == true) {
-                    tblTag += '<dl>';
-                    tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
-                    tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-                    tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
-                    tblTag += '<input type="hidden" value="' + item.data[j].location + '" />';
-                    tblTag += '</label>';
-                    tblTag += '</dt>';
-                    tblTag += '<dd>';
-                    tblTag += '<div class="selects">';
-                    tblTag += '<ul class="selectBox">';
-                    tblTag += dbColumnsOption(item.data[j], item.column);
-                    tblTag += '</div>';
-                    tblTag += '</dd>';
-                    tblTag += '</dl>';
-                }
-            }
-            break;
+            // TODO : 분석 결과를 정리하고 1 record로 생성한다.
+            var dtlHtml = `<tr>
+                                <td><input type="checkbox" id="dtl_chk_${item.imgId}" name="dtl_chk" /></td>
+                                <td>${item.imgId}</td>
+                                <td></td> 
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>`;
         }
-
-        /* 몇 페이지 어디인지 표시
-        var item = lineText[i];
-        for (var j = 0; j < item.data.length; j++) {
-            tblTag += '<tr onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
-            //tblTag += '<tr>';
-            tblTag += '<td>';
-            tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
-            tblTag += '<input type="hidden" value="' + item.data[j].location + '" alt="' + item.fileName + '" />';
-            tblTag += '</td>';
-            tblTag += '<td>';
-            tblTag += '<select style="width:100%; height:100%;  border:0;">';
-            tblTag += dbColumnsOption(item.dbColumns);
-            tblTag += '</select>';
-            tblTag += '</td>';
-            tblTag += '</tr>';
-        }
-        */
     }
-    $('#textResultTbl').append(tblSortTag);
-    $('#textResultTbl').append(tblTag);
-    // input 태그 마우스오버 말풍선 Tooltip 적용
-    $('input[type=checkbox]').ezMark();
-    new $.Zebra_Tooltips($('.tip'));
-    dbSelectClickEvent();
+
+    // TODO : DB 처리
+    // TODO : 파일의 기본정보를 TBL_OCR_FILE에 추가한다.
+    // TODO : 파일정보를 TBL_DOCUMENT에 추가한다.
+    // TODO : 파일의 분석결과를 TBL_DOCUMENT_DTL에 추가한다.
+    // TODO : 위 과정은 한번의 ajax 호출로 트랜잭션 처리한다.
+
+    // TODO : DB 처리가 성공하면 문서기본정보, 인식결과에 보여준다.
 }
 
 // DB 컬럼 option 렌더링
@@ -424,105 +562,6 @@ function dbColumnsOption(data, column) {
     return optionTag;
 }
 
-// 마우스 오버 이벤트
-function hoverSquare(e) {
-    // 해당 페이지로 이동
-    /* 몇 페이지 어디인지 표시
-    var fileName = $(e).find('input[type=hidden]').attr('alt');
-    $('.thumb-img').each(function (i, el) {
-        if ($(this).attr('src').split('/')[3] == fileName) {
-            $(this).click();
-        }
-    });
-    */
-
-    $('#mainImage').css('height', '500px');
-    $('#imageZoom').css('height', '300px').css('background-image', $('#mainImage').css('background-image')).show();
-
-    // 사각형 좌표값
-    var location = $(e).find('input[type=hidden]').val().split(',');
-    x = parseInt(location[0]);
-    y = parseInt(location[1]);
-    textWidth = parseInt(location[2]);
-    textHeight = parseInt(location[3]);
-    //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
-
-    // 해당 텍스트 x y좌표 원본 이미지에서 찾기
-    $('#imageZoom').css('background-position', '-' + (x - 5) + 'px -' + (y - 5) + 'px');
-
-    //실제 이미지 사이즈와 메인이미지div 축소율 판단
-    var reImg = new Image();
-    var imgPath = $('#mainImage').css('background-image').split('("')[1];
-    imgPath = imgPath.split('")')[0];
-    reImg.src = imgPath;
-    var width = reImg.width;
-    var height = reImg.height;
-
-    // 선택한 글씨에 빨간 네모 그리기
-    $('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 10) + 'px');
-    $('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 10) + 'px');
-    $('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
-    $('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
-    $('#redNemo').show();
-    $('#redZoomNemo').css('width', textWidth + 10);
-    $('#redZoomNemo').css('height', textHeight + 10);
-    $('#redZoomNemo').show();
-
-}
-
-// 마우스 아웃 이벤트
-function moutSquare(e) {
-    $('#redNemo').hide();
-    $('#redZoomNemo').hide();
-    $('#imageZoom').hide();
-    $('#mainImage').css('height', '700px');
-}
-
-function dbSelectClickEvent() {
-    $('.selectBox > li').click(function (e) {
-        if ($(this).children('ul').css('display') == 'none') {
-            $('.selectBox > li').removeClass('on');
-            $('.selectBox > li > ul').hide();
-            $('.selectBox > li > ul').css('visibility', 'hidden').css('z-index', '0');
-            $(this).addClass('on');
-            $(this).children('ul').show();
-            $(this).children('ul').css('visibility', 'visible').css('z-index', '1');
-            $('.box_table_st').css('height', Number($('.box_table_st').height() + $(this).children('ul').height()) + 'px');
-        } else {
-            $(this).children('ul').hide();
-            $(this).children('ul').css('visibility', 'hidden').css('z-index', '0');
-            $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).children('ul').height()) + 'px');
-        }
-        e.preventDefault();
-        e.stopPropagation();
-    });
-    $('.selectBox > li > ul > li').click(function (e) {
-        if ($(this).children('ul').css('display') == 'none') {
-            $('.selectBox > li > ul > li > ul').hide();
-            $('.selectBox > li > ul > li > ul').css('visibility', 'hidden');
-            $(this).children('ul').show();
-            $(this).children('ul').css('visibility', 'visible').css('z-index', '2');
-        } else {
-            $(this).children('ul').hide();
-            $(this).children('ul').css('visibility', 'hidden');
-        }
-        e.preventDefault();
-        e.stopPropagation();
-    });
-    $('.selectBox > li > ul > li > ul > li').click(function (e) {
-        var firstCategory = $(this).parent().prev().children('span').text();
-        var lastCategory = ($(this).children('a').text() == '키워드') ? '' : ' 값';
-        $(this).parent().parent().parent().prev().text(firstCategory);
-        $(this).parent().parent().children('ul').hide();
-        $(this).parent().parent().children('ul').css('visibility', 'hidden');
-        $(this).parent().parent().parent().parent().children('ul').hide();
-        $(this).parent().parent().parent().parent().children('ul').css('visibility', 'hidden').css('z-index', '0');
-        $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).parent().parent().parent().parent().children('ul').height()) + 'px')
-        e.preventDefault();
-        e.stopPropagation();
-    });
-}
-
 function uiTrainEvent() {
     $("#uiTrainBtn").click(function (e) {
         uiTrainAjax();
@@ -543,23 +582,15 @@ function uiTrainAjax() {
     //console.log(td.eq(0).text());
 
     for (var i = 0; i < tr.length; i++) {
-        /*`
-        var td = tr.eq(i).children();
-        var text = td.eq(0).children('input[type="text"]').val();
-        var location = td.eq(0).children('input[type="hidden"]').val();
-        var column = td.eq(1).children().find("a.dbColumnText").text();
-        */
         var text = tr.eq(i).find('input[type="text"]').val();
         var location = tr.eq(i).find('input[type="hidden"]').val();
         var column = tr.eq(i).find('a.dbColumnText').text();
         var columnSplit = column.split("::");
-        //var textClassi = td.eq(1).children();
 
         var obj = {}
         obj.text = text;
         obj.location = location;
         obj.column = columnSplit[0];
-        //obj.textClassi = textClassi;
 
         dataArray.push(obj);
     }
@@ -592,6 +623,29 @@ function uiTrainAjax() {
     });
 }
 
+/****************************************************************************************
+ * ETC
+ ****************************************************************************************/
+var insertCommError = function (eCode, type) {
+    $.ajax({
+        url: '/common/insertCommError',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'eCode': eCode, type: type }),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+        },
+        success: function (data) {
+        },
+        error: function (err) {
+            //console.log(err);
+        }
+    });
+}
+
+/****************************************************************************************
+ * INIT
+ ****************************************************************************************/
 var _init = function () {
     uploadFileEvent();
     thumbImgPagingEvent();

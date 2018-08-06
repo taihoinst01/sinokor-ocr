@@ -62,14 +62,14 @@
             <!-- 본문영역 -->
             <div id="content">
 
-                <div class="box_content st_stsh">
+                <div class="box_content st_stsh box_content_K01">
                     <!-- 양식이미지 업로드폼-->
                     <div id="uploadForm" class="box_content_T_01">
 
                         <div class="st_infortext_01">
                             <span id="uploadInfoText">Drag & Drop files here</span>
                             <form id="uploadFileForm" action="/invoiceRegistration/uploadFile" method="post" enctype="multipart/form-data">
-                                    <p class="attach_btn">
+                                    <p class="attach_btn attach_btn_k01">
                                         <input type="file" id="uploadFile" name="file" value="upload" />
                                         <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
                                     </p>
@@ -80,10 +80,10 @@
                     <!-- // 양식이미지 업로드폼-->
                     <!-- 조회조건 목록  -->
                     <div class="box_content_T_02">
-                        <h3 class="tits"><span>조회조건</span></h3>
+                        <h3 class="tits titsK00"><span>조회조건</span></h3>
 
                         <div class="box_txt_st01 st00_sh">
-                            <dl>
+                            <dl class="kDl01">
                                 <dt>
                                     <label for="intxt_01">
                                         문서번호
@@ -94,22 +94,25 @@
                                 </dd>
                             </dl>
 
-                            <dl>
+                            <dl class="kDl02">
                                 <dt><label for="intxt_02">문서담당자</label></dt>
                                 <dd>
                                     <input type="text" name="" id="" class="inputst_box01" value="" placeholder="홍길동" />
-                                `</dd>
+                                </dd>
                             </dl>
-                        </div>
 
-                        <div class="btn_rt">
-                            <button type="button" id="" class="button_st3">조회</button>
+                            <dl class="kDl03">
+                                <dt><label for="intxt_02"></label></dt>
+                                <dd>
+                                    <button type="button" id="" class="button_st3">조회</button>
+                                </dd>
+                            </dl>
                         </div>
                     </div>
                     <!-- // 조회조건 목록 -->
                     <!-- 문서 기본정보 영역 -->
                     <div id="div_base" class="box_content_T_03">
-                        <h3 class="tits"><span id="">문서 기본정보</span></h3>
+                        <h3 class="tits titsK00"><span id="">문서 기본정보</span></h3>
 
                         <div class="table_style02">
                             <table>
@@ -141,7 +144,7 @@
                             </table>
                         </div>
 
-                        <div class="table_style02">
+                        <div class="table_style02 table_style_K01">
                             <div class="mCustomScrollbar box_scroll_st3" data-mcs-axis="yx" data-mcs-theme="dark-3">
                                 <table class="">
                                     <caption>결재리스트(기본) 정보</caption>
@@ -197,11 +200,12 @@
                     <!-- // 문서 기본정보 영역 -->
                 </div>
                 <!-- 양식이미지 -->
-                <div id="div_image" class="box_content box_content_bg st_stsh st_last">
+                <div id="div_image" class="box_content box_content_bg st_stsh st_last box_content_bg_K01">
                     <h3 class="tits"><span>양식이미지</span></h3>
 
                     <div id="div_view_image" class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
                         <!--<img src="publish/image/sample01.jpg" alt="샘플이미지" />-->
+
                         <ul id="imageBox"></ul>
                     </div>
 
@@ -218,7 +222,7 @@
                 <!-- // 양식이미지 -->
                 <!-- 인식결과 영역 -->
                 <div id="div_base" class="box_content_T_05">
-                    <h3 class="tits"><span id="span_document">인식 결과</span></h3>
+                    <h3 class="tits titsK00"><span id="span_document">인식 결과</span></h3>
 
                     <div class="table_style02">
                         <div class="mCustomScrollbar box_scroll_st3" data-mcs-axis="yx" data-mcs-theme="dark-3">

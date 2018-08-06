@@ -15,6 +15,15 @@ var oracledb = require('oracledb');
 var dbConfig = require('../../config/dbConfig.js');
 var aimain = require('../util/aiMain');
 
+var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
+var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
+var selectLabel = queryConfig.uiLearningConfig.selectLabel;
+var insertTypo = queryConfig.uiLearningConfig.insertTypo;
+var insertDomainDic = queryConfig.uiLearningConfig.insertDomainDic;
+var selectTypo = queryConfig.uiLearningConfig.selectTypo;
+var updateTypo = queryConfig.uiLearningConfig.updateTypo;
+var selectColumn = queryConfig.uiLearningConfig.selectColumn;
+
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -32,10 +41,12 @@ const defaults = {
 
 
 
+/****************************************************************************************
+ * ROUTER
+ ****************************************************************************************/
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
-
 // invoiceRegistration.html 보여주기
 router.get('/', function (req, res) {
     console.log("check");
@@ -49,36 +60,99 @@ router.post('/', function (req, res) {
     else res.redirect("/logout");
 });
 
-// fileupload
+/****************************************************************************************
+ * FILE UPLOAD
+ ****************************************************************************************/
 router.post('/uploadFile', upload.any(), function (req, res) {
     var files = req.files;
     var endCount = 0;
+    var fileInfo = [];
+    var fileDtlInfo = [];
     var returnObj = [];
     var convertType = '';
+    var userId = req.session.userId;
 
     for (var i = 0; i < files.length; i++) {
+        var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성 - 규칙 생기면 변경 필요
+
         if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
             files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff') {
             var ifile = appRoot + '\\' + files[i].path;
             var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
+
+            // 파일 정보 추출
+            var fileObj = files[i];                             // 파일
+            var filePath = fileObj.path;                        // 파일 경로
+            var oriFileName = fileObj.originalname;             // 파일 원본명
+            var _lastDot = oriFileName.lastIndexOf('.');
+            var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
+            var fileSize = fileObj.size;                        // 파일 크기
+            var contentType = fileObj.mimetype;                 // 컨텐트타입
+            var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
+
+            var fileParam = {
+                imgId: imgId,
+                filePath: filePath,
+                oriFileName: oriFileName,
+                convertFileName: '',
+                svrFileName: svrFileName,
+                fileExt: fileExt,
+                fileSize: fileSize,
+                contentType: contentType,
+                regId: userId
+            };
+            fileInfo.push(fileParam);
+
+            var fileDtlArr = []; 
+
             execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 ' + ifile + ' ' + ofile);
             if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
                 var j = 0;
                 var isStop = false;
                 while (!isStop) {
                     try { // 하나의 파일 안의 여러 페이지면
-                        var stat = fs.statSync(appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg');
+                        var convertFilePath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg';
+                        var convertFileName = files[i].path.split('.')[0] + '-' + j + '.jpg';
+                        var _lastDotDtl = convertFileName.lastIndexOf('.');
+                        var stat = fs.statSync(convertFilePath);
                         if (stat) {
+                            var fileDtlParam = {
+                                imgId: imgId,
+                                filePath: convertFilePath,
+                                oriFileName: convertFileName,
+                                convertFileName: '',
+                                svrFileName: Math.random().toString(26).slice(2),
+                                fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(), 
+                                fileSize: stat.size,
+                                contentType: 'image/jpeg',
+                                regId: userId
+                            };  
                             returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
+                            fileDtlArr.push(fileDtlParam);
                         } else {
                             isStop = true;
                             break;
                         }
                     } catch (err) { // 하나의 파일 안의 한 페이지면
                         try {
-                            var stat2 = fs.statSync(appRoot + '\\' + files[i].path.split('.')[0] + '.jpg');
+                            var convertFilePath = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
+                            var convertFileName = files[i].path.split('.')[0] + '.jpg';
+                            var _lastDotDtl = convertFileName.lastIndexOf('.');
+                            var stat2 = fs.statSync(convertFilePath);
                             if (stat2) {
+                                var fileDtlParam = {
+                                    imgId: imgId,
+                                    filePath: convertFilePath,
+                                    oriFileName: convertFileName,
+                                    convertFileName: '',
+                                    svrFileName: Math.random().toString(26).slice(2),
+                                    fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
+                                    fileSize: stat2.size,
+                                    contentType: 'image/jpeg',
+                                    regId: userId
+                                };  
                                 returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
+                                fileDtlArr.push(fileDtlParam);
                                 break;
                             }
                         } catch (e) {
@@ -91,18 +165,26 @@ router.post('/uploadFile', upload.any(), function (req, res) {
             endCount++;
         }
     }
-    res.send({ code: 200, message: returnObj });
+    commonDB.insertFileInfo(fileInfo, "ocr_file"); // 파일 정보 DB INSERT
+    commonDB.insertFileInfo(fileDtlArr, "ocr_file_dtl"); // 세부 파일 정보 DB INSERT
+
+    res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlArr });
 });
 
+/****************************************************************************************
+ * ML
+ ****************************************************************************************/
 // typoSentence ML
-router.post('/typoSentence', function (req, res) {
+router.post('/typoSentence', function(req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
-    process.on('uncaughtException', function (err) {
+
+    process.on('uncaughtException', function(err) {
         console.log('uncaughtException : ' + err);
     });
+
     try {
-        aimain.typoSentenceEval(data, function (result) {
+        aimain.typoSentenceEval(data, function(result) {
             res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
         });
     }
@@ -112,14 +194,16 @@ router.post('/typoSentence', function (req, res) {
 });
 
 // domainDictionary ML
-router.post('/domainDictionary', function (req, res) {
+router.post('/domainDictionary', function(req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
-    process.on('uncaughtException', function (err) {
+
+    process.on('uncaughtException', function(err) {
         console.log('uncaughtException : ' + err);
     });
+
     try {
-        aimain.domainDictionaryEval(data, function (result) {
+        aimain.domainDictionaryEval(data, function(result) {
             res.send({ 'fileName': fileName, 'data': result, nextType: 'tc' });
         });
     } catch (exception) {
@@ -130,15 +214,35 @@ router.post('/domainDictionary', function (req, res) {
 });
 
 // textClassification ML
-router.post('/textClassification', function (req, res) {
+router.post('/textClassification', function(req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
-    process.on('uncaughtException', function (err) {
+
+    process.on('uncaughtException', function(err) {
         console.log('uncaughtException : ' + err);
     });
+
     try {
-        aimain.textClassificationEval(data, function (result) {
-            res.send({ 'fileName': fileName, 'data': result, nextType: 'lm' });
+        aimain.textClassificationEval(data, function(result) {
+            res.send({ 'fileName': fileName, 'data': result, nextType: 'st' });
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
+});
+
+// statement classifiction ML
+router.post('/statementClassification', function(req, res) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+
+    process.on('uncaughtException', function(err) {
+        console.log('uncaughtException : ' + err);
+    });
+
+    try {
+        aimain.statementClassificationEval(data, function(result) {
+            res.send({ 'fileName': fileName, 'data': result.data, 'docCategory': result.docCategory, nextType: 'lm' });
         });
     } catch (exception) {
         console.log(exception);
@@ -146,15 +250,18 @@ router.post('/textClassification', function (req, res) {
 });
 
 // labelMapping ML
-router.post('/labelMapping', function (req, res) {
+router.post('/labelMapping', function(req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
-    process.on('uncaughtException', function (err) {
+    var docCategory = (req.body.docCategory) ? req.body.docCategory : null;
+
+    process.on('uncaughtException', function(err) {
         console.log('uncaughtException : ' + err);
     });
+
     try {
-        aimain.labelMappingEval(data, function (result) {
-            res.send({ 'fileName': fileName, 'data': result, nextType: 'sc' });
+        aimain.labelMappingEval(data, function(result) {
+            res.send({ 'fileName': fileName, 'data': result, 'docCategory': docCategory, nextType: 'sc' });
         });
     } catch (exception) {
         console.log(exception);
@@ -162,27 +269,28 @@ router.post('/labelMapping', function (req, res) {
 });
 
 // DB Columns select
-router.post('/searchDBColumns', function (req, res) {
+router.post('/searchDBColumns', function(req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
+    var docCategory = (req.body.docCategory) ? req.body.docCategory : null;
 
-    commonDB.reqQuery(selectColumn, function (rows, req, res) {
-        res.send({ 'fileName': fileName, 'data': data, 'column': rows });
+    commonDB.reqQuery(selectColumn, function(rows, req, res) {
+        res.send({ 'fileName': fileName, 'data': data, 'docCategory': docCategory, 'column': rows });
     }, req, res);
 });
 
 // uiTrain
-router.post('/uiTrain', function (req, res) {
+router.post('/uiTrain', function(req, res) {
     var data = req.body.data;
 
-    runTrain(data, function (result) {
+    runTrain(data, function(result) {
         if (result == "true") {
             //text-classification train
             var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
-            exec(exeTextString, defaults, function (err, stdout, stderr) {
+            exec(exeTextString, defaults, function(err, stdout, stderr) {
                 //label-mapping train
                 var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\train.py'
-                exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
+                exec(exeLabelString, defaults, function(err1, stdout1, stderr1) {
                     res.send("ui 학습 완료");
                 });
             });
@@ -201,15 +309,18 @@ async function runTrain(data, callback) {
 }
 
 function textLabelTrain(data) {
-    return new Promise(async function (resolve, reject) {
+    return new Promise(async function(resolve, reject) {
         let conn;
+
         try {
             conn = await oracledb.getConnection(dbConfig);
+
             for (var i = 0; i < data.length; i++) {
                 if (data[i].originText != null) {
                     //console.log(data[i].originText);
                     var originSplit = data[i].originText.split(" ");
                     var textSplit = data[i].text.split(" ");
+
                     var textleng = Math.abs(data[i].originText.length - data[i].text.length);
 
                     if (textleng < 4) {
@@ -229,6 +340,7 @@ function textLabelTrain(data) {
                                     updTypoCond.push(selTypoRes.rows[0].KEYWORD);
                                     let updTypoRes = await conn.execute(updateTypo, updTypoCond);
                                 }
+
                             }
                         }
                     } else {
@@ -240,45 +352,56 @@ function textLabelTrain(data) {
                             updText += textSplit[j] + ' ';
                         }
                         updText.slice(0, -1);
+
                         var domainText = [];
                         domainText.push(textSplit[0]);
                         domainText.push(updText);
 
                         for (var ts = 0; ts < domainText.length; ts++) {
+
                             for (os; os < originSplit.length; os++) {
                                 if (ts == 1) {
                                     var insDicCond = [];
+
                                     //originword
                                     insDicCond.push(originSplit[os]);
+
                                     //frontword
                                     if (os == 0) {
                                         insDicCond.push("<<N>>");
                                     } else {
                                         insDicCond.push(originSplit[os - 1]);
                                     }
+
                                     //correctedword
                                     if (osNext == os) {
                                         insDicCond.push(domainText[ts]);
                                     } else {
                                         insDicCond.push("<<N>>");
                                     }
+
                                     //rearword
                                     if (os == originSplit.length - 1) {
                                         insDicCond.push("<<N>>");
                                     } else {
                                         insDicCond.push(originSplit[os + 1]);
                                     }
+
                                     let insDomainDicRes = await conn.execute(insertDomainDic, insDicCond);
+
                                 } else if (domainText[ts].toLowerCase() != originSplit[os].toLowerCase()) {
                                     var insDicCond = [];
+
                                     //originword
                                     insDicCond.push(originSplit[os]);
+
                                     //frontword
                                     if (os == 0) {
                                         insDicCond.push("<<N>>");
                                     } else {
                                         insDicCond.push(originSplit[os - 1]);
                                     }
+
                                     //correctedword
                                     insDicCond.push("<<N>>");
 
@@ -288,7 +411,9 @@ function textLabelTrain(data) {
                                     } else {
                                         insDicCond.push(originSplit[os + 1]);
                                     }
+
                                     let insDomainDicRes = await conn.execute(insertDomainDic, insDicCond);
+
                                 } else {
                                     os++;
                                     osNext = os;
@@ -300,6 +425,8 @@ function textLabelTrain(data) {
                     }
                 }
             }
+
+
             for (var i in data) {
                 var selectLabelCond = [];
                 selectLabelCond.push(data[i].column);
@@ -319,6 +446,7 @@ function textLabelTrain(data) {
 
                 let insResult = await conn.execute(insertTextClassification, insTextClassifiCond);
             }
+
             for (var i in data) {
                 if (data[i].textClassi == "fixlabel" || data[i].textClassi == "entryrowlabel") {
                     var insLabelMapCond = [];
@@ -330,7 +458,9 @@ function textLabelTrain(data) {
                     //console.log(insLabelMapRes);
                 }
             }
+
             resolve("true");
+
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
@@ -344,6 +474,7 @@ function textLabelTrain(data) {
         }
     });
 }
+
 
 
 module.exports = router;

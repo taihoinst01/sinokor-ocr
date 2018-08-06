@@ -880,7 +880,7 @@ var searchBatchLearnDataList = function (addCond) {
                     appendHtml += `
                     <tr>
                         ${checkboxHtml}
-                        <td>${nvl(entry.ORIGINFILENAME)}</td> <!--파일명-->
+                        <td><a onclick="javascript:fn_viewImageData('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.ORIGINFILENAME)}</a></td> <!--파일명-->
                         <td>${nvl(entry.STATUS)}</td> <!--학습여부-->
                         <td>${nvl(entry.OGCOMPANYNAME)}</td> <!--출재사명-->
                         <td>${nvl(entry.UY)}</td> <!--UY-->
@@ -888,8 +888,6 @@ var searchBatchLearnDataList = function (addCond) {
                         <td>${nvl(entry.CONTRACTNAMESUMMARY)}</td> <!--계약명요약-->
                         <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
                         <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
-
-
                         <td>${nvl(entry.IMGID)}</td> <!--이미지ID-->
                         <td>${nvl(entry.STATEMENTDIV)}</td> <!--계산서 구분-->
                         <td>${nvl(entry.CONTRACTNUM)}</td> <!--계약번호-->
@@ -944,6 +942,7 @@ var searchBatchLearnDataList = function (addCond) {
             endProgressBar(); // end progressbar
             checkboxEvent(); // refresh checkbox event
             $('input[type=checkbox]').ezMark();
+            imgPopupEvent();
         },
         error: function (err) {
             endProgressBar(); // end progressbar
@@ -951,6 +950,94 @@ var searchBatchLearnDataList = function (addCond) {
         }
     });
 };
+
+function fn_viewImageData(fileName, obj) {
+    
+    $('#viewImage').attr('src', '../../uploads/' + $(obj).text().split('.')[0] + '.jpg');
+    layer_open('layer3');
+
+    // 2018-08-06
+    var filePath = '/MIG/2014/img1/33/25633/' + fileName;
+    var param = {
+        filePath: filePath
+    };
+    var appendHtml = ``;
+        
+    console.log("filePath : " + filePath);
+    $.ajax({
+        url: '/batchLearning/viewImageData',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+                    
+            console.log("data : " + JSON.stringify(data));
+            if (data.length > 0) {
+                $.each(data, function (index, entry) {
+                    appendHtml += `
+                    <tr>
+                        <td scope="row">${nvl(entry.FILEPATH)}</td>
+                        <td scope="row">${nvl(entry.IMGID)}</td>
+                        <td scope="row">${nvl(entry.STATEMENTDIV)}</td>
+                        <td scope="row">${nvl(entry.CONTRACTNUM)}</td>
+                        <td scope="row">${nvl(entry.OGCOMPANYCODE)}</td>
+                        <td scope="row">${nvl(entry.BROKERCODE)}</td>
+                        <td scope="row">${nvl(entry.BROKERNAME)}</td>
+                        <td scope="row">${nvl(entry.INSSTDT)}</td>
+                        <td scope="row">${nvl(entry.INSENDDT)}</td>
+                        <td scope="row">${nvl(entry.CURCD)}</td>
+                        <td scope="row">${nvl(entry.PAIDPERCENT)}</td>
+                        <td scope="row">${nvl(entry.PAIDSHARE)}</td>
+                        <td scope="row">${nvl(entry.GROSSPM)}</td>
+                        <td scope="row">${nvl(entry.PM)}</td>
+                        <td scope="row">${nvl(entry.PMPFEND)}</td>
+                        <td scope="row">${nvl(entry.PMPFWOS)}</td>
+                        <td scope="row">${nvl(entry.XOLPM)}</td>
+                        <td scope="row">${nvl(entry.RETURNPM)}</td>
+                        <td scope="row">${nvl(entry.GROSSCN)}</td>
+                        <td scope="row">${nvl(entry.CN)}</td>
+                        <td scope="row">${nvl(entry.PROFITCN)}</td>
+                        <td scope="row">${nvl(entry.BROKERAGE)}</td>
+                        <td scope="row">${nvl(entry.TAX)}</td>
+                        <td scope="row">${nvl(entry.OVERRIDINGCOM)}</td>
+                        <td scope="row">${nvl(entry.CHARGE)}</td>
+                        <td scope="row">${nvl(entry.PMRESERVERTD1)}</td>
+                        <td scope="row">${nvl(entry.PFPMRESERVERTD1)}</td>
+                        <td scope="row">${nvl(entry.PMRESERVERTD2)}</td>
+                        <td scope="row">${nvl(entry.PFPMRESERVERTD2)}</td>
+                        <td scope="row">${nvl(entry.CLAIM)}</td>
+                        <td scope="row">${nvl(entry.LOSSRECOVERY)}</td>
+                        <td scope="row">${nvl(entry.CASHLOSS)}</td>
+                        <td scope="row">${nvl(entry.CASHLOSSRD)}</td>
+                        <td scope="row">${nvl(entry.LOSSRR)}</td>
+                        <td scope="row">${nvl(entry.LOSSRR2)}</td>
+                        <td scope="row">${nvl(entry.LOSSPFEND)}</td>
+                        <td scope="row">${nvl(entry.LOSSPFWOA)}</td>
+                        <td scope="row">${nvl(entry.INTEREST)}</td>
+                        <td scope="row">${nvl(entry.TAXON)}</td>
+                        <td scope="row">${nvl(entry.MISCELLANEOUS)}</td>
+                        <td scope="row">${nvl(entry.PMBL)}</td>
+                        <td scope="row">${nvl(entry.CMBL)}</td>
+                        <td scope="row">${nvl(entry.NTBL)}</td>
+                        <td scope="row">${nvl(entry.CSCOSARFRNCNNT2)}</td>
+                    </tr>
+                    `;
+                });
+            }
+            $("#tbody_batchList_answer").empty().append(appendHtml);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+function imgPopupEvent() {
+    //$('#tbody_batchList_before td > a').click(function () {
+    //    $('#viewImage').attr('src', '../../uploads/' + $(this).text().split('.')[0] + '.jpg');
+    //    layer_open('layer3');
+    //});
+}
 
 // [Select] 배치학습데이터 조회
 var searchBatchLearnData = function (imgIdArray, flag) {

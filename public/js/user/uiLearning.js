@@ -7,7 +7,8 @@ var thumnImgPageCount = 1; // 썸네일 이미지 페이징 번호
 var thumnbImgPerPage = 10; // 한 페이지당 썸네일 이미지 개수
 var x, y, textWidth, textHeight; // 문서 글씨 좌표
 var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, 마우스 이동 좌표
-
+var docPopImages; // 문서조회팝업 이미지 리스트
+var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
 $(function () {
 
     init();
@@ -15,6 +16,8 @@ $(function () {
     thumbImgPagingEvent();
     uiTrainEvent();
     popUpEvent();
+    changeDocPopRadio();
+    changeDocPopupImage();
 });
 
 // 초기 작업
@@ -41,43 +44,73 @@ function popUpRunEvent() {
 
 //팝업 문서 양식 LIKE 조회
 function popUpSearchDocCategory() {
-    var keyword = $('#searchDocCategoryKeyword').val();
     $('#searchDocCategoryBtn').click(function () {
-        $.ajax({
-            url: '/uiLearning/selectLikeDocCategory',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify({ "keyword": keyword }),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
+        if ($('.ez-selected').children('input').val() == 'choice-1') {
+            var keyword = $('#searchDocCategoryKeyword').val();
+            $.ajax({
+                url: '/uiLearning/selectLikeDocCategory',
+                type: 'post',
+                datatype: 'json',
+                data: JSON.stringify({ 'keyword': keyword }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    console.log(data);
+                    $('#docSearchResult').html('');
+                    $('#countCurrent').html('1');
+                    $('.button_control10').attr('disabled', true);
+                    if (data.length == 0) {
+                        $('#docSearchResultImg_thumbCount').hide();
+                        $('#docSearchResultMask').hide();
+                        return false;
+                    } else {
+                        /**
+                         결과에 따른 이미지폼 만들기
+                         */
+                        docPopImages = data;
+                        var resultImg = '<img src="' + data[0].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+                        $('#searchResultDocName').val(data[0].DOCNAME);
+                        if (data.length != 1) {
+                            $('.button_control12').attr('disabled', false);
+                        }
+                        $('#orgDocName').val(data[0].DOCNAME);
+                        $('#docSearchResult').html(resultImg);
+                        $('#docSearchResultMask').show();
+                        $('#countLast').html(data.length);
+                        $('#docSearchResultImg_thumbCount').show();
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        } else {
+        }
     });
 }
 
 //팝업 문서 양식 등록
 function popUpInsertDocCategory() {
-    var docName = $('#docName').val();
-    var sampleImagePath = '';
     $('#insertDocCategoryBtn').click(function () {
-        $.ajax({
-            url: '/uiLearning/insertDocCategory',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify({ "docName": docName, 'sampleImagePath': sampleImagePath }),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-                if (data.code == 200) {
-                    alert('문서 양식등록 성공');
+        if ($('.ez-selected').children('input').val() == 'choice-2') {
+            var docName = $('#newDocName').val();
+            var sampleImagePath = $('#originImg').attr('src').split('/')[2] + '/' + $('#originImg').attr('src').split('/')[3];
+            $.ajax({
+                url: '/uiLearning/insertDocCategory',
+                type: 'post',
+                datatype: 'json',
+                data: JSON.stringify({ 'docName': docName, 'sampleImagePath': sampleImagePath }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    if (data.code == 200) {
+                        alert(data.message);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
                 }
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
+            });
+        } else {
+        }
     });
 }
 
@@ -100,22 +133,18 @@ function uploadFileEvent() {
 
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
-            $("#progressMsgTitle").html('파일 업로드 중..');
-            $("#progressMsgDetail").html('');
+            $('#progressMsgTitle').html('파일 업로드 중..');
+            $('#progressMsgDetail').html('');
             startProgressBar(); // start progressbar
             addProgressBar(1, 10); // proceed progressbar
             return true;
         },
         success: function (responseText, statusText) {
             //console.log(responseText);
-            var $uploadForm = $('#uploadForm');
-            var $uploadSucessForm = $('#uploadSucessForm');
-
-            $("#progressMsgTitle").html('파일 업로드 완료..');
-            $("#progressMsgDetail").html('');
+            $('#progressMsgTitle').html('파일 업로드 완료..');
+            $('#progressMsgDetail').html('');
+            $('.button_control').attr('disabled', false);
             addProgressBar(11, 20);
-            $uploadForm.hide();
-            $uploadSucessForm.show();
             if (responseText.message.length > 0) {
                 totCount = responseText.message.length;
                 for (var i = 0; i < responseText.message.length; i++) {
@@ -140,10 +169,10 @@ function processImage(fileName) {
     $.ajax({
         url: '/common/ocr',
         beforeSend: function (jqXHR) {
-            jqXHR.setRequestHeader("Content-Type", "application/json");
+            jqXHR.setRequestHeader('Content-Type', 'application/json');
         },
-        type: "POST",
-        data: JSON.stringify({ 'fileName': fileName }),
+        type: 'POST',
+        data: JSON.stringify({ 'fileName' : fileName })
     }).done(function (data) {
         ocrCount++;
         if (!data.code) { // 에러가 아니면
@@ -200,7 +229,7 @@ function insertCommError(eCode, type) {
     $.ajax({
         url: '/common/insertCommError',
         type: 'post',
-        datatype: "json",
+        datatype: 'json',
         data: JSON.stringify({ 'eCode': eCode, type: type }),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
@@ -404,7 +433,7 @@ function executeML(totData) {
     $.ajax({
         url: targetUrl,
         type: 'post',
-        datatype: "json",
+        datatype: 'json',
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
@@ -430,19 +459,26 @@ function executeML(totData) {
                     $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
                     thumnImg();
                     $('#imageBox > li').eq(0).addClass('on');
+                    $('#mlPredictionDocName').val(data.docCategory.DOCNAME);
+                    $('#mlPredictionPercent').val(data.docCategory.score + '%');
                     $('#docName').html(data.docCategory.DOCNAME);
                     $('#docPredictionScore').html(data.docCategory.score + '%');
                     if (data.docCategory.score >= 90) {
+                        $('#docName').css('color', 'dodgerblue');
                         $('#docPredictionScore').css('color', 'dodgerblue');
                     } else {
+                        $('#docName').css('color', 'darkred');
                         $('#docPredictionScore').css('color', 'darkred');
                     }
                     detailTable(fileName);
                     docComparePopup(0);
                 }
+
                 if (totCount == searchDBColumnsCount) {
                     thumbImgEvent();
                     addProgressBar(91, 100);
+                    $('#uploadForm').hide();
+                    $('#uploadSucessForm').show();
                 }
             }
         },
@@ -457,7 +493,7 @@ function docComparePopup(imgIndex) {
     $('#docCompareBtn').unbind('click');
     $('#docCompareBtn').click(function (e) {
         $('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
-        $('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+        //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
         layer_open('layer1');
         e.preventDefault();
         e.stopPropagation();
@@ -816,4 +852,56 @@ function uiTrainAjax() {
             console.log(err);
         }
     });
+}
+
+// 문서 양식 조회 팝업 라디오 이벤트
+function changeDocPopRadio() {
+    $('#orgDocSearchRadio').click(function () {
+        $('#orgDocSearch').show();
+        $('#newDocRegistration').hide();
+    })
+
+    $('#newDocRegistrationRadio').click(function () {
+        $('#newDocRegistration').show();
+        $('#orgDocSearch').hide();
+    })
+}
+
+// 문서 양식 조회 이미지 좌우 버튼 이벤트
+function changeDocPopupImage() {
+    $('#docSearchResultImg_thumbPrev').click(function () {
+        $('#docSearchResultImg_thumbNext').attr('disabled', false);
+        if (docPopImagesCurrentCount ==  1) {
+            return false;
+        } else {
+            docPopImagesCurrentCount--;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            if (docPopImagesCurrentCount == 1) {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+            }
+        }
+    })
+
+    $('#docSearchResultImg_thumbNext').click(function () {
+        var totalCount = $('#countLast').html();
+        $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+        if (docPopImagesCurrentCount == totalCount) {
+            return false;
+        } else {
+            docPopImagesCurrentCount++;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+
+            if (docPopImagesCurrentCount == totalCount) {
+                $('#docSearchResultImg_thumbNext').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbNext').attr('disabled', false);
+            }
+        }
+    })
 }

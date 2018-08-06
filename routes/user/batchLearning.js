@@ -18,6 +18,7 @@ var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 const FileHound = require('filehound');
 const xlsx = require('xlsx');
 var oracledb = require('oracledb');
+var path = require('path');
 
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
@@ -60,6 +61,25 @@ router.get('/', function (req, res) {                           // 배치학습 
 });
 // BLANK CALLBACK
 var callbackBlank = function () { };
+
+
+
+// [POST] 배치학습데이터 이미지 데이터 조회 
+router.post('/viewImageData', function (req, res) {
+    if (req.isAuthenticated()) fnViewImageData(req, res);
+});
+var callbackViewImageData = function (rows, req, res) {
+    console.log("rows : " + JSON.stringify(rows));
+    if (req.isAuthenticated()) res.send(rows);
+}
+var fnViewImageData = function (req, res) {
+    console.log("filePath : " + req.body.filePath);
+    var data = [req.body.filePath];
+    var query = queryConfig.batchLearningConfig.selectViewImageData;
+    commonDB.reqQueryParam(query, data, callbackViewImageData, req, res);
+}
+
+
 
 // [POST] 배치학습데이터리스트 조회 
 router.post('/searchBatchLearnDataList', function (req, res) {   
@@ -215,6 +235,35 @@ router.post('/deleteBatchLearningData', function (req, res) {
     condition += ")";
     var query = queryConfig.batchLearningConfig.deleteBatchLearningData + condition;
     commonDB.reqQuery(query, callbackDeleteBatchLearningData, req, res);
+});
+
+// 학습 엑셀 복사
+router.post('/excelCopy', function (req, res) {
+    var realExcelPath = propertiesConfig.filepath.realExcelPath;
+    var files = fs.readdirSync(realExcelPath);
+    var pathExcel, dataExcel;
+    var tempPath1 = realExcelPath + path.sep + files[0];
+    var tempPath2 = realExcelPath + path.sep + files[1];
+
+    try {
+        // 파일이 2개라는 것을 가정
+        if (fs.statSync(tempPath1).size > fs.statSync(tempPath2).size) {
+            dataExcel = tempPath1;
+            pathExcel = tempPath2;
+        } else {
+            dataExcel = tempPath2;
+            pathExcel = tempPath1;
+        }
+
+        fs.copyFileSync(dataExcel, appRoot + propertiesConfig.filepath.excelBatchFileData);
+        fs.copyFileSync(pathExcel, appRoot + propertiesConfig.filepath.excelBatchFilePath);
+
+        res.send({ code: 200, message: 'excel copy success' });
+    } catch (e) {
+        res.send({ code: 500, message: 'excel copy error'});
+        console.error(e);
+    }
+
 });
 
 // [POST] 엑셀 업로드
