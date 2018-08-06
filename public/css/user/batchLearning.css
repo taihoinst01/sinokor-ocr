@@ -1,0 +1,4 @@
+﻿/* 이미지 보기 팝업 */
+.w600 { width: 600px; }
+.pop_close_btn{ float:right; background-color: white; font-size: 25px; font-weight:500; }
+#viewImage { width:  inherit; height: 800px; }
