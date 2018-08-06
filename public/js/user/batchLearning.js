@@ -540,16 +540,33 @@ function execBatchLearningData(ocrData, data) {
         url: '/batchLearning/execBatchLearningData',
         type: 'post',
         datatype: "json",
+        timeout: 0,
         data: JSON.stringify({ 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         async: false,
         beforeSend: function () {
         },
         success: function (data) {
-            //console.log(data);
+            console.log(data);
             modifyData = data.data;
             batchCount++;
-            compareBatchLearningData(ocrData, data)
+
+            if (data.docCategory.DOCTYPE == 2) {
+                var docData = data.data;
+                for (var i in docData) {
+                    data.data = docData[i];
+                    if (i > 0) {
+                        ocrData.fileToPage.IMGFILEENDNO = ocrData.fileToPage.IMGFILEENDNO + 1;
+                        ocrData.fileToPage.IMGFILESTARTNO = ocrData.fileToPage.IMGFILESTARTNO + 1;
+                        compareBatchLearningData(ocrData, data);
+                    } else {
+                        compareBatchLearningData(ocrData, data);
+                    }
+                }
+            } else {
+                compareBatchLearningData(ocrData, data);
+            }
+
             //compareBatchLearningData(fileInfo, data, isUiTraining);
             //updateBatchLearningData(fileName, data);
             
@@ -640,7 +657,7 @@ function compareBatchLearningData(ocrData, data) {
                     //}
                 } else {// UI Training 체크박스 체크 없으면
                     isFullMatch = true;
-                    updateBatchLearningData(retData, ocrData.fileInfo, data);
+                    updateBatchLearningData(retData, ocrData, data);
                 }               
                 
             },
@@ -676,20 +693,18 @@ function uiPopUpTrain(data, fileInfo) {
     return;
 }
 
-function updateBatchLearningData(retData, fileInfo, mlData) {
-
-
-
+function updateBatchLearningData(retData, ocrData, mlData) {
 
     $.ajax({
         url: '/batchLearning/updateBatchLearningData',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ mldata: mlData, fileInfos: fileInfo}),
+        data: JSON.stringify({ mldata: mlData, ocrData: ocrData }),
+        async: false,
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
-            comparedMLAndAnswer(retData, mlData, fileInfo);
+            comparedMLAndAnswer(retData, mlData, ocrData.fileInfo);
         },
         error: function (err) {
             console.log(err);

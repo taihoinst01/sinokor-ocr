@@ -277,6 +277,7 @@ exports.labelClassificationEval = function (data, callback) {
             logger.error.info(`labelClassificationEval ml model exec error: ${stderr}`);
             return;
         }
+        console.log(stdout);
 
         var outData = stdout.split("^");
 
