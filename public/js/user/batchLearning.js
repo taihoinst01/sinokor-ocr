@@ -956,10 +956,10 @@ function fn_viewImageData(fileName, obj) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log("데이터어어 : " + JSON.stringify(data));
+                    
+            console.log("data : " + JSON.stringify(data));
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
-                    console.log(`filePath : ${entry.FILEPATH}`);
                     appendHtml += `
                     <tr>
                         <td scope="row">${nvl(entry.FILEPATH)}</td>
