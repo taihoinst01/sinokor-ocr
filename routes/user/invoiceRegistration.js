@@ -5,15 +5,16 @@ var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var router = express.Router();
-var queryConfig = require(appRoot + '/config/queryConfig.js');
-var commonDB = require(appRoot + '/public/js/common.db.js');
-var commonUtil = require(appRoot + '/public/js/common.util.js');
+
+var oracledb = require('oracledb');
+var dbConfig = require('../../config/dbConfig.js');
 var exec = require('child_process').exec;
 var execSync = require('child_process').execSync;
 var logger = require('../util/logger');
-var oracledb = require('oracledb');
-var dbConfig = require('../../config/dbConfig.js');
 var aimain = require('../util/aiMain');
+var commonDB = require(appRoot + '/public/js/common.db.js');
+var commonUtil = require(appRoot + '/public/js/common.util.js');
+var queryConfig = require(appRoot + '/config/queryConfig.js');
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
@@ -39,22 +40,17 @@ const defaults = {
     encoding: 'utf8',
 };
 
-
-
 /****************************************************************************************
  * ROUTER
  ****************************************************************************************/
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
-// invoiceRegistration.html 보여주기
 router.get('/', function (req, res) {
     console.log("check");
     if (req.isAuthenticated()) res.render('user/invoiceRegistration', { currentUser: req.user });
     else res.redirect("/logout");
 });
-
-// invoiceRegistration.html 보여주기
 router.post('/', function (req, res) {
     if (req.isAuthenticated()) res.render('user/invoiceRegistration', { currentUser: req.user });
     else res.redirect("/logout");
@@ -102,92 +98,89 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 regId: userId,
                 row: i
             };
-            fileInfo.push(fileParam);
 
-            var fileDtlArr = []; 
+            fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
 
             execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 ' + ifile + ' ' + ofile);
-            if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
-                var j = 0;
-                var isStop = false;
-                while (!isStop) {
-                    try { // 하나의 파일 안의 여러 페이지면
-                        var convertFilePath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg';
-                        var convertFileName = files[i].path.split('.')[0] + '-' + j + '.jpg';
+            var isStop = false;
+            while (!isStop) {
+                try { // 하나의 파일 안의 여러 페이지면
+                    var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg';
+                    var convertFilePath = files[i].path.split('.')[0] + '-' + j + '.jpg';
+                    var convertFileName = convertFilePath.split('\\')[1];
+                    var _lastDotDtl = convertFileName.lastIndexOf('.');
+                    var stat = fs.statSync(convertFileFullPath);
+                    if (stat) {
+                        var fileDtlParam = {
+                            imgId: imgId,
+                            filePath: convertFilePath,
+                            oriFileName: convertFileName,
+                            convertFileName: convertFileName,
+                            svrFileName: Math.random().toString(26).slice(2),
+                            fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
+                            fileSize: stat.size,
+                            contentType: 'image/jpeg',
+                            regId: userId
+                        };
+                        returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
+                        fileDtlArr.push(fileDtlParam);          // 변환 후 JPG 파일 정보
+                    } else {
+                        isStop = true;
+                        break;
+                    }
+                } catch (err) { // 하나의 파일 안의 한 페이지면
+                    try {
+                        var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
+                        var convertFilePath = files[i].path.split('.')[0] + '.jpg';
+                        var convertFileName = convertFilePath.split('\\')[1];
                         var _lastDotDtl = convertFileName.lastIndexOf('.');
-                        var stat = fs.statSync(convertFilePath);
-                        if (stat) {
+                        var stat2 = fs.statSync(convertFileFullPath);
+                        if (stat2) {
                             var fileDtlParam = {
                                 imgId: imgId,
                                 filePath: convertFilePath,
                                 oriFileName: convertFileName,
                                 convertFileName: convertFileName,
                                 svrFileName: Math.random().toString(26).slice(2),
-                                fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(), 
-                                fileSize: stat.size,
+                                fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
+                                fileSize: stat2.size,
                                 contentType: 'image/jpeg',
-                                regId: userId,
-                                row: j
-                            };  
-                            returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
-                            fileDtlArr.push(fileDtlParam);
-                        } else {
-                            isStop = true;
+                                regId: userId
+                            };
+                            returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
+                            fileDtlInfo.push(fileDtlParam);         // 변환 후 JPG 파일 정보
                             break;
                         }
-                    } catch (err) { // 하나의 파일 안의 한 페이지면
-                        try {
-                            var convertFilePath = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
-                            var convertFileName = files[i].path.split('.')[0] + '.jpg';
-                            var _lastDotDtl = convertFileName.lastIndexOf('.');
-                            var stat2 = fs.statSync(convertFilePath);
-                            if (stat2) {
-                                var fileDtlParam = {
-                                    imgId: imgId,
-                                    filePath: convertFilePath,
-                                    oriFileName: convertFileName,
-                                    convertFileName: convertFileName,
-                                    svrFileName: Math.random().toString(26).slice(2),
-                                    fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
-                                    fileSize: stat2.size,
-                                    contentType: 'image/jpeg',
-                                    regId: userId,
-                                    row: j
-                                };  
-                                returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
-                                fileDtlArr.push(fileDtlParam);
-                                break;
-                            }
-                        } catch (e) {
-                            break;
-                        }
+                    } catch (e) {
+                        break;
                     }
-                    j++;
                 }
+                j++;
             }
             endCount++;
         }
     }
-    commonDB.insertFileInfo(fileInfo, "ocr_file"); // 파일 정보 DB INSERT
-    commonDB.insertFileInfo(fileDtlArr, "ocr_file_dtl"); // 세부 파일 정보 DB INSERT
 
-    res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlArr });
+    commonDB.insertFileInfo(fileInfo, "ocr_file"); // 파일 정보 DB INSERT
+    commonDB.insertFileInfo(fileDtlInfo, "ocr_file_dtl"); // 세부 파일 정보 DB INSERT
+
+    res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlInfo });
 });
 
 /****************************************************************************************
  * ML
  ****************************************************************************************/
 // typoSentence ML
-router.post('/typoSentence', function(req, res) {
+router.post('/typoSentence', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
 
-    process.on('uncaughtException', function(err) {
+    process.on('uncaughtException', function (err) {
         console.log('uncaughtException : ' + err);
     });
 
     try {
-        aimain.typoSentenceEval(data, function(result) {
+        aimain.typoSentenceEval(data, function (result) {
             res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
         });
     }
@@ -197,16 +190,16 @@ router.post('/typoSentence', function(req, res) {
 });
 
 // domainDictionary ML
-router.post('/domainDictionary', function(req, res) {
+router.post('/domainDictionary', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
 
-    process.on('uncaughtException', function(err) {
+    process.on('uncaughtException', function (err) {
         console.log('uncaughtException : ' + err);
     });
 
     try {
-        aimain.domainDictionaryEval(data, function(result) {
+        aimain.domainDictionaryEval(data, function (result) {
             res.send({ 'fileName': fileName, 'data': result, nextType: 'tc' });
         });
     } catch (exception) {
@@ -217,16 +210,16 @@ router.post('/domainDictionary', function(req, res) {
 });
 
 // textClassification ML
-router.post('/textClassification', function(req, res) {
+router.post('/textClassification', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
 
-    process.on('uncaughtException', function(err) {
+    process.on('uncaughtException', function (err) {
         console.log('uncaughtException : ' + err);
     });
 
     try {
-        aimain.textClassificationEval(data, function(result) {
+        aimain.textClassificationEval(data, function (result) {
             res.send({ 'fileName': fileName, 'data': result, nextType: 'st' });
         });
     } catch (exception) {
@@ -235,16 +228,16 @@ router.post('/textClassification', function(req, res) {
 });
 
 // statement classifiction ML
-router.post('/statementClassification', function(req, res) {
+router.post('/statementClassification', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
 
-    process.on('uncaughtException', function(err) {
+    process.on('uncaughtException', function (err) {
         console.log('uncaughtException : ' + err);
     });
 
     try {
-        aimain.statementClassificationEval(data, function(result) {
+        aimain.statementClassificationEval(data, function (result) {
             res.send({ 'fileName': fileName, 'data': result.data, 'docCategory': result.docCategory, nextType: 'lm' });
         });
     } catch (exception) {
@@ -253,17 +246,17 @@ router.post('/statementClassification', function(req, res) {
 });
 
 // labelMapping ML
-router.post('/labelMapping', function(req, res) {
+router.post('/labelMapping', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
     var docCategory = (req.body.docCategory) ? req.body.docCategory : null;
 
-    process.on('uncaughtException', function(err) {
+    process.on('uncaughtException', function (err) {
         console.log('uncaughtException : ' + err);
     });
 
     try {
-        aimain.labelMappingEval(data, function(result) {
+        aimain.labelMappingEval(data, function (result) {
             res.send({ 'fileName': fileName, 'data': result, 'docCategory': docCategory, nextType: 'sc' });
         });
     } catch (exception) {
@@ -272,28 +265,28 @@ router.post('/labelMapping', function(req, res) {
 });
 
 // DB Columns select
-router.post('/searchDBColumns', function(req, res) {
+router.post('/searchDBColumns', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
     var docCategory = (req.body.docCategory) ? req.body.docCategory : null;
 
-    commonDB.reqQuery(selectColumn, function(rows, req, res) {
+    commonDB.reqQuery(selectColumn, function (rows, req, res) {
         res.send({ 'fileName': fileName, 'data': data, 'docCategory': docCategory, 'column': rows });
     }, req, res);
 });
 
 // uiTrain
-router.post('/uiTrain', function(req, res) {
+router.post('/uiTrain', function (req, res) {
     var data = req.body.data;
 
-    runTrain(data, function(result) {
+    runTrain(data, function (result) {
         if (result == "true") {
             //text-classification train
             var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
-            exec(exeTextString, defaults, function(err, stdout, stderr) {
+            exec(exeTextString, defaults, function (err, stdout, stderr) {
                 //label-mapping train
                 var exeLabelString = 'python ' + appRoot + '\\ml\\cnn-label-mapping\\train.py'
-                exec(exeLabelString, defaults, function(err1, stdout1, stderr1) {
+                exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
                     res.send("ui 학습 완료");
                 });
             });
@@ -312,7 +305,7 @@ async function runTrain(data, callback) {
 }
 
 function textLabelTrain(data) {
-    return new Promise(async function(resolve, reject) {
+    return new Promise(async function (resolve, reject) {
         let conn;
 
         try {
@@ -477,6 +470,7 @@ function textLabelTrain(data) {
         }
     });
 }
+
 
 
 
