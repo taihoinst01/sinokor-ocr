@@ -622,7 +622,7 @@ function compareBatchLearningData(ocrData, data) {
                         }
                         */
                     } else {
-                        console.log("Alreaday exist Column(KEY) : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
+                        console.log("Already exist Column(KEY) : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
                     }
                 }
             }

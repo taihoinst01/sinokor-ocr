@@ -99,7 +99,8 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 fileExt: fileExt,
                 fileSize: fileSize,
                 contentType: contentType,
-                regId: userId
+                regId: userId,
+                row: i
             };
             fileInfo.push(fileParam);
 
@@ -120,12 +121,13 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                                 imgId: imgId,
                                 filePath: convertFilePath,
                                 oriFileName: convertFileName,
-                                convertFileName: '',
+                                convertFileName: convertFileName,
                                 svrFileName: Math.random().toString(26).slice(2),
                                 fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(), 
                                 fileSize: stat.size,
                                 contentType: 'image/jpeg',
-                                regId: userId
+                                regId: userId,
+                                row: j
                             };  
                             returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
                             fileDtlArr.push(fileDtlParam);
@@ -144,12 +146,13 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                                     imgId: imgId,
                                     filePath: convertFilePath,
                                     oriFileName: convertFileName,
-                                    convertFileName: '',
+                                    convertFileName: convertFileName,
                                     svrFileName: Math.random().toString(26).slice(2),
                                     fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
                                     fileSize: stat2.size,
                                     contentType: 'image/jpeg',
-                                    regId: userId
+                                    regId: userId,
+                                    row: j
                                 };  
                                 returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
                                 fileDtlArr.push(fileDtlParam);
