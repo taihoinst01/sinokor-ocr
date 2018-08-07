@@ -456,8 +456,65 @@ router.post('/execBatchLearningData', function (req, res) {
         console.log(result1);
 
         aimain.labelClassificationEval(result1, function (result2) {
+
+            //다중 계산서 처리
+            if (result2.docCategory.DOCTYPE == 2) {
+                var data = result2.data;
+                var dataArr = [];
+
+                for (var i in data) {
+                    if (data[i].column == "CTNM2") {
+                        var colData = [];
+                        colData.push(data[i]);
+
+                        var ctnmLoc = data[i].location.split(",");
+
+                        for (var j in data) {
+                            var loc = data[j].location.split(",");
+
+                            if (data[j].column == "PAIDSHARE" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                                colData.push(data[j]);
+                            }
+
+                            if (data[j].column == "OSLPERCENT" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                                colData.push(data[j]);
+                            }
+
+                            if (data[j].column == "OSLSHARE" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                                colData.push(data[j]);
+                            }
+
+                            if (data[j].column == "CURCD" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                                colData.push(data[j]);
+                            }
+                        }
+                        dataArr.push(colData);
+                    }
+                }
+
+                /*
+                for (var i in data) {
+                    if (data[i].column == "CTNM") {
+
+                        var ctnmLoc = data[i].location.split(",");
+
+                        for (var j in dataArr) {
+
+                            var loc = dataArr[j][0].location.split(",");
+
+                            if (loc[1] - ctnmLoc[1] > 0) {
+                                dataArr[j].push(data[i]);
+                            }
+                        }
+                    }
+                }
+                */
+
+                //console.log(dataArr);
+                result2.data = dataArr;
+            }
             res.send(result2);
-        })
+        });
         
     });
 
@@ -488,7 +545,8 @@ var callbackInsertBatchLearningData = function (rows, req, res) {
 router.post('/updateBatchLearningData', function (req, res) {
     var data = req.body.mldata.data;
     var billInfo = req.body.mldata.docCategory;
-    var fileInfos = req.body.fileInfos;
+    var fileInfos = req.body.ocrData.fileInfo;
+    var fileToPage = req.body.ocrData.fileToPage;
     var status = '';
     var keyCount = 0; // 컬럼 개수
     for (var key in data) keyCount++;
@@ -637,10 +695,8 @@ router.post('/updateBatchLearningData', function (req, res) {
         commonUtil.nvl2(dataCod.PMBL, 0),
         commonUtil.nvl2(dataCod.CMBL, 0),
         commonUtil.nvl2(dataCod.NTBL, 0),
-        commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0),
+        commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0)
     ];
-
-
 
     var condImgIdQuery = '('
     for (var i in fileInfos) {
@@ -648,7 +704,76 @@ router.post('/updateBatchLearningData', function (req, res) {
         condImgIdQuery += fileInfos[i].imgId;
         condImgIdQuery += (i != fileInfos.length - 1) ? "'," : "')";
     }
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, dataArr, callbackUpdateBatchLearningData, req, res);
+
+    if (billInfo.DOCTYPE == 2) {
+        var condSubNum = ' and subNum = ' + fileToPage.IMGFILESTARTNO;
+
+        commonDB.reqQueryParam(selectBatchLearningDataQuery + condSubNum, [fileInfos[0].imgId], function (rows, req, res) {
+            if (rows.length == 0) {
+                var regId = req.session.userId;
+
+                var insArr = [
+                    fileInfos[0].imgId,
+                    commonUtil.nvl(dataCod.entryNo),
+                    commonUtil.nvl(dataCod.STATEMENTDIV),
+                    commonUtil.nvl(dataCod.CONTRACTNUM),
+                    commonUtil.nvl(dataCod.ogCompanyCode),
+                    commonUtil.nvl(dataCod.CTOGCOMPANYNAMENM),
+                    commonUtil.nvl(dataCod.brokerCode),
+                    commonUtil.nvl(dataCod.brokerName),
+                    commonUtil.nvl(dataCod.CTNM),
+                    commonUtil.nvl(dataCod.insstdt),
+                    commonUtil.nvl(dataCod.insenddt),
+                    commonUtil.nvl(dataCod.UY),
+                    commonUtil.nvl(dataCod.CURCD),
+                    commonUtil.nvl2(dataCod.PAIDPERCENT, 0),
+                    commonUtil.nvl2(dataCod.PAIDSHARE, 0),
+                    commonUtil.nvl2(dataCod.OSLPERCENT, 0),
+                    commonUtil.nvl2(dataCod.OSLSHARE, 0),
+                    commonUtil.nvl2(dataCod.GROSSPM, 0),
+                    commonUtil.nvl2(dataCod.PM, 0),
+                    commonUtil.nvl2(dataCod.PMPFEND, 0),
+                    commonUtil.nvl2(dataCod.PMPFWOS, 0),
+                    commonUtil.nvl2(dataCod.XOLPM, 0),
+                    commonUtil.nvl2(dataCod.RETURNPM, 0),
+                    commonUtil.nvl2(dataCod.GROSSCN, 0),
+                    commonUtil.nvl2(dataCod.CN, 0),
+                    commonUtil.nvl2(dataCod.PROFITCN, 0),
+                    commonUtil.nvl2(dataCod.BROKERAGE, 0),
+                    commonUtil.nvl2(dataCod.TAX, 0),
+                    commonUtil.nvl2(dataCod.OVERRIDINGCOM, 0),
+                    commonUtil.nvl2(dataCod.CHARGE, 0),
+                    commonUtil.nvl2(dataCod.PMRESERVERTD, 0),
+                    commonUtil.nvl2(dataCod.PFPMRESERVERTD, 0),
+                    commonUtil.nvl2(dataCod.PMRESERVERLD, 0),
+                    commonUtil.nvl2(dataCod.PFPMRESERVERLD, 0),
+                    commonUtil.nvl2(dataCod.CLAIM, 0),
+                    commonUtil.nvl2(dataCod.LOSSRECOVERY, 0),
+                    commonUtil.nvl2(dataCod.CASHLOSS, 0),
+                    commonUtil.nvl2(dataCod.CASHLOSSRD, 0),
+                    commonUtil.nvl2(dataCod.LOSSRR, 0),
+                    commonUtil.nvl2(dataCod.LOSSRR2, 0),
+                    commonUtil.nvl2(dataCod.LOSSPFEND, 0),
+                    commonUtil.nvl2(dataCod.LOSSPFWOA, 0),
+                    commonUtil.nvl2(dataCod.INTEREST, 0),
+                    commonUtil.nvl2(dataCod.TAXON, 0),
+                    commonUtil.nvl2(dataCod.MISCELLANEOUS, 0),
+                    commonUtil.nvl2(dataCod.PMBL, 0),
+                    commonUtil.nvl2(dataCod.CMBL, 0),
+                    commonUtil.nvl2(dataCod.NTBL, 0),
+                    commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0),
+                    regId,
+                    fileToPage.IMGFILESTARTNO
+                ];
+
+                commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, insArr, callbackInsertBatchLearningData, req, res);
+            } else {
+                commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, dataArr, callbackUpdateBatchLearningData, req, res);
+            }
+        }, req, res);
+    } else {
+        commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, dataArr, callbackUpdateBatchLearningData, req, res);
+    }
 });
 
 var callbackUpdateBatchLearningData = function (rows, req, res) {
@@ -742,6 +867,7 @@ router.post('/syncFile', function (req, res) {
 
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
+    console.log(dataObj);
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.compareBatchLearningData, [
         dataObj.fileToPage.IMGID, dataObj.fileToPage.IMGFILESTARTNO, dataObj.fileToPage.IMGFILEENDNO
     ], callbackcompareBatchLearningData, req, res);

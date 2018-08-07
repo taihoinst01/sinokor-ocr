@@ -836,5 +836,72 @@
             layer_open('layer3');
         </script>
     -->
+    <!-- 팝업_문서비교레이어팝업 -->
+    <div id="layer4" class="poplayer">
+        <div class="bg"></div>
+        <div class="pop_layer">
+            <div class="pop_popup0 doc_popup">
+                <div class="pop_header">
+                    <h1>문서 양식 조회</h1>
+                </div>
+                <div class="tits22">
+                    <div class="inputst_role">
+                        <input type="radio" id="orgDocSearchRadio" value="choice-1" class="custom" name="radio_batch" checked="checked" />
+                        <label for="orgDocSearchRadio">기존문서 양식조회</label>
+                        <input type="radio" id="newDocRegistrationRadio" value="choice-2" class="custom" name="radio_batch" />
+                        <label for="newDocRegistrationRadio">신규문서 양식등록</label>
+                    </div>
+                    <div id="orgDocSearch" class="inputst_role2">
+                        <input type="text" name="orgDocName" id="orgDocName" class="inputst_box01 ui_doc_pop_ipt" value="" />
+                        <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1">확 인</button>
+                        <button type="button" id="" class="ui_doc_pop_btn2 cbtn ml5">취 소</button>
+                    </div>
+                    <div id="newDocRegistration" class="inputst_role2" style="display:none;">
+                        <input type="text" name="newDocName" id="newDocName" class="inputst_box01 ui_doc_pop_ipt2" value="" placeholder="신규문서명을 입력해 주세요" />
+                        <button type="button" id="insertDocCategoryBtn" class="ui_doc_pop_btn1">신규등록</button>
+                        <button type="button" id="" class="ui_doc_pop_btn2 cbtn ml5">취 소</button>
+                    </div>
+                </div>
+                <div class="pop_content">
+                    <div class="ui_doc_pop_div fl">
+                        <div class="ui_doc_pop_div00">
+                            <div class="ui_doc_pop_div01">
+                                <span>머신러닝 예측 문서</span>
+                                <input type="text" id="mlPredictionDocName" disabled="disabled">
+                            </div>
+                            <div class="ui_doc_pop_div01">
+                                <span>정확도</span>
+                                <input type="text" id="mlPredictionPercent" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="imgbox">
+                            <img id="originImg" src="../../uploads/26.jpg" style="width: 100%;height: 480px;">
+                        </div>
+                    </div>
+                    <div class="ui_doc_pop_div fr">
+                        <div class="ui_doc_pop_div00">
+                            <div class="ui_doc_pop_div01">
+                                <label class="searchIcon"></label>
+                                <input type="text" id="searchDocCategoryKeyword" class="ipt83" placeholder="검색할 단어를 입력해 주세요">
+                                <button type="button" id="searchDocCategoryBtn" class="ui_doc_pop_btn3">검색</button>
+                            </div>
+                            <div class="ui_doc_pop_div01">
+                                <input type="text" id="searchResultDocName" disabled="disabled">
+                            </div>
+                        </div>
+                        <div id="docSearchResult" class="imgbox">
+
+                        </div>
+                        <button type="button" id="docSearchResultImg_thumbPrev" class="button_control10 button_control11" disabled="disabled"><span class="blind">왼쪽이동</span></button>
+                        <button type="button" id="docSearchResultImg_thumbNext" class="button_control10 button_control12" disabled="disabled"><span class="blind">오른쪽이동</span></button>
+                        <div id="docSearchResultImg_thumbCount" class="docSearchResultImg_count"><span id="countCurrent">1</span><span> / </span><span id="countLast"></span></div>
+                        <div id="docSearchResultMask"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- // 팝업_문서비교레이어팝업 -->
 </body>
 </html>

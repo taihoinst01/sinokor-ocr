@@ -220,7 +220,7 @@
                     <h3 class="tits"><span>양식이미지</span></h3>
 
                     <div id="div_view_image" class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
-                        <img src="publish/image/sample02.jpg" alt="샘플이미지" />
+                        <!--<img src="publish/image/sample01.jpg" alt="샘플이미지" />-->
 
                         <ul id="imageBox"></ul>
                     </div>
@@ -229,6 +229,7 @@
                         <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
                         <div id="touchSlider">
                             <ul id="ul_image" class="invoiceR_thumbImg">                               
+                                <!--
                                 <li class="on">
                                     <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
                                     <span>sample02.png</span>
@@ -236,11 +237,12 @@
                                 <li>
                                     <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
                                     <span>sample01.png</span>
-                                </li>                                
+                                </li>   
+                                -->
                             </ul>
                         </div>
                         <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
-                        <div id="count" class="count"><span>1</span> / 1</div>
+                        <div id="count" class="count"><!--<span>1</span> / 1--></div>
                     </div>
                 </div>
                 <!-- // 양식이미지 -->
@@ -346,7 +348,7 @@
                                         <th scope="row">Your Refernece</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="tbody_dtlInfo">
                                     <!--
                                     <tr>
                                         <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>

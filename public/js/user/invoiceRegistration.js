@@ -72,6 +72,7 @@ var uploadFileEvent = function() {
             if (responseText.message.length > 0) {
                 totCount = responseText.message.length;
                 for (var i = 0; i < responseText.message.length; i++) {
+                    console.log(".....여기에 : " + responseText.message[i]);
                     processImage(responseText.message[i]);
                 }
             }
@@ -311,7 +312,7 @@ var executeML = function(fileName, data, type) {
     $('#progressMsgDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0, 200) + '...');
     var targetUrl;
 
-    console.log(`다음 순서는 type = ${type} 입니다.`);
+    console.log(`다음 순서 type = ${type}`);
 
     if (type == 'ts') {
         targetUrl = '/invoiceRegistration/typoSentence';
@@ -422,34 +423,63 @@ var fn_processData = function() {
                             <td><input type="text" id="base_memo_${arr.imgId}" name="base_memo" value="" /></td>
                         </tr>`;
 
-        for (var x = 0, item; item = arr.data[x]; x++) {
+        var dataObj = {};
+        var dataVal = arr.data;
+
+        for (var x = 0, item; item = dataVal[x]; x++) {
             console.log("make document dtl: " + JSON.stringify(item));
+
+            dataObj["imgId"] = arr.imgId;
 
             var location = nvl(item["location"]);
             var text = nvl(item["text"]);
             var label = nvl(item["label"]);
             var column = nvl(item["column"]);
 
-            if (label == "fixlabel" || label == "entryrowlabel") { //라벨 이면
-                for (var j = 0, y = dataVal.length; j < y; j++) {
-                    if (dataVal[j].column == column + "_VALUE") {// 해당 라벨에 대한 값이면
-                        console.log("Find Label and Value : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
+            if (label == "fixlabel" || label == "entryrowlabel") {
+                for (var y = 0, labelItem; labelItem = dataVal[y]; y++) {
+                    if (labelItem.column == column + "_VALUE") {// 해당 라벨에 대한 값이면
+                        console.log("Find Label and Value : " + labelItem["column"] + " >> " + labelItem["text"]);
                         if (isNull(dataObj[column])) {
+                            // 양식 변경전이랑 비교해야하기 때문에 ml에서 나온 값은 출재사명(거래사명),계약명,개시일, 종료일만을 담아서 보냄. 추후 수정 필요 -- 07.27 hyj
+                            if (column == "CSCO_NM") {
+                                dataObj["csconm"] = labelItem["text"];
+                            } else if (column == "CT_NM") {
+                                dataObj["ctnm"] = labelItem["text"];
+                            } else if (column == "INS_ST_DT") {
+                                dataObj["insstdt"] = labelItem["text"];
+                            } else if (column == "INS_END_DT") {
+                                dataObj["inenddt"] = labelItem["text"];
+                            }
 
+                            // DOUBLE 형태의 값은 공백 제거 처리                       
+                            /*
+                            if (column == "PRE" || column == "COM" || column == "BRKG" || column == "TXAM" ||
+                                column == "PRRS_CF" || column == "PRRS_RLS" || column == "LSRES_CF" ||
+                                column == "LSRES_RLS" || column == "CLA" || column == "EXEX" || column == "SVF" ||
+                                column == "CAS" || column == "NTBL") {
+                                dataObj[column] = data[j]["text"].replace(/(\s*)/g, "");
+                            } else {
+                                dataObj[column] = data[j]["text"];
+                            }
+                            */
                         } else {
-                            console.log("Alreaday exist Column(KEY) : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
+                            console.log("Already exist Column(KEY) : " + labelItem["column"] + " >> " + labelItem["text"]);
                         }
                     }
+                    
                 }
             }
+
+            console.log("dataObj : " + JSON.stringify(dataObj));
 
             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
             var dtlHtml = `<tr>
                                 <td><input type="checkbox" id="dtl_chk_${item.imgId}" name="dtl_chk" /></td>
-                                <td>${item.imgId}</td>
-                                <td></td> 
                                 <td></td>
                                 <td></td>
+                                <td>${dataObj.csconm}</td> 
+                                <td>${dataObj.ctnm}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -490,7 +520,10 @@ var fn_processData = function() {
                                 <td></td>
                                 <td></td>
                             </tr>`;
+
+            $("#tbody_dtlInfo").empty().append(dtlHtml);                                
         }
+        $("#tbody_baseInfo").empty().append(baseHtml);
     }
 
     // TODO : DB 처리
