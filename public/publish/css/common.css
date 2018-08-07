@@ -311,7 +311,7 @@ thead .ez-checkbox,
 .box_table_st04 > dl > dt label.iclick:before,
 .gnb_box .gnb_setting:after,
 .gnb_box .btn_logout:before,
-.lnb_menu li a:before,
+.lnb_menu li a i:before,
 .st_infortext_01:before,
 h3.tits:before,
 .st_infortext_01 span:after,
@@ -997,42 +997,42 @@ select:disabled + ul.idealSelect:before {
     /*border-bottom: 1px solid #e2e3e5;*/
 }
 
-    .lnb_menu li a:before {
+    .lnb_menu li a i:before {
         content: '';
         width: 15px;
         height: 17px;
         margin-left:10px;
     }
 
-    .lnb_menu li a.lnb_menu01:before {
+    .lnb_menu li a.lnb_menu01 i:before {
         background-position: -9px -456px;
     }
 
-    .lnb_menu li a.lnb_menu02:before {
+    .lnb_menu li a.lnb_menu02 i:before {
         background-position: -60px -459px;
     }
 
-    .lnb_menu li a.lnb_menu03:before {
+    .lnb_menu li a.lnb_menu03 i:before {
         background-position: -111px -460px;
     }
 
-    .lnb_menu li a.lnb_menu04:before {
+    .lnb_menu li a.lnb_menu04 i:before {
         background-position: -163px -456px;
     }
 
-    .lnb_menu li a.lnb_menu05:before {
+    .lnb_menu li a.lnb_menu05 i:before {
         background-position: -214px -461px;
     }
     
-    .lnb_menu li a.lnb_menu06:before {
+    .lnb_menu li a.lnb_menu06 i:before {
         background-position: -265px -461px;
     }
 
-    .lnb_menu li a.lnb_menu11:before {
+    .lnb_menu li a.lnb_menu11 i:before {
         background-position: -317px -458px;
     }
 
-    .lnb_menu li a.lnb_menu12:before {
+    .lnb_menu li a.lnb_menu12 i:before {
         background-position: -300px -450px;
     }
 
@@ -1054,38 +1054,38 @@ select:disabled + ul.idealSelect:before {
         color: #fff;
     }
 
-    .lnb_menu li.on a.lnb_menu01:before {
+    .lnb_menu li.on a.lnb_menu01 i:before {
         background-position: -11px -406px;
     }
 
-    .lnb_menu li.on a.lnb_menu02:before {
+    .lnb_menu li.on a.lnb_menu02 i:before {
         background-position: -61px -410px;
     }
 
-    .lnb_menu li.on a.lnb_menu03:before {
+    .lnb_menu li.on a.lnb_menu03 i:before {
         background-position: -111px -410px;
     }
 
-    .lnb_menu li.on a.lnb_menu04:before {
+    .lnb_menu li.on a.lnb_menu04 i:before {
         background-position: -163px -406px;
     }
 
-    .lnb_menu li.on a.lnb_menu05:before {
+    .lnb_menu li.on a.lnb_menu05 i:before {
         background-position: -215px -411px;
     }
-    .lnb_menu li.on a.lnb_menu06:before {
+    .lnb_menu li.on a.lnb_menu06 i:before {
         background-position: -266px -411px;
     }
 
-    .lnb_menu li.on a.lnb_menu11:before {
+    .lnb_menu li.on a.lnb_menu11 i:before {
         background-position: -317px -408px;
     }
 
-    .lnb_menu li.on a.lnb_menu12:before {
+    .lnb_menu li.on a.lnb_menu12 i:before {
         background-position: -300px -400px;
     }
 
-.lnb_menu li a span {
+.lnb_menu_title {
     display: inline-block;
     line-height: 36px;
     font-size: 14px;
@@ -5224,4 +5224,24 @@ button[disabled] {
 
 #userInfoPop .pop_popup0 .pop_content {
     padding: 26px 26px 5px 26px;
+}
+.mCS_no_scrollbar_y .mCSB_scrollTools_vertical {
+    display: none !important;
+}
+
+.lnb_menu_count {
+    display: inline-block;
+    width: 23px;
+    height: 15px;
+    background-color: #ec8200;
+    color: #fff;
+    border-radius: 5px;
+    text-align: center;
+    margin-left: 10px;
+    font-size: 11px;
+    display: none;
+}
+
+.lnb_menu02 .lnb_menu_icon, .lnb_menu03 .lnb_menu_icon, .lnb_menu05 .lnb_menu_icon, .lnb_menu06 .lnb_menu_icon {
+    vertical-align: sub;
 }
