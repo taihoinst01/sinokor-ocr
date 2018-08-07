@@ -22,7 +22,7 @@ $(function () {
     });
 
     fn_searchUser();
-    fn_searchHighApproval(0);
+    fn_searchHighApproval(0, "");
 
 
     // 사용자 비밀번호 수정
@@ -53,7 +53,7 @@ function fn_initUser() {
     $("input:checkbox[name='approval']").parent().removeClass('ez-checked');
     $("#highApprovalId").val("");
     $(".myValue").html("전 체");
-    fn_searchHighApproval(0);
+    fn_searchHighApproval(0, "");
 }
 /**
  * 사용자 조회
@@ -95,7 +95,7 @@ function fn_searchUser() {
                         <td>${nvl(entry.HIGHAPPROVALID)}</td>
                         <td>${nvl(entry.LASTLOGINDATE)}</td>
                         <td>${nvl(entry.OCRUSECOUNT)}</td>
-                        <td><button class="btn btn_delete" onclick="javascript:openDeleteUser(${entry.SEQNUM})">삭제</button></td>;
+                        <td><button class="btn btn_delete" onclick="javascript:openDeleteUser('${entry.SEQNUM}')">삭제</button></td>;
                      </tr>`;
                 });
                 //<td><button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn" onclick="javascript:openUpdatePw(${entry.seqNum}, ${entry.userId})">수정</button></td>
@@ -152,7 +152,7 @@ function fn_chooseUser(seqNum) {
                             $("#approval3").prop("checked", true);
                             $("#approval3").parent().addClass('ez-checked');
                         }
-                        fn_searchHighApproval(entry["SEQNUM"]); // 상위결재자 목록 조회
+                        fn_searchHighApproval(entry["SEQNUM"], entry["HIGHAPPROVALID"]); // 상위결재자 목록 조회
                     }
                 });
             } else {
@@ -168,7 +168,7 @@ function fn_chooseUser(seqNum) {
     });
 };
 // 상위결재자 조회
-var fn_searchHighApproval = function (seqNum) {
+var fn_searchHighApproval = function (seqNum, id) {
     var param = {
         seqNum: seqNum
     };
@@ -185,6 +185,10 @@ var fn_searchHighApproval = function (seqNum) {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     appendHtml += `<li><a class="a_userIdList" href="javascript:fn_selectHighApproval('${entry.SEQNUM}', '${entry.USERID}')">${entry.USERID}</a></li>`;
+                    if (entry.USERID == id) {
+                        $("#highApprovalId").val(entry.SEQNUM);
+                        $(".myValue").html(entry.USERID);
+                    }
                 });
             }
             $("#ul_highApproval").empty().append(appendHtml);
