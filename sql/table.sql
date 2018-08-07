@@ -281,3 +281,34 @@ COMMENT ON COLUMN TBL_COMM_ERROR.errorType IS '1001:OCR REQ½ÇÆÐ, 1002: typo corr
 COMMENT ON COLUMN TBL_COMM_ERROR.errorCode IS '400:InvalidImageUrl,InvalidImageFormat,InvalidImageSize,NotSupportedLanguage';
 
 
+CREATE TABLE TBL_KEYWORD_MAPPING(
+	seqNum NUMBER PRIMARY KEY,
+    originWord VARCHAR2(500),
+    correctWord VARCHAR2(500)
+);
+
+CREATE SEQUENCE SEQ_KEYWORD_MAPPING
+START WITH 1 INCREMENT BY 1 NOCACHE;
+
+SELECT *
+FROM TBL_BATCH_LEARN_DATA;
+
+
+
+UPDATE tbl_batch_learn_data
+            SET
+				ntbl = 0.00
+            WHERE
+                imgId IN ('42lyhdhxtc8');
+
+ROLLBACK;
+
+
+SELECT *
+FROM TBL_BATCH_LEARN_DATA;
+
+SELECT *
+FROM TBL_DOCUMENT_category;
+
+
+
