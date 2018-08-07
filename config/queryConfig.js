@@ -182,13 +182,13 @@ var batchLearningConfig = {
             brokerName, ctnm, insstdt, insenddt, uy, curcd, paidPercent, paidShare, oslPercent, oslShare, grosspm, pm, pmPFEnd,
             pmPFWos, xolPm, returnPm, grosscn, cn, profitcn, brokerAge, tax, overridingCom, charge, pmReserveRTD, pfPmReserveRTD,
             pmReserveRTD2, pfPmReserveRTD2, claim, lossRecovery, cashLoss, cashLossRD, lossRR, lossRR2, lossPFEnd, lossPFWoa,
-            interest, taxOn, miscellaneous, pmbl, cmbl, ntbl, cscosarfrncnnt2, regId, regDate)
+            interest, taxOn, miscellaneous, pmbl, cmbl, ntbl, cscosarfrncnnt2, regId, subNum, regDate)
          VALUES
             (:imgId, 'N', :entryNo, :statementDiv, :contractNum, :ogCompanyCode, :ogCompanyName, :brokerCode,
             :brokerName, :ctnm, :insstdt, :insenddt, :uy, :curcd, :paidPercent, :paidShare, :oslPercent, :oslShare, :grosspm, :pm, :pmPFEnd,
             :pmPFWos, :xolPm, :returnPm, :grosscn, :cn, :profitcn, :brokerAge, :tax, :overridingCom, :charge, :pmReserveRTD, :pfPmReserveRTD,
             :pmReserveRTD2, :pfPmReserveRTD2, :claim, :lossRecovery, :cashLoss, :cashLossRD, :lossRR, :lossRR2, :lossPFEnd, :lossPFWoa,
-            :interest, :taxOn, :miscellaneous, :pmbl, :cmbl, :ntbl, :cscosarfrncnnt2, :regId, sysdate) `,
+            :interest, :taxOn, :miscellaneous, :pmbl, :cmbl, :ntbl, :cscosarfrncnnt2, :regId, :subNum, sysdate) `,
     insertFileInfo:
         `INSERT INTO
             tbl_ocr_file(seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize, contentType, fileType, regId, regDate)
