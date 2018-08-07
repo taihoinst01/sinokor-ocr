@@ -624,7 +624,7 @@ function compareBatchLearningData(ocrData, data) {
                         }
                         */
                     } else {
-                        console.log("Alreaday exist Column(KEY) : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
+                        console.log("Already exist Column(KEY) : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
                     }
                 }
             }
@@ -891,7 +891,7 @@ var searchBatchLearnDataList = function (addCond) {
                         <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
                         <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
                         <td>${nvl(entry.IMGID)}</td> <!--이미지ID-->
-                        <td>${nvl(entry.STATEMENTDIV)}</td> <!--계산서 구분-->
+                        <td><a onclick="javascript:docComparePopup('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.STATEMENTDIV)}</a></td> <!--계산서 구분-->
                         <td>${nvl(entry.CONTRACTNUM)}</td> <!--계약번호-->
                         <td>${nvl(entry.OGCOMPANYCODE)}</td> <!--출재사코드-->
                         <td>${nvl(entry.BROKERCODE)}</td> <!--중개사코드-->
@@ -1470,6 +1470,65 @@ var fn_batchUiTraining = function () {
     });
 }
 
+//문서 비교 popup 버튼 클릭 이벤트
+function docComparePopup(imgIndex, obj) {
+    var imgId = imgIndex.substring(0, imgIndex.lastIndexOf("."));
+    $('#originImg').attr('src', '../../uploads/' + imgId + ".jpg");
+    $('#mlPredictionDocName').val(obj.innerText);
+    //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+    layer_open('layer4');
+}
+
+function popUpEvent() {
+    popUpSearchDocCategory();
+}
+
+//팝업 문서 양식 LIKE 조회
+function popUpSearchDocCategory() {
+    $('#searchDocCategoryBtn').click(function () {
+        if ($('.ez-selected').children('input').val() == 'choice-1') {
+            var keyword = $('#searchDocCategoryKeyword').val();
+            $.ajax({
+                url: '/uiLearning/selectLikeDocCategory',
+                type: 'post',
+                datatype: 'json',
+                data: JSON.stringify({ 'keyword': keyword }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    console.log(data);
+                    $('#docSearchResult').html('');
+                    $('#countCurrent').html('1');
+                    $('.button_control10').attr('disabled', true);
+                    if (data.length == 0) {
+                        $('#docSearchResultImg_thumbCount').hide();
+                        $('#docSearchResultMask').hide();
+                        return false;
+                    } else {
+                        /**
+                         결과에 따른 이미지폼 만들기
+                         */
+                        docPopImages = data;
+                        var resultImg = '<img src="' + data[0].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+                        $('#searchResultDocName').val(data[0].DOCNAME);
+                        if (data.length != 1) {
+                            $('.button_control12').attr('disabled', false);
+                        }
+                        $('#orgDocName').val(data[0].DOCNAME);
+                        $('#docSearchResult').html(resultImg);
+                        $('#docSearchResultMask').show();
+                        $('#countLast').html(data.length);
+                        $('#docSearchResultImg_thumbCount').show();
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        } else {
+        }
+    });
+}
+
 // init
 function _init() {
     $('#uploadFile').css('display', 'none');
@@ -1484,7 +1543,7 @@ function _init() {
     popupEvent.scrollPopup();   // popup event - scroll
     imageUploadEvent();         // image upload event
 	//excelUploadEvent();         // excel upload event
-
+    popUpEvent();
     searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
 }
 
