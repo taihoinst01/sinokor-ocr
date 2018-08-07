@@ -36,11 +36,11 @@
                     </dl>
                 </div>
                 <div class="gnb_setting">
-                    <a href="#none" title="서비스설정">서비스 설정</a>
+                    <a href="#" title="서비스설정">서비스 설정</a>
                 </div>
                 <% if(currentUser != null) { %>
                 <div class="gnb_infor">
-                    <a href="#none" title="회원정보">
+                    <a href="#" title="회원정보" onclick="layer_open('userInfoPop');return false;">
                         <span><%=currentUser.userId%></span>
                         <i class="tmb" style="background-image:url(/publish/image/man1.png);"></i>
                     </a>
@@ -58,65 +58,30 @@
 </header>
 
 <!-- 팝업_회원 정보 -->
-<!--
-<div class="modal fade" id="userInfoPopup" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content" style="min-height: 300px; max-height: 400px;">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="">회원정보</h4>
+<div id="userInfoPop" class="poplayer">
+    <div class="bg"></div>
+    <div class="pop_layer">
+        <div class="pop_popup0 pop_popup01">
+            <div class="pop_header">
+                <h1>회원정보</h1>
             </div>
-            <div class="modal-body">
-                <form name="" id="" method="post">
-                    <table class="Tbl">
-                        <thead>
-
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    아이디
-                                </td>
-                                <td>
-                                    tiiz_1004
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    비밀번호
-                                </td>
-                                <td>
-                                    <input type="password" class="form-control" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    새로운 비밀번호
-                                </td>
-                                <td>
-                                    <input type="password" class="form-control" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    이메일
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" value="tiiz1004@taiho.com" />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <div class="btn_wrap">
-                    <button type="button" class="btn btn_01" id="">저장</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+            <div class="pop_content">
+                <div class="pop_box_120 box_txt_st01">
+                    <span>아이디</span>
+                    <input type="text" name="" id" class="inputst_box01" value="" disabled="disabled" />
+                    <span>기존 Password</span>
+                    <input type="text" name="" id" class="inputst_box01" value="" disabled="disabled" />
+                    <span>새로운 Password</span>
+                    <input type="password" name="" id" class="inputst_box01" value="" />
+                    <span>새로운 Password 확인</span>
+                    <input type="password" name="" id" class="inputst_box01" value="" />
                 </div>
+            </div>
+            <div class="pop_footer">
+                <button type="button" id="btn_pop_batch_run" class="button_st1">확인</button>
+                <button type="button" id="btn_pop_batch_close" class="button_st4 cbtn">취 소</button>
             </div>
         </div>
     </div>
 </div>
--->
 <!-- //팝업_회원 정보 -->
