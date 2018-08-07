@@ -184,8 +184,10 @@ var fn_excelUpload = function () {
             } else {
                 alert("엑셀 파일 업로드 중 오류가 발생하였습니다.");
             }
+            $('#btn_excelUpload').removeClass('on');
         },
         error: function (err) {
+            $('#btn_excelUpload').removeClass('on');
             console.log(err);
         }
     });
@@ -1167,6 +1169,7 @@ var fn_imageDelete = function () {
                 success: function (responseText, statusText) {
                     alert("삭제 되었습니다.");
                     searchBatchLearnDataList(addCond);
+                    $('#btn_imageDelete').removeClass('on');
                 },
                 error: function (err) {
                     console.log(err);
@@ -1174,6 +1177,7 @@ var fn_imageDelete = function () {
             });
         }
     } else {
+        $('#btn_imageDelete').removeClass('on');
         alert("삭제할 파일이 선택되지 않았습니다.");
         return;
     }
