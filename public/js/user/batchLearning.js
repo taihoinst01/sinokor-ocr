@@ -563,10 +563,8 @@ function execBatchLearningData(ocrData, data) {
                     if (i > 0) {
                         ocrData.fileToPage.IMGFILEENDNO = ocrData.fileToPage.IMGFILEENDNO + 1;
                         ocrData.fileToPage.IMGFILESTARTNO = ocrData.fileToPage.IMGFILESTARTNO + 1;
-                        compareBatchLearningData(ocrData, data);
-                    } else {
-                        compareBatchLearningData(ocrData, data);
                     }
+                    compareBatchLearningData(ocrData, data);
                 }
             } else {
                 compareBatchLearningData(ocrData, data);
@@ -1089,8 +1087,10 @@ var searchBatchLearnData = function (imgIdArray, flag) {
 }
 
 // syncServerFile (서버의 이미지가 DB에 등록이 안되어있다면 DB에 등록처리)
-var fn_syncServerFile = function() {
+var fn_syncServerFile = function () {
     var param = {};
+    startProgressBar(); // start progressbar
+    addProgressBar(1, 1); // proceed progressbar
     $.ajax({
         url: '/batchLearning/syncFile',
         type: 'post',
@@ -1112,12 +1112,23 @@ var fn_syncServerFile = function() {
                         console.log("fileInfo " + i + " : " + JSON.stringify(fileInfo));
                         console.log("fileName " + i + " : " + JSON.stringify(fileName));
                         if (i == (totCount - 1)) lastYN = true;
-                        insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
-                        insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
+                        insertSyncFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
+                        //insertSyncBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
                     }
+                    addProgressBar(2, 50);
+                    resolve(responseText, statusText);
                 });
                 insertPromise.then(function (responseText, statusText) {
-                    alert("완료");
+                    console.log(responseText);
+                    var totCount = responseText.message.length;
+                    for (var i = 0; i < totCount; i++) {
+                        var lastYN = false;
+                        if (i == (totCount - 1)) lastYN = true;
+                        insertSyncBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);
+                    }
+                    //alert("완료");
+                }, function (err) {
+                    alert("파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + err);
                 });
                 insertPromise.then().catch(function (e) {
                     alert("파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + e);
@@ -1129,6 +1140,59 @@ var fn_syncServerFile = function() {
             console.log(err);
         }
     });
+}
+
+// [imageUpload event]
+// INSERT DB IMAGE
+var insertSyncFileDB = function (fileInfo, fileName, lastYN) {
+    if (fileInfo) {
+        var param = { fileInfo: fileInfo };
+        $.ajax({
+            url: '/batchLearning/insertFileInfo',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                //addProgressBar(81, 90);
+            },
+            success: function (data) {
+                console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
+                //callback(fileInfo, fileName, lastYN,"true");
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+}
+
+// INSERT DB BATCH LEARNING BASE DATA
+var insertSyncBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
+    if (fileInfo) {
+        var param = { fileInfo: fileInfo };
+        $.ajax({
+            url: '/batchLearning/insertBatchLearningBaseData',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                //addProgressBar(91, 100);
+            },
+            success: function (data) {
+                console.log("SUCCESS insertBatchLearningBaseData : " + JSON.stringify(data));
+                endProgressBar();
+                if (lastYN) {
+                    alert("파일 등록이 완료되었습니다.");
+                    searchBatchLearnDataList("LEARN_N");
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
 }
 
 // 정답엑셀 업로드
