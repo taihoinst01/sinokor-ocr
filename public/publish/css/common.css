@@ -311,7 +311,7 @@ thead .ez-checkbox,
 .box_table_st04 > dl > dt label.iclick:before,
 .gnb_box .gnb_setting:after,
 .gnb_box .btn_logout:before,
-.lnb_menu li a:before,
+.lnb_menu li a i:before,
 .st_infortext_01:before,
 h3.tits:before,
 .st_infortext_01 span:after,
@@ -997,42 +997,42 @@ select:disabled + ul.idealSelect:before {
     /*border-bottom: 1px solid #e2e3e5;*/
 }
 
-    .lnb_menu li a:before {
+    .lnb_menu li a i:before {
         content: '';
         width: 15px;
         height: 17px;
         margin-left:10px;
     }
 
-    .lnb_menu li a.lnb_menu01:before {
+    .lnb_menu li a.lnb_menu01 i:before {
         background-position: -9px -456px;
     }
 
-    .lnb_menu li a.lnb_menu02:before {
+    .lnb_menu li a.lnb_menu02 i:before {
         background-position: -60px -459px;
     }
 
-    .lnb_menu li a.lnb_menu03:before {
+    .lnb_menu li a.lnb_menu03 i:before {
         background-position: -111px -460px;
     }
 
-    .lnb_menu li a.lnb_menu04:before {
+    .lnb_menu li a.lnb_menu04 i:before {
         background-position: -163px -456px;
     }
 
-    .lnb_menu li a.lnb_menu05:before {
+    .lnb_menu li a.lnb_menu05 i:before {
         background-position: -214px -461px;
     }
     
-    .lnb_menu li a.lnb_menu06:before {
+    .lnb_menu li a.lnb_menu06 i:before {
         background-position: -265px -461px;
     }
 
-    .lnb_menu li a.lnb_menu11:before {
+    .lnb_menu li a.lnb_menu11 i:before {
         background-position: -317px -458px;
     }
 
-    .lnb_menu li a.lnb_menu12:before {
+    .lnb_menu li a.lnb_menu12 i:before {
         background-position: -300px -450px;
     }
 
@@ -1054,38 +1054,38 @@ select:disabled + ul.idealSelect:before {
         color: #fff;
     }
 
-    .lnb_menu li.on a.lnb_menu01:before {
+    .lnb_menu li.on a.lnb_menu01 i:before {
         background-position: -11px -406px;
     }
 
-    .lnb_menu li.on a.lnb_menu02:before {
+    .lnb_menu li.on a.lnb_menu02 i:before {
         background-position: -61px -410px;
     }
 
-    .lnb_menu li.on a.lnb_menu03:before {
+    .lnb_menu li.on a.lnb_menu03 i:before {
         background-position: -111px -410px;
     }
 
-    .lnb_menu li.on a.lnb_menu04:before {
+    .lnb_menu li.on a.lnb_menu04 i:before {
         background-position: -163px -406px;
     }
 
-    .lnb_menu li.on a.lnb_menu05:before {
+    .lnb_menu li.on a.lnb_menu05 i:before {
         background-position: -215px -411px;
     }
-    .lnb_menu li.on a.lnb_menu06:before {
+    .lnb_menu li.on a.lnb_menu06 i:before {
         background-position: -266px -411px;
     }
 
-    .lnb_menu li.on a.lnb_menu11:before {
+    .lnb_menu li.on a.lnb_menu11 i:before {
         background-position: -317px -408px;
     }
 
-    .lnb_menu li.on a.lnb_menu12:before {
+    .lnb_menu li.on a.lnb_menu12 i:before {
         background-position: -300px -400px;
     }
 
-.lnb_menu li a span {
+.lnb_menu_title {
     display: inline-block;
     line-height: 36px;
     font-size: 14px;
@@ -2613,7 +2613,7 @@ h3.tits span {
 .button_st4 {
     display: inline-block;
     min-width: 80px;
-    height: 40px;
+    height: 41px;
     padding: 5px 20px 10px;
     margin: 0;
     font-size: 14px;
@@ -4803,7 +4803,7 @@ thead .ez-checked {
 }
 
 .box_content_T_03 {
-    height: 325px;
+    height: 305px;
     min-height: 182px !important;
     margin: 148px 0 18px;
     position: relative;
@@ -4813,14 +4813,16 @@ thead .ez-checked {
     box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
     clear:both;
 }
-
+    .box_content_T_03 .mCustomScrollbar {
+        height: 230px !important;
+    }
 .box_content_T_05 {
     position: relative;
     width: 100%;
     width: calc(100% - 46px);
     width: -webkit-calc(100% - 46px);
     width: -moz-calc(100% - 46px);
-    height: 255px !important;
+    height: 275px !important;
     padding: 14px 22px;
     background-color: #fff;
     border: 1px solid #dadbdd;
@@ -5107,11 +5109,6 @@ button[disabled] {
     background-position: -214px -546px;
 }
 
-#uploadInfoText {
-    font-size: 16px !important;
-    width: 220px;
-}
-
 .attach_btn_k01 {
     margin: 15px auto 0 !important;
 }
@@ -5140,26 +5137,26 @@ button[disabled] {
 }
 
 .table_style_K01 {
-    height: 205px !important;
+    height: 185px !important;
 }
 
     .table_style_K01 .box_scroll_st3 {
-        height: 205px !important;
+        height: 185px !important;
     }
 .box_content_bg_K01 {
-    min-height: 519px !important;
+    min-height: 499px !important;
 }
     .box_content_bg_K01 .imgtmb_b {
         height: 290px !important;
     }
     .box_content_bg_K01 .box_imgtmb {
-        max-height: 110px !important;
+        max-height: 100px !important;
     }
     .box_content_bg_K01 .button_control1, .box_content_bg_K01 .button_control2 {
-        top: 26px !important;
+        top: 20px !important;
     }
 .box_content_K01 {
-    min-height: 542px !important;
+    min-height: 522px !important;
 }
 
 .pop_layer_K01 {
@@ -5173,3 +5170,78 @@ button[disabled] {
     .popTable_K01 th, .popTable_K01 td {
         border: 1px solid black;
     }
+.box_content_T_05 .box_scroll_st3 {
+    height: 190px !important;
+}
+.ui_uploadText {
+    font-size: 24px !important;
+    width: 280px !important;
+}
+.invoiceR_uploadText {
+    font-size: 16px !important;
+    width: 220px;
+}
+
+.box_content_bg_K01 #count {
+    margin: 3px auto 0 !important;
+}
+
+.box_content_bg_K01 #touchSlider {
+    height: 110px !important;
+}
+.btnK01 {
+    width: 150px !important;
+}
+
+.invoiceR_thumbImg li span {
+    font-size: 12px;
+}
+
+.invoiceR_thumbImg li .box_img {
+    height: 81px !important;
+}
+
+    .invoiceR_thumbImg li .box_img img {
+        height: 66px !important;
+    }
+
+.table_K01 .mCustomScrollbar.mCS_no_scrollbar {
+    height:50px !important;
+}
+.table_K02 .mCustomScrollbar.box_scroll_st3 {
+    height: 170px !important;
+}
+#userInfoPop span {
+    font-size: 14px;
+
+}
+#userInfoPop input {
+    margin: 5px 0 15px;
+}
+#userInfoPop .pop_popup0 .pop_footer {
+    padding: 0 26px 20px !important;
+}
+
+#userInfoPop .pop_popup0 .pop_content {
+    padding: 26px 26px 5px 26px;
+}
+.mCS_no_scrollbar_y .mCSB_scrollTools_vertical {
+    display: none !important;
+}
+
+.lnb_menu_count {
+    display: inline-block;
+    width: 23px;
+    height: 15px;
+    background-color: #ec8200;
+    color: #fff;
+    border-radius: 5px;
+    text-align: center;
+    margin-left: 10px;
+    font-size: 11px;
+    display: none;
+}
+
+.lnb_menu02 .lnb_menu_icon, .lnb_menu03 .lnb_menu_icon, .lnb_menu05 .lnb_menu_icon, .lnb_menu06 .lnb_menu_icon {
+    vertical-align: sub;
+}

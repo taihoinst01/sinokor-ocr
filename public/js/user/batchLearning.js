@@ -17,6 +17,9 @@ var moreNum = 20;
 
 var ocrPopData; //UI Popup DATA
 
+var docPopImages; // 문서조회팝업 이미지 리스트
+var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
+
 $(function () {
     _init();
     //viewServerFileTest();
@@ -184,8 +187,10 @@ var fn_excelUpload = function () {
             } else {
                 alert("엑셀 파일 업로드 중 오류가 발생하였습니다.");
             }
+            $('#btn_excelUpload').removeClass('on');
         },
         error: function (err) {
+            $('#btn_excelUpload').removeClass('on');
             console.log(err);
         }
     });
@@ -558,10 +563,8 @@ function execBatchLearningData(ocrData, data) {
                     if (i > 0) {
                         ocrData.fileToPage.IMGFILEENDNO = ocrData.fileToPage.IMGFILEENDNO + 1;
                         ocrData.fileToPage.IMGFILESTARTNO = ocrData.fileToPage.IMGFILESTARTNO + 1;
-                        compareBatchLearningData(ocrData, data);
-                    } else {
-                        compareBatchLearningData(ocrData, data);
                     }
+                    compareBatchLearningData(ocrData, data);
                 }
             } else {
                 compareBatchLearningData(ocrData, data);
@@ -889,7 +892,7 @@ var searchBatchLearnDataList = function (addCond) {
                         <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
                         <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
                         <td>${nvl(entry.IMGID)}</td> <!--이미지ID-->
-                        <td>${nvl(entry.STATEMENTDIV)}</td> <!--계산서 구분-->
+                        <td><a onclick="javascript:docComparePopup('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.STATEMENTDIV)}</a></td> <!--계산서 구분-->
                         <td>${nvl(entry.CONTRACTNUM)}</td> <!--계약번호-->
                         <td>${nvl(entry.OGCOMPANYCODE)}</td> <!--출재사코드-->
                         <td>${nvl(entry.BROKERCODE)}</td> <!--중개사코드-->
@@ -1084,8 +1087,10 @@ var searchBatchLearnData = function (imgIdArray, flag) {
 }
 
 // syncServerFile (서버의 이미지가 DB에 등록이 안되어있다면 DB에 등록처리)
-var fn_syncServerFile = function() {
+var fn_syncServerFile = function () {
     var param = {};
+    startProgressBar(); // start progressbar
+    addProgressBar(1, 1); // proceed progressbar
     $.ajax({
         url: '/batchLearning/syncFile',
         type: 'post',
@@ -1107,12 +1112,23 @@ var fn_syncServerFile = function() {
                         console.log("fileInfo " + i + " : " + JSON.stringify(fileInfo));
                         console.log("fileName " + i + " : " + JSON.stringify(fileName));
                         if (i == (totCount - 1)) lastYN = true;
-                        insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
-                        insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
+                        insertSyncFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
+                        //insertSyncBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
                     }
+                    addProgressBar(2, 50);
+                    resolve(responseText, statusText);
                 });
                 insertPromise.then(function (responseText, statusText) {
-                    alert("완료");
+                    console.log(responseText);
+                    var totCount = responseText.message.length;
+                    for (var i = 0; i < totCount; i++) {
+                        var lastYN = false;
+                        if (i == (totCount - 1)) lastYN = true;
+                        insertSyncBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);
+                    }
+                    //alert("완료");
+                }, function (err) {
+                    alert("파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + err);
                 });
                 insertPromise.then().catch(function (e) {
                     alert("파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + e);
@@ -1124,6 +1140,59 @@ var fn_syncServerFile = function() {
             console.log(err);
         }
     });
+}
+
+// [imageUpload event]
+// INSERT DB IMAGE
+var insertSyncFileDB = function (fileInfo, fileName, lastYN) {
+    if (fileInfo) {
+        var param = { fileInfo: fileInfo };
+        $.ajax({
+            url: '/batchLearning/insertFileInfo',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                //addProgressBar(81, 90);
+            },
+            success: function (data) {
+                console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
+                //callback(fileInfo, fileName, lastYN,"true");
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+}
+
+// INSERT DB BATCH LEARNING BASE DATA
+var insertSyncBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
+    if (fileInfo) {
+        var param = { fileInfo: fileInfo };
+        $.ajax({
+            url: '/batchLearning/insertBatchLearningBaseData',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                //addProgressBar(91, 100);
+            },
+            success: function (data) {
+                console.log("SUCCESS insertBatchLearningBaseData : " + JSON.stringify(data));
+                endProgressBar();
+                if (lastYN) {
+                    alert("파일 등록이 완료되었습니다.");
+                    searchBatchLearnDataList("LEARN_N");
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
 }
 
 // 정답엑셀 업로드
@@ -1167,6 +1236,7 @@ var fn_imageDelete = function () {
                 success: function (responseText, statusText) {
                     alert("삭제 되었습니다.");
                     searchBatchLearnDataList(addCond);
+                    $('#btn_imageDelete').removeClass('on');
                 },
                 error: function (err) {
                     console.log(err);
@@ -1174,6 +1244,7 @@ var fn_imageDelete = function () {
             });
         }
     } else {
+        $('#btn_imageDelete').removeClass('on');
         alert("삭제할 파일이 선택되지 않았습니다.");
         return;
     }
@@ -1466,6 +1537,144 @@ var fn_batchUiTraining = function () {
     });
 }
 
+//문서 비교 popup 버튼 클릭 이벤트
+function docComparePopup(imgIndex, obj) {
+    var imgId = imgIndex.substring(0, imgIndex.lastIndexOf("."));
+    $('#originImg').attr('src', '../../uploads/' + imgId + ".jpg");
+    $('#mlPredictionDocName').val(obj.innerText);
+    //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+    layer_open('layer4');
+}
+
+function popUpEvent() {
+    popUpSearchDocCategory();
+    popUpInsertDocCategory();
+}
+
+//팝업 문서 양식 LIKE 조회
+function popUpSearchDocCategory() {
+    $('#searchDocCategoryBtn').click(function () {
+        if ($('.ez-selected').children('input').val() == 'choice-1') {
+            var keyword = $('#searchDocCategoryKeyword').val();
+            $.ajax({
+                url: '/uiLearning/selectLikeDocCategory',
+                type: 'post',
+                datatype: 'json',
+                data: JSON.stringify({ 'keyword': keyword }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    console.log(data);
+                    $('#docSearchResult').html('');
+                    $('#countCurrent').html('1');
+                    $('.button_control10').attr('disabled', true);
+                    if (data.length == 0) {
+                        $('#docSearchResultImg_thumbCount').hide();
+                        $('#docSearchResultMask').hide();
+                        return false;
+                    } else {
+                        /**
+                         결과에 따른 이미지폼 만들기
+                         */
+                        docPopImages = data;
+                        var resultImg = '<img src="' + data[0].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+                        $('#searchResultDocName').val(data[0].DOCNAME);
+                        if (data.length != 1) {
+                            $('.button_control12').attr('disabled', false);
+                        }
+                        $('#orgDocName').val(data[0].DOCNAME);
+                        $('#docSearchResult').html(resultImg);
+                        $('#docSearchResultMask').show();
+                        $('#countLast').html(data.length);
+                        $('#docSearchResultImg_thumbCount').show();
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        } else {
+        }
+    });
+}
+
+// 문서 양식 조회 이미지 좌우 버튼 이벤트
+function changeDocPopupImage() {
+    $('#docSearchResultImg_thumbPrev').click(function () {
+        $('#docSearchResultImg_thumbNext').attr('disabled', false);
+        if (docPopImagesCurrentCount == 1) {
+            return false;
+        } else {
+            docPopImagesCurrentCount--;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            if (docPopImagesCurrentCount == 1) {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+            }
+        }
+    })
+
+    $('#docSearchResultImg_thumbNext').click(function () {
+        var totalCount = $('#countLast').html();
+        $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+        if (docPopImagesCurrentCount == totalCount) {
+            return false;
+        } else {
+            docPopImagesCurrentCount++;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+
+            if (docPopImagesCurrentCount == totalCount) {
+                $('#docSearchResultImg_thumbNext').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbNext').attr('disabled', false);
+            }
+        }
+    })
+}
+
+//팝업 문서 양식 등록
+function popUpInsertDocCategory() {
+    $('#insertDocCategoryBtn').click(function () {
+        if ($('.ez-selected').children('input').val() == 'choice-2') {
+            var docName = $('#newDocName').val();
+            var sampleImagePath = $('#originImg').attr('src').split('/')[2] + '/' + $('#originImg').attr('src').split('/')[3];
+            $.ajax({
+                url: '/uiLearning/insertDocCategory',
+                type: 'post',
+                datatype: 'json',
+                data: JSON.stringify({ 'docName': docName, 'sampleImagePath': sampleImagePath }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    if (data.code == 200) {
+                        alert(data.message);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        } else {
+        }
+    });
+}
+
+// 문서 양식 조회 팝업 라디오 이벤트
+function changeDocPopRadio() {
+    $('#orgDocSearchRadio').click(function () {
+        $('#orgDocSearch').show();
+        $('#newDocRegistration').hide();
+    })
+
+    $('#newDocRegistrationRadio').click(function () {
+        $('#newDocRegistration').show();
+        $('#orgDocSearch').hide();
+    })
+}
+
 // init
 function _init() {
     $('#uploadFile').css('display', 'none');
@@ -1480,8 +1689,10 @@ function _init() {
     popupEvent.scrollPopup();   // popup event - scroll
     imageUploadEvent();         // image upload event
 	//excelUploadEvent();         // excel upload event
-
+    popUpEvent();
     searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
+    changeDocPopupImage();
+    changeDocPopRadio();
 }
 
 
