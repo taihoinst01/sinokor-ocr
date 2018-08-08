@@ -4885,6 +4885,7 @@ thead .ez-checked {
     display: none;
     border: 2px solid red;
     position: absolute;
+    top: 200px;
 }
 
 button[disabled] {
@@ -4999,11 +5000,13 @@ button[disabled] {
 
 .ui_doc_pop_div01 input[type=text] {
     width: 100%;
+    text-align: center;
 }
 
 .ipt83 {
     width: 83% !important;
     padding: 6px 6px 6px 30px !important;
+    text-align:left !important;
 }
 
     .ipt83:before {
@@ -5270,4 +5273,8 @@ button[disabled] {
     .invocieR_div03 td {
         overflow: visible !important;
     }
-    
+.ui_mainImage {
+    height: 1600px !important;
+    background-size: 100% 100% !important;
+    background-repeat: no-repeat !important;
+}
