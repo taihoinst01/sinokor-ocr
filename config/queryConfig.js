@@ -38,7 +38,19 @@ var sessionConfig = {
          SET
             lastLoginDate = sysdate
          WHERE
-            userId = :id `
+            userId = :id `,
+    leftSideBarInvoiceRegistration:
+        `SELECT COUNT(*) AS CNT
+           FROM TBL_DOCUMENT
+          WHERE APPROVALSTATE = 'R'
+            AND APPROVALREPORTER = :id 
+        `,
+    leftSideBarMyApproval:
+        ` SELECT COUNT(*) AS CNT
+            FROM TBL_DOCUMENT
+           WHERE APPROVALSTATE = 'P'
+             AND DOCUMENTMANAGER = :id
+        `
 }
 
 var userMngConfig = {

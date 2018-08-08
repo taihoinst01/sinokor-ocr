@@ -1,24 +1,29 @@
 ﻿'use strict';
+
 var express = require('express');
 var fs = require('fs');
 var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
-var exec = require('child_process').exec;
-var mysql = require('mysql');
-var dbConfig = require(appRoot + '/config/dbConfig');
-var pool = mysql.createPool(dbConfig);
+var request = require('request');
+var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
-var logger = require('../util/logger');
-var aimain = require('../util/aiMain');
-var PythonShell = require('python-shell');
-var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
-const FileHound = require('filehound');
-const xlsx = require('xlsx');
-var request = require('request');
 
+const upload = multer({
+    storage: multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'uploads/');
+        },
+        filename: function (req, file, cb) {
+            cb(null, file.originalname);
+        }
+    }),
+});
+const defaults = {
+    encoding: 'utf8',
+};
 var router = express.Router();
 
 
@@ -110,5 +115,24 @@ function ocrErrorCode(code) {
         return 999;
     }
 }
+
+// [POST] 레프트사이드바 계산서등록(반려된 수) 표시
+var callbackLeftSideBarInvoiceRegistration = function (rows, req, res) {
+    res.send({ code: 200, cnt: rows });
+};
+router.post('/leftSideBarInvoiceRegistration', function (req, res) {
+    var param = [req.session.userId];
+    commonDB.reqCountQueryParam(queryConfig.sessionConfig.leftSideBarInvoiceRegistration, param, callbackLeftSideBarInvoiceRegistration, req, res);
+    
+});
+
+// [POST] 레프트사이드바 내결재(진행 수) 표시
+var callbackLeftSideBarMyApproval = function (rows, req, res) {
+    res.send({ code: 200, cnt: rows });
+};
+router.post('/leftSideBarMyApproval', function (req, res) {
+    var param = [req.session.userId];
+    commonDB.reqCountQueryParam(queryConfig.sessionConfig.leftSideBarMyApproval, param, callbackLeftSideBarMyApproval, req, res);
+});
 
 module.exports = router;
