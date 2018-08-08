@@ -209,12 +209,12 @@ var fn_search_dtl = function (seqNum, docNum) {
                     appendHtml += `
                         <tr id="tr_dtl_${entry['IMGID']}" name="tr_dtl" style="cursor:pointer">
                             <th scope="row">${entry["IMGFILESTARTNO"]} ~ ${entry["IMGFILESTARTNO"]} </th>
-                            <td>${entry["CONTRACTNUM"]}</td>
-                            <td><a href="#none" class="tip" title="${entry["CTNM"]}">${entry["CTNM"]} </a></td>
-                            <td>${entry["UY"]}</td>
-                            <td>${entry["CURCD"]}</td>
-                            <td>${entry["NTBL"]}</td>
-                            <td>${entry["ENTRYNO"]}</td>
+                            <td>${nvl(entry["CONTRACTNUM"])}</td>
+                            <td><a href="#none" class="tip" title="${nvl(entry["CTNM"])}">${nvl(entry["CTNM"])} </a></td>
+                            <td>${nvl(entry["UY"])}</td>
+                            <td>${nvl(entry["CURCD"])}</td>
+                            <td>${nvl(entry["NTBL"])}</td>
+                            <td>${nvl(entry["ENTRYNO"])}</td>
                         </tr>
                     `;
                 });
@@ -256,18 +256,26 @@ var fn_search_image = function (imgId) {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     if (index == 0) {
-                        imageHtml += ``;
+                        $("#main_image").prop("src", `../../${nvl(entry.ORIGINFILENAME)}`);
+                        $("#main_image").prop("alt", entry.ORIGINFILENAME);
+                        imageHtml += `<li class="on">
+                                        <div class="box_img"><i><img src="../../${nvl(entry.ORIGINFILENAME)}" title="${nvl(entry.ORIGINFILENAME)}"></i></div>
+                                        <span>${nvl(entry.ORIGINFILENAME)}</span>
+                                    </li> `;
+                    } else {
+                        imageHtml += `
+                                    <li>
+                                        <div class="box_img"><i><img src="../../${nvl(entry.ORIGINFILENAME)}" title="${nvl(entry.ORIGINFILENAME)}"></i></div>
+                                        <span>${nvl(entry.ORIGINFILENAME)}</span>
+                                    </li> `;
                     }
-                    appendHtml += `
-                       
-                    `;
                 });
             } else {
                 //appendHtml += `<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>`;
-                appendHtml += `<li>문서 이미지가 존재하지 않습니다.</li>`;
+                imageHtml += `<li>문서 이미지가 존재하지 않습니다.</li>`;
             }
-            $("#div_view_image").empty().append(imageHtml);
-            $("#ul_image").empty().append(appendHtml);
+            //$("#div_view_image").empty().append(imageHtml);
+            $("#ul_image").empty().append(imageHtml);
             $("#div_image").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
             endProgressBar(); // end progressbar
