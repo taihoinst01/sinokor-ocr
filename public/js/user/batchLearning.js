@@ -591,44 +591,15 @@ function compareBatchLearningData(ocrData, data) {
     //var data = JSON.parse('[{"location":"300,51,370,44","text":"123123123213123","label":"entryrowlabel","column":"PRRS_CF"},{"location":"252,57,480,46","text":"abcdqwjlvasmlkfsdafasd","label":"entryrowlabel","column":"PRRS_CF"},{"location":"1018,240,411,87","text":"APEX","label":""},{"location":"1019,338,409,23","text":"Partner of Choice","label":""},{"location":"1562,509,178,25","text":"Voucher No","label":""},{"location":"1562,578,206,25","text":"Voucher Date","label":""},{"location":"206,691,274,27","text":"4153 Korean Re","label":""},{"location":"208,756,525,34","text":"Proportional Treaty Statement","label":""},{"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","label":""},{"location":"1840,575,169,25","text":"01105/2018","label":""},{"location":"206,848,111,24","text":"decant","label":"entryrowlabel","column":"PRRS_CF"},{"location":"206,908,285,24","text":"Class of Business","label":"fixlabel","column":"CT_NM"},{"location":"210,963,272,26","text":"Period of Quarter","label":"fixlabel","column":"INS_ST_DT"},{"location":"207,1017,252,31","text":"Period of Treaty","label":"fixlabel","column":"CUR_CD"},{"location":"206,1066,227,24","text":"Our Reference","label":"fixlabel","column":"CSCO_SA_RFRN_CNNT2"},{"location":"226,1174,145,31","text":"Currency","label":"entryrowlabel","column":"CUR_CD"},{"location":"227,1243,139,24","text":"Premium","label":"entryrowlabel","column":"PRE"},{"location":"226,1303,197,24","text":"Commission","label":"entryrowlabel","column":"COM"},{"location":"226,1366,107,24","text":"Claims","label":"entryrowlabel","column":"CLA"},{"location":"227,1426,126,24","text":"Reserve","label":"entryrowlabel","column":"PRRS_CF"},{"location":"227,1489,123,24","text":"Release","label":"entryrowlabel","column":"PRRS_RLS"},{"location":"227,1549,117,24","text":"Interest","label":"entryrowlabel","column":"EXEX"},{"location":"227,1609,161,31","text":"Brokerage","label":"entryrowlabel","column":"BRKG"},{"location":"233,1678,134,24","text":"Portfolio","label":"entryrowlabel","column":"SVF"},{"location":"227,1781,124,24","text":"Balance","label":"entryrowlabel","column":"NTBL"},{"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","label":""},{"location":"574,907,568,32","text":": Marine Cargo Surplus 2018 - Inward","label":""},{"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","label":"fixvalue","column":"INS_ST_DT_VALUE"},{"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018","label":"fixvalue","column":"CUR_CD_VALUE"},{"location":"574,1065,304,25","text":": APEX/BORD/2727","label":""},{"location":"629,1173,171,25","text":"jody 1.00","label":"entryvalue","column":"CUR_CD_VALUE"},{"location":"639,1239,83,25","text":"25.53","label":"entryvalue","column":"PRE_VALUE"},{"location":"639,1299,64,25","text":"5.74","label":"entryvalue","column":"COM_VALUE"},{"location":"639,1362,64,25","text":"0.00","label":"entryvalue","column":"CLA_VALUE"},{"location":"639,1422,64,25","text":"7.66","label":"entryvalue","column":"PRRS_CF_VALUE"},{"location":"639,1485,64,25","text":"0.00","label":"entryvalue","column":"PRRS_RLS_VALUE"},{"location":"639,1545,64,25","text":"0.00","label":"entryvalue","column":"EXEX_VALUE"},{"location":"639,1605,64,25","text":"0.64","label":"entryvalue","column":"BRKG_VALUE"},{"location":"648,1677,64,25","text":"0.00","label":"entryvalue","column":"SVF_VALUE"},{"location":"641,1774,81,25","text":"11 .49","label":"entryvalue","column":"NTBL_VALUE"},{"location":"1706,1908,356,29","text":"APEX INSURANCE","label":"undefined"}]');
     var dataObj = {};
     var dataVal = data.data;
+
     for (var i = 0, x = dataVal.length; i < x; i++) {
         var location = nvl(dataVal[i]["location"]);
         var label = nvl(dataVal[i]["label"]);
         var text = nvl(dataVal[i]["text"]);
         var column = nvl(dataVal[i]["column"]);
 
-        if (label == "fixlabel" || label == "entryrowlabel") { //라벨 이면
-            for (var j = 0, y = dataVal.length; j < y; j++) {
-                if (dataVal[j].column == column + "_VALUE") {// 해당 라벨에 대한 값이면
-                    console.log("Find Label and Value : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
-                    if (isNull(dataObj[column])) {
-                        // 양식 변경전이랑 비교해야하기 때문에 ml에서 나온 값은 출재사명(거래사명),계약명,개시일, 종료일만을 담아서 보냄. 추후 수정 필요 -- 07.27 hyj
-                        if (column == "CSCO_NM" ) {
-                            dataObj["csconm"] = dataVal[j]["text"];
-                        } else if (column == "CT_NM") {
-                            dataObj["ctnm"] = dataVal[j]["text"];
-                        } else if (column == "INS_ST_DT") {
-                            dataObj["insstdt"] = dataVal[j]["text"];
-                        } else if (column == "INS_END_DT") {
-                            dataObj["inenddt"] = dataVal[j]["text"];
-                        }
-
-                        // DOUBLE 형태의 값은 공백 제거 처리                       
-                        /*
-                        if (column == "PRE" || column == "COM" || column == "BRKG" || column == "TXAM" ||
-                            column == "PRRS_CF" || column == "PRRS_RLS" || column == "LSRES_CF" ||
-                            column == "LSRES_RLS" || column == "CLA" || column == "EXEX" || column == "SVF" ||
-                            column == "CAS" || column == "NTBL") {
-                            dataObj[column] = data[j]["text"].replace(/(\s*)/g, "");
-                        } else {
-                            dataObj[column] = data[j]["text"];
-                        }
-                        */
-                    } else {
-                        console.log("Already exist Column(KEY) : " + dataVal[j]["column"] + " >> " + dataVal[j]["text"]);
-                    }
-                }
-            }
+        if (column != "UNDEFINED") {
+            dataObj[column] = dataVal[i]["text"];
         }
     }
     //console.log("결과 : ");
@@ -672,6 +643,161 @@ function compareBatchLearningData(ocrData, data) {
     
 }
 
+// 학습 후 table에 결과값 출력
+function appendTabelText(answerData, mlData) {
+    console.log(answerData);
+    console.log(mlData);
+
+    for (var mlKey in mlData) {
+        for (var answerKey in answerData) {
+            if (mlKey == answerKey) {
+                if (mlData[mlKey] == answerData[answerKey]) {
+
+                }
+                break;
+            }
+        }
+    }
+}
+
+// ML 데이터와 정답 데이터를 비교해여 색상 표시
+function comparedMLAndAnswer(retData, mlData, fileInfo) {
+    var answerData = retData.rows[0];   
+
+    $('input[name="listCheck_before"]').each(function (index, element) {
+        for (var i in fileInfo) {
+            if ($(this).val() == fileInfo[i].imgId) {
+                var matchingColumn = [];
+                var targetTdNumArr = [];
+
+                for (var j in mlData.data) {
+                    if (mlData.data[j].column != 'UNDEFINED') {
+                        for (var answerKey in answerData) {
+                            if (mlData.data[j].column == answerKey) { // 컬럼이 같으면
+                                if (mlData.data[j].text == answerData[answerKey]) { // 값이 같으면
+                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text });
+                                } else { // 값이 다르면
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                for (var j in matchingColumn) {
+                    $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).text(matchingColumn[j].text);
+                }
+                for (var j = 0; j < $(this).parent().parent().parent().parent().children('td').length; j++) {                   
+                    if ($(this).parent().parent().parent().parent().children('td').eq(j).text() == '') {
+                        $(this).parent().parent().parent().parent().children('td').eq(j).css('background-color', 'red');
+                    }
+                }
+                break;
+            }
+        }
+    });
+}
+
+function columToTableNumber(column) {
+    switch (column) {
+        case 'OGCOMPANYNAME':
+            return 2;
+        case 'UY':
+            return 3;
+        case 'ORIGINCTNM':
+            return 4;
+        case 'SUMMARYCTNM':
+            return 5;
+        case 'OSLPERCENT':
+            return 6;
+        case 'OSLSHARE':
+            return 7;
+        case 'STATEMENTDIV':
+            return 9;
+        case 'CONTRACTNUM':
+            return 10;
+        case 'OGCOMPANYCODE':
+            return 11;
+        case 'BROKERCODE':
+            return 12;
+        case 'BROKERNAME':
+            return 13;
+        case 'INSSTDT':
+            return 14;
+        case 'INSENDDT':
+            return 15;
+        case 'CURCD':
+            return 16;
+        case 'PAIDPERCENT':
+            return 17;
+        case 'PAIDSHARE':
+            return 18;
+        case 'GROSSPM':
+            return 19;
+        case 'PM':
+            return 20;
+        case 'PMPFEND':
+            return 21;
+        case 'PMPFWOS':
+            return 22;
+        case 'XOLPM':
+            return 23;
+        case 'RETURNPM':
+            return 24;
+        case 'GROSSCN':
+            return 25;
+        case 'CN':
+            return 26;
+        case 'PROFITCN':
+            return 27;
+        case 'BROKERAGE':
+            return 28;
+        case 'TAX':
+            return 29;
+        case 'OVERRIDINGCOM':
+            return 30;
+        case 'CHARGE':
+            return 31;
+        case 'PMRESERVERTD1':
+            return 32;
+        case 'PFPMRESERVERTD1':
+            return 33;
+        case 'PMRESERVERTD2':
+            return 34;
+        case 'PFPMRESERVERTD2':
+            return 35;
+        case 'CLAIM':
+            return 36;
+        case 'LOSSRECOVERY':
+            return 37;
+        case 'CASHLOSS':
+            return 38;
+        case 'CASHLOSSRD':
+            return 39;
+        case 'LOSSRR':
+            return 40;
+        case 'LOSSRR2':
+            return 41;
+        case 'LOSSPFEND':
+            return 42;
+        case 'LOSSPFWOA':
+            return 43;
+        case 'INTEREST':
+            return 44;
+        case 'TAXON':
+            return 45;
+        case 'MISCELLANEOUS':
+            return 46;
+        case 'PMBL':
+            return 47;
+        case 'CMBL':
+            return 48;
+        case 'NTBL':
+            return 49;
+        case 'CSCOSARFRNCNNT2':
+            return 50;
+    }
+}
+
 function uiPopUpTrain(data, fileInfo) {
     $("#uiImg").attr("src", "./uploads/" + fileInfo.convertFileName);
     $("#cscoNm").val(data["CSCO_NM"]);//거래사명
@@ -711,74 +837,6 @@ function updateBatchLearningData(retData, ocrData, mlData) {
         },
         error: function (err) {
             console.log(err);
-        }
-    });
-}
-
-// ML 데이터와 정답 데이터를 비교해여 색상 표시
-function comparedMLAndAnswer(retData, mlData, fileInfo) {
-    console.log(retData);
-    console.log(mlData);
-    $('input[name="listCheck_before"]').each(function (index, element) {
-        for (var i in fileInfo) {
-            if ($(this).val() == fileInfo[i].imgId) {
-                var targetTdNumArr = [];
-                for (var j in mlData) {
-                    // 라벨 맵핑에서 컬럼명 정해지면 이부분 수정 필요 -- 07.30 hyj
-                    if (!retData.entryNo) targetTdNumArr.push(3);
-                    if (!retData.statementDiv) targetTdNumArr.push(4);
-                    if (!retData.contractNum) targetTdNumArr.push(5);
-                    if (!retData.ogCompanyCode) targetTdNumArr.push(6);
-                    if (!retData.ogCompanyName) targetTdNumArr.push(7);
-                    if (!retData.brokerCode) targetTdNumArr.push(8);
-                    if (!retData.brokerName) targetTdNumArr.push(9);
-                    if (!retData.ctnm) targetTdNumArr.push(10);
-                    if (!(mlData[j].column == 'INS_ST_DT_VALUE' && retData.insstdt == mlData[j].text)) targetTdNumArr.push(11);
-                    if (!retData.insenddt) targetTdNumArr.push(12);
-                    if (!retData.uy) targetTdNumArr.push(13);
-                    if (!retData.curcd) targetTdNumArr.push(14);
-                    if (!retData.paidPercent) targetTdNumArr.push(15);
-                    if (!retData.paidShare) targetTdNumArr.push(16);
-                    if (!retData.oslPercent) targetTdNumArr.push(17);
-                    if (!retData.oslShare) targetTdNumArr.push(18);
-                    if (!retData.grosspm) targetTdNumArr.push(19);
-                    if (!retData.pm) targetTdNumArr.push(20);
-                    if (!retData.pmPFEnd) targetTdNumArr.push(21);
-                    if (!retData.pmPFWos) targetTdNumArr.push(22);
-                    if (!retData.xolPm) targetTdNumArr.push(23);
-                    if (!retData.returnPm) targetTdNumArr.push(24);
-                    if (!retData.grosscn) targetTdNumArr.push(25);
-                    if (!retData.cn) targetTdNumArr.push(26);
-                    if (!retData.profitcn) targetTdNumArr.push(27);
-                    if (!retData.brokerAge) targetTdNumArr.push(28);
-                    if (!retData.tax) targetTdNumArr.push(29);
-                    if (!retData.overridingCom) targetTdNumArr.push(30);
-                    if (!retData.charge) targetTdNumArr.push(31);
-                    if (!retData.pmReserveRTD) targetTdNumArr.push(32);
-                    if (!retData.pfPmReserveRTD) targetTdNumArr.push(33);
-                    if (!retData.pmReserveRTD1) targetTdNumArr.push(34);
-                    if (!retData.pfPmReserveRTD2) targetTdNumArr.push(35);
-                    if (!retData.claim) targetTdNumArr.push(36);
-                    if (!retData.lossRecovery) targetTdNumArr.push(37);
-                    if (!retData.cashLoss) targetTdNumArr.push(38);
-                    if (!retData.cashLossRD) targetTdNumArr.push(39);
-                    if (!retData.lossRR) targetTdNumArr.push(40);
-                    if (!retData.lossRR2) targetTdNumArr.push(41);
-                    if (!retData.lossPFEnd) targetTdNumArr.push(42);
-                    if (!retData.lossPFWoa) targetTdNumArr.push(43);
-                    if (!retData.interest) targetTdNumArr.push(44);
-                    if (!retData.taxOn) targetTdNumArr.push(45);
-                    if (!retData.miscellaneous) targetTdNumArr.push(46);
-                    if (!retData.pmbl) targetTdNumArr.push(47);
-                    if (!retData.cmbl) targetTdNumArr.push(48);
-                    if (!retData.ntbl) targetTdNumArr.push(49);
-                    if (!retData.cscosarfrncnnt2) targetTdNumArr.push(50);
-                }
-                for (var j in targetTdNumArr) {
-                    $(this).parent().parent().parent().parent().children('td').eq(targetTdNumArr[j]).css('background-color', 'red');
-                }
-                break;
-            }
         }
     });
 }
