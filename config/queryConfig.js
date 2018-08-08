@@ -100,9 +100,9 @@ var myApprovalConfig = {
     selectApprovalImageList:
         `SELECT A.SEQNUM, A.IMGID, A.FILEPATH, A.ORIGINFILENAME, A.SERVERFILENAME, A.FILEEXTENSION, 
                 A.FILESIZE, A.CONTENTTYPE, A.FILETYPE, A.FILEWIDTH, A.FILEHEIGHT, A.REGID, A.REGDATE 
-           FROM TBL_OCR_FILE A
-            LEFT OUTER JOIN TBL_DOCUMENT_DTL B
-              ON B.IMGID = A.IMGID `
+           FROM TBL_OCR_FILE_DTL A,
+                TBL_DOCUMENT_DTL B
+          WHERE A.IMGID = B.IMGID `
 }
 
 var documentConfig = {};
