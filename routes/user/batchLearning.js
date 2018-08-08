@@ -879,7 +879,7 @@ var callbackSelectContractMapping = function (rows, dataObj, req, res) {
         dataObj.ASOGCOMPANYNAME = rows[0].ASOGCOMPANYNAME;
         dataObj.ASCTNM = rows[0].ASCTNM;
         commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
-            dataObj.fileToPage.IMGID, dataObj.fileToPage.IMGFILESTARTNO, dataObj.fileToPage.IMGFILEENDNO
+            dataObj.fileToPage.IMGID, dataObj.PM, dataObj.CN
         ], callbackcompareBatchLearningData, dataObj, req, res);
     } else {
         res.send({ isContractMapping : false});
