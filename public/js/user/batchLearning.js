@@ -338,6 +338,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
         data: JSON.stringify({ 'fileName': fileName }),
     }).done(function (data) {          
         ocrCount++;
+        //console.log(data);
         if (!data.code) { // 에러가 아니면
             if (ocrCount == 1) {
                 for (var i in fileToPage) {
@@ -536,10 +537,8 @@ function popUpLayer2(ocrData) {
 }
 
 function execBatchLearningData(ocrData, data) {
-    //$("#progressMsgTitle").html("processing machine learning...");
-    //addProgressBar(61, 90);
-    batchCount++;
-    //compareBatchLearningData(ocrData, '');
+    //var data = { "data": [{ "location": "1018,240,411,87", "text": "APEX", "column": "UNDEFINED" }, { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNDEFINED" }, { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNDEFINED" }, { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNDEFINED" }, { "location": "206,691,274,27", "text": "4153 Korean Re", "column": "UNDEFINED" }, { "location": "208,756,525,34", "text": "Proportional Treaty Statement", "column": "UNDEFINED" }, { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626", "column": "UNDEFINED" }, { "location": "1840,575,169,25", "text": "01105/2018", "column": "UNDEFINED" }, { "location": "206,848,111,24", "text": "Cedant", "column": "UNDEFINED" }, { "location": "206,908,285,24", "text": "Class of Business", "column": "UNDEFINED" }, { "location": "210,963,272,26", "text": "Period of Quarter", "column": "UNDEFINED" }, { "location": "207,1017,252,31", "text": "Period of Treaty", "column": "UNDEFINED" }, { "location": "206,1066,227,24", "text": "Our Reference", "column": "UNDEFINED" }, { "location": "226,1174,145,31", "text": "Currency", "column": "UNDEFINED" }, { "location": "227,1243,139,24", "text": "Premium", "column": "UNDEFINED" }, { "location": "226,1303,197,24", "text": "Commission", "column": "UNDEFINED" }, { "location": "226,1366,107,24", "text": "Claims", "column": "UNDEFINED" }, { "location": "227,1426,126,24", "text": "Reserve", "column": "UNDEFINED" }, { "location": "227,1489,123,24", "text": "Release", "column": "UNDEFINED" }, { "location": "227,1549,117,24", "text": "Interest", "column": "UNDEFINED" }, { "location": "227,1609,161,31", "text": "Brokerage", "column": "UNDEFINED" }, { "location": "233,1678,134,24", "text": "Portfolio", "column": "UNDEFINED" }, { "location": "227,1781,124,24", "text": "Balance", "column": "UNDEFINED" }, { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018", "column": "CTOGCOMPANYNAMENM" }, { "location": "574,907,568,32", "text": ": Marine Cargo Surplus 2018 - Inward", "column": "CTNM" }, { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018", "column": "PERIODQ" }, { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018", "column": "PERIODT" }, { "location": "574,1065,304,25", "text": ": APEX/BORD/2727", "column": "CSCOSARFRNCNNT2" }, { "location": "629,1173,171,25", "text": "JOD 1.00", "column": "CURCD" }, { "location": "639,1239,83,25", "text": "25.53", "column": "PM" }, { "location": "639,1299,64,25", "text": "5.74", "column": "CN" }, { "location": "639,1362,64,25", "text": "0.00", "column": "CLAIM" }, { "location": "639,1422,64,25", "text": "7.66", "column": "PMRESERVERTD" }, { "location": "639,1485,64,25", "text": "0.00", "column": "PMRESERVERLD" }, { "location": "639,1545,64,25", "text": "0.00", "column": "INTEREST" }, { "location": "639,1605,64,25", "text": "0.64", "column": "BROKERAGE" }, { "location": "648,1677,64,25", "text": "0.00", "column": "PROFITCN" }, { "location": "641,1774,81,25", "text": "11 .49", "column": "NTBL" }, { "location": "1706,1908,356,29", "text": "APEX INSURANCE", "column": "UNDEFINED\r\n" }], "docCategory": { "SEQNUM": 2, "DOCNAME": "Apex 계산서", "DOCTYPE": 1, "SAMPLEIMAGEPATH": "sample/apex.jpg" } };
+    //compareBatchLearningData(ocrData, data);
     
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
@@ -553,6 +552,7 @@ function execBatchLearningData(ocrData, data) {
         },
         success: function (data) {
             console.log(data);
+            
             modifyData = data.data;
             batchCount++;
 
@@ -569,6 +569,7 @@ function execBatchLearningData(ocrData, data) {
             } else {
                 compareBatchLearningData(ocrData, data);
             }
+            
 
             //compareBatchLearningData(fileInfo, data, isUiTraining);
             //updateBatchLearningData(fileName, data);
@@ -584,6 +585,7 @@ function execBatchLearningData(ocrData, data) {
             console.log(err);
         }
     });
+    
     
 }
 
@@ -603,7 +605,7 @@ function compareBatchLearningData(ocrData, data) {
         }
     }
     //console.log("결과 : ");
-    //console.log(dataObj);
+    console.log(dataObj);
     
     // BatchLearning Data Insert
     if (dataObj) {
@@ -620,19 +622,24 @@ function compareBatchLearningData(ocrData, data) {
             success: function (retData) {
                 console.log("----- retData -----");
                 console.log(retData);
-                if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
-                    ocrData.exeML = "Y";
-                    isFullMatch = (dataObj.length != 53) ? false : true;
-                    //ui팝업 로직
-                    //if (retData.rows[0].IMGID == dataObj["imgId"]) {
-                    //    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
-                    //        uiPopUpTrain(data, fileInfo);
-                    //    }
-                    //}
-                } else {// UI Training 체크박스 체크 없으면
-                    isFullMatch = true;
-                    updateBatchLearningData(retData, ocrData, data);
-                }               
+                if (retData.isContractMapping) {
+                    if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
+                        ocrData.exeML = "Y";
+                        isFullMatch = (dataObj.length != 53) ? false : true;
+                        //ui팝업 로직
+                        //if (retData.rows[0].IMGID == dataObj["imgId"]) {
+                        //    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
+                        //        uiPopUpTrain(data, fileInfo);
+                        //    }
+                        //}
+                    } else {// UI Training 체크박스 체크 없으면
+                        isFullMatch = true;
+                        comparedMLAndAnswer(retData, data, ocrData);
+                        //updateBatchLearningData(retData, ocrData, data);
+                    }
+                } else {
+                    popUpLayer2(ocrData);
+                }
                 
             },
             error: function (err) {
@@ -643,26 +650,10 @@ function compareBatchLearningData(ocrData, data) {
     
 }
 
-// 학습 후 table에 결과값 출력
-function appendTabelText(answerData, mlData) {
-    console.log(answerData);
-    console.log(mlData);
-
-    for (var mlKey in mlData) {
-        for (var answerKey in answerData) {
-            if (mlKey == answerKey) {
-                if (mlData[mlKey] == answerData[answerKey]) {
-
-                }
-                break;
-            }
-        }
-    }
-}
-
 // ML 데이터와 정답 데이터를 비교해여 색상 표시
-function comparedMLAndAnswer(retData, mlData, fileInfo) {
+function comparedMLAndAnswer(retData, mlData, ocrData) {
     var answerData = retData.rows[0];   
+    var fileInfo = ocrData.fileInfo;
 
     $('input[name="listCheck_before"]').each(function (index, element) {
         for (var i in fileInfo) {
@@ -673,10 +664,16 @@ function comparedMLAndAnswer(retData, mlData, fileInfo) {
                 for (var j in mlData.data) {
                     if (mlData.data[j].column != 'UNDEFINED') {
                         for (var answerKey in answerData) {
+                            if (answerKey == 'EXTCTNM' || answerKey == 'EXTOGCOMPANYNAME' ||
+                                answerKey == 'CTNM' || answerKey == 'OGCOMPANYNAME') {
+                                matchingColumn.push({ 'column': answerKey, 'text': answerData[answerKey], 'isMapping': true });
+                                continue;
+                            }
                             if (mlData.data[j].column == answerKey) { // 컬럼이 같으면
                                 if (mlData.data[j].text == answerData[answerKey]) { // 값이 같으면
-                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text });
+                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text, 'isMapping' : true });
                                 } else { // 값이 다르면
+                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text, 'isMapping': false });
                                 }
                                 break;
                             }
@@ -684,13 +681,18 @@ function comparedMLAndAnswer(retData, mlData, fileInfo) {
                     }
                 }
                 for (var j in matchingColumn) {
-                    $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).text(matchingColumn[j].text);
+                    if (matchingColumn[j].isMapping) {
+                        $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).text(matchingColumn[j].text);
+                    } else {
+                        $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).css('background-color', 'red');
+                    }
                 }
                 for (var j = 0; j < $(this).parent().parent().parent().parent().children('td').length; j++) {                   
                     if ($(this).parent().parent().parent().parent().children('td').eq(j).text() == '') {
                         $(this).parent().parent().parent().parent().children('td').eq(j).css('background-color', 'red');
                     }
                 }
+                //updateBatchLearningData(retData, ocrData, mlData);
                 break;
             }
         }
@@ -699,102 +701,104 @@ function comparedMLAndAnswer(retData, mlData, fileInfo) {
 
 function columToTableNumber(column) {
     switch (column) {
-        case 'OGCOMPANYNAME':
+        case 'EXTOGCOMPANYNAME':
             return 2;
-        case 'UY':
+        case 'EXTCTNM':
             return 3;
-        case 'ORIGINCTNM':
+        case 'OGCOMPANYNAME':
             return 4;
-        case 'SUMMARYCTNM':
+        case 'CTNM':
             return 5;
-        case 'OSLPERCENT':
+        case 'UY':
             return 6;
-        case 'OSLSHARE':
+        case 'OSLPERCENT':
             return 7;
+        case 'OSLSHARE':
+            return 8;
         case 'STATEMENTDIV':
-            return 9;
-        case 'CONTRACTNUM':
             return 10;
-        case 'OGCOMPANYCODE':
+        case 'CONTRACTNUM':
             return 11;
-        case 'BROKERCODE':
+        case 'OGCOMPANYCODE':
             return 12;
-        case 'BROKERNAME':
+        case 'BROKERCODE':
             return 13;
-        case 'INSSTDT':
+        case 'BROKERNAME':
             return 14;
-        case 'INSENDDT':
+        case 'INSSTDT':
             return 15;
-        case 'CURCD':
+        case 'INSENDDT':
             return 16;
-        case 'PAIDPERCENT':
+        case 'CURCD':
             return 17;
-        case 'PAIDSHARE':
+        case 'PAIDPERCENT':
             return 18;
-        case 'GROSSPM':
+        case 'PAIDSHARE':
             return 19;
-        case 'PM':
+        case 'GROSSPM':
             return 20;
-        case 'PMPFEND':
+        case 'PM':
             return 21;
-        case 'PMPFWOS':
+        case 'PMPFEND':
             return 22;
-        case 'XOLPM':
+        case 'PMPFWOS':
             return 23;
-        case 'RETURNPM':
+        case 'XOLPM':
             return 24;
-        case 'GROSSCN':
+        case 'RETURNPM':
             return 25;
-        case 'CN':
+        case 'GROSSCN':
             return 26;
-        case 'PROFITCN':
+        case 'CN':
             return 27;
-        case 'BROKERAGE':
-            return 28;
-        case 'TAX':
+        case 'PROFITCN':
             return 29;
-        case 'OVERRIDINGCOM':
+        case 'BROKERAGE':
+            return 29;
+        case 'TAX':
             return 30;
-        case 'CHARGE':
+        case 'OVERRIDINGCOM':
             return 31;
-        case 'PMRESERVERTD1':
+        case 'CHARGE':
             return 32;
-        case 'PFPMRESERVERTD1':
+        case 'PMRESERVERTD1':
             return 33;
-        case 'PMRESERVERTD2':
+        case 'PFPMRESERVERTD1':
             return 34;
-        case 'PFPMRESERVERTD2':
+        case 'PMRESERVERTD2':
             return 35;
-        case 'CLAIM':
+        case 'PFPMRESERVERTD2':
             return 36;
-        case 'LOSSRECOVERY':
+        case 'CLAIM':
             return 37;
-        case 'CASHLOSS':
+        case 'LOSSRECOVERY':
             return 38;
-        case 'CASHLOSSRD':
+        case 'CASHLOSS':
             return 39;
-        case 'LOSSRR':
+        case 'CASHLOSSRD':
             return 40;
-        case 'LOSSRR2':
+        case 'LOSSRR':
             return 41;
-        case 'LOSSPFEND':
+        case 'LOSSRR2':
             return 42;
-        case 'LOSSPFWOA':
+        case 'LOSSPFEND':
             return 43;
-        case 'INTEREST':
+        case 'LOSSPFWOA':
             return 44;
-        case 'TAXON':
+        case 'INTEREST':
             return 45;
-        case 'MISCELLANEOUS':
+        case 'TAXON':
             return 46;
-        case 'PMBL':
+        case 'MISCELLANEOUS':
             return 47;
-        case 'CMBL':
+        case 'PMBL':
             return 48;
-        case 'NTBL':
+        case 'CMBL':
             return 49;
-        case 'CSCOSARFRNCNNT2':
+        case 'NTBL':
             return 50;
+        case 'CSCOSARFRNCNNT2':
+            return 51;
     }
 }
 
@@ -833,7 +837,7 @@ function updateBatchLearningData(retData, ocrData, mlData) {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
-            comparedMLAndAnswer(retData, mlData, ocrData.fileInfo);
+            //comparedMLAndAnswer(retData, mlData, ocrData.fileInfo);
         },
         error: function (err) {
             console.log(err);
@@ -943,10 +947,11 @@ var searchBatchLearnDataList = function (addCond) {
                         ${checkboxHtml}
                         <td><a onclick="javascript:fn_viewImageData('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.ORIGINFILENAME)}</a></td> <!--파일명-->
                         <td>${nvl(entry.STATUS)}</td> <!--학습여부-->
-                        <td>${nvl(entry.OGCOMPANYNAME)}</td> <!--출재사명-->
+                        <td>${nvl(entry.OGCOMPANYNAME)}</td> <!--추출 출재사명-->
+                        <td></td> <!--추출 계약명-->
+                        <td>${nvl(entry.OGCONTRACTNAME)}</td> <!--출재사명 원본-->
+                        <td>${nvl(entry.CONTRACTNAMESUMMARY)}</td> <!--계약명 원본-->
                         <td>${nvl(entry.UY)}</td> <!--UY-->
-                        <td>${nvl(entry.OGCONTRACTNAME)}</td> <!--계약명원본-->
-                        <td>${nvl(entry.CONTRACTNAMESUMMARY)}</td> <!--계약명요약-->
                         <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
                         <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
                         <td>${nvl(entry.IMGID)}</td> <!--이미지ID-->

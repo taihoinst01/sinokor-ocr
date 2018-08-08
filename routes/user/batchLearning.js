@@ -867,15 +867,30 @@ router.post('/syncFile', function (req, res) {
 
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-    console.log(dataObj);
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.compareBatchLearningData, [
-        dataObj.fileToPage.IMGID, dataObj.fileToPage.IMGFILESTARTNO, dataObj.fileToPage.IMGFILEENDNO
-    ], callbackcompareBatchLearningData, req, res);
+    //console.log(dataObj);
+
+    commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectContractMapping, [
+        dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM
+    ], callbackSelectContractMapping, dataObj, req, res);
 });
 
-var callbackcompareBatchLearningData = function (rows, req, res) {
+var callbackSelectContractMapping = function (rows, dataObj, req, res) {
+    if (rows.length > 0) {
+        dataObj.ASOGCOMPANYNAME = rows[0].ASOGCOMPANYNAME;
+        dataObj.ASCTNM = rows[0].ASCTNM;
+        commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
+            dataObj.fileToPage.IMGID, dataObj.fileToPage.IMGFILESTARTNO, dataObj.fileToPage.IMGFILEENDNO
+        ], callbackcompareBatchLearningData, dataObj, req, res);
+    } else {
+        res.send({ isContractMapping : false});
+    }
+}
+
+var callbackcompareBatchLearningData = function (rows, dataObj, req, res) {
     console.log("compareBatchLearningData finish..");
-    res.send({ code: 200, rows: rows });
+    rows[0].EXTOGCOMPANYNAME = dataObj.CTOGCOMPANYNAMENM;
+    rows[0].EXTCTNM = dataObj.CTNM;
+    res.send({ code: 200, rows: rows, isContractMapping: true });
 }
 
 router.post('/uiTrainBatchLearningData', function (req, res) {
