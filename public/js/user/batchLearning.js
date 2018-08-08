@@ -680,9 +680,10 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
                         }
                     }
                 }
+                console.log(matchingColumn);
                 for (var j in matchingColumn) {
+                    $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).text(matchingColumn[j].text);
                     if (matchingColumn[j].isMapping) {
-                        $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).text(matchingColumn[j].text);
                         if (matchingColumn[j].column == 'CTNM' || matchingColumn[j].column == 'OGCOMPANYNAME') {
                             $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).css('background-color', 'lightgray');
                         }
