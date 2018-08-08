@@ -550,7 +550,7 @@ router.post('/updateBatchLearningData', function (req, res) {
     var status = '';
     var keyCount = 0; // 컬럼 개수
     for (var key in data) keyCount++;
-    if (keyCount == 48 ){ // 모든 컬럼 있으면
+    if (keyCount == 49 ){ // 모든 컬럼 있으면
         status = 'Y';
     } else {
         status = 'N';
@@ -879,7 +879,7 @@ var callbackSelectContractMapping = function (rows, dataObj, req, res) {
         dataObj.ASOGCOMPANYNAME = rows[0].ASOGCOMPANYNAME;
         dataObj.ASCTNM = rows[0].ASCTNM;
         commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
-            dataObj.fileToPage.IMGID, dataObj.fileToPage.IMGFILESTARTNO, dataObj.fileToPage.IMGFILEENDNO
+            dataObj.fileToPage.IMGID, dataObj.PM, dataObj.CN
         ], callbackcompareBatchLearningData, dataObj, req, res);
     } else {
         res.send({ isContractMapping : false});

@@ -680,9 +680,13 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
                         }
                     }
                 }
+
                 for (var j in matchingColumn) {
+                    $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).text(matchingColumn[j].text);
                     if (matchingColumn[j].isMapping) {
-                        $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).text(matchingColumn[j].text);
+                        if (matchingColumn[j].column == 'CTNM' || matchingColumn[j].column == 'OGCOMPANYNAME') {
+                            $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).css('background-color', 'lightgray');
+                        }
                     } else {
                         $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).css('background-color', 'red');
                     }
@@ -692,6 +696,7 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
                         $(this).parent().parent().parent().parent().children('td').eq(j).css('background-color', 'red');
                     }
                 }
+                //mlData.data = matchingColumn;
                 //updateBatchLearningData(retData, ocrData, mlData);
                 break;
             }

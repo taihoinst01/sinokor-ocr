@@ -292,7 +292,7 @@ var batchLearningConfig = {
          FROM 
             tbl_batch_answer_data
          where 
-            imgId = :imgId AND imgFileStartNo = :imgFileStartNo And imgFileEndNo = :imgFileEndNo `,
+            imgId = :imgId AND pm = :pm And cn = :cn `,
     selectContractMapping:
         `SELECT
             asOgcompanyName, asCtnm
