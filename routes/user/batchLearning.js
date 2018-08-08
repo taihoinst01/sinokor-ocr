@@ -550,7 +550,7 @@ router.post('/updateBatchLearningData', function (req, res) {
     var status = '';
     var keyCount = 0; // 컬럼 개수
     for (var key in data) keyCount++;
-    if (keyCount == 48 ){ // 모든 컬럼 있으면
+    if (keyCount == 49 ){ // 모든 컬럼 있으면
         status = 'Y';
     } else {
         status = 'N';

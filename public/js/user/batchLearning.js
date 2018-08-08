@@ -680,7 +680,7 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
                         }
                     }
                 }
-                console.log(matchingColumn);
+
                 for (var j in matchingColumn) {
                     $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).text(matchingColumn[j].text);
                     if (matchingColumn[j].isMapping) {
@@ -696,6 +696,7 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
                         $(this).parent().parent().parent().parent().children('td').eq(j).css('background-color', 'red');
                     }
                 }
+                //mlData.data = matchingColumn;
                 //updateBatchLearningData(retData, ocrData, mlData);
                 break;
             }
