@@ -60,6 +60,7 @@ router.post('/', function (req, res) {
 router.post('/typoSentence', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
+    var regId = req.session.userId;
     
     process.on('uncaughtException', function (err) {
         console.log('uncaughtException : ' + err);
@@ -67,7 +68,75 @@ router.post('/typoSentence', function (req, res) {
     
     try {
         aimain.typoSentenceEval(data, function (result) {
-            res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
+
+            /*
+            var condTypo = "and originword in(";
+
+            for (var i in data) {
+                if (data[i].originText != null) {
+                    var correctWord = data[i].text;
+                    var originWord = data[i].originText;
+
+                    var correctSplit = correctWord.split(" ");
+                    var originSplit = originWord.split(" ");
+
+                    for (var j in correctSplit) {
+                        if (correctSplit[j] != originSplit[j]) {
+                            condTypo += "'" + originSplit[j] + "',";
+                        }
+                    }
+                }
+            }
+
+            condTypo = condTypo.slice(0, -1);
+            condTypo += ")";
+
+            commonDB.reqQuery(queryConfig.uiLearningConfig.selectTypoCorrect + condTypo, function (rows) {
+                console.log(rows);
+
+            }, req, res);
+            */
+
+            var arr = [];
+
+            for (var i in data) {
+                if (data[i].originText != null) {
+                    var correctWord = data[i].text;
+                    var originWord = data[i].originText;
+
+                    var correctSplit = correctWord.split(" ");
+                    var originSplit = originWord.split(" ");
+
+                    for (var j in correctSplit) {
+                        if (correctSplit[j] != originSplit[j]) {
+                            var arrData = {
+                                userid: regId,
+                                originWord: originSplit[j],
+                                correctWord: correctSplit[j],
+                                fileName: fileName,
+                                correctorType: "M"
+                            };
+                            arr.push(arrData);
+                        }
+                    }
+                }
+            }
+
+            var options = {
+                autoCommit: true,
+                bindDefs: {
+                    userid: { type: oracledb.STRING, maxSize: 100 },
+                    originWord: { type: oracledb.STRING, maxSize: 100},
+                    correctWord: { type: oracledb.STRING, maxSize: 100},
+                    fileName: { type: oracledb.STRING, maxSize: 100 },
+                    correctorType: { type: oracledb.STRING, maxSize: 1 }
+                }
+            };
+
+            commonDB.reqBatchQueryParam(queryConfig.uiLearningConfig.insertTypoCorrect, arr, options, function (rows, req, res) {
+                res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
+            }, req, res);
+            
         });
     }
     catch (exception) {

@@ -338,6 +338,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
         data: JSON.stringify({ 'fileName': fileName }),
     }).done(function (data) {          
         ocrCount++;
+        //console.log(data);
         if (!data.code) { // 에러가 아니면
             if (ocrCount == 1) {
                 for (var i in fileToPage) {
@@ -468,6 +469,7 @@ function execBatchLearning() {
     for (var i in ocrDataArr) {
         if (ocrDataArr[i].exeML != "Y") {
             execBatchLearningData(ocrDataArr[i], dataArr[i]);
+            if ($('#layer2').css('dlsplay') != 'none') break;
             if (isFullMatch) { // 모든 컬럼 매핑이 되었거나 계산서가 아닌 경우
             } else {            
                 popUpLayer2(ocrDataArr[i]);
@@ -536,11 +538,110 @@ function popUpLayer2(ocrData) {
 }
 
 function execBatchLearningData(ocrData, data) {
-    //$("#progressMsgTitle").html("processing machine learning...");
-    //addProgressBar(61, 90);
-    batchCount++;
-    //compareBatchLearningData(ocrData, '');
+    /*
+    var data = `{ "data": [
+    {"location":"2974,20,66,31","text":"Page","column": "UNDEFINED"},
+    {"location":"1594,201,683,47","text":"Reinsurers Outstanding Losses","column": "UNDEFINED"},
+    {"location":"1596,259,174,29","text":"28/06/2018","column": "UNDEFINED"},
+    {"location":"3178,16,11,26","text":"1","column": "UNDEFINED"},
+    {"location":"3072,392,149,27","text":"Remarks","column": "UNDEFINED"},
+    {"location":"3296,20,10,24","text":"1","column": "UNDEFINED"},
+    {"location":"218,305,1136,39","text":"010 872 2079 OO KOREAN REINSURANCE CO.","column": "UNDEFINED"},
+    {"location":"208,385,191,31","text":"AL SAGR", "column": "CTOGCOMPANYNAMENM"},
+    {"location":"1154,384,470,32","text":"Share os Losses 100%","column": "UNDEFINED"},
+    {"location":"1741,385,258,31","text":"os Losses/Shr","column": "UNDEFINED"},
+    {"location":"1946,536,77,24","text":"2120","column": "UNDEFINED"},
+    {"location":"1929,616,92,24","text":"303.70","column": "UNDEFINED"},
+    {"location":"1963,696,58,26","text":"3.65","column": "UNDEFINED"},
+    {"location":"1932,777,92,28","text":"115.80","column": "CN"},
+    {"location":"1932,859,90,25","text":"124.29","column": "UNDEFINED"},
+    {"location":"1906,940,116,30","text":"1,069.76","column": "UNDEFINED"},
+    {"location":"1905,1025,117,31","text":"1,638.40","column": "UNDEFINED"},
+    {"location":"1930,1144,93,24","text":"350.00","column": "UNDEFINED"},
+    {"location":"1928,1228,94,25","text":"350.00","column": "UNDEFINED"},
+    {"location":"1930,1345,91,26","text":"418.15","column": "UNDEFINED"},
+    {"location":"1929,1432,95,24","text":"418.15","column": "UNDEFINED"},
+    {"location":"1902,1502,121,31","text":"2,406.55","column": "UNDEFINED"},
+    {"location":"2269,385,110,33","text":"IBNR","column": "UNDEFINED"},
+    {"location":"220,474,32,24","text":"72","column": "UNDEFINED"},
+    {"location":"336,473,248,25","text":"ENGINEERING", "column": "CTNM"},
+    {"location":"228,536,212,24","text":"P 2004 01377","column": "UNDEFINED"},
+    {"location":"227,697,213,27","text":"P 2005 01377","column": "UNDEFINED"},
+    {"location":"225,860,215,27","text":"P 2006 01377","column": "UNDEFINED"},
+    {"location":"221,1080,241,24","text":"74 CARGO", "column": "CTNM"},
+    {"location":"228,1144,212,24","text":"P 2005 01377","column": "UNDEFINED"},
+    {"location":"221,1283,211,28","text":"75 HULL", "column": "CTNM"},
+    {"location":"227,1345,213,27","text":"P 2004 01377","column": "UNDEFINED"},
+    {"location":"476,1144,39,24","text":"co","column": "UNDEFINED"},
+    {"location":"560,534,211,27","text":"QUOTA SHARE","column": "UNDEFINED"},
+    {"location":"560,616,132,23","text":"SURPLUS","column": "UNDEFINED"},
+    {"location":"560,696,211,27","text":"QUOTA SHARE","column": "UNDEFINED"},
+    {"location":"560,776,131,24","text":"SURPLUS","column": "UNDEFINED"},
+    {"location":"560,856,211,30","text":"QUOTA SHARE","column": "UNDEFINED"},
+    {"location":"562,937,129,23","text":"SURPLUS","column": "UNDEFINED"},
+    {"location":"560,1140,241,29","text":"CARGO Q/SHARE","column": "UNDEFINED"},
+    {"location":"560,1344,216,32","text":"HULL Q/SHARE","column": "UNDEFINED"},
+    {"location":"1165,536,109,24","text":"005.000","column": "UNDEFINED"},
+    {"location":"1165,616,109,24","text":"005.000","column": "UNDEFINED"},
+    {"location":"1165,697,109,25","text":"005.000","column": "UNDEFINED"},
+    {"location":"1165,776,110,28","text":"005.000","column": "UNDEFINED"},
+    {"location":"1165,858,109,30","text":"002.500","column": "UNDEFINED"},
+    {"location":"1165,936,109,30","text":"002.500","column": "UNDEFINED"},
+    {"location":"844,1024,275,32","text":"Sub Total By COB","column": "UNDEFINED"},
+    {"location":"1165,1144,109,24","text":"005.000","column": "UNDEFINED"},
+    {"location":"844,1227,275,33","text":"Sub Total By COB","column": "UNDEFINED"},
+    {"location":"1165,1344,110,28","text":"005.000","column": "UNDEFINED"},
+    {"location":"843,1430,275,33","text":"Sub Total By COB","column": "UNDEFINED"},
+    {"location":"1525,536,93,24","text":"424.00","column": "PM"},
+    {"location":"1499,616,119,30","text":"6,074.00","column": "UNDEFINED"},
+    {"location":"1543,696,74,26","text":"73.00","column": "UNDEFINED"},
+    {"location":"1498,776,119,31","text":"2,316.00","column": "UNDEFINED"},
+    {"location":"1499,859,119,29","text":"4, 971.54","column": "UNDEFINED"},
+    {"location":"1480,938,139,32","text":"42,790.57","column": "UNDEFINED"},
+    {"location":"1482,1025,134,31","text":"56,649.11","column": "UNDEFINED"},
+    {"location":"1500,1228,118,33","text":"7,000.00","column": "UNDEFINED"},
+    {"location":"1500,1344,117,32","text":"8,363.00","column": "UNDEFINED"},
+    {"location":"1498,1432,120,30","text":"8,363.00","column": "UNDEFINED"},
+    {"location":"1482,1502,134,33","text":"72,012.11","column": "UNDEFINED"},
+    {"location":"2488,1025,41,27","text":".00","column": "UNDEFINED"},
+    {"location":"2488,1228,41,25","text":".00","column": "UNDEFINED"},
+    {"location":"2488,1432,42,23","text":".00","column": "UNDEFINED"},
+    {"location":"2488,1503,41,23","text":".00","column": "UNDEFINED"},
+    {"location":"2581,393,62,35","text":"ccy","column": "UNDEFINED"},
+    {"location":"2576,536,70,24","text":"AED","column": "UNDEFINED"},
+    {"location":"2576,616,70,24","text":"AED","column": "UNDEFINED"},
+    {"location":"2576,696,69,26","text":"AED","column": "UNDEFINED"},
+    {"location":"2576,776,69,28","text":"AED","column": "UNDEFINED"},
+    {"location":"2576,858,71,26","text":"AED","column": "UNDEFINED"},
+    {"location":"2576,940,71,27","text":"AED","column": "UNDEFINED"},
+    {"location":"2576,1026,71,25","text":"AED","column": "UNDEFINED"},
+    {"location":"2576,1144,70,24","text":"AED","column": "UNDEFINED"},
+    {"location":"2576,1228,72,25","text":"AED","column": "UNDEFINED"},
+    {"location":"2576,1344,69,28","text":"AED","column": "UNDEFINED"},
+    {"location":"2576,1432,72,24","text":"AED","column": "UNDEFINED"},
+    {"location":"2576,1502,72,26","text":"AED","column": "UNDEFINED"},
+    {"location":"2712,534,154,26","text":"31/03/2018","column": "UNDEFINED"},
+    {"location":"2712,614,154,26","text":"31/03/2018","column": "UNDEFINED"},
+    {"location":"2712,696,154,26","text":"31/03/2018","column": "UNDEFINED"},
+    {"location":"2712,776,154,26","text":"31/03/2018","column": "UNDEFINED"},
+    {"location":"2712,858,153,30","text":"31/03/2018","column": "UNDEFINED"},
+    {"location":"2712,938,153,30","text":"31/03/2018","column": "UNDEFINED"},
+    {"location":"2712,1140,153,28","text":"31/03/2018","column": "UNDEFINED"},
+    {"location":"2712,1344,154,26","text":"31/03/2018","column": "UNDEFINED"},
+    {"location":"832,1501,277,31","text":"Total By Cedant in","column": "UNDEFINED"},
+    {"location":"656,2238,481,42","text":"Nasco Karaoglan France","column": "UNDEFINED"},
+    {"location":"656,2286,678,34","text":"171 rue de Euzenval 92380 Garches","column": "UNDEFINED"},
+    {"location":"652,2334,370,34","text":"T +33 147 OO","column": "UNDEFINED"},
+    {"location":"652,2380,359,33","text":"mm.nkfrance.com","column": "UNDEFINED"},
+    {"location":"2432,2331,180,23","text":"CSO'S 31","column": "UNDEFINED"},
+    {"location":"1911,2360,670,21","text":"it. ZZZZ","column": "UNDEFINED"},
+    {"location":"1967,2389,323,21","text":"ZZZ z-0i.AE •Z:","column": "UNDEFINED"}
+    ], "docCategory": { "SEQNUM": 4, "DOCNAME": "Nasco 계산서", "DOCTYPE": 2, "SAMPLEIMAGEPATH": "sample/nasco.jpg" } }`
+    data = JSON.parse(data);
     
+    //var data = { "data": [{ "location": "1018,240,411,87", "text": "APEX", "column": "UNDEFINED" }, { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNDEFINED" }, { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNDEFINED" }, { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNDEFINED" }, { "location": "206,691,274,27", "text": "4153 Korean Re", "column": "UNDEFINED" }, { "location": "208,756,525,34", "text": "Proportional Treaty Statement", "column": "UNDEFINED" }, { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626", "column": "UNDEFINED" }, { "location": "1840,575,169,25", "text": "01105/2018", "column": "UNDEFINED" }, { "location": "206,848,111,24", "text": "Cedant", "column": "UNDEFINED" }, { "location": "206,908,285,24", "text": "Class of Business", "column": "UNDEFINED" }, { "location": "210,963,272,26", "text": "Period of Quarter", "column": "UNDEFINED" }, { "location": "207,1017,252,31", "text": "Period of Treaty", "column": "UNDEFINED" }, { "location": "206,1066,227,24", "text": "Our Reference", "column": "UNDEFINED" }, { "location": "226,1174,145,31", "text": "Currency", "column": "UNDEFINED" }, { "location": "227,1243,139,24", "text": "Premium", "column": "UNDEFINED" }, { "location": "226,1303,197,24", "text": "Commission", "column": "UNDEFINED" }, { "location": "226,1366,107,24", "text": "Claims", "column": "UNDEFINED" }, { "location": "227,1426,126,24", "text": "Reserve", "column": "UNDEFINED" }, { "location": "227,1489,123,24", "text": "Release", "column": "UNDEFINED" }, { "location": "227,1549,117,24", "text": "Interest", "column": "UNDEFINED" }, { "location": "227,1609,161,31", "text": "Brokerage", "column": "UNDEFINED" }, { "location": "233,1678,134,24", "text": "Portfolio", "column": "UNDEFINED" }, { "location": "227,1781,124,24", "text": "Balance", "column": "UNDEFINED" }, { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018", "column": "CTOGCOMPANYNAMENM" }, { "location": "574,907,568,32", "text": ": Marine Cargo Surplus 2018 - Inward", "column": "CTNM" }, { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018", "column": "PERIODQ" }, { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018", "column": "PERIODT" }, { "location": "574,1065,304,25", "text": ": APEX/BORD/2727", "column": "CSCOSARFRNCNNT2" }, { "location": "629,1173,171,25", "text": "JOD 1.00", "column": "CURCD" }, { "location": "639,1239,83,25", "text": "25.53", "column": "PM" }, { "location": "639,1299,64,25", "text": "5.74", "column": "CN" }, { "location": "639,1362,64,25", "text": "0.00", "column": "CLAIM" }, { "location": "639,1422,64,25", "text": "7.66", "column": "PMRESERVERTD" }, { "location": "639,1485,64,25", "text": "0.00", "column": "PMRESERVERLD" }, { "location": "639,1545,64,25", "text": "0.00", "column": "INTEREST" }, { "location": "639,1605,64,25", "text": "0.64", "column": "BROKERAGE" }, { "location": "648,1677,64,25", "text": "0.00", "column": "PROFITCN" }, { "location": "641,1774,81,25", "text": "11 .49", "column": "NTBL" }, { "location": "1706,1908,356,29", "text": "APEX INSURANCE", "column": "UNDEFINED\r\n" }], "docCategory": { "SEQNUM": 2, "DOCNAME": "Apex 계산서", "DOCTYPE": 1, "SAMPLEIMAGEPATH": "sample/apex.jpg" } };
+    compareBatchLearningData(ocrData, data);
+    */
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
         type: 'post',
@@ -553,6 +654,7 @@ function execBatchLearningData(ocrData, data) {
         },
         success: function (data) {
             console.log(data);
+            
             modifyData = data.data;
             batchCount++;
 
@@ -569,6 +671,7 @@ function execBatchLearningData(ocrData, data) {
             } else {
                 compareBatchLearningData(ocrData, data);
             }
+            
 
             //compareBatchLearningData(fileInfo, data, isUiTraining);
             //updateBatchLearningData(fileName, data);
@@ -599,7 +702,14 @@ function compareBatchLearningData(ocrData, data) {
         var column = nvl(dataVal[i]["column"]);
 
         if (column != "UNDEFINED") {
-            dataObj[column] = dataVal[i]["text"];
+            if (dataObj[column]) {
+                if (typeof dataObj[column] == 'string') {
+                    dataObj[column] = [dataObj[column]]
+                }
+                dataObj[column].push(dataVal[i]["text"]);                
+            } else {
+                dataObj[column] = dataVal[i]["text"];
+            }
         }
     }
     //console.log("결과 : ");
@@ -620,19 +730,24 @@ function compareBatchLearningData(ocrData, data) {
             success: function (retData) {
                 console.log("----- retData -----");
                 console.log(retData);
-                if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
-                    ocrData.exeML = "Y";
-                    isFullMatch = (dataObj.length != 53) ? false : true;
-                    //ui팝업 로직
-                    //if (retData.rows[0].IMGID == dataObj["imgId"]) {
-                    //    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
-                    //        uiPopUpTrain(data, fileInfo);
-                    //    }
-                    //}
-                } else {// UI Training 체크박스 체크 없으면
-                    isFullMatch = true;
-                    updateBatchLearningData(retData, ocrData, data);
-                }               
+                if (retData.isContractMapping) {
+                    if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
+                        ocrData.exeML = "Y";
+                        isFullMatch = (dataObj.length != 53) ? false : true;
+                        //ui팝업 로직
+                        //if (retData.rows[0].IMGID == dataObj["imgId"]) {
+                        //    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
+                        //        uiPopUpTrain(data, fileInfo);
+                        //    }
+                        //}
+                    } else {// UI Training 체크박스 체크 없으면
+                        isFullMatch = true;
+                        comparedMLAndAnswer(retData, data, ocrData);
+                        //updateBatchLearningData(retData, ocrData, data);
+                    }
+                } else {
+                    popUpLayer2(ocrData);
+                }
                 
             },
             error: function (err) {
@@ -643,26 +758,10 @@ function compareBatchLearningData(ocrData, data) {
     
 }
 
-// 학습 후 table에 결과값 출력
-function appendTabelText(answerData, mlData) {
-    console.log(answerData);
-    console.log(mlData);
-
-    for (var mlKey in mlData) {
-        for (var answerKey in answerData) {
-            if (mlKey == answerKey) {
-                if (mlData[mlKey] == answerData[answerKey]) {
-
-                }
-                break;
-            }
-        }
-    }
-}
-
 // ML 데이터와 정답 데이터를 비교해여 색상 표시
-function comparedMLAndAnswer(retData, mlData, fileInfo) {
+function comparedMLAndAnswer(retData, mlData, ocrData) {
     var answerData = retData.rows[0];   
+    var fileInfo = ocrData.fileInfo;
 
     $('input[name="listCheck_before"]').each(function (index, element) {
         for (var i in fileInfo) {
@@ -670,27 +769,62 @@ function comparedMLAndAnswer(retData, mlData, fileInfo) {
                 var matchingColumn = [];
                 var targetTdNumArr = [];
 
+
+                for (var answerKey in answerData) {
+                    if (answerKey == 'EXTCTNM' || answerKey == 'EXTOGCOMPANYNAME' ||
+                        answerKey == 'CTNM' || answerKey == 'OGCOMPANYNAME') {
+                        matchingColumn.push({ 'column': answerKey, 'text': answerData[answerKey], 'isMapping': true });
+                    }
+                }
                 for (var j in mlData.data) {
                     if (mlData.data[j].column != 'UNDEFINED') {
                         for (var answerKey in answerData) {
+                            if (answerKey == 'EXTCTNM' || answerKey == 'EXTOGCOMPANYNAME' ||
+                                answerKey == 'CTNM' || answerKey == 'OGCOMPANYNAME' || answerKey == 'MAPPINGCTNM') {
+                                continue;
+                            }
                             if (mlData.data[j].column == answerKey) { // 컬럼이 같으면
                                 if (mlData.data[j].text == answerData[answerKey]) { // 값이 같으면
-                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text });
+                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text, 'isMapping' : true });
                                 } else { // 값이 다르면
+                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text, 'isMapping': false });
                                 }
                                 break;
                             }
                         }
                     }
                 }
+
+                
                 for (var j in matchingColumn) {
-                    $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).text(matchingColumn[j].text);
+                    if (typeof matchingColumn[j].text == 'string') {
+                        $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).text(matchingColumn[j].text);
+                    } else {
+                        var ctnmSelectHTML = '<select>';
+                        for (var k in matchingColumn[j].text) {
+                            var seleted = (matchingColumn[j].text[k] == answerData.MAPPINGCTNM)? 'selected' : '';
+                            var optionHTML = '<option value="' + matchingColumn[j].text[k] + '" ' + seleted +'>' + matchingColumn[j].text[k] + '</option>';
+                            ctnmSelectHTML += optionHTML;
+                        }
+                        ctnmSelectHTML += '</select>';
+                        $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).html(ctnmSelectHTML);
+                    }
+                    if (matchingColumn[j].isMapping) {
+                        if (matchingColumn[j].column == 'CTNM' || matchingColumn[j].column == 'OGCOMPANYNAME') {
+                            $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).css('background-color', 'lightgray');
+                        }
+                    } else {
+                        $(this).parent().parent().parent().parent().children('td').eq(columToTableNumber(matchingColumn[j].column)).css('background-color', 'red');
+                    }
                 }
                 for (var j = 0; j < $(this).parent().parent().parent().parent().children('td').length; j++) {                   
                     if ($(this).parent().parent().parent().parent().children('td').eq(j).text() == '') {
                         $(this).parent().parent().parent().parent().children('td').eq(j).css('background-color', 'red');
                     }
                 }
+                
+                //mlData.data = matchingColumn;
+                //updateBatchLearningData(retData, ocrData, mlData);
                 break;
             }
         }
@@ -699,102 +833,104 @@ function comparedMLAndAnswer(retData, mlData, fileInfo) {
 
 function columToTableNumber(column) {
     switch (column) {
-        case 'OGCOMPANYNAME':
+        case 'EXTOGCOMPANYNAME':
             return 2;
-        case 'UY':
+        case 'EXTCTNM':
             return 3;
-        case 'ORIGINCTNM':
+        case 'OGCOMPANYNAME':
             return 4;
-        case 'SUMMARYCTNM':
+        case 'CTNM':
             return 5;
-        case 'OSLPERCENT':
+        case 'UY':
             return 6;
-        case 'OSLSHARE':
+        case 'OSLPERCENT':
             return 7;
+        case 'OSLSHARE':
+            return 8;
         case 'STATEMENTDIV':
-            return 9;
-        case 'CONTRACTNUM':
             return 10;
-        case 'OGCOMPANYCODE':
+        case 'CONTRACTNUM':
             return 11;
-        case 'BROKERCODE':
+        case 'OGCOMPANYCODE':
             return 12;
-        case 'BROKERNAME':
+        case 'BROKERCODE':
             return 13;
-        case 'INSSTDT':
+        case 'BROKERNAME':
             return 14;
-        case 'INSENDDT':
+        case 'INSSTDT':
             return 15;
-        case 'CURCD':
+        case 'INSENDDT':
             return 16;
-        case 'PAIDPERCENT':
+        case 'CURCD':
             return 17;
-        case 'PAIDSHARE':
+        case 'PAIDPERCENT':
             return 18;
-        case 'GROSSPM':
+        case 'PAIDSHARE':
             return 19;
-        case 'PM':
+        case 'GROSSPM':
             return 20;
-        case 'PMPFEND':
+        case 'PM':
             return 21;
-        case 'PMPFWOS':
+        case 'PMPFEND':
             return 22;
-        case 'XOLPM':
+        case 'PMPFWOS':
             return 23;
-        case 'RETURNPM':
+        case 'XOLPM':
             return 24;
-        case 'GROSSCN':
+        case 'RETURNPM':
             return 25;
-        case 'CN':
+        case 'GROSSCN':
             return 26;
-        case 'PROFITCN':
+        case 'CN':
             return 27;
-        case 'BROKERAGE':
-            return 28;
-        case 'TAX':
+        case 'PROFITCN':
             return 29;
-        case 'OVERRIDINGCOM':
+        case 'BROKERAGE':
+            return 29;
+        case 'TAX':
             return 30;
-        case 'CHARGE':
+        case 'OVERRIDINGCOM':
             return 31;
-        case 'PMRESERVERTD1':
+        case 'CHARGE':
             return 32;
-        case 'PFPMRESERVERTD1':
+        case 'PMRESERVERTD1':
             return 33;
-        case 'PMRESERVERTD2':
+        case 'PFPMRESERVERTD1':
             return 34;
-        case 'PFPMRESERVERTD2':
+        case 'PMRESERVERTD2':
             return 35;
-        case 'CLAIM':
+        case 'PFPMRESERVERTD2':
             return 36;
-        case 'LOSSRECOVERY':
+        case 'CLAIM':
             return 37;
-        case 'CASHLOSS':
+        case 'LOSSRECOVERY':
             return 38;
-        case 'CASHLOSSRD':
+        case 'CASHLOSS':
             return 39;
-        case 'LOSSRR':
+        case 'CASHLOSSRD':
             return 40;
-        case 'LOSSRR2':
+        case 'LOSSRR':
             return 41;
-        case 'LOSSPFEND':
+        case 'LOSSRR2':
             return 42;
-        case 'LOSSPFWOA':
+        case 'LOSSPFEND':
             return 43;
-        case 'INTEREST':
+        case 'LOSSPFWOA':
             return 44;
-        case 'TAXON':
+        case 'INTEREST':
             return 45;
-        case 'MISCELLANEOUS':
+        case 'TAXON':
             return 46;
-        case 'PMBL':
+        case 'MISCELLANEOUS':
             return 47;
-        case 'CMBL':
+        case 'PMBL':
             return 48;
-        case 'NTBL':
+        case 'CMBL':
             return 49;
-        case 'CSCOSARFRNCNNT2':
+        case 'NTBL':
             return 50;
+        case 'CSCOSARFRNCNNT2':
+            return 51;
     }
 }
 
@@ -833,7 +969,7 @@ function updateBatchLearningData(retData, ocrData, mlData) {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
-            comparedMLAndAnswer(retData, mlData, ocrData.fileInfo);
+            //comparedMLAndAnswer(retData, mlData, ocrData.fileInfo);
         },
         error: function (err) {
             console.log(err);
@@ -943,10 +1079,11 @@ var searchBatchLearnDataList = function (addCond) {
                         ${checkboxHtml}
                         <td><a onclick="javascript:fn_viewImageData('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.ORIGINFILENAME)}</a></td> <!--파일명-->
                         <td>${nvl(entry.STATUS)}</td> <!--학습여부-->
-                        <td>${nvl(entry.OGCOMPANYNAME)}</td> <!--출재사명-->
+                        <td>${nvl(entry.OGCOMPANYNAME)}</td> <!--추출 출재사명-->
+                        <td></td> <!--추출 계약명-->
+                        <td>${nvl(entry.OGCONTRACTNAME)}</td> <!--출재사명 원본-->
+                        <td>${nvl(entry.CONTRACTNAMESUMMARY)}</td> <!--계약명 원본-->
                         <td>${nvl(entry.UY)}</td> <!--UY-->
-                        <td>${nvl(entry.OGCONTRACTNAME)}</td> <!--계약명원본-->
-                        <td>${nvl(entry.CONTRACTNAMESUMMARY)}</td> <!--계약명요약-->
                         <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
                         <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
                         <td>${nvl(entry.IMGID)}</td> <!--이미지ID-->

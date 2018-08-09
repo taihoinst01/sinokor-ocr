@@ -550,7 +550,7 @@ router.post('/updateBatchLearningData', function (req, res) {
     var status = '';
     var keyCount = 0; // 컬럼 개수
     for (var key in data) keyCount++;
-    if (keyCount == 48 ){ // 모든 컬럼 있으면
+    if (keyCount == 49 ){ // 모든 컬럼 있으면
         status = 'Y';
     } else {
         status = 'N';
@@ -867,15 +867,44 @@ router.post('/syncFile', function (req, res) {
 
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-    console.log(dataObj);
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.compareBatchLearningData, [
-        dataObj.fileToPage.IMGID, dataObj.fileToPage.IMGFILESTARTNO, dataObj.fileToPage.IMGFILEENDNO
-    ], callbackcompareBatchLearningData, req, res);
+    //console.log(dataObj);
+    var query = queryConfig.batchLearningConfig.selectContractMapping;
+    var param;
+    if (typeof dataObj.CTNM == 'string') { // 단일 계약명
+        param = [dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM];
+    } else { // 다중 계약명
+        param = [dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM[0]];
+        for (var i = 1; i < dataObj.CTNM.length; i++) {
+            query += " OR (extOgCompanyName = '" + dataObj.CTOGCOMPANYNAMENM + "' AND extCtnm = '" + dataObj.CTNM[i]+ "')";
+        }
+    }
+
+    commonDB.reqQueryParam2(query, param, callbackSelectContractMapping, dataObj, req, res);
 });
 
-var callbackcompareBatchLearningData = function (rows, req, res) {
+var callbackSelectContractMapping = function (rows, dataObj, req, res) {
+    if (rows.length > 0) {
+        dataObj.ASOGCOMPANYNAME = rows[0].ASOGCOMPANYNAME;
+        dataObj.ASCTNM = rows[0].ASCTNM;
+        dataObj.MAPPINGCTNM = rows[0].EXTCTNM
+        commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
+            dataObj.fileToPage.IMGID, dataObj.PM, dataObj.CN
+        ], callbackcompareBatchLearningData, dataObj, req, res);
+    } else {
+        res.send({ isContractMapping : false});
+    }
+}
+
+var callbackcompareBatchLearningData = function (rows, dataObj, req, res) {
     console.log("compareBatchLearningData finish..");
-    res.send({ code: 200, rows: rows });
+    if (rows.length > 0) {
+        rows[0].EXTOGCOMPANYNAME = dataObj.CTOGCOMPANYNAMENM;
+        rows[0].EXTCTNM = dataObj.CTNM;
+        rows[0].MAPPINGCTNM = dataObj.MAPPINGCTNM;
+        res.send({ code: 200, rows: rows, isContractMapping: true });
+    } else {
+        res.send({ code: 500, message: 'answer Data not Found' });
+    }
 }
 
 router.post('/uiTrainBatchLearningData', function (req, res) {

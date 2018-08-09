@@ -19,7 +19,7 @@ exports.typoSentenceEval = function (data, callback) {
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\typo.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
-
+        var retData = data;
         if (err) {
             logger.error.info(`typo ml model exec error: ${stderr}`);
             return;
@@ -35,21 +35,21 @@ exports.typoSentenceEval = function (data, callback) {
                 typoData.splice(typoDataLen, 1);
             }
         }
-
         for (var i = 0; i < typoData.length; i++) {
             var typoSplit = typoData[i].split("^");
             var typoText = typoSplit[0];
             var typoOriWord = typoSplit[1];
             var typoUpdWord = typoSplit[2];
 
-            for (var j = 0; j < data.length; j++) {
-                if (data[j].text.toLowerCase() == typoText && typoOriWord.match(/:|-|[1234567890]/g) == null) {
+            for (var j = 0; j < retData.length; j++) {
+                if (retData[j].text.toLowerCase() == typoText && typoOriWord.match(/:|-|[1234567890]/g) == null) {
                     var updWord = typoUpdWord.split(":");
-                    data[j].text = data[j].text.toLowerCase().replace(typoOriWord, updWord[0]);
+                    retData[j].text = retData[j].text.toLowerCase().replace(typoOriWord, updWord[0]);
+                    retData[j].originText = typoText;
                 }
             }
         }
-        callback(data);
+        callback(retData);
     });
 };
 
