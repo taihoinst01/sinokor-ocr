@@ -283,7 +283,7 @@ var batchLearningConfig = {
             imgId = :imgId AND pm = :pm And cn = :cn `,
     selectContractMapping:
         `SELECT
-            asOgcompanyName, asCtnm
+            extOgcompanyName, extCtnm, asOgcompanyName, asCtnm
          FROM
             tbl_contract_mapping
          WHERE
