@@ -303,6 +303,11 @@ var batchLearningConfig = {
             tbl_contract_mapping
          WHERE
             extOgcompanyName = :extOgcompanyName AND extCtnm = :extCtnm
+        `,
+    insertContractMapping:
+        `INSERT INTO
+            tbl_contract_mapping(extOgcompanyName, extCtnm, asOgcompanyName, asCtnm)
+         VALUES(:extOgcompanyName, :extCtnm, :asOgcompanyName, :asCtnm)
         `
 }
 
