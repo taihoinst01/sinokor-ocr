@@ -1,4 +1,6 @@
-﻿var timer = '';
+﻿'use strict';
+
+var timer = '';
 var curr = 0;
 
 
@@ -18,19 +20,16 @@ WebFontConfig = {
 	s.parentNode.insertBefore(wf, s);
 })(); 
 
-
-
 //달력
-
-  $(function() {
-   $('input').filter('.datepicker').datepicker({
-    changeMonth: true,
-    changeYear: true,
-    showOn: 'button',
-    buttonImage: 'images/ico_cal.gif',
-    buttonImageOnly: true
-   });
-  });
+$(function() {
+    $('input').filter('.datepicker').datepicker({
+        changeMonth: true,
+        changeYear: true,
+        showOn: 'button',
+        buttonImage: 'images/ico_cal.gif',
+        buttonImageOnly: true
+    });
+});
 
 
 $(document).ready(function() {
@@ -77,8 +76,8 @@ $(document).ready(function() {
             $("#fdate").datepicker( "option", "changeMonth", true);
         }
     });
-
     fn_datePickerStyle();
+    
 
     $('#afaxRecv').on('click', function(e) {
         $('#pageIndex').val('1');
@@ -92,7 +91,6 @@ $(document).ready(function() {
             MovePage(1);
         }
     });
-
 });
 
 function fn_datePickerStyle() {
