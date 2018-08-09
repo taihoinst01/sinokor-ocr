@@ -1,6 +1,4 @@
 import numpy as np
-import csv
-import pymysql
 import cx_Oracle
 import configparser
 

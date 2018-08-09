@@ -868,16 +868,25 @@ router.post('/syncFile', function (req, res) {
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
     //console.log(dataObj);
+    var query = queryConfig.batchLearningConfig.selectContractMapping;
+    var param;
+    if (typeof dataObj.CTNM == 'string') { // 단일 계약명
+        param = [dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM];
+    } else { // 다중 계약명
+        param = [dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM[0]];
+        for (var i = 1; i < dataObj.CTNM.length; i++) {
+            query += " OR (extOgCompanyName = '" + dataObj.CTOGCOMPANYNAMENM + "' AND extCtnm = '" + dataObj.CTNM[i]+ "')";
+        }
+    }
 
-    commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectContractMapping, [
-        dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM
-    ], callbackSelectContractMapping, dataObj, req, res);
+    commonDB.reqQueryParam2(query, param, callbackSelectContractMapping, dataObj, req, res);
 });
 
 var callbackSelectContractMapping = function (rows, dataObj, req, res) {
     if (rows.length > 0) {
         dataObj.ASOGCOMPANYNAME = rows[0].ASOGCOMPANYNAME;
         dataObj.ASCTNM = rows[0].ASCTNM;
+        dataObj.MAPPINGCTNM = rows[0].EXTCTNM
         commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
             dataObj.fileToPage.IMGID, dataObj.PM, dataObj.CN
         ], callbackcompareBatchLearningData, dataObj, req, res);
@@ -888,9 +897,14 @@ var callbackSelectContractMapping = function (rows, dataObj, req, res) {
 
 var callbackcompareBatchLearningData = function (rows, dataObj, req, res) {
     console.log("compareBatchLearningData finish..");
-    rows[0].EXTOGCOMPANYNAME = dataObj.CTOGCOMPANYNAMENM;
-    rows[0].EXTCTNM = dataObj.CTNM;
-    res.send({ code: 200, rows: rows, isContractMapping: true });
+    if (rows.length > 0) {
+        rows[0].EXTOGCOMPANYNAME = dataObj.CTOGCOMPANYNAMENM;
+        rows[0].EXTCTNM = dataObj.CTNM;
+        rows[0].MAPPINGCTNM = dataObj.MAPPINGCTNM;
+        res.send({ code: 200, rows: rows, isContractMapping: true });
+    } else {
+        res.send({ code: 500, message: 'answer Data not Found' });
+    }
 }
 
 router.post('/uiTrainBatchLearningData', function (req, res) {
