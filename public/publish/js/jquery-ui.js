@@ -94,6 +94,7 @@ jQuery(function($){
 		});
 
 	// 버튼 선택시 class=on 추가제거
+    /*
 	$('.button_st5').click(function(e){
 	 	var thiss = $(this);
 	 	if(thiss.hasClass('on')){
@@ -102,7 +103,7 @@ jQuery(function($){
 	 		thiss.addClass('on');
 	 	}
 	});
-
+    */
 
 	// TEP 버튼 선택시 시변경
 	$('.btn_tep_01').click(function(){
