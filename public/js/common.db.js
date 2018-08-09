@@ -179,6 +179,20 @@ module.exports = function (pool) {
     var callbackFileInfo = function (rows, req, res) { };
     var callbackFileDtlInfo = function (rows, req, res) { };
 
+    // 다수 쿼리 요청 (파라미터 포함)
+    var reqBatchQueryParam = function (sql, binds, options, callbackFunc, req, res) {
+        pool.getConnection(function (err, connection) {
+            connection.executeMany(sql, binds, options, function (err, result) {
+                if (err) {
+                    console.error("OracleDB err : ", err);
+                    console.log(sql);
+                }
+                callbackFunc(result.rowsAffected ? result.rowsAffected : null, req, res);
+                connection.release();
+            });
+        });
+    };
+
     module.exports.makePagingQuery = makePagingQuery;
     module.exports.reqListQuery = reqListQuery;
     module.exports.reqQueryParam = reqQueryParam;
@@ -189,4 +203,5 @@ module.exports = function (pool) {
     module.exports.queryParam2 = queryParam2;
     module.exports.queryNoRows = queryNoRows;
     module.exports.insertFileInfo = insertFileInfo;
+    module.exports.reqBatchQueryParam = reqBatchQueryParam;
 }

@@ -355,7 +355,16 @@ var uiLearningConfig = {
         `INSERT INTO
             tbl_document_category
          VALUES
-            (seq_document_category.nextval, :docName, :docType, :sampleImagePath) `
+            (seq_document_category.nextval, :docName, :docType, :sampleImagePath) `,
+    selectTypoCorrect:
+        `SELECT SEQNUM, USERID, ORIGINWORD, CORRECTEDWORD, REGDATE, CONVERTEDIMAGEFILENAME, CORRECTORTYPE
+         FROM TBL_OCR_TYPO_CORRECT
+         WHERE 1=1 `,
+    insertTypoCorrect:
+        `INSERT INTO 
+            TBL_OCR_TYPO_CORRECT(seqNum, userId, originWord, correctedWord, convertedImageFileName, correctorType) 
+         VALUES
+            (seq_ocr_typo_correct.nextval, :userid, :originWord, :correctWord, :fileName, :correctorType) `
 }
 
 var commonConfig = {
