@@ -2216,7 +2216,7 @@ h3.tits span {
     }
 
         .select_style button.myValue:hover {
-            border: 1px solid #0075bb;
+            border: 1px solid #0075bb !important;
         }
 
     .select_style div.myValue {
@@ -4885,6 +4885,7 @@ thead .ez-checked {
     display: none;
     border: 2px solid red;
     position: absolute;
+    top: 200px;
 }
 
 button[disabled] {
@@ -4999,11 +5000,13 @@ button[disabled] {
 
 .ui_doc_pop_div01 input[type=text] {
     width: 100%;
+    text-align: center;
 }
 
 .ipt83 {
     width: 83% !important;
     padding: 6px 6px 6px 30px !important;
+    text-align:left !important;
 }
 
     .ipt83:before {
@@ -5244,4 +5247,34 @@ button[disabled] {
 
 .lnb_menu02 .lnb_menu_icon, .lnb_menu03 .lnb_menu_icon, .lnb_menu05 .lnb_menu_icon, .lnb_menu06 .lnb_menu_icon {
     vertical-align: sub;
+}
+
+.select_style_K {
+    width: 95%;
+    min-width: unset;
+
+}
+    .select_style_K button.myValue {
+        line-height: 0px !important;
+        height: 30px !important;
+        border: 0px;
+        text-align: center;
+    }
+    .select_style_K .ctrl {
+        height: 21px !important;
+    }
+    .select_style_K .arrow {
+        top: 11px !important;
+    }
+    .select_style_K ul {
+        top: 30px !important;
+    }
+
+    .invocieR_div03 td {
+        overflow: visible !important;
+    }
+.ui_mainImage {
+    height: 1600px !important;
+    background-size: 100% 100% !important;
+    background-repeat: no-repeat !important;
 }

@@ -38,7 +38,19 @@ var sessionConfig = {
          SET
             lastLoginDate = sysdate
          WHERE
-            userId = :id `
+            userId = :id `,
+    leftSideBarInvoiceRegistration:
+        `SELECT COUNT(*) AS CNT
+           FROM TBL_DOCUMENT
+          WHERE APPROVALSTATE = 'R'
+            AND APPROVALREPORTER = :id 
+        `,
+    leftSideBarMyApproval:
+        ` SELECT COUNT(*) AS CNT
+            FROM TBL_DOCUMENT
+           WHERE APPROVALSTATE = 'P'
+             AND DOCUMENTMANAGER = :id
+        `
 }
 
 var userMngConfig = {
@@ -100,9 +112,9 @@ var myApprovalConfig = {
     selectApprovalImageList:
         `SELECT A.SEQNUM, A.IMGID, A.FILEPATH, A.ORIGINFILENAME, A.SERVERFILENAME, A.FILEEXTENSION, 
                 A.FILESIZE, A.CONTENTTYPE, A.FILETYPE, A.FILEWIDTH, A.FILEHEIGHT, A.REGID, A.REGDATE 
-           FROM TBL_OCR_FILE A
-            LEFT OUTER JOIN TBL_DOCUMENT_DTL B
-              ON B.IMGID = A.IMGID `
+           FROM TBL_OCR_FILE_DTL A,
+                TBL_DOCUMENT_DTL B
+          WHERE A.IMGID = B.IMGID `
 }
 
 var documentConfig = {};
@@ -280,7 +292,15 @@ var batchLearningConfig = {
          FROM 
             tbl_batch_answer_data
          where 
-            imgId = :imgId AND imgFileStartNo = :imgFileStartNo And imgFileEndNo = :imgFileEndNo `
+            imgId = :imgId AND pm = :pm And cn = :cn `,
+    selectContractMapping:
+        `SELECT
+            asOgcompanyName, asCtnm
+         FROM
+            tbl_contract_mapping
+         WHERE
+            extOgcompanyName = :extOgcompanyName AND extCtnm = :extCtnm
+        `
 }
 
 var uiLearningConfig = {

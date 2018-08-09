@@ -61,6 +61,9 @@ function popUpSearchDocCategory() {
                     if (data.length == 0) {
                         $('#docSearchResultImg_thumbCount').hide();
                         $('#docSearchResultMask').hide();
+                        $('#searchResultDocName').html('');
+                        $('#orgDocName').val('');
+                        $('#searchResultDocName').val('');
                         return false;
                     } else {
                         /**
@@ -447,7 +450,7 @@ function executeML(totData) {
 
                 if (searchDBColumnsCount == 1) {
                     var mainImgHtml = '';
-                    mainImgHtml += '<div id="mainImage">';
+                    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
                     mainImgHtml += '<div id="redNemo">';
                     mainImgHtml += '</div>';
                     mainImgHtml += '</div>';
@@ -659,8 +662,8 @@ function hoverSquare(e) {
     });
     */
 
-    $('#mainImage').css('height', '500px');
-    $('#imageZoom').css('height', '300px').css('background-image', $('#mainImage').css('background-image')).show();
+    $('#mainImage').hide();
+    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).show();
 
     // 사각형 좌표값
     var location = $(e).find('input[type=hidden]').val().split(',');
@@ -671,34 +674,33 @@ function hoverSquare(e) {
     //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
 
     // 해당 텍스트 x y좌표 원본 이미지에서 찾기
-    $('#imageZoom').css('background-position', '-' + (x - 5) + 'px -' + (y - 5) + 'px');
+    $('#imageZoom').css('background-position', '-' + (x - 5) + 'px -' + (y - 205) + 'px');
     
     //실제 이미지 사이즈와 메인이미지div 축소율 판단
-    var reImg = new Image();
-    var imgPath = $('#mainImage').css('background-image').split('("')[1];
-    imgPath = imgPath.split('")')[0];
-    reImg.src = imgPath;
-    var width = reImg.width;
-    var height = reImg.height;
+    //var reImg = new Image();
+    //var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    //imgPath = imgPath.split('")')[0];
+    //reImg.src = imgPath;
+    //var width = reImg.width;
+    //var height = reImg.height;
 
     // 선택한 글씨에 빨간 네모 그리기
-    $('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 10) + 'px');
-    $('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 10) + 'px');
-    $('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
-    $('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
-    $('#redNemo').show();
+    //$('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 10) + 'px');
+    //$('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 10) + 'px');
+    //$('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
+    //$('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
+    //$('#redNemo').show();
     $('#redZoomNemo').css('width', textWidth + 10);
-    $('#redZoomNemo').css('height', textHeight+ 10);
+    $('#redZoomNemo').css('height', textHeight + 10);
     $('#redZoomNemo').show();
-
 }
 
 // 마우스 아웃 이벤트
 function moutSquare(e) {
-    $('#redNemo').hide();
+    //$('#redNemo').hide();
     $('#redZoomNemo').hide();
     $('#imageZoom').hide();
-    $('#mainImage').css('height', '700px');
+    $('#mainImage').show();
 }
 
 function dbSelectClickEvent() {
@@ -876,7 +878,8 @@ function changeDocPopupImage() {
         } else {
             docPopImagesCurrentCount--;
             $('#countCurrent').html(docPopImagesCurrentCount);
-            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
             if (docPopImagesCurrentCount == 1) {
                 $('#docSearchResultImg_thumbPrev').attr('disabled', true);
@@ -894,7 +897,8 @@ function changeDocPopupImage() {
         } else {
             docPopImagesCurrentCount++;
             $('#countCurrent').html(docPopImagesCurrentCount);
-            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
 
             if (docPopImagesCurrentCount == totalCount) {

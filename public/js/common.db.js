@@ -59,6 +59,20 @@ module.exports = function (pool) {
         });
     };
 
+    // 일반 쿼리 요청 (파라미터 포함, 외부 변수 1개)
+    var reqQueryParam2 = function (sql, param, callbackFunc, origin, req, res) {
+        pool.getConnection(function (err, connection) {
+            connection.execute(sql, param, function (err, result) {
+                if (err) {
+                    console.error("OracleDB err : ", err);
+                    console.log(sql);
+                }
+                callbackFunc(result.rows ? result.rows : null, origin, req, res);
+                connection.release();
+            });
+        });
+    };
+
     // 쿼리 요청 (파라미터 포함, req & res 미포함, 함수 파라미터 하나 포함)
     var queryParam = function (sql, param, callbackFunc, origin) {
         pool.getConnection(function (err, connection) {
@@ -89,16 +103,16 @@ module.exports = function (pool) {
 
     // 일반 쿼리 요청
     var reqQuery = function (sql, callbackFunc, req, res) {
-    pool.getConnection(function (err, connection) {
-        connection.execute(sql, function (err, result) {
-            if (err) {
-                console.error("OracleDB err : ", err);
-                console.log(sql);
-            }
-            callbackFunc(result.rows ? result.rows: null, req, res);
-            connection.release();
+        pool.getConnection(function (err, connection) {
+            connection.execute(sql, function (err, result) {
+                if (err) {
+                    console.error("OracleDB err : ", err);
+                    console.log(sql);
+                }
+                callbackFunc(result.rows ? result.rows: null, req, res);
+                connection.release();
+            });
         });
-    });
     };
 
     // 일반 쿼리 요청(함수 파라미터 하나 포함)
@@ -138,6 +152,20 @@ module.exports = function (pool) {
                     console.log(sql);
                 }
                 callbackFunc();
+                connection.release();
+            });
+        });
+    };
+
+    // 일반 쿼리 요청 (파라미터, rows 포함, 결과값이 COUNT 일때)
+    var reqCountQueryParam = function (sql, param, callbackFunc, req, res) {
+        pool.getConnection(function (err, connection) {
+            connection.execute(sql, param, function (err, result) {
+                if (err) {
+                    console.error("OracleDB err : ", err);
+                    console.log(sql);
+                }
+                callbackFunc(result.rowsAffected ? result.rowsAffected : 0, req, res);
                 connection.release();
             });
         });
@@ -196,12 +224,14 @@ module.exports = function (pool) {
     module.exports.makePagingQuery = makePagingQuery;
     module.exports.reqListQuery = reqListQuery;
     module.exports.reqQueryParam = reqQueryParam;
+    module.exports.reqQueryParam2 = reqQueryParam2
     module.exports.reqQuery = reqQuery;
     module.exports.reqQueryF1param = reqQueryF1param;
     module.exports.reqQueryF2param = reqQueryF2param;
     module.exports.queryParam = queryParam;
     module.exports.queryParam2 = queryParam2;
     module.exports.queryNoRows = queryNoRows;
+    module.exports.reqCountQueryParam = reqCountQueryParam;
     module.exports.insertFileInfo = insertFileInfo;
     module.exports.reqBatchQueryParam = reqBatchQueryParam;
 }

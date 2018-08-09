@@ -111,7 +111,7 @@
                     </div>
                     <!-- // 조회조건 목록 -->
                     <!-- 문서 기본정보 영역 -->
-                    <div id="div_base" class="box_content_T_03">
+                    <div id="div_base" class="box_content_T_03 invocieR_div03">
                         <h3 class="tits titsK00"><span id="">문서 기본정보</span></h3>
 
                         <div class="table_style02">
@@ -121,11 +121,11 @@
                                     <colgroup>
                                         <col style="width:50px" />
                                         <col style="width:180px;" />
+                                        <col style="width:60px" />
                                         <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
+                                        <col style="width:130px" />
+                                        <col style="width:130px" />
+                                        <col style="width:130px" />
                                         <col style="width:100px" />
                                         <col style="width:130px" />
                                     </colgroup>
@@ -142,16 +142,46 @@
                                             <th scope="row">MEMO</th>
                                         </tr>
                                     </thead>
-                                    <tbody>   
+                                    <tbody>
                                         <!--
                                         <tr>
                                             <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="" class="sta00 stck_tr" name="st_ck01" /></div></th>
                                             <td>ICR2018071000000123</td>
                                             <td>27</td>
                                             <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td>이라르</td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
                                             <td><label for="intxt_001" class="blind">마감년월</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
                                             <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
                                         </tr>
@@ -160,44 +190,205 @@
                                             <td>ICR2018071000000123</td>
                                             <td>27</td>
                                             <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td>이라르</td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
                                             <td><label for="intxt_001" class="blind">마감년월</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
-                                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="intxt_001" class="inputst_box01" value="" /></td>
+                                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="" class="sta00 stck_tr" name="st_ck01" /></div></th>
                                             <td>ICR2018071000000123</td>
                                             <td>27</td>
                                             <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td>이라르</td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
                                             <td><label for="intxt_001" class="blind">마감년월</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
-                                            <td><label for="intxt_001" class="blind">메모</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
+                                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="" class="sta00 stck_tr" name="st_ck01" /></div></th>
                                             <td>ICR2018071000000123</td>
                                             <td>27</td>
                                             <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td>이라르</td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
                                             <td><label for="intxt_001" class="blind">마감년월</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
-                                            <td><label for="intxt_001" class="blind">메모</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
+                                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
                                         </tr>
                                         <tr>
                                             <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="" class="sta00 stck_tr" name="st_ck01" /></div></th>
                                             <td>ICR2018071000000123</td>
                                             <td>27</td>
                                             <td>201807</td>
-                                            <td>리키타츠너</td>
-                                            <td>이라르</td>
-                                            <td>이라르</td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
                                             <td><label for="intxt_001" class="blind">마감년월</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
-                                            <td><label for="intxt_001" class="blind">메모</label><input type="text" name="" id="intxt_001" class="inputst_box01" value="" /></td>
+                                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="" class="sta00 stck_tr" name="st_ck01" /></div></th>
+                                            <td>ICR2018071000000123</td>
+                                            <td>27</td>
+                                            <td>201807</td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="select_style select_style_K">
+                                                    <span class="ctrl"><span class="arrow"></span></span>
+                                                    <button type="button" class="myValue">전 체</button>
+                                                    <ul class="aList">
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('X')">테스트파트X</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Y')">테스트파트Y</a></li>
+                                                        <li><a href="#none" onclick="javascript: selectFaoPart('Z')">테스트파트Z</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td><label for="intxt_001" class="blind">마감년월</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
+                                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
                                         </tr>
                                         -->
                                     </tbody>
@@ -226,7 +417,7 @@
                     </div>
 
                     <div class="box_imgtmb">
-                        <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
+                        <button type="button" id="thumb-prev" class="button_control button_control1" disabled="disabled"><span class="blind">왼쪽이동</span></button>
                         <div id="touchSlider">
                             <ul id="ul_image" class="invoiceR_thumbImg">                               
                                 <!--
@@ -241,7 +432,7 @@
                                 -->
                             </ul>
                         </div>
-                        <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
+                        <button type="button" id="thumb-next" class="button_control button_control2" disabled="disabled"><span class="blind">오른쪽이동</span></button>
                         <div id="count" class="count"><!--<span>1</span> / 1--></div>
                     </div>
                 </div>
