@@ -116,6 +116,27 @@ function ocrErrorCode(code) {
     }
 }
 
+// [POST] 헤더 사용자관리 팝업 패스워드 비교
+var callbackHeaderUserPopSelectPw = function (rows, req, res) {
+    res.send({ code: 200, cnt: rows });
+};
+router.post('/headerUserPopSelectPw', function (req, res) {
+    var condQuery = ` WHERE USERID = '${req.session.userId}' AND USERPW = '${req.body.userPw}' `;
+    var query = queryConfig.userMngConfig.headerUserPopSelectPw + condQuery;
+    commonDB.reqQuery(query, callbackHeaderUserPopSelectPw, req, res);
+});
+
+// [POST] 헤더 사용자관리 팝업 패스워드 변경
+var callbackHeaderUserPopChangePw = function (rows, req, res) {
+    res.send({ code: 200, cnt: rows });
+};
+router.post('/headerUserPopChangePw', function (req, res) {
+    var condQuery = ` USERPW = '${req.body.userPw}' WHERE USERID = '${req.session.userId}' `;
+    var query = queryConfig.userMngConfig.updateUser + condQuery;
+    var param = [req.body.userPw, req.session.userId];
+    commonDB.reqQuery(query, callbackHeaderUserPopChangePw, req, res);
+});
+
 // [POST] 레프트사이드바 계산서등록(반려된 수) 표시
 var callbackLeftSideBarInvoiceRegistration = function (rows, req, res) {
     res.send({ code: 200, cnt: rows });
@@ -123,7 +144,6 @@ var callbackLeftSideBarInvoiceRegistration = function (rows, req, res) {
 router.post('/leftSideBarInvoiceRegistration', function (req, res) {
     var param = [req.session.userId];
     commonDB.reqCountQueryParam(queryConfig.sessionConfig.leftSideBarInvoiceRegistration, param, callbackLeftSideBarInvoiceRegistration, req, res);
-    
 });
 
 // [POST] 레프트사이드바 내결재(진행 수) 표시

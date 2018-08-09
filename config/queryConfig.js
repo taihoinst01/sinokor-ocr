@@ -80,7 +80,10 @@ var userMngConfig = {
         `DELETE FROM
             tbl_ocr_comm_user
          WHERE
-            seqNum = :seqNum `
+            seqNum = :seqNum `,
+    headerUserPopSelectPw:
+        `SELECT COUNT(USERID) AS CNT
+           FROM tbl_ocr_comm_user `
 };
 
 var dbcolumnsConfig = {
