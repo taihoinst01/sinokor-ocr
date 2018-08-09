@@ -826,6 +826,7 @@
     <Compile Include="public\js\index.js" />
     <Compile Include="public\js\interact.js" />
     <Compile Include="public\js\interact.min.js" />
+    <Compile Include="public\js\header.js" />
     <Compile Include="public\js\leftsidebar.js">
       <SubType>Code</SubType>
     </Compile>

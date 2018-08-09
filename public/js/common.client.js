@@ -81,6 +81,16 @@ function leadingZeros(n, digits) {
 }
 
 /**
+ * 두 문자열을 비교하여 일치하는지 확인
+ * @param {any} a   값1
+ * @param {any} b   값2
+ * @returns 값이 일치하면 0, 값이 일치하지 않으면 -1을 return
+ */
+function strcmp(a, b) {
+    return (a < b ? -1 : (a > b ? 1 : 0));
+}
+
+/**
  * getNowDateTime
  * 현재일자시각
  * @param separator1       구분자(일자)
@@ -267,4 +277,10 @@ function changePercentColor(val) {
 
 function changeTest() {
     changePercentColor($('#changeTest').val());
+}
+
+
+// li 선택시 input[type=hidden]에 값 넣어주기
+function liSelect(e, val) {
+    $(e).parents('.select_style_K').find('.liSelectValue').val(val);
 }
