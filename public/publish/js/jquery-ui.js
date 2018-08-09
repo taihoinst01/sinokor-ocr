@@ -14,6 +14,7 @@ jQuery(function($){
 		});
 
     // 양식이미지용 문서 슬라이딩 좌우버튼 
+    /*
     //좌측버튼
     $('.button_control1').click(function () {
         $('.box_imgtmb li').each(function () {
@@ -45,6 +46,8 @@ jQuery(function($){
             }
         });
     });
+    */
+
 	// input 선택시 전체선택/해제
 	$(".sta00_all").change(function(){
 	 	var chk = $(".sta00");
