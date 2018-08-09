@@ -284,3 +284,17 @@ function changeTest() {
 function liSelect(e, val) {
     $(e).parents('.select_style_K').find('.liSelectValue').val(val);
 }
+
+
+// 커스텀 테이블 스크롤
+$(function () {
+    // divBodyScroll의 스크롤이 동작할때에 함수를 불러옵니다.
+    $('.divBodyScroll').scroll(function () {
+        // divBodyScroll의 x좌표가 움직인 거리를 가져옵니다.
+        var xPoint = $(this).scrollLeft();
+
+        // 가져온 x좌표를 divHeadScroll에 적용시켜 같이 움직일수 있도록 합니다.
+        $(this).prev().scrollLeft(xPoint);
+    });
+
+});

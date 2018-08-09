@@ -151,6 +151,7 @@
                                                     <col style="width:130px" />
                                                 </colgroup>
                                                 <tbody>
+                                                    <!--
                                                     <tr>
                                                         <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="" class="sta00 stck_tr" name="st_ck01" /></div></th>
                                                         <td>ICR2018071000000123</td>
@@ -371,6 +372,7 @@
                                                         <td><label for="intxt_001" class="blind">마감년월</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
                                                         <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
                                                     </tr>
+                                                    -->
                                                 </tbody>
                                             </table>
                                         </div>
@@ -520,7 +522,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tbody_dtlInfo">
-                                    
+                                    <!--
                                     <tr>
                                         <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
                                         <td>ICR2018071000000123</td>
@@ -705,7 +707,7 @@
                                         <td>이라르</td>
                                         <td>이라르</td>
                                     </tr>
-                                    
+                                    -->
                                 </tbody>
                             </table>
                         </div>
@@ -724,25 +726,7 @@
         </div>
     </div>
     <script type="text/javascript">
-        $(function () {
-            // divBodyScroll의 스크롤이 동작할때에 함수를 불러옵니다.
-            $('#divBodyScroll').scroll(function () {
-                // divBodyScroll의 x좌표가 움직인 거리를 가져옵니다.
-                var xPoint = $('#divBodyScroll').scrollLeft();
-
-                // 가져온 x좌표를 divHeadScroll에 적용시켜 같이 움직일수 있도록 합니다.
-                $('#divHeadScroll').scrollLeft(xPoint);
-            });
-
-            // 처음에 divBodyScroll의 세로스크롤 너비를 알수 없기 때문에
-            // 스크롤을 우측으로 최대한 움직인 후 버튼을 눌러 두 스크롤의 차이를 찾아서 그 크기 만큼 tblHead의 공백 Column의 width를 지정해줍니다.
-            $('#btnCheck').click(function () {
-                var headMaximum = $('#divHeadScroll').scrollLeft();
-                var bodyMaximum = $('#divBodyScroll').scrollLeft();
-
-                alert('head: ' + headMaximum + '\nbody: ' + bodyMaximum);
-            });
-        });
+       
     </script>
 </body>
 </html>
