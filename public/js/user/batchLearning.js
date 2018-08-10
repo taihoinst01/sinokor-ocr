@@ -539,6 +539,7 @@ function popUpLayer2(ocrData) {
 
 function execBatchLearningData(ocrData, data) {
     /*
+    // 다중 계약서 샘플
     var data = `{ "data": [
     {"location":"2974,20,66,31","text":"Page","column": "UNDEFINED"},
     {"location":"1594,201,683,47","text":"Reinsurers Outstanding Losses","column": "UNDEFINED"},
@@ -642,6 +643,50 @@ function execBatchLearningData(ocrData, data) {
     //var data = { "data": [{ "location": "1018,240,411,87", "text": "APEX", "column": "UNDEFINED" }, { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNDEFINED" }, { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNDEFINED" }, { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNDEFINED" }, { "location": "206,691,274,27", "text": "4153 Korean Re", "column": "UNDEFINED" }, { "location": "208,756,525,34", "text": "Proportional Treaty Statement", "column": "UNDEFINED" }, { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626", "column": "UNDEFINED" }, { "location": "1840,575,169,25", "text": "01105/2018", "column": "UNDEFINED" }, { "location": "206,848,111,24", "text": "Cedant", "column": "UNDEFINED" }, { "location": "206,908,285,24", "text": "Class of Business", "column": "UNDEFINED" }, { "location": "210,963,272,26", "text": "Period of Quarter", "column": "UNDEFINED" }, { "location": "207,1017,252,31", "text": "Period of Treaty", "column": "UNDEFINED" }, { "location": "206,1066,227,24", "text": "Our Reference", "column": "UNDEFINED" }, { "location": "226,1174,145,31", "text": "Currency", "column": "UNDEFINED" }, { "location": "227,1243,139,24", "text": "Premium", "column": "UNDEFINED" }, { "location": "226,1303,197,24", "text": "Commission", "column": "UNDEFINED" }, { "location": "226,1366,107,24", "text": "Claims", "column": "UNDEFINED" }, { "location": "227,1426,126,24", "text": "Reserve", "column": "UNDEFINED" }, { "location": "227,1489,123,24", "text": "Release", "column": "UNDEFINED" }, { "location": "227,1549,117,24", "text": "Interest", "column": "UNDEFINED" }, { "location": "227,1609,161,31", "text": "Brokerage", "column": "UNDEFINED" }, { "location": "233,1678,134,24", "text": "Portfolio", "column": "UNDEFINED" }, { "location": "227,1781,124,24", "text": "Balance", "column": "UNDEFINED" }, { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018", "column": "CTOGCOMPANYNAMENM" }, { "location": "574,907,568,32", "text": ": Marine Cargo Surplus 2018 - Inward", "column": "CTNM" }, { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018", "column": "PERIODQ" }, { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018", "column": "PERIODT" }, { "location": "574,1065,304,25", "text": ": APEX/BORD/2727", "column": "CSCOSARFRNCNNT2" }, { "location": "629,1173,171,25", "text": "JOD 1.00", "column": "CURCD" }, { "location": "639,1239,83,25", "text": "25.53", "column": "PM" }, { "location": "639,1299,64,25", "text": "5.74", "column": "CN" }, { "location": "639,1362,64,25", "text": "0.00", "column": "CLAIM" }, { "location": "639,1422,64,25", "text": "7.66", "column": "PMRESERVERTD" }, { "location": "639,1485,64,25", "text": "0.00", "column": "PMRESERVERLD" }, { "location": "639,1545,64,25", "text": "0.00", "column": "INTEREST" }, { "location": "639,1605,64,25", "text": "0.64", "column": "BROKERAGE" }, { "location": "648,1677,64,25", "text": "0.00", "column": "PROFITCN" }, { "location": "641,1774,81,25", "text": "11 .49", "column": "NTBL" }, { "location": "1706,1908,356,29", "text": "APEX INSURANCE", "column": "UNDEFINED\r\n" }], "docCategory": { "SEQNUM": 2, "DOCNAME": "Apex 계산서", "DOCTYPE": 1, "SAMPLEIMAGEPATH": "sample/apex.jpg" } };
     compareBatchLearningData(ocrData, data);
     */
+    /*
+    var data = {"data":[
+    {"location":"1018,240,411,87","text":"APEX","column":"UNDEFINED"},
+    {"location":"1019,338,409,23","text":"Partner of Choice","column":"UNDEFINED"},
+    {"location":"1562,509,178,25","text":"Voucher No","column":"UNDEFINED"},
+    {"location":"1562,578,206,25","text":"Voucher Date","column":"UNDEFINED"},
+    {"location":"206,691,274,27","text":"4153 Korean Re","column":"UNDEFINED"},
+    {"location":"208,756,525,34","text":"Proportional Treaty Statement","column":"UNDEFINED"},
+    {"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","column":"UNDEFINED"},
+    {"location":"1840,575,169,25","text":"01105/2018","column":"UNDEFINED"},
+    {"location":"206,848,111,24","text":"Cedant","column":"UNDEFINED"},
+    {"location":"206,908,285,24","text":"Class of Business","column":"UNDEFINED"},
+    {"location":"210,963,272,26","text":"Period of Quarter","column":"UNDEFINED"},
+    {"location":"207,1017,252,31","text":"Period of Treaty","column":"UNDEFINED"},
+    {"location":"206,1066,227,24","text":"Our Reference","column":"UNDEFINED"},
+    {"location":"226,1174,145,31","text":"Currency","column":"UNDEFINED"},
+    {"location":"227,1243,139,24","text":"Premium","column":"UNDEFINED"},
+    {"location":"226,1303,197,24","text":"Commission","column":"UNDEFINED"},
+    {"location":"226,1366,107,24","text":"Claims","column":"UNDEFINED"},
+    {"location":"227,1426,126,24","text":"Reserve","column":"UNDEFINED"},
+    {"location":"227,1489,123,24","text":"Release","column":"UNDEFINED"},
+    {"location":"227,1549,117,24","text":"Interest","column":"UNDEFINED"},
+    {"location":"227,1609,161,31","text":"Brokerage","column":"UNDEFINED"},
+    {"location":"233,1678,134,24","text":"Portfolio","column":"UNDEFINED"},
+    {"location":"227,1781,124,24","text":"Balance","column":"UNDEFINED"},
+    {"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","column":"CTOGCOMPANYNAMENM"},
+    {"location":"574,907,636,26","text":": Fire QS EQ 2018 W HOS BK UNI HTEL","column":"CTNM"},
+    {"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","column":"PERIODQ"},
+    {"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018","column":"PERIODT"},
+    {"location":"574,1065,304,25","text":": APEX/BORD/2727","column":"CSCOSARFRNCNNT2"},
+    {"location":"629,1173,171,25","text":"JOD 1.00","column":"CURCD"},
+    {"location":"639,1239,83,25","text":"30.02","column":"PM"},
+    {"location":"639,1299,58,25","text":"9.01","column":"UNDEFINED"},
+    {"location":"639,1362,64,25","text":"0.00","column":"CLAIM"},
+    {"location":"639,1422,58,25","text":"9.01","column":"UNDEFINED"},
+    {"location":"639,1485,64,25","text":"0.00","column":"PMRESERVERLD"},
+    {"location":"639,1545,64,25","text":"0.00","column":"INTEREST"},
+    {"location":"639,1605,64,25","text":"0.75","column":"BROKERAGE"},
+    {"location":"648,1677,64,25","text":"0.00","column":"PROFITCN"},
+    {"location":"1706,1908,356,29","text":"APEX INSURANCE","column":"UNDEFINED\r\n"}
+    ],"docCategory":{"SEQNUM":2,"DOCNAME":"Apex 계산서","DOCTYPE":1,"SAMPLEIMAGEPATH":"sample/apex.jpg"}};
+    compareBatchLearningData(ocrData, data);
+    */
+    
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
         type: 'post',
@@ -653,7 +698,7 @@ function execBatchLearningData(ocrData, data) {
         beforeSend: function () {
         },
         success: function (data) {
-            console.log(data);
+            console.log(JSON.stringify(data));
             
             modifyData = data.data;
             batchCount++;
@@ -1615,102 +1660,51 @@ var fn_processUiTraining = function (fileInfoList) {
 
 // UI학습 팝업 실행
 var fn_batchUiTraining = function () {
-    var dataObj = {};
-    //dataObj["imgId"] = $("#imgId").val();
-    //dataObj["imgFileStartNo"] = $("#imgFileStartNo").val();
-    //dataObj["imgFileEndNo"] = $("#imgFileEndNo").val();
-    dataObj["cscoNm"] = $("#cscoNm").val();
-    dataObj["ctNm"] = $("#ctNm").val();
-    dataObj["insStDt"] = $("#insStDt").val();
-    dataObj["insEndDt"] = $("#insEndDt").val();
-    dataObj["curCd"] = $("#curCd").val();
-    dataObj["pre"] = $("#pre").val();
-    dataObj["com"] = $("#com").val();
-    dataObj["brkg"] = $("#brkg").val();
-    dataObj["txam"] = $("#txam").val();
-    dataObj["prrsCf"] = $("#prrsCf").val();
-    dataObj["prrsRls"] = $("#prrsRls").val();
-    dataObj["lsresCf"] = $("#lsresCf").val();
-    dataObj["lsresRls"] = $("#lsresRls").val();
-    dataObj["cla"] = $("#cla").val();
-    dataObj["exex"] = $("#exex").val();
-    dataObj["svf"] = $("#svf").val();
-    dataObj["cas"] = $("#cas").val();
-    dataObj["ntbl"] = $("#ntbl").val();
-    dataObj["cscoSaRfrnCnnt2"] = $("#cscoSaRfrnCnnt2").val();
+    var data = {
+        "data": [
+            { "location": "1018,240,411,87", "text": "APEX", "column": "UNDEFINED" },
+            { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNDEFINED" },
+            { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNDEFINED" },
+            { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNDEFINED" },
+            { "location": "206,691,274,27", "text": "4153 Korean Re", "column": "UNDEFINED" },
+            { "location": "208,756,525,34", "text": "Proportional Treaty Statement", "column": "UNDEFINED" },
+            { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626", "column": "UNDEFINED" },
+            { "location": "1840,575,169,25", "text": "01105/2018", "column": "UNDEFINED" },
+            { "location": "206,848,111,24", "text": "Cedant", "column": "UNDEFINED" },
+            { "location": "206,908,285,24", "text": "Class of Business", "column": "UNDEFINED" },
+            { "location": "210,963,272,26", "text": "Period of Quarter", "column": "UNDEFINED" },
+            { "location": "207,1017,252,31", "text": "Period of Treaty", "column": "UNDEFINED" },
+            { "location": "206,1066,227,24", "text": "Our Reference", "column": "UNDEFINED" },
+            { "location": "226,1174,145,31", "text": "Currency", "column": "UNDEFINED" },
+            { "location": "227,1243,139,24", "text": "Premium", "column": "UNDEFINED" },
+            { "location": "226,1303,197,24", "text": "Commission", "column": "UNDEFINED" },
+            { "location": "226,1366,107,24", "text": "Claims", "column": "UNDEFINED" },
+            { "location": "227,1426,126,24", "text": "Reserve", "column": "UNDEFINED" },
+            { "location": "227,1489,123,24", "text": "Release", "column": "UNDEFINED" },
+            { "location": "227,1549,117,24", "text": "Interest", "column": "UNDEFINED" },
+            { "location": "227,1609,161,31", "text": "Brokerage", "column": "UNDEFINED" },
+            { "location": "233,1678,134,24", "text": "Portfolio", "column": "UNDEFINED" },
+            { "location": "227,1781,124,24", "text": "Balance", "column": "UNDEFINED" },
+            { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018", "column": "CTOGCOMPANYNAMENM" },
+            { "location": "574,907,636,26", "text": ": Fire QS EQ 2018 W HOS BK UNI HTEL", "column": "CTNM" },
+            { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018", "column": "PERIODQ" },
+            { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018", "column": "PERIODT" },
+            { "location": "574,1065,304,25", "text": ": APEX/BORD/2727", "column": "CSCOSARFRNCNNT2" },
+            { "location": "629,1173,171,25", "text": "JOD 1.00", "column": "CURCD" },
+            { "location": "639,1239,83,25", "text": "30.02", "column": "PM" },
+            { "location": "639,1299,58,25", "text": "9.01", "column": "UNDEFINED" },
+            { "location": "639,1362,64,25", "text": "0.00", "column": "CLAIM" },
+            { "location": "639,1422,58,25", "text": "9.01", "column": "UNDEFINED" },
+            { "location": "639,1485,64,25", "text": "0.00", "column": "PMRESERVERLD" },
+            { "location": "639,1545,64,25", "text": "0.00", "column": "INTEREST" },
+            { "location": "639,1605,64,25", "text": "0.75", "column": "BROKERAGE" },
+            { "location": "648,1677,64,25", "text": "0.00", "column": "PROFITCN" },
+            { "location": "1706,1908,356,29", "text": "APEX INSURANCE", "column": "UNDEFINED\r\n" }
+        ], "docCategory": { "SEQNUM": 2, "DOCNAME": "Apex 계산서", "DOCTYPE": 1, "SAMPLEIMAGEPATH": "sample/apex.jpg" }
+    };
+    docLabelMapping(data);
 
-    for (var num in ocrPopData) {
-        if (ocrPopData[num].column == "CSCO_NM_VALUE") {
-            if (ocrPopData[num].text != $("#cscoNm").val()) {
-                ocrPopData[num].transText = $("#cscoNm").val();
-            }
-        } else if (ocrPopData[num].column == "CT_NM_VALUE") {
-            if (ocrPopData[num].text != $("#ctNm").val()) {
-                ocrPopData[num].transText = $("#ctNm").val();
-            }
-        } else if (ocrPopData[num].column == "INS_ST_DT_VALUE") {
-            if (ocrPopData[num].text != $("#insStDt").val()) {
-                ocrPopData[num].transText = $("#insStDt").val();
-            }
-        } else if (ocrPopData[num].column == "INS_END_DT_VALUE") {
-            if (ocrPopData[num].text != $("#insEndDt").val()) {
-                ocrPopData[num].transText = $("#insEndDt").val();
-            }
-        } else if (ocrPopData[num].column == "CUR_CD_VALUE") {
-            if (ocrPopData[num].text != $("#curCd").val()) {
-                ocrPopData[num].transText = $("#curCd").val();
-            }
-        } else if (ocrPopData[num].column == "PRE_VALUE") {
-            if (ocrPopData[num].text != $("#pre").val()) {
-                ocrPopData[num].transText = $("#pre").val();
-            }
-        } else if (ocrPopData[num].column == "COM_VALUE") {
-            if (ocrPopData[num].text != $("#com").val()) {
-                ocrPopData[num].transText = $("#com").val();
-            }
-        } else if (ocrPopData[num].column == "BRKG_VALUE") {
-            if (ocrPopData[num].text != $("#brkg").val()) {
-                ocrPopData[num].transText = $("#brkg").val();
-            }
-        } else if (ocrPopData[num].column == "TXAM_VALUE") {
-            if (ocrPopData[num].text != $("#txam").val()) {
-                ocrPopData[num].transText = $("#txam").val();
-            }
-        } else if (ocrPopData[num].column == "PRRS_CF_VALUE") {
-            if (ocrPopData[num].text != $("#prrsCf").val()) {
-                ocrPopData[num].transText = $("#prrsCf").val();
-            }
-        } else if (ocrPopData[num].column == "PRRS_RLS_VALUE") {
-            if (ocrPopData[num].text != $("#prrsRls").val()) {
-                ocrPopData[num].transText = $("#prrsRls").val();
-            }
-        } else if (ocrPopData[num].column == "CLA_VALUE") {
-            if (ocrPopData[num].text != $("#cla").val()) {
-                ocrPopData[num].transText = $("#cla").val();
-            }
-        } else if (ocrPopData[num].column == "EXEX_VALUE") {
-            if (ocrPopData[num].text != $("#exex").val()) {
-                ocrPopData[num].transText = $("#exex").val();
-            }
-        } else if (ocrPopData[num].column == "SVF_VALUE") {
-            if (ocrPopData[num].text != $("#svf").val()) {
-                ocrPopData[num].transText = $("#svf").val();
-            }
-        } else if (ocrPopData[num].column == "CAS_VALUE") {
-            if (ocrPopData[num].text != $("#cas").val()) {
-                ocrPopData[num].transText = $("#cas").val();
-            }
-        } else if (ocrPopData[num].column == "NTBL_VALUE") {
-            if (ocrPopData[num].text != $("#ntbl").val()) {
-                ocrPopData[num].transText = $("#ntbl").val();
-            }
-        } else if (ocrPopData[num].column == "CSCO_SA_RFRN_CNNT2_VALUE") {
-            if (ocrPopData[num].text != $("#cscoSaRfrnCnnt2").val()) {
-                ocrPopData[num].transText = $("#cscoSaRfrnCnnt2").val();
-            }
-        }
-    }
-
+    /*
     var param = { "dataObj": ocrPopData };
 
     $.ajax({
@@ -1730,6 +1724,56 @@ var fn_batchUiTraining = function () {
             console.log(err);
         }
     });
+    */
+}
+
+// 양식레이블 매핑
+var docLabelMapping = function (data) {
+    var returnObj = [];
+    
+    $.ajax({
+        url: '/batchLearning/selectOcrSymSpell',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data' : data.data }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            var mlParams = [];
+            for (var i in data.data) {
+                var returnItem = {};
+                returnItem.x = data.data[i].location.split(',')[0];
+                returnItem.y = data.data[i].location.split(',')[0];
+                returnItem.word1 = 0;
+                returnItem.word2 = 0;
+                returnItem.word3 = 0;
+                returnItem.word4 = 0;
+                returnItem.word5 = 0;
+                var wordArr = data.data[i].text.split(' ');
+                var wordNum = [];
+                for (var j = 0; j < wordArr.length; j++) {                   
+                    for (var k in data.data[i].typoData) {
+                        if (wordArr[j] == data.data[i].typoData[k].KEYWORD) {
+                            wordNum.push(data.data[i].typoData[k].SEQNUM);
+                            if (wordNum.length == 5) break;
+                        }
+                    }                 
+                }
+                for (var j in wordNum) {
+                    if (j == 0) returnItem.word1 = wordNum[0];
+                    if (j == 1) returnItem.word2 = wordNum[1];
+                    if (j == 2) returnItem.word3 = wordNum[2];
+                    if (j == 3) returnItem.word4 = wordNum[3];
+                    if (j == 4) returnItem.word5 = wordNum[4];
+                }
+                mlParams.push(returnItem);
+            }
+            console.log(mlParams);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+    
 }
 
 //문서 비교 popup 버튼 클릭 이벤트
