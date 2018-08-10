@@ -299,8 +299,14 @@ var batchLearningConfig = {
          FROM
             tbl_contract_mapping
          WHERE
-            extOgcompanyName = :extOgcompanyName AND extCtnm = :extCtnm
-        `
+            extOgcompanyName = :extOgcompanyName AND extCtnm = :extCtnm `,
+    selectTypo:
+        `SELECT
+            seqNum, keyword
+         FROM
+            tbl_ocr_symspell
+         WHERE
+            1=1 `
 }
 
 var uiLearningConfig = {

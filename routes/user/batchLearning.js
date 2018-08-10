@@ -520,6 +520,36 @@ router.post('/execBatchLearningData', function (req, res) {
 
 });
 
+router.post('/selectOcrSymSpell', function (req, res) {
+    /*
+    var data = [{ "location": "1018,240,411,87", "text": "APEX", "column": "UNDEFINED" },
+    { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNDEFINED" },
+    { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNDEFINED" },
+    { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNDEFINED" }];  
+    */
+    var data = req.body.data;
+    var querycount = 0;
+    for (var i in data) {
+        var query = queryConfig.batchLearningConfig.selectTypo;
+        var wordArr = data[i].text.split(' ');       
+        for (var j in wordArr) {
+            if (j == 0) {
+                query += "AND keyword = '" + wordArr[j] + "' ";
+            } else {
+                query += "OR keyword = '" + wordArr[j] + "' ";
+            }
+           
+        }
+        commonDB.reqQueryF1param(query, function (rows, req, res, i) {
+            querycount++;
+            data[i].typoData = rows;
+            if (querycount == data.length) {
+                res.send({ code: 200, 'data': data });
+            }
+        }, req, res, i);
+    }
+});
+
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
 var callbackInsertBatchLearningBaseData = function (rows, req, res) {
     //console.log("upload batchLearningBaseData finish..");
@@ -870,16 +900,20 @@ router.post('/compareBatchLearningData', function (req, res) {
     //console.log(dataObj);
     var query = queryConfig.batchLearningConfig.selectContractMapping;
     var param;
-    if (typeof dataObj.CTNM == 'string') { // 단일 계약명
-        param = [dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM];
-    } else { // 다중 계약명
-        param = [dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM[0]];
-        for (var i = 1; i < dataObj.CTNM.length; i++) {
-            query += " OR (extOgCompanyName = '" + dataObj.CTOGCOMPANYNAMENM + "' AND extCtnm = '" + dataObj.CTNM[i]+ "')";
+    if (dataObj.CTOGCOMPANYNAMENM && dataObj.CTNM) {
+        if (typeof dataObj.CTNM == 'string') { // 단일 계약명
+            param = [dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM];
+        } else { // 다중 계약명
+            param = [dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM[0]];
+            for (var i = 1; i < dataObj.CTNM.length; i++) {
+                query += " OR (extOgCompanyName = '" + dataObj.CTOGCOMPANYNAMENM + "' AND extCtnm = '" + dataObj.CTNM[i] + "')";
+            }
         }
+        commonDB.reqQueryParam2(query, param, callbackSelectContractMapping, dataObj, req, res);
+    } else {
+        res.send({ isContractMapping: false });
     }
-
-    commonDB.reqQueryParam2(query, param, callbackSelectContractMapping, dataObj, req, res);
+   
 });
 
 var callbackSelectContractMapping = function (rows, dataObj, req, res) {
