@@ -21,7 +21,7 @@ var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
 
 $(function () {
-    _init();
+    //_init();
     //viewServerFileTest();
 });
 
