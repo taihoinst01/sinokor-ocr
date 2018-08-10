@@ -209,13 +209,13 @@
                         </div>
                         <div id="orgDocSearch" class="inputst_role2">
                             <input type="text" name="orgDocName" id="orgDocName" class="inputst_box01 ui_doc_pop_ipt" value="" />
-                            <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1">확 인</button>
-                            <button type="button" id="" class="ui_doc_pop_btn2 cbtn ml5">취 소</button>
+                            <button type="button" id="" class="ui_doc_pop_btn2 cbtn">취 소</button>
+                            <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1 ml5">확 인</button>
                         </div>
                         <div id="newDocRegistration" class="inputst_role2" style="display:none;">
                             <input type="text" name="newDocName" id="newDocName" class="inputst_box01 ui_doc_pop_ipt2" value="" placeholder="신규문서명을 입력해 주세요" />
-                            <button type="button" id="insertDocCategoryBtn" class="ui_doc_pop_btn1">신규등록</button>
-                            <button type="button" id="" class="ui_doc_pop_btn2 cbtn ml5">취 소</button>
+                            <button type="button" id="" class="ui_doc_pop_btn2 cbtn">취 소</button>
+                            <button type="button" id="insertDocCategoryBtn" class="ui_doc_pop_btn1 ml5">신규등록</button>
                         </div>
                     </div>
                     <div class="pop_content">
@@ -223,11 +223,11 @@
                             <div class="ui_doc_pop_div00">
                                 <div class="ui_doc_pop_div01">
                                     <span>머신러닝 예측 문서</span>
-                                    <input type="text" id="mlPredictionDocName" disabled="disabled">
+                                    <input type="text" id="mlPredictionDocName" readonly="readonly">
                                 </div>
                                 <div class="ui_doc_pop_div01">
                                     <span>정확도</span>
-                                    <input type="text" id="mlPredictionPercent"disabled="disabled">
+                                    <input type="text" id="mlPredictionPercent" readonly="readonly">
                                 </div>
                             </div>
                             <div class="imgbox">
@@ -242,7 +242,7 @@
                                     <button type="button" id="searchDocCategoryBtn" class="ui_doc_pop_btn3">검색</button>
                                 </div>
                                 <div class="ui_doc_pop_div01">
-                                    <input type="text" id="searchResultDocName" disabled="disabled">
+                                    <input type="text" id="searchResultDocName" readonly="readonly">
                                 </div>
                             </div>
                             <div id="docSearchResult" class="imgbox">

@@ -126,7 +126,7 @@ input.noline{border:none !important;}*/
 
         input[type='text']:hover,
         input[type='password']:hover {
-            border: 1px solid #0774b9;
+            border: 1px solid #525251;
         }
 
 .my-placeholder {
