@@ -5508,3 +5508,57 @@ button[disabled] {
 .batch_pop2 .select_style {
     min-width: auto;
 }
+.batch_pop1 .pop_popup01 .pop_header {
+    height: 36px !important;
+}
+
+.uiHorizontal {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: table;
+}
+
+    .uiHorizontal .liStyle01 {
+        width: 150px;
+        text-align: center;
+        height: 40px;
+        display: inline-block;
+        margin: 0 0 0 0;
+        padding: 0 0 0 0;
+        border: 0;
+        float: left;
+        line-height: 2.5;
+        cursor: pointer;
+        border: 1px solid #ccc !important;
+        font-size: 16px;
+    }
+.uiHorizontal .liStyle01.on {
+    background: #525251;    
+    cursor: default;
+}
+.uiHorizontal .liStyle01.on a {
+    color: #fff;
+}
+.liStyle01 a{
+    color: #3f3f3f;
+}
+.batch_pop1 .pop_popup01 {
+    width: 510px !important;
+}
+
+.batch_pop1 .inputst_box01 .dset {
+    width: 49% !important;
+}
+.batch_pop1 .inputst_box01  {
+    width: 456px;
+}
+#learningRange_content {
+    padding-top: 10px;
+    border-top: 1px solid #eaeaea;
+    margin-top: 10px;
+}
+
+.batch_pop1 .pop_footer {
+    padding: 0 27px 20px !important;
+}

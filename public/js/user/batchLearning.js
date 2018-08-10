@@ -21,7 +21,7 @@ var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
 
 $(function () {
-    //_init();
+    _init();
     //viewServerFileTest();
 });
 
@@ -1498,10 +1498,10 @@ var fn_batchTraining = function () {
 };
 var fn_popBatchRun = function () {
     var imgIdArray = [];
-    var radioValue = $("input[name='radio_batch']:checked").val();
+    var learningMethodNum = $("#learningMethodNum").val();
 
-    switch (radioValue) {
-        case "choice-1":        // 전체 학습
+    switch (learningMethodNum) {
+        case "0":        // 전체 학습
             if (addCond == "LEARN_N") {
                 let chkCnt = 0;
                 $("input[name=listCheck_before]").each(function (index, entry) {
@@ -1520,7 +1520,7 @@ var fn_popBatchRun = function () {
                 return;
             }
             break;
-        case "choice-2":        // 선택한 파일 학습
+        case "1":        // 선택한 파일 학습
             if (addCond == "LEARN_N") {
                 let chkCnt = 0;
                 $("input[name=listCheck_before]").each(function (index, entry) {
@@ -1541,7 +1541,7 @@ var fn_popBatchRun = function () {
                 return;
             }
             break;
-        case "choice-3":        // 학습 범위 지정
+        case "2":        // 학습 범위 지정
             alert("준비중 입니다.");
             break;
         default:
@@ -1930,8 +1930,9 @@ function _init() {
 	//excelUploadEvent();         // excel upload event
     popUpEvent();
     searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
-    changeDocPopupImage();
-    changeDocPopRadio();
+    changeDocPopupImage();      // 문서 양식 조회 이미지 좌우 버튼 이벤트
+    changeDocPopRadio();        // 문서 양식 조회 팝업 라디오 이벤트
+    selectLearningMethod();     //학습실행팝업
 }
 
 
@@ -2264,6 +2265,28 @@ function insertRegion(lineText) {
             }
         });
     }
+}
+
+// 학습실행팝업
+function selectLearningMethod() {
+
+    // 전체학습
+    $('#allLaerning').click(function () {
+        $('#learningMethodNum').val(0);
+        $('#learningRange_content').hide();
+    })
+
+    // 선택한 파일 학습
+    $('#selectFileLearning').click(function () {
+        $('#learningMethodNum').val(1);
+        $('#learningRange_content').hide();
+    })
+
+    // 학습 범위 지정
+    $('#learningRange').click(function () {
+        $('#learningMethodNum').val(2);
+        $('#learningRange_content').show();
+    })
 }
 
 

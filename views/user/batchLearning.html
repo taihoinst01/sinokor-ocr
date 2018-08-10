@@ -606,7 +606,7 @@
     </div>
 
     <!-- 팝업_수동학습레이어팝업 -->
-    <div id="layer1" class="poplayer">
+    <div id="layer1" class="poplayer batch_pop1">
         <div class="bg"></div>
         <div class="pop_layer">
             <div class="pop_popup0 pop_popup01">
@@ -614,59 +614,48 @@
                     <h1>학습 실행</h1>
                 </div>
                 <div class="pop_content">
-                    <div class="pop_box_120 box_txt_st01">
-                        <ul>
-                            <li>
-                                <div class="inputst_role">
+                    <div>
+                        <!-- 0:전체학습     1:선택한 파일 학습     2:학습 범위 지정-->
+                        <input type="hidden" id="learningMethodNum" value="0" />
+                        <ul class="uiHorizontal">
+                            <li id="allLaerning" class="liStyle01 liSwitch on">
+                                <a>전체학습</a>
+                                <!--
                                     <input type="radio" id="radio-choice-1" value="choice-1" class="custom" name="radio_batch" checked="checked" />
                                     <label for="radio-choice-1">전체학습</label>
-                                </div>
+                                -->
                             </li>
-                            <li>
-                                <div class="inputst_role">
+                            <li id="selectFileLearning" class="liStyle01 liSwitch">
+                                <a>선택한 파일 학습</a>
+                                <!--
                                     <input type="radio" id="radio-choice-2" value="choice-2" class="custom" name="radio_batch" />
                                     <label for="radio-choice-2">선택한 파일 학습</label>
-                                </div>
+                                -->
                             </li>
-                            <li>
-                                <div class="inputst_role">
+                            <li id="learningRange" class="liStyle01 liSwitch">
+                                <a>학습 범위 지정</a>
+                                <!--
                                     <input type="radio" id="radio-choice-3" value="choice-3" class="custom" name="radio_batch" />
                                     <label for="radio-choice-3">학습 범위 지정</label>
-                                </div>
+                                -->
                             </li>
-                            <div class="clearfix inputst_box01 box_day" style="display:none">
-                                <span class="dset">
-                                    <input type="text" class="datepicker inpType" name="searchStartDate" id="searchStartDate" readonly />
-                                    <a href="#none" class="btncalendar dateclick">달력</a>
-                                </span>
-                                <span class="demi">-</span>
-                                <span class="dset dset2">
-                                    <input type="text" class="datepicker inpType" name="searchEndDate" id="searchEndDate" readonly />
-                                    <a href="#none" class="btncalendar dateclick">달력</a>
-                                </span>
-                            </div>
-                            <!--
-                                 <div class="box_day" style="display:none">
-                                     <ul>
-                                         <li>
-                                             <label for="intxt_01" " class="blind">학습범위지정 시작</label>
-                                             <input type="text" class="datepicker inpType" name="searchStartDate" id="searchStartDate" readonly />
-                                             <a href="#none" class="btncalendar dateclick">달력</a>
-                                         </li>
-                                         <li>-</li>
-                                         <li>
-                                             <label for="intxt_02" class="blind">학습범위지정 끝</label>
-                                             <input type="text" class="datepicker inpType" name="searchEndDate" id="searchEndDate" readonly />
-                                             <a href="#none" class="btncalendar dateclick">달력</a>
-                                         </li>
-                                     </ul>
-                                 </div>
-                            -->
+                        </ul>
+                    </div>
+                    <div id="learningRange_content" class="clearfix inputst_box01 box_day" style="display:none">
+                        <span class="dset">
+                            <input type="text" class="datepicker inpType" name="searchStartDate" id="searchStartDate" readonly />
+                            <a href="#none" class="btncalendar dateclick">달력</a>
+                        </span>
+                        <span class="demi">-</span>
+                        <span class="dset dset2">
+                            <input type="text" class="datepicker inpType" name="searchEndDate" id="searchEndDate" readonly />
+                            <a href="#none" class="btncalendar dateclick">달력</a>
+                        </span>
                     </div>
                 </div>
                 <div class="pop_footer">
+                    <button type="button" id="btn_pop_batch_close" class="button_st4 cbtn">취 소</button>
                     <button type="button" id="btn_pop_batch_run" class="button_st1 cbtn">실 행</button>
-                    <button type="button" id="btn_pop_batch_close" class="button_st2 cbtn">취 소</button>
                 </div>
             </div>
         </div>
@@ -1043,7 +1032,7 @@
     <!--
         <script type="text/javascript">
         layer_open('layer1');
-    </script>
+        </script>
     -->
     <!-- 팝업_문서비교레이어팝업 -->
     <div id="layer4" class="poplayer">

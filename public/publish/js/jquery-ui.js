@@ -13,6 +13,12 @@ jQuery(function($){
 			$(this).parent('li').addClass('on');
 		});
 
+    // li on/off 효과  
+    $('.liSwitch').click(function () {
+        $(this).siblings('.liSwitch').removeClass('on');
+        $(this).addClass('on');
+    });
+    
     // 양식이미지용 문서 슬라이딩 좌우버튼 
     /*
     //좌측버튼
