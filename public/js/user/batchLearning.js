@@ -1132,7 +1132,7 @@ var searchBatchLearnDataList = function (addCond) {
                     </tr>`;
                 });
             } else {
-                appendHtml += `<tr><td colspan="52">조회할 데이터가 없습니다.</td></tr>`;
+                appendHtml += `<tr><td colspan="53">조회할 데이터가 없습니다.</td></tr>`;
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") $("#tbody_batchList_before").empty().append(appendHtml);

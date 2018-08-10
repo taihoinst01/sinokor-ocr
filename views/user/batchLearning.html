@@ -135,7 +135,7 @@
                         <li><a href="#none" class="btn_tep_02" id="tab_after" title="After Training">After Training</a></li>
                     </ul>
                     <!-- Looks like select box-->
-                    <input type="hidden" id="select_view_count" value="20" />
+                    <input type="hidden" id="select_view_count" value="12" />
                     <div class="select_style">
                         <span class="ctrl"><span class="arrow"></span></span>
                         <button type="button" class="myValue">선택하기</button>
@@ -172,126 +172,194 @@
                         <h3 class="blind"><span>Before Training</span></h3>
 
                         <div id="content-6" class="content horizontal-images">
-                            <div class="table_style02">
-                                <table class="">
-                                    <caption id="list_caption">Before Training 파일 정보</caption>
-                                    <colgroup>
-                                        <col style="width:50px" />
-                                        <col style="width:150px" />
-                                        <col style="width:150px" />
-                                        <col style="width:200px" />
-                                        <col style="width:200px" />
-                                        <col style="width:200px" />
-                                        <col style="width:200px" />
-                                        <col style="width:100px" />
-                                        <col style="width:250px" />
-                                        <col style="width:100px" />
-                                        <col style="width:150px" />
-                                        <col style="width:150px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                    </colgroup>
-                                    <thead>
-                                        <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
-                                            <!--머신러닝 거쳐오는 값들-->
-                                            <th scope="row">파일명</th>
-                                            <th scope="row">학습여부</th>
-                                            <th scope="row">추출 출재사명</th>
-                                            <th scope="row">추출 계약명</th>
-                                            <th scope="row">원본 출재사명</th>
-                                            <th scope="row">원본 계약명</th>
-                                            <th scope="row">UY</th>
-                                            <th scope="row">OSL(100%)</th>
-                                            <th scope="row">OSL(Our Share)</th>
-                                            <!--DB에서 가져오는 값들-->
-                                            <th scope="row">이미지ID</th>
-                                            <th scope="row">계산서 구분</th>
-                                            <th scope="row">계약번호</th>
-                                            <th scope="row">출재사코드</th>
-                                            <th scope="row">중개사코드</th>
-                                            <th scope="row">중개사명</th>
-                                            <th scope="row">보험개시일</th>
-                                            <th scope="row">보험종료일</th>
-                                            <th scope="row">화폐코드</th>
-                                            <th scope="row">Paid(100%)</th>
-                                            <th scope="row">Paid(Our Share)</th>
-                                            <th scope="row">GROSS PREMIUM</th>
-                                            <th scope="row">PREMIUM</th>
-                                            <th scope="row">PREMIUM P/F ENT</th>
-                                            <th scope="row">PREMIUM P/F WOS</th>
-                                            <th scope="row">XOL PREMIUM</th>
-                                            <th scope="row">RETURN PREMIUM</th>
-                                            <th scope="row">GROSS COMMISSION</th>
-                                            <th scope="row">COMMISSION</th>
-                                            <th scope="row">PROFIT COMMISSION</th>
-                                            <th scope="row">BROKERAGE</th>
-                                            <th scope="row">TEX</th>
-                                            <th scope="row">OVERRIDING COM</th>
-                                            <th scope="row">CHARGE</th>
-                                            <th scope="row">PREMUIM RESERVE RTD</th>
-                                            <th scope="row">P/F PREMIUM RESERVE RTD</th>
-                                            <th scope="row">PREMIUM RESERVE RLD</th>
-                                            <th scope="row">P/F PREMIUM RESERVE RLD</th>
-                                            <th scope="row">CLAIM</th>
-                                            <th scope="row">LOSS RECOVERY</th>
-                                            <th scope="row">CASH LOSS</th>
-                                            <th scope="row">CASH LOSS REFUND</th>
-                                            <th scope="row">LOSS RESERVE RTD</th>
-                                            <th scope="row">LOSS RESERVE RLD</th>
-                                            <th scope="row">LOSS P/F ENT</th>
-                                            <th scope="row">LOSS P/F WOA</th>
-                                            <th scope="row">INTEREST</th>
-                                            <th scope="row">TAX ON</th>
-                                            <th scope="row">MISCELLANEOUS</th>
-                                            <th scope="row">PREMIUM BALANCE</th>
-                                            <th scope="row">CLAIM BALANCE</th>
-                                            <th scope="row">NET BALANCE</th>
-                                            <th scope="row">Your Ref</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tbody_batchList_before"></tbody>
-                                </table>
-                            </div>
+                            <table class="batch_tblBackground tblBackground" cellspacing="0">
+                                <tr>
+                                    <td>
+                                        <div class="table_style02">
+                                            <div class="batch_divHeadScroll divHeadScroll">
+                                                <table class="batch_tblHead tblHead" border="0">
+                                                    <caption id="list_caption">Before Training 파일 정보</caption>
+                                                    <colgroup>
+                                                        <col style="width:50px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:250px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:17px" />
+                                                    </colgroup>
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
+                                                            <!--머신러닝 거쳐오는 값들-->
+                                                            <th scope="row">파일명</th>
+                                                            <th scope="row">학습여부</th>
+                                                            <th scope="row">추출 출재사명</th>
+                                                            <th scope="row">추출 계약명</th>
+                                                            <th scope="row">원본 출재사명</th>
+                                                            <th scope="row">원본 계약명</th>
+                                                            <th scope="row">UY</th>
+                                                            <th scope="row">OSL(100%)</th>
+                                                            <th scope="row">OSL(Our Share)</th>
+                                                            <!--DB에서 가져오는 값들-->
+                                                            <th scope="row">이미지ID</th>
+                                                            <th scope="row">계산서 구분</th>
+                                                            <th scope="row">계약번호</th>
+                                                            <th scope="row">출재사코드</th>
+                                                            <th scope="row">중개사코드</th>
+                                                            <th scope="row">중개사명</th>
+                                                            <th scope="row">보험개시일</th>
+                                                            <th scope="row">보험종료일</th>
+                                                            <th scope="row">화폐코드</th>
+                                                            <th scope="row">Paid(100%)</th>
+                                                            <th scope="row">Paid(Our Share)</th>
+                                                            <th scope="row">GROSS PREMIUM</th>
+                                                            <th scope="row">PREMIUM</th>
+                                                            <th scope="row">PREMIUM P/F ENT</th>
+                                                            <th scope="row">PREMIUM P/F WOS</th>
+                                                            <th scope="row">XOL PREMIUM</th>
+                                                            <th scope="row">RETURN PREMIUM</th>
+                                                            <th scope="row">GROSS COMMISSION</th>
+                                                            <th scope="row">COMMISSION</th>
+                                                            <th scope="row">PROFIT COMMISSION</th>
+                                                            <th scope="row">BROKERAGE</th>
+                                                            <th scope="row">TEX</th>
+                                                            <th scope="row">OVERRIDING COM</th>
+                                                            <th scope="row">CHARGE</th>
+                                                            <th scope="row">PREMUIM RESERVE RTD</th>
+                                                            <th scope="row">P/F PREMIUM RESERVE RTD</th>
+                                                            <th scope="row">PREMIUM RESERVE RLD</th>
+                                                            <th scope="row">P/F PREMIUM RESERVE RLD</th>
+                                                            <th scope="row">CLAIM</th>
+                                                            <th scope="row">LOSS RECOVERY</th>
+                                                            <th scope="row">CASH LOSS</th>
+                                                            <th scope="row">CASH LOSS REFUND</th>
+                                                            <th scope="row">LOSS RESERVE RTD</th>
+                                                            <th scope="row">LOSS RESERVE RLD</th>
+                                                            <th scope="row">LOSS P/F ENT</th>
+                                                            <th scope="row">LOSS P/F WOA</th>
+                                                            <th scope="row">INTEREST</th>
+                                                            <th scope="row">TAX ON</th>
+                                                            <th scope="row">MISCELLANEOUS</th>
+                                                            <th scope="row">PREMIUM BALANCE</th>
+                                                            <th scope="row">CLAIM BALANCE</th>
+                                                            <th scope="row">NET BALANCE</th>
+                                                            <th scope="row">Your Ref</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                            <div class="batch_divBodyScroll divBodyScroll">
+                                                <table class="batch_tblBody tblBody" border="0">
+                                                    <colgroup>
+                                                        <col style="width:50px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:250px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                    </colgroup>
+                                                    <tbody id="tbody_batchList_before"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
 
                         <!-- 하단 정보 영역 -->
@@ -309,136 +377,210 @@
                         <h3 class="blind"><span>After Training</span></h3>
 
                         <div id="content-7" class="content horizontal-images">
-                            <div class="table_style02">
-                                <table class="">
-                                    <caption>After Training 파일 정보</caption>
-                                    <colgroup>
-                                        <col style="width:50px" />
-                                        <col style="width:150px" />
-                                        <col style="width:150px" />
-                                        <col style="width:100px" />
-                                        <col style="width:150px" />
-                                        <col style="width:100px" />
-                                        <col style="width:150px" />
-                                        <col style="width:100px" />
-                                        <col style="width:250px" />
-                                        <col style="width:100px" />
-                                        <col style="width:150px" />
-                                        <col style="width:150px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                    </colgroup>
-                                    <thead>
-                                        <tr>
-                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="stb00_all" value="" id="listCheckAll_after" name="listCheckAll_after" /></div></th>
-                                            <!--머신러닝 거쳐오는 값들-->
-                                            <th scope="row">파일명</th>
-                                            <th scope="row">학습여부</th>
-                                            <th scope="row">출재사명</th>
-                                            <th scope="row">UY</th>
-                                            <th scope="row">계약명 원본</th>
-                                            <th scope="row">계약명 요약</th>
-                                            <th scope="row">OSL(100%)</th>
-                                            <th scope="row">OSL(Our Share)</th>
-                                            <!--DB에서 가져오는 값들-->
-                                            <th scope="row">이미지ID</th>
-                                            <th scope="row">계산서 구분</th>
-                                            <th scope="row">계약번호</th>
-                                            <th scope="row">출재사코드</th>
-                                            <th scope="row">중개사코드</th>
-                                            <th scope="row">중개사명</th>
-                                            <th scope="row">보험개시일</th>
-                                            <th scope="row">보험종료일</th>
-                                            <th scope="row">화폐코드</th>
-                                            <th scope="row">Paid(100%)</th>
-                                            <th scope="row">Paid(Our Share)</th>
-                                            <th scope="row">GROSS PREMIUM</th>
-                                            <th scope="row">PREMIUM</th>
-                                            <th scope="row">PREMIUM P/F ENT</th>
-                                            <th scope="row">PREMIUM P/F WOS</th>
-                                            <th scope="row">XOL PREMIUM</th>
-                                            <th scope="row">RETURN PREMIUM</th>
-                                            <th scope="row">GROSS COMMISSION</th>
-                                            <th scope="row">COMMISSION</th>
-                                            <th scope="row">PROFIT COMMISSION</th>
-                                            <th scope="row">BROKERAGE</th>
-                                            <th scope="row">TEX</th>
-                                            <th scope="row">OVERRIDING COM</th>
-                                            <th scope="row">CHARGE</th>
-                                            <th scope="row">PREMUIM RESERVE RTD</th>
-                                            <th scope="row">P/F PREMIUM RESERVE RTD</th>
-                                            <th scope="row">PREMIUM RESERVE RLD</th>
-                                            <th scope="row">P/F PREMIUM RESERVE RLD</th>
-                                            <th scope="row">CLAIM</th>
-                                            <th scope="row">LOSS RECOVERY</th>
-                                            <th scope="row">CASH LOSS</th>
-                                            <th scope="row">CASH LOSS REFUND</th>
-                                            <th scope="row">LOSS RESERVE RTD</th>
-                                            <th scope="row">LOSS RESERVE RLD</th>
-                                            <th scope="row">LOSS P/F ENT</th>
-                                            <th scope="row">LOSS P/F WOA</th>
-                                            <th scope="row">INTEREST</th>
-                                            <th scope="row">TAX ON</th>
-                                            <th scope="row">MISCELLANEOUS</th>
-                                            <th scope="row">PREMIUM BALANCE</th>
-                                            <th scope="row">CLAIM BALANCE</th>
-                                            <th scope="row">NET BALANCE</th>
-                                            <th scope="row">Your Ref</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tbody_batchList_after"></tbody>
-                                </table>
+                            <table class="batch_tblBackground tblBackground" cellspacing="0">
+                                <tr>
+                                    <td>
+                                        <div class="table_style02">
+                                            <div class="batch_divHeadScroll divHeadScroll">
+                                                <table class="batch_tblHead tblHead" border="0">
+                                                    <colgroup>
+                                                        <col style="width:50px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:250px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:17px" />
+                                                    </colgroup>
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
+                                                            <!--머신러닝 거쳐오는 값들-->
+                                                            <th scope="row">파일명</th>
+                                                            <th scope="row">학습여부</th>
+                                                            <th scope="row">추출 출재사명</th>
+                                                            <th scope="row">추출 계약명</th>
+                                                            <th scope="row">원본 출재사명</th>
+                                                            <th scope="row">원본 계약명</th>
+                                                            <th scope="row">UY</th>
+                                                            <th scope="row">OSL(100%)</th>
+                                                            <th scope="row">OSL(Our Share)</th>
+                                                            <!--DB에서 가져오는 값들-->
+                                                            <th scope="row">이미지ID</th>
+                                                            <th scope="row">계산서 구분</th>
+                                                            <th scope="row">계약번호</th>
+                                                            <th scope="row">출재사코드</th>
+                                                            <th scope="row">중개사코드</th>
+                                                            <th scope="row">중개사명</th>
+                                                            <th scope="row">보험개시일</th>
+                                                            <th scope="row">보험종료일</th>
+                                                            <th scope="row">화폐코드</th>
+                                                            <th scope="row">Paid(100%)</th>
+                                                            <th scope="row">Paid(Our Share)</th>
+                                                            <th scope="row">GROSS PREMIUM</th>
+                                                            <th scope="row">PREMIUM</th>
+                                                            <th scope="row">PREMIUM P/F ENT</th>
+                                                            <th scope="row">PREMIUM P/F WOS</th>
+                                                            <th scope="row">XOL PREMIUM</th>
+                                                            <th scope="row">RETURN PREMIUM</th>
+                                                            <th scope="row">GROSS COMMISSION</th>
+                                                            <th scope="row">COMMISSION</th>
+                                                            <th scope="row">PROFIT COMMISSION</th>
+                                                            <th scope="row">BROKERAGE</th>
+                                                            <th scope="row">TEX</th>
+                                                            <th scope="row">OVERRIDING COM</th>
+                                                            <th scope="row">CHARGE</th>
+                                                            <th scope="row">PREMUIM RESERVE RTD</th>
+                                                            <th scope="row">P/F PREMIUM RESERVE RTD</th>
+                                                            <th scope="row">PREMIUM RESERVE RLD</th>
+                                                            <th scope="row">P/F PREMIUM RESERVE RLD</th>
+                                                            <th scope="row">CLAIM</th>
+                                                            <th scope="row">LOSS RECOVERY</th>
+                                                            <th scope="row">CASH LOSS</th>
+                                                            <th scope="row">CASH LOSS REFUND</th>
+                                                            <th scope="row">LOSS RESERVE RTD</th>
+                                                            <th scope="row">LOSS RESERVE RLD</th>
+                                                            <th scope="row">LOSS P/F ENT</th>
+                                                            <th scope="row">LOSS P/F WOA</th>
+                                                            <th scope="row">INTEREST</th>
+                                                            <th scope="row">TAX ON</th>
+                                                            <th scope="row">MISCELLANEOUS</th>
+                                                            <th scope="row">PREMIUM BALANCE</th>
+                                                            <th scope="row">CLAIM BALANCE</th>
+                                                            <th scope="row">NET BALANCE</th>
+                                                            <th scope="row">Your Ref</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                            <div class="batch_divBodyScroll divBodyScroll">
+                                                <table class="batch_tblBody tblBody" border="0">                                           
+                                                    <colgroup>
+                                                        <col style="width:50px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:200px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:250px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:150px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                        <col style="width:100px" />
+                                                    </colgroup>
+                                                    <tbody id="tbody_batchList_after">
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+
+                                                
                             </div>
-                        </div>
 
-                        <!-- 하단 정보 영역 -->
-                        <div class="box_cotent_bottom mt10">
-                            <span class="fl">총 <i id="total_cnt_after"></i>건의 학습중, <i id="choose_cnt_after">0</i>건이 선택됨</span>
-                        </div>
-                        <!-- // 하단 정보 영역 -->
+                            <!-- 하단 정보 영역 -->
+                            <div class="box_cotent_bottom mt10">
+                                <span class="fl">총 <i id="total_cnt_after"></i>건의 학습중, <i id="choose_cnt_after">0</i>건이 선택됨</span>
+                            </div>
+                            <!-- // 하단 정보 영역 -->
 
-                    </div>
+</div>
                 </div>
                 <!-- After Training 영역 -->
-
+                <!--
                 <script>
                     (function ($) {
                         $(window).on("load", function () {
@@ -456,7 +598,9 @@
 
                         });
                     })(jQuery);
+
                 </script>
+                -->
             </div>
             <!-- // 본문영역 -->
         </div>
