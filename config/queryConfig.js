@@ -304,6 +304,13 @@ var batchLearningConfig = {
          WHERE
             extOgcompanyName = :extOgcompanyName AND extCtnm = :extCtnm
         `,
+    electTypo:
+        `SELECT
+            seqNum, keyword
+         FROM
+            tbl_ocr_symspell
+         WHERE
+            1=1 `,
     insertContractMapping:
         `INSERT INTO
             tbl_contract_mapping(extOgcompanyName, extCtnm, asOgcompanyName, asCtnm)
