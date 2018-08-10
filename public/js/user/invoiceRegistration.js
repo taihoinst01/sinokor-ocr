@@ -14,9 +14,18 @@ var thumnbImgPerPage = 10; // 한 페이지당 썸네일 이미지 개수
 var x, y, textWidth, textHeight; // 문서 글씨 좌표
 var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, 마우스 이동 좌표
 
-
 $(function () {
     _init();
+
+    $("#mCSB_1_dragger_horizontal").mCustomScrollbar({
+        callbacks: {
+            whileScrolling: function () {
+                $('#divHeadScroll').scrollLeft($('#mCSB_1_dragger_horizontal').css('left').substring(0, $('#mCSB_1_dragger_horizontal').css('left').indexOf("p")));
+            }
+        }
+    });
+
+    
 });
 
 /****************************************************************************************

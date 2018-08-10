@@ -14,6 +14,7 @@ jQuery(function($){
 		});
 
     // 양식이미지용 문서 슬라이딩 좌우버튼 
+    /*
     //좌측버튼
     $('.button_control1').click(function () {
         $('.box_imgtmb li').each(function () {
@@ -45,6 +46,8 @@ jQuery(function($){
             }
         });
     });
+    */
+
 	// input 선택시 전체선택/해제
 	$(".sta00_all").change(function(){
 	 	var chk = $(".sta00");
@@ -91,6 +94,7 @@ jQuery(function($){
 		});
 
 	// 버튼 선택시 class=on 추가제거
+    /*
 	$('.button_st5').click(function(e){
 	 	var thiss = $(this);
 	 	if(thiss.hasClass('on')){
@@ -99,7 +103,7 @@ jQuery(function($){
 	 		thiss.addClass('on');
 	 	}
 	});
-
+    */
 
 	// TEP 버튼 선택시 시변경
 	$('.btn_tep_01').click(function(){

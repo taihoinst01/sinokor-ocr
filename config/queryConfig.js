@@ -80,7 +80,10 @@ var userMngConfig = {
         `DELETE FROM
             tbl_ocr_comm_user
          WHERE
-            seqNum = :seqNum `
+            seqNum = :seqNum `,
+    headerUserPopSelectPw:
+        `SELECT COUNT(USERID) AS CNT
+           FROM tbl_ocr_comm_user `
 };
 
 var dbcolumnsConfig = {
@@ -299,14 +302,13 @@ var batchLearningConfig = {
          FROM
             tbl_contract_mapping
          WHERE
-            extOgcompanyName = :extOgcompanyName AND extCtnm = :extCtnm `,
-    selectTypo:
-        `SELECT
-            seqNum, keyword
-         FROM
-            tbl_ocr_symspell
-         WHERE
-            1=1 `
+            extOgcompanyName = :extOgcompanyName AND extCtnm = :extCtnm
+        `,
+    insertContractMapping:
+        `INSERT INTO
+            tbl_contract_mapping(extOgcompanyName, extCtnm, asOgcompanyName, asCtnm)
+         VALUES(:extOgcompanyName, :extCtnm, :asOgcompanyName, :asCtnm)
+        `
 }
 
 var uiLearningConfig = {

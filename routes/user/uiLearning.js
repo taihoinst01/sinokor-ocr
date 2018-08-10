@@ -69,80 +69,61 @@ router.post('/typoSentence', function (req, res) {
     try {
         aimain.typoSentenceEval(data, function (result) {
 
-            /*
-            var condTypo = "and originword in(";
+            insertTypoCorrect(req, res, result);
 
-            for (var i in data) {
-                if (data[i].originText != null) {
-                    var correctWord = data[i].text;
-                    var originWord = data[i].originText;
-
-                    var correctSplit = correctWord.split(" ");
-                    var originSplit = originWord.split(" ");
-
-                    for (var j in correctSplit) {
-                        if (correctSplit[j] != originSplit[j]) {
-                            condTypo += "'" + originSplit[j] + "',";
-                        }
-                    }
-                }
-            }
-
-            condTypo = condTypo.slice(0, -1);
-            condTypo += ")";
-
-            commonDB.reqQuery(queryConfig.uiLearningConfig.selectTypoCorrect + condTypo, function (rows) {
-                console.log(rows);
-
-            }, req, res);
-            */
-
-            var arr = [];
-
-            for (var i in data) {
-                if (data[i].originText != null) {
-                    var correctWord = data[i].text;
-                    var originWord = data[i].originText;
-
-                    var correctSplit = correctWord.split(" ");
-                    var originSplit = originWord.split(" ");
-
-                    for (var j in correctSplit) {
-                        if (correctSplit[j] != originSplit[j]) {
-                            var arrData = {
-                                userid: regId,
-                                originWord: originSplit[j],
-                                correctWord: correctSplit[j],
-                                fileName: fileName,
-                                correctorType: "M"
-                            };
-                            arr.push(arrData);
-                        }
-                    }
-                }
-            }
-
-            var options = {
-                autoCommit: true,
-                bindDefs: {
-                    userid: { type: oracledb.STRING, maxSize: 100 },
-                    originWord: { type: oracledb.STRING, maxSize: 100},
-                    correctWord: { type: oracledb.STRING, maxSize: 100},
-                    fileName: { type: oracledb.STRING, maxSize: 100 },
-                    correctorType: { type: oracledb.STRING, maxSize: 1 }
-                }
-            };
-
-            commonDB.reqBatchQueryParam(queryConfig.uiLearningConfig.insertTypoCorrect, arr, options, function (rows, req, res) {
-                res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
-            }, req, res);
-            
         });
     }
     catch (exception) {
         console.log(exception);
     }
 });
+
+function insertTypoCorrect(req, res, result) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+    var regId = req.session.userId;
+
+    var arr = [];
+
+    for (var i in data) {
+        if (data[i].originText != null) {
+            var correctWord = data[i].text;
+            var originWord = data[i].originText;
+
+            var correctSplit = correctWord.split(" ");
+            var originSplit = originWord.split(" ");
+
+            for (var j in correctSplit) {
+                if (correctSplit[j] != originSplit[j]) {
+                    var arrData = {
+                        userid: regId,
+                        originWord: originSplit[j],
+                        correctWord: correctSplit[j],
+                        fileName: fileName,
+                        correctorType: "M"
+                    };
+                    arr.push(arrData);
+                }
+            }
+        }
+    }
+
+    var options = {
+        autoCommit: true,
+        bindDefs: {
+            userid: { type: oracledb.STRING, maxSize: 100 },
+            originWord: { type: oracledb.STRING, maxSize: 100 },
+            correctWord: { type: oracledb.STRING, maxSize: 100 },
+            fileName: { type: oracledb.STRING, maxSize: 100 },
+            correctorType: { type: oracledb.STRING, maxSize: 1 }
+        }
+    };
+
+    commonDB.reqBatchQueryParam(queryConfig.uiLearningConfig.insertTypoCorrect, arr, options, function (rows, req, res) {
+        res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
+    }, req, res);
+
+}
 
 // domainDictionary ML
 router.post('/domainDictionary', function (req, res) {
@@ -368,7 +349,7 @@ router.post('/insertDocCategory', function (req, res) {
 router.post('/uiTrain', function (req, res) {
     var data = req.body.data;
 
-    runTrain(data, function (result) {
+    runTrain(data, req, function (result) {
         if (result == "true") {
             //text-classification train
             var exeTextString = 'python ' + appRoot + '\\ml\\cnn-text-classification\\train.py'
@@ -384,9 +365,9 @@ router.post('/uiTrain', function (req, res) {
 
 });
 
-async function runTrain(data, callback) {
+async function runTrain(data, req, callback) {
     try {
-        let res = await textLabelTrain(data);
+        let res = await textLabelTrain(data, req);
         callback(res);
     } catch (err) {
         console.error(err);
@@ -400,6 +381,7 @@ function textLabelTrain(data) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
+            var ctnm, csconm;
             for (var i = 0; i < data.length; i++) {
                 if (data[i].originText != null) {
                     //console.log(data[i].originText);
@@ -426,10 +408,26 @@ function textLabelTrain(data) {
                                     let updTypoRes = await conn.execute(updateTypo, updTypoCond);
                                 }
 
+                                var insTypoCorCond = [];
+                                insTypoCorCond.push(req.session.regId);
+                                insTypoCorCond.push(originSplit[ty]);//originWord
+                                insTypoCorCond.push(textSplit[ty]);//correctWord
+                                insTypoCorCond.push("");//fileName
+                                insTypoCorCond.push("U");
+                                var insTypoCorRes = await conn.execute(queryConfig.uiLearningConfig.insertTypoCorrect, insTypoCorCond);
                             }
                         }
                     } else {
+    
+                        if (data[i].labelMapping == "CT_NM_VALUE") {
+                            ctnm = data[i];
+                        }
+
+                        if (data[i].labelMapping == "CSCO_NM_VALUE") {
+                            csconm = data[i];
+                        }
                         //domain dictionary train
+                        /*
                         var os = 0;
                         var osNext = 0;
                         var updText = "";
@@ -507,10 +505,54 @@ function textLabelTrain(data) {
                             }
 
                         }
+                        */
                     }
                 }
             }
 
+            if (csconm != null && ctnm != null) {
+                selCtrCond = [];
+                selCtrCond.push(csconm.text);
+                selCtrCond.push(ctnm.text);
+
+                let selCtrRes = await conn.execute(queryConfig.batchLearningConfig.selectContractMapping, selCtrCond);
+
+                if (selCtrRes.rows[0] == null) {
+
+                    var insCtrCond = [];
+                    insCtrCond.push(csconm.originText);//extOgcompanyName
+                    insCtrCond.push(ctnm.originText);//extCtnm
+                    insCtrCond.push(csconm.text);//asOgcompanyName
+                    insCtrCond.push(ctnm.text);//asCtnm
+
+                    let insCtrRes = await conn.execute(queryConfig.batchLearningConfig.insertContractMapping, insCtrCond);
+                }
+
+                var csconmSplit = csconm.text.split(" ");
+                var ctnmSplit = ctnm.text.split(" ");
+
+                for (var cs in csconmSplit) {
+                    var selTypoCond = [];
+                    selTypoCond.push(csconmSplit[cs]);
+                    let selTypoRes = await conn.execute(queryConfig.uiLearningConfig.selectTypo, selTypoCond);
+
+                    if (selTypoRes.rows[0] == null) {
+                        let insTypoRes = await conn.execute(queryConfig.uiLearningConfig.insertTypo, selTypoCond);
+                    }
+                }
+
+                for (var cs in ctnmSplit) {
+                    var selTypoCond = [];
+                    selTypoCond.push(ctnmSplit[cs]);
+                    let selTypoRes = await conn.execute(queryConfig.uiLearningConfig.selectTypo, selTypoCond);
+
+                    if (selTypoRes.rows[0] == null) {
+                        let insTypoRes = await conn.execute(queryConfig.uiLearningConfig.insertTypo, selTypoCond);
+                    }
+                }
+
+
+            }
 
             for (var i in data) {
                 var selectLabelCond = [];

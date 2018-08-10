@@ -81,6 +81,16 @@ function leadingZeros(n, digits) {
 }
 
 /**
+ * 두 문자열을 비교하여 일치하는지 확인
+ * @param {any} a   값1
+ * @param {any} b   값2
+ * @returns 값이 일치하면 0, 값이 일치하지 않으면 -1을 return
+ */
+function strcmp(a, b) {
+    return (a < b ? -1 : (a > b ? 1 : 0));
+}
+
+/**
  * getNowDateTime
  * 현재일자시각
  * @param separator1       구분자(일자)
@@ -268,3 +278,23 @@ function changePercentColor(val) {
 function changeTest() {
     changePercentColor($('#changeTest').val());
 }
+
+
+// li 선택시 input[type=hidden]에 값 넣어주기
+function liSelect(e, val) {
+    $(e).parents('.select_style_K').find('.liSelectValue').val(val);
+}
+
+
+// 커스텀 테이블 스크롤
+$(function () {
+    // divBodyScroll의 스크롤이 동작할때에 함수를 불러옵니다.
+    $('.divBodyScroll').scroll(function () {
+        // divBodyScroll의 x좌표가 움직인 거리를 가져옵니다.
+        var xPoint = $(this).scrollLeft();
+
+        // 가져온 x좌표를 divHeadScroll에 적용시켜 같이 움직일수 있도록 합니다.
+        $(this).prev().scrollLeft(xPoint);
+    });
+
+});
