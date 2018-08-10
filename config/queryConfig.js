@@ -304,7 +304,7 @@ var batchLearningConfig = {
          WHERE
             extOgcompanyName = :extOgcompanyName AND extCtnm = :extCtnm
         `,
-    electTypo:
+    selectTypo:
         `SELECT
             seqNum, keyword
          FROM
