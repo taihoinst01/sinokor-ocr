@@ -2829,6 +2829,8 @@ h3.tits span {
     height: auto;
     line-height: 1.0;
     color: #303030;
+    background: #eaeaea;
+    border: 1px solid #6a6a6a;
 }
 
     .pop_popup0 .pop_header {
@@ -5221,7 +5223,7 @@ button[disabled] {
 
 }
 #userInfoPop input {
-    margin: 5px 0 15px;
+    margin: 5px 0 0px;
 }
 #userInfoPop .pop_popup0 .pop_footer {
     padding: 0 26px 20px !important;
@@ -5561,4 +5563,34 @@ button[disabled] {
 
 .batch_pop1 .pop_footer {
     padding: 0 27px 20px !important;
+}
+
+.userInfoPop .pop_popup0{
+    width: 450px !important;
+    height: 495px !important;
+}
+.necessary {
+    color: #ed0e0e;
+    font-size: 12px;
+}
+.warnning {
+    color: #ed0e0e;
+    font-size: 12px !important;
+    display: block;
+    width: 100%;
+    margin-top: 5px;
+}
+.span_pwd {
+    color: #0075bb;
+}
+.pop_content_01 {
+    margin-bottom: 20px;
+}
+
+input:disabled {
+    background: #dedede;
+}
+
+.userInfoPop .title {
+    font-weight: bold;
 }

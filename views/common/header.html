@@ -59,28 +59,42 @@
 </header>
 
 <!-- 팝업_회원 정보 -->
-<div id="userInfoPop" class="poplayer">
+<div id="userInfoPop" class="poplayer userInfoPop">
     <div class="bg"></div>
     <div class="pop_layer">
-        <div class="pop_popup0 pop_popup01">
+        <div class="pop_popup0 ">
             <div class="pop_header">
                 <h1>회원정보</h1>
             </div>
             <div class="pop_content">
                 <div class="pop_box_120 box_txt_st01">
-                    <span>아이디</span>
-                    <input type="text" name="header_userPop_userId" id="header_userPop_userId" class="inputst_box01" value="<%=currentUser.userId%>" disabled="disabled" />
-                    <span>기존 Password</span>
-                    <input type="password" name="header_userPop_userPw" id="header_userPop_userPw" class="inputst_box01" value="" />
-                    <span>새로운 Password</span>
-                    <input type="password" name="header_userPop_newUserPw" id="header_userPop_newUserPw" class="inputst_box01" value="" />
-                    <span>새로운 Password 확인</span>
-                    <input type="password" name="header_userPop_newUserPw_confirm" id="header_userPop_newUserPw_confirm" class="inputst_box01" value="" />
+                    <div class="pop_content_01">
+                        <span class="title">ID</span>
+                        <input type="text" name="header_userPop_userId" id="header_userPop_userId" class="inputst_box01" value="<%=currentUser.userId%>" disabled="disabled" />
+                    </div>
+                    <div class="pop_content_01">
+                        <span class="title">기존 Password</span>
+                        <input type="password" name="header_userPop_userPw" id="header_userPop_userPw" class="inputst_box01" value="" />
+                    </div>
+                    <div class="pop_content_01">
+                        <span class="span_pwd title">새로운 Password</span><span class="necessary">*</span>
+                        <input type="password" name="header_userPop_newUserPw" id="header_userPop_newUserPw" class="inputst_box01" value="" />
+                        <span id="newPwd" class="warnning">
+                            영문 숫자 특수문자 2가지 이상 8~15자 조합으로 입력해주세요.
+                        </span>
+                    </div>
+                    <div class="pop_content_01">
+                        <span class="span_pwd title">새로운 Password 확인</span><span class="necessary">*</span>
+                        <input type="password" name="header_userPop_newUserPw_confirm" id="header_userPop_newUserPw_confirm" class="inputst_box01" value="" />
+                        <span id="newPwdCheck" class="warnning">
+                            영문 숫자 특수문자 2가지 이상 8~15자 조합으로 입력해주세요.
+                        </span>
+                    </div>
                 </div>
             </div>
             <div class="pop_footer">
-                <button type="button" id="btn_header_userPop_submit" class="button_st1">확인</button>
                 <button type="button" id="btn_header_userPop_cancel" class="button_st4 cbtn">취소</button>
+                <button type="button" id="btn_header_userPop_submit" class="button_st1">확인</button>
             </div>
         </div>
     </div>
