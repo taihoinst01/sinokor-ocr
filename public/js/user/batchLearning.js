@@ -330,7 +330,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     //$("#progressMsgTitle").html("processing ocr api...");
     //addProgressBar(51, 60);
     $.ajax({
-        url: '/proxy/ocr',
+        url: '/common/ocr',
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader("Content-Type", "application/json");
         },
@@ -462,6 +462,24 @@ function convertOcrData() {
     return convertArr;
 }
 
+function convertLineOcrData(ocrData) {
+    var convertArr = [];
+
+    for (var j in ocrData.regions) {
+        var regionsItem = ocrData.regions[j];
+        for (var k in regionsItem.lines) {
+            var linesItem = regionsItem.lines[k];
+            var item = '';
+            for (var m in linesItem.words) {
+                item += linesItem.words[m].text + ' ';
+            }            
+            convertArr.push({ 'location': linesItem.boundingBox, 'text': item.trim() });
+        }
+    }    
+
+    return convertArr;
+}
+
 // [OCR API -> CLASSIFICATION -> LABEL MAPPING]
 function execBatchLearning() {
     var dataArr = convertOcrData();
@@ -481,60 +499,32 @@ function execBatchLearning() {
 
 // UI레이어 작업 함수
 function popUpLayer2(ocrData) {
-    var data = modifyData;
-    console.log('---------------------------------------');
-    console.log(ocrData);
-    console.log(data)
-
-    ocrPopData = data;
 
     fn_initUiTraining(); // 팝업 초기화
-    console.log("popupTest");
     layer_open('layer2'); // ui 학습레이어 띄우기
     $("#layer2.poplayer").css("display", "block");
+    $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
+    $("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);
+    var tblTag = '';
 
-    //$("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);
-    $("#uiImg").attr("src", "./uploads/26.jpg");
-    for (var num in data) {
-        if (data[num].column == "CSCO_NM_VALUE") {
-            $("#cscoNm").val(data[num].text);
-        } else if (data[num].column == "CT_NM_VALUE") {
-            $("#ctNm").val(data[num].text);
-        } else if (data[num].column == "INS_ST_DT_VALUE") {
-            $("#insStDt").val(data[num].text);
-        } else if (data[num].column == "INS_END_DT_VALUE") {
-            $("#insEndDt").val(data[num].text);
-        } else if (data[num].column == "CUR_CD_VALUE") {
-            $("#curCd").val(data[num].text);
-        } else if (data[num].column == "PRE_VALUE") {
-            $("#pre").val(data[num].text);
-        } else if (data[num].column == "COM_VALUE") {
-            $("#com").val(data[num].text);
-        } else if (data[num].column == "BRKG_VALUE") {
-            $("#brkg").val(data[num].text);
-        } else if (data[num].column == "TXAM_VALUE") {
-            $("#txam").val(data[num].text);
-        } else if (data[num].column == "PRRS_CF_VALUE") {
-            $("#prrsCf").val(data[num].text);
-        } else if (data[num].column == "PRRS_RLS_VALUE") {
-            $("#prrsRls").val(data[num].text);
-        } else if (data[num].column == "CLA_VALUE") {
-            $("#cla").val(data[num].text);
-        } else if (data[num].column == "EXEX_VALUE") {
-            $("#exex").val(data[num].text);
-        } else if (data[num].column == "SVF_VALUE") {
-            $("#svf").val(data[num].text);
-        } else if (data[num].column == "CAS_VALUE") {
-            $("#cas").val(data[num].text);
-        } else if (data[num].column == "NTBL_VALUE") {
-            $("#ntbl").val(data[num].text);
-        } else if (data[num].column == "CSCO_SA_RFRN_CNNT2_VALUE") {
-            $("#cscoSaRfrnCnnt2").val(data[num].text);
-        } else {
-
-        }
+    console.log(modifyData);
+    for (var i in modifyData) {
+        tblTag += '<dl>';
+        tblTag += '<dt onmouseover="" onmouseout="">';
+        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+        tblTag += '<input type="text" value="' + modifyData[i].text + '" style="width:100%; border:0;" />';
+        tblTag += '<input type="hidden" value="' + modifyData[i].location + '" />';
+        tblTag += '</label>';
+        tblTag += '</dt>';
+        tblTag += '<dd>';
+        tblTag += '<div class="selects">';
+        tblTag += '<ul class="selectBox">';
+        tblTag += '<select></select>'
+        tblTag += '</div>';
+        tblTag += '</dd>';
+        tblTag += '</dl>';
     }
-    
+    $('#textResultTbl').append(tblTag);
 }
 
 function execBatchLearningData(ocrData, data) {
@@ -1593,32 +1583,8 @@ var fn_uiTraining = function () {
 
 // UI학습 팝업 초기화
 var fn_initUiTraining = function () {
-    $("#imgId").val("");
-    $("#imgFileStNo").val("");
-    $("#imgFileEndNo").val("");
-    $("#cscoNm").val("");
-    $("#ctNm").val("");
-    $("#instStDt").val("");
-    $("#instEndDt").val("");
-    $("#curCd").val("");
-    $("#pre").val("");
-    $("#com").val("");
-    $("#brkg").val("");
-    $("#txam").val("");
-    $("#prrsCf").val("");
-    $("#prrsRls").val("");
-    $("#lsresCf").val("");
-    $("#lsresRls").val("");
-    $("#cla").val("");
-    $("#exex").val("");
-    $("#svf").val("");
-    $("#cas").val("");
-    $("#ntbl").val("");
-    $("#cscoSaRfrnCnnt2").val("");
-    $("#regId").val("");
-    $("#regDate").val("");
-    $("#updId").val("");
-    $("#updDate").val("");
+    $('#imgNameTag').text('');
+    $("#uiImg").html('');
 }
 // UI학습 팝업 값 대입
 var fn_processUiTraining = function (fileInfoList) {
