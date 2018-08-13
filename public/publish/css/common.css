@@ -5442,7 +5442,7 @@ button[disabled] {
          *  height는 테이블의 데이터가 나올 기본 크기를 잡아줍니다.
          *  세로길이를 잡아주지 않으면 overflow-y가 걸리지 않습니다.
          */
-    width: 791px !important;
+    width: 808px !important;
     height: 220px !important;
     overflow-x: scroll;
     overflow-y: scroll;
@@ -5452,7 +5452,7 @@ button[disabled] {
     /*
          * tblBody의 데이터는 필요한 열의 수만큼만 만드시고 헤더와 col의 width는 동일해야 합니다.
          */
-    width: 1007px !important;
+    width: 991px !important;
     table-layout: fixed;
     height: 30px;
     border-collapse: collapse;
