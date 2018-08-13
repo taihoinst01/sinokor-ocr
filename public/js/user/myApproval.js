@@ -187,8 +187,8 @@ var fn_search = function () {
                             <td name="td_base">${entry['DOCNUM']}</td>
                             <td name="td_base">${nvl(entry['PAGECNT'])}</td>
                             <td name="td_base">${nvl(entry['DEADLINEDT'])}</td>
-                            <td name="td_base">${nvl(entry['APPROVALREPORTER'])}<input type="hidden" id="reporter_${entry['SEQNUM']}-${entry['DOCNUM']}" val="${nvl(entry['APPROVALREPORTER'])}" /></td>
-                            <td name="td_base">${nvl(entry['DOCUMENTMANAGER'])}<input type="hidden" id="manager_${entry['SEQNUM']}-${entry['DOCNUM']}" val="${nvl(entry['DOCUMENTMANAGER'])}" /></td>
+                            <td name="td_base">${nvl(entry['APPROVALREPORTER'])}<input type="hidden" id="reporter_${entry['SEQNUM']}-${entry['DOCNUM']}" value="${nvl(entry['APPROVALREPORTER'])}" /></td>
+                            <td name="td_base">${nvl(entry['DOCUMENTMANAGER'])}<input type="hidden" id="manager_${entry['SEQNUM']}-${entry['DOCNUM']}" value="${nvl(entry['DOCUMENTMANAGER'])}" /></td>
                             <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="memo_${entry['SEQNUM']}-${entry['DOCNUM']}" class="inputst_box01" value="${nvl(entry['MEMO'])}" /></td>
                             <td name="td_base">${state}</td>
                         </tr>`;
@@ -326,7 +326,6 @@ var fn_baseList_chk = function (flag) {
             var memo = "memo_" + val[0] + "-" + val[1];
             var reporter = "reporter_" + val[0] + "-" + val[1];
             var manager = "manager_" + val[0] + "-" + val[1];
-            alert($("#"+manager).val());
             arrSeqNum.push(val[0]);
             arrState.push(val[2]);
             arrMemo.push(nvl($("#" + memo).val()));
