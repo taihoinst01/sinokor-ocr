@@ -330,7 +330,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     //$("#progressMsgTitle").html("processing ocr api...");
     //addProgressBar(51, 60);
     $.ajax({
-        url: '/common/ocr',
+        url: '/proxy/ocr',
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader("Content-Type", "application/json");
         },
