@@ -439,7 +439,12 @@ var mlConfig = {
          FROM
             tbl_document_category
          WHERE
-            docType = :docType `
+            docType = :docType `,
+    insertDocLabelMapping:
+        `INSERT INTO
+            tbl_form_label_mapping
+         VALUES
+            (seq_form_label_mapping.nextval, :data, :class, sysdate)`
 }
 
 module.exports = {

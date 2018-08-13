@@ -550,6 +550,21 @@ router.post('/selectOcrSymSpell', function (req, res) {
     }
 });
 
+router.post('/insertDocLabelMapping', function (req, res) {
+    var data = req.body.data;
+    var insertCount = 0;
+    
+    for (var i in data) {
+        var item = data[i].x + ',' + data[i].y + ',' + data[i].word1 + ',' + data[i].word2 + ',' + data[i].word3 + ',' + data[i].word4 + ',' + data[i].word5;
+        commonDB.queryNoRows(queryConfig.mlConfig.insertDocLabelMapping, [item, data[i].label], function () {
+            insertCount++;
+            if (insertCount == data.length) {
+                res.send({ code: 200, message: 'form label mapping insert' });
+            }
+        });
+    }
+});
+
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
 var callbackInsertBatchLearningBaseData = function (rows, req, res) {
     //console.log("upload batchLearningBaseData finish..");

@@ -1714,6 +1714,13 @@ var docLabelMapping = function (data) {
                 returnItem.word3 = 0;
                 returnItem.word4 = 0;
                 returnItem.word5 = 0;
+                if (data.data[i].column == 'CTOGCOMPANYNAMENM') { // 출재사명 이면
+                    returnItem.label = 1;
+                } else if (data.data[i].column == 'CTNM') {// 계약명 이면
+                    returnItem.label = 2;
+                } else {
+                    returnItem.label = 3;
+                }
                 var wordArr = data.data[i].text.split(' ');
                 var wordNum = [];
                 for (var j = 0; j < wordArr.length; j++) {                   
@@ -1733,13 +1740,30 @@ var docLabelMapping = function (data) {
                 }
                 mlParams.push(returnItem);
             }
-            console.log(mlParams);
+            insertDocLabelMapping(mlParams);
         },
         error: function (err) {
             console.log(err);
         }
     });
     
+}
+
+// 양식 레이블 매핑 ml 데이터 insert
+function insertDocLabelMapping(data) {
+    $.ajax({
+        url: '/batchLearning/insertDocLabelMapping',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': data }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 }
 
 //문서 비교 popup 버튼 클릭 이벤트
