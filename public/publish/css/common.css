@@ -994,7 +994,7 @@ select:disabled + ul.idealSelect:before {
     height: 36px;
     color: #6e6e6e;
     /*letter-spacing: -0.1em;*/
-    border-left: 3px solid transparent;
+    border-left: 4px solid transparent;
     /*text-align: center;*/
     /*border-bottom: 1px solid #e2e3e5;*/
 }
@@ -1023,11 +1023,11 @@ select:disabled + ul.idealSelect:before {
     }
 
     .lnb_menu li a.lnb_menu05 i:before {
-        background-position: -214px -461px;
+        background-position: -215px -461px;
     }
     
     .lnb_menu li a.lnb_menu06 i:before {
-        background-position: -265px -461px;
+        background-position: -266px -461px;
     }
 
     .lnb_menu li a.lnb_menu11 i:before {
@@ -1057,11 +1057,11 @@ select:disabled + ul.idealSelect:before {
     }
 
     .lnb_menu li.on a.lnb_menu01 i:before {
-        background-position: -11px -406px;
+        background-position: -9px -406px;
     }
 
     .lnb_menu li.on a.lnb_menu02 i:before {
-        background-position: -61px -410px;
+        background-position: -60px -410px;
     }
 
     .lnb_menu li.on a.lnb_menu03 i:before {
@@ -5386,7 +5386,7 @@ button[disabled] {
          *  height는 테이블의 데이터가 나올 기본 크기를 잡아줍니다.
          *  세로길이를 잡아주지 않으면 overflow-y가 걸리지 않습니다.
          */
-    width: 1655px !important;
+    width: 1672px !important;
     height: 630px !important;
     overflow-x: scroll;
     overflow-y: scroll;
