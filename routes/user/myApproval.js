@@ -132,5 +132,16 @@ var fnUpdateState = function (req, res) {
     }
 };
 
+// [POST] 사용자 조회
+router.post('/selectUsers', function (req, res) {
+    if (req.isAuthenticated()) fnSelectUsers(req, res);
+});
+var callbackSelectUsers = function (rows, req, res) {
+    if (req.isAuthenticated()) res.send(rows);
+};
+var fnSelectUsers = function (req, res) {
+    var query = queryConfig.myApprovalConfig.selectUsers;
+    commonDB.reqQuery(query, callbackSelectUsers, req, res);
+};
 
 module.exports = router;

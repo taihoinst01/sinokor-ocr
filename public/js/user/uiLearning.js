@@ -170,7 +170,7 @@ function processImage(fileName) {
     $('#progressMsgDetail').html(fileName);
     addProgressBar(21, 30);
     $.ajax({
-        url: '/common/ocr',
+        url: '/proxy/ocr',
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader('Content-Type', 'application/json');
         },
