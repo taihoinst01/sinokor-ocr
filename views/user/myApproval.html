@@ -196,9 +196,9 @@
 
                         <!-- 버튼 영역 -->
                         <div class="fr mt10">
-                            <button type="button" id="btn_baseList_approval" class="button_st1">승인</button>
                             <button type="button" id="btn_baseList_return" class="button_st2">반려</button>
                             <button type="button" id="btn_baseList_forward" class="button_st2">전달</button>
+                            <button type="button" id="btn_baseList_approval" class="button_st1">승인</button>
                         </div>
                         <!-- // 버튼 영역 -->
                     </div>
@@ -207,35 +207,148 @@
                     <div id="div_dtl" class="box_st03 box_st031 box_content_bg" style="display:none">
                         <h3 class="tits"><span id="span_document_dtl">결재리스트(상세)</span></h3>
 
-                        <div class="table_style02">
-                            <div class="mCustomScrollbar box_scroll_st4" data-mcs-axis="yx" data-mcs-theme="dark-3">
-                                <table>
-                                    <caption>최근 작업한 파일 정보</caption>
-                                    <colgroup>
-                                        <col style="width:150px" />
-                                        <col style="width:180px" />
-                                        <col style="width:180px" />
-                                        <col style="width:120px" />
-                                        <col style="width:120px" />
-                                        <col style="width:120px" />
-                                        <col style="width:120px" />
-                                    </colgroup>
-                                    <thead>
-                                        <tr>
-                                            <th scope="row">페이지번호(from-to)</th>
-                                            <th scope="row">계약번호</th>
-                                            <th scope="row">계약명</th>
-                                            <th scope="row">UY</th>
-                                            <th scope="row">화페코드</th>
-                                            <th scope="row">NET BALANCE</th>
-                                            <th scope="row">ENTRY NO</th>
-                                            <!--<th scope="row">IBNR</th>-->
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tbody_dtlList"></tbody>
-                                </table>
-                            </div>
-                        </div>
+
+                        <table class="myApproval_tblBackground tblBackground" cellspacing="0">
+                            <tr>
+                                <td>
+                                    <div class="table_style02">
+                                        <div class="myApproval_divHeadScroll divHeadScroll">
+                                            <table class="myApproval_tblHead tblHead" border="0">
+                                                <caption>결재리스트(상세) 타이틀 정보</caption>
+                                                <colgroup>
+                                                    <col style="width:150px" />
+                                                    <col style="width:180px" />
+                                                    <col style="width:180px" />
+                                                    <col style="width:120px" />
+                                                    <col style="width:120px" />
+                                                    <col style="width:120px" />
+                                                    <col style="width:120px" />
+                                                    <col style="width:17px" />
+                                                </colgroup>
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="row">페이지번호(from-to)</th>
+                                                        <th scope="row">계약번호</th>
+                                                        <th scope="row">계약명</th>
+                                                        <th scope="row">UY</th>
+                                                        <th scope="row">화페코드</th>
+                                                        <th scope="row">NET BALANCE</th>
+                                                        <th scope="row">ENTRY NO</th>
+                                                        <!--<th scope="row">IBNR</th>-->
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                        <div class="myApproval_divBodyScroll divBodyScroll">
+                                            <table class="myApproval_tblBody tblBody" border="0">
+                                                <colgroup>
+                                                    <col style="width:150px" />
+                                                    <col style="width:180px" />
+                                                    <col style="width:180px" />
+                                                    <col style="width:120px" />
+                                                    <col style="width:120px" />
+                                                    <col style="width:120px" />
+                                                    <col style="width:120px" />
+                                                </colgroup>
+                                                <tbody id="tbody_dtlList">
+                                                    <tr id="tr_dtl_ev8m5tll2tv" name="tr_dtl" style="cursor:pointer">
+                                                        <th scope="row">1 ~ 1 </th>
+                                                        <td></td>
+                                                        <td><a href="#none" class="tip" title=": Marine Cargo Surplus 2018 - Inward">: Marine Cargo Surplus 2018 - Inward </a></td>
+                                                        <td></td>
+                                                        <td>JOD 1.00</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr id="tr_dtl_ev8m5tll2tv" name="tr_dtl" style="cursor:pointer">
+                                                        <th scope="row">1 ~ 1 </th>
+                                                        <td></td>
+                                                        <td><a href="#none" class="tip" title=": Marine Cargo Surplus 2018 - Inward">: Marine Cargo Surplus 2018 - Inward </a></td>
+                                                        <td></td>
+                                                        <td>JOD 1.00</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr id="tr_dtl_ev8m5tll2tv" name="tr_dtl" style="cursor:pointer">
+                                                        <th scope="row">1 ~ 1 </th>
+                                                        <td></td>
+                                                        <td><a href="#none" class="tip" title=": Marine Cargo Surplus 2018 - Inward">: Marine Cargo Surplus 2018 - Inward </a></td>
+                                                        <td></td>
+                                                        <td>JOD 1.00</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr id="tr_dtl_ev8m5tll2tv" name="tr_dtl" style="cursor:pointer">
+                                                        <th scope="row">1 ~ 1 </th>
+                                                        <td></td>
+                                                        <td><a href="#none" class="tip" title=": Marine Cargo Surplus 2018 - Inward">: Marine Cargo Surplus 2018 - Inward </a></td>
+                                                        <td></td>
+                                                        <td>JOD 1.00</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr id="tr_dtl_ev8m5tll2tv" name="tr_dtl" style="cursor:pointer">
+                                                        <th scope="row">1 ~ 1 </th>
+                                                        <td></td>
+                                                        <td><a href="#none" class="tip" title=": Marine Cargo Surplus 2018 - Inward">: Marine Cargo Surplus 2018 - Inward </a></td>
+                                                        <td></td>
+                                                        <td>JOD 1.00</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr id="tr_dtl_ev8m5tll2tv" name="tr_dtl" style="cursor:pointer">
+                                                        <th scope="row">1 ~ 1 </th>
+                                                        <td></td>
+                                                        <td><a href="#none" class="tip" title=": Marine Cargo Surplus 2018 - Inward">: Marine Cargo Surplus 2018 - Inward </a></td>
+                                                        <td></td>
+                                                        <td>JOD 1.00</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr id="tr_dtl_ev8m5tll2tv" name="tr_dtl" style="cursor:pointer">
+                                                        <th scope="row">1 ~ 1 </th>
+                                                        <td></td>
+                                                        <td><a href="#none" class="tip" title=": Marine Cargo Surplus 2018 - Inward">: Marine Cargo Surplus 2018 - Inward </a></td>
+                                                        <td></td>
+                                                        <td>JOD 1.00</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr id="tr_dtl_ev8m5tll2tv" name="tr_dtl" style="cursor:pointer">
+                                                        <th scope="row">1 ~ 1 </th>
+                                                        <td></td>
+                                                        <td><a href="#none" class="tip" title=": Marine Cargo Surplus 2018 - Inward">: Marine Cargo Surplus 2018 - Inward </a></td>
+                                                        <td></td>
+                                                        <td>JOD 1.00</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr id="tr_dtl_ev8m5tll2tv" name="tr_dtl" style="cursor:pointer">
+                                                        <th scope="row">1 ~ 1 </th>
+                                                        <td></td>
+                                                        <td><a href="#none" class="tip" title=": Marine Cargo Surplus 2018 - Inward">: Marine Cargo Surplus 2018 - Inward </a></td>
+                                                        <td></td>
+                                                        <td>JOD 1.00</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr id="tr_dtl_ev8m5tll2tv" name="tr_dtl" style="cursor:pointer">
+                                                        <th scope="row">1 ~ 1 </th>
+                                                        <td></td>
+                                                        <td><a href="#none" class="tip" title=": Marine Cargo Surplus 2018 - Inward">: Marine Cargo Surplus 2018 - Inward </a></td>
+                                                        <td></td>
+                                                        <td>JOD 1.00</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        
                     </div>
                     <!-- // 상세결재리스트 영역 -->
 
