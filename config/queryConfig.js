@@ -119,6 +119,15 @@ var myApprovalConfig = {
            FROM TBL_OCR_FILE_DTL A,
                 TBL_DOCUMENT_DTL B
           WHERE A.IMGID = B.IMGID `,
+    selectUsers:
+        `SELECT
+            seqnum, userId, userPw, auth, email, ocrUseCount,
+            TO_CHAR(joinDate, 'yyyy-mm-dd hh:mi:ss') AS joinDate, 
+            TO_CHAR(lastLoginDate, 'yyyy-mm-dd hh:mi:ss') AS lastLoginDate
+         FROM
+            tbl_ocr_comm_user
+         WHERE
+            1=1 `,
     updateDocument:
         `UPDATE TBL_DOCUMENT SET `
 }

@@ -1280,12 +1280,12 @@ select:disabled + ul.idealSelect:before {
             }
 
 .box_content.st_stsh {
-    min-height: 682px;
+    min-height: 672px;
     margin-bottom: 0px;
 }
 
     .box_content.st_stsh .box_st031 {
-        height: 285px;
+        height: 280px;
     }
 
     .box_content.st_stsh .box_st032 {

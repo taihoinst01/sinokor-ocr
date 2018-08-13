@@ -35,6 +35,7 @@ var checkboxEvent = function () {
 
     });
 };
+
 // [이벤트] 버튼
 var buttonEvent = function () {
     // 문서 리스트 조회
@@ -102,7 +103,6 @@ var datePickerEvent = function () {
 /***************************************************
  * Function
  ***************************************************/
-
 // 클릭 이벤트 (DOCUMENT)
 var fn_clickEvent = function () {
     // Document 클릭 시 상세 조회
@@ -120,6 +120,75 @@ var fn_clickEvent = function () {
         fn_search_image(imgId); // image 조회
     });
 };
+
+// [사용자조회]
+var selectUsers = function (flag, id, docId) {
+    var param = {};
+    $.ajax({
+        url: '/myApproval/selectUsers',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+        },
+        success: function (data) {
+            var appendHtml = "";
+            if (data.length > 0) {
+                $.each(data, function (index, entry) {
+                    if (flag == "REPORTER") {
+                        appendHtml += `<li><a class="a_userIdList" href="javascript:fn_selectApprovalReporter('${entry.SEQNUM}', '${entry.USERID}')">${entry.USERID}</a></li>`;
+                        if (entry.USERID == id) {
+                            $(`#reporter_${docId}`).val(entry.SEQNUM);
+                            $(`.myValueReporter_${docId}`).html(entry.USERID);
+                        }
+                    } else if (flag == "MANAGER") {
+                        appendHtml += `<li><a class="a_userIdList" href="javascript:fn_selectApprovalReporter('${entry.SEQNUM}', '${entry.USERID}')">${entry.USERID}</a></li>`;
+                        if (entry.USERID == id) {
+                            $(`#manager_${docId}`).val(entry.SEQNUM);
+                            $(`.myValueManager_${docId}`).html(entry.USERID);
+                        }
+                    }
+                });
+            }
+            //if (flag == "REPORTER") $("#ul_highApproval").empty().append(appendHtml);
+            return appendHtml;
+        },
+        error: function (err) {
+            endProgressBar(); // end progressbar
+            console.log(err);
+        }
+    });
+};
+
+// [이벤트] 결제상신자 리스트 생성 
+var makeApprovalReporter = function (docId, reporter) {
+    var userList = selectUsers("REPORTER", reporter, docId);
+    return `<dl>
+                <dd>
+                    <input type="hidden" id="reporter_${docId}" value="" />
+                    <div class="select_style w100">
+                        <span class="ctrl"><span class="arrow"></span></span>
+                        <button type="button" class="myValueReporter_${docId}">선택</button>
+                        <ul id="ul_approvalReporter_${docId}" class="aList">${userList}</ul>
+                    </div>
+                </dd>
+            </dl>`;
+}
+// [이벤트] 문서담당자 리스트 생성 
+var makeDocumentManager = function (docId, manager) {
+    var userList = selectUsers("MANAGER", manager, docId);
+    return `<dl>
+                <dd>
+                    <input type="hidden" id="documentManager_${docId}" value="" />
+                    <div class="select_style w100">
+                        <span class="ctrl"><span class="arrow"></span></span>
+                        <button type="button" class="myValueManager_${docId}">선택</button>
+                        <ul id="ul_documentManager_${docId}" class="bList">${userList}</ul>
+                    </div>
+                </dd>
+            </dl>`;
+}
 
 // document 조회
 var fn_search = function () {
@@ -181,15 +250,16 @@ var fn_search = function () {
                         default:
                             break;
                     }
+                    var docId = `${nvl(entry['SEQNUM'])}-${nvl(entry['DOCNUM'])}`;
                     appendHtml += `
                         <tr id="tr_base_${entry['SEQNUM']}-${entry['DOCNUM']}-${entry['APPROVALSTATE']}" style="cursor:pointer">
-                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry['SEQNUM']}-${entry['DOCNUM']}" class="sta00 stck_tr" name="chk_document" /></div></th>
+                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${docId}" class="sta00 stck_tr" name="chk_document" /></div></th>
                             <td name="td_base">${entry['DOCNUM']}</td>
                             <td name="td_base">${nvl(entry['PAGECNT'])}</td>
                             <td name="td_base">${nvl(entry['DEADLINEDT'])}</td>
-                            <td name="td_base">${nvl(entry['APPROVALREPORTER'])}<input type="hidden" id="reporter_${entry['SEQNUM']}-${entry['DOCNUM']}" value="${nvl(entry['APPROVALREPORTER'])}" /></td>
-                            <td name="td_base">${nvl(entry['DOCUMENTMANAGER'])}<input type="hidden" id="manager_${entry['SEQNUM']}-${entry['DOCNUM']}" value="${nvl(entry['DOCUMENTMANAGER'])}" /></td>
-                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="memo_${entry['SEQNUM']}-${entry['DOCNUM']}" class="inputst_box01" value="${nvl(entry['MEMO'])}" /></td>
+                            <th>${makeApprovalReporter(docId, entry['APPROVALREPORTER'])}</th>
+                            <th>${makeDocumentManager(docId, entry['DOCUMENTMANAGER'])}</th>
+                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="memo_${docId}" class="inputst_box01" value="${nvl(entry['MEMO'])}" /></td>
                             <td name="td_base">${state}</td>
                         </tr>`;
                 });
