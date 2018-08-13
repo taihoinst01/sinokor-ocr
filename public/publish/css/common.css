@@ -4793,9 +4793,9 @@ thead .ez-checked {
     position: relative;
     width: 100%;
     float: left;
-    width: calc(58% - 0px);
-    width: -webkit-calc(58% - 0px);
-    width: -moz-calc(58% - 46px);
+    width: calc(58% - -3px);
+    width: -webkit-calc(58% - -3px);
+    width: -moz-calc(58% - -3px);
     height: 97px !important;
     padding: 14px 22px;
     background-color: #fff;
@@ -5213,7 +5213,7 @@ button[disabled] {
     }
 
 .table_K01 .mCustomScrollbar.mCS_no_scrollbar {
-    height:50px !important;
+    height:45px !important;
 }
 .table_K02 .mCustomScrollbar.box_scroll_st3 {
     height: 170px !important;
@@ -5402,6 +5402,61 @@ button[disabled] {
     border-collapse: collapse;
 }
 
+/*
+    myApproval 스크롤
+*/
+
+.myApproval_tblBackground {
+    /*
+         *  화면에 보여야 할 Table의 가로크기를 잡아줍니다.
+         */
+    width: 791px !important;
+    table-layout: fixed;
+}
+
+.myApproval_divHeadScroll {
+    /*
+         *  안의 내용이 790보다 길게 적용이 되므로 overflow-x, overflow-y를 hidden을 걸어줘서 설정한 가로너비만큼만 화면에 보이도록 잡아줍니다.
+         */
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    display: block !important;
+}
+
+.myApproval_tblHead {
+    /*
+         *  Table의 필드명의 너비를 여기에서 지정합니다.
+         *  필드명을 보여줄 테이블은 body보다 하나의 td를 더 가지며 마지막 td는 아무것도 입력하지 않고 크기만 잡아줍니다.
+         *  이렇게 하는 이유는 데이터를 보여주는 테이블은 세로 스크롤의 가로두께만큼 더 이동하기 때문입니다.
+         */
+    table-layout: fixed;
+    width: 1007px !important;
+    height: 30px;
+    border-collapse: collapse;
+}
+
+.myApproval_divBodyScroll {
+    /*
+         *  overflow-x, overflow-y는 scroll로 지정하고,
+         *  height는 테이블의 데이터가 나올 기본 크기를 잡아줍니다.
+         *  세로길이를 잡아주지 않으면 overflow-y가 걸리지 않습니다.
+         */
+    width: 808px !important;
+    height: 220px !important;
+    overflow-x: scroll;
+    overflow-y: scroll;
+}
+
+.myApproval_tblBody {
+    /*
+         * tblBody의 데이터는 필요한 열의 수만큼만 만드시고 헤더와 col의 width는 동일해야 합니다.
+         */
+    width: 991px !important;
+    table-layout: fixed;
+    height: 30px;
+    border-collapse: collapse;
+}
 ::-webkit-scrollbar-track {
     background: rgba(0,0,0,.1);
     -webkit-border-radius: 5px;
@@ -5532,7 +5587,7 @@ button[disabled] {
         float: left;
         line-height: 2.5;
         cursor: pointer;
-        border: 1px solid #ccc !important;
+        border: 1px solid #b0b0b0 !important;
         font-size: 16px;
     }
 .uiHorizontal .liStyle01.on {
@@ -5557,7 +5612,7 @@ button[disabled] {
 }
 #learningRange_content {
     padding-top: 10px;
-    border-top: 1px solid #eaeaea;
+    border-top: 1px solid #b0b0b0;
     margin-top: 10px;
 }
 

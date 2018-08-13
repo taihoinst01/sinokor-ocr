@@ -24,8 +24,15 @@ var selectDocManager = function (val) {
 var checkboxEvent = function () {
     // all checkbox
     $("#listCheckAll").on("click", function () {
-        if ($("#listCheckAll").prop("checked")) $("input[name=chk_document]").prop("checked", true);
-        else $("input[name=chk_document]").prop("checked", false);
+        if ($("#listCheckAll").prop("checked")) {
+            $("input[name=chk_document]").attr("checked", true);
+            $("input[name=chk_document]").parent().addClass("ez-checked");
+        }
+        else {
+            $("input[name=chk_document]").attr("checked", false);
+            $("input[name=chk_document]").parent().removeClass("ez-checked");
+        }
+
     });
 };
 // [이벤트] 버튼
@@ -193,6 +200,7 @@ var fn_search = function () {
             $("#span_document").empty().html(`결재리스트(기본) - ${data.length}건`);
             $("#div_base").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
+            $('input[type=checkbox]').ezMark();
             endProgressBar(); // end progressbar
         },
         error: function (err) {
