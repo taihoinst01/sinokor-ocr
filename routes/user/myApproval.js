@@ -49,7 +49,7 @@ var fnSearchApprovalList = function (req, res) {
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
     if (!commonUtil.isNull(param["faoTeam"])) condQuery += ` AND FAOTEAM = '${param["faoTeam"]}' `;
     if (!commonUtil.isNull(param["faoPart"])) condQuery += ` AND FAOPART = '${param["faoPart"]}' `;
-    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND DOCUMENTMANAGER LIKE '%${param["documentManager"]}%' `;
+    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND DOCUMENTMANAGER = '${param["documentManager"]}' `;
     if (!commonUtil.isNull(param["deadLineDt"])) condQuery += ` AND DEADLINEDT = '${param["deadLineDt"]}' `;
     //if (!commonUtil.isNull(param["searchStartDate"]) && !commonUtil.isNull(param["searchEndDate"]))
     //    condQuery += ` AND REGDT BETWEEN TO_DATE('${param["searchStartDate"]}', 'yyyymmdd') AND TO_DATE('${param["searchEndDate"]}', 'yyyymmdd') `;
@@ -102,6 +102,35 @@ var fnSearchApprovalImageList = function (req, res) {
     commonDB.reqQuery(listQuery, callbackApprovalImageList, req, res);
 };
 
+// [POST] 문서 승인/반려/전달
+router.post('/updateState', function (req, res) {
+    if (req.isAuthenticated()) fnUpdateState(req, res);
+});
+var callbackUpdateState = function (rows, req, res) {
+    if (req.isAuthenticated()) res.send({ code: "200" });
+};
+var fnUpdateState = function (req, res) {
+    var flag = req.body.flag;
+    var arrSeqNum = req.body.arrSeqNum;
+    var arrState = req.body.arrState;
+    var arrMemo = req.body.arrMemo;
+    var arrReporter = req.body.arrReporter;
+    var arrManager = req.body.arrManager;
+
+    console.log("arrManager : " + JSON.stringify(arrManager));
+
+    var query = queryConfig.myApprovalConfig.updateDocument;
+
+    for (var i = 0; i < arrSeqNum.length; i++) {
+        query += ` APPROVALSTATE = '${flag}', `;
+        query += ` MEMO = '${arrMemo[i]}', `;
+        query += ` APPROVALREPORTER = '${arrReporter[i]}', `;
+        query += ` DOCUMENTMANAGER = '${arrManager[i]}' `;
+        query += ` WHERE SEQNUM = '${arrSeqNum[i]}' `;
+        console.log("쿼리 : " + query);
+        commonDB.reqQuery(query, callbackUpdateState, req, res);
+    }
+};
 
 
 module.exports = router;

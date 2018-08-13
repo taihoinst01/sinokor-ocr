@@ -96,7 +96,8 @@ var dbcolumnsConfig = {
 
 var myApprovalConfig = {
     selectApprovalList:
-        `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO 
+        `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO,
+                DECODE(APPROVALSTATE, 'P', 'P', 'C', 'C', 'R', 'R', 'U', 'U', '') AS APPROVALSTATE_STR
             FROM TBL_DOCUMENT
            WHERE 1=1 `,
     selectApprovalDtlList:
@@ -117,7 +118,9 @@ var myApprovalConfig = {
                 A.FILESIZE, A.CONTENTTYPE, A.FILETYPE, A.FILEWIDTH, A.FILEHEIGHT, A.REGID, A.REGDATE 
            FROM TBL_OCR_FILE_DTL A,
                 TBL_DOCUMENT_DTL B
-          WHERE A.IMGID = B.IMGID `
+          WHERE A.IMGID = B.IMGID `,
+    updateDocument:
+        `UPDATE TBL_DOCUMENT SET `
 }
 
 var documentConfig = {};

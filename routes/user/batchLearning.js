@@ -813,10 +813,13 @@ var callbackUpdateBatchLearningData = function (rows, req, res) {
 
 // [POST] syncFile
 router.post('/syncFile', function (req, res) {
-    const testFolder = appRoot + '\\uploads\\';
+    //const testFolder = appRoot + '\\uploads\\';
+    const testFolder = propertiesConfig.filepath.imagePath;
+    
 
     const files = FileHound.create()
         .paths(testFolder)
+        .directory()
         //.ext('jpg', 'tif')
         .ext('tif', 'tiff')
         .find();
