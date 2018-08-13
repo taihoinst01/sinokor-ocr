@@ -97,7 +97,7 @@
                         <dl>
                             <dt><label for="intxt_02">문서담당자</label></dt>
                             <dd>
-                                <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="" placeholder="홍길동" />
+                                <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="<%=currentUser.userId%>" disabled="disabled" placeholder="" />
                             </dd>
                         </dl>
                         <dl>
@@ -157,7 +157,8 @@
                                         <col style="width:80px" />
                                         <col style="width:90px" />
                                         <col style="width:90px" />
-                                        <col style="width:246px" />
+                                        <col style="width:189px" />
+                                        <col style="width:57px" />
                                     </colgroup>
                                     <thead>
                                         <tr>
@@ -168,6 +169,7 @@
                                             <th scope="row">결제상신자</th>
                                             <th scope="row">문서담당자</th>
                                             <th scope="row">메모</th>
+                                            <th scope="row">상태</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -185,10 +187,10 @@
                                         <col style="width:80px" />
                                         <col style="width:90px" />
                                         <col style="width:90px" />
-                                        <col style="width:230px" />
+                                        <col style="width:189px" />
+                                        <col style="width:57px" />
                                     </colgroup>
                                     <tbody id="tbody_baseList">
-                                        
                                     </tbody>
                                 </table>
                             </div>

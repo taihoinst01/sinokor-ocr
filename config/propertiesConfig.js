@@ -21,9 +21,10 @@ var propertiesConfig = {
         //realExcelPath: 'C:\\Users\\Taiho\\Desktop\\labeled_data',
         //product
         //logfilepath: 'c:/logs'
-        excelBatchFilePath: '/excel/filepath.xlsx',
-        excelBatchFileData: '/excel/data.xlsx',
-        realExcelPath: '/image/labeled_data'
+        excelBatchFilePath: '/ICR/labeled_data/filepath_mapping_20180720.xlsx',
+        excelBatchFileData: '/ICR/labeled_data/labeled_data_20180723.xlsx',
+        realExcelPath: '/image/labeled_data',
+        imagePath: '/ICR/image'
     }
 };
 

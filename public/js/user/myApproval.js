@@ -46,15 +46,15 @@ var buttonEvent = function () {
     });
     // 승인
     $("#btn_baseList_approval").on("click", function () {
-        fn_baseList_chk('P');
+        fn_baseList_chk('C');
     });
     // 반려
     $("#btn_baseList_return").on("click", function () {
-        fn_baseList_chk('C');
+        fn_baseList_chk('R');
     });
     // 전달
     $("#btn_baseList_forward").on("click", function () {
-        fn_baseList_chk('R');
+        fn_baseList_chk('P');
     });
 };
 // [이벤트] 날짜 (datepicker)
@@ -109,8 +109,8 @@ var fn_clickEvent = function () {
     $("td[name='td_base']").on("click", function () {
         var id = $(this).parent().attr("id");
         var numArr = id.replace("tr_base_", "");
-        var seqNum = numArr.split("||")[0];
-        var docNum = numArr.split("||")[1];
+        var seqNum = numArr.split("-")[0];
+        var docNum = numArr.split("-")[1];
         fn_search_dtl(seqNum, docNum); // document_dtl 조회
     });
     // Document DTL 클릭 시 이미지 조회
@@ -164,15 +164,33 @@ var fn_search = function () {
             addProgressBar(2, 99); // proceed progressbar
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
+                    var state = "";
+                    switch (nvl(entry['APPROVALSTATE'])) {
+                        case "P":
+                            state = "진행";
+                            break;
+                        case "C":
+                            state = "승인";
+                            break;
+                        case "R":
+                            state = "반려";
+                            break;
+                        case "U":
+                            state = "업로드";
+                            break;
+                        default:
+                            break;
+                    }
                     appendHtml += `
-                        <tr id="tr_base_${entry['SEQNUM']}||${entry['DOCNUM']}" style="cursor:pointer">
-                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry['SEQNUM']}||${entry['DOCNUM']}" class="sta00 stck_tr" name="chk_document" /></div></th>
+                        <tr id="tr_base_${entry['SEQNUM']}-${entry['DOCNUM']}-${entry['APPROVALSTATE']}" style="cursor:pointer">
+                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry['SEQNUM']}-${entry['DOCNUM']}" class="sta00 stck_tr" name="chk_document" /></div></th>
                             <td name="td_base">${entry['DOCNUM']}</td>
                             <td name="td_base">${nvl(entry['PAGECNT'])}</td>
                             <td name="td_base">${nvl(entry['DEADLINEDT'])}</td>
-                            <td name="td_base">${nvl(entry['APPROVALREPORTER'])}</td>
-                            <td name="td_base">${nvl(entry['DOCUMENTMANAGER'])}</td>
-                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="memo_${entry['SEQNUM']}||${entry['DOCNUM']}" class="inputst_box01" value="${nvl(entry['MEMO'])}" /></td>
+                            <td name="td_base">${nvl(entry['APPROVALREPORTER'])}<input type="hidden" id="reporter_${entry['SEQNUM']}-${entry['DOCNUM']}" value="${nvl(entry['APPROVALREPORTER'])}" /></td>
+                            <td name="td_base">${nvl(entry['DOCUMENTMANAGER'])}<input type="hidden" id="manager_${entry['SEQNUM']}-${entry['DOCNUM']}" value="${nvl(entry['DOCUMENTMANAGER'])}" /></td>
+                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="memo_${entry['SEQNUM']}-${entry['DOCNUM']}" class="inputst_box01" value="${nvl(entry['MEMO'])}" /></td>
+                            <td name="td_base">${state}</td>
                         </tr>`;
                 });
             } else {
@@ -296,32 +314,60 @@ var fn_search_image = function (imgId) {
 // 체크된 문서 갯수 확인하고 승인/반려/전달 실행
 var fn_baseList_chk = function (flag) {
     var chkCnt = 0;
-    var chkVal = [];
+    var arrSeqNum = [];
+    var arrState = [];
+    var arrMemo = [];
+    var arrReporter = [];
+    var arrManager = [];
+    var val = "";
     $("input[name=chk_document]").each(function (index, value) {
         if ($(this).is(":checked")) {
-            chkVal.push($(this).val());
+            val = $(this).val().split("-");  // value="${entry['SEQNUM']}-${entry['DOCNUM']}"
+            var memo = "memo_" + val[0] + "-" + val[1];
+            var reporter = "reporter_" + val[0] + "-" + val[1];
+            var manager = "manager_" + val[0] + "-" + val[1];
+            arrSeqNum.push(val[0]);
+            arrState.push(val[2]);
+            arrMemo.push(nvl($("#" + memo).val()));
+            arrReporter.push(nvl($("#" + reporter).val()));
+            arrManager.push(nvl($("#" + manager).val()));
             chkCnt++;
         }
     });
+
     if (chkCnt > 0) {
         var param = {
             flag: flag,
-            chkCnt: chkCnt,
-            chkVal: chkVal
+            arrSeqNum: arrSeqNum,
+            arrState: arrState,
+            arrMemo: arrMemo,
+            arrReporter: arrReporter,
+            arrManager: arrManager
         };
         $.ajax({
-            url: '/myApproval/TODO:이름설정',
+            url: '/myApproval/updateState',
             type: 'post',
             datatype: "json",
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             beforeSend: function () {
+                if (flag == "C") $("#progressMsgTitle").html("승인처리 중 입니다.");
+                else if (flag == "R") $("#progressMsgTitle").html("반려처리 중 입니다.");
+                else if (flag == "P") $("#progressMsgTitle").html("전달 중 입니다.");
+                startProgressBar(); // start progressbar
+                addProgressBar(1, 99); // proceed progressbar
             },
             success: function (data) {
-
+                if (flag == "C") alert("승인처리 되었습니다.");
+                else if (flag == "R") alert("반려처리 되었습니다.");
+                else if (flag == "P") alert("전달되었습니다.");
+                else alert("잘못된 경로로 접근하였습니다.");
+                $("#btn_search").click();
+                endProgressBar();
             },
             error: function (err) {
                 console.log(err);
+                endProgressBar();
             }
         });
     } else {
