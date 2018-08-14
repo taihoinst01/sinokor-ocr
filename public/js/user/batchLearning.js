@@ -1285,6 +1285,8 @@ function fn_viewImageData(fileName, obj) {
                     </tr>
                     `;
                 });
+            } else {
+                appendHtml += `<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>`
             }
             $("#tbody_batchList_answer").empty().append(appendHtml);
         },
