@@ -91,7 +91,12 @@ var dbcolumnsConfig = {
         `SELECT
             seqNum, koKeyword, enKeyword
          FROM
-            tbl_extraction_keyword `
+            tbl_extraction_keyword `,
+    selectColMappingCls:
+        `SELECT
+            seqNum, colName, colType, colNum
+         FROM
+            tbl_column_mapping_cls `
 };
 
 var myApprovalConfig = {

@@ -507,7 +507,7 @@ function popUpLayer2(ocrData) {
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
     $("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);   
     $.ajax({
-        url: '/batchLearning/selDBColumns',
+        url: '/batchLearning/selectColMappingCls',
         type: 'post',
         datatype: "json",
         contentType: 'application/json; charset=UTF-8',
@@ -541,10 +541,10 @@ function appendOptionHtml(targetColumn, columns) {
     var selectHTML = '<select>';
     for (var i in columns) {
         var optionHTML = '';
-        if (targetColumn == columns[i].ENKEYWORD) {
-            optionHTML = '<option value="' + columns[i].ENKEYWORD + '" selected>' + columns[i].KOKEYWORD + '</option>';
+        if (targetColumn == columns[i].COLTYPE) {
+            optionHTML = '<option value="' + columns[i].COLTYPE + '" selected>' + columns[i].COLNAME + '</option>';
         } else {
-            optionHTML = '<option value="' + columns[i].ENKEYWORD + '">' + columns[i].KOKEYWORD + '</option>';
+            optionHTML = '<option value="' + columns[i].COLTYPE + '">' + columns[i].COLNAME + '</option>';
         }
         selectHTML += optionHTML
     }
@@ -1748,7 +1748,7 @@ var docLabelMapping = function (data) {
 
             insertDocLabelMapping(mlParams);
             insertDocMapping(mlParams, docCategory);
-            insertColMapping(mlParams, docCategory);
+            insertColMapping(mlParams, data.data, docCategory);
         },
         error: function (err) {
             console.log(err);
@@ -1798,12 +1798,24 @@ function insertDocMapping(data, docCategory) {
 }
 
 // 컬럼 매핑 ml 데이터 insert
-function insertColMapping(data, docCategory) {
+function insertColMapping(data, mlData, docCategory) {
+    var param = [];
+    for (var i in mlData) {
+        for (var j in columnArr) {
+            if (mlData[i].column != 'UNDEFINED' && mlData[i].column == columnArr[j].COLTYPE) {
+                var item = data[i];
+                item.colNum = columnArr[j].COLNUM;
+                param.push(item);
+                break;
+            }
+        }
+    }
+
     $.ajax({
         url: '/batchLearning/insertColMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': data, 'docCategory': docCategory }),
+        data: JSON.stringify({ 'data': param, 'docCategory': docCategory }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);
