@@ -161,33 +161,29 @@ var selectUsers = function (flag, id, docId) {
     });
 };
 
-// [이벤트] 결제상신자 리스트 생성 
+// [이벤트] 결재상신자 리스트 생성 
 var makeApprovalReporter = function (docId, reporter) {
     var userList = selectUsers("REPORTER", reporter, docId);
-    return `<dl>
-                <dd>
-                    <input type="hidden" id="reporter_${docId}" value="" />
-                    <div class="select_style w100">
-                        <span class="ctrl"><span class="arrow"></span></span>
-                        <button type="button" class="myValueReporter_${docId}">선택</button>
-                        <ul id="ul_approvalReporter_${docId}" class="aList">${userList}</ul>
-                    </div>
-                </dd>
-            </dl>`;
+    return `
+            <div class="select_style select_style_K">
+                <input type="hidden" id="reporter_${docId}" value="" />
+                    <span class="ctrl"><span class="arrow"></span></span>
+                    <button type="button" class="myValueReporter_${docId} btnSelector">선택</button>
+                    <ul id="ul_approvalReporter_${docId}" class="aList">${userList}</ul>
+            </div>
+            `;
 }
 // [이벤트] 문서담당자 리스트 생성 
 var makeDocumentManager = function (docId, manager) {
     var userList = selectUsers("MANAGER", manager, docId);
-    return `<dl>
-                <dd>
-                    <input type="hidden" id="documentManager_${docId}" value="" />
-                    <div class="select_style w100">
-                        <span class="ctrl"><span class="arrow"></span></span>
-                        <button type="button" class="myValueManager_${docId}">선택</button>
-                        <ul id="ul_documentManager_${docId}" class="bList">${userList}</ul>
-                    </div>
-                </dd>
-            </dl>`;
+    return `
+            <div class="select_style select_style_K">
+                <input type="hidden" id="documentManager_${docId}" value="" />
+                    <span class="ctrl"><span class="arrow"></span></span>
+                    <button type="button" class="myValueManager_${docId} btnSelector">선택</button>
+                    <ul id="ul_documentManager_${docId}" class="aList">${userList}</ul>
+            </div>
+            `;
 }
 
 // document 조회
@@ -257,8 +253,8 @@ var fn_search = function () {
                             <td name="td_base">${entry['DOCNUM']}</td>
                             <td name="td_base">${nvl(entry['PAGECNT'])}</td>
                             <td name="td_base">${nvl(entry['DEADLINEDT'])}</td>
-                            <th>${makeApprovalReporter(docId, entry['APPROVALREPORTER'])}</th>
-                            <th>${makeDocumentManager(docId, entry['DOCUMENTMANAGER'])}</th>
+                            <td>${makeApprovalReporter(docId, entry['APPROVALREPORTER'])}</td>
+                            <td>${makeDocumentManager(docId, entry['DOCUMENTMANAGER'])}</td>
                             <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="memo_${docId}" class="inputst_box01" value="${nvl(entry['MEMO'])}" /></td>
                             <td name="td_base">${state}</td>
                         </tr>`;
@@ -266,6 +262,7 @@ var fn_search = function () {
             } else {
                 appendHtml += `<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>`;
             }
+            
             $("#tbody_baseList").empty().append(appendHtml);
             $("#span_document").empty().html(`결재리스트(기본) - ${data.length}건`);
             $("#div_base").fadeIn('slow');
@@ -470,3 +467,5 @@ var screenTest = function (flag) {
             break;
     }
 };
+
+
