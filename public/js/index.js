@@ -19,9 +19,9 @@ $(document).ready(function () {
     });
 
     //임시 자동로그인
-    $('#userId').val('admin');
-    $('#userPw').val('123');
-    setTimeout(function () { $('#sendLoginBtn').click(); }, 1000);
+    //$('#userId').val('admin');
+    //$('#userPw').val('123');
+    //setTimeout(function () { $('#sendLoginBtn').click(); }, 1000);
 });
 
 function getCookie(cookieName) {

@@ -1219,13 +1219,11 @@ function fn_viewImageData(fileName, obj) {
     layer_open('layer3');
 
     // 2018-08-06
-    var filePath = '/MIG/2014/img1/33/25633/' + fileName;
     var param = {
-        filePath: filePath
+        filePath: fileName
     };
     var appendHtml = ``;
         
-    console.log("filePath : " + filePath);
     $.ajax({
         url: '/batchLearning/viewImageData',
         type: 'post',
@@ -1234,7 +1232,6 @@ function fn_viewImageData(fileName, obj) {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
                     
-            console.log("data : " + JSON.stringify(data));
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     appendHtml += `
@@ -1243,7 +1240,9 @@ function fn_viewImageData(fileName, obj) {
                         <td scope="row">${nvl(entry.IMGID)}</td>
                         <td scope="row">${nvl(entry.STATEMENTDIV)}</td>
                         <td scope="row">${nvl(entry.CONTRACTNUM)}</td>
+                        <td scope="row">${nvl(entry.CTNM)}</td>
                         <td scope="row">${nvl(entry.OGCOMPANYCODE)}</td>
+                        <td scope="row">${nvl(entry.OGCOMPANYNAME)}</td>
                         <td scope="row">${nvl(entry.BROKERCODE)}</td>
                         <td scope="row">${nvl(entry.BROKERNAME)}</td>
                         <td scope="row">${nvl(entry.INSSTDT)}</td>
