@@ -214,7 +214,7 @@ var fn_search = function () {
         searchEndDate: nvl($("#searchEndDate").val()),
         approvalState: approvalState
     };
-    console.log("조건 : " + JSON.stringify(param));
+    console.log("조건 : " + JSON.stringify(param)); 
 
     var appendHtml = "";
     $.ajax({

@@ -5,9 +5,7 @@ var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var exec = require('child_process').exec;
-var mysql = require('mysql');
 var dbConfig = require(appRoot + '/config/dbConfig');
-var pool = mysql.createPool(dbConfig);
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
@@ -91,7 +89,7 @@ var callbackBatchLearningDataList = function (rows, req, res) {
 var fnSearchBatchLearningDataList = function (req, res) {
     // 조건절
     var condQuery = "";
-    var orderQuery = " ORDER BY A.regDate DESC ";
+    var orderQuery = " ORDER BY LENGTH(F.originFileName) ASC, F.originFileName ASC, A.regDate DESC ";
     if (!commonUtil.isNull(req.body.addCond)) {
         if (req.body.addCond == "LEARN_N") condQuery = " AND A.status != 'Y' ";
         else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.status = 'Y' ";
@@ -869,16 +867,18 @@ router.post('/syncFile', function (req, res) {
 
     const files = FileHound.create()
         .paths(testFolder)
-        .directory()
         //.ext('jpg', 'tif')
         .ext('tif', 'tiff')
         .find();
+
+    console.log("filehound : " + JSON.stringify(files));
 
     var resText = [];
 
     files.then(function (result) {
         var del_result = [];
 
+        console.log(JSON.stringify(result));
         // 파일테이블 리스트를 가져와서 존재여부 검사
         var callbackSelectFileNameList = function (rows, req, res) {
             for (var i = 0, x = result.length; i < x; i++) {
