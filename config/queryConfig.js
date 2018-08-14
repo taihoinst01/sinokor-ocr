@@ -91,7 +91,12 @@ var dbcolumnsConfig = {
         `SELECT
             seqNum, koKeyword, enKeyword
          FROM
-            "tbl_extraction_keyword `
+            tbl_extraction_keyword `,
+    selectColMappingCls:
+        `SELECT
+            seqNum, colName, colType, colNum
+         FROM
+            tbl_column_mapping_cls `
 };
 
 var myApprovalConfig = {
@@ -119,6 +124,15 @@ var myApprovalConfig = {
            FROM TBL_OCR_FILE_DTL A,
                 TBL_DOCUMENT_DTL B
           WHERE A.IMGID = B.IMGID `,
+    selectUsers:
+        `SELECT
+            seqnum, userId, userPw, auth, email, ocrUseCount,
+            TO_CHAR(joinDate, 'yyyy-mm-dd hh:mi:ss') AS joinDate, 
+            TO_CHAR(lastLoginDate, 'yyyy-mm-dd hh:mi:ss') AS lastLoginDate
+         FROM
+            tbl_ocr_comm_user
+         WHERE
+            1=1 `,
     updateDocument:
         `UPDATE TBL_DOCUMENT SET `
 }
@@ -314,6 +328,11 @@ var batchLearningConfig = {
             tbl_ocr_symspell
          WHERE
             1=1 `,
+    selectExportSentenceSid:
+        `SELECT
+            EXPORT_SENTENCE_SID (:word) as word
+         FROM
+            dual `,
     insertContractMapping:
         `INSERT INTO
             tbl_contract_mapping(extOgcompanyName, extCtnm, asOgcompanyName, asCtnm)
@@ -430,7 +449,22 @@ var mlConfig = {
          FROM
             tbl_document_category
          WHERE
-            docType = :docType `
+            docType = :docType `,
+    insertDocLabelMapping:
+        `INSERT INTO
+            tbl_form_label_mapping
+         VALUES
+            (seq_form_label_mapping.nextval, :data, :class, sysdate) `,
+    insertDocMapping:
+        `INSERT INTO
+            tbl_form_mapping
+         VALUES
+            (seq_form_mapping.nextval, :data, :class, sysdate) `,
+    insertColMapping:
+        `INSERT INTO
+            tbl_column_mapping_train
+         VALUES
+            (seq_column_mapping_train.nextval, :data, :class, sysdate) `,
 }
 
 module.exports = {

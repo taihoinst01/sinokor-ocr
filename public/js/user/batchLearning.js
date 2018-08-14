@@ -8,6 +8,7 @@ var batchCount = 0; // ml 학습 횟수
 var grid;
 var isFullMatch = true; // UI training 체크 중 모든 컬럼 매치 유무
 var modifyData = []; // UI 수정할 데이터 
+var columnArr = []; // 컬럼 데이터
 
 var ocrDataArr = []; //ocr 학습한 데이터 배열
 
@@ -293,7 +294,7 @@ var insertBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
                 console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
                 endProgressBar();
                 if (lastYN) {
-                    alert("파일 등록이 완료되었습니다.");
+                    //alert("파일 등록이 완료되었습니다.");
                     searchBatchLearnDataList("LEARN_N");
                 }
             },
@@ -462,6 +463,24 @@ function convertOcrData() {
     return convertArr;
 }
 
+function convertLineOcrData(ocrData) {
+    var convertArr = [];
+
+    for (var j in ocrData.regions) {
+        var regionsItem = ocrData.regions[j];
+        for (var k in regionsItem.lines) {
+            var linesItem = regionsItem.lines[k];
+            var item = '';
+            for (var m in linesItem.words) {
+                item += linesItem.words[m].text + ' ';
+            }            
+            convertArr.push({ 'location': linesItem.boundingBox, 'text': item.trim() });
+        }
+    }    
+
+    return convertArr;
+}
+
 // [OCR API -> CLASSIFICATION -> LABEL MAPPING]
 function execBatchLearning() {
     var dataArr = convertOcrData();
@@ -481,60 +500,57 @@ function execBatchLearning() {
 
 // UI레이어 작업 함수
 function popUpLayer2(ocrData) {
-    var data = modifyData;
-    console.log('---------------------------------------');
-    console.log(ocrData);
-    console.log(data)
-
-    ocrPopData = data;
 
     fn_initUiTraining(); // 팝업 초기화
-    console.log("popupTest");
     layer_open('layer2'); // ui 학습레이어 띄우기
     $("#layer2.poplayer").css("display", "block");
-
-    //$("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);
-    $("#uiImg").attr("src", "./uploads/26.jpg");
-    for (var num in data) {
-        if (data[num].column == "CSCO_NM_VALUE") {
-            $("#cscoNm").val(data[num].text);
-        } else if (data[num].column == "CT_NM_VALUE") {
-            $("#ctNm").val(data[num].text);
-        } else if (data[num].column == "INS_ST_DT_VALUE") {
-            $("#insStDt").val(data[num].text);
-        } else if (data[num].column == "INS_END_DT_VALUE") {
-            $("#insEndDt").val(data[num].text);
-        } else if (data[num].column == "CUR_CD_VALUE") {
-            $("#curCd").val(data[num].text);
-        } else if (data[num].column == "PRE_VALUE") {
-            $("#pre").val(data[num].text);
-        } else if (data[num].column == "COM_VALUE") {
-            $("#com").val(data[num].text);
-        } else if (data[num].column == "BRKG_VALUE") {
-            $("#brkg").val(data[num].text);
-        } else if (data[num].column == "TXAM_VALUE") {
-            $("#txam").val(data[num].text);
-        } else if (data[num].column == "PRRS_CF_VALUE") {
-            $("#prrsCf").val(data[num].text);
-        } else if (data[num].column == "PRRS_RLS_VALUE") {
-            $("#prrsRls").val(data[num].text);
-        } else if (data[num].column == "CLA_VALUE") {
-            $("#cla").val(data[num].text);
-        } else if (data[num].column == "EXEX_VALUE") {
-            $("#exex").val(data[num].text);
-        } else if (data[num].column == "SVF_VALUE") {
-            $("#svf").val(data[num].text);
-        } else if (data[num].column == "CAS_VALUE") {
-            $("#cas").val(data[num].text);
-        } else if (data[num].column == "NTBL_VALUE") {
-            $("#ntbl").val(data[num].text);
-        } else if (data[num].column == "CSCO_SA_RFRN_CNNT2_VALUE") {
-            $("#cscoSaRfrnCnnt2").val(data[num].text);
-        } else {
-
+    $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
+    $("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);   
+    $.ajax({
+        url: '/batchLearning/selectColMappingCls',
+        type: 'post',
+        datatype: "json",
+        contentType: 'application/json; charset=UTF-8',
+        success: function (columns) {
+            columnArr = columns.data;
+            var tblTag = '';
+            for (var i in modifyData) {
+                tblTag += '<dl>';
+                tblTag += '<dt onmouseover="" onmouseout="">';
+                tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                tblTag += '<input type="text" value="' + modifyData[i].text + '" style="width:100%; border:0;" />';
+                tblTag += '<input type="hidden" value="' + modifyData[i].location + '" />';
+                tblTag += '</label>';
+                tblTag += '</dt>';
+                tblTag += '<dd>';
+                tblTag += appendOptionHtml(modifyData[i].column, columns.data)
+                tblTag += '</dd>';
+                tblTag += '</dl>';
+            }
+            $('#textResultTbl').append(tblTag);
+        },
+        error: function (err) {
+            console.log(err);
         }
+    });
+
+}
+
+// 컬럼 select html 가공 함수
+function appendOptionHtml(targetColumn, columns) {
+    var selectHTML = '<select>';
+    for (var i in columns) {
+        var optionHTML = '';
+        if (targetColumn == columns[i].COLTYPE) {
+            optionHTML = '<option value="' + columns[i].COLTYPE + '" selected>' + columns[i].COLNAME + '</option>';
+        } else {
+            optionHTML = '<option value="' + columns[i].COLTYPE + '">' + columns[i].COLNAME + '</option>';
+        }
+        selectHTML += optionHTML
     }
-    
+    selectHTML += '</select>'
+
+    return selectHTML;
 }
 
 function execBatchLearningData(ocrData, data) {
@@ -1593,32 +1609,8 @@ var fn_uiTraining = function () {
 
 // UI학습 팝업 초기화
 var fn_initUiTraining = function () {
-    $("#imgId").val("");
-    $("#imgFileStNo").val("");
-    $("#imgFileEndNo").val("");
-    $("#cscoNm").val("");
-    $("#ctNm").val("");
-    $("#instStDt").val("");
-    $("#instEndDt").val("");
-    $("#curCd").val("");
-    $("#pre").val("");
-    $("#com").val("");
-    $("#brkg").val("");
-    $("#txam").val("");
-    $("#prrsCf").val("");
-    $("#prrsRls").val("");
-    $("#lsresCf").val("");
-    $("#lsresRls").val("");
-    $("#cla").val("");
-    $("#exex").val("");
-    $("#svf").val("");
-    $("#cas").val("");
-    $("#ntbl").val("");
-    $("#cscoSaRfrnCnnt2").val("");
-    $("#regId").val("");
-    $("#regDate").val("");
-    $("#updId").val("");
-    $("#updDate").val("");
+    $('#imgNameTag').text('');
+    $("#uiImg").html('');
 }
 // UI학습 팝업 값 대입
 var fn_processUiTraining = function (fileInfoList) {
@@ -1730,7 +1722,7 @@ var fn_batchUiTraining = function () {
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
     var returnObj = [];
-    
+    var docCategory = data.docCategory;
     $.ajax({
         url: '/batchLearning/selectOcrSymSpell',
         type: 'post',
@@ -1742,38 +1734,96 @@ var docLabelMapping = function (data) {
             for (var i in data.data) {
                 var returnItem = {};
                 returnItem.x = data.data[i].location.split(',')[0];
-                returnItem.y = data.data[i].location.split(',')[0];
-                returnItem.word1 = 0;
-                returnItem.word2 = 0;
-                returnItem.word3 = 0;
-                returnItem.word4 = 0;
-                returnItem.word5 = 0;
-                var wordArr = data.data[i].text.split(' ');
-                var wordNum = [];
-                for (var j = 0; j < wordArr.length; j++) {                   
-                    for (var k in data.data[i].typoData) {
-                        if (wordArr[j] == data.data[i].typoData[k].KEYWORD) {
-                            wordNum.push(data.data[i].typoData[k].SEQNUM);
-                            if (wordNum.length == 5) break;
-                        }
-                    }                 
-                }
-                for (var j in wordNum) {
-                    if (j == 0) returnItem.word1 = wordNum[0];
-                    if (j == 1) returnItem.word2 = wordNum[1];
-                    if (j == 2) returnItem.word3 = wordNum[2];
-                    if (j == 3) returnItem.word4 = wordNum[3];
-                    if (j == 4) returnItem.word5 = wordNum[4];
+                returnItem.y = data.data[i].location.split(',')[1];
+                returnItem.word = data.data[i].typoData;
+                if (data.data[i].column == 'CTOGCOMPANYNAMENM') { // 출재사명 이면
+                    returnItem.label = 1;
+                } else if (data.data[i].column == 'CTNM') {// 계약명 이면
+                    returnItem.label = 2;
+                } else {
+                    returnItem.label = 3;
                 }
                 mlParams.push(returnItem);
             }
-            console.log(mlParams);
+
+            insertDocLabelMapping(mlParams);
+            insertDocMapping(mlParams, docCategory);
+            insertColMapping(mlParams, data.data, docCategory);
         },
         error: function (err) {
             console.log(err);
         }
     });
     
+}
+
+// 양식 레이블 매핑 ml 데이터 insert
+function insertDocLabelMapping(data) {
+    $.ajax({
+        url: '/batchLearning/insertDocLabelMapping',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': data }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// 양식 매핑 ml 데이터 insert
+function insertDocMapping(data, docCategory) {
+    var param = [];
+    for (var i in data) {
+        if (data[i].label != 3) {
+            param.push(data[i]);
+        }
+    }
+    $.ajax({
+        url: '/batchLearning/insertDocMapping',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': param ,'docCategory': docCategory}),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// 컬럼 매핑 ml 데이터 insert
+function insertColMapping(data, mlData, docCategory) {
+    var param = [];
+    for (var i in mlData) {
+        for (var j in columnArr) {
+            if (mlData[i].column != 'UNDEFINED' && mlData[i].column == columnArr[j].COLTYPE) {
+                var item = data[i];
+                item.colNum = columnArr[j].COLNUM;
+                param.push(item);
+                break;
+            }
+        }
+    }
+
+    $.ajax({
+        url: '/batchLearning/insertColMapping',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': param, 'docCategory': docCategory }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 }
 
 //문서 비교 popup 버튼 클릭 이벤트

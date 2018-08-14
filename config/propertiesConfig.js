@@ -3,7 +3,7 @@ var propertiesConfig = {
 
     },
     proxy: {
-        serverUrl: 'https://sinokor-rest.azurewebsites.net'
+        serverUrl: 'http://210.109.27.111:8888'
     },
     uiLearning: {
 

@@ -12,9 +12,7 @@ var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var router = express.Router();
 // DB
-var mysql = require('mysql');
 var dbConfig = require(appRoot + '/config/dbConfig');
-var pool = mysql.createPool(dbConfig);
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
