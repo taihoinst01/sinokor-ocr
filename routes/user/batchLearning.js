@@ -528,23 +528,13 @@ router.post('/selectOcrSymSpell', function (req, res) {
     var data = req.body.data;
     var querycount = 0;
     for (var i in data) {
-        var query = queryConfig.batchLearningConfig.selectTypo;
-        var wordArr = data[i].text.split(' ');       
-        for (var j in wordArr) {
-            if (j == 0) {
-                query += "AND keyword = '" + wordArr[j] + "' ";
-            } else {
-                query += "OR keyword = '" + wordArr[j] + "' ";
-            }
-           
-        }
-        commonDB.reqQueryF1param(query, function (rows, req, res, i) {
+        commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectExportSentenceSid, [data[i].text], function (rows, i, req, res) {
             querycount++;
-            data[i].typoData = rows;
+            data[i].typoData = rows[0].WORD;
             if (querycount == data.length) {
                 res.send({ code: 200, 'data': data });
             }
-        }, req, res, i);
+        }, i, req, res);
     }
 });
 
@@ -559,9 +549,9 @@ router.post('/selDBColumns', function (req, res) {
 router.post('/insertDocLabelMapping', function (req, res) {
     var data = req.body.data;
     var insertCount = 0;
-    /*
+    
     for (var i in data) {
-        var item = data[i].x + ',' + data[i].y + ',' + data[i].word1 + ',' + data[i].word2 + ',' + data[i].word3 + ',' + data[i].word4 + ',' + data[i].word5;
+        var item = data[i].x + ',' + data[i].y + ',' + data[i].word;
         commonDB.queryNoRows(queryConfig.mlConfig.insertDocLabelMapping, [item, data[i].label], function () {
             insertCount++;
             if (insertCount == data.length) {
@@ -569,33 +559,33 @@ router.post('/insertDocLabelMapping', function (req, res) {
             }
         });
     }
-    */
-    res.send({});
+
 });
 
 var callbackInsertDocMapping = function (rows, req, res) {
-    res.send({ code: 200, message: 'from mapping insert' });
-};
-var callbackSelectBatchAnswerFile2 = function (rows, req, res, data) {
-    if (rows.length > 0) {
-        var item = '';
-        for (var i in data) {
-            item += data[i].x + ',' + data[i].y + ',' + data[i].word1 + ',' + data[i].word2 + ',' + data[i].word3 + ',' + data[i].word4 + ',' + data[i].word5;
-            item += (i == data.length - 1)? '': ',';
-        }
-
-        //commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, rows[0].IMGID], callbackInsertDocMapping, req, res);
-        res.send({});
-    } else {
-        res.send({ code: 404, message: 'answer file not found' });
-    }
+    res.send({ code: 200, message: 'form mapping insert' });
 };
 router.post('/insertDocMapping', function (req, res) {
     var data = req.body.data;
-    var fileName = req.body.fileName;
+    var docCategory = req.body.docCategory;
 
-    var condQuery = "('" + fileName.split('.')[0] + ".tif')";
-    commonDB.reqQueryF1param(queryConfig.batchLearningConfig.selectBatchAnswerFile + condQuery, callbackSelectBatchAnswerFile2 ,req, res, data);
+    var item = '';
+    for (var i in data) {
+        item += data[i].x + ',' + data[i].y + ',' + data[i].word;;
+        item += (i == data.length - 1) ? '' : ',';
+    }
+
+    commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertDocMapping, req, res);
+});
+
+var callbackInsertColMapping = function (rows, req, res) {
+    res.send({ code: 200, message: 'column mapping insert' });
+};
+router.post('/insertColMapping', function (req, res) {
+    var data = req.body.data;
+    var docCategory = req.body.docCategory;
+
+    //commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertColMapping, req, res);
 });
 
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
