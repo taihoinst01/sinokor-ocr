@@ -4,6 +4,8 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var logger = require('./logger.js');
+var oracledb = require('oracledb');
+var dbConfig = require(appRoot + '/config/dbConfig');
 
 const defaults = {
     encoding: 'utf8',
@@ -49,9 +51,47 @@ exports.typoSentenceEval = function (data, callback) {
                 }
             }
         }
+
+        getSymspellSID(retData, function (data) {
+
+        });
+
         callback(retData);
     });
 };
+
+async function getSymspellSID(data, callbackTypoDomainTrain) {
+    let res;
+    try {
+        res = await runSymspellSID(data);
+        console.log(res);
+        callbackTypoDomainTrain(res);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function typoDomainTrain(data) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            resolve("true");
+
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
 
 exports.formLabelMapping = function (data, callback) {
     var args = dataToLocationArgs(data);

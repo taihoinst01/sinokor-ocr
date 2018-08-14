@@ -450,6 +450,19 @@ router.post('/execBatchLearningData', function (req, res) {
         })
     });
     */
+
+    aimain.typoSentenceEval(arg, function (result1) {
+
+        console.log(result1);
+
+        res.send('');
+    });
+
+    aimain.formLabelMapping(arg, function (result1) {
+        console.log('test');
+    });
+
+    /*
     console.log("bill ML");
     aimain.billClassificationEval(arg, function (result1) {
         console.log(result1);
@@ -491,31 +504,13 @@ router.post('/execBatchLearningData', function (req, res) {
                     }
                 }
 
-                /*
-                for (var i in data) {
-                    if (data[i].column == "CTNM") {
-
-                        var ctnmLoc = data[i].location.split(",");
-
-                        for (var j in dataArr) {
-
-                            var loc = dataArr[j][0].location.split(",");
-
-                            if (loc[1] - ctnmLoc[1] > 0) {
-                                dataArr[j].push(data[i]);
-                            }
-                        }
-                    }
-                }
-                */
-
-                //console.log(dataArr);
                 result2.data = dataArr;
             }
             res.send(result2);
         });
         
     });
+    */
 
 });
 
