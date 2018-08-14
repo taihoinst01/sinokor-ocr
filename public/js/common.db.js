@@ -157,6 +157,20 @@ module.exports = function (pool) {
         });
     };
 
+    // 쿼리 요청 2 (파라미터 포함, req & res 미포함, rows 미포함)
+    var queryNoRows2 = function (sql, param, callbackFunc) {
+        pool.getConnection(function (err, connection) {
+            connection.execute(sql, param, function (err, result) {
+                if (err) {
+                    console.error("OracleDB err : ", err);
+                    console.log(sql);
+                }
+                callbackFunc(result.rows ? result.rows : null);
+                connection.release();
+            });
+        });
+    };
+
     // 일반 쿼리 요청 (파라미터, rows 포함, 결과값이 COUNT 일때)
     var reqCountQueryParam = function (sql, param, callbackFunc, req, res) {
         pool.getConnection(function (err, connection) {
@@ -231,6 +245,7 @@ module.exports = function (pool) {
     module.exports.queryParam = queryParam;
     module.exports.queryParam2 = queryParam2;
     module.exports.queryNoRows = queryNoRows;
+    module.exports.queryNoRows2 = queryNoRows2;
     module.exports.reqCountQueryParam = reqCountQueryParam;
     module.exports.insertFileInfo = insertFileInfo;
     module.exports.reqBatchQueryParam = reqBatchQueryParam;
