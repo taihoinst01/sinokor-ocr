@@ -91,7 +91,7 @@ var dbcolumnsConfig = {
         `SELECT
             seqNum, koKeyword, enKeyword
          FROM
-            "tbl_extraction_keyword `
+            tbl_extraction_keyword `
 };
 
 var myApprovalConfig = {
@@ -444,7 +444,12 @@ var mlConfig = {
         `INSERT INTO
             tbl_form_label_mapping
          VALUES
-            (seq_form_label_mapping.nextval, :data, :class, sysdate)`
+            (seq_form_label_mapping.nextval, :data, :class, sysdate) `,
+    insertDocMapping:
+        `INSERT INTO
+            tbl_form_mapping
+         VALUES
+            (seq_form_mapping.nextval, :data, :class, sysdate) `
 }
 
 module.exports = {

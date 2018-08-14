@@ -550,10 +550,18 @@ router.post('/selectOcrSymSpell', function (req, res) {
     }
 });
 
+var callbackSelDbColumns = function (rows, req, res) {
+    res.send({ code : 200, data: rows });
+};
+router.post('/selDBColumns', function (req, res) {
+
+    commonDB.reqQuery(queryConfig.dbcolumnsConfig.selDBColumns, callbackSelDbColumns, req, res);
+});
+
 router.post('/insertDocLabelMapping', function (req, res) {
     var data = req.body.data;
     var insertCount = 0;
-    
+    /*
     for (var i in data) {
         var item = data[i].x + ',' + data[i].y + ',' + data[i].word1 + ',' + data[i].word2 + ',' + data[i].word3 + ',' + data[i].word4 + ',' + data[i].word5;
         commonDB.queryNoRows(queryConfig.mlConfig.insertDocLabelMapping, [item, data[i].label], function () {
@@ -563,6 +571,33 @@ router.post('/insertDocLabelMapping', function (req, res) {
             }
         });
     }
+    */
+    res.send({});
+});
+
+var callbackInsertDocMapping = function (rows, req, res) {
+    res.send({ code: 200, message: 'from mapping insert' });
+};
+var callbackSelectBatchAnswerFile2 = function (rows, req, res, data) {
+    if (rows.length > 0) {
+        var item = '';
+        for (var i in data) {
+            item += data[i].x + ',' + data[i].y + ',' + data[i].word1 + ',' + data[i].word2 + ',' + data[i].word3 + ',' + data[i].word4 + ',' + data[i].word5;
+            item += (i == data.length - 1)? '': ',';
+        }
+
+        //commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, rows[0].IMGID], callbackInsertDocMapping, req, res);
+        res.send({});
+    } else {
+        res.send({ code: 404, message: 'answer file not found' });
+    }
+};
+router.post('/insertDocMapping', function (req, res) {
+    var data = req.body.data;
+    var fileName = req.body.fileName;
+
+    var condQuery = "('" + fileName.split('.')[0] + ".tif')";
+    commonDB.reqQueryF1param(queryConfig.batchLearningConfig.selectBatchAnswerFile + condQuery, callbackSelectBatchAnswerFile2 ,req, res, data);
 });
 
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)

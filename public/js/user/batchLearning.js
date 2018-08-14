@@ -504,27 +504,51 @@ function popUpLayer2(ocrData) {
     layer_open('layer2'); // ui 학습레이어 띄우기
     $("#layer2.poplayer").css("display", "block");
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
-    $("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);
-    var tblTag = '';
+    $("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);   
+    $.ajax({
+        url: '/batchLearning/selDBColumns',
+        type: 'post',
+        datatype: "json",
+        contentType: 'application/json; charset=UTF-8',
+        success: function (columns) {
+            var tblTag = '';
+            for (var i in modifyData) {
+                tblTag += '<dl>';
+                tblTag += '<dt onmouseover="" onmouseout="">';
+                tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                tblTag += '<input type="text" value="' + modifyData[i].text + '" style="width:100%; border:0;" />';
+                tblTag += '<input type="hidden" value="' + modifyData[i].location + '" />';
+                tblTag += '</label>';
+                tblTag += '</dt>';
+                tblTag += '<dd>';
+                tblTag += appendOptionHtml(modifyData[i].column, columns.data)
+                tblTag += '</dd>';
+                tblTag += '</dl>';
+            }
+            $('#textResultTbl').append(tblTag);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 
-    console.log(modifyData);
-    for (var i in modifyData) {
-        tblTag += '<dl>';
-        tblTag += '<dt onmouseover="" onmouseout="">';
-        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-        tblTag += '<input type="text" value="' + modifyData[i].text + '" style="width:100%; border:0;" />';
-        tblTag += '<input type="hidden" value="' + modifyData[i].location + '" />';
-        tblTag += '</label>';
-        tblTag += '</dt>';
-        tblTag += '<dd>';
-        tblTag += '<div class="selects">';
-        tblTag += '<ul class="selectBox">';
-        tblTag += '<select></select>'
-        tblTag += '</div>';
-        tblTag += '</dd>';
-        tblTag += '</dl>';
+}
+
+// 컬럼 select html 가공 함수
+function appendOptionHtml(targetColumn, columns) {
+    var selectHTML = '<select>';
+    for (var i in columns) {
+        var optionHTML = '';
+        if (targetColumn == columns[i].ENKEYWORD) {
+            optionHTML = '<option value="' + columns[i].ENKEYWORD + '" selected>' + columns[i].KOKEYWORD + '</option>';
+        } else {
+            optionHTML = '<option value="' + columns[i].ENKEYWORD + '">' + columns[i].KOKEYWORD + '</option>';
+        }
+        selectHTML += optionHTML
     }
-    $('#textResultTbl').append(tblTag);
+    selectHTML += '</select>'
+
+    return selectHTML;
 }
 
 function execBatchLearningData(ocrData, data) {
@@ -1708,7 +1732,7 @@ var docLabelMapping = function (data) {
             for (var i in data.data) {
                 var returnItem = {};
                 returnItem.x = data.data[i].location.split(',')[0];
-                returnItem.y = data.data[i].location.split(',')[0];
+                returnItem.y = data.data[i].location.split(',')[1];
                 returnItem.word1 = 0;
                 returnItem.word2 = 0;
                 returnItem.word3 = 0;
@@ -1741,6 +1765,7 @@ var docLabelMapping = function (data) {
                 mlParams.push(returnItem);
             }
             insertDocLabelMapping(mlParams);
+            insertDocMapping(mlParams)
         },
         error: function (err) {
             console.log(err);
@@ -1756,6 +1781,29 @@ function insertDocLabelMapping(data) {
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': data }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// 양식 매핑 ml 데이터 insert
+function insertDocMapping(data) {
+    var param = [];
+    for (var i in data) {
+        if (data[i].label != 3) {
+            param.push(data[i]);
+        }
+    }
+    $.ajax({
+        url: '/batchLearning/insertDocMapping',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': param, 'fileName': $('#imgNameTag').text() }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);
