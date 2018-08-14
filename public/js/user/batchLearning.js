@@ -294,7 +294,7 @@ var insertBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
                 console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
                 endProgressBar();
                 if (lastYN) {
-                    alert("파일 등록이 완료되었습니다.");
+                    //alert("파일 등록이 완료되었습니다.");
                     searchBatchLearnDataList("LEARN_N");
                 }
             },
