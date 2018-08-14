@@ -53,6 +53,54 @@ exports.typoSentenceEval = function (data, callback) {
     });
 };
 
+exports.formLabelMapping = function (data, callback) {
+    var args = dataToLocationArgs(data);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\FormLabelMapping\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+        console.log(stdout);
+    });
+
+}
+
+function dataToArgs(data) {
+
+    var args = '';
+    for (var i = 0; i < data.length; i++) {
+        args += '"' + commonUtil.nvl(data[i].text).toLowerCase() + '"' + ' ';
+    }
+
+    return args;
+}
+
+function dataToLocationArgs(data) {
+    var args = '';
+
+    for (var i in data) {
+        var loc = data[i].location.split(",");
+        var text = data[i].text;
+
+        args += '"' + loc[0] + ' ' + loc[1] + ' ' + commonUtil.nvl(text).toLowerCase() + '"' + ' ';
+    }
+
+    return args;
+}
+
+function dataToAllLocationArgs(data) {
+    var args = '"';
+
+    for (var i in data) {
+        var loc = data[i].location.split(",");
+        var text = data[i].text;
+
+        args += loc[0] + ' ' + loc[1] + ' ' + text + ' ';
+    }
+
+    args += '"';
+
+    return args;
+}
+
 exports.domainDictionaryEval = function (data, callback) {
     var args = dataToArgs(data);
 
@@ -87,8 +135,11 @@ exports.domainDictionaryEval = function (data, callback) {
     });
 };
 
+/*
+ *  ML OLD
+ * 
 //text classification eval
-exports.textClassificationEval = function(data, callback) {
+exports.textClassificationEval = function (data, callback) {
 
     var args = dataToArgs(data);
 
@@ -149,7 +200,7 @@ exports.statementClassificationEval = function (data, callback) {
 };
 
 //label mapping eval
-exports.labelMappingEval = function(data, callback) {
+exports.labelMappingEval = function (data, callback) {
 
     var labelData = [];
 
@@ -301,41 +352,4 @@ exports.labelClassificationEval = function (data, callback) {
         callback(data);
     });
 }
-
-function dataToArgs(data) {
-
-    var args = '';
-    for (var i = 0; i < data.length; i++) {
-        args += '"' + commonUtil.nvl(data[i].text).toLowerCase() + '"' + ' ';
-    }
-
-    return args;
-}
-
-function dataToLocationArgs(data) {
-    var args = '';
-
-    for (var i in data) {
-        var loc = data[i].location.split(",");
-        var text = data[i].text;
-
-        args += '"' + loc[0] + ' ' + loc[1] + ' ' + commonUtil.nvl(text).toLowerCase() + '"' + ' ';
-    }
-
-    return args;
-}
-
-function dataToAllLocationArgs(data) {
-    var args = '"';
-
-    for (var i in data) {
-        var loc = data[i].location.split(",");
-        var text = data[i].text;
-
-        args += loc[0] + ' ' + loc[1] + ' ' + text + ' ';
-    }
-
-    args += '"';
-
-    return args;
-}
+*/
