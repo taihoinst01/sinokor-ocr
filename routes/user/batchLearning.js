@@ -455,12 +455,16 @@ router.post('/execBatchLearningData', function (req, res) {
 
         console.log(result1);
 
-        res.send('');
+        aimain.formLabelMapping(result1, function (result1) {
+            console.log('test');
+
+            res.send('');
+        });
+
+        
     });
 
-    aimain.formLabelMapping(arg, function (result1) {
-        console.log('test');
-    });
+
 
     /*
     console.log("bill ML");

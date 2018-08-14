@@ -52,11 +52,10 @@ exports.typoSentenceEval = function (data, callback) {
             }
         }
 
-        getSymspellSID(retData, function (data) {
-
+        getSymspellSID(retData, function (sidData) {
+            callback(sidData);
         });
-
-        callback(retData);
+        
     });
 };
 
@@ -71,13 +70,29 @@ async function getSymspellSID(data, callbackTypoDomainTrain) {
     }
 }
 
-function typoDomainTrain(data) {
+function runSymspellSID(data) {
     return new Promise(async function (resolve, reject) {
         let conn;
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            resolve("true");
+
+            console.log(data);
+
+            for (var i in data) {
+                var sid = "";
+                locSplit = data[i].location.split(",");
+                sid += locSplit[0] + "," + locSplit[1];
+
+                let result = await conn.execute("SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL", [data[i].text.toLowerCase()]);
+
+                if (result.rows[0] != null) {
+                    sid += "," + result.rows[0].SID;
+                }
+
+                data[i].sid = sid;
+            }
+            resolve(data);
 
         } catch (err) { // catches errors in getConnection and the query
             reject(err);

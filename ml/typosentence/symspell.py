@@ -3,7 +3,6 @@ import os
 import sys
 import re
 import json
-import pymysql
 import cx_Oracle
 import configparser
 
