@@ -266,9 +266,10 @@ router.post('/excelCopy', function (req, res) {
 
 // [POST] 엑셀 업로드
 router.post('/excelUpload', upload.any(), function (req, res) {
+    console.log("!!!!!!!!!!!!!!!!!!!!!!! excelupload");
     // 엑셀 파일 확인
-    var pathExcel = appRoot + propertiesConfig.filepath.excelBatchFilePath;
-    var dataExcel = appRoot + propertiesConfig.filepath.excelBatchFileData;
+    var pathExcel = propertiesConfig.filepath.excelBatchFilePath;
+    var dataExcel = propertiesConfig.filepath.excelBatchFileData;
     console.log(dataExcel);
     var pathExcelWorkbook = xlsx.readFile(pathExcel);
     var dataExcelWorkbook = xlsx.readFile(dataExcel);
