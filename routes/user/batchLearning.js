@@ -5,9 +5,7 @@ var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var exec = require('child_process').exec;
-var mysql = require('mysql');
 var dbConfig = require(appRoot + '/config/dbConfig');
-var pool = mysql.createPool(dbConfig);
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
@@ -91,7 +89,7 @@ var callbackBatchLearningDataList = function (rows, req, res) {
 var fnSearchBatchLearningDataList = function (req, res) {
     // 조건절
     var condQuery = "";
-    var orderQuery = " ORDER BY A.regDate DESC ";
+    var orderQuery = " ORDER BY A.regDate DESC, LENGTH(F.originFileName) ASC, F.originFileName ASC";
     if (!commonUtil.isNull(req.body.addCond)) {
         if (req.body.addCond == "LEARN_N") condQuery = " AND A.status != 'Y' ";
         else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.status = 'Y' ";
@@ -268,9 +266,10 @@ router.post('/excelCopy', function (req, res) {
 
 // [POST] 엑셀 업로드
 router.post('/excelUpload', upload.any(), function (req, res) {
+    console.log("!!!!!!!!!!!!!!!!!!!!!!! excelupload");
     // 엑셀 파일 확인
-    var pathExcel = appRoot + propertiesConfig.filepath.excelBatchFilePath;
-    var dataExcel = appRoot + propertiesConfig.filepath.excelBatchFileData;
+    var pathExcel = propertiesConfig.filepath.excelBatchFilePath;
+    var dataExcel = propertiesConfig.filepath.excelBatchFileData;
     console.log(dataExcel);
     var pathExcelWorkbook = xlsx.readFile(pathExcel);
     var dataExcelWorkbook = xlsx.readFile(dataExcel);
@@ -521,32 +520,78 @@ router.post('/execBatchLearningData', function (req, res) {
 });
 
 router.post('/selectOcrSymSpell', function (req, res) {
-    /*
-    var data = [{ "location": "1018,240,411,87", "text": "APEX", "column": "UNDEFINED" },
-    { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNDEFINED" },
-    { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNDEFINED" },
-    { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNDEFINED" }];  
-    */
     var data = req.body.data;
     var querycount = 0;
+    console.log(data);
+    console.log('시작');
     for (var i in data) {
-        var query = queryConfig.batchLearningConfig.selectTypo;
-        var wordArr = data[i].text.split(' ');       
-        for (var j in wordArr) {
-            if (j == 0) {
-                query += "AND keyword = '" + wordArr[j] + "' ";
-            } else {
-                query += "OR keyword = '" + wordArr[j] + "' ";
-            }
-           
-        }
-        commonDB.reqQueryF1param(query, function (rows, req, res, i) {
+        commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectExportSentenceSid, [data[i].text], function (rows, i, req, res) {
+            console.log(querycount);
             querycount++;
-            data[i].typoData = rows;
+            data[i].typoData = rows[0].WORD;
             if (querycount == data.length) {
                 res.send({ code: 200, 'data': data });
             }
-        }, req, res, i);
+        }, i, req, res);
+    }
+});
+
+var callbackSelDbColumns = function (rows, req, res) {
+    res.send({ code : 200, data: rows });
+};
+router.post('/selectColMappingCls', function (req, res) {
+
+    commonDB.reqQuery(queryConfig.dbcolumnsConfig.selectColMappingCls, callbackSelDbColumns, req, res);
+});
+
+router.post('/insertDocLabelMapping', function (req, res) {
+    var data = req.body.data;
+    var insertCount = 0;
+
+    for (var i in data) {
+        var item = data[i].x + ',' + data[i].y + ',' + data[i].word;
+        commonDB.queryNoRows(queryConfig.mlConfig.insertDocLabelMapping, [item, data[i].label], function () {
+            insertCount++;
+            if (insertCount == data.length) {
+                res.send({ code: 200, message: 'form label mapping insert' });
+            }
+        });
+    }
+    
+});
+
+var callbackInsertDocMapping = function (rows, req, res) {
+    res.send({ code: 200, message: 'form mapping insert' });
+};
+router.post('/insertDocMapping', function (req, res) {
+    var data = req.body.data;
+    var docCategory = req.body.docCategory;
+
+    var item = '';
+    for (var i in data) {
+        item += data[i].x + ',' + data[i].y + ',' + data[i].word;;
+        item += (i == data.length - 1) ? '' : ',';
+    }
+
+    commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertDocMapping, req, res);
+});
+
+router.post('/insertColMapping', function (req, res) {
+    var data = req.body.data;
+    var docCategory = req.body.docCategory;
+    var colMappingCount = 0;
+
+    for (var i in data) {
+        if (data[i].column != 'UNKOWN') {
+            var item = '';
+            item += docCategory.DOCTYPE + ',' + data[i].x + ',' + data[i].y + ',' + data[i].word;
+            commonDB.reqQueryParam(queryConfig.mlConfig.insertColMapping, [item, data[i].colNum], function (rows, req, res) {
+                colMappingCount++;
+                if (colMappingCount == data.length) {
+                    res.send({ code: 200, message: 'column mapping insert' });
+                }
+            }, req, res);
+        }
     }
 });
 
@@ -819,16 +864,18 @@ router.post('/syncFile', function (req, res) {
 
     const files = FileHound.create()
         .paths(testFolder)
-        .directory()
         //.ext('jpg', 'tif')
         .ext('tif', 'tiff')
         .find();
+
+	 console.log("filehound : " + JSON.stringify(files));
 
     var resText = [];
 
     files.then(function (result) {
         var del_result = [];
 
+		console.log(JSON.stringify(result));
         // 파일테이블 리스트를 가져와서 존재여부 검사
         var callbackSelectFileNameList = function (rows, req, res) {
             for (var i = 0, x = result.length; i < x; i++) {

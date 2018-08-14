@@ -832,7 +832,7 @@
         </div>
     </div>
     -->
-    <div id="layer2" class="poplayer batch_pop2">
+    <div id="layer2" class="poplayer batch_pop2">        
         <div class="bg"></div>
         <div class="pop_layer">
             <div class="pop_popup0">
@@ -845,10 +845,10 @@
                             <span>양식이미지</span>
                         </div>
                         <div class="imgName">
-                            <span id=""></span>
+                            <span id="imgNameTag"></span>
                         </div>
                         <div class="pop_box_11">
-                            <!--<img src="publish/image/sample01.jpg" id="uiImg" alt="샘플이미지" />-->
+                            <img src="" id="uiImg" alt="" />
                         </div>
                     </div>
                     <!-- 양식분석상세 -->
@@ -860,11 +860,12 @@
                                     <b id="docName" class="mr5"></b>   <b id="docPredictionScore"></b>
                                 </h3>
                                 <button type="button" id="docCompareBtn" class="tits11_btn01"></button>
-                                <div class="fr">
+                                <!--<div class="fr">
                                     <button type="button" id="uiTrainBtn" class="button_st1">UI Training</button>
-                                </div>
+                                </div>-->
                             </div>
                             <div class="mCustomScrollbar box_scroll_st99" data-mcs-theme="dark-3">
+                                <input type="hidden" id="resultJson" />
                                 <div class="table_style02">
                                     <table>
                                         <caption>양식 분석 상세 정보</caption>
@@ -889,7 +890,7 @@
                 </div>
                 <div class="pop_footer">
                     <button type="button" id="btn_pop_ui_close" class="button_st4 cbtn">취 소</button>
-                    <button type="button" id="btn_pop_ui_run" class="button_st1 cbtn">학습 진행</button>
+                    <button type="button" id="btn_pop_ui_run" class="button_st1">학습 진행</button>
                 </div>
             </div>
         </div>
@@ -960,7 +961,9 @@
                         <th scope="row">이미지ID</th>
                         <th scope="row">계산서 구분</th>
                         <th scope="row">계약번호</th>
+                        <th scope="row">계약명</th>
                         <th scope="row">출재사코드</th>
+                        <th scope="row">출재사명</th>
                         <th scope="row">중개사코드</th>
                         <th scope="row">중개사명</th>
                         <th scope="row">보험개시일</th>

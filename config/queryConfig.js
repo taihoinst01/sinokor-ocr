@@ -91,7 +91,12 @@ var dbcolumnsConfig = {
         `SELECT
             seqNum, koKeyword, enKeyword
          FROM
-            "tbl_extraction_keyword `
+            tbl_extraction_keyword `,
+    selectColMappingCls:
+        `SELECT
+            seqNum, colName, colType, colNum
+         FROM
+            tbl_column_mapping_cls `
 };
 
 var myApprovalConfig = {
@@ -136,15 +141,22 @@ var documentConfig = {};
 
 var batchLearningConfig = {
     selectViewImageData:
-        `SELECT A.IMGID, A.IMGFILESTARTNO, A.IMGFILEENDNO, A.ENTRYNO, A.STATEMENTDIV, A.CONTRACTNUM, A.OGCOMPANYCODE, A.OGCOMPANYNAME, 
+        `SELECT
+            T.*
+         FROM
+            (SELECT 
+                A.IMGID, A.IMGFILESTARTNO, A.IMGFILEENDNO, A.ENTRYNO, A.STATEMENTDIV, A.CONTRACTNUM, A.OGCOMPANYCODE, A.OGCOMPANYNAME, 
                 A.BROKERCODE, A.BROKERNAME, A.CTNM, A.INSSTDT, A.INSENDDT, A.UY, A.CURCD, A.PAIDPERCENT, A.PAIDSHARE, A.OSLPERCENT, A.OSLSHARE, 
                 A.GROSSPM, A.PM, A.PMPFEND, A.PMPFWOS, A.XOLPM, A.RETURNPM, A.GROSSCN, A.CN, A.PROFITCN, A.BROKERAGE, A.TAX, A.OVERRIDINGCOM, 
                 A.CHARGE, A.PMRESERVERTD1, A.PFPMRESERVERTD1, A.PMRESERVERTD2, A.PFPMRESERVERTD2, A.CLAIM, A.LOSSRECOVERY, A.CASHLOSS, A.CASHLOSSRD, 
                 A.LOSSRR, A.LOSSRR2, A.LOSSPFEND, A.LOSSPFWOA, A.INTEREST, A.TAXON, A.MISCELLANEOUS, A.PMBL, A.CMBL, A.NTBL, A.CSCOSARFRNCNNT2,
-                B.PAGENUM, B.FILEPATH, B.TOTALCOUNT
-            FROM TBL_BATCH_ANSWER_DATA A, TBL_BATCH_ANSWER_FILE B
-           WHERE B.FILEPATH = :filePath
-            AND B.IMGID = A.IMGID `,
+                B.PAGENUM, B.TOTALCOUNT, SUBSTR(B.FILEPATH, INSTR(B.FILEPATH, '/', -1) + 1, LENGTH(B.FILEPATH)) AS FILEPATH
+            FROM
+                TBL_BATCH_ANSWER_DATA A, TBL_BATCH_ANSWER_FILE B
+            WHERE
+                B.IMGID = A.IMGID) T
+         WHERE
+            T.FILEPATH = : filePath `,
     selectBatchLearningDataList:
         `SELECT
             F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
@@ -323,6 +335,11 @@ var batchLearningConfig = {
             tbl_ocr_symspell
          WHERE
             1=1 `,
+    selectExportSentenceSid:
+        `SELECT
+            EXPORT_SENTENCE_SID (:word) as word
+         FROM
+            dual `,
     insertContractMapping:
         `INSERT INTO
             tbl_contract_mapping(extOgcompanyName, extCtnm, asOgcompanyName, asCtnm)
@@ -439,7 +456,22 @@ var mlConfig = {
          FROM
             tbl_document_category
          WHERE
-            docType = :docType `
+            docType = :docType `,
+    insertDocLabelMapping:
+        `INSERT INTO
+            tbl_form_label_mapping
+         VALUES
+            (seq_form_label_mapping.nextval, :data, :class, sysdate) `,
+    insertDocMapping:
+        `INSERT INTO
+            tbl_form_mapping
+         VALUES
+            (seq_form_mapping.nextval, :data, :class, sysdate) `,
+    insertColMapping:
+        `INSERT INTO
+            tbl_column_mapping_train
+         VALUES
+            (seq_column_mapping_train.nextval, :data, :class, sysdate) `,
 }
 
 module.exports = {
