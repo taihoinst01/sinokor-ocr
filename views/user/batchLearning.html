@@ -138,11 +138,11 @@
                     <input type="hidden" id="select_view_count" value="12" />
                     <div class="select_style">
                         <span class="ctrl"><span class="arrow"></span></span>
-                        <button type="button" class="myValue">선택하기</button>
+                        <button type="button" class="myValue btnSelector">선택하기</button>
                         <ul class="aList">
-                            <li><a href="#none" onclick="javascript: selectViewCount(20)">행표시 : 20</a></li>
-                            <li><a href="#none" onclick="javascript: selectViewCount(100)">행표시 : 100</a></li>
-                            <li><a href="#none" onclick="javascript: selectViewCount(1000);">행표시 : 1000</a></li>
+                            <li><a onclick="selectViewCount(20)">행표시 : 20</a></li>
+                            <li><a onclick="selectViewCount(100)" >행표시 : 100</a></li>
+                            <li><a onclick="selectViewCount(1000)" >행표시 : 1000</a></li>
                         </ul>
                     </div>
                     <!--<button type="button" id="btn_sync" class="button_st1 ml5 fl">Sync</button>-->
@@ -860,9 +860,9 @@
                                     <b id="docName" class="mr5"></b>   <b id="docPredictionScore"></b>
                                 </h3>
                                 <button type="button" id="docCompareBtn" class="tits11_btn01"></button>
-                                <div class="fr">
+                                <!--<div class="fr">
                                     <button type="button" id="uiTrainBtn" class="button_st1">UI Training</button>
-                                </div>
+                                </div>-->
                             </div>
                             <div class="mCustomScrollbar box_scroll_st99" data-mcs-theme="dark-3">
                                 <input type="hidden" id="resultJson" />
@@ -961,7 +961,9 @@
                         <th scope="row">이미지ID</th>
                         <th scope="row">계산서 구분</th>
                         <th scope="row">계약번호</th>
+                        <th scope="row">계약명</th>
                         <th scope="row">출재사코드</th>
+                        <th scope="row">출재사명</th>
                         <th scope="row">중개사코드</th>
                         <th scope="row">중개사명</th>
                         <th scope="row">보험개시일</th>

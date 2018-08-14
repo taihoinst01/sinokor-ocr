@@ -1,22 +1,3 @@
-/*var queryConfig = {
-    selectDbColumns:
-        "SELECT " + 
-            "* " +
-        "FROM " +
-            "TBL_sinokor_dbColumns " +
-        "WHERE " +
-            "formName = @formName",
-    insertfvClassification:
-        "INSERT INTO TBL_sinokor_fvClassification " +
-        "values (@x,@y,@text,@isFixed)",
-    insertformClassification:
-        "INSERT INTO TBL_sinohor_formClassification " +
-        "values (@a,@b,@c,@d,@e,@f,@g,@h,@i,@j,@k,@l,@m,@n,@o,@p,@q,@r,@s,@t,@u,@v,@w,@x,@y,@z,@etc,@form)",
-    insertsrClassification:
-        "INSERT INTO TBL_sinokor_srClassification " +
-        "values (@x,@y,@text,@columnNo)"
-};*/
-
 var count = {
     startQuery: "SELECT COUNT(*) AS cnt FROM ( ",
     endQuery: " ) "
@@ -141,15 +122,22 @@ var documentConfig = {};
 
 var batchLearningConfig = {
     selectViewImageData:
-        `SELECT A.IMGID, A.IMGFILESTARTNO, A.IMGFILEENDNO, A.ENTRYNO, A.STATEMENTDIV, A.CONTRACTNUM, A.OGCOMPANYCODE, A.OGCOMPANYNAME, 
+        `SELECT
+            T.*
+         FROM
+            (SELECT 
+                A.IMGID, A.IMGFILESTARTNO, A.IMGFILEENDNO, A.ENTRYNO, A.STATEMENTDIV, A.CONTRACTNUM, A.OGCOMPANYCODE, A.OGCOMPANYNAME, 
                 A.BROKERCODE, A.BROKERNAME, A.CTNM, A.INSSTDT, A.INSENDDT, A.UY, A.CURCD, A.PAIDPERCENT, A.PAIDSHARE, A.OSLPERCENT, A.OSLSHARE, 
                 A.GROSSPM, A.PM, A.PMPFEND, A.PMPFWOS, A.XOLPM, A.RETURNPM, A.GROSSCN, A.CN, A.PROFITCN, A.BROKERAGE, A.TAX, A.OVERRIDINGCOM, 
                 A.CHARGE, A.PMRESERVERTD1, A.PFPMRESERVERTD1, A.PMRESERVERTD2, A.PFPMRESERVERTD2, A.CLAIM, A.LOSSRECOVERY, A.CASHLOSS, A.CASHLOSSRD, 
                 A.LOSSRR, A.LOSSRR2, A.LOSSPFEND, A.LOSSPFWOA, A.INTEREST, A.TAXON, A.MISCELLANEOUS, A.PMBL, A.CMBL, A.NTBL, A.CSCOSARFRNCNNT2,
-                B.PAGENUM, B.FILEPATH, B.TOTALCOUNT
-            FROM TBL_BATCH_ANSWER_DATA A, TBL_BATCH_ANSWER_FILE B
-           WHERE B.FILEPATH = :filePath
-            AND B.IMGID = A.IMGID `,
+                B.PAGENUM, B.TOTALCOUNT, SUBSTR(B.FILEPATH, INSTR(B.FILEPATH, '/', -1) + 1, LENGTH(B.FILEPATH)) AS FILEPATH
+            FROM
+                TBL_BATCH_ANSWER_DATA A, TBL_BATCH_ANSWER_FILE B
+            WHERE
+                B.IMGID = A.IMGID) T
+         WHERE
+            T.FILEPATH = : filePath `,
     selectBatchLearningDataList:
         `SELECT
             F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
@@ -470,7 +458,6 @@ var mlConfig = {
 module.exports = {
     count: count,
     sessionConfig: sessionConfig,
-    //queryConfig: queryConfig,
     userMngConfig: userMngConfig,
     dbcolumnsConfig: dbcolumnsConfig,
     documentConfig: documentConfig,
