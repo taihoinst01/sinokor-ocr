@@ -542,9 +542,9 @@ router.post('/selectOcrSymSpell', function (req, res) {
 var callbackSelDbColumns = function (rows, req, res) {
     res.send({ code : 200, data: rows });
 };
-router.post('/selDBColumns', function (req, res) {
+router.post('/selectColMappingCls', function (req, res) {
 
-    commonDB.reqQuery(queryConfig.dbcolumnsConfig.selDBColumns, callbackSelDbColumns, req, res);
+    commonDB.reqQuery(queryConfig.dbcolumnsConfig.selectColMappingCls, callbackSelDbColumns, req, res);
 });
 
 router.post('/insertDocLabelMapping', function (req, res) {
@@ -560,7 +560,7 @@ router.post('/insertDocLabelMapping', function (req, res) {
             }
         });
     }
-
+    
 });
 
 var callbackInsertDocMapping = function (rows, req, res) {
@@ -579,14 +579,23 @@ router.post('/insertDocMapping', function (req, res) {
     commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertDocMapping, req, res);
 });
 
-var callbackInsertColMapping = function (rows, req, res) {
-    res.send({ code: 200, message: 'column mapping insert' });
-};
 router.post('/insertColMapping', function (req, res) {
     var data = req.body.data;
     var docCategory = req.body.docCategory;
-
-    //commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertColMapping, req, res);
+    var colMappingCount = 0;
+    
+    for (var i in data) {
+        colMappingCount++;
+        if (data[i].column != 'UNDEFINED') {
+            var item = '';
+            item += docCategory.DOCTYPE + ',' + data[i].x + ',' + data[i].y + ',' + data[i].word;
+            commonDB.reqQueryParam(queryConfig.mlConfig.insertColMapping, [item, data[i].colNum], function (rows, req, res) {
+                if (colMappingCount == data.length) {
+                    res.send({ code: 200, message: 'column mapping insert' });
+                }
+            }, req, res);
+        }
+    }
 });
 
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
@@ -862,14 +871,14 @@ router.post('/syncFile', function (req, res) {
         .ext('tif', 'tiff')
         .find();
 
-    console.log("filehound : " + JSON.stringify(files));
+	 console.log("filehound : " + JSON.stringify(files));
 
     var resText = [];
 
     files.then(function (result) {
         var del_result = [];
 
-        console.log(JSON.stringify(result));
+		console.log(JSON.stringify(result));
         // 파일테이블 리스트를 가져와서 존재여부 검사
         var callbackSelectFileNameList = function (rows, req, res) {
             for (var i = 0, x = result.length; i < x; i++) {
