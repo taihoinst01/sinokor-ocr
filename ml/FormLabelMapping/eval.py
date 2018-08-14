@@ -27,25 +27,10 @@ rows = curs.fetchall()
 
 userData = []
 
-selSid = "SELECT EXPORT_SENTENCE_SID(:SENTENCE) FROM DUAL"
-
 for word in sys.argv[1:]:
-    wordSplit = word.split(" ")
+    wordSplit = word.split(",")
     wordData = []
-    wordData.append(float(wordSplit[0]))
-    wordData.append(float(wordSplit[1]))
-
-    text = ""
-    for s in wordSplit[2:]:
-        text += s + " "
-    text = text[:-1]
-
-    curs.execute(selSid, SENTENCE = text)
-    sidRes = curs.fetchall()
-
-    sid = sidRes[0][0].split(",")
-
-    for s in sid:
+    for s in wordSplit:
         wordData.append(float(s))
 
     userData.append(wordData)
@@ -96,15 +81,8 @@ selLabel = "SELECT SEQNUM, DATA, CLASS FROM TBL_FORM_LABEL_MAPPING WHERE DATA = 
 
 retText = ''
 for word in enumerate(sys.argv[1:]):
-    cond = ''
-    for uData in userData[word[0]]:
-        cond += str(int(uData)) + ","
-
-    cond = cond[:-1]
-
-    curs.execute(selLabel, selData=cond)
+    curs.execute(selLabel, selData=word[1])
     selLabelRes = curs.fetchall()
-
 
     if len(selLabelRes) > 0:
         retText += word[1] + "||" + selLabelRes[0][2] + "^"
