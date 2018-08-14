@@ -89,7 +89,7 @@ var callbackBatchLearningDataList = function (rows, req, res) {
 var fnSearchBatchLearningDataList = function (req, res) {
     // 조건절
     var condQuery = "";
-    var orderQuery = " ORDER BY LENGTH(F.originFileName) ASC, F.originFileName ASC, A.regDate DESC ";
+    var orderQuery = " ORDER BY A.regDate DESC, LENGTH(F.originFileName) ASC, F.originFileName ASC";
     if (!commonUtil.isNull(req.body.addCond)) {
         if (req.body.addCond == "LEARN_N") condQuery = " AND A.status != 'Y' ";
         else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.status = 'Y' ";
