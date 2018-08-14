@@ -520,16 +520,13 @@ router.post('/execBatchLearningData', function (req, res) {
 });
 
 router.post('/selectOcrSymSpell', function (req, res) {
-    /*
-    var data = [{ "location": "1018,240,411,87", "text": "APEX", "column": "UNDEFINED" },
-    { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNDEFINED" },
-    { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNDEFINED" },
-    { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNDEFINED" }];  
-    */
     var data = req.body.data;
     var querycount = 0;
+    console.log(data);
+    console.log('시작');
     for (var i in data) {
         commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectExportSentenceSid, [data[i].text], function (rows, i, req, res) {
+            console.log(querycount);
             querycount++;
             data[i].typoData = rows[0].WORD;
             if (querycount == data.length) {
@@ -550,7 +547,7 @@ router.post('/selectColMappingCls', function (req, res) {
 router.post('/insertDocLabelMapping', function (req, res) {
     var data = req.body.data;
     var insertCount = 0;
-    
+
     for (var i in data) {
         var item = data[i].x + ',' + data[i].y + ',' + data[i].word;
         commonDB.queryNoRows(queryConfig.mlConfig.insertDocLabelMapping, [item, data[i].label], function () {
@@ -583,13 +580,13 @@ router.post('/insertColMapping', function (req, res) {
     var data = req.body.data;
     var docCategory = req.body.docCategory;
     var colMappingCount = 0;
-    
+
     for (var i in data) {
-        colMappingCount++;
-        if (data[i].column != 'UNDEFINED') {
+        if (data[i].column != 'UNKOWN') {
             var item = '';
             item += docCategory.DOCTYPE + ',' + data[i].x + ',' + data[i].y + ',' + data[i].word;
             commonDB.reqQueryParam(queryConfig.mlConfig.insertColMapping, [item, data[i].colNum], function (rows, req, res) {
+                colMappingCount++;
                 if (colMappingCount == data.length) {
                     res.send({ code: 200, message: 'column mapping insert' });
                 }

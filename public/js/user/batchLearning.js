@@ -24,6 +24,9 @@ var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운�
 $(function () {
     _init();
     //viewServerFileTest();
+    modifyData = { "data": [{ "location": "1018,240,411,87", "text": "APEX", "column": "UNKOWN" }, { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNKOWN" }, { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNKOWN" }, { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNKOWN" }, { "location": "206,691,274,27", "text": "4153 Korean Re", "column": "UNKOWN" }, { "location": "208,756,525,34", "text": "Proportional Treaty Statement", "column": "UNKOWN" }, { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626", "column": "UNKOWN" }, { "location": "1840,575,169,25", "text": "01105/2018", "column": "UNKOWN" }, { "location": "206,848,111,24", "text": "Cedant", "column": "UNKOWN" }, { "location": "206,908,285,24", "text": "Class of Business", "column": "UNKOWN" }, { "location": "210,963,272,26", "text": "Period of Quarter", "column": "UNKOWN" }, { "location": "207,1017,252,31", "text": "Period of Treaty", "column": "UNKOWN" }, { "location": "206,1066,227,24", "text": "Our Reference", "column": "UNKOWN" }, { "location": "226,1174,145,31", "text": "Currency", "column": "UNKOWN" }, { "location": "227,1243,139,24", "text": "Premium", "column": "UNKOWN" }, { "location": "226,1303,197,24", "text": "Commission", "column": "UNKOWN" }, { "location": "226,1366,107,24", "text": "Claims", "column": "UNKOWN" }, { "location": "227,1426,126,24", "text": "Reserve", "column": "UNKOWN" }, { "location": "227,1489,123,24", "text": "Release", "column": "UNKOWN" }, { "location": "227,1549,117,24", "text": "Interest", "column": "UNKOWN" }, { "location": "227,1609,161,31", "text": "Brokerage", "column": "UNKOWN" }, { "location": "233,1678,134,24", "text": "Portfolio", "column": "UNKOWN" }, { "location": "227,1781,124,24", "text": "Balance", "column": "UNKOWN" }, { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018", "column": "CTOGCOMPANYNAMENM" }, { "location": "574,907,636,26", "text": ": Fire QS EQ 2018 W HOS BK UNI HTEL", "column": "CTNM" }, { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018", "column": "PERIODQ" }, { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018", "column": "PERIODT" }, { "location": "574,1065,304,25", "text": ": APEX/BORD/2727", "column": "CSCOSARFRNCNNT2" }, { "location": "629,1173,171,25", "text": "JOD 1.00", "column": "CURCD" }, { "location": "639,1239,83,25", "text": "30.02", "column": "PM" }, { "location": "639,1299,58,25", "text": "9.01", "column": "UNKOWN" }, { "location": "639,1362,64,25", "text": "0.00", "column": "CLAIM" }, { "location": "639,1422,58,25", "text": "9.01", "column": "UNKOWN" }, { "location": "639,1485,64,25", "text": "0.00", "column": "PMRESERVERLD" }, { "location": "639,1545,64,25", "text": "0.00", "column": "INTEREST" }, { "location": "639,1605,64,25", "text": "0.75", "column": "BROKERAGE" }, { "location": "648,1677,64,25", "text": "0.00", "column": "PROFITCN" }, { "location": "1706,1908,356,29", "text": "APEX INSURANCE", "column": "UNKOWN\r\n" }], "docCategory": { "SEQNUM": 2, "DOCNAME": "Apex 계산서", "DOCTYPE": 1, "SAMPLEIMAGEPATH": "sample/apex.jpg" }};
+    var temp = { "answerImgId": 1, "fileInfo": [{ "imgId": "bx8s1mtwh4f", "filePath": "uploads\\noMappingTest.tif", "oriFileName": "noMappingTest.tif", "svrFileName": "5nkcc181ebjf", "convertFileName": "noMappingTest.jpg", "fileExt": "tif", "fileSize": 99600, "contentType": "image/tiff", "ctNm": null, "insStDt": null, "insEndDt": null, "curCd": null, "ntbl": null, "cscoSaRfrnCnnt2": null, "regId": "admin", "regDate": "2018-08-14T01:59:11.000Z" }], "fileName": ["noMappingTest.jpg"], "regions": [{ "boundingBox": "206,240,1562,550", "lines": [{ "boundingBox": "1018,240,411,87", "words": [{ "boundingBox": "1018,240,411,87", "text": "APEX" }] }, { "boundingBox": "1019,338,409,23", "words": [{ "boundingBox": "1019,338,172,23", "text": "Partner" }, { "boundingBox": "1211,338,43,23", "text": "of" }, { "boundingBox": "1273,338,155,23", "text": "Choice" }] }, { "boundingBox": "1562,509,178,25", "words": [{ "boundingBox": "1562,509,126,25", "text": "Voucher" }, { "boundingBox": "1701,509,39,25", "text": "No" }] }, { "boundingBox": "1562,578,206,25", "words": [{ "boundingBox": "1562,578,126,25", "text": "Voucher" }, { "boundingBox": "1701,578,67,25", "text": "Date" }] }, { "boundingBox": "206,691,274,27", "words": [{ "boundingBox": "206,691,79,27", "text": "4153" }, { "boundingBox": "300,691,121,27", "text": "Korean" }, { "boundingBox": "437,691,43,27", "text": "Re" }] }, { "boundingBox": "208,756,525,34", "words": [{ "boundingBox": "208,756,214,34", "text": "Proportional" }, { "boundingBox": "435,756,109,34", "text": "Treaty" }, { "boundingBox": "556,756,177,27", "text": "Statement" }] }] }, { "boundingBox": "1840,506,346,94", "lines": [{ "boundingBox": "1842,506,344,25", "words": [{ "boundingBox": "1842,506,344,25", "text": "BV/HEO/2018/05/0626" }] }, { "boundingBox": "1840,575,169,25", "words": [{ "boundingBox": "1840,575,169,25", "text": "01105/2018" }] }] }, { "boundingBox": "206,848,285,957", "lines": [{ "boundingBox": "206,848,111,24", "words": [{ "boundingBox": "206,848,111,24", "text": "Cedant" }] }, { "boundingBox": "206,908,285,24", "words": [{ "boundingBox": "206,908,86,24", "text": "Class" }, { "boundingBox": "304,908,32,24", "text": "of" }, { "boundingBox": "346,908,145,24", "text": "Business" }] }, { "boundingBox": "210,963,272,26", "words": [{ "boundingBox": "210,963,99,24", "text": "Period" }, { "boundingBox": "322,963,31,24", "text": "of" }, { "boundingBox": "363,963,119,26", "text": "Quarter" }] }, { "boundingBox": "207,1017,252,31", "words": [{ "boundingBox": "207,1017,99,24", "text": "Period" }, { "boundingBox": "319,1017,31,24", "text": "of" }, { "boundingBox": "360,1017,99,31", "text": "Treaty" }] }, { "boundingBox": "206,1066,227,24", "words": [{ "boundingBox": "206,1066,58,24", "text": "Our" }, { "boundingBox": "276,1066,157,24", "text": "Reference" }] }, { "boundingBox": "226,1174,145,31", "words": [{ "boundingBox": "226,1174,145,31", "text": "Currency" }] }, { "boundingBox": "227,1243,139,24", "words": [{ "boundingBox": "227,1243,139,24", "text": "Premium" }] }, { "boundingBox": "226,1303,197,24", "words": [{ "boundingBox": "226,1303,197,24", "text": "Commission" }] }, { "boundingBox": "226,1366,107,24", "words": [{ "boundingBox": "226,1366,107,24", "text": "Claims" }] }, { "boundingBox": "227,1426,126,24", "words": [{ "boundingBox": "227,1426,126,24", "text": "Reserve" }] }, { "boundingBox": "227,1489,123,24", "words": [{ "boundingBox": "227,1489,123,24", "text": "Release" }] }, { "boundingBox": "227,1549,117,24", "words": [{ "boundingBox": "227,1549,117,24", "text": "Interest" }] }, { "boundingBox": "227,1609,161,31", "words": [{ "boundingBox": "227,1609,161,31", "text": "Brokerage" }] }, { "boundingBox": "233,1678,134,24", "words": [{ "boundingBox": "233,1678,134,24", "text": "Portfolio" }] }, { "boundingBox": "227,1781,124,24", "words": [{ "boundingBox": "227,1781,124,24", "text": "Balance" }] }] }, { "boundingBox": "574,847,636,855", "lines": [{ "boundingBox": "574,847,492,32", "words": [{ "boundingBox": "574,854,5,18", "text": ":" }, { "boundingBox": "596,847,149,32", "text": "Solidarity-" }, { "boundingBox": "758,847,62,25", "text": "First" }, { "boundingBox": "834,847,145,25", "text": "Insurance" }, { "boundingBox": "992,847,74,25", "text": "2018" }] }, { "boundingBox": "574,907,636,26", "words": [{ "boundingBox": "574,914,5,18", "text": ":" }, { "boundingBox": "597,907,54,25", "text": "Fire" }, { "boundingBox": "664,907,46,26", "text": "QS" }, { "boundingBox": "724,907,44,26", "text": "EQ" }, { "boundingBox": "781,907,74,25", "text": "2018" }, { "boundingBox": "869,907,39,25", "text": "W" }, { "boundingBox": "920,907,69,25", "text": "HOS" }, { "boundingBox": "1003,907,43,25", "text": "BK" }, { "boundingBox": "1058,907,53,25", "text": "UNI" }, { "boundingBox": "1127,907,83,25", "text": "HTEL" }] }, { "boundingBox": "598,959,433,25", "words": [{ "boundingBox": "598,959,173,25", "text": "01-01-2018" }, { "boundingBox": "792,959,43,25", "text": "TO" }, { "boundingBox": "858,959,173,25", "text": "31-03-2018" }] }, { "boundingBox": "574,1010,454,25", "words": [{ "boundingBox": "574,1015,5,17", "text": ":" }, { "boundingBox": "595,1010,173,25", "text": "01-01-2018" }, { "boundingBox": "789,1010,44,25", "text": "TO" }, { "boundingBox": "855,1010,173,25", "text": "31-12-2018" }] }, { "boundingBox": "574,1065,304,25", "words": [{ "boundingBox": "574,1072,5,18", "text": ":" }, { "boundingBox": "594,1065,284,25", "text": "APEX/BORD/2727" }] }, { "boundingBox": "629,1173,171,25", "words": [{ "boundingBox": "629,1173,66,25", "text": "JOD" }, { "boundingBox": "738,1173,62,25", "text": "1.00" }] }, { "boundingBox": "639,1239,83,25", "words": [{ "boundingBox": "639,1239,83,25", "text": "30.02" }] }, { "boundingBox": "639,1299,58,25", "words": [{ "boundingBox": "639,1299,58,25", "text": "9.01" }] }, { "boundingBox": "639,1362,64,25", "words": [{ "boundingBox": "639,1362,64,25", "text": "0.00" }] }, { "boundingBox": "639,1422,58,25", "words": [{ "boundingBox": "639,1422,58,25", "text": "9.01" }] }, { "boundingBox": "639,1485,64,25", "words": [{ "boundingBox": "639,1485,64,25", "text": "0.00" }] }, { "boundingBox": "639,1545,64,25", "words": [{ "boundingBox": "639,1545,64,25", "text": "0.00" }] }, { "boundingBox": "639,1605,64,25", "words": [{ "boundingBox": "639,1605,64,25", "text": "0.75" }] }, { "boundingBox": "648,1677,64,25", "words": [{ "boundingBox": "648,1677,64,25", "text": "0.00" }] }] }, { "boundingBox": "1706,1908,356,29", "lines": [{ "boundingBox": "1706,1908,356,29", "words": [{ "boundingBox": "1706,1908,108,29", "text": "APEX" }, { "boundingBox": "1828,1908,234,29", "text": "INSURANCE" }] }] }], "fileToPage": { "IMGID": 1, "IMGFILESTARTNO": 1, "IMGFILEENDNO": 1 }, "lastYn": "Y" };
+    popUpLayer2(temp);
 });
 
 // [Select Event]
@@ -500,10 +503,10 @@ function execBatchLearning() {
 
 // UI레이어 작업 함수
 function popUpLayer2(ocrData) {
-
     fn_initUiTraining(); // 팝업 초기화
     layer_open('layer2'); // ui 학습레이어 띄우기
     $("#layer2.poplayer").css("display", "block");
+    $('#docName').text(modifyData.docCategory.DOCNAME);
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
     $("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);   
     $.ajax({
@@ -514,16 +517,16 @@ function popUpLayer2(ocrData) {
         success: function (columns) {
             columnArr = columns.data;
             var tblTag = '';
-            for (var i in modifyData) {
+            for (var i in modifyData.data) {
                 tblTag += '<dl>';
                 tblTag += '<dt onmouseover="" onmouseout="">';
                 tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-                tblTag += '<input type="text" value="' + modifyData[i].text + '" style="width:100%; border:0;" />';
-                tblTag += '<input type="hidden" value="' + modifyData[i].location + '" />';
+                tblTag += '<input type="text" value="' + modifyData.data[i].text + '" style="width:100%; border:0;" />';
+                tblTag += '<input type="hidden" value="' + modifyData.data[i].location + '" />';
                 tblTag += '</label>';
                 tblTag += '</dt>';
                 tblTag += '<dd>';
-                tblTag += appendOptionHtml(modifyData[i].column, columns.data)
+                tblTag += appendOptionHtml(modifyData.data[i].column, columns.data)
                 tblTag += '</dd>';
                 tblTag += '</dl>';
             }
@@ -557,133 +560,133 @@ function execBatchLearningData(ocrData, data) {
     /*
     // 다중 계약서 샘플
     var data = `{ "data": [
-    {"location":"2974,20,66,31","text":"Page","column": "UNDEFINED"},
-    {"location":"1594,201,683,47","text":"Reinsurers Outstanding Losses","column": "UNDEFINED"},
-    {"location":"1596,259,174,29","text":"28/06/2018","column": "UNDEFINED"},
-    {"location":"3178,16,11,26","text":"1","column": "UNDEFINED"},
-    {"location":"3072,392,149,27","text":"Remarks","column": "UNDEFINED"},
-    {"location":"3296,20,10,24","text":"1","column": "UNDEFINED"},
-    {"location":"218,305,1136,39","text":"010 872 2079 OO KOREAN REINSURANCE CO.","column": "UNDEFINED"},
+    {"location":"2974,20,66,31","text":"Page","column": "UNKOWN"},
+    {"location":"1594,201,683,47","text":"Reinsurers Outstanding Losses","column": "UNKOWN"},
+    {"location":"1596,259,174,29","text":"28/06/2018","column": "UNKOWN"},
+    {"location":"3178,16,11,26","text":"1","column": "UNKOWN"},
+    {"location":"3072,392,149,27","text":"Remarks","column": "UNKOWN"},
+    {"location":"3296,20,10,24","text":"1","column": "UNKOWN"},
+    {"location":"218,305,1136,39","text":"010 872 2079 OO KOREAN REINSURANCE CO.","column": "UNKOWN"},
     {"location":"208,385,191,31","text":"AL SAGR", "column": "CTOGCOMPANYNAMENM"},
-    {"location":"1154,384,470,32","text":"Share os Losses 100%","column": "UNDEFINED"},
-    {"location":"1741,385,258,31","text":"os Losses/Shr","column": "UNDEFINED"},
-    {"location":"1946,536,77,24","text":"2120","column": "UNDEFINED"},
-    {"location":"1929,616,92,24","text":"303.70","column": "UNDEFINED"},
-    {"location":"1963,696,58,26","text":"3.65","column": "UNDEFINED"},
+    {"location":"1154,384,470,32","text":"Share os Losses 100%","column": "UNKOWN"},
+    {"location":"1741,385,258,31","text":"os Losses/Shr","column": "UNKOWN"},
+    {"location":"1946,536,77,24","text":"2120","column": "UNKOWN"},
+    {"location":"1929,616,92,24","text":"303.70","column": "UNKOWN"},
+    {"location":"1963,696,58,26","text":"3.65","column": "UNKOWN"},
     {"location":"1932,777,92,28","text":"115.80","column": "CN"},
-    {"location":"1932,859,90,25","text":"124.29","column": "UNDEFINED"},
-    {"location":"1906,940,116,30","text":"1,069.76","column": "UNDEFINED"},
-    {"location":"1905,1025,117,31","text":"1,638.40","column": "UNDEFINED"},
-    {"location":"1930,1144,93,24","text":"350.00","column": "UNDEFINED"},
-    {"location":"1928,1228,94,25","text":"350.00","column": "UNDEFINED"},
-    {"location":"1930,1345,91,26","text":"418.15","column": "UNDEFINED"},
-    {"location":"1929,1432,95,24","text":"418.15","column": "UNDEFINED"},
-    {"location":"1902,1502,121,31","text":"2,406.55","column": "UNDEFINED"},
-    {"location":"2269,385,110,33","text":"IBNR","column": "UNDEFINED"},
-    {"location":"220,474,32,24","text":"72","column": "UNDEFINED"},
+    {"location":"1932,859,90,25","text":"124.29","column": "UNKOWN"},
+    {"location":"1906,940,116,30","text":"1,069.76","column": "UNKOWN"},
+    {"location":"1905,1025,117,31","text":"1,638.40","column": "UNKOWN"},
+    {"location":"1930,1144,93,24","text":"350.00","column": "UNKOWN"},
+    {"location":"1928,1228,94,25","text":"350.00","column": "UNKOWN"},
+    {"location":"1930,1345,91,26","text":"418.15","column": "UNKOWN"},
+    {"location":"1929,1432,95,24","text":"418.15","column": "UNKOWN"},
+    {"location":"1902,1502,121,31","text":"2,406.55","column": "UNKOWN"},
+    {"location":"2269,385,110,33","text":"IBNR","column": "UNKOWN"},
+    {"location":"220,474,32,24","text":"72","column": "UNKOWN"},
     {"location":"336,473,248,25","text":"ENGINEERING", "column": "CTNM"},
-    {"location":"228,536,212,24","text":"P 2004 01377","column": "UNDEFINED"},
-    {"location":"227,697,213,27","text":"P 2005 01377","column": "UNDEFINED"},
-    {"location":"225,860,215,27","text":"P 2006 01377","column": "UNDEFINED"},
+    {"location":"228,536,212,24","text":"P 2004 01377","column": "UNKOWN"},
+    {"location":"227,697,213,27","text":"P 2005 01377","column": "UNKOWN"},
+    {"location":"225,860,215,27","text":"P 2006 01377","column": "UNKOWN"},
     {"location":"221,1080,241,24","text":"74 CARGO", "column": "CTNM"},
-    {"location":"228,1144,212,24","text":"P 2005 01377","column": "UNDEFINED"},
+    {"location":"228,1144,212,24","text":"P 2005 01377","column": "UNKOWN"},
     {"location":"221,1283,211,28","text":"75 HULL", "column": "CTNM"},
-    {"location":"227,1345,213,27","text":"P 2004 01377","column": "UNDEFINED"},
-    {"location":"476,1144,39,24","text":"co","column": "UNDEFINED"},
-    {"location":"560,534,211,27","text":"QUOTA SHARE","column": "UNDEFINED"},
-    {"location":"560,616,132,23","text":"SURPLUS","column": "UNDEFINED"},
-    {"location":"560,696,211,27","text":"QUOTA SHARE","column": "UNDEFINED"},
-    {"location":"560,776,131,24","text":"SURPLUS","column": "UNDEFINED"},
-    {"location":"560,856,211,30","text":"QUOTA SHARE","column": "UNDEFINED"},
-    {"location":"562,937,129,23","text":"SURPLUS","column": "UNDEFINED"},
-    {"location":"560,1140,241,29","text":"CARGO Q/SHARE","column": "UNDEFINED"},
-    {"location":"560,1344,216,32","text":"HULL Q/SHARE","column": "UNDEFINED"},
-    {"location":"1165,536,109,24","text":"005.000","column": "UNDEFINED"},
-    {"location":"1165,616,109,24","text":"005.000","column": "UNDEFINED"},
-    {"location":"1165,697,109,25","text":"005.000","column": "UNDEFINED"},
-    {"location":"1165,776,110,28","text":"005.000","column": "UNDEFINED"},
-    {"location":"1165,858,109,30","text":"002.500","column": "UNDEFINED"},
-    {"location":"1165,936,109,30","text":"002.500","column": "UNDEFINED"},
-    {"location":"844,1024,275,32","text":"Sub Total By COB","column": "UNDEFINED"},
-    {"location":"1165,1144,109,24","text":"005.000","column": "UNDEFINED"},
-    {"location":"844,1227,275,33","text":"Sub Total By COB","column": "UNDEFINED"},
-    {"location":"1165,1344,110,28","text":"005.000","column": "UNDEFINED"},
-    {"location":"843,1430,275,33","text":"Sub Total By COB","column": "UNDEFINED"},
+    {"location":"227,1345,213,27","text":"P 2004 01377","column": "UNKOWN"},
+    {"location":"476,1144,39,24","text":"co","column": "UNKOWN"},
+    {"location":"560,534,211,27","text":"QUOTA SHARE","column": "UNKOWN"},
+    {"location":"560,616,132,23","text":"SURPLUS","column": "UNKOWN"},
+    {"location":"560,696,211,27","text":"QUOTA SHARE","column": "UNKOWN"},
+    {"location":"560,776,131,24","text":"SURPLUS","column": "UNKOWN"},
+    {"location":"560,856,211,30","text":"QUOTA SHARE","column": "UNKOWN"},
+    {"location":"562,937,129,23","text":"SURPLUS","column": "UNKOWN"},
+    {"location":"560,1140,241,29","text":"CARGO Q/SHARE","column": "UNKOWN"},
+    {"location":"560,1344,216,32","text":"HULL Q/SHARE","column": "UNKOWN"},
+    {"location":"1165,536,109,24","text":"005.000","column": "UNKOWN"},
+    {"location":"1165,616,109,24","text":"005.000","column": "UNKOWN"},
+    {"location":"1165,697,109,25","text":"005.000","column": "UNKOWN"},
+    {"location":"1165,776,110,28","text":"005.000","column": "UNKOWN"},
+    {"location":"1165,858,109,30","text":"002.500","column": "UNKOWN"},
+    {"location":"1165,936,109,30","text":"002.500","column": "UNKOWN"},
+    {"location":"844,1024,275,32","text":"Sub Total By COB","column": "UNKOWN"},
+    {"location":"1165,1144,109,24","text":"005.000","column": "UNKOWN"},
+    {"location":"844,1227,275,33","text":"Sub Total By COB","column": "UNKOWN"},
+    {"location":"1165,1344,110,28","text":"005.000","column": "UNKOWN"},
+    {"location":"843,1430,275,33","text":"Sub Total By COB","column": "UNKOWN"},
     {"location":"1525,536,93,24","text":"424.00","column": "PM"},
-    {"location":"1499,616,119,30","text":"6,074.00","column": "UNDEFINED"},
-    {"location":"1543,696,74,26","text":"73.00","column": "UNDEFINED"},
-    {"location":"1498,776,119,31","text":"2,316.00","column": "UNDEFINED"},
-    {"location":"1499,859,119,29","text":"4, 971.54","column": "UNDEFINED"},
-    {"location":"1480,938,139,32","text":"42,790.57","column": "UNDEFINED"},
-    {"location":"1482,1025,134,31","text":"56,649.11","column": "UNDEFINED"},
-    {"location":"1500,1228,118,33","text":"7,000.00","column": "UNDEFINED"},
-    {"location":"1500,1344,117,32","text":"8,363.00","column": "UNDEFINED"},
-    {"location":"1498,1432,120,30","text":"8,363.00","column": "UNDEFINED"},
-    {"location":"1482,1502,134,33","text":"72,012.11","column": "UNDEFINED"},
-    {"location":"2488,1025,41,27","text":".00","column": "UNDEFINED"},
-    {"location":"2488,1228,41,25","text":".00","column": "UNDEFINED"},
-    {"location":"2488,1432,42,23","text":".00","column": "UNDEFINED"},
-    {"location":"2488,1503,41,23","text":".00","column": "UNDEFINED"},
-    {"location":"2581,393,62,35","text":"ccy","column": "UNDEFINED"},
-    {"location":"2576,536,70,24","text":"AED","column": "UNDEFINED"},
-    {"location":"2576,616,70,24","text":"AED","column": "UNDEFINED"},
-    {"location":"2576,696,69,26","text":"AED","column": "UNDEFINED"},
-    {"location":"2576,776,69,28","text":"AED","column": "UNDEFINED"},
-    {"location":"2576,858,71,26","text":"AED","column": "UNDEFINED"},
-    {"location":"2576,940,71,27","text":"AED","column": "UNDEFINED"},
-    {"location":"2576,1026,71,25","text":"AED","column": "UNDEFINED"},
-    {"location":"2576,1144,70,24","text":"AED","column": "UNDEFINED"},
-    {"location":"2576,1228,72,25","text":"AED","column": "UNDEFINED"},
-    {"location":"2576,1344,69,28","text":"AED","column": "UNDEFINED"},
-    {"location":"2576,1432,72,24","text":"AED","column": "UNDEFINED"},
-    {"location":"2576,1502,72,26","text":"AED","column": "UNDEFINED"},
-    {"location":"2712,534,154,26","text":"31/03/2018","column": "UNDEFINED"},
-    {"location":"2712,614,154,26","text":"31/03/2018","column": "UNDEFINED"},
-    {"location":"2712,696,154,26","text":"31/03/2018","column": "UNDEFINED"},
-    {"location":"2712,776,154,26","text":"31/03/2018","column": "UNDEFINED"},
-    {"location":"2712,858,153,30","text":"31/03/2018","column": "UNDEFINED"},
-    {"location":"2712,938,153,30","text":"31/03/2018","column": "UNDEFINED"},
-    {"location":"2712,1140,153,28","text":"31/03/2018","column": "UNDEFINED"},
-    {"location":"2712,1344,154,26","text":"31/03/2018","column": "UNDEFINED"},
-    {"location":"832,1501,277,31","text":"Total By Cedant in","column": "UNDEFINED"},
-    {"location":"656,2238,481,42","text":"Nasco Karaoglan France","column": "UNDEFINED"},
-    {"location":"656,2286,678,34","text":"171 rue de Euzenval 92380 Garches","column": "UNDEFINED"},
-    {"location":"652,2334,370,34","text":"T +33 147 OO","column": "UNDEFINED"},
-    {"location":"652,2380,359,33","text":"mm.nkfrance.com","column": "UNDEFINED"},
-    {"location":"2432,2331,180,23","text":"CSO'S 31","column": "UNDEFINED"},
-    {"location":"1911,2360,670,21","text":"it. ZZZZ","column": "UNDEFINED"},
-    {"location":"1967,2389,323,21","text":"ZZZ z-0i.AE •Z:","column": "UNDEFINED"}
+    {"location":"1499,616,119,30","text":"6,074.00","column": "UNKOWN"},
+    {"location":"1543,696,74,26","text":"73.00","column": "UNKOWN"},
+    {"location":"1498,776,119,31","text":"2,316.00","column": "UNKOWN"},
+    {"location":"1499,859,119,29","text":"4, 971.54","column": "UNKOWN"},
+    {"location":"1480,938,139,32","text":"42,790.57","column": "UNKOWN"},
+    {"location":"1482,1025,134,31","text":"56,649.11","column": "UNKOWN"},
+    {"location":"1500,1228,118,33","text":"7,000.00","column": "UNKOWN"},
+    {"location":"1500,1344,117,32","text":"8,363.00","column": "UNKOWN"},
+    {"location":"1498,1432,120,30","text":"8,363.00","column": "UNKOWN"},
+    {"location":"1482,1502,134,33","text":"72,012.11","column": "UNKOWN"},
+    {"location":"2488,1025,41,27","text":".00","column": "UNKOWN"},
+    {"location":"2488,1228,41,25","text":".00","column": "UNKOWN"},
+    {"location":"2488,1432,42,23","text":".00","column": "UNKOWN"},
+    {"location":"2488,1503,41,23","text":".00","column": "UNKOWN"},
+    {"location":"2581,393,62,35","text":"ccy","column": "UNKOWN"},
+    {"location":"2576,536,70,24","text":"AED","column": "UNKOWN"},
+    {"location":"2576,616,70,24","text":"AED","column": "UNKOWN"},
+    {"location":"2576,696,69,26","text":"AED","column": "UNKOWN"},
+    {"location":"2576,776,69,28","text":"AED","column": "UNKOWN"},
+    {"location":"2576,858,71,26","text":"AED","column": "UNKOWN"},
+    {"location":"2576,940,71,27","text":"AED","column": "UNKOWN"},
+    {"location":"2576,1026,71,25","text":"AED","column": "UNKOWN"},
+    {"location":"2576,1144,70,24","text":"AED","column": "UNKOWN"},
+    {"location":"2576,1228,72,25","text":"AED","column": "UNKOWN"},
+    {"location":"2576,1344,69,28","text":"AED","column": "UNKOWN"},
+    {"location":"2576,1432,72,24","text":"AED","column": "UNKOWN"},
+    {"location":"2576,1502,72,26","text":"AED","column": "UNKOWN"},
+    {"location":"2712,534,154,26","text":"31/03/2018","column": "UNKOWN"},
+    {"location":"2712,614,154,26","text":"31/03/2018","column": "UNKOWN"},
+    {"location":"2712,696,154,26","text":"31/03/2018","column": "UNKOWN"},
+    {"location":"2712,776,154,26","text":"31/03/2018","column": "UNKOWN"},
+    {"location":"2712,858,153,30","text":"31/03/2018","column": "UNKOWN"},
+    {"location":"2712,938,153,30","text":"31/03/2018","column": "UNKOWN"},
+    {"location":"2712,1140,153,28","text":"31/03/2018","column": "UNKOWN"},
+    {"location":"2712,1344,154,26","text":"31/03/2018","column": "UNKOWN"},
+    {"location":"832,1501,277,31","text":"Total By Cedant in","column": "UNKOWN"},
+    {"location":"656,2238,481,42","text":"Nasco Karaoglan France","column": "UNKOWN"},
+    {"location":"656,2286,678,34","text":"171 rue de Euzenval 92380 Garches","column": "UNKOWN"},
+    {"location":"652,2334,370,34","text":"T +33 147 OO","column": "UNKOWN"},
+    {"location":"652,2380,359,33","text":"mm.nkfrance.com","column": "UNKOWN"},
+    {"location":"2432,2331,180,23","text":"CSO'S 31","column": "UNKOWN"},
+    {"location":"1911,2360,670,21","text":"it. ZZZZ","column": "UNKOWN"},
+    {"location":"1967,2389,323,21","text":"ZZZ z-0i.AE •Z:","column": "UNKOWN"}
     ], "docCategory": { "SEQNUM": 4, "DOCNAME": "Nasco 계산서", "DOCTYPE": 2, "SAMPLEIMAGEPATH": "sample/nasco.jpg" } }`
     data = JSON.parse(data);
     
-    //var data = { "data": [{ "location": "1018,240,411,87", "text": "APEX", "column": "UNDEFINED" }, { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNDEFINED" }, { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNDEFINED" }, { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNDEFINED" }, { "location": "206,691,274,27", "text": "4153 Korean Re", "column": "UNDEFINED" }, { "location": "208,756,525,34", "text": "Proportional Treaty Statement", "column": "UNDEFINED" }, { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626", "column": "UNDEFINED" }, { "location": "1840,575,169,25", "text": "01105/2018", "column": "UNDEFINED" }, { "location": "206,848,111,24", "text": "Cedant", "column": "UNDEFINED" }, { "location": "206,908,285,24", "text": "Class of Business", "column": "UNDEFINED" }, { "location": "210,963,272,26", "text": "Period of Quarter", "column": "UNDEFINED" }, { "location": "207,1017,252,31", "text": "Period of Treaty", "column": "UNDEFINED" }, { "location": "206,1066,227,24", "text": "Our Reference", "column": "UNDEFINED" }, { "location": "226,1174,145,31", "text": "Currency", "column": "UNDEFINED" }, { "location": "227,1243,139,24", "text": "Premium", "column": "UNDEFINED" }, { "location": "226,1303,197,24", "text": "Commission", "column": "UNDEFINED" }, { "location": "226,1366,107,24", "text": "Claims", "column": "UNDEFINED" }, { "location": "227,1426,126,24", "text": "Reserve", "column": "UNDEFINED" }, { "location": "227,1489,123,24", "text": "Release", "column": "UNDEFINED" }, { "location": "227,1549,117,24", "text": "Interest", "column": "UNDEFINED" }, { "location": "227,1609,161,31", "text": "Brokerage", "column": "UNDEFINED" }, { "location": "233,1678,134,24", "text": "Portfolio", "column": "UNDEFINED" }, { "location": "227,1781,124,24", "text": "Balance", "column": "UNDEFINED" }, { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018", "column": "CTOGCOMPANYNAMENM" }, { "location": "574,907,568,32", "text": ": Marine Cargo Surplus 2018 - Inward", "column": "CTNM" }, { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018", "column": "PERIODQ" }, { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018", "column": "PERIODT" }, { "location": "574,1065,304,25", "text": ": APEX/BORD/2727", "column": "CSCOSARFRNCNNT2" }, { "location": "629,1173,171,25", "text": "JOD 1.00", "column": "CURCD" }, { "location": "639,1239,83,25", "text": "25.53", "column": "PM" }, { "location": "639,1299,64,25", "text": "5.74", "column": "CN" }, { "location": "639,1362,64,25", "text": "0.00", "column": "CLAIM" }, { "location": "639,1422,64,25", "text": "7.66", "column": "PMRESERVERTD" }, { "location": "639,1485,64,25", "text": "0.00", "column": "PMRESERVERLD" }, { "location": "639,1545,64,25", "text": "0.00", "column": "INTEREST" }, { "location": "639,1605,64,25", "text": "0.64", "column": "BROKERAGE" }, { "location": "648,1677,64,25", "text": "0.00", "column": "PROFITCN" }, { "location": "641,1774,81,25", "text": "11 .49", "column": "NTBL" }, { "location": "1706,1908,356,29", "text": "APEX INSURANCE", "column": "UNDEFINED\r\n" }], "docCategory": { "SEQNUM": 2, "DOCNAME": "Apex 계산서", "DOCTYPE": 1, "SAMPLEIMAGEPATH": "sample/apex.jpg" } };
+    //var data = { "data": [{ "location": "1018,240,411,87", "text": "APEX", "column": "UNKOWN" }, { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNKOWN" }, { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNKOWN" }, { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNKOWN" }, { "location": "206,691,274,27", "text": "4153 Korean Re", "column": "UNKOWN" }, { "location": "208,756,525,34", "text": "Proportional Treaty Statement", "column": "UNKOWN" }, { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626", "column": "UNKOWN" }, { "location": "1840,575,169,25", "text": "01105/2018", "column": "UNKOWN" }, { "location": "206,848,111,24", "text": "Cedant", "column": "UNKOWN" }, { "location": "206,908,285,24", "text": "Class of Business", "column": "UNKOWN" }, { "location": "210,963,272,26", "text": "Period of Quarter", "column": "UNKOWN" }, { "location": "207,1017,252,31", "text": "Period of Treaty", "column": "UNKOWN" }, { "location": "206,1066,227,24", "text": "Our Reference", "column": "UNKOWN" }, { "location": "226,1174,145,31", "text": "Currency", "column": "UNKOWN" }, { "location": "227,1243,139,24", "text": "Premium", "column": "UNKOWN" }, { "location": "226,1303,197,24", "text": "Commission", "column": "UNKOWN" }, { "location": "226,1366,107,24", "text": "Claims", "column": "UNKOWN" }, { "location": "227,1426,126,24", "text": "Reserve", "column": "UNKOWN" }, { "location": "227,1489,123,24", "text": "Release", "column": "UNKOWN" }, { "location": "227,1549,117,24", "text": "Interest", "column": "UNKOWN" }, { "location": "227,1609,161,31", "text": "Brokerage", "column": "UNKOWN" }, { "location": "233,1678,134,24", "text": "Portfolio", "column": "UNKOWN" }, { "location": "227,1781,124,24", "text": "Balance", "column": "UNKOWN" }, { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018", "column": "CTOGCOMPANYNAMENM" }, { "location": "574,907,568,32", "text": ": Marine Cargo Surplus 2018 - Inward", "column": "CTNM" }, { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018", "column": "PERIODQ" }, { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018", "column": "PERIODT" }, { "location": "574,1065,304,25", "text": ": APEX/BORD/2727", "column": "CSCOSARFRNCNNT2" }, { "location": "629,1173,171,25", "text": "JOD 1.00", "column": "CURCD" }, { "location": "639,1239,83,25", "text": "25.53", "column": "PM" }, { "location": "639,1299,64,25", "text": "5.74", "column": "CN" }, { "location": "639,1362,64,25", "text": "0.00", "column": "CLAIM" }, { "location": "639,1422,64,25", "text": "7.66", "column": "PMRESERVERTD" }, { "location": "639,1485,64,25", "text": "0.00", "column": "PMRESERVERLD" }, { "location": "639,1545,64,25", "text": "0.00", "column": "INTEREST" }, { "location": "639,1605,64,25", "text": "0.64", "column": "BROKERAGE" }, { "location": "648,1677,64,25", "text": "0.00", "column": "PROFITCN" }, { "location": "641,1774,81,25", "text": "11 .49", "column": "NTBL" }, { "location": "1706,1908,356,29", "text": "APEX INSURANCE", "column": "UNKOWN\r\n" }], "docCategory": { "SEQNUM": 2, "DOCNAME": "Apex 계산서", "DOCTYPE": 1, "SAMPLEIMAGEPATH": "sample/apex.jpg" } };
     compareBatchLearningData(ocrData, data);
     */
     /*
     var data = {"data":[
-    {"location":"1018,240,411,87","text":"APEX","column":"UNDEFINED"},
-    {"location":"1019,338,409,23","text":"Partner of Choice","column":"UNDEFINED"},
-    {"location":"1562,509,178,25","text":"Voucher No","column":"UNDEFINED"},
-    {"location":"1562,578,206,25","text":"Voucher Date","column":"UNDEFINED"},
-    {"location":"206,691,274,27","text":"4153 Korean Re","column":"UNDEFINED"},
-    {"location":"208,756,525,34","text":"Proportional Treaty Statement","column":"UNDEFINED"},
-    {"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","column":"UNDEFINED"},
-    {"location":"1840,575,169,25","text":"01105/2018","column":"UNDEFINED"},
-    {"location":"206,848,111,24","text":"Cedant","column":"UNDEFINED"},
-    {"location":"206,908,285,24","text":"Class of Business","column":"UNDEFINED"},
-    {"location":"210,963,272,26","text":"Period of Quarter","column":"UNDEFINED"},
-    {"location":"207,1017,252,31","text":"Period of Treaty","column":"UNDEFINED"},
-    {"location":"206,1066,227,24","text":"Our Reference","column":"UNDEFINED"},
-    {"location":"226,1174,145,31","text":"Currency","column":"UNDEFINED"},
-    {"location":"227,1243,139,24","text":"Premium","column":"UNDEFINED"},
-    {"location":"226,1303,197,24","text":"Commission","column":"UNDEFINED"},
-    {"location":"226,1366,107,24","text":"Claims","column":"UNDEFINED"},
-    {"location":"227,1426,126,24","text":"Reserve","column":"UNDEFINED"},
-    {"location":"227,1489,123,24","text":"Release","column":"UNDEFINED"},
-    {"location":"227,1549,117,24","text":"Interest","column":"UNDEFINED"},
-    {"location":"227,1609,161,31","text":"Brokerage","column":"UNDEFINED"},
-    {"location":"233,1678,134,24","text":"Portfolio","column":"UNDEFINED"},
-    {"location":"227,1781,124,24","text":"Balance","column":"UNDEFINED"},
+    {"location":"1018,240,411,87","text":"APEX","column":"UNKOWN"},
+    {"location":"1019,338,409,23","text":"Partner of Choice","column":"UNKOWN"},
+    {"location":"1562,509,178,25","text":"Voucher No","column":"UNKOWN"},
+    {"location":"1562,578,206,25","text":"Voucher Date","column":"UNKOWN"},
+    {"location":"206,691,274,27","text":"4153 Korean Re","column":"UNKOWN"},
+    {"location":"208,756,525,34","text":"Proportional Treaty Statement","column":"UNKOWN"},
+    {"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","column":"UNKOWN"},
+    {"location":"1840,575,169,25","text":"01105/2018","column":"UNKOWN"},
+    {"location":"206,848,111,24","text":"Cedant","column":"UNKOWN"},
+    {"location":"206,908,285,24","text":"Class of Business","column":"UNKOWN"},
+    {"location":"210,963,272,26","text":"Period of Quarter","column":"UNKOWN"},
+    {"location":"207,1017,252,31","text":"Period of Treaty","column":"UNKOWN"},
+    {"location":"206,1066,227,24","text":"Our Reference","column":"UNKOWN"},
+    {"location":"226,1174,145,31","text":"Currency","column":"UNKOWN"},
+    {"location":"227,1243,139,24","text":"Premium","column":"UNKOWN"},
+    {"location":"226,1303,197,24","text":"Commission","column":"UNKOWN"},
+    {"location":"226,1366,107,24","text":"Claims","column":"UNKOWN"},
+    {"location":"227,1426,126,24","text":"Reserve","column":"UNKOWN"},
+    {"location":"227,1489,123,24","text":"Release","column":"UNKOWN"},
+    {"location":"227,1549,117,24","text":"Interest","column":"UNKOWN"},
+    {"location":"227,1609,161,31","text":"Brokerage","column":"UNKOWN"},
+    {"location":"233,1678,134,24","text":"Portfolio","column":"UNKOWN"},
+    {"location":"227,1781,124,24","text":"Balance","column":"UNKOWN"},
     {"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","column":"CTOGCOMPANYNAMENM"},
     {"location":"574,907,636,26","text":": Fire QS EQ 2018 W HOS BK UNI HTEL","column":"CTNM"},
     {"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","column":"PERIODQ"},
@@ -691,14 +694,14 @@ function execBatchLearningData(ocrData, data) {
     {"location":"574,1065,304,25","text":": APEX/BORD/2727","column":"CSCOSARFRNCNNT2"},
     {"location":"629,1173,171,25","text":"JOD 1.00","column":"CURCD"},
     {"location":"639,1239,83,25","text":"30.02","column":"PM"},
-    {"location":"639,1299,58,25","text":"9.01","column":"UNDEFINED"},
+    {"location":"639,1299,58,25","text":"9.01","column":"UNKOWN"},
     {"location":"639,1362,64,25","text":"0.00","column":"CLAIM"},
-    {"location":"639,1422,58,25","text":"9.01","column":"UNDEFINED"},
+    {"location":"639,1422,58,25","text":"9.01","column":"UNKOWN"},
     {"location":"639,1485,64,25","text":"0.00","column":"PMRESERVERLD"},
     {"location":"639,1545,64,25","text":"0.00","column":"INTEREST"},
     {"location":"639,1605,64,25","text":"0.75","column":"BROKERAGE"},
     {"location":"648,1677,64,25","text":"0.00","column":"PROFITCN"},
-    {"location":"1706,1908,356,29","text":"APEX INSURANCE","column":"UNDEFINED\r\n"}
+    {"location":"1706,1908,356,29","text":"APEX INSURANCE","column":"UNKOWN\r\n"}
     ],"docCategory":{"SEQNUM":2,"DOCNAME":"Apex 계산서","DOCTYPE":1,"SAMPLEIMAGEPATH":"sample/apex.jpg"}};
     compareBatchLearningData(ocrData, data);
     */
@@ -716,7 +719,7 @@ function execBatchLearningData(ocrData, data) {
         success: function (data) {
             console.log(JSON.stringify(data));
             
-            modifyData = data.data;
+            modifyData = data;
             batchCount++;
 
             if (data.docCategory.DOCTYPE == 2) {
@@ -752,7 +755,7 @@ function execBatchLearningData(ocrData, data) {
 }
 
 function compareBatchLearningData(ocrData, data) {
-    //var data = JSON.parse('[{"location":"300,51,370,44","text":"123123123213123","label":"entryrowlabel","column":"PRRS_CF"},{"location":"252,57,480,46","text":"abcdqwjlvasmlkfsdafasd","label":"entryrowlabel","column":"PRRS_CF"},{"location":"1018,240,411,87","text":"APEX","label":""},{"location":"1019,338,409,23","text":"Partner of Choice","label":""},{"location":"1562,509,178,25","text":"Voucher No","label":""},{"location":"1562,578,206,25","text":"Voucher Date","label":""},{"location":"206,691,274,27","text":"4153 Korean Re","label":""},{"location":"208,756,525,34","text":"Proportional Treaty Statement","label":""},{"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","label":""},{"location":"1840,575,169,25","text":"01105/2018","label":""},{"location":"206,848,111,24","text":"decant","label":"entryrowlabel","column":"PRRS_CF"},{"location":"206,908,285,24","text":"Class of Business","label":"fixlabel","column":"CT_NM"},{"location":"210,963,272,26","text":"Period of Quarter","label":"fixlabel","column":"INS_ST_DT"},{"location":"207,1017,252,31","text":"Period of Treaty","label":"fixlabel","column":"CUR_CD"},{"location":"206,1066,227,24","text":"Our Reference","label":"fixlabel","column":"CSCO_SA_RFRN_CNNT2"},{"location":"226,1174,145,31","text":"Currency","label":"entryrowlabel","column":"CUR_CD"},{"location":"227,1243,139,24","text":"Premium","label":"entryrowlabel","column":"PRE"},{"location":"226,1303,197,24","text":"Commission","label":"entryrowlabel","column":"COM"},{"location":"226,1366,107,24","text":"Claims","label":"entryrowlabel","column":"CLA"},{"location":"227,1426,126,24","text":"Reserve","label":"entryrowlabel","column":"PRRS_CF"},{"location":"227,1489,123,24","text":"Release","label":"entryrowlabel","column":"PRRS_RLS"},{"location":"227,1549,117,24","text":"Interest","label":"entryrowlabel","column":"EXEX"},{"location":"227,1609,161,31","text":"Brokerage","label":"entryrowlabel","column":"BRKG"},{"location":"233,1678,134,24","text":"Portfolio","label":"entryrowlabel","column":"SVF"},{"location":"227,1781,124,24","text":"Balance","label":"entryrowlabel","column":"NTBL"},{"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","label":""},{"location":"574,907,568,32","text":": Marine Cargo Surplus 2018 - Inward","label":""},{"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","label":"fixvalue","column":"INS_ST_DT_VALUE"},{"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018","label":"fixvalue","column":"CUR_CD_VALUE"},{"location":"574,1065,304,25","text":": APEX/BORD/2727","label":""},{"location":"629,1173,171,25","text":"jody 1.00","label":"entryvalue","column":"CUR_CD_VALUE"},{"location":"639,1239,83,25","text":"25.53","label":"entryvalue","column":"PRE_VALUE"},{"location":"639,1299,64,25","text":"5.74","label":"entryvalue","column":"COM_VALUE"},{"location":"639,1362,64,25","text":"0.00","label":"entryvalue","column":"CLA_VALUE"},{"location":"639,1422,64,25","text":"7.66","label":"entryvalue","column":"PRRS_CF_VALUE"},{"location":"639,1485,64,25","text":"0.00","label":"entryvalue","column":"PRRS_RLS_VALUE"},{"location":"639,1545,64,25","text":"0.00","label":"entryvalue","column":"EXEX_VALUE"},{"location":"639,1605,64,25","text":"0.64","label":"entryvalue","column":"BRKG_VALUE"},{"location":"648,1677,64,25","text":"0.00","label":"entryvalue","column":"SVF_VALUE"},{"location":"641,1774,81,25","text":"11 .49","label":"entryvalue","column":"NTBL_VALUE"},{"location":"1706,1908,356,29","text":"APEX INSURANCE","label":"undefined"}]');
+    //var data = JSON.parse('[{"location":"300,51,370,44","text":"123123123213123","label":"entryrowlabel","column":"PRRS_CF"},{"location":"252,57,480,46","text":"abcdqwjlvasmlkfsdafasd","label":"entryrowlabel","column":"PRRS_CF"},{"location":"1018,240,411,87","text":"APEX","label":""},{"location":"1019,338,409,23","text":"Partner of Choice","label":""},{"location":"1562,509,178,25","text":"Voucher No","label":""},{"location":"1562,578,206,25","text":"Voucher Date","label":""},{"location":"206,691,274,27","text":"4153 Korean Re","label":""},{"location":"208,756,525,34","text":"Proportional Treaty Statement","label":""},{"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","label":""},{"location":"1840,575,169,25","text":"01105/2018","label":""},{"location":"206,848,111,24","text":"decant","label":"entryrowlabel","column":"PRRS_CF"},{"location":"206,908,285,24","text":"Class of Business","label":"fixlabel","column":"CT_NM"},{"location":"210,963,272,26","text":"Period of Quarter","label":"fixlabel","column":"INS_ST_DT"},{"location":"207,1017,252,31","text":"Period of Treaty","label":"fixlabel","column":"CUR_CD"},{"location":"206,1066,227,24","text":"Our Reference","label":"fixlabel","column":"CSCO_SA_RFRN_CNNT2"},{"location":"226,1174,145,31","text":"Currency","label":"entryrowlabel","column":"CUR_CD"},{"location":"227,1243,139,24","text":"Premium","label":"entryrowlabel","column":"PRE"},{"location":"226,1303,197,24","text":"Commission","label":"entryrowlabel","column":"COM"},{"location":"226,1366,107,24","text":"Claims","label":"entryrowlabel","column":"CLA"},{"location":"227,1426,126,24","text":"Reserve","label":"entryrowlabel","column":"PRRS_CF"},{"location":"227,1489,123,24","text":"Release","label":"entryrowlabel","column":"PRRS_RLS"},{"location":"227,1549,117,24","text":"Interest","label":"entryrowlabel","column":"EXEX"},{"location":"227,1609,161,31","text":"Brokerage","label":"entryrowlabel","column":"BRKG"},{"location":"233,1678,134,24","text":"Portfolio","label":"entryrowlabel","column":"SVF"},{"location":"227,1781,124,24","text":"Balance","label":"entryrowlabel","column":"NTBL"},{"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","label":""},{"location":"574,907,568,32","text":": Marine Cargo Surplus 2018 - Inward","label":""},{"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","label":"fixvalue","column":"INS_ST_DT_VALUE"},{"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018","label":"fixvalue","column":"CUR_CD_VALUE"},{"location":"574,1065,304,25","text":": APEX/BORD/2727","label":""},{"location":"629,1173,171,25","text":"jody 1.00","label":"entryvalue","column":"CUR_CD_VALUE"},{"location":"639,1239,83,25","text":"25.53","label":"entryvalue","column":"PRE_VALUE"},{"location":"639,1299,64,25","text":"5.74","label":"entryvalue","column":"COM_VALUE"},{"location":"639,1362,64,25","text":"0.00","label":"entryvalue","column":"CLA_VALUE"},{"location":"639,1422,64,25","text":"7.66","label":"entryvalue","column":"PRRS_CF_VALUE"},{"location":"639,1485,64,25","text":"0.00","label":"entryvalue","column":"PRRS_RLS_VALUE"},{"location":"639,1545,64,25","text":"0.00","label":"entryvalue","column":"EXEX_VALUE"},{"location":"639,1605,64,25","text":"0.64","label":"entryvalue","column":"BRKG_VALUE"},{"location":"648,1677,64,25","text":"0.00","label":"entryvalue","column":"SVF_VALUE"},{"location":"641,1774,81,25","text":"11 .49","label":"entryvalue","column":"NTBL_VALUE"},{"location":"1706,1908,356,29","text":"APEX INSURANCE","label":"UNKOWN"}]');
     var dataObj = {};
     var dataVal = data.data;
 
@@ -762,7 +765,7 @@ function compareBatchLearningData(ocrData, data) {
         var text = nvl(dataVal[i]["text"]);
         var column = nvl(dataVal[i]["column"]);
 
-        if (column != "UNDEFINED") {
+        if (column != "UNKOWN") {
             if (dataObj[column]) {
                 if (typeof dataObj[column] == 'string') {
                     dataObj[column] = [dataObj[column]]
@@ -838,7 +841,7 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
                     }
                 }
                 for (var j in mlData.data) {
-                    if (mlData.data[j].column != 'UNDEFINED') {
+                    if (mlData.data[j].column != 'UNKOWN') {
                         for (var answerKey in answerData) {
                             if (answerKey == 'EXTCTNM' || answerKey == 'EXTOGCOMPANYNAME' ||
                                 answerKey == 'CTNM' || answerKey == 'OGCOMPANYNAME' || answerKey == 'MAPPINGCTNM') {
@@ -1652,48 +1655,20 @@ var fn_processUiTraining = function (fileInfoList) {
 
 // UI학습 팝업 실행
 var fn_batchUiTraining = function () {
-    var data = {
-        "data": [
-            { "location": "1018,240,411,87", "text": "APEX", "column": "UNDEFINED" },
-            { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNDEFINED" },
-            { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNDEFINED" },
-            { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNDEFINED" },
-            { "location": "206,691,274,27", "text": "4153 Korean Re", "column": "UNDEFINED" },
-            { "location": "208,756,525,34", "text": "Proportional Treaty Statement", "column": "UNDEFINED" },
-            { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626", "column": "UNDEFINED" },
-            { "location": "1840,575,169,25", "text": "01105/2018", "column": "UNDEFINED" },
-            { "location": "206,848,111,24", "text": "Cedant", "column": "UNDEFINED" },
-            { "location": "206,908,285,24", "text": "Class of Business", "column": "UNDEFINED" },
-            { "location": "210,963,272,26", "text": "Period of Quarter", "column": "UNDEFINED" },
-            { "location": "207,1017,252,31", "text": "Period of Treaty", "column": "UNDEFINED" },
-            { "location": "206,1066,227,24", "text": "Our Reference", "column": "UNDEFINED" },
-            { "location": "226,1174,145,31", "text": "Currency", "column": "UNDEFINED" },
-            { "location": "227,1243,139,24", "text": "Premium", "column": "UNDEFINED" },
-            { "location": "226,1303,197,24", "text": "Commission", "column": "UNDEFINED" },
-            { "location": "226,1366,107,24", "text": "Claims", "column": "UNDEFINED" },
-            { "location": "227,1426,126,24", "text": "Reserve", "column": "UNDEFINED" },
-            { "location": "227,1489,123,24", "text": "Release", "column": "UNDEFINED" },
-            { "location": "227,1549,117,24", "text": "Interest", "column": "UNDEFINED" },
-            { "location": "227,1609,161,31", "text": "Brokerage", "column": "UNDEFINED" },
-            { "location": "233,1678,134,24", "text": "Portfolio", "column": "UNDEFINED" },
-            { "location": "227,1781,124,24", "text": "Balance", "column": "UNDEFINED" },
-            { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018", "column": "CTOGCOMPANYNAMENM" },
-            { "location": "574,907,636,26", "text": ": Fire QS EQ 2018 W HOS BK UNI HTEL", "column": "CTNM" },
-            { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018", "column": "PERIODQ" },
-            { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018", "column": "PERIODT" },
-            { "location": "574,1065,304,25", "text": ": APEX/BORD/2727", "column": "CSCOSARFRNCNNT2" },
-            { "location": "629,1173,171,25", "text": "JOD 1.00", "column": "CURCD" },
-            { "location": "639,1239,83,25", "text": "30.02", "column": "PM" },
-            { "location": "639,1299,58,25", "text": "9.01", "column": "UNDEFINED" },
-            { "location": "639,1362,64,25", "text": "0.00", "column": "CLAIM" },
-            { "location": "639,1422,58,25", "text": "9.01", "column": "UNDEFINED" },
-            { "location": "639,1485,64,25", "text": "0.00", "column": "PMRESERVERLD" },
-            { "location": "639,1545,64,25", "text": "0.00", "column": "INTEREST" },
-            { "location": "639,1605,64,25", "text": "0.75", "column": "BROKERAGE" },
-            { "location": "648,1677,64,25", "text": "0.00", "column": "PROFITCN" },
-            { "location": "1706,1908,356,29", "text": "APEX INSURANCE", "column": "UNDEFINED\r\n" }
-        ], "docCategory": { "SEQNUM": 2, "DOCNAME": "Apex 계산서", "DOCTYPE": 1, "SAMPLEIMAGEPATH": "sample/apex.jpg" }
-    };
+    var data = modifyData;
+    $('#textResultTbl > dl').each(function (i, el) {
+        var location = $(el).find('input')[1].value;
+        var text = $(el).find('input')[0].value;
+        var column = $(el).find('select').find('option:selected').val();
+        for (var i in data.data) {
+            if (data.data[i].location == location) {
+                data.data[i].text = text;
+                data.data[i].column = column;
+                break;
+            }
+        }
+    });
+    //console.log(data);
     docLabelMapping(data);
 
     /*
@@ -1802,7 +1777,7 @@ function insertColMapping(data, mlData, docCategory) {
     var param = [];
     for (var i in mlData) {
         for (var j in columnArr) {
-            if (mlData[i].column != 'UNDEFINED' && mlData[i].column == columnArr[j].COLTYPE) {
+            if (mlData[i].column != 'UNKOWN' && mlData[i].column == columnArr[j].COLTYPE) {
                 var item = data[i];
                 item.colNum = columnArr[j].COLNUM;
                 param.push(item);
