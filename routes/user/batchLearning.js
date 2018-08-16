@@ -427,54 +427,147 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningBaseData, data, callbackInsertBatchLearningBaseData, req, res);
 });
 
-// test ml
+
+// test ml - 18.08.16 hyj
 router.get('/test', function (req, res) {
     var arg = [{ "location": "1018,240,411,87", "text": "APEX" }, { "location": "1019,338,409,23", "text": "Partner of Choice" }, { "location": "1562,509,178,25", "text": "Voucher No" }, { "location": "1562,578,206,25", "text": "Voucher Date" }, { "location": "206,691,274,27", "text": "4153 Korean Re" }, { "location": "208,756,525,34", "text": "Proportional Treaty Statement" }, { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626" }, { "location": "1840,575,169,25", "text": "01105/2018" }, { "location": "206,848,111,24", "text": "Cedant" }, { "location": "206,908,285,24", "text": "Class of Business" }, { "location": "210,963,272,26", "text": "Period of Quarter" }, { "location": "207,1017,252,31", "text": "Period of Treaty" }, { "location": "206,1066,227,24", "text": "Our Reference" }, { "location": "226,1174,145,31", "text": "Currency" }, { "location": "227,1243,139,24", "text": "Premium" }, { "location": "226,1303,197,24", "text": "Commission" }, { "location": "226,1366,107,24", "text": "Claims" }, { "location": "227,1426,126,24", "text": "Reserve" }, { "location": "227,1489,123,24", "text": "Release" }, { "location": "227,1549,117,24", "text": "Interest" }, { "location": "227,1609,161,31", "text": "Brokerage" }, { "location": "233,1678,134,24", "text": "Portfolio" }, { "location": "227,1781,124,24", "text": "Balance" }, { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018" }, { "location": "574,907,636,26", "text": ": Fire QS EQ 2018 W HOS BK UNI HTEL" }, { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018" }, { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018" }, { "location": "574,1065,304,25", "text": ": APEX/BORD/2727" }, { "location": "629,1173,171,25", "text": "JOD 1.00" }, { "location": "639,1239,83,25", "text": "30.02" }, { "location": "639,1299,58,25", "text": "9.01" }, { "location": "639,1362,64,25", "text": "0.00" }, { "location": "639,1422,58,25", "text": "9.01" }, { "location": "639,1485,64,25", "text": "0.00" }, { "location": "639,1545,64,25", "text": "0.00" }, { "location": "639,1605,64,25", "text": "0.75" }, { "location": "648,1677,64,25", "text": "0.00" }, { "location": "1706,1908,356,29", "text": "APEX INSURANCE" }];
 
     aimain.typoSentenceEval(arg, function (typoResult) {
         arg = typoResult;
-        console.log('--------------------typo ML--------------------');
+        console.log('execute typo ML');
         //console.log(arg);
         aimain.formLabelMapping(arg, function (formLabelResult) {
             var formLabelArr = formLabelResult.split('^');
             for (var i in formLabelArr) {
                 for (var j in arg) {
                     if (formLabelArr[i].split('||')[0] == arg[j].sid) {
-                        arg[j].formLabel = formLabelArr[i].split('||')[1].replace(/\r\n/g,'');
+                        arg[j].formLabel = Number(formLabelArr[i].split('||')[1].replace(/\r\n/g,''));
                         break;
                     }
                 }
             }
-            console.log('----------------------formLabelMapping ML------------------');
+            console.log('execute formLabelMapping ML');
             //console.log(arg);
             aimain.formMapping(arg, function (formResult) {
-                console.log('----------------------formMapping ML------------------');
-                var form = formResult.split('[')[1].split(']')[0];
-                var formScore = formResult.split(': ')[1].split('\r\n')[0];
-                var obj = {};
-                obj.data = arg;
-                obj.form = {'type': form, 'score': formScore};
-                arg = obj;
+                console.log('execute formMapping ML');
+                arg = formResult;
                 //console.log(arg);
                 aimain.columnMapping(arg, function (columnResult) {
-                    console.log('----------------------columnMapping ML------------------');
-                    var columnArr = columnResult.split('[')[1].split(']')[0].split(',');
-                    for (var i in arg.data) {
-                        arg.data[i].column = columnArr[i];
+                    for (var i in columnResult) {
+                        for (var j in arg.data) {
+                            if (columnResult[i].split('||')[0] == arg.data[j].sid) {
+                                arg.data[j].column = Number(columnResult[i].split('||')[1].replace(/\r\n/g, ''));
+                                break;
+                            }
+                        }
                     }
+                    console.log('execute columnMapping ML');
                     //console.log(arg);
-                    res.send(arg);
+
+                    // DB select (extraction OgCompanyName And ContractName)
+                    var ctOgCompanyName = '';
+                    var contractNames = []; // contractName Array
+                    var exeQueryCount = 0; // query execute count 
+                    var result = []; // function output
+                    for (var i in arg.data) {
+                        if (arg.data[i].formLabel == 1) {
+                            ctOgCompanyName = arg.data[i].text;
+                        } else if (arg.data[i].formLabel == 2) {
+                            contractNames.push(arg.data[i].text);
+                        } else {
+                        }
+                    }
+
+                    for (var i in contractNames) {
+                        commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
+                            exeQueryCount++;
+                            if (rows.length > 0) {
+                                result = rows;
+                            }
+                            if (exeQueryCount == contractNames.length) {
+                                arg.extOgAndCtnm = result;
+                                res.send(arg);
+                            }
+                        });
+                    }
                 });
             });
         });
     })
 });
 
+
 // RUN batchLearningData
 router.post('/execBatchLearningData', function (req, res) {
     var arg = req.body.data;
 
-    /*
+    // Machine Learning v1.2
+    aimain.typoSentenceEval(arg, function (typoResult) {
+        arg = typoResult;
+        console.log('execute typo ML');
+        //console.log(arg);
+        aimain.formLabelMapping(arg, function (formLabelResult) {
+            var formLabelArr = formLabelResult.split('^');
+            for (var i in formLabelArr) {
+                for (var j in arg) {
+                    if (formLabelArr[i].split('||')[0] == arg[j].sid) {
+                        arg[j].formLabel = Number(formLabelArr[i].split('||')[1].replace(/\r\n/g, ''));
+                        break;
+                    }
+                }
+            }
+            console.log('execute formLabelMapping ML');
+            //console.log(arg);
+            aimain.formMapping(arg, function (formResult) {
+                console.log('execute formMapping ML');
+                arg = formResult;
+                //console.log(arg);
+                aimain.columnMapping(arg, function (columnResult) {
+                    var columnArr = columnResult.split('^');
+                    for (var i in columnArr) {
+                        for (var j in arg.data) {
+                            if (columnArr[i].split('||')[0] == arg.data[j].sid) {
+                                arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
+                                break;
+                            }
+                        }
+                    }
+                    console.log('execute columnMapping ML');
+                    //console.log(arg);
+
+                    // DB select (extraction OgCompanyName And ContractName)
+                    var ctOgCompanyName = '';
+                    var contractNames = []; // contractName Array
+                    var exeQueryCount = 0; // query execute count 
+                    var result = []; // function output
+                    for (var i in arg.data) {
+                        if (arg.data[i].formLabel == 1) {
+                            ctOgCompanyName = arg.data[i].text;
+                        } else if (arg.data[i].formLabel == 2) {
+                            contractNames.push(arg.data[i].text);
+                        } else {
+                        }
+                    }
+
+                    for (var i in contractNames) {
+                        commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
+                            exeQueryCount++;
+                            if (rows.length > 0) {
+                                result = rows;
+                            }
+                            if (exeQueryCount == contractNames.length) {
+                                arg.extOgAndCtnm = result;
+                                res.send(arg);
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    })
+
+    /* 
+    // Machine Learning v.1.0
     aimain.typoSentenceEval(arg, function (result1) {
         console.log("typo ML");
         aimain.domainDictionaryEval(result1, function (result2) {
@@ -494,16 +587,8 @@ router.post('/execBatchLearningData', function (req, res) {
     });
     */
 
-    aimain.typoSentenceEval(arg, function (result1) {
-        aimain.formMapping(result1, function (result2) {
-            console.log(result2);
-            res.send(result2);
-        });
-    });
-
-
-
     /*
+    // Machine Learning v.1.1
     console.log("bill ML");
     aimain.billClassificationEval(arg, function (result1) {
         console.log(result1);

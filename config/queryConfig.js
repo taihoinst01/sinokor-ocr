@@ -472,7 +472,14 @@ var mlConfig = {
             tbl_contract_mapping
          WHERE
             extOgcompanyName = :extOgcompanyName AND extCtnm = :extCtnm
-        `
+        `,
+    selectdocCategory:
+        `SELECT
+            seqNum, docName, docType, sampleImagePath
+         FROM
+            tbl_document_category
+         WHERE
+            docType = :docType `
 }
 
 module.exports = {

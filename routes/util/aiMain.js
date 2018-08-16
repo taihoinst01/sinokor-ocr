@@ -123,7 +123,7 @@ exports.formLabelMapping = function (data, callback) {
 
 // [step3] form mapping ML
 exports.formMapping = function (data, callback) {
-    var args = dataToForm(data);
+    var args = dataToSidArgs(data, true);
 
     var exeformMapping = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
     exec(exeformMapping, defaults, function (err, stdout, stderr) {
@@ -156,35 +156,6 @@ exports.columnMapping = function (data, callback) {
         callback(stdout);
     });
 }
-
-// extraction OgCompanyName And ContractName
-exports.extractionOgAndCtnmEval = function (data, callback) {
-    var ctOgCompanyName = '';
-    var contractNames = []; // contractName Array
-    var exeQueryCount = 0; // query execute count 
-    var result = {}; // function output
-    for (var i in data) {
-        if (data[i].column == 'CTOGCOMPANYNAMENM') {
-            ctOgCompanyName = data[i].text;
-        } else if (data[i].column == 'CTNM') {
-            contractNames.push(data[i].text);
-        } else {
-        }
-    }
-
-    for (var i in contractNames) {
-        commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
-            exeQueryCount++;
-            if (rows.length > 0) {
-                result.data = data
-                result.extOgAndCtnm = rows;
-            }
-            if (exeQueryCount == contractNames.length) {
-                callback(result);
-            }
-        });
-    }
-};
 
 function dataToArgs(data) {
 
@@ -247,12 +218,13 @@ function dataToformSidArgs(data) {
     var args = '';
 
     for (var i in data.data) {
-        args += '"' + data.form.type + ',' + data.data[i].sid + '"' + ' ';
+        args += '"' + data.docCategory[0].DOCTYPE + ',' + data.data[i].sid + '"' + ' ';
     }
 
     return args;
 }
 
+/*
 function dataToForm(data) {
     var args = '"';
     var ctog = '';
@@ -274,6 +246,7 @@ function dataToForm(data) {
 
     return args;
 }
+*/
 
 exports.domainDictionaryEval = function (data, callback) {
     var args = dataToArgs(data);
