@@ -508,7 +508,7 @@ function popUpLayer2(ocrData) {
     layer_open('layer2'); // ui 학습레이어 띄우기
     $("#layer2.poplayer").css("display", "block");
     $('#docName').text(modifyData.docCategory[0].DOCNAME);
-    $('#docPredictionScore').text(modifyData.docCategory[0].SCORE);
+    $('#docPredictionScore').text(modifyData.score + '%');
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
 
 
