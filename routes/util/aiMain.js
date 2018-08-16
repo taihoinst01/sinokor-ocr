@@ -123,12 +123,26 @@ exports.formLabelMapping = function (data, callback) {
 
 // [step3] form mapping ML
 exports.formMapping = function (data, callback) {
-    var args = dataToSidArgs(data, true);
+    var args = dataToForm(data);
 
-    var exeTypoString = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
-    exec(exeTypoString, defaults, function (err, stdout, stderr) {
-        if (err) console.error(err);
-        callback(stdout);
+    var exeformMapping = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
+    exec(exeformMapping, defaults, function (err, stdout, stderr) {
+        if (err) {
+            logger.error.info(`formMapping ml model exec error: ${stderr}`);
+            return;
+        }
+
+        var retSplit = stdout.split("||");
+        if (retSplit[1] != null) {
+            var param = retSplit[1].trim();
+            commonDB.queryParam("select docname, doctype, sampleimagepath from tbl_document_category where doctype = to_number(:doctype)", [param], function (ret, retData) {
+                obj = {};
+                obj.data = retData;
+                obj.docCategory = ret;
+
+                callback(obj);
+            }, data)
+        }
     });
 }
 
@@ -206,6 +220,28 @@ function dataToformSidArgs(data) {
     for (var i in data.data) {
         args += '"' + data.form.type + ',' + data.data[i].sid + '"' + ' ';
     }
+
+    return args;
+}
+
+function dataToForm(data) {
+    var args = '"';
+    var ctog = '';
+    var ctnm = '';
+
+    for (var i in data) {
+        if (data[i].formLabelMapping == '1') {
+            ctog = data[i].sid;
+        }
+    }
+
+    for (var i in data) {
+        if (data[i].formLabelMapping == '2') {
+            ctnm = data[i].sid;
+        }
+    }
+
+    args = '"' + ctog + ',' + ctnm + '"';
 
     return args;
 }
