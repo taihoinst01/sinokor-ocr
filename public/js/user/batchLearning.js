@@ -503,7 +503,7 @@ function execBatchLearning() {
 
 // UI레이어 작업 함수
 function popUpLayer2(ocrData) {
-    console.log(modifyData);
+
     fn_initUiTraining(); // 팝업 초기화
     layer_open('layer2'); // ui 학습레이어 띄우기
     $("#layer2.poplayer").css("display", "block");
@@ -560,9 +560,9 @@ function appendOptionHtml(targetColumn, columns) {
     for (var i in columns) {
         var optionHTML = '';
         if (targetColumn == columns[i].COLNUM) {
-            optionHTML = '<option value="' + columns[i].COLTYPE + '" selected>' + columns[i].COLNAME + '</option>';
+            optionHTML = '<option value="' + columns[i].COLNUM + '" selected>' + columns[i].COLNAME + '</option>';
         } else {
-            optionHTML = '<option value="' + columns[i].COLTYPE + '">' + columns[i].COLNAME + '</option>';
+            optionHTML = '<option value="' + columns[i].COLNUM + '">' + columns[i].COLNAME + '</option>';
         }
         selectHTML += optionHTML
     }
@@ -1712,39 +1712,10 @@ var fn_batchUiTraining = function () {
 
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
-    var returnObj = [];
-    var docCategory = data.docCategory;
-    $.ajax({
-        url: '/batchLearning/selectOcrSymSpell',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify({ 'data' : data.data }),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            var mlParams = [];
-            for (var i in data.data) {
-                var returnItem = {};
-                returnItem.x = data.data[i].location.split(',')[0];
-                returnItem.y = data.data[i].location.split(',')[1];
-                returnItem.word = data.data[i].typoData;
-                if (data.data[i].column == 'CTOGCOMPANYNAMENM') { // 출재사명 이면
-                    returnItem.label = 1;
-                } else if (data.data[i].column == 'CTNM') {// 계약명 이면
-                    returnItem.label = 2;
-                } else {
-                    returnItem.label = 3;
-                }
-                mlParams.push(returnItem);
-            }
 
-            insertDocLabelMapping(mlParams);
-            insertDocMapping(mlParams, docCategory);
-            insertColMapping(mlParams, data.data, docCategory);
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
+    insertDocLabelMapping(data);
+    insertDocMapping(data);
+    insertColMapping(data);
     
 }
 
@@ -1766,18 +1737,18 @@ function insertDocLabelMapping(data) {
 }
 
 // 양식 매핑 ml 데이터 insert
-function insertDocMapping(data, docCategory) {
+function insertDocMapping(data) {
     var param = [];
-    for (var i in data) {
-        if (data[i].label != 3) {
-            param.push(data[i]);
+    for (var i in data.data) {
+        if (data.data[i].column == 0 || data.data[i].column == 1) {
+            param.push(data.data[i]);
         }
     }
     $.ajax({
         url: '/batchLearning/insertDocMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param ,'docCategory': docCategory}),
+        data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);
@@ -1789,16 +1760,11 @@ function insertDocMapping(data, docCategory) {
 }
 
 // 컬럼 매핑 ml 데이터 insert
-function insertColMapping(data, mlData, docCategory) {
+function insertColMapping(data) {
     var param = [];
-    for (var i in mlData) {
-        for (var j in columnArr) {
-            if (mlData[i].column != 'UNKOWN' && mlData[i].column == columnArr[j].COLTYPE) {
-                var item = data[i];
-                item.colNum = columnArr[j].COLNUM;
-                param.push(item);
-                break;
-            }
+    for (var i in data.data) {
+        if (data.data[i].column != 999) {
+            param.push(data.data[i]);
         }
     }
 
@@ -1806,7 +1772,7 @@ function insertColMapping(data, mlData, docCategory) {
         url: '/batchLearning/insertColMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': docCategory }),
+        data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);

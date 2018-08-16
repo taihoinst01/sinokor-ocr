@@ -643,23 +643,6 @@ router.post('/execBatchLearningData', function (req, res) {
 
 });
 
-router.post('/selectOcrSymSpell', function (req, res) {
-    var data = req.body.data;
-    var querycount = 0;
-    console.log(data);
-    console.log('시작');
-    for (var i in data) {
-        commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectExportSentenceSid, [data[i].text], function (rows, i, req, res) {
-            console.log(querycount);
-            querycount++;
-            data[i].typoData = rows[0].WORD;
-            if (querycount == data.length) {
-                res.send({ code: 200, 'data': data });
-            }
-        }, i, req, res);
-    }
-});
-
 var callbackSelDbColumns = function (rows, req, res) {
     res.send({ code : 200, data: rows });
 };
@@ -670,17 +653,25 @@ router.post('/selectColMappingCls', function (req, res) {
 
 router.post('/insertDocLabelMapping', function (req, res) {
     var data = req.body.data;
-    var insertCount = 0;
+    var params = [];
 
-    for (var i in data) {
-        var item = data[i].x + ',' + data[i].y + ',' + data[i].word;
-        commonDB.queryNoRows(queryConfig.mlConfig.insertDocLabelMapping, [item, data[i].label], function () {
-            insertCount++;
-            if (insertCount == data.length) {
-                res.send({ code: 200, message: 'form label mapping insert' });
-            }
-        });
+    for (var i in data.data) {
+        var classData = 0;
+        if (data.data[i].column == 0 || data.data[i].column == 1) {            
+            classData = String(Number(data.data[i].column) + 1);
+        } else {
+            classData = String(3);
+        }
+        params.push([data.data[i].sid, classData]);
     }
+
+    var options = {
+        autoCommit: true
+    };
+    commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertDocLabelMapping, params, options, function (rowsAffected, req, res) {
+        res.send({ code: 200, message: 'form label mapping insert' });
+    }, req, res);
+
     
 });
 
@@ -693,8 +684,7 @@ router.post('/insertDocMapping', function (req, res) {
 
     var item = '';
     for (var i in data) {
-        item += data[i].x + ',' + data[i].y + ',' + data[i].word;;
-        item += (i == data.length - 1) ? '' : ',';
+        item += (item == '')? data[i].sid : ',' + data[i].sid;
     }
 
     commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertDocMapping, req, res);
@@ -704,19 +694,22 @@ router.post('/insertColMapping', function (req, res) {
     var data = req.body.data;
     var docCategory = req.body.docCategory;
     var colMappingCount = 0;
+    var params = [];
 
     for (var i in data) {
-        if (data[i].column != 'UNKOWN') {
+        if (data[i].column != 999) {
             var item = '';
-            item += docCategory.DOCTYPE + ',' + data[i].x + ',' + data[i].y + ',' + data[i].word;
-            commonDB.reqQueryParam(queryConfig.mlConfig.insertColMapping, [item, data[i].colNum], function (rows, req, res) {
-                colMappingCount++;
-                if (colMappingCount == data.length) {
-                    res.send({ code: 200, message: 'column mapping insert' });
-                }
-            }, req, res);
+            item += docCategory.DOCTYPE + ',' + data[i].sid;
+            params.push([item, data[i].column]);
         }
     }
+
+    var options = {
+        autoCommit: true
+    };
+    commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertColMapping, params, options, function (rowsAffected, req, res) {
+        res.send({ code: 200, message: 'column mapping insert' });
+    }, req, res);
 });
 
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
