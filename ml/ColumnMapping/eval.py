@@ -70,8 +70,6 @@ classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns,
 accuracy_score = classifier.evaluate(x=testNpData,
                                      y=testNpTarget)["accuracy"]
 
-print('정확도: {0:f}'.format(accuracy_score))
-
 new_samples = np.array(
     userData, dtype=float)
 y = list(classifier.predict(new_samples, as_iterable=True))
