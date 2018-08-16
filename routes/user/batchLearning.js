@@ -1769,4 +1769,24 @@ function callbackInsLabelMap(rows, data) {
 
 //---------------------------- // train test 영역 --------------------------------------------//
 
+
+// 신규문서 양식 등록
+var callbackInsertDocCategory = function (rows, req, res) {
+    res.send({ code: 200, message: 'document Category insert success' });
+};
+var callbackSelectMaxDocType = function (rows, req, res) {
+    var docName = req.body.docName;
+    var sampleImagePath = req.body.sampleImagePath;
+    var docType = rows[0].DOCTYPE;
+    if (docType == 998) { // unk 가 999이므로 피하기 위함
+        docType++;
+    }
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertDocCategory, [docName, (docType + 1), sampleImagePath], callbackInsertDocCategory, req, res);
+};
+router.post('/insertDocCategory', function (req, res) {
+
+    commonDB.reqQuery(queryConfig.batchLearningConfig.selectMaxDocType, callbackSelectMaxDocType, req, res);
+});
+// end 신규문서 양식 등록 
+
 module.exports = router;

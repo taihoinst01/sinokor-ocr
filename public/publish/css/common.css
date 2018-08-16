@@ -5052,7 +5052,7 @@ button[disabled] {
 }
 .button_control11 {
     top: 410px !important;
-    left: 623px !important;
+    left: 624px !important;
     z-index: 500;
     opacity: 0.8 !important;
     position: absolute;
@@ -5358,7 +5358,7 @@ button[disabled] {
     /*
          *  화면에 보여야 할 Table의 가로크기를 잡아줍니다.
          */
-    width: 1655px !important;
+    width: 1672px !important;
     table-layout: fixed;
 }
 
@@ -5379,7 +5379,7 @@ button[disabled] {
          *  이렇게 하는 이유는 데이터를 보여주는 테이블은 세로 스크롤의 가로두께만큼 더 이동하기 때문입니다.
          */
     table-layout: fixed;
-    width: 6000px !important;
+    width: 6017px !important;
     height: 30px;
     border-collapse: collapse;
 }
@@ -5390,7 +5390,7 @@ button[disabled] {
          *  height는 테이블의 데이터가 나올 기본 크기를 잡아줍니다.
          *  세로길이를 잡아주지 않으면 overflow-y가 걸리지 않습니다.
          */
-    width: 1672px !important;
+    width: 100% !important;
     height: 630px !important;
     overflow-x: scroll;
     overflow-y: scroll;
@@ -5652,4 +5652,13 @@ input:disabled {
 
 .userInfoPop .title {
     font-weight: bold;
+}
+
+.batch_pop2 select{
+    width:100%;
+}
+
+.doc_popup {
+    width: 1200px !important;
+    height: 720px !important;
 }
