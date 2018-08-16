@@ -16,7 +16,21 @@ var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, �
 
 $(function () {
     _init();
+});
 
+/****************************************************************************************
+ * INIT
+ ****************************************************************************************/
+var _init = function () {
+    fn_scrollbarEvent();
+    fn_buttonEvent();
+    fn_uploadFileEvent();
+};
+
+/****************************************************************************************
+ * SCROLLBAR EVENT
+ ****************************************************************************************/
+var fn_scrollbarEvent = function () {
     $("#mCSB_1_dragger_horizontal").mCustomScrollbar({
         callbacks: {
             whileScrolling: function () {
@@ -24,17 +38,16 @@ $(function () {
             }
         }
     });
-
-    
-});
-
-/****************************************************************************************
- * INIT
- ****************************************************************************************/
-var _init = function () {
-    fn_uploadFileEvent();
 };
 
+/****************************************************************************************
+ * BUTTON EVENT
+ ****************************************************************************************/
+var fn_buttonEvent = function () {
+    $("#btn_search").on("click", function () {
+        fn_search();
+    });
+};
 
 /****************************************************************************************
  * FILE UPLOAD EVENT
@@ -91,6 +104,70 @@ var fn_uploadFileEvent = function () {
 };
 
 /****************************************************************************************
+ * Function
+ ****************************************************************************************/
+var fn_search = function () {
+    var param = {
+        docNum: nvl($("#docNum").val()),
+        documentManager: nvl($("#documentManager").val())
+    };
+
+    $.ajax({
+        url: '/invoiceRegistration/searchDocumentList',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            addProgressBar(1, 99);
+        },
+        success: function (data) {
+            var appendHtml = "";
+            console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
+            if (data.length > 0) {
+                $.each(data, function (index, entry) {
+                    appendHtml += `<tr id="tr_base_${entry['SEQNUM']}-${entry['DOCNUM']}-${entry['APPROVALSTATE']}">
+                            <td><input type="checkbox" id="base_chk_${entry["DOCNUM"]}" name="base_chk" /></td>
+                            <td name="td_base">${entry["DOCNUM"]}</td>
+                            <td name="td_base">${nvl2(entry["PAGECNT"], 0)}</td>
+                            <td>${nvl(entry["DOCUMENTMANAGER"])}</td>
+                            <td>${nvl(entry["FAOTEAM"])}</td>
+                            <td>${nvl(entry["FAOPART"])}</td>
+                            <td>${nvl(entry["APPROVALREPORTER"])}</td>
+                        </tr>`;
+                });
+            } else {
+                appendHtml += `<tr><td colspan="7">조회된 데이터가 없습니다.</td></tr>`;
+            }
+            $("#tbody_baseList").empty().append(appendHtml);
+            endProgressBar();
+        },
+        error: function (err) {
+            endProgressBar();
+            console.log(err);
+        }
+    });
+};
+
+// 클릭 이벤트 (DOCUMENT)
+var fn_clickEvent = function () {
+    // Document 클릭 시 상세 조회
+    $("td[name='td_base']").on("click", function () {
+        var id = $(this).parent().attr("id");
+        var numArr = id.replace("tr_base_", "");
+        var seqNum = numArr.split("-")[0];
+        var docNum = numArr.split("-")[1];
+        fn_search_dtl(seqNum, docNum); // document_dtl 조회
+    });
+    // Document DTL 클릭 시 이미지 조회
+    $("tr[name='tr_dtl']").on("click", function () {
+        var id = $(this).attr("id");
+        var imgId = id.replace("tr_dtl_", "");
+        fn_search_image(imgId); // image 조회
+    });
+};
+
+/****************************************************************************************
  * ML
  ****************************************************************************************/
 // 문서 기본 정보 append
@@ -107,8 +184,6 @@ var fn_processBaseImage = function(fileInfo) {
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
-                    <td><input type="text" id="base_memo_${item.imgId}" name="base_memo" value="" /></td>
                 </tr>`;
     }
     $("#tbody_baseInfo").empty().append(html);

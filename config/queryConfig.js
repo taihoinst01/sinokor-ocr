@@ -80,6 +80,14 @@ var dbcolumnsConfig = {
             tbl_column_mapping_cls `
 };
 
+var invoiceRegistrationConfig = {
+    selectDocumentList:
+        `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO,
+                DECODE(APPROVALSTATE, 'P', 'P', 'C', 'C', 'R', 'R', 'U', 'U', '') AS APPROVALSTATE_STR
+            FROM TBL_DOCUMENT
+           WHERE 1=1 `
+}
+
 var myApprovalConfig = {
     selectApprovalList:
         `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO,
@@ -469,6 +477,7 @@ module.exports = {
     userMngConfig: userMngConfig,
     dbcolumnsConfig: dbcolumnsConfig,
     documentConfig: documentConfig,
+    invoiceRegistrationConfig: invoiceRegistrationConfig,
     myApprovalConfig: myApprovalConfig,
     batchLearningConfig: batchLearningConfig,
     uiLearningConfig: uiLearningConfig,
