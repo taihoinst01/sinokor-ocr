@@ -453,6 +453,14 @@ router.get('/test', function (req, res) {
                 arg = formResult;
                 //console.log(arg);
                 aimain.columnMapping(arg, function (columnResult) {
+                    for (var i in columnResult) {
+                        for (var j in arg.data) {
+                            if (columnResult[i].split('||')[0] == arg.data[j].sid) {
+                                arg.data[j].column = Number(columnResult[i].split('||')[1].replace(/\r\n/g, ''));
+                                break;
+                            }
+                        }
+                    }
                     console.log('execute columnMapping ML');
                     //console.log(arg);
 
@@ -515,6 +523,14 @@ router.post('/execBatchLearningData', function (req, res) {
                 arg = formResult;
                 //console.log(arg);
                 aimain.columnMapping(arg, function (columnResult) {
+                    for (var i in columnResult) {
+                        for (var j in arg.data) {
+                            if (columnResult[i].split('||')[0] == arg.data[j].sid) {
+                                arg.data[j].column = Number(columnResult[i].split('||')[1].replace(/\r\n/g, ''));
+                                break;
+                            }
+                        }
+                    }
                     console.log('execute columnMapping ML');
                     //console.log(arg);
 
