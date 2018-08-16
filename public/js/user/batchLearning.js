@@ -127,6 +127,11 @@ var buttonEvent = function () {
     $("#btn_pop_ui_close").on("click", function () {
         popupEvent.closePopup();
     });
+
+    // UI train 실행
+    $('#uiTrainBtn').on("click", function () {
+        uiTrainingBtn();
+    });
     
 
 
@@ -1719,6 +1724,23 @@ var docLabelMapping = function (data) {
     
 }
 
+// UI레이어 학습 버튼 클릭 이벤트
+var uiTrainingBtn = function () {
+    $.ajax({
+        url: '/batchLearning/uitraining',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': data }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            alert('학습 완료');
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
 // 양식 레이블 매핑 ml 데이터 insert
 function insertDocLabelMapping(data) {
     $.ajax({
@@ -1967,6 +1989,7 @@ function _init() {
     popUpRunEvent();            // 문서 양식 조회 기존 양식 확인
     popUpInsertDocCategory();   // 문서 양식 조회 신규 등록 확인
     selectLearningMethod();     //학습실행팝업
+
 }
 
 

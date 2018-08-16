@@ -643,6 +643,10 @@ router.post('/execBatchLearningData', function (req, res) {
 
 });
 
+router.post('/uitraining', function (req, res) {
+    
+});
+
 var callbackSelDbColumns = function (rows, req, res) {
     res.send({ code : 200, data: rows });
 };
