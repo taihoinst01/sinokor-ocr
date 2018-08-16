@@ -11,6 +11,7 @@ const defaults = {
     encoding: 'utf8',
 };
 
+// [step1] typo sentence ML
 exports.typoSentenceEval = function (data, callback) {
     /*
     setTimeout(function () {
@@ -108,14 +109,38 @@ function runSymspellSID(data) {
     });
 }
 
+// [step2] form label mapping ML
 exports.formLabelMapping = function (data, callback) {
-    var args = dataToLocationArgs(data);
+    var args = dataToSidArgs(data);
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\FormLabelMapping\\eval.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
-        console.log(stdout);
+        if (err) console.error(err);
+        callback(stdout);
     });
 
+}
+
+// [step3] form mapping ML
+exports.formMapping = function (data, callback) {
+    var args = '';
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+        if (err) console.error(err);
+        callback(stdout);
+    });
+}
+
+// [step4] column mapping ML
+exports.columnMapping = function (data, callback) {
+    var args = '';
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\ColumnMapping\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+        if (err) console.error(err);
+        callback(stdout);
+    });
 }
 
 // extraction OgCompanyName And ContractName
@@ -181,6 +206,16 @@ function dataToAllLocationArgs(data) {
     }
 
     args += '"';
+
+    return args;
+}
+
+function dataToSidArgs(data) {
+    var args = '';
+
+    for (var i in data) {
+        args += '"' + data[i].sid + '"' + ' ';
+    }
 
     return args;
 }
