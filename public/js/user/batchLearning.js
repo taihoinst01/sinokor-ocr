@@ -503,10 +503,12 @@ function execBatchLearning() {
 
 // UI레이어 작업 함수
 function popUpLayer2(ocrData) {
+    console.log(modifyData);
     fn_initUiTraining(); // 팝업 초기화
     layer_open('layer2'); // ui 학습레이어 띄우기
     $("#layer2.poplayer").css("display", "block");
-    $('#docName').text(modifyData.docCategory.DOCNAME);
+    $('#docName').text(modifyData.docCategory[0].DOCNAME);
+    $('#docPredictionScore').text(modifyData.docCategory[0].SCORE);
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
 
 
@@ -557,7 +559,7 @@ function appendOptionHtml(targetColumn, columns) {
     var selectHTML = '<select>';
     for (var i in columns) {
         var optionHTML = '';
-        if (targetColumn == columns[i].COLTYPE) {
+        if (targetColumn == columns[i].COLNUM) {
             optionHTML = '<option value="' + columns[i].COLTYPE + '" selected>' + columns[i].COLNAME + '</option>';
         } else {
             optionHTML = '<option value="' + columns[i].COLTYPE + '">' + columns[i].COLNAME + '</option>';
