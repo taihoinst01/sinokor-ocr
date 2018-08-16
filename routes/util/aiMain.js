@@ -63,7 +63,7 @@ async function getSymspellSID(data, callbackTypoDomainTrain) {
     let res;
     try {
         res = await runSymspellSID(data);
-        console.log(res);
+        //console.log(res);
         callbackTypoDomainTrain(res);
     } catch (err) {
         console.error(err);
@@ -77,7 +77,7 @@ function runSymspellSID(data) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            console.log(data);
+            //console.log(data);
 
             for (var i in data) {
                 var sid = "";
@@ -104,6 +104,59 @@ function runSymspellSID(data) {
                     console.error(e);
                 }
             }
+        }
+    });
+}
+
+exports.formMapping = function (data, callback) {
+
+    data = [
+        {
+            location: '574,847,492,32',
+            text: ': Solidarity- First Insurance 2018',
+            sid: '574,847,0,0,14535,14813,0',
+            formLabelMapping: '1'
+        },
+        {
+            location: '574,907,636,26',
+            text: ': fire qs eq 2018 wop hos bk uni htel',
+            originText: ': fire qs eq 2018 w hos bk uni htel',
+            sid: '574,907,0,15378,97294,97297,0',
+            formLabelMapping: '2'
+        },
+        {
+            location: '629,1173,171,25',
+            text: 'JOD 1.00',
+            sid: '629,1173,97300,0,0,0,0',
+            formLabelMapping: '3'
+        },
+        {
+            location: '639,1299,58,25',
+            text: '9.01',
+            sid: '639,1299,1,1,1,1,1',
+            formLabelMapping: '3'
+        }
+    ];
+
+    var args = dataToForm(data);
+
+    var exeformMapping = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
+    exec(exeformMapping, defaults, function (err, stdout, stderr) {
+        if (err) {
+            logger.error.info(`formMapping ml model exec error: ${stderr}`);
+            return;
+        }
+
+        var retSplit = stdout.split("||");
+        if (retSplit[1] != null) {
+            var param = retSplit[1].trim();
+            commonDB.queryParam("select docname, doctype, sampleimagepath from tbl_document_category where doctype = to_number(:doctype)", [param], function (ret, retData) {
+                obj = {};
+                obj.data = retData;
+                obj.docCategory = ret;
+
+                callback(obj);
+            }, data)
         }
     });
 }
@@ -181,6 +234,28 @@ function dataToAllLocationArgs(data) {
     }
 
     args += '"';
+
+    return args;
+}
+
+function dataToForm(data) {
+    var args = '"';
+    var ctog = '';
+    var ctnm = '';
+
+    for (var i in data) {
+        if (data[i].formLabelMapping == '1') {
+            ctog = data[i].sid;
+        }
+    }
+
+    for (var i in data) {
+        if (data[i].formLabelMapping == '2') {
+            ctnm = data[i].sid; 
+        }
+    }
+
+    args = '"' + ctog + ',' + ctnm + '"';
 
     return args;
 }

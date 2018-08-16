@@ -452,16 +452,10 @@ router.post('/execBatchLearningData', function (req, res) {
     */
 
     aimain.typoSentenceEval(arg, function (result1) {
-
-        console.log(result1);
-
-        aimain.formLabelMapping(result1, function (result1) {
-            console.log('test');
-
-            res.send('');
+        aimain.formMapping(result1, function (result2) {
+            console.log(result2);
+            res.send(result2);
         });
-
-        
     });
 
 
