@@ -1829,7 +1829,7 @@ function docComparePopup(imgIndex, obj) {
 //문서 비교 popup 버튼 클릭 이벤트
 function docComparePopup2() {
     var imgId = $('#docName').html();
-    $('#originImg').attr('src', '../../' + modifyData.docCategory.SAMPLEIMAGEPATH);//todo
+    $('#originImg').attr('src', '../../' + modifyData.docCategory[0].SAMPLEIMAGEPATH);//todo
     $('#mlPredictionDocName').val($('#docName').html());
     //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
     layer_open('layer4');

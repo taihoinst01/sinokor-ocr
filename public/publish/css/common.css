@@ -5637,7 +5637,6 @@ button[disabled] {
 .batch_pop2 .box_content_L .imgName {
     background: #fff;
     text-align: center;
-    height: 5%;
     padding: 10px;
     font-size: 14px;
     margin-top: 10px;
@@ -5770,3 +5769,6 @@ input:disabled {
     height: 720px !important;
 }
 
+.batch_pop2 .imgtmb_b {
+    height: 596px !important;
+}
