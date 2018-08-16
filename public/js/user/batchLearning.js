@@ -1730,10 +1730,12 @@ var uiTrainingBtn = function () {
         url: '/batchLearning/uitraining',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': data }),
+        data: null,
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            alert('학습 완료');
+            if (data.code == 200) {
+                alert(data.message);
+            }
         },
         error: function (err) {
             console.log(err);

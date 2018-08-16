@@ -644,7 +644,34 @@ router.post('/execBatchLearningData', function (req, res) {
 });
 
 router.post('/uitraining', function (req, res) {
-    
+
+    var exeLabelString = 'python ' + appRoot + '\\ml\\FormLabelMapping\\train.py'
+    exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
+        if (err1) {
+            console.error(err1);
+            res.send({ code:500, message: 'Form Label Mapping training error' });
+        } else {
+            exeLabelString = 'python ' + appRoot + '\\ml\\FormMapping\\train.py'
+            exec(exeLabelString, defaults, function (err2, stdout2, stderr2) {
+                if (err2) {
+                    console.error(err2);
+                    res.send({ code: 500, message: 'Form  Mapping training error' });
+                } else {
+                    exeLabelString = 'python ' + appRoot + '\\ml\\ColumnMapping\\train.py'
+                    exec(exeLabelString, defaults, function (err3, stdout3, stderr3) {
+                        if (err3) {
+                            console.error(err3);
+                            res.send({ code: 500, message: 'Column Mapping training error' });
+                        } else {
+                            res.send({ code: 200, message: 'training OK' });
+                        }
+                    });
+                }
+            });
+        }
+        
+    });
+
 });
 
 var callbackSelDbColumns = function (rows, req, res) {
@@ -1066,6 +1093,7 @@ router.post('/syncFile', function (req, res) {
     });
 });
 
+//hyj
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
     //console.log(dataObj);
