@@ -1095,7 +1095,7 @@ router.post('/syncFile', function (req, res) {
 
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-    console.log(dataObj);
+
     var query = queryConfig.batchLearningConfig.selectContractMapping;
     var param;
 
