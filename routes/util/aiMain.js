@@ -64,7 +64,7 @@ async function getSymspellSID(data, callbackTypoDomainTrain) {
     let res;
     try {
         res = await runSymspellSID(data);
-        console.log(res);
+        //console.log(res);
         callbackTypoDomainTrain(res);
     } catch (err) {
         console.error(err);
@@ -78,7 +78,7 @@ function runSymspellSID(data) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            console.log(data);
+            //console.log(data);
 
             for (var i in data) {
                 var sid = "";
@@ -111,7 +111,7 @@ function runSymspellSID(data) {
 
 // [step2] form label mapping ML
 exports.formLabelMapping = function (data, callback) {
-    var args = dataToSidArgs(data);
+    var args = dataToSidArgs(data, false);
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\FormLabelMapping\\eval.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
@@ -123,18 +123,36 @@ exports.formLabelMapping = function (data, callback) {
 
 // [step3] form mapping ML
 exports.formMapping = function (data, callback) {
-    var args = '';
+    var args = dataToSidArgs(data, true);
 
-    var exeTypoString = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
-    exec(exeTypoString, defaults, function (err, stdout, stderr) {
-        if (err) console.error(err);
-        callback(stdout);
+    var exeformMapping = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
+    exec(exeformMapping, defaults, function (err, stdout, stderr) {
+        if (err) {
+            logger.error.info(`formMapping ml model exec error: ${stderr}`);
+            return;
+        }
+
+        var retSplit = stdout.split("^");
+        var formSplit = retSplit[0].split("||");
+        var scoreSplit = retSplit[1].split("||");
+
+        if (formSplit[1] != null) {
+            var param = formSplit[1].trim();
+            commonDB.queryParam("select docname, doctype, sampleimagepath from tbl_document_category where doctype = to_number(:doctype)", [param], function (ret, retData) {
+                obj = {};
+                obj.data = retData;
+                obj.docCategory = ret;
+                obj.score = scoreSplit[1] * 100;
+
+                callback(obj);
+            }, data)
+        }
     });
 }
 
 // [step4] column mapping ML
 exports.columnMapping = function (data, callback) {
-    var args = '';
+    var args = dataToformSidArgs(data);
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\ColumnMapping\\eval.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
@@ -142,35 +160,6 @@ exports.columnMapping = function (data, callback) {
         callback(stdout);
     });
 }
-
-// extraction OgCompanyName And ContractName
-exports.extractionOgAndCtnmEval = function (data, callback) {
-    var ctOgCompanyName = '';
-    var contractNames = []; // contractName Array
-    var exeQueryCount = 0; // query execute count 
-    var result = {}; // function output
-    for (var i in data) {
-        if (data[i].column == 'CTOGCOMPANYNAMENM') {
-            ctOgCompanyName = data[i].text;
-        } else if (data[i].column == 'CTNM') {
-            contractNames.push(data[i].text);
-        } else {
-        }
-    }
-
-    for (var i in contractNames) {
-        commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
-            exeQueryCount++;
-            if (rows.length > 0) {
-                result.data = data
-                result.extOgAndCtnm = rows;
-            }
-            if (exeQueryCount == contractNames.length) {
-                callback(result);
-            }
-        });
-    }
-};
 
 function dataToArgs(data) {
 
@@ -210,15 +199,58 @@ function dataToAllLocationArgs(data) {
     return args;
 }
 
-function dataToSidArgs(data) {
+function dataToSidArgs(data, isFormMapping) {
     var args = '';
 
     for (var i in data) {
-        args += '"' + data[i].sid + '"' + ' ';
+        if (isFormMapping) {
+            if (data[i].formLabel == 1) {
+                args += '"' + data[i].sid;
+            } else if (data[i].formLabel == 2) {
+                args += ',' + data[i].sid + '"' + ' ';
+            }           
+            continue;
+        } else {
+            args += '"' + data[i].sid + '"' + ' ';
+        }
     }
 
     return args;
 }
+
+function dataToformSidArgs(data) {
+    var args = '';
+
+    for (var i in data.data) {
+        args += '"' + data.docCategory[0].DOCTYPE + ',' + data.data[i].sid + '"' + ' ';
+    }
+
+    return args;
+}
+
+/*
+function dataToForm(data) {
+    var args = '"';
+    var ctog = '';
+    var ctnm = '';
+
+    for (var i in data) {
+        if (data[i].formLabelMapping == '1') {
+            ctog = data[i].sid;
+        }
+    }
+
+    for (var i in data) {
+        if (data[i].formLabelMapping == '2') {
+            ctnm = data[i].sid;
+        }
+    }
+
+    args = '"' + ctog + ',' + ctnm + '"';
+
+    return args;
+}
+*/
 
 exports.domainDictionaryEval = function (data, callback) {
     var args = dataToArgs(data);

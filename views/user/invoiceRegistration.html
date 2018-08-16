@@ -101,12 +101,12 @@
                     <!-- 문서 기본정보 영역 -->
                     <div id="div_base" class="box_content_T_03 invocieR_div03">
                         <h3 class="tits titsK00"><span id="">문서 기본정보</span></h3>
-                        <table id="tblBackground" cellspacing="0">
+                        <table class="invoiceR_tblBackground" cellspacing="0">
                             <tr>
                                 <td>
                                     <div class="table_style02">                                     
-                                        <div id="divHeadScroll">
-                                            <table id="tblHead" border="0">
+                                        <div class="invoiceR_divHeadScroll">
+                                            <table class="invoiceR_tblHead" border="0">
                                                 <caption>결재리스트(기본) 타이틀 정보</caption>
                                                 <colgroup>
                                                     <col style="width:50px" />
@@ -118,8 +118,7 @@
                                                     <col style="width:130px" />
                                                     <col style="width:100px" />
                                                     <col style="width:130px" />
-                                                    <col style="width:7px" />
-
+                                                    <col style="width:17px" />
                                                 </colgroup>
                                                 <thead>
                                                     <tr>
@@ -132,13 +131,13 @@
                                                         <th scope="row">계약담당자</th>
                                                         <th scope="row">마감년월</th>
                                                         <th scope="row">MEMO</th>
-                                                        <th scope="row"></th>
+                                                        <th></th>
                                                     </tr>
                                                 </thead>
                                             </table>
                                         </div>
-                                        <div id="divBodyScroll">
-                                            <table id="tblBody" border="0">
+                                        <div class="invoiceR_divBodyScroll divBodyScroll">
+                                            <table class="invoiceR_tblBody" border="0">
                                                 <colgroup>
                                                     <col style="width:50px" />
                                                     <col style="width:180px;" />
@@ -157,7 +156,7 @@
                                                         <td>ICR2018071000000123</td>
                                                         <td>27</td>
                                                         <td>201807</td>
-                                                        <td>
+                                                        <td class="selectTd">
                                                             <div class="select_style select_style_K">
                                                                 <input type="hidden" id="select_onesTeam" class="liSelectValue" value="" />
                                                                 <span class="ctrl"><span class="arrow"></span></span>
@@ -170,7 +169,7 @@
                                                                 </ul>
                                                             </div>
                                                         </td>
-                                                        <td>
+                                                        <td class="selectTd">
                                                             <div class="select_style select_style_K">
                                                                 <input type="hidden" id="select_onesTeam" class="liSelectValue" value="" />
                                                                 <span class="ctrl"><span class="arrow"></span></span>
@@ -183,7 +182,7 @@
                                                                 </ul>
                                                             </div>
                                                         </td>
-                                                        <td>
+                                                        <td class="selectTd">
                                                             <div class="select_style select_style_K">
                                                                 <input type="hidden" id="select_onesTeam" class="liSelectValue" value="" />
                                                                 <span class="ctrl"><span class="arrow"></span></span>
@@ -249,296 +248,214 @@
                 <!-- 인식결과 영역 -->
                 <div id="div_base" class="box_content_T_05">
                     <h3 class="tits titsK00"><span id="span_document">인식 결과</span></h3>
-                    <div class="table_style02">
-                        <div class="mCustomScrollbar box_scroll_st3" data-mcs-axis="yx" data-mcs-theme="dark-3">
-                            <table>
-                                <caption>인식 결과</caption>
-                                <colgroup>
-                                    <col style="width:50px" />
-                                    <col style="width:140px" />
-                                    <col style="width:60px" />
-                                    <col style="width:80px" />
-                                    <col style="width:90px" />
-                                    <col style="width:90px" />
-                                    <col style="width:123px" />
-                                    <col style="width:123px" />
-                                    <col style="width:50px" />
-                                    <col style="width:140px" />
-                                    <col style="width:60px" />
-                                    <col style="width:80px" />
-                                    <col style="width:90px" />
-                                    <col style="width:90px" />
-                                    <col style="width:123px" />
-                                    <col style="width:123px" />
-                                    <col style="width:50px" />
-                                    <col style="width:140px" />
-                                    <col style="width:60px" />
-                                    <col style="width:80px" />
-                                    <col style="width:90px" />
-                                    <col style="width:90px" />
-                                    <col style="width:123px" />
-                                    <col style="width:123px" />
-                                    <col style="width:50px" />
-                                    <col style="width:140px" />
-                                    <col style="width:60px" />
-                                    <col style="width:80px" />
-                                    <col style="width:90px" />
-                                    <col style="width:90px" />
-                                    <col style="width:123px" />
-                                    <col style="width:123px" />
-                                    <col style="width:50px" />
-                                    <col style="width:140px" />
-                                    <col style="width:60px" />
-                                    <col style="width:80px" />
-                                    <col style="width:90px" />
-                                    <col style="width:90px" />
-                                    <col style="width:123px" />
-                                    <col style="width:123px" />
-                                    <col style="width:90px" />
-                                    <col style="width:90px" />
-                                    <col style="width:123px" />
-                                    <col style="width:123px" />
-                                    <col style="width:17px" />
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll" name="listCheckAll" /></div></th>
-                                        <th scope="row">페이지번호 from</th>
-                                        <th scope="row">페이지번호 to</th>
-                                        <th scope="row">출재사명</th>
-                                        <th scope="row">계약명</th>
-                                        <th scope="row">UY</th>
-                                        <th scope="row">계약번호</th>
-                                        <th scope="row">화폐코드</th>
-                                        <th scope="row">PAID<br />(100%)</th>
-                                        <th scope="row">PAID<br />(Our Share)</th>
-                                        <th scope="row">OSL<br />(100%)</th>
-                                        <th scope="row">OSL<br />(Our Share)</th>
-                                        <th scope="row">GROSS PREMIUM</th>
-                                        <th scope="row">PREMIUM</th>
-                                        <th scope="row">PREMIUM P/F ENT</th>
-                                        <th scope="row">v</th>
-                                        <th scope="row">XOL PREMIUM</th>
-                                        <th scope="row">RETURN PREMIUM</th>
-                                        <th scope="row">GROSS COMMISSION</th>
-                                        <th scope="row">COMMISSION</th>
-                                        <th scope="row">PROFIT COMMISSION</th>
-                                        <th scope="row">BROKERAGE</th>
-                                        <th scope="row">TAX</th>
-                                        <th scope="row">OVERRIDING COM</th>
-                                        <th scope="row">CHARGE</th>
-                                        <th scope="row">PREMUIM RESERVE RTD</th>
-                                        <th scope="row">P/F PREMIUM RESERVE RTD</th>
-                                        <th scope="row">PREMIUM RESERVE RLD</th>
-                                        <th scope="row">P/F PREMIUM RESERVE RLD</th>
-                                        <th scope="row">CLAIM</th>
-                                        <th scope="row">LOSS RECOVERY</th>
-                                        <th scope="row">CASH LOSS</th>
-                                        <th scope="row">CASH LOSS REFUND</th>
-                                        <th scope="row">LOSS RESERVE RTD</th>
-                                        <th scope="row">LOSS RESERVE RLD</th>
-                                        <th scope="row">LOSS P/F ENT</th>
-                                        <th scope="row">LOSS P/F WOA</th>
-                                        <th scope="row">INTEREST</th>
-                                        <th scope="row">TAX ON INTEREST</th>
-                                        <th scope="row">MISCELLANEOUS</th>
-                                        <th scope="row">PREMIUM BALANCE</th>
-                                        <th scope="row">CLAIM BALANCE</th>
-                                        <th scope="row">NET BALANCE</th>
-                                        <th scope="row">Your Refernece</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tbody_dtlInfo">
-                                    <!--
-                                    <tr>
-                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>ICR2018071000000123</td>
-                                        <td>27</td>
-                                        <td>201807</td>
-                                        <td>리키타츠너</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                        <td>이라르</td>
-                                    </tr>
-                                    -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <table class="invoiceR_tblBackground2">
+                        <tr>
+                            <td>
+                                <div class="table_style02">
+                                    <div class="invoiceR_divHeadScroll2">
+                                        <table class="ivoiceR_tblHead2" border="0">
+                                            <colgroup>
+                                                <col style="width:50px" />
+                                                <col style="width:140px" />
+                                                <col style="width:140px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:17px" />
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="listCheckAll" name="listCheckAll" /></div></th>
+                                                    <th scope="row">페이지번호 from</th>
+                                                    <th scope="row">페이지번호 to</th>
+                                                    <th scope="row">출재사명</th>
+                                                    <th scope="row">계약명</th>
+                                                    <th scope="row">UY</th>
+                                                    <th scope="row">계약번호</th>
+                                                    <th scope="row">화폐코드</th>
+                                                    <th scope="row">PAID<br />(100%)</th>
+                                                    <th scope="row">PAID<br />(Our Share)</th>
+                                                    <th scope="row">OSL<br />(100%)</th>
+                                                    <th scope="row">OSL<br />(Our Share)</th>
+                                                    <th scope="row">GROSS PREMIUM</th>
+                                                    <th scope="row">PREMIUM</th>
+                                                    <th scope="row">PREMIUM P/F ENT</th>
+                                                    <th scope="row">v</th>
+                                                    <th scope="row">XOL PREMIUM</th>
+                                                    <th scope="row">RETURN PREMIUM</th>
+                                                    <th scope="row">GROSS COMMISSION</th>
+                                                    <th scope="row">COMMISSION</th>
+                                                    <th scope="row">PROFIT COMMISSION</th>
+                                                    <th scope="row">BROKERAGE</th>
+                                                    <th scope="row">TAX</th>
+                                                    <th scope="row">OVERRIDING COM</th>
+                                                    <th scope="row">CHARGE</th>
+                                                    <th scope="row">PREMUIM RESERVE RTD</th>
+                                                    <th scope="row">P/F PREMIUM RESERVE RTD</th>
+                                                    <th scope="row">PREMIUM RESERVE RLD</th>
+                                                    <th scope="row">P/F PREMIUM RESERVE RLD</th>
+                                                    <th scope="row">CLAIM</th>
+                                                    <th scope="row">LOSS RECOVERY</th>
+                                                    <th scope="row">CASH LOSS</th>
+                                                    <th scope="row">CASH LOSS REFUND</th>
+                                                    <th scope="row">LOSS RESERVE RTD</th>
+                                                    <th scope="row">LOSS RESERVE RLD</th>
+                                                    <th scope="row">LOSS P/F ENT</th>
+                                                    <th scope="row">LOSS P/F WOA</th>
+                                                    <th scope="row">INTEREST</th>
+                                                    <th scope="row">TAX ON INTEREST</th>
+                                                    <th scope="row">MISCELLANEOUS</th>
+                                                    <th scope="row">PREMIUM BALANCE</th>
+                                                    <th scope="row">CLAIM BALANCE</th>
+                                                    <th scope="row">NET BALANCE</th>
+                                                    <th scope="row">Your Refernece</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                    <div class="invoiceR_divBodyScroll2 divBodyScroll">
+                                        <table class="invoiceR_tblBody2" border="0">
+                                            <colgroup>
+                                                <col style="width:50px" />
+                                                <col style="width:140px" />
+                                                <col style="width:140px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                                <col style="width:100px" />
+                                            </colgroup>
+                                            <tbody id="tbody_dtlInfo">
+                                                <!--
+                                                <tr>
+                                                    <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
+                                                    <td>ICR2018071000000123</td>
+                                                    <td>27</td>
+                                                    <td>201807</td>
+                                                    <td>리키타츠너</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>ICR2018071000000123</td>
+                                                    <td>27</td>
+                                                    <td>201807</td>
+                                                    <td>리키타츠너</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>ICR2018071000000123</td>
+                                                    <td>27</td>
+                                                    <td>201807</td>
+                                                    <td>리키타츠너</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>ICR2018071000000123</td>
+                                                    <td>27</td>
+                                                    <td>201807</td>
+                                                    <td>리키타츠너</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>ICR2018071000000123</td>
+                                                    <td>27</td>
+                                                    <td>201807</td>
+                                                    <td>리키타츠너</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                </tr>
+                                                -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
                     <!-- 버튼 영역 -->
                     <div class="fr mt10">
                         <button type="button" id="" class="button_st2 btnK01">전달/결재상신</button>

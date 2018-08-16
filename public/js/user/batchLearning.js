@@ -503,12 +503,27 @@ function execBatchLearning() {
 
 // UI레이어 작업 함수
 function popUpLayer2(ocrData) {
+    console.log(modifyData);
     fn_initUiTraining(); // 팝업 초기화
     layer_open('layer2'); // ui 학습레이어 띄우기
     $("#layer2.poplayer").css("display", "block");
-    $('#docName').text(modifyData.docCategory.DOCNAME);
+    $('#docName').text(modifyData.docCategory[0].DOCNAME);
+    $('#docPredictionScore').text(modifyData.score + '%');
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
-    $("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);   
+
+
+    var mainImgHtml = '';
+    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
+    mainImgHtml += '<div id="redNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    mainImgHtml += '<div id="imageZoom">';
+    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    $('#img_content').html(mainImgHtml);
+    $('#mainImage').css('background-image', 'url("../../uploads/' + ocrData.fileInfo[0].convertFileName + '")');
+
     $.ajax({
         url: '/batchLearning/selectColMappingCls',
         type: 'post',
@@ -519,7 +534,7 @@ function popUpLayer2(ocrData) {
             var tblTag = '';
             for (var i in modifyData.data) {
                 tblTag += '<dl>';
-                tblTag += '<dt onmouseover="" onmouseout="">';
+                tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
                 tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
                 tblTag += '<input type="text" value="' + modifyData.data[i].text + '" style="width:100%; border:0;" />';
                 tblTag += '<input type="hidden" value="' + modifyData.data[i].location + '" />';
@@ -544,7 +559,7 @@ function appendOptionHtml(targetColumn, columns) {
     var selectHTML = '<select>';
     for (var i in columns) {
         var optionHTML = '';
-        if (targetColumn == columns[i].COLTYPE) {
+        if (targetColumn == columns[i].COLNUM) {
             optionHTML = '<option value="' + columns[i].COLTYPE + '" selected>' + columns[i].COLNAME + '</option>';
         } else {
             optionHTML = '<option value="' + columns[i].COLTYPE + '">' + columns[i].COLNAME + '</option>';
@@ -1811,6 +1826,58 @@ function docComparePopup(imgIndex, obj) {
     layer_open('layer4');
 }
 
+//문서 비교 popup 버튼 클릭 이벤트
+function docComparePopup2() {
+    var imgId = $('#docName').html();
+    $('#originImg').attr('src', '../../' + modifyData.docCategory[0].SAMPLEIMAGEPATH);
+    $('#mlPredictionPercent').val($('#docPredictionScore').html());
+    $('#mlPredictionDocName').val($('#docName').html());
+    //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+    layer_open('layer4');
+}
+
+// 문서 양식 조회 이미지 좌우 버튼 이벤트
+function changeDocPopupImage() {
+    $('#docSearchResultImg_thumbPrev').click(function () {
+        $('#docSearchResultImg_thumbNext').attr('disabled', false);
+        if (docPopImagesCurrentCount == 1) {
+            return false;
+        } else {
+            docPopImagesCurrentCount--;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            if (docPopImagesCurrentCount == 1) {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+            }
+        }
+    })
+
+    $('#docSearchResultImg_thumbNext').click(function () {
+        var totalCount = $('#countLast').html();
+        $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+        if (docPopImagesCurrentCount == totalCount) {
+            return false;
+        } else {
+            docPopImagesCurrentCount++;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+
+            if (docPopImagesCurrentCount == totalCount) {
+                $('#docSearchResultImg_thumbNext').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbNext').attr('disabled', false);
+            }
+        }
+    })
+}
+
+
 function popUpEvent() {
     popUpSearchDocCategory();
     popUpInsertDocCategory();
@@ -1835,6 +1902,9 @@ function popUpSearchDocCategory() {
                     if (data.length == 0) {
                         $('#docSearchResultImg_thumbCount').hide();
                         $('#docSearchResultMask').hide();
+                        $('#searchResultDocName').html('');
+                        $('#orgDocName').val('');
+                        $('#searchResultDocName').val('');
                         return false;
                     } else {
                         /**
@@ -1862,43 +1932,13 @@ function popUpSearchDocCategory() {
     });
 }
 
-// 문서 양식 조회 이미지 좌우 버튼 이벤트
-function changeDocPopupImage() {
-    $('#docSearchResultImg_thumbPrev').click(function () {
-        $('#docSearchResultImg_thumbNext').attr('disabled', false);
-        if (docPopImagesCurrentCount == 1) {
-            return false;
-        } else {
-            docPopImagesCurrentCount--;
-            $('#countCurrent').html(docPopImagesCurrentCount);
-            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
-            if (docPopImagesCurrentCount == 1) {
-                $('#docSearchResultImg_thumbPrev').attr('disabled', true);
-            } else {
-                $('#docSearchResultImg_thumbPrev').attr('disabled', false);
-            }
-        }
-    })
+// 팝업 확인 이벤트
+function popUpRunEvent() {
+    $('#btn_pop_doc_run').click(function (e) {
 
-    $('#docSearchResultImg_thumbNext').click(function () {
-        var totalCount = $('#countLast').html();
-        $('#docSearchResultImg_thumbPrev').attr('disabled', false);
-        if (docPopImagesCurrentCount == totalCount) {
-            return false;
-        } else {
-            docPopImagesCurrentCount++;
-            $('#countCurrent').html(docPopImagesCurrentCount);
-            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
-
-            if (docPopImagesCurrentCount == totalCount) {
-                $('#docSearchResultImg_thumbNext').attr('disabled', true);
-            } else {
-                $('#docSearchResultImg_thumbNext').attr('disabled', false);
-            }
-        }
-    })
+        e.stopPropagation();
+        e.preventDefault();
+    });
 }
 
 //팝업 문서 양식 등록
@@ -1908,7 +1948,7 @@ function popUpInsertDocCategory() {
             var docName = $('#newDocName').val();
             var sampleImagePath = $('#originImg').attr('src').split('/')[2] + '/' + $('#originImg').attr('src').split('/')[3];
             $.ajax({
-                url: '/uiLearning/insertDocCategory',
+                url: '/batchLearning/insertDocCategory',
                 type: 'post',
                 datatype: 'json',
                 data: JSON.stringify({ 'docName': docName, 'sampleImagePath': sampleImagePath }),
@@ -1958,6 +1998,8 @@ function _init() {
     searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
     changeDocPopupImage();      // 문서 양식 조회 이미지 좌우 버튼 이벤트
     changeDocPopRadio();        // 문서 양식 조회 팝업 라디오 이벤트
+    popUpRunEvent();            // 문서 양식 조회 기존 양식 확인
+    popUpInsertDocCategory();   // 문서 양식 조회 신규 등록 확인
     selectLearningMethod();     //학습실행팝업
 }
 
@@ -2315,4 +2357,56 @@ function selectLearningMethod() {
     })
 }
 
+// 마우스 오버 이벤트
+function hoverSquare(e) {
+    // 해당 페이지로 이동
+    /* 몇 페이지 어디인지 표시
+    var fileName = $(e).find('input[type=hidden]').attr('alt');
+    $('.thumb-img').each(function (i, el) {
+        if ($(this).attr('src').split('/')[3] == fileName) {
+            $(this).click();
+        }
+    });
+    */
 
+    $('#mainImage').hide();
+    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).show();
+
+    // 사각형 좌표값
+    var location, x, y, textWidth, textHeight;
+    location = $(e).find('input[type=hidden]').val().split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+    //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
+
+    // 해당 텍스트 x y좌표 원본 이미지에서 찾기
+    $('#imageZoom').css('background-position', '-' + (x - 5) + 'px -' + (y - 205) + 'px');
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    //var reImg = new Image();
+    //var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    //imgPath = imgPath.split('")')[0];
+    //reImg.src = imgPath;
+    //var width = reImg.width;
+    //var height = reImg.height;
+
+    // 선택한 글씨에 빨간 네모 그리기
+    //$('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 10) + 'px');
+    //$('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 10) + 'px');
+    //$('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
+    //$('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
+    //$('#redNemo').show();
+    $('#redZoomNemo').css('width', textWidth + 10);
+    $('#redZoomNemo').css('height', textHeight + 10);
+    $('#redZoomNemo').show();
+}
+
+// 마우스 아웃 이벤트
+function moutSquare(e) {
+    //$('#redNemo').hide();
+    $('#redZoomNemo').hide();
+    $('#imageZoom').hide();
+    $('#mainImage').show();
+}
