@@ -87,4 +87,4 @@ for word in enumerate(sys.argv[1:]):
         retText += word[1] + "||" + str(y[word[0]]) + "^"
 
 retText = retText[:-1]
-print(retText)
+print(retText + "^score||" + str(accuracy_score))
