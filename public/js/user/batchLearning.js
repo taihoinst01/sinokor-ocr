@@ -508,7 +508,20 @@ function popUpLayer2(ocrData) {
     $("#layer2.poplayer").css("display", "block");
     $('#docName').text(modifyData.docCategory.DOCNAME);
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
-    $("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);   
+
+
+    var mainImgHtml = '';
+    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
+    mainImgHtml += '<div id="redNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    mainImgHtml += '<div id="imageZoom">';
+    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    $('#img_content').html(mainImgHtml);
+    $('#mainImage').css('background-image', 'url("../../uploads/' + ocrData.fileInfo[0].convertFileName + '")');
+
     $.ajax({
         url: '/batchLearning/selectColMappingCls',
         type: 'post',
@@ -519,7 +532,7 @@ function popUpLayer2(ocrData) {
             var tblTag = '';
             for (var i in modifyData.data) {
                 tblTag += '<dl>';
-                tblTag += '<dt onmouseover="" onmouseout="">';
+                tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
                 tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
                 tblTag += '<input type="text" value="' + modifyData.data[i].text + '" style="width:100%; border:0;" />';
                 tblTag += '<input type="hidden" value="' + modifyData.data[i].location + '" />';
@@ -2341,3 +2354,56 @@ function selectLearningMethod() {
     })
 }
 
+// 마우스 오버 이벤트
+function hoverSquare(e) {
+    // 해당 페이지로 이동
+    /* 몇 페이지 어디인지 표시
+    var fileName = $(e).find('input[type=hidden]').attr('alt');
+    $('.thumb-img').each(function (i, el) {
+        if ($(this).attr('src').split('/')[3] == fileName) {
+            $(this).click();
+        }
+    });
+    */
+
+    $('#mainImage').hide();
+    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).show();
+
+    // 사각형 좌표값
+    var location, x, y, textWidth, textHeight;
+    location = $(e).find('input[type=hidden]').val().split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+    //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
+
+    // 해당 텍스트 x y좌표 원본 이미지에서 찾기
+    $('#imageZoom').css('background-position', '-' + (x - 5) + 'px -' + (y - 205) + 'px');
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    //var reImg = new Image();
+    //var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    //imgPath = imgPath.split('")')[0];
+    //reImg.src = imgPath;
+    //var width = reImg.width;
+    //var height = reImg.height;
+
+    // 선택한 글씨에 빨간 네모 그리기
+    //$('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 10) + 'px');
+    //$('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 10) + 'px');
+    //$('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
+    //$('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
+    //$('#redNemo').show();
+    $('#redZoomNemo').css('width', textWidth + 10);
+    $('#redZoomNemo').css('height', textHeight + 10);
+    $('#redZoomNemo').show();
+}
+
+// 마우스 아웃 이벤트
+function moutSquare(e) {
+    //$('#redNemo').hide();
+    $('#redZoomNemo').hide();
+    $('#imageZoom').hide();
+    $('#mainImage').show();
+}
