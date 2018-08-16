@@ -134,7 +134,7 @@ exports.formMapping = function (data, callback) {
 
 // [step4] column mapping ML
 exports.columnMapping = function (data, callback) {
-    var args = '';
+    var args = dataToformSidArgs(data);
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\ColumnMapping\\eval.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
@@ -224,6 +224,16 @@ function dataToSidArgs(data, isFormMapping) {
         } else {
             args += '"' + data[i].sid + '"' + ' ';
         }
+    }
+
+    return args;
+}
+
+function dataToformSidArgs(data) {
+    var args = '';
+
+    for (var i in data.data) {
+        args += '"' + data.form.type + ',' + data.data[i].sid + '"' + ' ';
     }
 
     return args;

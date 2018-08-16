@@ -8,7 +8,7 @@ import cx_Oracle
 import configparser
 import sys
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('./ml/config.ini')
 
 id = config['ORACLE']['ID']
 pw = config['ORACLE']['PW']
