@@ -1561,9 +1561,10 @@ var fn_batchUiTraining = function () {
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
 
-    insertDocLabelMapping(data);
-    insertDocMapping(data);
-    insertColMapping(data);
+    //insertDocLabelMapping(data);
+    //insertDocMapping(data);
+    //insertColMapping(data);
+    insertContractMapping(data);
     
 }
 
@@ -1592,7 +1593,7 @@ function insertDocLabelMapping(data) {
         url: '/batchLearning/insertDocLabelMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': data }),
+        data: JSON.stringify({ 'data': data  }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);
@@ -1640,6 +1641,23 @@ function insertColMapping(data) {
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// 계약명 매핑 insert
+function insertContractMapping(data) {
+    $.ajax({
+        url: '/batchLearning/insertContractMapping',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': data, 'fileName': $('#imgNameTag').text().split('.')[0] + '.tif' }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);

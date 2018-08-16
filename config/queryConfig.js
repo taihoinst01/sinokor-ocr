@@ -346,6 +346,21 @@ var batchLearningConfig = {
             tbl_document_category
          WHERE
             docType != 999 `,
+    selectBatchAnswerDataToFilePath:
+        `SELECT
+            D.*
+         FROM
+            (SELECT
+                SUBSTR(filePath, INSTR(filePath, '/', -1) + 1, LENGTH(filePath)) AS filePath,
+                imgId
+             FROM
+                TBL_BATCH_ANSWER_FILE 
+            ) F,
+            TBL_BATCH_ANSWER_DATA D
+        WHERE
+            F.imgId = D.imgId
+            AND
+            F.filePath = :filePath `
 }
 
 var uiLearningConfig = {
