@@ -344,7 +344,19 @@ var batchLearningConfig = {
         `INSERT INTO
             tbl_contract_mapping(extOgcompanyName, extCtnm, asOgcompanyName, asCtnm)
          VALUES(:extOgcompanyName, :extCtnm, :asOgcompanyName, :asCtnm)
-        `
+        `,
+    insertDocCategory:
+        `INSERT INTO
+            tbl_document_category
+         VALUES
+            (seq_document_category.nextval, :docName, :docType, :sampleImagePath) `,
+    selectMaxDocType:
+        `SELECT
+            MAX(docType) AS docType
+         FROM
+            tbl_document_category
+         WHERE
+            docType != 999 `,
 }
 
 var uiLearningConfig = {
