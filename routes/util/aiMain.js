@@ -136,14 +136,13 @@ exports.formMapping = function (data, callback) {
         var formSplit = retSplit[0].split("||");
         var scoreSplit = retSplit[1].split("||");
 
-        data.score = { score: scoreSplit[1] };
-
         if (formSplit[1] != null) {
             var param = formSplit[1].trim();
             commonDB.queryParam("select docname, doctype, sampleimagepath from tbl_document_category where doctype = to_number(:doctype)", [param], function (ret, retData) {
                 obj = {};
                 obj.data = retData;
                 obj.docCategory = ret;
+                obj.score = scoreSplit[1] * 100;
 
                 callback(obj);
             }, data)
