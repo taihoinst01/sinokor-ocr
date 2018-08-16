@@ -1093,12 +1093,12 @@ router.post('/syncFile', function (req, res) {
     });
 });
 
-//hyj
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-    //console.log(dataObj);
+
     var query = queryConfig.batchLearningConfig.selectContractMapping;
     var param;
+
     if (dataObj.CTOGCOMPANYNAMENM && dataObj.CTNM) {
         if (typeof dataObj.CTNM == 'string') { // 단일 계약명
             param = [dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM];

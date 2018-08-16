@@ -16,7 +16,7 @@ function fn_loadLeftSideBarInvoiceRegistration() {
         beforeSend: function () {
         },
         success: function (data) {
-            console.log("leftSideBar ir : " + JSON.stringify(data));
+            //console.log("leftSideBar ir : " + JSON.stringify(data));
             if (data.cnt > 0) $("#span_leftsidebar_ir").show().html(data.cnt);
         },
         error: function (err) {
@@ -35,7 +35,7 @@ function fn_loadLeftSideBarMyApproval() {
         beforeSend: function () {
         },
         success: function (data) {
-            console.log("leftSideBar ir : " + JSON.stringify(data));
+            //console.log("leftSideBar ir : " + JSON.stringify(data));
             if(data.cnt > 0 ) $("#span_leftsidebar_ma").show().html(data.cnt);
         },
         error: function (err) {

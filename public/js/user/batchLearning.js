@@ -331,10 +331,10 @@ var imageUploadEvent = function () {
                
 // [파일정보 -> OCR API]
 function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
-    console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
-    console.log("processImage fileName : " + fileName);
-    console.log("processImage lastYn : " + lastYn);
-    console.log("processImage answerRows : " + JSON.stringify(answerRows));
+    //console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
+    //console.log("processImage fileName : " + fileName);
+    //console.log("processImage lastYn : " + lastYn);
+    //console.log("processImage answerRows : " + JSON.stringify(answerRows));
 
     //$("#progressMsgTitle").html("processing ocr api...");
     //addProgressBar(51, 60);
@@ -529,33 +529,21 @@ function popUpLayer2(ocrData) {
     $('#img_content').html(mainImgHtml);
     $('#mainImage').css('background-image', 'url("../../uploads/' + ocrData.fileInfo[0].convertFileName + '")');
 
-    $.ajax({
-        url: '/batchLearning/selectColMappingCls',
-        type: 'post',
-        datatype: "json",
-        contentType: 'application/json; charset=UTF-8',
-        success: function (columns) {
-            columnArr = columns.data;
-            var tblTag = '';
-            for (var i in modifyData.data) {
-                tblTag += '<dl>';
-                tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
-                tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-                tblTag += '<input type="text" value="' + modifyData.data[i].text + '" style="width:100%; border:0;" />';
-                tblTag += '<input type="hidden" value="' + modifyData.data[i].location + '" />';
-                tblTag += '</label>';
-                tblTag += '</dt>';
-                tblTag += '<dd>';
-                tblTag += appendOptionHtml(modifyData.data[i].column, columns.data)
-                tblTag += '</dd>';
-                tblTag += '</dl>';
-            }
-            $('#textResultTbl').append(tblTag);
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
+    var tblTag = '';
+    for (var i in modifyData.data) {
+        tblTag += '<dl>';
+        tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+        tblTag += '<input type="text" value="' + modifyData.data[i].text + '" style="width:100%; border:0;" />';
+        tblTag += '<input type="hidden" value="' + modifyData.data[i].location + '" />';
+        tblTag += '</label>';
+        tblTag += '</dt>';
+        tblTag += '<dd>';
+        tblTag += appendOptionHtml(modifyData.data[i].column, columnArr)
+        tblTag += '</dd>';
+        tblTag += '</dl>';
+    }
+    $('#textResultTbl').append(tblTag);
 
 }
 
@@ -577,154 +565,6 @@ function appendOptionHtml(targetColumn, columns) {
 }
 
 function execBatchLearningData(ocrData, data) {
-    /*
-    // 다중 계약서 샘플
-    var data = `{ "data": [
-    {"location":"2974,20,66,31","text":"Page","column": "UNKOWN"},
-    {"location":"1594,201,683,47","text":"Reinsurers Outstanding Losses","column": "UNKOWN"},
-    {"location":"1596,259,174,29","text":"28/06/2018","column": "UNKOWN"},
-    {"location":"3178,16,11,26","text":"1","column": "UNKOWN"},
-    {"location":"3072,392,149,27","text":"Remarks","column": "UNKOWN"},
-    {"location":"3296,20,10,24","text":"1","column": "UNKOWN"},
-    {"location":"218,305,1136,39","text":"010 872 2079 OO KOREAN REINSURANCE CO.","column": "UNKOWN"},
-    {"location":"208,385,191,31","text":"AL SAGR", "column": "CTOGCOMPANYNAMENM"},
-    {"location":"1154,384,470,32","text":"Share os Losses 100%","column": "UNKOWN"},
-    {"location":"1741,385,258,31","text":"os Losses/Shr","column": "UNKOWN"},
-    {"location":"1946,536,77,24","text":"2120","column": "UNKOWN"},
-    {"location":"1929,616,92,24","text":"303.70","column": "UNKOWN"},
-    {"location":"1963,696,58,26","text":"3.65","column": "UNKOWN"},
-    {"location":"1932,777,92,28","text":"115.80","column": "CN"},
-    {"location":"1932,859,90,25","text":"124.29","column": "UNKOWN"},
-    {"location":"1906,940,116,30","text":"1,069.76","column": "UNKOWN"},
-    {"location":"1905,1025,117,31","text":"1,638.40","column": "UNKOWN"},
-    {"location":"1930,1144,93,24","text":"350.00","column": "UNKOWN"},
-    {"location":"1928,1228,94,25","text":"350.00","column": "UNKOWN"},
-    {"location":"1930,1345,91,26","text":"418.15","column": "UNKOWN"},
-    {"location":"1929,1432,95,24","text":"418.15","column": "UNKOWN"},
-    {"location":"1902,1502,121,31","text":"2,406.55","column": "UNKOWN"},
-    {"location":"2269,385,110,33","text":"IBNR","column": "UNKOWN"},
-    {"location":"220,474,32,24","text":"72","column": "UNKOWN"},
-    {"location":"336,473,248,25","text":"ENGINEERING", "column": "CTNM"},
-    {"location":"228,536,212,24","text":"P 2004 01377","column": "UNKOWN"},
-    {"location":"227,697,213,27","text":"P 2005 01377","column": "UNKOWN"},
-    {"location":"225,860,215,27","text":"P 2006 01377","column": "UNKOWN"},
-    {"location":"221,1080,241,24","text":"74 CARGO", "column": "CTNM"},
-    {"location":"228,1144,212,24","text":"P 2005 01377","column": "UNKOWN"},
-    {"location":"221,1283,211,28","text":"75 HULL", "column": "CTNM"},
-    {"location":"227,1345,213,27","text":"P 2004 01377","column": "UNKOWN"},
-    {"location":"476,1144,39,24","text":"co","column": "UNKOWN"},
-    {"location":"560,534,211,27","text":"QUOTA SHARE","column": "UNKOWN"},
-    {"location":"560,616,132,23","text":"SURPLUS","column": "UNKOWN"},
-    {"location":"560,696,211,27","text":"QUOTA SHARE","column": "UNKOWN"},
-    {"location":"560,776,131,24","text":"SURPLUS","column": "UNKOWN"},
-    {"location":"560,856,211,30","text":"QUOTA SHARE","column": "UNKOWN"},
-    {"location":"562,937,129,23","text":"SURPLUS","column": "UNKOWN"},
-    {"location":"560,1140,241,29","text":"CARGO Q/SHARE","column": "UNKOWN"},
-    {"location":"560,1344,216,32","text":"HULL Q/SHARE","column": "UNKOWN"},
-    {"location":"1165,536,109,24","text":"005.000","column": "UNKOWN"},
-    {"location":"1165,616,109,24","text":"005.000","column": "UNKOWN"},
-    {"location":"1165,697,109,25","text":"005.000","column": "UNKOWN"},
-    {"location":"1165,776,110,28","text":"005.000","column": "UNKOWN"},
-    {"location":"1165,858,109,30","text":"002.500","column": "UNKOWN"},
-    {"location":"1165,936,109,30","text":"002.500","column": "UNKOWN"},
-    {"location":"844,1024,275,32","text":"Sub Total By COB","column": "UNKOWN"},
-    {"location":"1165,1144,109,24","text":"005.000","column": "UNKOWN"},
-    {"location":"844,1227,275,33","text":"Sub Total By COB","column": "UNKOWN"},
-    {"location":"1165,1344,110,28","text":"005.000","column": "UNKOWN"},
-    {"location":"843,1430,275,33","text":"Sub Total By COB","column": "UNKOWN"},
-    {"location":"1525,536,93,24","text":"424.00","column": "PM"},
-    {"location":"1499,616,119,30","text":"6,074.00","column": "UNKOWN"},
-    {"location":"1543,696,74,26","text":"73.00","column": "UNKOWN"},
-    {"location":"1498,776,119,31","text":"2,316.00","column": "UNKOWN"},
-    {"location":"1499,859,119,29","text":"4, 971.54","column": "UNKOWN"},
-    {"location":"1480,938,139,32","text":"42,790.57","column": "UNKOWN"},
-    {"location":"1482,1025,134,31","text":"56,649.11","column": "UNKOWN"},
-    {"location":"1500,1228,118,33","text":"7,000.00","column": "UNKOWN"},
-    {"location":"1500,1344,117,32","text":"8,363.00","column": "UNKOWN"},
-    {"location":"1498,1432,120,30","text":"8,363.00","column": "UNKOWN"},
-    {"location":"1482,1502,134,33","text":"72,012.11","column": "UNKOWN"},
-    {"location":"2488,1025,41,27","text":".00","column": "UNKOWN"},
-    {"location":"2488,1228,41,25","text":".00","column": "UNKOWN"},
-    {"location":"2488,1432,42,23","text":".00","column": "UNKOWN"},
-    {"location":"2488,1503,41,23","text":".00","column": "UNKOWN"},
-    {"location":"2581,393,62,35","text":"ccy","column": "UNKOWN"},
-    {"location":"2576,536,70,24","text":"AED","column": "UNKOWN"},
-    {"location":"2576,616,70,24","text":"AED","column": "UNKOWN"},
-    {"location":"2576,696,69,26","text":"AED","column": "UNKOWN"},
-    {"location":"2576,776,69,28","text":"AED","column": "UNKOWN"},
-    {"location":"2576,858,71,26","text":"AED","column": "UNKOWN"},
-    {"location":"2576,940,71,27","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1026,71,25","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1144,70,24","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1228,72,25","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1344,69,28","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1432,72,24","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1502,72,26","text":"AED","column": "UNKOWN"},
-    {"location":"2712,534,154,26","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,614,154,26","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,696,154,26","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,776,154,26","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,858,153,30","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,938,153,30","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,1140,153,28","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,1344,154,26","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"832,1501,277,31","text":"Total By Cedant in","column": "UNKOWN"},
-    {"location":"656,2238,481,42","text":"Nasco Karaoglan France","column": "UNKOWN"},
-    {"location":"656,2286,678,34","text":"171 rue de Euzenval 92380 Garches","column": "UNKOWN"},
-    {"location":"652,2334,370,34","text":"T +33 147 OO","column": "UNKOWN"},
-    {"location":"652,2380,359,33","text":"mm.nkfrance.com","column": "UNKOWN"},
-    {"location":"2432,2331,180,23","text":"CSO'S 31","column": "UNKOWN"},
-    {"location":"1911,2360,670,21","text":"it. ZZZZ","column": "UNKOWN"},
-    {"location":"1967,2389,323,21","text":"ZZZ z-0i.AE •Z:","column": "UNKOWN"}
-    ], "docCategory": { "SEQNUM": 4, "DOCNAME": "Nasco 계산서", "DOCTYPE": 2, "SAMPLEIMAGEPATH": "sample/nasco.jpg" } }`
-    data = JSON.parse(data);
-    
-    //var data = { "data": [{ "location": "1018,240,411,87", "text": "APEX", "column": "UNKOWN" }, { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNKOWN" }, { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNKOWN" }, { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNKOWN" }, { "location": "206,691,274,27", "text": "4153 Korean Re", "column": "UNKOWN" }, { "location": "208,756,525,34", "text": "Proportional Treaty Statement", "column": "UNKOWN" }, { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626", "column": "UNKOWN" }, { "location": "1840,575,169,25", "text": "01105/2018", "column": "UNKOWN" }, { "location": "206,848,111,24", "text": "Cedant", "column": "UNKOWN" }, { "location": "206,908,285,24", "text": "Class of Business", "column": "UNKOWN" }, { "location": "210,963,272,26", "text": "Period of Quarter", "column": "UNKOWN" }, { "location": "207,1017,252,31", "text": "Period of Treaty", "column": "UNKOWN" }, { "location": "206,1066,227,24", "text": "Our Reference", "column": "UNKOWN" }, { "location": "226,1174,145,31", "text": "Currency", "column": "UNKOWN" }, { "location": "227,1243,139,24", "text": "Premium", "column": "UNKOWN" }, { "location": "226,1303,197,24", "text": "Commission", "column": "UNKOWN" }, { "location": "226,1366,107,24", "text": "Claims", "column": "UNKOWN" }, { "location": "227,1426,126,24", "text": "Reserve", "column": "UNKOWN" }, { "location": "227,1489,123,24", "text": "Release", "column": "UNKOWN" }, { "location": "227,1549,117,24", "text": "Interest", "column": "UNKOWN" }, { "location": "227,1609,161,31", "text": "Brokerage", "column": "UNKOWN" }, { "location": "233,1678,134,24", "text": "Portfolio", "column": "UNKOWN" }, { "location": "227,1781,124,24", "text": "Balance", "column": "UNKOWN" }, { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018", "column": "CTOGCOMPANYNAMENM" }, { "location": "574,907,568,32", "text": ": Marine Cargo Surplus 2018 - Inward", "column": "CTNM" }, { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018", "column": "PERIODQ" }, { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018", "column": "PERIODT" }, { "location": "574,1065,304,25", "text": ": APEX/BORD/2727", "column": "CSCOSARFRNCNNT2" }, { "location": "629,1173,171,25", "text": "JOD 1.00", "column": "CURCD" }, { "location": "639,1239,83,25", "text": "25.53", "column": "PM" }, { "location": "639,1299,64,25", "text": "5.74", "column": "CN" }, { "location": "639,1362,64,25", "text": "0.00", "column": "CLAIM" }, { "location": "639,1422,64,25", "text": "7.66", "column": "PMRESERVERTD" }, { "location": "639,1485,64,25", "text": "0.00", "column": "PMRESERVERLD" }, { "location": "639,1545,64,25", "text": "0.00", "column": "INTEREST" }, { "location": "639,1605,64,25", "text": "0.64", "column": "BROKERAGE" }, { "location": "648,1677,64,25", "text": "0.00", "column": "PROFITCN" }, { "location": "641,1774,81,25", "text": "11 .49", "column": "NTBL" }, { "location": "1706,1908,356,29", "text": "APEX INSURANCE", "column": "UNKOWN\r\n" }], "docCategory": { "SEQNUM": 2, "DOCNAME": "Apex 계산서", "DOCTYPE": 1, "SAMPLEIMAGEPATH": "sample/apex.jpg" } };
-    compareBatchLearningData(ocrData, data);
-    */
-    /*
-    var data = {"data":[
-    {"location":"1018,240,411,87","text":"APEX","column":"UNKOWN"},
-    {"location":"1019,338,409,23","text":"Partner of Choice","column":"UNKOWN"},
-    {"location":"1562,509,178,25","text":"Voucher No","column":"UNKOWN"},
-    {"location":"1562,578,206,25","text":"Voucher Date","column":"UNKOWN"},
-    {"location":"206,691,274,27","text":"4153 Korean Re","column":"UNKOWN"},
-    {"location":"208,756,525,34","text":"Proportional Treaty Statement","column":"UNKOWN"},
-    {"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","column":"UNKOWN"},
-    {"location":"1840,575,169,25","text":"01105/2018","column":"UNKOWN"},
-    {"location":"206,848,111,24","text":"Cedant","column":"UNKOWN"},
-    {"location":"206,908,285,24","text":"Class of Business","column":"UNKOWN"},
-    {"location":"210,963,272,26","text":"Period of Quarter","column":"UNKOWN"},
-    {"location":"207,1017,252,31","text":"Period of Treaty","column":"UNKOWN"},
-    {"location":"206,1066,227,24","text":"Our Reference","column":"UNKOWN"},
-    {"location":"226,1174,145,31","text":"Currency","column":"UNKOWN"},
-    {"location":"227,1243,139,24","text":"Premium","column":"UNKOWN"},
-    {"location":"226,1303,197,24","text":"Commission","column":"UNKOWN"},
-    {"location":"226,1366,107,24","text":"Claims","column":"UNKOWN"},
-    {"location":"227,1426,126,24","text":"Reserve","column":"UNKOWN"},
-    {"location":"227,1489,123,24","text":"Release","column":"UNKOWN"},
-    {"location":"227,1549,117,24","text":"Interest","column":"UNKOWN"},
-    {"location":"227,1609,161,31","text":"Brokerage","column":"UNKOWN"},
-    {"location":"233,1678,134,24","text":"Portfolio","column":"UNKOWN"},
-    {"location":"227,1781,124,24","text":"Balance","column":"UNKOWN"},
-    {"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","column":"CTOGCOMPANYNAMENM"},
-    {"location":"574,907,636,26","text":": Fire QS EQ 2018 W HOS BK UNI HTEL","column":"CTNM"},
-    {"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","column":"PERIODQ"},
-    {"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018","column":"PERIODT"},
-    {"location":"574,1065,304,25","text":": APEX/BORD/2727","column":"CSCOSARFRNCNNT2"},
-    {"location":"629,1173,171,25","text":"JOD 1.00","column":"CURCD"},
-    {"location":"639,1239,83,25","text":"30.02","column":"PM"},
-    {"location":"639,1299,58,25","text":"9.01","column":"UNKOWN"},
-    {"location":"639,1362,64,25","text":"0.00","column":"CLAIM"},
-    {"location":"639,1422,58,25","text":"9.01","column":"UNKOWN"},
-    {"location":"639,1485,64,25","text":"0.00","column":"PMRESERVERLD"},
-    {"location":"639,1545,64,25","text":"0.00","column":"INTEREST"},
-    {"location":"639,1605,64,25","text":"0.75","column":"BROKERAGE"},
-    {"location":"648,1677,64,25","text":"0.00","column":"PROFITCN"},
-    {"location":"1706,1908,356,29","text":"APEX INSURANCE","column":"UNKOWN\r\n"}
-    ],"docCategory":{"SEQNUM":2,"DOCNAME":"Apex 계산서","DOCTYPE":1,"SAMPLEIMAGEPATH":"sample/apex.jpg"}};
-    compareBatchLearningData(ocrData, data);
-    */
     
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
@@ -737,7 +577,7 @@ function execBatchLearningData(ocrData, data) {
         beforeSend: function () {
         },
         success: function (data) {
-            console.log(JSON.stringify(data));
+            //console.log(JSON.stringify(data));
             
             modifyData = data;
             batchCount++;
@@ -756,16 +596,6 @@ function execBatchLearningData(ocrData, data) {
                 compareBatchLearningData(ocrData, data);
             }
             
-
-            //compareBatchLearningData(fileInfo, data, isUiTraining);
-            //updateBatchLearningData(fileName, data);
-            
-            //if (totCount = batchCount) {
-                //$("#progressMsgTitle").html("success...");
-                //addProgressBar(91, 100);               
-            //}
-            
-            
         },
         error: function (err) {
             console.log(err);
@@ -775,70 +605,83 @@ function execBatchLearningData(ocrData, data) {
 }
 
 function compareBatchLearningData(ocrData, data) {
-    //var data = JSON.parse('[{"location":"300,51,370,44","text":"123123123213123","label":"entryrowlabel","column":"PRRS_CF"},{"location":"252,57,480,46","text":"abcdqwjlvasmlkfsdafasd","label":"entryrowlabel","column":"PRRS_CF"},{"location":"1018,240,411,87","text":"APEX","label":""},{"location":"1019,338,409,23","text":"Partner of Choice","label":""},{"location":"1562,509,178,25","text":"Voucher No","label":""},{"location":"1562,578,206,25","text":"Voucher Date","label":""},{"location":"206,691,274,27","text":"4153 Korean Re","label":""},{"location":"208,756,525,34","text":"Proportional Treaty Statement","label":""},{"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","label":""},{"location":"1840,575,169,25","text":"01105/2018","label":""},{"location":"206,848,111,24","text":"decant","label":"entryrowlabel","column":"PRRS_CF"},{"location":"206,908,285,24","text":"Class of Business","label":"fixlabel","column":"CT_NM"},{"location":"210,963,272,26","text":"Period of Quarter","label":"fixlabel","column":"INS_ST_DT"},{"location":"207,1017,252,31","text":"Period of Treaty","label":"fixlabel","column":"CUR_CD"},{"location":"206,1066,227,24","text":"Our Reference","label":"fixlabel","column":"CSCO_SA_RFRN_CNNT2"},{"location":"226,1174,145,31","text":"Currency","label":"entryrowlabel","column":"CUR_CD"},{"location":"227,1243,139,24","text":"Premium","label":"entryrowlabel","column":"PRE"},{"location":"226,1303,197,24","text":"Commission","label":"entryrowlabel","column":"COM"},{"location":"226,1366,107,24","text":"Claims","label":"entryrowlabel","column":"CLA"},{"location":"227,1426,126,24","text":"Reserve","label":"entryrowlabel","column":"PRRS_CF"},{"location":"227,1489,123,24","text":"Release","label":"entryrowlabel","column":"PRRS_RLS"},{"location":"227,1549,117,24","text":"Interest","label":"entryrowlabel","column":"EXEX"},{"location":"227,1609,161,31","text":"Brokerage","label":"entryrowlabel","column":"BRKG"},{"location":"233,1678,134,24","text":"Portfolio","label":"entryrowlabel","column":"SVF"},{"location":"227,1781,124,24","text":"Balance","label":"entryrowlabel","column":"NTBL"},{"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","label":""},{"location":"574,907,568,32","text":": Marine Cargo Surplus 2018 - Inward","label":""},{"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","label":"fixvalue","column":"INS_ST_DT_VALUE"},{"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018","label":"fixvalue","column":"CUR_CD_VALUE"},{"location":"574,1065,304,25","text":": APEX/BORD/2727","label":""},{"location":"629,1173,171,25","text":"jody 1.00","label":"entryvalue","column":"CUR_CD_VALUE"},{"location":"639,1239,83,25","text":"25.53","label":"entryvalue","column":"PRE_VALUE"},{"location":"639,1299,64,25","text":"5.74","label":"entryvalue","column":"COM_VALUE"},{"location":"639,1362,64,25","text":"0.00","label":"entryvalue","column":"CLA_VALUE"},{"location":"639,1422,64,25","text":"7.66","label":"entryvalue","column":"PRRS_CF_VALUE"},{"location":"639,1485,64,25","text":"0.00","label":"entryvalue","column":"PRRS_RLS_VALUE"},{"location":"639,1545,64,25","text":"0.00","label":"entryvalue","column":"EXEX_VALUE"},{"location":"639,1605,64,25","text":"0.64","label":"entryvalue","column":"BRKG_VALUE"},{"location":"648,1677,64,25","text":"0.00","label":"entryvalue","column":"SVF_VALUE"},{"location":"641,1774,81,25","text":"11 .49","label":"entryvalue","column":"NTBL_VALUE"},{"location":"1706,1908,356,29","text":"APEX INSURANCE","label":"UNKOWN"}]');
     var dataObj = {};
     var dataVal = data.data;
 
-    for (var i = 0, x = dataVal.length; i < x; i++) {
-        var location = nvl(dataVal[i]["location"]);
-        var label = nvl(dataVal[i]["label"]);
-        var text = nvl(dataVal[i]["text"]);
-        var column = nvl(dataVal[i]["column"]);
+    $.ajax({
+        url: '/batchLearning/selectColMappingCls',
+        type: 'post',
+        datatype: "json",
+        contentType: 'application/json; charset=UTF-8',
+        success: function (columns) {
+            columnArr = columns.data;
 
-        if (column != "UNKOWN") {
-            if (dataObj[column]) {
-                if (typeof dataObj[column] == 'string') {
-                    dataObj[column] = [dataObj[column]]
+            for (var i = 0; i < dataVal.length; i++) {
+                var location = dataVal[i].location;
+                var text = dataVal[i].text;
+                var column = dataVal[i].column;
+
+                if (column != 999) {
+                    for (var j in columnArr) {
+                        if (column == columnArr[j].COLNUM) {
+                            if (dataObj[column]) {
+                                if (typeof dataObj[columnArr[j].COLTYPE] == 'string') {
+                                    dataObj[columnArr[j].COLTYPE] = [dataObj[columnArr[j].COLTYPE]]
+                                }
+                                dataObj[columnArr[j].COLTYPE].push(dataVal[i].text);
+                            } else {
+                                dataObj[columnArr[j].COLTYPE] = dataVal[i].text;
+                            }
+                            break;
+                        }
+                    }
                 }
-                dataObj[column].push(dataVal[i]["text"]);                
-            } else {
-                dataObj[column] = dataVal[i]["text"];
+            }
+            //console.log("결과 : ");
+            //console.log(dataObj);
+
+            // BatchLearning Data Insert
+            if (dataObj) {
+                dataObj.fileToPage = ocrData.fileToPage;
+
+                var param = { dataObj: dataObj };
+                $.ajax({
+                    url: '/batchLearning/compareBatchLearningData',
+                    type: 'post',
+                    datatype: "json",
+                    data: JSON.stringify(param),
+                    contentType: 'application/json; charset=UTF-8',
+                    async: false,
+                    success: function (retData) {
+                        console.log("----- retData -----");
+                        console.log(retData);
+                        if (retData.isContractMapping) {
+                            if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
+                                ocrData.exeML = "Y";
+                                isFullMatch = (dataObj.length != 53) ? false : true;
+                                //ui팝업 로직
+                                //if (retData.rows[0].IMGID == dataObj["imgId"]) {
+                                //    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
+                                //        uiPopUpTrain(data, fileInfo);
+                                //    }
+                                //}
+                            } else {// UI Training 체크박스 체크 없으면
+                                isFullMatch = true;
+                                comparedMLAndAnswer(retData, data, ocrData);
+                                //updateBatchLearningData(retData, ocrData, data);
+                            }
+                        } else {
+                            popUpLayer2(ocrData);
+                        }
+
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
             }
         }
-    }
-    //console.log("결과 : ");
-    //console.log(dataObj);
-    
-    // BatchLearning Data Insert
-    if (dataObj) {
-        dataObj["fileToPage"] = ocrData.fileToPage;
-       
-        var param = { dataObj: dataObj };
-        $.ajax({
-            url: '/batchLearning/compareBatchLearningData',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify(param),
-            contentType: 'application/json; charset=UTF-8',
-            async: false,
-            success: function (retData) {
-                console.log("----- retData -----");
-                console.log(retData);
-                if (retData.isContractMapping) {
-                    if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
-                        ocrData.exeML = "Y";
-                        isFullMatch = (dataObj.length != 53) ? false : true;
-                        //ui팝업 로직
-                        //if (retData.rows[0].IMGID == dataObj["imgId"]) {
-                        //    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
-                        //        uiPopUpTrain(data, fileInfo);
-                        //    }
-                        //}
-                    } else {// UI Training 체크박스 체크 없으면
-                        isFullMatch = true;
-                        comparedMLAndAnswer(retData, data, ocrData);
-                        //updateBatchLearningData(retData, ocrData, data);
-                    }
-                } else {
-                    popUpLayer2(ocrData);
-                }
-                
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    }
+    });
     
 }
 
@@ -1342,8 +1185,8 @@ var searchBatchLearnData = function (imgIdArray, flag) {
         success: function (data) {
             //$("#progressMsgTitle").html("processing learn data...");
             //addProgressBar(31, 50);
-            console.log("/batchLearning/searchBatchLearnData result :");
-            console.log(data);
+            //console.log("/batchLearning/searchBatchLearnData result :");
+            //console.log(data);
             
             if (flag == "PROCESS_IMAGE") {  // 배치학습 실행
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
