@@ -1561,9 +1561,9 @@ var fn_batchUiTraining = function () {
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
 
-    //insertDocLabelMapping(data);
-    //insertDocMapping(data);
-    //insertColMapping(data);
+    insertDocLabelMapping(data);
+    insertDocMapping(data);
+    insertColMapping(data);
     insertContractMapping(data);
     
 }
