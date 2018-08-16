@@ -511,6 +511,14 @@ function popUpLayer2(ocrData) {
     $('#docPredictionScore').text(modifyData.score + '%');
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
 
+    if (modifyData.score >= 90) {
+        $('#docName').css('color', 'dodgerblue');
+        $('#docPredictionScore').css('color', 'dodgerblue');
+    } else {
+        $('#docName').css('color', 'darkred');
+        $('#docPredictionScore').css('color', 'darkred');
+    }
+
 
     var mainImgHtml = '';
     mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
