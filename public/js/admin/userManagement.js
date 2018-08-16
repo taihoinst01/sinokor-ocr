@@ -184,10 +184,10 @@ var fn_searchHighApproval = function (seqNum, id) {
             var appendHtml = "";
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
-                    appendHtml += `<li><a class="a_userIdList" href="javascript:fn_selectHighApproval('${entry.SEQNUM}', '${entry.USERID}')">${entry.USERID}</a></li>`;
+                    appendHtml += `<li><a class="a_userIdList" onclick="javascript:fn_selectHighApproval('${entry.SEQNUM}', '${entry.USERID}')">${entry.USERID}</a></li>`;
                     if (entry.USERID == id) {
                         $("#highApprovalId").val(entry.SEQNUM);
-                        $(".myValue").html(entry.USERID);
+                        //$(".myValue").html(entry.USERID);
                     }
                 });
             }

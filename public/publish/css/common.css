@@ -64,8 +64,9 @@ table {
     border-spacing: 0;
 }
 
-table td {
-    overflow: visible !important;
+.selectTd {
+    overflow-y: visible !important;
+    overflow: unset !important;
 }
 
 dl, ul, ol, li {
@@ -2796,7 +2797,6 @@ h3.tits span {
 .poplayer {
     display: none;
     position: absolute;
-    _position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -4797,9 +4797,9 @@ thead .ez-checked {
     position: relative;
     width: 100%;
     float: left;
-    width: calc(58% - -3px);
-    width: -webkit-calc(58% - -3px);
-    width: -moz-calc(58% - -3px);
+    width: calc(58% - -2px);
+    width: -webkit-calc(58% - -2px);
+    width: -moz-calc(58% - -2px);
     height: 97px !important;
     padding: 14px 22px;
     background-color: #fff;
@@ -4936,7 +4936,7 @@ button[disabled] {
 }
 
 .ui_doc_pop_btn1 {
-    display: inline-block;
+    float: right;
     min-width: 80px;
     height: 41px;
     padding: 9px 15px 11px;
@@ -4986,7 +4986,7 @@ button[disabled] {
     display: inline-table;
 }
 .inputst_role2 {
-    display: inline-table;
+    display: inline-flex;
 }
 
 .ui_doc_pop_div {
@@ -4996,14 +4996,13 @@ button[disabled] {
     width: 100%;
 }
 .ui_doc_pop_div01 {
-    display: table;
+    display: inline-flex;
     width: 100%;
     margin-bottom: 10px;
 }
     .ui_doc_pop_div01 span {
-        display: table-cell;
-        width: 130px;
-        vertical-align: middle;
+        width: 180px;
+        line-height: 3;
     }
 
 .ui_doc_pop_div01 input[type=text] {
@@ -5040,12 +5039,12 @@ button[disabled] {
     height: 140px !important;
 }
 #docSearchResultMask {
-    width: 550px;
-    height: 480px;
+    width: 551px;
+    height: 481px;
     opacity: 0.3;
     position: absolute;
     left: 624px;
-    top: 217px;
+    top: 216px;
     z-index: 260;
     background-color: #000;
     display: none;
@@ -5278,9 +5277,6 @@ button[disabled] {
         top: 30px !important;
     }
 
-    .invocieR_div03 td {
-        overflow: visible !important;
-    }
 .ui_mainImage {
     height: 1600px !important;
     background-size: 100% 100% !important;
@@ -5446,7 +5442,7 @@ button[disabled] {
          *  height는 테이블의 데이터가 나올 기본 크기를 잡아줍니다.
          *  세로길이를 잡아주지 않으면 overflow-y가 걸리지 않습니다.
          */
-    width: 808px !important;
+    width: 100% !important;
     height: 220px !important;
     overflow-x: scroll;
     overflow-y: scroll;
@@ -5456,11 +5452,122 @@ button[disabled] {
     /*
          * tblBody의 데이터는 필요한 열의 수만큼만 만드시고 헤더와 col의 width는 동일해야 합니다.
          */
-    width: 991px !important;
+    width: 990px !important;
     table-layout: fixed;
     height: 30px;
     border-collapse: collapse;
 }
+
+/*
+    invoiceRegistration 스크롤테이블
+*/
+.invoiceR_tblBackground {
+    /*
+         *  화면에 보여야 할 Table의 가로크기를 잡아줍니다.
+         */
+    width: 790px;
+    table-layout: fixed;
+}
+
+.invoiceR_divHeadScroll {
+    /*
+         *  안의 내용이 790보다 길게 적용이 되므로 overflow-x, overflow-y를 hidden을 걸어줘서 설정한 가로너비만큼만 화면에 보이도록 잡아줍니다.
+         */
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    display: block !important;
+}
+
+.invoiceR_tblHead {
+    /*
+         *  Table의 필드명의 너비를 여기에서 지정합니다.
+         *  필드명을 보여줄 테이블은 body보다 하나의 td를 더 가지며 마지막 td는 아무것도 입력하지 않고 크기만 잡아줍니다.
+         *  이렇게 하는 이유는 데이터를 보여주는 테이블은 세로 스크롤의 가로두께만큼 더 이동하기 때문입니다.
+         */
+    table-layout: fixed;
+    width: 1027px;
+    height: 30px;
+    border-collapse: collapse;
+}
+
+.invoiceR_divBodyScroll {
+    /*
+         *  overflow-x, overflow-y는 scroll로 지정하고,
+         *  height는 테이블의 데이터가 나올 기본 크기를 잡아줍니다.
+         *  세로길이를 잡아주지 않으면 overflow-y가 걸리지 않습니다.
+         */
+    width: 100%;
+    height: 180px;
+    overflow-x: scroll;
+    overflow-y: scroll;
+}
+
+.invoiceR_tblBody {
+    /*
+         * tblBody의 데이터는 필요한 열의 수만큼만 만드시고 헤더와 col의 width는 동일해야 합니다.
+         */
+    width: 1010px;
+    table-layout: fixed;
+    height: 30px;
+    border-collapse: collapse;
+}
+
+
+.invoiceR_tblBackground2 {
+    /*
+         *  화면에 보여야 할 Table의 가로크기를 잡아줍니다.
+         */
+    width: 1671px;
+    table-layout: fixed;
+}
+
+.invoiceR_divHeadScroll2 {
+    /*
+         *  안의 내용이 790보다 길게 적용이 되므로 overflow-x, overflow-y를 hidden을 걸어줘서 설정한 가로너비만큼만 화면에 보이도록 잡아줍니다.
+         */
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    display: block !important;
+}
+
+.invoiceR_tblHead2 {
+    /*
+         *  Table의 필드명의 너비를 여기에서 지정합니다.
+         *  필드명을 보여줄 테이블은 body보다 하나의 td를 더 가지며 마지막 td는 아무것도 입력하지 않고 크기만 잡아줍니다.
+         *  이렇게 하는 이유는 데이터를 보여주는 테이블은 세로 스크롤의 가로두께만큼 더 이동하기 때문입니다.
+         */
+    table-layout: fixed;
+    width: 4447px;
+    height: 30px;
+    border-collapse: collapse;
+}
+
+.invoiceR_divBodyScroll2 {
+    /*
+         *  overflow-x, overflow-y는 scroll로 지정하고,
+         *  height는 테이블의 데이터가 나올 기본 크기를 잡아줍니다.
+         *  세로길이를 잡아주지 않으면 overflow-y가 걸리지 않습니다.
+         */
+    width: 100%;
+    height: 150px;
+    overflow-x: scroll;
+    overflow-y: scroll;
+}
+
+.invoiceR_tblBody2 {
+    /*
+         * tblBody의 데이터는 필요한 열의 수만큼만 만드시고 헤더와 col의 width는 동일해야 합니다.
+         */
+    width: 4430px;
+    table-layout: fixed;
+    height: 30px;
+    border-collapse: collapse;
+}
+
+
+
 ::-webkit-scrollbar-track {
     background: rgba(0,0,0,.1);
     -webkit-border-radius: 5px;
@@ -5662,3 +5769,4 @@ input:disabled {
     width: 1200px !important;
     height: 720px !important;
 }
+
