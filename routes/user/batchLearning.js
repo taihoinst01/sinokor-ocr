@@ -456,7 +456,8 @@ router.get('/test', function (req, res) {
                     var columnArr = columnResult.split('^');
                     for (var i in columnArr) {
                         for (var j in arg.data) {
-                            if (columnArr[i].split('||')[0] == arg.data[j].sid) {
+                            var columnSid = columnArr[i].split('||')[0];
+                            if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
                                 arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
                                 break;
                             }
@@ -527,7 +528,8 @@ router.post('/execBatchLearningData', function (req, res) {
                     var columnArr = columnResult.split('^');
                     for (var i in columnArr) {
                         for (var j in arg.data) {
-                            if (columnArr[i].split('||')[0] == arg.data[j].sid) {
+                            var columnSid = columnArr[i].split('||')[0];
+                            if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
                                 arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
                                 break;
                             }
