@@ -435,7 +435,7 @@ router.get('/test', function (req, res) {
         arg = typoResult;
         console.log('--------------------typo ML--------------------');
         console.log(arg);
-        aimain.formLabelMapping(typoResult, function (formLabelResult) {
+        aimain.formLabelMapping(arg, function (formLabelResult) {
             var formLabelArr = formLabelResult.split('^');
             for (var i in formLabelArr) {
                 for (var j in arg) {
@@ -447,16 +447,22 @@ router.get('/test', function (req, res) {
             }
             console.log('----------------------formLabelMapping ML------------------');
             console.log(arg);
-            res.send();
-            /*aimain.formMapping(formLabelResult, function (formResult) {
+            aimain.formMapping(arg, function (formResult) {
                 console.log('----------------------formMapping ML------------------');
-                console.log(formResult);
-                aimain.columnMapping(formResult, function (columnResult) {
+                var form = formResult.split('[')[1].split(']')[0];
+                var formScore = formResult.split(': ')[1].split('\r\n')[0];
+                var obj = {};
+                obj.data = arg;
+                obj.form = {'type': form, 'score': formScore};
+                arg = obj;
+                console.log(arg);
+                res.send(arg);
+                /*aimain.columnMapping(arg, function (columnResult) {
                     console.log('----------------------columnMapping ML------------------');
                     console.log(columnResult);
                     res.send(columnResult);
-                });
-            });*/
+                });*/
+            });
         });
     })
 });

@@ -111,7 +111,7 @@ function runSymspellSID(data) {
 
 // [step2] form label mapping ML
 exports.formLabelMapping = function (data, callback) {
-    var args = dataToSidArgs(data);
+    var args = dataToSidArgs(data, false);
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\FormLabelMapping\\eval.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
@@ -123,7 +123,7 @@ exports.formLabelMapping = function (data, callback) {
 
 // [step3] form mapping ML
 exports.formMapping = function (data, callback) {
-    var args = '';
+    var args = dataToSidArgs(data, true);
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
@@ -210,11 +210,20 @@ function dataToAllLocationArgs(data) {
     return args;
 }
 
-function dataToSidArgs(data) {
+function dataToSidArgs(data, isFormMapping) {
     var args = '';
 
     for (var i in data) {
-        args += '"' + data[i].sid + '"' + ' ';
+        if (isFormMapping) {
+            if (data[i].formLabel == 1) {
+                args += '"' + data[i].sid;
+            } else if (data[i].formLabel == 2) {
+                args += ',' + data[i].sid + '"' + ' ';
+            }           
+            continue;
+        } else {
+            args += '"' + data[i].sid + '"' + ' ';
+        }
     }
 
     return args;
