@@ -427,6 +427,49 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningBaseData, data, callbackInsertBatchLearningBaseData, req, res);
 });
 
+// test ml
+router.get('/test', function (req, res) {
+    var arg = [{ "location": "1018,240,411,87", "text": "APEX" }, { "location": "1019,338,409,23", "text": "Partner of Choice" }, { "location": "1562,509,178,25", "text": "Voucher No" }, { "location": "1562,578,206,25", "text": "Voucher Date" }, { "location": "206,691,274,27", "text": "4153 Korean Re" }, { "location": "208,756,525,34", "text": "Proportional Treaty Statement" }, { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626" }, { "location": "1840,575,169,25", "text": "01105/2018" }, { "location": "206,848,111,24", "text": "Cedant" }, { "location": "206,908,285,24", "text": "Class of Business" }, { "location": "210,963,272,26", "text": "Period of Quarter" }, { "location": "207,1017,252,31", "text": "Period of Treaty" }, { "location": "206,1066,227,24", "text": "Our Reference" }, { "location": "226,1174,145,31", "text": "Currency" }, { "location": "227,1243,139,24", "text": "Premium" }, { "location": "226,1303,197,24", "text": "Commission" }, { "location": "226,1366,107,24", "text": "Claims" }, { "location": "227,1426,126,24", "text": "Reserve" }, { "location": "227,1489,123,24", "text": "Release" }, { "location": "227,1549,117,24", "text": "Interest" }, { "location": "227,1609,161,31", "text": "Brokerage" }, { "location": "233,1678,134,24", "text": "Portfolio" }, { "location": "227,1781,124,24", "text": "Balance" }, { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018" }, { "location": "574,907,636,26", "text": ": Fire QS EQ 2018 W HOS BK UNI HTEL" }, { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018" }, { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018" }, { "location": "574,1065,304,25", "text": ": APEX/BORD/2727" }, { "location": "629,1173,171,25", "text": "JOD 1.00" }, { "location": "639,1239,83,25", "text": "30.02" }, { "location": "639,1299,58,25", "text": "9.01" }, { "location": "639,1362,64,25", "text": "0.00" }, { "location": "639,1422,58,25", "text": "9.01" }, { "location": "639,1485,64,25", "text": "0.00" }, { "location": "639,1545,64,25", "text": "0.00" }, { "location": "639,1605,64,25", "text": "0.75" }, { "location": "648,1677,64,25", "text": "0.00" }, { "location": "1706,1908,356,29", "text": "APEX INSURANCE" }];
+
+    aimain.typoSentenceEval(arg, function (typoResult) {
+        arg = typoResult;
+        console.log('--------------------typo ML--------------------');
+        //console.log(arg);
+        aimain.formLabelMapping(arg, function (formLabelResult) {
+            var formLabelArr = formLabelResult.split('^');
+            for (var i in formLabelArr) {
+                for (var j in arg) {
+                    if (formLabelArr[i].split('||')[0] == arg[j].sid) {
+                        arg[j].formLabel = formLabelArr[i].split('||')[1].replace(/\r\n/g,'');
+                        break;
+                    }
+                }
+            }
+            console.log('----------------------formLabelMapping ML------------------');
+            //console.log(arg);
+            aimain.formMapping(arg, function (formResult) {
+                console.log('----------------------formMapping ML------------------');
+                var form = formResult.split('[')[1].split(']')[0];
+                var formScore = formResult.split(': ')[1].split('\r\n')[0];
+                var obj = {};
+                obj.data = arg;
+                obj.form = {'type': form, 'score': formScore};
+                arg = obj;
+                //console.log(arg);
+                aimain.columnMapping(arg, function (columnResult) {
+                    console.log('----------------------columnMapping ML------------------');
+                    var columnArr = columnResult.split('[')[1].split(']')[0].split(',');
+                    for (var i in arg.data) {
+                        arg.data[i].column = columnArr[i];
+                    }
+                    //console.log(arg);
+                    res.send(arg);
+                });
+            });
+        });
+    })
+});
+
 // RUN batchLearningData
 router.post('/execBatchLearningData', function (req, res) {
     var arg = req.body.data;
@@ -1722,5 +1765,25 @@ function callbackInsLabelMap(rows, data) {
 }
 
 //---------------------------- // train test 영역 --------------------------------------------//
+
+
+// 신규문서 양식 등록
+var callbackInsertDocCategory = function (rows, req, res) {
+    res.send({ code: 200, message: 'document Category insert success' });
+};
+var callbackSelectMaxDocType = function (rows, req, res) {
+    var docName = req.body.docName;
+    var sampleImagePath = req.body.sampleImagePath;
+    var docType = rows[0].DOCTYPE;
+    if (docType == 998) { // unk 가 999이므로 피하기 위함
+        docType++;
+    }
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertDocCategory, [docName, (docType + 1), sampleImagePath], callbackInsertDocCategory, req, res);
+};
+router.post('/insertDocCategory', function (req, res) {
+
+    commonDB.reqQuery(queryConfig.batchLearningConfig.selectMaxDocType, callbackSelectMaxDocType, req, res);
+});
+// end 신규문서 양식 등록 
 
 module.exports = router;

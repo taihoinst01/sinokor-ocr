@@ -11,6 +11,7 @@ const defaults = {
     encoding: 'utf8',
 };
 
+// [step1] typo sentence ML
 exports.typoSentenceEval = function (data, callback) {
     /*
     setTimeout(function () {
@@ -108,67 +109,38 @@ function runSymspellSID(data) {
     });
 }
 
-exports.formMapping = function (data, callback) {
-
-    data = [
-        {
-            location: '574,847,492,32',
-            text: ': Solidarity- First Insurance 2018',
-            sid: '574,847,0,0,14535,14813,0',
-            formLabelMapping: '1'
-        },
-        {
-            location: '574,907,636,26',
-            text: ': fire qs eq 2018 wop hos bk uni htel',
-            originText: ': fire qs eq 2018 w hos bk uni htel',
-            sid: '574,907,0,15378,97294,97297,0',
-            formLabelMapping: '2'
-        },
-        {
-            location: '629,1173,171,25',
-            text: 'JOD 1.00',
-            sid: '629,1173,97300,0,0,0,0',
-            formLabelMapping: '3'
-        },
-        {
-            location: '639,1299,58,25',
-            text: '9.01',
-            sid: '639,1299,1,1,1,1,1',
-            formLabelMapping: '3'
-        }
-    ];
-
-    var args = dataToForm(data);
-
-    var exeformMapping = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
-    exec(exeformMapping, defaults, function (err, stdout, stderr) {
-        if (err) {
-            logger.error.info(`formMapping ml model exec error: ${stderr}`);
-            return;
-        }
-
-        var retSplit = stdout.split("||");
-        if (retSplit[1] != null) {
-            var param = retSplit[1].trim();
-            commonDB.queryParam("select docname, doctype, sampleimagepath from tbl_document_category where doctype = to_number(:doctype)", [param], function (ret, retData) {
-                obj = {};
-                obj.data = retData;
-                obj.docCategory = ret;
-
-                callback(obj);
-            }, data)
-        }
-    });
-}
-
+// [step2] form label mapping ML
 exports.formLabelMapping = function (data, callback) {
-    var args = dataToLocationArgs(data);
+    var args = dataToSidArgs(data, false);
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\FormLabelMapping\\eval.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
-        console.log(stdout);
+        if (err) console.error(err);
+        callback(stdout);
     });
 
+}
+
+// [step3] form mapping ML
+exports.formMapping = function (data, callback) {
+    var args = dataToSidArgs(data, true);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+        if (err) console.error(err);
+        callback(stdout);
+    });
+}
+
+// [step4] column mapping ML
+exports.columnMapping = function (data, callback) {
+    var args = dataToformSidArgs(data);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\ColumnMapping\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+        if (err) console.error(err);
+        callback(stdout);
+    });
 }
 
 // extraction OgCompanyName And ContractName
@@ -238,24 +210,31 @@ function dataToAllLocationArgs(data) {
     return args;
 }
 
-function dataToForm(data) {
-    var args = '"';
-    var ctog = '';
-    var ctnm = '';
+function dataToSidArgs(data, isFormMapping) {
+    var args = '';
 
     for (var i in data) {
-        if (data[i].formLabelMapping == '1') {
-            ctog = data[i].sid;
+        if (isFormMapping) {
+            if (data[i].formLabel == 1) {
+                args += '"' + data[i].sid;
+            } else if (data[i].formLabel == 2) {
+                args += ',' + data[i].sid + '"' + ' ';
+            }           
+            continue;
+        } else {
+            args += '"' + data[i].sid + '"' + ' ';
         }
     }
 
-    for (var i in data) {
-        if (data[i].formLabelMapping == '2') {
-            ctnm = data[i].sid; 
-        }
-    }
+    return args;
+}
 
-    args = '"' + ctog + ',' + ctnm + '"';
+function dataToformSidArgs(data) {
+    var args = '';
+
+    for (var i in data.data) {
+        args += '"' + data.form.type + ',' + data.data[i].sid + '"' + ' ';
+    }
 
     return args;
 }

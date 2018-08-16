@@ -141,8 +141,8 @@
                         <button type="button" class="myValue btnSelector">선택하기</button>
                         <ul class="aList">
                             <li><a onclick="selectViewCount(20)">행표시 : 20</a></li>
-                            <li><a onclick="selectViewCount(100)" >행표시 : 100</a></li>
-                            <li><a onclick="selectViewCount(1000)" >행표시 : 1000</a></li>
+                            <li><a onclick="selectViewCount(100)">행표시 : 100</a></li>
+                            <li><a onclick="selectViewCount(1000)">행표시 : 1000</a></li>
                         </ul>
                     </div>
                     <!--<button type="button" id="btn_sync" class="button_st1 ml5 fl">Sync</button>-->
@@ -292,6 +292,7 @@
                                                             <th scope="row">CLAIM BALANCE</th>
                                                             <th scope="row">NET BALANCE</th>
                                                             <th scope="row">Your Ref</th>
+                                                            <th></th>
                                                         </tr>
                                                     </thead>
                                                 </table>
@@ -832,7 +833,7 @@
         </div>
     </div>
     -->
-    <div id="layer2" class="poplayer batch_pop2">        
+    <div id="layer2" class="poplayer batch_pop2">
         <div class="bg"></div>
         <div class="pop_layer">
             <div class="pop_popup0">
@@ -859,7 +860,7 @@
                                     <span class="mr10">문서 양식 예측</span>
                                     <b id="docName" class="mr5"></b>   <b id="docPredictionScore"></b>
                                 </h3>
-                                <button type="button" id="docCompareBtn" class="tits11_btn01"></button>
+                                <button type="button" id="docCompareBtn" class="tits11_btn01" onclick="docComparePopup2();"></button>
                                 <!--<div class="fr">
                                     <button type="button" id="uiTrainBtn" class="button_st1">UI Training</button>
                                 </div>-->
@@ -1020,11 +1021,6 @@
         </div>
     </div>
     <!-- // 팝업_이미지뷰레이어팝업 -->
-    <!--
-            <script type="text/javascript">
-                layer_open('layer1');
-            </script>
-    -->
     <!-- 팝업_문서비교레이어팝업 -->
     <div id="layer4" class="poplayer">
         <div class="bg"></div>
@@ -1042,13 +1038,13 @@
                     </div>
                     <div id="orgDocSearch" class="inputst_role2">
                         <input type="text" name="orgDocName" id="orgDocName" class="inputst_box01 ui_doc_pop_ipt" value="" />
-                        <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1">확 인</button>
-                        <button type="button" id="" class="ui_doc_pop_btn2 cbtn ml5">취 소</button>
+                        <button type="button" id="" class="ui_doc_pop_btn2 cbtn">취 소</button>
+                        <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1 ml5">확 인</button>
                     </div>
                     <div id="newDocRegistration" class="inputst_role2" style="display:none;">
                         <input type="text" name="newDocName" id="newDocName" class="inputst_box01 ui_doc_pop_ipt2" value="" placeholder="신규문서명을 입력해 주세요" />
-                        <button type="button" id="insertDocCategoryBtn" class="ui_doc_pop_btn1">신규등록</button>
-                        <button type="button" id="" class="ui_doc_pop_btn2 cbtn ml5">취 소</button>
+                        <button type="button" id="" class="ui_doc_pop_btn2 cbtn">취 소</button>
+                        <button type="button" id="insertDocCategoryBtn" class="ui_doc_pop_btn1 ml5">신규등록</button>
                     </div>
                 </div>
                 <div class="pop_content">
@@ -1091,5 +1087,10 @@
         </div>
     </div>
     <!-- // 팝업_문서비교레이어팝업 -->
+    <!--
+    <script type="text/javascript">
+            layer_open('layer4');
+        </script>
+     -->
 </body>
 </html>

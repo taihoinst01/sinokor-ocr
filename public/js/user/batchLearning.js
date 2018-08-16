@@ -1811,6 +1811,57 @@ function docComparePopup(imgIndex, obj) {
     layer_open('layer4');
 }
 
+//문서 비교 popup 버튼 클릭 이벤트
+function docComparePopup2() {
+    var imgId = $('#docName').html();
+    $('#originImg').attr('src', '../../' + modifyData.docCategory.SAMPLEIMAGEPATH);//todo
+    $('#mlPredictionDocName').val($('#docName').html());
+    //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+    layer_open('layer4');
+}
+
+// 문서 양식 조회 이미지 좌우 버튼 이벤트
+function changeDocPopupImage() {
+    $('#docSearchResultImg_thumbPrev').click(function () {
+        $('#docSearchResultImg_thumbNext').attr('disabled', false);
+        if (docPopImagesCurrentCount == 1) {
+            return false;
+        } else {
+            docPopImagesCurrentCount--;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            if (docPopImagesCurrentCount == 1) {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+            }
+        }
+    })
+
+    $('#docSearchResultImg_thumbNext').click(function () {
+        var totalCount = $('#countLast').html();
+        $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+        if (docPopImagesCurrentCount == totalCount) {
+            return false;
+        } else {
+            docPopImagesCurrentCount++;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+
+            if (docPopImagesCurrentCount == totalCount) {
+                $('#docSearchResultImg_thumbNext').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbNext').attr('disabled', false);
+            }
+        }
+    })
+}
+
+
 function popUpEvent() {
     popUpSearchDocCategory();
     popUpInsertDocCategory();
@@ -1835,6 +1886,9 @@ function popUpSearchDocCategory() {
                     if (data.length == 0) {
                         $('#docSearchResultImg_thumbCount').hide();
                         $('#docSearchResultMask').hide();
+                        $('#searchResultDocName').html('');
+                        $('#orgDocName').val('');
+                        $('#searchResultDocName').val('');
                         return false;
                     } else {
                         /**
@@ -1862,43 +1916,13 @@ function popUpSearchDocCategory() {
     });
 }
 
-// 문서 양식 조회 이미지 좌우 버튼 이벤트
-function changeDocPopupImage() {
-    $('#docSearchResultImg_thumbPrev').click(function () {
-        $('#docSearchResultImg_thumbNext').attr('disabled', false);
-        if (docPopImagesCurrentCount == 1) {
-            return false;
-        } else {
-            docPopImagesCurrentCount--;
-            $('#countCurrent').html(docPopImagesCurrentCount);
-            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
-            if (docPopImagesCurrentCount == 1) {
-                $('#docSearchResultImg_thumbPrev').attr('disabled', true);
-            } else {
-                $('#docSearchResultImg_thumbPrev').attr('disabled', false);
-            }
-        }
-    })
+// 팝업 확인 이벤트
+function popUpRunEvent() {
+    $('#btn_pop_doc_run').click(function (e) {
 
-    $('#docSearchResultImg_thumbNext').click(function () {
-        var totalCount = $('#countLast').html();
-        $('#docSearchResultImg_thumbPrev').attr('disabled', false);
-        if (docPopImagesCurrentCount == totalCount) {
-            return false;
-        } else {
-            docPopImagesCurrentCount++;
-            $('#countCurrent').html(docPopImagesCurrentCount);
-            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
-
-            if (docPopImagesCurrentCount == totalCount) {
-                $('#docSearchResultImg_thumbNext').attr('disabled', true);
-            } else {
-                $('#docSearchResultImg_thumbNext').attr('disabled', false);
-            }
-        }
-    })
+        e.stopPropagation();
+        e.preventDefault();
+    });
 }
 
 //팝업 문서 양식 등록
@@ -1908,7 +1932,7 @@ function popUpInsertDocCategory() {
             var docName = $('#newDocName').val();
             var sampleImagePath = $('#originImg').attr('src').split('/')[2] + '/' + $('#originImg').attr('src').split('/')[3];
             $.ajax({
-                url: '/uiLearning/insertDocCategory',
+                url: '/batchLearning/insertDocCategory',
                 type: 'post',
                 datatype: 'json',
                 data: JSON.stringify({ 'docName': docName, 'sampleImagePath': sampleImagePath }),
@@ -1958,6 +1982,8 @@ function _init() {
     searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
     changeDocPopupImage();      // 문서 양식 조회 이미지 좌우 버튼 이벤트
     changeDocPopRadio();        // 문서 양식 조회 팝업 라디오 이벤트
+    popUpRunEvent();            // 문서 양식 조회 기존 양식 확인
+    popUpInsertDocCategory();   // 문서 양식 조회 신규 등록 확인
     selectLearningMethod();     //학습실행팝업
 }
 
@@ -2314,5 +2340,4 @@ function selectLearningMethod() {
         $('#learningRange_content').show();
     })
 }
-
 

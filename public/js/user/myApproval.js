@@ -297,6 +297,7 @@ var fn_search_dtl = function (seqNum, docNum) {
         },
         success: function (data) {
             addProgressBar(2, 99); // proceed progressbar
+            console.log(data);
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     appendHtml += `
