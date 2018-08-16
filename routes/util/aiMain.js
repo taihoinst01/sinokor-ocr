@@ -123,7 +123,7 @@ exports.formLabelMapping = function (data, callback) {
 
 // [step3] form mapping ML
 exports.formMapping = function (data, callback) {
-    var args = dataToForm(data);
+    var args = dataToSidArgs(data, true);
 
     var exeformMapping = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
     exec(exeformMapping, defaults, function (err, stdout, stderr) {
@@ -218,12 +218,13 @@ function dataToformSidArgs(data) {
     var args = '';
 
     for (var i in data.data) {
-        args += '"' + data.form.type + ',' + data.data[i].sid + '"' + ' ';
+        args += '"' + data.docCategory[0].DOCTYPE + ',' + data.data[i].sid + '"' + ' ';
     }
 
     return args;
 }
 
+/*
 function dataToForm(data) {
     var args = '"';
     var ctog = '';
@@ -245,6 +246,7 @@ function dataToForm(data) {
 
     return args;
 }
+*/
 
 exports.domainDictionaryEval = function (data, callback) {
     var args = dataToArgs(data);
