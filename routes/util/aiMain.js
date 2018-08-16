@@ -64,7 +64,7 @@ async function getSymspellSID(data, callbackTypoDomainTrain) {
     let res;
     try {
         res = await runSymspellSID(data);
-        console.log(res);
+        //console.log(res);
         callbackTypoDomainTrain(res);
     } catch (err) {
         console.error(err);
@@ -78,7 +78,7 @@ function runSymspellSID(data) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            console.log(data);
+            //console.log(data);
 
             for (var i in data) {
                 var sid = "";
@@ -142,35 +142,6 @@ exports.columnMapping = function (data, callback) {
         callback(stdout);
     });
 }
-
-// extraction OgCompanyName And ContractName
-exports.extractionOgAndCtnmEval = function (data, callback) {
-    var ctOgCompanyName = '';
-    var contractNames = []; // contractName Array
-    var exeQueryCount = 0; // query execute count 
-    var result = {}; // function output
-    for (var i in data) {
-        if (data[i].column == 'CTOGCOMPANYNAMENM') {
-            ctOgCompanyName = data[i].text;
-        } else if (data[i].column == 'CTNM') {
-            contractNames.push(data[i].text);
-        } else {
-        }
-    }
-
-    for (var i in contractNames) {
-        commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
-            exeQueryCount++;
-            if (rows.length > 0) {
-                result.data = data
-                result.extOgAndCtnm = rows;
-            }
-            if (exeQueryCount == contractNames.length) {
-                callback(result);
-            }
-        });
-    }
-};
 
 function dataToArgs(data) {
 
