@@ -8,7 +8,7 @@ import cx_Oracle
 import configparser
 import sys
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('./ml/config.ini')
 
 id = config['ORACLE']['ID']
 pw = config['ORACLE']['PW']
@@ -57,9 +57,6 @@ for i, r in enumerate(rows):
 testNpData = np.array(testData)
 testNpTarget = np.array(testTarget)
 
-
-
-
 # 모든 특성이 실수값을 가지고 있다고 지정합니다
 feature_columns = [tf.contrib.layers.real_valued_column("", dimension=7)]
 
@@ -73,18 +70,24 @@ classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns,
 accuracy_score = classifier.evaluate(x=testNpData,
                                      y=testNpTarget)["accuracy"]
 
-print('정확도: {0:f}'.format(accuracy_score))
+# print('정확도: {0:f}'.format(accuracy_score))
 
 new_samples = np.array(
     userData, dtype=float)
 y = list(classifier.predict(new_samples, as_iterable=True))
 
+
+selLabel = "SELECT SEQNUM, DATA, CLASS FROM TBL_FORM_LABEL_MAPPING WHERE DATA = :selData"
+
+retText = ''
 for word in enumerate(sys.argv[1:]):
-    selLabel = "SELECT SEQNUM, DATA, CLASS FROM TBL_FORM_LABEL_MAPPING WHERE DATA = '" + word[1] + "'"
-    curs.execute(selLabel)
-    rows = curs.fetchall()
-    if len(rows) > 0:
-        y[word[0]] = int(rows[0][2])
+    curs.execute(selLabel, selData=word[1])
+    selLabelRes = curs.fetchall()
 
-print(y)
+    if len(selLabelRes) > 0:
+        retText += word[1] + "||" + selLabelRes[0][2] + "^"
+    else:
+        retText += word[1] + "||" + str(y[word[0]]) + "^"
 
+retText = retText[:-1]
+print(retText)
