@@ -331,10 +331,10 @@ var imageUploadEvent = function () {
                
 // [파일정보 -> OCR API]
 function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
-    console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
-    console.log("processImage fileName : " + fileName);
-    console.log("processImage lastYn : " + lastYn);
-    console.log("processImage answerRows : " + JSON.stringify(answerRows));
+    //console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
+    //console.log("processImage fileName : " + fileName);
+    //console.log("processImage lastYn : " + lastYn);
+    //console.log("processImage answerRows : " + JSON.stringify(answerRows));
 
     //$("#progressMsgTitle").html("processing ocr api...");
     //addProgressBar(51, 60);
@@ -577,7 +577,7 @@ function execBatchLearningData(ocrData, data) {
         beforeSend: function () {
         },
         success: function (data) {
-            console.log(JSON.stringify(data));
+            //console.log(JSON.stringify(data));
             
             modifyData = data;
             batchCount++;
@@ -1185,8 +1185,8 @@ var searchBatchLearnData = function (imgIdArray, flag) {
         success: function (data) {
             //$("#progressMsgTitle").html("processing learn data...");
             //addProgressBar(31, 50);
-            console.log("/batchLearning/searchBatchLearnData result :");
-            console.log(data);
+            //console.log("/batchLearning/searchBatchLearnData result :");
+            //console.log(data);
             
             if (flag == "PROCESS_IMAGE") {  // 배치학습 실행
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
