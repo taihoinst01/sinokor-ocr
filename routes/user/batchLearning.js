@@ -548,7 +548,6 @@ router.post('/execBatchLearningData', function (req, res) {
             });
         });
     })
-    })
 
     /* 
     // Machine Learning v.1.0
