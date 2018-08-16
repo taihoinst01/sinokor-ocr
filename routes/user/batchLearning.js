@@ -570,18 +570,8 @@ router.post('/execBatchLearningData', function (req, res) {
     });
     */
 
-    /* 
-    // Machine Learning v.1.1
-    aimain.typoSentenceEval(arg, function (result1) {
-        aimain.formMapping(result1, function (result2) {
-            console.log(result2);
-            res.send(result2);
-        });
-    });
-
-
-
     /*
+    // Machine Learning v.1.1
     console.log("bill ML");
     aimain.billClassificationEval(arg, function (result1) {
         console.log(result1);
