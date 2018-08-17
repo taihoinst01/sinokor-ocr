@@ -125,29 +125,34 @@ exports.formLabelMapping = function (data, callback) {
 exports.formMapping = function (data, callback) {
     var args = dataToSidArgs(data, true);
 
-    var exeformMapping = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
-    exec(exeformMapping, defaults, function (err, stdout, stderr) {
-        if (err) {
-            logger.error.info(`formMapping ml model exec error: ${stderr}`);
-            return;
-        }
+    var isValid = (args.split(',').length == 14) ? true : false;
+    if (isValid) {
+        var exeformMapping = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
+        exec(exeformMapping, defaults, function (err, stdout, stderr) {
+            if (err) {
+                logger.error.info(`formMapping ml model exec error: ${stderr}`);
+                return;
+            }
 
-        var retSplit = stdout.split("^");
-        var formSplit = retSplit[0].split("||");
-        var scoreSplit = retSplit[1].split("||");
+            var retSplit = stdout.split("^");
+            var formSplit = retSplit[0].split("||");
+            var scoreSplit = retSplit[1].split("||");
 
-        if (formSplit[1] != null) {
-            var param = formSplit[1].trim();
-            commonDB.queryParam("select docname, doctype, sampleimagepath from tbl_document_category where doctype = to_number(:doctype)", [param], function (ret, retData) {
-                obj = {};
-                obj.data = retData;
-                obj.docCategory = ret;
-                obj.score = scoreSplit[1] * 100;
+            if (formSplit[1] != null) {
+                var param = formSplit[1].trim();
+                commonDB.queryParam("select docname, doctype, sampleimagepath from tbl_document_category where doctype = to_number(:doctype)", [param], function (ret, retData) {
+                    obj = {};
+                    obj.data = retData;
+                    obj.docCategory = ret;
+                    obj.score = scoreSplit[1] * 100;
 
-                callback(obj);
-            }, data)
-        }
-    });
+                    callback(obj);
+                }, data)
+            }
+        });
+    } else {
+        callback(null);
+    }
 }
 
 // [step4] column mapping ML
@@ -201,20 +206,22 @@ function dataToAllLocationArgs(data) {
 
 function dataToSidArgs(data, isFormMapping) {
     var args = '';
-
+    var arg1, arg2;
     for (var i in data) {
         if (isFormMapping) {
             if (data[i].formLabel == 1) {
-                args += '"' + data[i].sid;
+                arg1 = '"' + data[i].sid;
             } else if (data[i].formLabel == 2) {
-                args += ',' + data[i].sid + '"' + ' ';
+                arg2 = ',' + data[i].sid + '"' + ' ';
             }           
             continue;
         } else {
             args += '"' + data[i].sid + '"' + ' ';
         }
     }
-
+    if (isFormMapping) {
+        args = arg1 + arg2;
+    }
     return args;
 }
 

@@ -2,6 +2,7 @@
 
 "use strict";
 
+var exeBatchLearningCount = 0 // 배치실행 횟수
 var totCount = 0; // 총 이미지 분석 개수
 var ocrCount = 0; // ocr 수행 횟수
 var batchCount = 0; // ml 학습 횟수
@@ -98,7 +99,7 @@ var buttonEvent = function () {
         fn_imageDelete();
     });
     // 배치실행
-    $("#btn_batchTraining").on("click", function () {
+    $("#btn_batchTraining").on("click", function () {       
         fn_batchTraining();
     });
     // 최종학습
@@ -119,18 +120,19 @@ var buttonEvent = function () {
         popupEvent.closePopup();
     });
 
-    // [UI학습팝업] 저장
+    // [UI학습팝업] 학습 진행
     $("#btn_pop_ui_run").on("click", function () {
-        fn_batchUiTraining();
+        //fn_batchUiTraining();
+        execBatchLearning();
     });
     // [UI학습팝업] close popup
     $("#btn_pop_ui_close").on("click", function () {
-        popupEvent.closePopup();
+        popupEvent.batchClosePopup();
     });
 
     // UI train 실행
     $('#uiTrainBtn').on("click", function () {
-        uiTrainingBtn();
+        fn_batchUiTraining();
     });
     
 
@@ -171,10 +173,21 @@ var popupEvent = (function () {
         $('.poplayer').fadeOut();
     }
 
+    var batchClosePopup = function (type) {
+        $('.poplayer').fadeOut();
+        setTimeout(function () {
+            if (!type) {
+                exeBatchLearningCount++;
+            }
+            execBatchLearning();
+        }, 2000);
+    }
+
     return {
         scrollPopup: scrollPopup,
         openPopup: openPopup,
-        closePopup: closePopup
+        closePopup: closePopup,
+        batchClosePopup: batchClosePopup
     };
 }());
 
@@ -194,7 +207,7 @@ var fn_excelUpload = function () {
             console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
             if (data["code"] == "200") {
                 if (data["fileCnt"] > 0 || data["dataCnt"] > 0) {
-                    alert("엑셀 파일의 정답 데이터가 INSERT 되었습니다.")
+                    alert("엑셀 파일의 정답 데이터가 INSERT 되었습니다.");
                 } else {
                     alert("INSERT 할 파일이 없습니다.");
                 }
@@ -494,19 +507,23 @@ function convertLineOcrData(ocrData) {
     return convertArr;
 }
 
-// [OCR API -> CLASSIFICATION -> LABEL MAPPING]
 function execBatchLearning() {
     var dataArr = convertOcrData();
-
-    for (var i in ocrDataArr) {
-        if (ocrDataArr[i].exeML != "Y") {
+    if (exeBatchLearningCount <= ocrDataArr.length - 1) {
+        for (var i = exeBatchLearningCount; i < ocrDataArr.length; i++) {            
+            exeBatchLearningCount = i;
+            console.log(exeBatchLearningCount);
             execBatchLearningData(ocrDataArr[i], dataArr[i]);
-            if ($('#layer2').css('dlsplay') != 'none') break;
+            if ($('#layer2').css('display') != 'none') break;
             if (isFullMatch) { // 모든 컬럼 매핑이 되었거나 계산서가 아닌 경우
-            } else {            
+            } else {
                 popUpLayer2(ocrDataArr[i]);
                 break;
             }
+        }
+
+        if (ocrDataArr.length == i) {
+            ocrDataArr = [];
         }
     }
 }
@@ -529,7 +546,6 @@ function popUpLayer2(ocrData) {
         $('#docPredictionScore').css('color', 'darkred');
     }
 
-
     var mainImgHtml = '';
     mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
     mainImgHtml += '<div id="redNemo">';
@@ -541,7 +557,7 @@ function popUpLayer2(ocrData) {
     mainImgHtml += '</div>';
     $('#img_content').html(mainImgHtml);
     $('#mainImage').css('background-image', 'url("../../uploads/' + ocrData.fileInfo[0].convertFileName + '")');
-
+ 
     var tblTag = '';
     for (var i in modifyData.data) {
         tblTag += '<dl>';
@@ -552,7 +568,7 @@ function popUpLayer2(ocrData) {
         tblTag += '</label>';
         tblTag += '</dt>';
         tblTag += '<dd>';
-        tblTag += appendOptionHtml(modifyData.data[i].column, columnArr)
+        tblTag += appendOptionHtml((modifyData.data[i].column + '') ? modifyData.data[i].column : 999, columnArr)
         tblTag += '</dd>';
         tblTag += '</dl>';
     }
@@ -562,6 +578,7 @@ function popUpLayer2(ocrData) {
 
 // 컬럼 select html 가공 함수
 function appendOptionHtml(targetColumn, columns) {
+
     var selectHTML = '<select>';
     for (var i in columns) {
         var optionHTML = '';
@@ -578,7 +595,7 @@ function appendOptionHtml(targetColumn, columns) {
 }
 
 function execBatchLearningData(ocrData, data) {
-    
+
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
         type: 'post',
@@ -589,13 +606,12 @@ function execBatchLearningData(ocrData, data) {
         async: false,
         beforeSend: function () {
         },
-        success: function (data) {
-            //console.log(JSON.stringify(data));
-            
+        success: function (data) {       
+    
             modifyData = data;
             batchCount++;
 
-            if (data.docCategory.DOCTYPE == 2) {
+            if (data.docCategory && data.docCategory.DOCTYPE == 2) {
                 var docData = data.data;
                 for (var i in docData) {
                     data.data = docData[i];
@@ -607,8 +623,8 @@ function execBatchLearningData(ocrData, data) {
                 }
             } else {
                 compareBatchLearningData(ocrData, data);
-            }
-            
+            }          
+
         },
         error: function (err) {
             console.log(err);
@@ -626,6 +642,7 @@ function compareBatchLearningData(ocrData, data) {
         type: 'post',
         datatype: "json",
         contentType: 'application/json; charset=UTF-8',
+        async: false,
         success: function (columns) {
             columnArr = columns.data;
 
@@ -680,8 +697,7 @@ function compareBatchLearningData(ocrData, data) {
                                 //}
                             } else {// UI Training 체크박스 체크 없으면
                                 isFullMatch = true;
-                                comparedMLAndAnswer(retData, data, ocrData);
-                                //updateBatchLearningData(retData, ocrData, data);
+                                //comparedMLAndAnswer(retData, data, ocrData);
                             }
                         } else {
                             popUpLayer2(ocrData);
@@ -698,6 +714,7 @@ function compareBatchLearningData(ocrData, data) {
     
 }
 
+/*
 // ML 데이터와 정답 데이터를 비교해여 색상 표시
 function comparedMLAndAnswer(retData, mlData, ocrData) {
     var answerData = retData.rows[0];   
@@ -779,6 +796,7 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
         }
     });
 }
+*/
 
 function columToTableNumber(column) {
     switch (column) {
@@ -1084,8 +1102,12 @@ var searchBatchLearnDataList = function (addCond) {
                 appendHtml += `<tr><td colspan="53">조회할 데이터가 없습니다.</td></tr>`;
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
-            if (addCond == "LEARN_N") $("#tbody_batchList_before").empty().append(appendHtml);
-            else $("#tbody_batchList_after").empty().append(appendHtml);
+            if (addCond == "LEARN_N") {
+                $("#tbody_batchList_before").empty().append(appendHtml);
+            } else {
+                $("#tbody_batchList_after").empty().append(appendHtml);
+                compareMLAndAnswer(data);
+            }
             endProgressBar(); // end progressbar
             checkboxEvent(); // refresh checkbox event
             $('input[type=checkbox]').ezMark();
@@ -1097,6 +1119,82 @@ var searchBatchLearnDataList = function (addCond) {
         }
     });
 };
+
+function compareMLAndAnswer(mlData) {
+    if (mlData.length != 0) {
+        var queryIn = "(";
+        for (var i in mlData) {
+            queryIn += "'" + mlData[i].ORIGINFILENAME + "'";
+            queryIn += (i == mlData.length - 1) ? "" : ",";
+        }
+        queryIn += ")";
+        $.ajax({
+            url: '/batchLearning/selectMultiBatchAnswerDataToFilePath',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({ 'queryIn': queryIn }),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+            },
+            success: function (data) {
+                $('#tbody_batchList_after tr').each(function (i, el) {
+                    for (var i in data) {
+                        if ($(el).children('td').eq(0).text().trim() == data[i].FILENAME) {
+                            for (var j = 2; j < $(el).children('td').length; j++) {
+                                if (j == 4 || j == 5) {
+                                    $(el).children('td').eq(j).css('background-color', 'lightgray');
+                                    continue;
+                                }      
+                                if ($(el).children('td').eq(j).text() == '') {
+                                    $(el).children('td').eq(j).css('background-color', 'red');
+                                }
+                            }
+
+
+                            break;
+                        }
+                    }
+                    // ML과 정답 데이터 값이 다른 것 표시    
+                    var misMatch = [];
+                    for (var i in mlData) {
+                        for (var j in data) {
+                            if (mlData[i].ORIGINFILENAME == data[j].FILENAME) {
+                                var keyArr = Object.keys(mlData[i]);
+                                for (var k in keyArr) {
+                                    console.log(keyArr[k]);
+                                    if (mlData[i][keyArr[k]] && data[j][keyArr[k]] && mlData[i][keyArr[k]] != '' &&
+                                        data[j][keyArr[k]] != '' && data[j][keyArr[k]] != mlData[i][keyArr[k]]) {
+                                        misMatch.push(keyArr[k]);
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    for (var i in misMatch) {
+                        $(el).children('td').eq(columToTableNumber(misMatch[i])).css('background-color', 'red');
+                    }
+                });
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
+    /*
+    $('#tbody_batchList_after tr').each(function (i, el) {
+        if (i == 4 || i == 5) {
+            $(el).children('td').css('background-color', 'lightgray');
+        }
+        if ($(el).children('td').text() == '') {
+            $(el).children('td').css('background-color', 'red');
+        } else {
+
+        }
+    });
+    */
+}
 
 function fn_viewImageData(fileName, obj) {
     
@@ -1402,6 +1500,7 @@ var fn_batchTraining = function () {
     popupEvent.openPopup();
 };
 var fn_popBatchRun = function () {
+    exeBatchLearningCount = 0;
     var imgIdArray = [];
     var learningMethodNum = $("#learningMethodNum").val();
 
@@ -1421,8 +1520,8 @@ var fn_popBatchRun = function () {
                     searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
                 }
             } else {
-                alert("Before Training 상태에서만 배치학습이 가능합니다.");
-                return;
+                //alert("Before Training 상태에서만 배치학습이 가능합니다.");
+                //return;
             }
             break;
         case "1":        // 선택한 파일 학습
@@ -1470,10 +1569,10 @@ var fn_uiTraining = function () {
     imgIdArray.push(imgId);
     processImage_TEST("26.jpg");
     */
-    if (addCond == "LEARN_Y") {
-        let imgId = "";
-        let chkCnt = 0;
-        $("input[name=listCheck_after]").each(function (index, entry) {
+    //if (addCond == "LEARN_Y") {
+        //let imgId = "";
+        //let chkCnt = 0;
+        $("input[name=listCheck_before]").each(function (index, entry) {
             if ($(this).is(":checked")) {
                 imgId = $(this).val();
                 chkCnt++;
@@ -1489,10 +1588,10 @@ var fn_uiTraining = function () {
             imgIdArray.push(imgId);
             searchBatchLearnData(imgIdArray, "UI_TRAINING");
         }
-    } else {
-        alert("After Training 상태에서만 UI학습이 가능합니다.");
-        return;
-    }
+    //} else {
+    //    alert("After Training 상태에서만 UI학습이 가능합니다.");
+    //    return;
+    //}
 
 };
 
@@ -1582,16 +1681,38 @@ var fn_batchUiTraining = function () {
 
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
+    startProgressBar();
+    $('#progressMsgTitle').html('양식 라벨 처리 중..');
+    addProgressBar(1, 20);
+    insertDocLabelMapping(data, callbackInsertDocLabelMapping);
+}
 
-    insertDocLabelMapping(data);
-    insertDocMapping(data);
-    insertColMapping(data);
-    insertContractMapping(data);
-    
+var callbackInsertDocLabelMapping = function (data) {
+    $('#progressMsgTitle').html('양식 분류 처리 중..');
+    addProgressBar(21, 40);
+    insertDocMapping(data, callbackInsertDocMapping);
+}
+
+var callbackInsertDocMapping = function (data) {
+    $('#progressMsgTitle').html('라벨 분류 처리 중..');
+    addProgressBar(41, 60);
+    insertColMapping(data, callbackInsertColMapping);
+}
+
+var callbackInsertColMapping = function (data) {
+    $('#progressMsgTitle').html('DB 컬럼 조회 중..');
+    addProgressBar(61, 80);
+    insertContractMapping(data, callbackInsertContractMapping);
+}
+
+var callbackInsertContractMapping = function () {
+    $('#progressMsgTitle').html('UI TRAINING..');
+    uiTrainingBtn();
 }
 
 // UI레이어 학습 버튼 클릭 이벤트
 var uiTrainingBtn = function () {
+    
     $.ajax({
         url: '/batchLearning/uitraining',
         type: 'post',
@@ -1600,25 +1721,29 @@ var uiTrainingBtn = function () {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             if (data.code == 200) {
+                addProgressBar(81, 100);
                 alert(data.message);
+                popupEvent.batchClosePopup('retrain');
             }
         },
         error: function (err) {
             console.log(err);
         }
     });
+    
 }
 
 // 양식 레이블 매핑 ml 데이터 insert
-function insertDocLabelMapping(data) {
+function insertDocLabelMapping(data, callback) {
     $.ajax({
         url: '/batchLearning/insertDocLabelMapping',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': data  }),
         contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log(data);
+        success: function (res) {
+            console.log(res);
+            callback(data);
         },
         error: function (err) {
             console.log(err);
@@ -1627,21 +1752,29 @@ function insertDocLabelMapping(data) {
 }
 
 // 양식 매핑 ml 데이터 insert
-function insertDocMapping(data) {
+function insertDocMapping(data, callback) {
     var param = [];
     for (var i in data.data) {
-        if (data.data[i].column == 0 || data.data[i].column == 1) {
+        if (data.data[i].column == 0) {
             param.push(data.data[i]);
         }
     }
+    for (var i in data.data) {
+        if (data.data[i].column == 1) {
+            param.push(data.data[i]);
+        }
+    }
+    var dacCategory = JSON.parse($('#docData').val());
+
     $.ajax({
         url: '/batchLearning/insertDocMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
+        data: JSON.stringify({ 'data': param, 'docCategory': dacCategory }),
         contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log(data);
+        success: function (res) {
+            console.log(res);
+            callback(data);
         },
         error: function (err) {
             console.log(err);
@@ -1650,7 +1783,7 @@ function insertDocMapping(data) {
 }
 
 // 컬럼 매핑 ml 데이터 insert
-function insertColMapping(data) {
+function insertColMapping(data, callback) {
     var param = [];
     for (var i in data.data) {
         if (data.data[i].column != 999) {
@@ -1658,14 +1791,17 @@ function insertColMapping(data) {
         }
     }
 
+    var dacCategory = JSON.parse($('#docData').val());
+
     $.ajax({
         url: '/batchLearning/insertColMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
+        data: JSON.stringify({ 'data': param, 'docCategory': dacCategory }),
         contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log(data);
+        success: function (res) {
+            console.log(res);
+            callback(data);
         },
         error: function (err) {
             console.log(err);
@@ -1674,15 +1810,16 @@ function insertColMapping(data) {
 }
 
 // 계약명 매핑 insert
-function insertContractMapping(data) {
+function insertContractMapping(data,callback) {
     $.ajax({
         url: '/batchLearning/insertContractMapping',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': data, 'fileName': $('#imgNameTag').text().split('.')[0] + '.tif' }),
         contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log(data);
+        success: function (res) {
+            console.log(res);
+            callback(data);
         },
         error: function (err) {
             console.log(err);
@@ -1702,7 +1839,9 @@ function docComparePopup(imgIndex, obj) {
 //문서 비교 popup 버튼 클릭 이벤트
 function docComparePopup2() {
     var imgId = $('#docName').html();
-    $('#originImg').attr('src', '../../' + modifyData.docCategory[0].SAMPLEIMAGEPATH);
+    if (modifyData.docCategory) {
+        $('#originImg').attr('src', '../../' + modifyData.docCategory[0].SAMPLEIMAGEPATH);
+    }
     $('#mlPredictionPercent').val($('#docPredictionScore').html());
     $('#mlPredictionDocName').val($('#docName').html());
     //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
@@ -1768,7 +1907,7 @@ function popUpSearchDocCategory() {
                 data: JSON.stringify({ 'keyword': keyword }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
-                    console.log(data);
+                    $('#docData').val(JSON.stringify(data));
                     $('#docSearchResult').html('');
                     $('#countCurrent').html('1');
                     $('.button_control10').attr('disabled', true);
@@ -1808,7 +1947,14 @@ function popUpSearchDocCategory() {
 // 팝업 확인 이벤트
 function popUpRunEvent() {
     $('#btn_pop_doc_run').click(function (e) {
-
+        var docData = JSON.parse($('#docData').val());
+        for (var i in docData) {
+            if ($('#searchResultDocName').val() == docData[i].DOCNAME) {
+                $('#docName').text(docData[i].DOCNAME);
+                $('#docData').val(JSON.stringify(docData[i]));
+                break;
+            }
+        }
         e.stopPropagation();
         e.preventDefault();
     });

@@ -99,8 +99,8 @@
                     </div>
                     <!-- // 조회조건 목록 -->
                     <!-- 문서 기본정보 영역 -->
-                    <div id="div_base" class="box_content_T_03 invocieR_div03">
-                        <h3 class="tits titsK00"><span id="">문서 기본정보</span></h3>
+                    <div id="div_base" class="box_content_T_03 invocieR_div03" style="display:none">
+                        <h3 class="tits titsK00"><span id="span_document_base">문서 기본정보</span></h3>
                         <table class="invoiceR_tblBackground" cellspacing="0">
                             <tr>
                                 <td>
@@ -222,7 +222,7 @@
                     <h3 class="tits"><span>양식이미지</span></h3>
                     <div id="div_view_image" class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
                         <!--<img src="publish/image/sample01.jpg" alt="샘플이미지" />-->
-                        <ul id="imageBox"></ul>
+                        <img id="main_image" src="" />
                     </div>
                     <div class="box_imgtmb">
                         <button type="button" id="thumb-prev" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
@@ -233,10 +233,6 @@
                                     <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
                                     <span>sample02.png</span>
                                 </li>
-                                <li>
-                                    <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                                    <span>sample01.png</span>
-                                </li>
                                 -->
                             </ul>
                         </div>
@@ -246,8 +242,8 @@
                 </div>
                 <!-- // 양식이미지 -->
                 <!-- 인식결과 영역 -->
-                <div id="div_base" class="box_content_T_05">
-                    <h3 class="tits titsK00"><span id="span_document">인식 결과</span></h3>
+                <div id="div_dtl" class="box_content_T_05" style="display:none">
+                    <h3 class="tits titsK00"><span id="span_document_dtl">인식 결과</span></h3>
                     <table class="invoiceR_tblBackground2">
                         <tr>
                             <td>
@@ -318,7 +314,7 @@
                                                     <th scope="row">GROSS PREMIUM</th>
                                                     <th scope="row">PREMIUM</th>
                                                     <th scope="row">PREMIUM P/F ENT</th>
-                                                    <th scope="row">v</th>
+                                                    <th scope="row">PREMIUM P/F WOS</th>
                                                     <th scope="row">XOL PREMIUM</th>
                                                     <th scope="row">RETURN PREMIUM</th>
                                                     <th scope="row">GROSS COMMISSION</th>
@@ -400,7 +396,7 @@
                                                 <col style="width:100px" />
                                                 <col style="width:100px" />
                                             </colgroup>
-                                            <tbody id="tbody_dtlInfo">
+                                            <tbody id="tbody_dtlList">
                                                 <!--
                                                 <tr>
                                                     <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>

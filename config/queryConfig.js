@@ -1,7 +1,7 @@
 var count = {
     startQuery: "SELECT COUNT(*) AS cnt FROM ( ",
     endQuery: " ) "
-}
+};
 
 var sessionConfig = {
     loginQuery:
@@ -32,7 +32,7 @@ var sessionConfig = {
            WHERE APPROVALSTATE = 'P'
              AND DOCUMENTMANAGER = :id
         `
-}
+};
 
 var userMngConfig = {
     selUserList:
@@ -85,8 +85,36 @@ var invoiceRegistrationConfig = {
         `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO,
                 DECODE(APPROVALSTATE, 'P', 'P', 'C', 'C', 'R', 'R', 'U', 'U', '') AS APPROVALSTATE_STR
             FROM TBL_DOCUMENT
-           WHERE 1=1 `
-}
+           WHERE 1=1 `,
+    selectDocumentDtlList:
+        `SELECT A.SEQNUM, 
+                A.DOCNUM, A.PAGECNT, A.APPROVALSTATE, A.DEADLINEDT, A.REGDT, A.FAOTEAM, A.FAOPART, A.APPROVALREPORTER, A.DOCUMENTMANAGER, A.MEMO,
+                B.SEQNUM AS SEQNUM_DTL,
+                B.IMGID, B.IMGFILESTARTNO, B.IMGFILEENDNO, B.ENTRYNO, B.STATEMENTDIV, B.CONTRACTNUM, 
+                B.OGCOMPANYCODE, B.OGCOMPANYCODECOORDI, B.OGCOMPANYNAME, B.OGCOMPANYNAMECOORDI, 
+                B.BROKERCODE, B.BROKERCODECOORDI, B.BROKERNAME, B.BROKERNAMECOORDI, 
+                B.CTNM, B.CTNMCOORDI, B.INSSTDT, B.INSSTDTCOORDI, B.INSENDDT, B.INSENDDTCOORDI, B.UY, B.UYCOORDI, 
+                B.CURCD, B.CURCDCOORDI, B.PAIDPERCENT, B.PAIDPERCENTCOORDI, B.PAIDSHARE, B.PAIDSHARECOORDI, 
+                B.OSLPERCENT, B.OSLPERCENTCOORDI, B.OSLSHARE, B.OSLSHARECOORDI, B.GROSSPM, B.GROSSPMCOORDI, 
+                B.PM, B.PMCOORDI, B.PMPFEND, B.PMPFENDCOORDI, B.PMPFWOS, B.PMPFWOSCOORDI, B.XOLPM, B.XOLPMCOORDI, 
+                B.RETURNPM, B.RETURNPMCOORDI, B.GROSSCN, B.GROSSCNCOORDI, B.CN, B.CNCOORDI, B.PROFITCN, B.PROFITCNCOORDI, 
+                B.BROKERAGE, B.BROKERAGECOORDI, B.TAX, B.TAXCOORDI, B.OVERRIDINGCOM, B.OVERRIDINGCOMCOORDI, B.CHARGE, B.CHARGECOORDI, 
+                B.PMRESERVERTD1, B.PMRESERVERTD1COORDI, B.PFPMRESERVERTD1, B.PFPMRESERVERTD1COORDI, 
+                B.PMRESERVERTD2, B.PMRESERVERTD2COORDI, B.PFPMRESERVERTD2, B.PFPMRESERVERTD2COORDI, 
+                B.CLAIM, B.CLAIMCOORDI, B.LOSSRECOVERY, B.LOSSRECOVERYCOORDI, B.CASHLOSS, B.CASHLOSSCOORDI, B.CASHLOSSRD, B.CASHLOSSRDCOORDI, 
+                B.LOSSRR, B.LOSSRRCOORDI, B.LOSSRR2, B.LOSSRR2COORDI, B.LOSSPFEND, B.LOSSPFENDCOORDI, B.LOSSPFWOA, B.LOSSPFWOACOORDI, 
+                B.INTEREST, B.INTERESTCOORDI, B.TAXON, B.TAXONCOORDI, B.MISCELLANEOUS, B.MISCELLANEOUSCOORDI, B.PMBL, B.PMBLCOORDI, B.CMBL, B.CMBLCOORDI, 
+                B.NTBL, B.NTBLCOORDI, B.CSCOSARFRNCNNT2, B.CSCOSARFRNCNNT2COORDI 
+           FROM TBL_DOCUMENT_DTL B
+     LEFT OUTER JOIN TBL_DOCUMENT A ON A.DOCNUM = B.DOCNUM
+          WHERE 1=1 `,
+    selectDocumentImageList:
+        `SELECT A.SEQNUM, A.IMGID, A.FILEPATH, A.ORIGINFILENAME, A.SERVERFILENAME, A.FILEEXTENSION, 
+                A.FILESIZE, A.CONTENTTYPE, A.FILETYPE, A.FILEWIDTH, A.FILEHEIGHT, A.REGID, A.REGDATE 
+           FROM TBL_OCR_FILE_DTL A,
+                TBL_DOCUMENT_DTL B
+          WHERE A.IMGID = B.IMGID `
+};
 
 var myApprovalConfig = {
     selectApprovalList:
@@ -98,12 +126,21 @@ var myApprovalConfig = {
         `SELECT A.SEQNUM, 
                 A.DOCNUM, A.PAGECNT, A.APPROVALSTATE, A.DEADLINEDT, A.REGDT, A.FAOTEAM, A.FAOPART, A.APPROVALREPORTER, A.DOCUMENTMANAGER, A.MEMO,
                 B.SEQNUM AS SEQNUM_DTL,
-                B.IMGID, B.IMGFILESTARTNO, B.IMGFILEENDNO, B.ENTRYNO, B.STATEMENTDIV, B.CONTRACTNUM, B.OGCOMPANYCODE, B.OGCOMPANYNAME, 
-                B.BROKERCODE, B.BROKERNAME, B.CTNM, B.INSSTDT, B.INSENDDT, B.UY, B.CURCD, B.PAIDPERCENT, B.PAIDSHARE, B.OSLPERCENT, 
-                B.OSLSHARE, B.GROSSPM, B.PM, B.PMPFEND, B.PMPFWOS, B.XOLPM, B.RETURNPM, B.GROSSCN, B.CN, B.PROFITCN, B.BROKERAGE, B.TAX, 
-                B.OVERRIDINGCOM, B.CHARGE, B.PMRESERVERTD1, B.PFPMRESERVERTD1, B.PMRESERVERTD2, B.PFPMRESERVERTD2, B.CLAIM, B.LOSSRECOVERY, 
-                B.CASHLOSS, B.CASHLOSSRD, B.LOSSRR, B.LOSSRR2, B.LOSSPFEND, B.LOSSPFWOA, B.INTEREST, B.TAXON, B.MISCELLANEOUS, B.PMBL, B.CMBL, B.NTBL, 
-                B.CSCOSARFRNCNNT2 
+                B.IMGID, B.IMGFILESTARTNO, B.IMGFILEENDNO, B.ENTRYNO, B.STATEMENTDIV, B.CONTRACTNUM, 
+                B.OGCOMPANYCODE, B.OGCOMPANYCODECOORDI, B.OGCOMPANYNAME, B.OGCOMPANYNAMECOORDI, 
+                B.BROKERCODE, B.BROKERCODECOORDI, B.BROKERNAME, B.BROKERNAMECOORDI, 
+                B.CTNM, B.CTNMCOORDI, B.INSSTDT, B.INSSTDTCOORDI, B.INSENDDT, B.INSENDDTCOORDI, B.UY, B.UYCOORDI, 
+                B.CURCD, B.CURCDCOORDI, B.PAIDPERCENT, B.PAIDPERCENTCOORDI, B.PAIDSHARE, B.PAIDSHARECOORDI, 
+                B.OSLPERCENT, B.OSLPERCENTCOORDI, B.OSLSHARE, B.OSLSHARECOORDI, B.GROSSPM, B.GROSSPMCOORDI, 
+                B.PM, B.PMCOORDI, B.PMPFEND, B.PMPFENDCOORDI, B.PMPFWOS, B.PMPFWOSCOORDI, B.XOLPM, B.XOLPMCOORDI, 
+                B.RETURNPM, B.RETURNPMCOORDI, B.GROSSCN, B.GROSSCNCOORDI, B.CN, B.CNCOORDI, B.PROFITCN, B.PROFITCNCOORDI, 
+                B.BROKERAGE, B.BROKERAGECOORDI, B.TAX, B.TAXCOORDI, B.OVERRIDINGCOM, B.OVERRIDINGCOMCOORDI, B.CHARGE, B.CHARGECOORDI, 
+                B.PMRESERVERTD1, B.PMRESERVERTD1COORDI, B.PFPMRESERVERTD1, B.PFPMRESERVERTD1COORDI, 
+                B.PMRESERVERTD2, B.PMRESERVERTD2COORDI, B.PFPMRESERVERTD2, B.PFPMRESERVERTD2COORDI, 
+                B.CLAIM, B.CLAIMCOORDI, B.LOSSRECOVERY, B.LOSSRECOVERYCOORDI, B.CASHLOSS, B.CASHLOSSCOORDI, B.CASHLOSSRD, B.CASHLOSSRDCOORDI, 
+                B.LOSSRR, B.LOSSRRCOORDI, B.LOSSRR2, B.LOSSRR2COORDI, B.LOSSPFEND, B.LOSSPFENDCOORDI, B.LOSSPFWOA, B.LOSSPFWOACOORDI, 
+                B.INTEREST, B.INTERESTCOORDI, B.TAXON, B.TAXONCOORDI, B.MISCELLANEOUS, B.MISCELLANEOUSCOORDI, B.PMBL, B.PMBLCOORDI, B.CMBL, B.CMBLCOORDI, 
+                B.NTBL, B.NTBLCOORDI, B.CSCOSARFRNCNNT2, B.CSCOSARFRNCNNT2COORDI 
            FROM TBL_DOCUMENT_DTL B
      LEFT OUTER JOIN TBL_DOCUMENT A ON A.DOCNUM = B.DOCNUM
           WHERE 1=1 `,
@@ -124,7 +161,7 @@ var myApprovalConfig = {
             1=1 `,
     updateDocument:
         `UPDATE TBL_DOCUMENT SET `
-}
+};
 
 var documentConfig = {};
 
@@ -282,7 +319,7 @@ var batchLearningConfig = {
          SET
             status = 'D'
          WHERE imgId IN `,
-    selectBatchAnswerFile: 
+    selectBatchAnswerFile:
         `SELECT
             imgId, pageNum, filePath, totalCount
          FROM
@@ -360,8 +397,23 @@ var batchLearningConfig = {
         WHERE
             F.imgId = D.imgId
             AND
-            F.filePath = :filePath `
-}
+            F.filePath = :filePath `,
+    selectMultiBatchAnswerDataToFilePath:
+        `SELECT
+            D.*, F.filePath AS fileName
+         FROM
+            (SELECT
+                SUBSTR(filePath, INSTR(filePath, '/', -1) + 1, LENGTH(filePath)) AS filePath,
+                imgId
+             FROM
+                TBL_BATCH_ANSWER_FILE 
+            ) F,
+            TBL_BATCH_ANSWER_DATA D
+        WHERE
+            F.imgId = D.imgId
+            AND
+            F.filePath IN `
+};
 
 var uiLearningConfig = {
     insertTextClassification:
@@ -445,7 +497,7 @@ var uiLearningConfig = {
             TBL_OCR_TYPO_CORRECT(seqNum, userId, originWord, correctedWord, convertedImageFileName, correctorType) 
          VALUES
             (seq_ocr_typo_correct.nextval, :userid, :originWord, :correctWord, :fileName, :correctorType) `
-}
+};
 
 var commonConfig = {
     insertCommError:
@@ -463,7 +515,7 @@ var commonConfig = {
             tbl_ocr_file_dtl(seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize, contentType, fileType, regId, regDate)
          VALUES
             (seq_ocr_file_dtl.nextval, :imgId, :filePath, :originFileName, :serverFileName, :fileExtension, :fileSize, :contentType, :fileType, :regId, sysdate) `
-}
+};
 
 var mlConfig = {
     selectDocCategory:
@@ -503,7 +555,7 @@ var mlConfig = {
             tbl_document_category
          WHERE
             docType = :docType `
-}
+};
 
 module.exports = {
     count: count,
@@ -517,4 +569,4 @@ module.exports = {
     uiLearningConfig: uiLearningConfig,
     commonConfig: commonConfig,
     mlConfig: mlConfig
-}
+};

@@ -77,8 +77,49 @@ var fnSearchDocumentList = function (req, res) {
     var listQuery = documentListQuery + condQuery + orderQuery;
     console.log("base listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackDocumentList, req, res);
-    
-}
+
+};
+
+// [POST] 문서 상세 리스트 조회
+router.post('/searchDocumentDtlList', function (req, res) {
+    if (req.isAuthenticated()) fnSearchDocumentDtlList(req, res);
+});
+var callbackDocumentDtlList = function (rows, req, res) {
+    if (req.isAuthenticated()) res.send(rows);
+};
+var fnSearchDocumentDtlList = function (req, res) {
+    var param = {
+        seqNum: req.body.seqNum,
+        docNum: req.body.docNum
+    };
+    var condQuery = ` AND A.DOCNUM = '${param.docNum}' `;
+    var orderQuery = ` ORDER BY B.SEQNUM ASC `;
+
+    var documentDtlListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentDtlList;
+    var listQuery = documentDtlListQuery + condQuery + orderQuery;
+    console.log("dtl listQuery : " + listQuery);
+    commonDB.reqQuery(listQuery, callbackDocumentDtlList, req, res);
+};
+
+// [POST] 문서 이미지 리스트 조회 
+router.post('/searchDocumentImageList', function (req, res) {
+    if (req.isAuthenticated()) fnSearchDocumentImageList(req, res);
+});
+var callbackDocumentImageList = function (rows, req, res) {
+    if (req.isAuthenticated()) res.send(rows);
+};
+var fnSearchDocumentImageList = function (req, res) {
+    var param = {
+        imgId: req.body.imgId
+    };
+    var condQuery = ` AND A.IMGID = '${param.imgId}' `;
+    var orderQuery = ` ORDER BY A.SEQNUM ASC `;
+
+    var documentImageListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentImageList;
+    var listQuery = documentImageListQuery + condQuery + orderQuery;
+    console.log("img listQuery : " + listQuery);
+    commonDB.reqQuery(listQuery, callbackDocumentImageList, req, res);
+};
 
 /****************************************************************************************
  * FILE UPLOAD

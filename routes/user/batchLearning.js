@@ -793,7 +793,7 @@ var callbackInsertBatchLearningData = function (rows, req, res) {
 };
 router.post('/updateBatchLearningData', function (req, res) {
     var data = req.body.mldata.data;
-    var billInfo = req.body.mldata.docCategory;
+    var billInfo = req.body.mldata.docCategory[0];
     var fileInfos = req.body.ocrData.fileInfo;
     var fileToPage = req.body.ocrData.fileToPage;
     var status = '';
@@ -810,79 +810,79 @@ router.post('/updateBatchLearningData', function (req, res) {
     dataCod.STATEMENTDIV = billInfo.DOCNAME;
 
     for (var i in data) {
-        if (data[i].column == "CTOGCOMPANYNAMENM") {
+        if (data[i].column == "CTOGCOMPANYNAMENM" || data[i].column == "0") {
             dataCod.CTOGCOMPANYNAMENM = data[i].text;
-        } else if (data[i].column == "CTNM") {
+        } else if (data[i].column == "CTNM" || data[i].column == "1") {
             dataCod.CTNM = data[i].text;
-        } else if (data[i].column == "UY") {
+        } else if (data[i].column == "UY" || data[i].column == "2") {
             dataCod.UY = data[i].text;
-        } else if (data[i].column == "CONTRACTNUM") {
+        } else if (data[i].column == "CONTRACTNUM" || data[i].column == "3") {
             dataCod.CONTRACTNUM = data[i].text;
-        } else if (data[i].column == "CURCD") {
+        } else if (data[i].column == "CURCD" || data[i].column == "4") {
             dataCod.CURCD = data[i].text;
-        } else if (data[i].column == "PAIDPERCENT") {
+        } else if (data[i].column == "PAIDPERCENT" || data[i].column == "5") {
             dataCod.PAIDPERCENT = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PAIDSHARE") {
+        } else if (data[i].column == "PAIDSHARE" || data[i].column == "6") {
             dataCod.PAIDSHARE = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "OSLPERCENT") {
+        } else if (data[i].column == "OSLPERCENT" || data[i].column == "7") {
             dataCod.OSLPERCENT = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "OSLSHARE") {
+        } else if (data[i].column == "OSLSHARE" || data[i].column == "8") {
             dataCod.OSLSHARE = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "GROSSPM") {
             dataCod.GROSSPM = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PM") {
+        } else if (data[i].column == "PM" || data[i].column == "9") {
             dataCod.PM = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PMPFEND") {
+        } else if (data[i].column == "PMPFEND" || data[i].column == "10") {
             dataCod.PMPFEND = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PMPFWOS") {
+        } else if (data[i].column == "PMPFWOS" || data[i].column == "11") {
             dataCod.PMPFWOS = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "XOLPM") {
+        } else if (data[i].column == "XOLPM" || data[i].column == "12") {
             dataCod.XOLPM = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "RETURNPM") {
+        } else if (data[i].column == "RETURNPM" || data[i].column == "13") {
             dataCod.RETURNPM = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "GROSSCN") {
             dataCod.GROSSCN = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CN") {
+        } else if (data[i].column == "CN" || data[i].column == "14") {
             dataCod.CN = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PROFITCN") {
+        } else if (data[i].column == "PROFITCN" || data[i].column == "15") {
             dataCod.PROFITCN = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "BROKERAGE") {
+        } else if (data[i].column == "BROKERAGE" || data[i].column == "16") {
             dataCod.BROKERAGE = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "TAX") {
+        } else if (data[i].column == "TAX" || data[i].column == "17") {
             dataCod.TAX = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "OVERRIDINGCOM") {
+        } else if (data[i].column == "OVERRIDINGCOM" || data[i].column == "18") {
             dataCod.OVERRIDINGCOM = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CHARGE") {
+        } else if (data[i].column == "CHARGE" || data[i].column == "19") {
             dataCod.CHARGE = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PMRESERVERTD") {
+        } else if (data[i].column == "PMRESERVERTD" || data[i].column == "20") {
             dataCod.PMRESERVERTD = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PFPMRESERVERTD") {
+        } else if (data[i].column == "PFPMRESERVERTD" || data[i].column == "21") {
             dataCod.PFPMRESERVERTD = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PMRESERVERLD") {
+        } else if (data[i].column == "PMRESERVERLD" || data[i].column == "22") {
             dataCod.PMRESERVERLD = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PFPMRESERVERLD") {
+        } else if (data[i].column == "PFPMRESERVERLD" || data[i].column == "23") {
             dataCod.PFPMRESERVERLD = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CLAIM") {
+        } else if (data[i].column == "CLAIM" || data[i].column == "24") {
             dataCod.CLAIM = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "LOSSRECOVERY") {
+        } else if (data[i].column == "LOSSRECOVERY" || data[i].column == "25") {
             dataCod.LOSSRECOVERY = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CASHLOSS") {
+        } else if (data[i].column == "CASHLOSS" || data[i].column == "26") {
             dataCod.CASHLOSS = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CASHLOSSRD") {
+        } else if (data[i].column == "CASHLOSSRD" || data[i].column == "27") {
             dataCod.CASHLOSSRD = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "LOSSRR") {
+        } else if (data[i].column == "LOSSRR" || data[i].column == "28") {
             dataCod.LOSSRR = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "LOSSRR2") {
+        } else if (data[i].column == "LOSSRR2" || data[i].column == "29") {
             dataCod.LOSSRR2 = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "LOSSPFEND") {
+        } else if (data[i].column == "LOSSPFEND" || data[i].column == "30") {
             dataCod.LOSSPFEND = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "LOSSPFWOA") {
+        } else if (data[i].column == "LOSSPFWOA" || data[i].column == "31") {
             dataCod.LOSSPFWOA = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "INTEREST") {
+        } else if (data[i].column == "INTEREST" || data[i].column == "32") {
             dataCod.INTEREST = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "TAXON") {
+        } else if (data[i].column == "TAXON" || data[i].column == "33") {
             dataCod.TAXON = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "MISCELLANEOUS") {
+        } else if (data[i].column == "MISCELLANEOUS" || data[i].column == "34") {
             dataCod.MISCELLANEOUS = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "PMBL") {
             dataCod.PMBL = data[i].text.replace(/ |,/g, '');
@@ -890,7 +890,7 @@ router.post('/updateBatchLearningData', function (req, res) {
             dataCod.CMBL = data[i].text.replace(/ |,/g, '');
         } else if (data[i].column == "NTBL") {
             dataCod.NTBL = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CSCOSARFRNCNNT2") {
+        } else if (data[i].column == "CSCOSARFRNCNNT2" || data[i].column == "35") {
             dataCod.CSCOSARFRNCNNT2 = data[i].text;
         }
     }
@@ -1147,7 +1147,7 @@ var callbackSelectContractMapping = function (rows, dataObj, req, res) {
         dataObj.ASCTNM = rows[0].ASCTNM;
         dataObj.MAPPINGCTNM = rows[0].EXTCTNM
         commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
-            dataObj.fileToPage.IMGID, dataObj.PM, dataObj.CN
+            dataObj.fileToPage.IMGID, commonUtil.nvl2(dataObj.PM.replace(",", "").replace(/(\s*)/g, "").trim(), 0), commonUtil.nvl2(dataObj.CN.replace(",", "").replace(/(\s*)/g, "").trim(), 0)
         ], callbackcompareBatchLearningData, dataObj, req, res);
     } else {
         res.send({ isContractMapping : false});
@@ -1190,6 +1190,15 @@ router.post('/uiTrainBatchLearningData', function (req, res) {
         }
     });
 
+});
+
+var callbackSelectMultiBatchAnswerDataToFilePath = function (rows, req, res) {
+    res.send(rows);
+};
+router.post('/selectMultiBatchAnswerDataToFilePath', function (req, res) {
+    var queryIn = req.body.queryIn;
+
+    commonDB.reqQuery(queryConfig.batchLearningConfig.selectMultiBatchAnswerDataToFilePath + queryIn, callbackSelectMultiBatchAnswerDataToFilePath, req, res);
 });
 
 async function runTypoDomainTrain(data, callbackTypoDomainTrain) {
