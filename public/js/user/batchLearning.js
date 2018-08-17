@@ -189,7 +189,7 @@ var fn_excelUpload = function () {
             console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
             if (data["code"] == "200") {
                 if (data["fileCnt"] > 0 || data["dataCnt"] > 0) {
-                    alert("엑셀 파일의 정답 데이터가 INSERT 되었습니다.")
+                    alert("엑셀 파일의 정답 데이터가 INSERT 되었습니다.");
                 } else {
                     alert("INSERT 할 파일이 없습니다.");
                 }
@@ -515,6 +515,14 @@ function popUpLayer2(ocrData) {
     $('#docName').text(modifyData.docCategory[0].DOCNAME);
     $('#docPredictionScore').text(modifyData.score + '%');
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
+
+    if (modifyData.score >= 90) {
+        $('#docName').css('color', 'dodgerblue');
+        $('#docPredictionScore').css('color', 'dodgerblue');
+    } else {
+        $('#docName').css('color', 'darkred');
+        $('#docPredictionScore').css('color', 'darkred');
+    }
 
 
     var mainImgHtml = '';
@@ -1408,8 +1416,8 @@ var fn_popBatchRun = function () {
                     searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
                 }
             } else {
-                alert("Before Training 상태에서만 배치학습이 가능합니다.");
-                return;
+                //alert("Before Training 상태에서만 배치학습이 가능합니다.");
+                //return;
             }
             break;
         case "1":        // 선택한 파일 학습
@@ -1457,10 +1465,10 @@ var fn_uiTraining = function () {
     imgIdArray.push(imgId);
     processImage_TEST("26.jpg");
     */
-    if (addCond == "LEARN_Y") {
-        let imgId = "";
-        let chkCnt = 0;
-        $("input[name=listCheck_after]").each(function (index, entry) {
+    //if (addCond == "LEARN_Y") {
+       //let imgId = "";
+       //let chkCnt = 0;
+        $("input[name=listCheck_before]").each(function (index, entry) {
             if ($(this).is(":checked")) {
                 imgId = $(this).val();
                 chkCnt++;
@@ -1476,10 +1484,10 @@ var fn_uiTraining = function () {
             imgIdArray.push(imgId);
             searchBatchLearnData(imgIdArray, "UI_TRAINING");
         }
-    } else {
-        alert("After Training 상태에서만 UI학습이 가능합니다.");
-        return;
-    }
+    //} else {
+    //    alert("After Training 상태에서만 UI학습이 가능합니다.");
+    //    return;
+    //}
 
 };
 

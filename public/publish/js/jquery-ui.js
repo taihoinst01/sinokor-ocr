@@ -88,17 +88,6 @@ jQuery(function ($) {
         }
     });
 
-
-
-
-    // UI학습 양식분석상태  - input 클릭시 input 확대/축소
-    $(".box_table_st04 dt > .iclick input").click(function () {
-        $(this).addClass('on');
-    });
-    $(".box_table_st04 dt > .iclick input").bind("blur", function () {
-        $(this).removeClass('on');
-    });
-
     // 버튼 선택시 class=on 추가제거
     /*
 	$('.button_st5').click(function(e){
@@ -333,6 +322,13 @@ $(document).ready(function () {
 })(jQuery);
 
 
+// UI학습 양식분석상태  - input 클릭시 input 확대/축소
+$(document).on('click', '.box_table_st04 dt .iclick input', function () {
+    $(this).addClass('on');
+})
+$(document).on('blur', '.box_table_st04 dt .iclick input', function () {
+    $(this).removeClass('on');
+})
 
 $(document).ready(function () {
     $('input[type=radio]').ezMark();

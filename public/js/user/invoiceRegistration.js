@@ -14,6 +14,42 @@ var thumnbImgPerPage = 10; // 한 페이지당 썸네일 이미지 개수
 var x, y, textWidth, textHeight; // 문서 글씨 좌표
 var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, 마우스 이동 좌표
 
+/**
+ * 전역변수 초기화
+ **/
+var initGlobalVariable = function () {
+    totCount = 0;
+    ocrCount = 0;
+    searchDBColumnsCount = 0;
+    lineText = [];
+    thumbImgs = []; // 썸네일 이미지 경로 배열
+    thumnImgPageCount = 1; // 썸네일 이미지 페이징 번호
+    thumnbImgPerPage = 10; // 한 페이지당 썸네일 이미지 개수
+    x = 0;
+    y = 0;
+    textWidth = 0;
+    textHeight = 0; // 문서 글씨 좌표
+    mouseX = 0;
+    mouseY = 0;
+    mouseMoveX = 0;
+    mouseMoveY = 0; // 마우스 이동 시작 좌표, 마우스 이동 좌표
+};
+
+// 폼 초기화
+var initForm = function () {
+    $("#span_document_base").html("문서 기본정보");
+    $("#tbody_baseList").html("");
+    $("#span_document_dtl").html("인식 결과");
+    $("#tbody_dtlList").html("");
+    $("#main_image").prop("src", "");
+    $("#main_image").prop("alt", "");
+    $("#ul_image").html("");
+
+    $("#div_image").fadeOut("fast");
+    $("#div_dtl").fadeOut("fast");
+    $("#div_base").fadeOut("fast");
+};
+
 $(function () {
     _init();
 });
@@ -22,6 +58,8 @@ $(function () {
  * INIT
  ****************************************************************************************/
 var _init = function () {
+    initForm();
+    initGlobalVariable();
     fn_scrollbarEvent();
     fn_buttonEvent();
     fn_uploadFileEvent();
@@ -55,11 +93,8 @@ var fn_buttonEvent = function () {
 var fn_uploadFileEvent = function () {
     $("#uploadFile").change(function () {
         if ($(this).val() !== "") {
-            lineText = [];
-            totCount = 0;
-            ocrCount = 0;
-            searchDBColumnsCount = 0;
-            $('#ul_image').html('');
+            initGlobalVariable();   // 전역변수 초기화
+            initForm();             // 폼 초기화
             $('#uploadFileForm').submit();
         }
     });
@@ -140,6 +175,9 @@ var fn_search = function () {
                 appendHtml += `<tr><td colspan="7">조회된 데이터가 없습니다.</td></tr>`;
             }
             $("#tbody_baseList").empty().append(appendHtml);
+            $("#span_document_base").empty().html(`문서 기본정보 - ${data.length}건`);
+            $("#div_base").fadeIn();
+            fn_clickEvent();
             endProgressBar();
         },
         error: function (err) {
@@ -160,10 +198,150 @@ var fn_clickEvent = function () {
         fn_search_dtl(seqNum, docNum); // document_dtl 조회
     });
     // Document DTL 클릭 시 이미지 조회
-    $("tr[name='tr_dtl']").on("click", function () {
-        var id = $(this).attr("id");
+    $("td[name='td_dtl']").on("click", function () {
+        var id = $(this).parent().attr("id");
         var imgId = id.replace("tr_dtl_", "");
         fn_search_image(imgId); // image 조회
+    });
+};
+
+// document_dtl 조회
+var fn_search_dtl = function (seqNum, docNum) {
+    var param = {
+        seqNum: seqNum,
+        docNum: docNum
+    };
+    var appendHtml = "";
+    $.ajax({
+        url: '/invoiceRegistration/searchDocumentDtlList',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving document detail list...");
+            startProgressBar(); // start progressbar
+            addProgressBar(1, 1); // proceed progressbar
+        },
+        success: function (data) {
+            addProgressBar(2, 99); // proceed progressbar
+            console.log(data);
+            if (data.length > 0) {
+                $.each(data, function (index, entry) {
+                    appendHtml += `
+                        <tr id="tr_dtl_${entry['IMGID']}" name="tr_dtl" style="cursor:pointer">
+                            <td><input type="checkbox" id="dtl_chk_${entry["DOCNUM"]}" name="dtl_chk" /></td>
+                            <td name="td_dtl">${entry["IMGFILESTARTNO"]}<th>
+                            <td name="td_dtl">${entry["IMGFILESTARTNO"]} </th>
+                            <td name="td_dtl">${nvl(entry["OGCOMPANYNAME"])}</td>
+                            <td name="td_dtl">${nvl(entry["CTNM"])}</td>
+                            <td name="td_dtl">${nvl(entry["UY"])}</td>
+                            <td name="td_dtl">${nvl(entry["CONTRACTNUM"])}</td>
+                            <td name="td_dtl">${nvl(entry["CURCD"])}</td>
+                            <td name="td_dtl">${nvl(entry["PAIDPERCENT"])}</td>
+                            <td name="td_dtl">${nvl(entry["PAIDSHARE"])}</td>
+                            <td name="td_dtl">${nvl(entry["OSLPERCENT"])}</td>
+                            <td name="td_dtl">${nvl(entry["OSLSHARE"])}</td>
+                            <td name="td_dtl">${nvl(entry["GROSSPM"])}</td>
+                            <td name="td_dtl">${nvl(entry["PM"])}</td>
+                            <td name="td_dtl">${nvl(entry["PMPFEND"])}</td>
+                            <td name="td_dtl">${nvl(entry["PMPFWOS"])}</td>
+                            <td name="td_dtl">${nvl(entry["XOLPM"])}</td>
+                            <td name="td_dtl">${nvl(entry["RETURNPM"])}</td>
+                            <td name="td_dtl">${nvl(entry["GROSSCN"])}</td>
+                            <td name="td_dtl">${nvl(entry["CN"])}</td>
+                            <td name="td_dtl">${nvl(entry["PROFITCN"])}</td>
+                            <td name="td_dtl">${nvl(entry["BROKERAGE"])}</td>
+                            <td name="td_dtl">${nvl(entry["TAX"])}</td>
+                            <td name="td_dtl">${nvl(entry["OVERRIDINGCOM"])}</td>
+                            <td name="td_dtl">${nvl(entry["CHARGE"])}</td>
+                            <td name="td_dtl">${nvl(entry["PMRESERVERTD1"])}</td>
+                            <td name="td_dtl">${nvl(entry["PFPMRESERVERTD1"])}</td>
+                            <td name="td_dtl">${nvl(entry["PMRESERVERTD2"])}</td>
+                            <td name="td_dtl">${nvl(entry["PFPMRESERVERTD2"])}</td>
+                            <td name="td_dtl">${nvl(entry["CLAIM"])}</td>
+                            <td name="td_dtl">${nvl(entry["LOSSRECOVERY"])}</td>
+                            <td name="td_dtl">${nvl(entry["CASHLOSS"])}</td>
+                            <td name="td_dtl">${nvl(entry["CASHLOSSRD"])}</td>
+                            <td name="td_dtl">${nvl(entry["LOSSRR"])}</td>
+                            <td name="td_dtl">${nvl(entry["LOSSRR2"])}</td>
+                            <td name="td_dtl">${nvl(entry["LOSSPFEND"])}</td>
+                            <td name="td_dtl">${nvl(entry["LOSSPFWOA"])}</td>
+                            <td name="td_dtl">${nvl(entry["INTEREST"])}</td>
+                            <td name="td_dtl">${nvl(entry["TAXON"])}</td>
+                            <td name="td_dtl">${nvl(entry["MISCELLANEOUS"])}</td>
+                            <td name="td_dtl">${nvl(entry["PMBL"])}</td>
+                            <td name="td_dtl">${nvl(entry["CMBL"])}</td>
+                            <td name="td_dtl">${nvl(entry["NTBL"])}</td>
+                            <td name="td_dtl">${nvl(entry["CSCOSARFRNCNNT2"])}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                appendHtml += `<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>`;
+            }
+            $("#tbody_dtlList").empty().html(appendHtml);
+            $("#span_document_dtl").empty().html(`인식 결과 - ${data.length}건`);
+            $("#div_dtl").fadeIn('slow');
+            fn_clickEvent(); // regist and refresh click event
+            endProgressBar(); // end progressbar
+        }, error: function (err) {
+            endProgressBar(); // end progressbar
+            console.log(err);
+        }
+    });
+};
+
+// img 조회
+var fn_search_image = function (imgId) {
+    var param = {
+        imgId: imgId
+    };
+    var imageHtml = "";
+    var appendHtml = "";
+    $.ajax({
+        url: '/invoiceRegistration/searchDocumentImageList',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving document image list...");
+            startProgressBar(); // start progressbar
+            addProgressBar(1, 1); // proceed progressbar
+        },
+        success: function (data) {
+            addProgressBar(2, 99); // proceed progressbar
+            if (data.length > 0) {
+                $.each(data, function (index, entry) {
+                    if (index == 0) {
+                        $("#main_image").prop("src", `../../${nvl(entry.ORIGINFILENAME)}`);
+                        $("#main_image").prop("alt", entry.ORIGINFILENAME);
+                        imageHtml += `<li class="on">
+                                        <div class="box_img"><i><img src="../../${nvl(entry.ORIGINFILENAME)}" title="${nvl(entry.ORIGINFILENAME)}"></i></div>
+                                        <span>${nvl(entry.ORIGINFILENAME)}</span>
+                                    </li> `;
+                    } else {
+                        imageHtml += `
+                                    <li>
+                                        <div class="box_img"><i><img src="../../${nvl(entry.ORIGINFILENAME)}" title="${nvl(entry.ORIGINFILENAME)}"></i></div>
+                                        <span>${nvl(entry.ORIGINFILENAME)}</span>
+                                    </li> `;
+                    }
+                });
+            } else {
+                //appendHtml += `<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>`;
+                imageHtml += `<li>문서 이미지가 존재하지 않습니다.</li>`;
+            }
+            //$("#div_view_image").empty().append(imageHtml);
+            $("#ul_image").empty().append(imageHtml);
+            $("#div_image").fadeIn('slow');
+            fn_clickEvent(); // regist and refresh click event
+            endProgressBar(); // end progressbar
+        }, error: function (err) {
+            endProgressBar(); // end progressbar
+            console.log(err);
+        }
     });
 };
 
@@ -171,7 +349,7 @@ var fn_clickEvent = function () {
  * ML
  ****************************************************************************************/
 // 문서 기본 정보 append
-var fn_processBaseImage = function(fileInfo) {
+var fn_processBaseImage = function (fileInfo) {
     var html = "";
     console.log("fileInfo.. length... : " + fileInfo.length);
     for (var i = 0, x = fileInfo.length; i < x; i++) {
@@ -187,7 +365,7 @@ var fn_processBaseImage = function(fileInfo) {
                 </tr>`;
     }
     $("#tbody_baseInfo").empty().append(html);
-}
+};
 
 // ML 및 인식결과 append
 var fn_processDtlImage = function (fileDtlInfo) {
@@ -221,7 +399,7 @@ var fn_processDtlImage = function (fileDtlInfo) {
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
     });
-}
+};
 
 
 // OCR 데이터 line별 가공 & 상세 테이블 렌더링 & DB컬럼 조회
@@ -237,7 +415,7 @@ var appendOcrData = function (fileDtlInfo, fileName, regions) {
         }
     }
     executeML(fileDtlInfo, fileName, data, 'ts');
-}
+};
 
 /**
  * @param {any} type
@@ -312,7 +490,7 @@ var executeML = function (fileDtlInfo, fileName, data, type) {
             console.log(err);
         }
     });
-}
+};
 
 // 인식 결과 처리
 function fn_processFinish(data, fileDtlInfo) {
@@ -435,7 +613,7 @@ var thumbImgPagingEvent = function () {
         thumnImgPageCount++;
         thumbImgPaging(thumnImgPageCount);
     });
-}
+};
 
 // 초기 썸네일 이미지 렌더링
 var thumnImg = function () {
@@ -459,7 +637,7 @@ var thumnImg = function () {
     }
     thumbImgEvent();
     //console.log(thumbImgs);
-}
+};
 
 // 썸네일 이미지 페이징
 var thumbImgPaging = function (pageCount) {
@@ -500,7 +678,7 @@ var thumbImgEvent = function () {
         //detailTable($(this).css('background-image').split('/')[4].split('")')[0]);
         //detailTable($(this).children().prop('src').split('/')[4].split('")')[0]);
     });
-}
+};
 
 // 마우스 오버 이벤트
 function hoverSquare(e) {
