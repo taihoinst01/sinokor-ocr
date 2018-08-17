@@ -123,6 +123,7 @@ var buttonEvent = function () {
     // [UI학습팝업] 학습 진행
     $("#btn_pop_ui_run").on("click", function () {
         //fn_batchUiTraining();
+        popupEvent.closePopup();
         execBatchLearning();
     });
     // [UI학습팝업] close popup
@@ -692,6 +693,7 @@ function compareBatchLearningData(ocrData, data) {
                                 //}
                             } else {// UI Training 체크박스 체크 없으면
                                 isFullMatch = true;
+                                updateBatchLearningData(retData, ocrData, mlData);
                                 //comparedMLAndAnswer(retData, data, ocrData);
                             }
                         } else {
