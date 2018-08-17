@@ -2,6 +2,7 @@
 
 "use strict";
 
+var exeBatchLearningCount = 0 // 배치실행 횟수
 var totCount = 0; // 총 이미지 분석 개수
 var ocrCount = 0; // ocr 수행 횟수
 var batchCount = 0; // ml 학습 횟수
@@ -98,7 +99,7 @@ var buttonEvent = function () {
         fn_imageDelete();
     });
     // 배치실행
-    $("#btn_batchTraining").on("click", function () {
+    $("#btn_batchTraining").on("click", function () {       
         fn_batchTraining();
     });
     // 최종학습
@@ -125,7 +126,7 @@ var buttonEvent = function () {
     });
     // [UI학습팝업] close popup
     $("#btn_pop_ui_close").on("click", function () {
-        popupEvent.closePopup();
+        popupEvent.batchClosePopup();
     });
 
     // UI train 실행
@@ -166,10 +167,21 @@ var popupEvent = (function () {
         $('.poplayer').fadeOut();
     }
 
+    var batchClosePopup = function (type) {
+        $('.poplayer').fadeOut();
+        setTimeout(function () {
+            if (!type) {
+                exeBatchLearningCount++;
+            }
+            execBatchLearning();
+        }, 2000);
+    }
+
     return {
         scrollPopup: scrollPopup,
         openPopup: openPopup,
-        closePopup: closePopup
+        closePopup: closePopup,
+        batchClosePopup: batchClosePopup
     };
 }());
 
@@ -491,17 +503,19 @@ function convertLineOcrData(ocrData) {
 
 function execBatchLearning() {
     var dataArr = convertOcrData();
-    
-    for (var i in ocrDataArr) {
-        execBatchLearningData(ocrDataArr[i], dataArr[i]);
-        if ($('#layer2').css('display') != 'none') break;
-        if (isFullMatch) { // 모든 컬럼 매핑이 되었거나 계산서가 아닌 경우
-        } else {
-            popUpLayer2(ocrDataArr[i]);
-            break;
+    if (exeBatchLearningCount <= ocrDataArr.length - 1) {
+        for (var i = exeBatchLearningCount; i < ocrDataArr.length; i++) {            
+            exeBatchLearningCount = i;
+            console.log(exeBatchLearningCount);
+            execBatchLearningData(ocrDataArr[i], dataArr[i]);
+            if ($('#layer2').css('display') != 'none') break;
+            if (isFullMatch) { // 모든 컬럼 매핑이 되었거나 계산서가 아닌 경우
+            } else {
+                popUpLayer2(ocrDataArr[i]);
+                break;
+            }
         }
     }
-    
 }
 
 // UI레이어 작업 함수
@@ -1395,6 +1409,7 @@ var fn_batchTraining = function () {
     popupEvent.openPopup();
 };
 var fn_popBatchRun = function () {
+    exeBatchLearningCount = 0;
     var imgIdArray = [];
     var learningMethodNum = $("#learningMethodNum").val();
 
@@ -1585,6 +1600,7 @@ var docLabelMapping = function (data) {
 
 // UI레이어 학습 버튼 클릭 이벤트
 var uiTrainingBtn = function () {
+    
     $.ajax({
         url: '/batchLearning/uitraining',
         type: 'post',
@@ -1594,12 +1610,14 @@ var uiTrainingBtn = function () {
         success: function (data) {
             if (data.code == 200) {
                 alert(data.message);
+                popupEvent.batchClosePopup('retrain');
             }
         },
         error: function (err) {
             console.log(err);
         }
     });
+    
 }
 
 // 양식 레이블 매핑 ml 데이터 insert
