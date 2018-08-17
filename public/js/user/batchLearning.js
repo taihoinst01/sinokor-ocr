@@ -189,7 +189,7 @@ var fn_excelUpload = function () {
             console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
             if (data["code"] == "200") {
                 if (data["fileCnt"] > 0 || data["dataCnt"] > 0) {
-                    alert("엑셀 파일의 정답 데이터가 INSERT 되었습니다.")
+                    alert("엑셀 파일의 정답 데이터가 INSERT 되었습니다.");
                 } else {
                     alert("INSERT 할 파일이 없습니다.");
                 }
@@ -1402,7 +1402,7 @@ var fn_popBatchRun = function () {
 
     switch (learningMethodNum) {
         case "0":        // 전체 학습
-            if (addCond == "LEARN_N") {
+            //if (addCond == "LEARN_N") {
                 let chkCnt = 0;
                 $("input[name=listCheck_before]").each(function (index, entry) {
                     chkCnt++;
@@ -1415,10 +1415,10 @@ var fn_popBatchRun = function () {
                 } else {
                     searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
                 }
-            } else {
-                alert("Before Training 상태에서만 배치학습이 가능합니다.");
-                return;
-            }
+            //} else {
+                //alert("Before Training 상태에서만 배치학습이 가능합니다.");
+                //return;
+            //}
             break;
         case "1":        // 선택한 파일 학습
             if (addCond == "LEARN_N") {
