@@ -161,6 +161,11 @@ var popupEvent = (function () {
 
     // open popup
     var openPopup = function () {
+        if ($('#choose_cnt_before').html() > 0) {
+            $('#selectFileLearning').click();
+        } else {          
+            $('#allLaerning').click();
+        }
         layer_open('layer1');
     }
 
