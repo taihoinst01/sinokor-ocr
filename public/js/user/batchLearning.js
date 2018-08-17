@@ -1466,8 +1466,8 @@ var fn_uiTraining = function () {
     processImage_TEST("26.jpg");
     */
     //if (addCond == "LEARN_Y") {
-        let imgId = "";
-        let chkCnt = 0;
+       //let imgId = "";
+       //let chkCnt = 0;
         $("input[name=listCheck_after]").each(function (index, entry) {
             if ($(this).is(":checked")) {
                 imgId = $(this).val();
