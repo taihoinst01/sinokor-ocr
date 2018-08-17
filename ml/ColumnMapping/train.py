@@ -7,6 +7,7 @@ import numpy as np
 import cx_Oracle
 import configparser
 import sys
+import shutil
 
 userData = []
 
@@ -19,7 +20,7 @@ for word in sys.argv[1:]:
     userData.append(wordData)
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('./ml/config.ini')
 
 id = config['ORACLE']['ID']
 pw = config['ORACLE']['PW']
@@ -60,7 +61,7 @@ npTarget = np.array(target)
 
 testNpData = np.array(testData)
 testNpTarget = np.array(testTarget)
-
+shutil.rmtree("/tmp/columnMapping", False)
 # 모든 특성이 실수값을 가지고 있다고 지정합니다
 feature_columns = [tf.contrib.layers.real_valued_column("", dimension=8)]
 
