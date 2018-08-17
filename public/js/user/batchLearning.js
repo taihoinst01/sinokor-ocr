@@ -1402,7 +1402,7 @@ var fn_popBatchRun = function () {
 
     switch (learningMethodNum) {
         case "0":        // 전체 학습
-            //if (addCond == "LEARN_N") {
+            if (addCond == "LEARN_N") {
                 let chkCnt = 0;
                 $("input[name=listCheck_before]").each(function (index, entry) {
                     chkCnt++;
@@ -1415,10 +1415,10 @@ var fn_popBatchRun = function () {
                 } else {
                     searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
                 }
-            //} else {
+            } else {
                 //alert("Before Training 상태에서만 배치학습이 가능합니다.");
                 //return;
-            //}
+            }
             break;
         case "1":        // 선택한 파일 학습
             if (addCond == "LEARN_N") {
@@ -1465,7 +1465,7 @@ var fn_uiTraining = function () {
     imgIdArray.push(imgId);
     processImage_TEST("26.jpg");
     */
-    if (addCond == "LEARN_Y") {
+    //if (addCond == "LEARN_Y") {
         let imgId = "";
         let chkCnt = 0;
         $("input[name=listCheck_after]").each(function (index, entry) {
@@ -1484,10 +1484,10 @@ var fn_uiTraining = function () {
             imgIdArray.push(imgId);
             searchBatchLearnData(imgIdArray, "UI_TRAINING");
         }
-    } else {
-        alert("After Training 상태에서만 UI학습이 가능합니다.");
-        return;
-    }
+    //} else {
+    //    alert("After Training 상태에서만 UI학습이 가능합니다.");
+    //    return;
+    //}
 
 };
 
