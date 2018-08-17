@@ -1147,7 +1147,7 @@ var callbackSelectContractMapping = function (rows, dataObj, req, res) {
         dataObj.ASCTNM = rows[0].ASCTNM;
         dataObj.MAPPINGCTNM = rows[0].EXTCTNM
         commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
-            dataObj.fileToPage.IMGID, commonUtil.nvl2(dataObj.PM.replace(",", "").trim(), 0), commonUtil.nvl2(dataObj.CN.replace(",", "").trim(), 0)
+            dataObj.fileToPage.IMGID, commonUtil.nvl2(dataObj.PM.replace(",", "").replace(/(\s*)/g, "").trim(), 0), commonUtil.nvl2(dataObj.CN.replace(",", "").replace(/(\s*)/g, "").trim(), 0)
         ], callbackcompareBatchLearningData, dataObj, req, res);
     } else {
         res.send({ isContractMapping : false});
@@ -1190,6 +1190,15 @@ router.post('/uiTrainBatchLearningData', function (req, res) {
         }
     });
 
+});
+
+var callbackSelectMultiBatchAnswerDataToFilePath = function (rows, req, res) {
+    res.send(rows);
+};
+router.post('/selectMultiBatchAnswerDataToFilePath', function (req, res) {
+    var queryIn = req.body.queryIn;
+
+    commonDB.reqQuery(queryConfig.batchLearningConfig.selectMultiBatchAnswerDataToFilePath + queryIn, callbackSelectMultiBatchAnswerDataToFilePath, req, res);
 });
 
 async function runTypoDomainTrain(data, callbackTypoDomainTrain) {

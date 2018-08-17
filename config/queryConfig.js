@@ -397,7 +397,22 @@ var batchLearningConfig = {
         WHERE
             F.imgId = D.imgId
             AND
-            F.filePath = :filePath `
+            F.filePath = :filePath `,
+    selectMultiBatchAnswerDataToFilePath:
+        `SELECT
+            D.*, F.filePath AS fileName
+         FROM
+            (SELECT
+                SUBSTR(filePath, INSTR(filePath, '/', -1) + 1, LENGTH(filePath)) AS filePath,
+                imgId
+             FROM
+                TBL_BATCH_ANSWER_FILE 
+            ) F,
+            TBL_BATCH_ANSWER_DATA D
+        WHERE
+            F.imgId = D.imgId
+            AND
+            F.filePath IN `
 };
 
 var uiLearningConfig = {
