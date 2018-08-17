@@ -618,7 +618,7 @@
                     <div>
                         <!-- 0:전체학습     1:선택한 파일 학습     2:학습 범위 지정-->
                         <input type="hidden" id="learningMethodNum" value="0" />
-                        <ul class="uiHorizontal">
+                        <ul id="batchLearningUl" class="uiHorizontal">
                             <li id="allLaerning" class="liStyle01 liSwitch on">
                                 <a>전체학습</a>
                             </li>
@@ -896,8 +896,10 @@
                     <!-- // 양식분석상세 -->
                 </div>
                 <div class="pop_footer">
-                    <button type="button" id="btn_pop_ui_close" class="button_st4 cbtn">취 소</button>
-                    <button type="button" id="btn_pop_ui_run" class="button_st1">학습 진행</button>
+
+                    <button type="button" id="btn_pop_ui_close" class="button_st4 cbtn">닫기</button>
+                    <!--<button type="button" id="btn_pop_ui_run" class="button_st1">학습 진행</button>-->
+
                 </div>
             </div>
         </div>

@@ -123,6 +123,7 @@ var buttonEvent = function () {
     // [UI학습팝업] 학습 진행
     $("#btn_pop_ui_run").on("click", function () {
         //fn_batchUiTraining();
+        popupEvent.closePopup();
         execBatchLearning();
     });
     // [UI학습팝업] close popup
@@ -160,6 +161,11 @@ var popupEvent = (function () {
 
     // open popup
     var openPopup = function () {
+        if ($('#choose_cnt_before').html() > 0) {
+            $('#selectFileLearning').click();
+        } else {          
+            $('#allLaerning').click();
+        }
         layer_open('layer1');
     }
 
@@ -602,9 +608,10 @@ function execBatchLearningData(ocrData, data) {
         beforeSend: function () {
         },
         success: function (data) {       
+    
             modifyData = data;
             batchCount++;
-            
+
             if (data.docCategory && data.docCategory.DOCTYPE == 2) {
                 var docData = data.data;
                 for (var i in docData) {
@@ -618,7 +625,7 @@ function execBatchLearningData(ocrData, data) {
             } else {
                 compareBatchLearningData(ocrData, data);
             }          
-            
+
         },
         error: function (err) {
             console.log(err);
@@ -676,7 +683,7 @@ function compareBatchLearningData(ocrData, data) {
                     data: JSON.stringify(param),
                     contentType: 'application/json; charset=UTF-8',
                     async: false,
-                    success: function (retData) {                        
+                    success: function (retData) {
                         console.log("----- retData -----");
                         console.log(retData);
                         if (retData.isContractMapping) {
@@ -691,7 +698,7 @@ function compareBatchLearningData(ocrData, data) {
                                 //}
                             } else {// UI Training 체크박스 체크 없으면
                                 isFullMatch = true;
-                                updateBatchLearningData(retData, ocrData, data);
+                                updateBatchLearningData(retData, ocrData, mlData);
                                 //comparedMLAndAnswer(retData, data, ocrData);
                             }
                         } else {
@@ -710,7 +717,7 @@ function compareBatchLearningData(ocrData, data) {
 }
 
 /*
-// ML 데이터와 정답 데이터를 비교해여 색상 표시 v1.0
+// ML 데이터와 정답 데이터를 비교해여 색상 표시
 function comparedMLAndAnswer(retData, mlData, ocrData) {
     var answerData = retData.rows[0];   
     var fileInfo = ocrData.fileInfo;
@@ -784,6 +791,8 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
                     }
                 }
                 
+                //mlData.data = matchingColumn;
+                //updateBatchLearningData(retData, ocrData, mlData);
                 break;
             }
         }
@@ -1097,9 +1106,9 @@ var searchBatchLearnDataList = function (addCond) {
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
                 $("#tbody_batchList_before").empty().append(appendHtml);
-                compareMLAndAnswer(data);
             } else {
-                $("#tbody_batchList_after").empty().append(appendHtml);               
+                $("#tbody_batchList_after").empty().append(appendHtml);
+                compareMLAndAnswer(data);
             }
             endProgressBar(); // end progressbar
             checkboxEvent(); // refresh checkbox event
@@ -1112,7 +1121,6 @@ var searchBatchLearnDataList = function (addCond) {
         }
     });
 };
-
 
 function compareMLAndAnswer(mlData) {
     if (mlData.length != 0) {
@@ -1131,72 +1139,43 @@ function compareMLAndAnswer(mlData) {
             beforeSend: function () {
             },
             success: function (data) {
-                var tempArr = [];
-                $('#tbody_batchList_before tr').each(function (i, el) {
-                    for (var i in data) {    
-                        var isTraining = false;
+                $('#tbody_batchList_after tr').each(function (i, el) {
+                    for (var i in data) {
                         if ($(el).children('td').eq(0).text().trim() == data[i].FILENAME) {
-                            
                             for (var j = 2; j < $(el).children('td').length; j++) {
-                                if (j != 9 && $(el).children('td').eq(j).text() != '') {
-                                    isTraining = true;
-                                    break;
+                                if (j == 4 || j == 5) {
+                                    $(el).children('td').eq(j).css('background-color', 'lightgray');
+                                    continue;
+                                }      
+                                if ($(el).children('td').eq(j).text() == '') {
+                                    $(el).children('td').eq(j).css('background-color', 'red');
                                 }
                             }
-                            if (isTraining) {
-                                for (var j = 2; j < $(el).children('td').length; j++) {
-                                    /*if (j == 4 || j == 5) {
-                                        $(el).children('td').eq(j).css('background-color', 'lightgray');
-                                        continue;
-                                    }*/
-                                    if ($(el).children('td').eq(j).text() == '') {
-                                        $(el).children('td').eq(j).css('background-color', 'red');
-                                    }
-                                }
-                                var misMatch = [];
-                                for (var j in mlData) {
-                                    if (mlData[j].ORIGINFILENAME == data[i].FILENAME) {
-                                        var keyArr = Object.keys(mlData[i]);
-                                        for (var k in keyArr) {
-                                            if (mlData[j][keyArr[k]] && data[i][keyArr[k]] && mlData[j][keyArr[k]] != '' &&
-                                                data[i][keyArr[k]] != '' && data[i][keyArr[k]] != mlData[j][keyArr[k]]) {
-                                                misMatch.push(keyArr[k]);
-                                            }
-                                        }
-                                        for (var k in misMatch) {
-                                            $(el).children('td').eq(columToTableNumber(misMatch[k])).css('background-color', 'red');
-                                        }
-                                        break;
-                                    }
-                                }
-                            }                                  
-                            /*
-                            mlData = tempArr;
-                            // ML과 정답 데이터 값이 다른 것 표시                       
-                            for (var i in mlData) {
-                                var misMatch = [];
-                                for (var j in data) {
-                                    if (mlData[i].ORIGINFILENAME == data[j].FILENAME) {
-                                        var keyArr = Object.keys(mlData[i]);
-                                        for (var k in keyArr) {
-                                            if (mlData[i][keyArr[k]] && data[j][keyArr[k]] && mlData[i][keyArr[k]] != '' &&
-                                                data[j][keyArr[k]] != '' && data[j][keyArr[k]] != mlData[i][keyArr[k]]) {
-                                                misMatch.push(keyArr[k]);
-                                            }
-                                        }
-                                        for (var i in misMatch) {
-                                            $(el).children('td').eq(columToTableNumber(misMatch[i])).css('background-color', 'red');
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                            */
+
+
                             break;
                         }
                     }
-                    
-                    
+                    // ML과 정답 데이터 값이 다른 것 표시    
+                    var misMatch = [];
+                    for (var i in mlData) {
+                        for (var j in data) {
+                            if (mlData[i].ORIGINFILENAME == data[j].FILENAME) {
+                                var keyArr = Object.keys(mlData[i]);
+                                for (var k in keyArr) {
+                                    console.log(keyArr[k]);
+                                    if (mlData[i][keyArr[k]] && data[j][keyArr[k]] && mlData[i][keyArr[k]] != '' &&
+                                        data[j][keyArr[k]] != '' && data[j][keyArr[k]] != mlData[i][keyArr[k]]) {
+                                        misMatch.push(keyArr[k]);
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    for (var i in misMatch) {
+                        $(el).children('td').eq(columToTableNumber(misMatch[i])).css('background-color', 'red');
+                    }
                 });
             },
             error: function (err) {
@@ -1204,6 +1183,19 @@ function compareMLAndAnswer(mlData) {
             }
         });
     }
+
+    /*
+    $('#tbody_batchList_after tr').each(function (i, el) {
+        if (i == 4 || i == 5) {
+            $(el).children('td').css('background-color', 'lightgray');
+        }
+        if ($(el).children('td').text() == '') {
+            $(el).children('td').css('background-color', 'red');
+        } else {
+
+        }
+    });
+    */
 }
 
 function fn_viewImageData(fileName, obj) {
