@@ -522,49 +522,53 @@ router.post('/execBatchLearningData', function (req, res) {
             //console.log(arg);
             aimain.formMapping(arg, function (formResult) {
                 console.log('execute formMapping ML');
-                arg = formResult;
-                //console.log(arg);
-                aimain.columnMapping(arg, function (columnResult) {
-                    var columnArr = columnResult.split('^');
-                    for (var i in columnArr) {
-                        for (var j in arg.data) {
-                            var columnSid = columnArr[i].split('||')[0];
-                            if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
-                                arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
-                                break;
-                            }
-                        }
-                    }
-                    console.log('execute columnMapping ML');
+                if (formResult) {
+                    arg = formResult;
                     //console.log(arg);
-
-                    // DB select (extraction OgCompanyName And ContractName)
-                    var ctOgCompanyName = '';
-                    var contractNames = []; // contractName Array
-                    var exeQueryCount = 0; // query execute count 
-                    var result = []; // function output
-                    for (var i in arg.data) {
-                        if (arg.data[i].formLabel == 1) {
-                            ctOgCompanyName = arg.data[i].text;
-                        } else if (arg.data[i].formLabel == 2) {
-                            contractNames.push(arg.data[i].text);
-                        } else {
+                    aimain.columnMapping(arg, function (columnResult) {
+                        var columnArr = columnResult.split('^');
+                        for (var i in columnArr) {
+                            for (var j in arg.data) {
+                                var columnSid = columnArr[i].split('||')[0];
+                                if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
+                                    arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
+                                    break;
+                                }
+                            }
                         }
-                    }
+                        console.log('execute columnMapping ML');
+                        //console.log(arg);
 
-                    for (var i in contractNames) {
-                        commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
-                            exeQueryCount++;
-                            if (rows.length > 0) {
-                                result = rows;
+                        // DB select (extraction OgCompanyName And ContractName)
+                        var ctOgCompanyName = '';
+                        var contractNames = []; // contractName Array
+                        var exeQueryCount = 0; // query execute count 
+                        var result = []; // function output
+                        for (var i in arg.data) {
+                            if (arg.data[i].formLabel == 1) {
+                                ctOgCompanyName = arg.data[i].text;
+                            } else if (arg.data[i].formLabel == 2) {
+                                contractNames.push(arg.data[i].text);
+                            } else {
                             }
-                            if (exeQueryCount == contractNames.length) {
-                                arg.extOgAndCtnm = result;
-                                res.send(arg);
-                            }
-                        });
-                    }
-                });
+                        }
+
+                        for (var i in contractNames) {
+                            commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
+                                exeQueryCount++;
+                                if (rows.length > 0) {
+                                    result = rows;
+                                }
+                                if (exeQueryCount == contractNames.length) {
+                                    arg.extOgAndCtnm = result;
+                                    res.send(arg);
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    res.send({ 'data': arg });
+                }
             });
         });
     })
@@ -1147,7 +1151,7 @@ var callbackSelectContractMapping = function (rows, dataObj, req, res) {
         dataObj.ASCTNM = rows[0].ASCTNM;
         dataObj.MAPPINGCTNM = rows[0].EXTCTNM
         commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
-            dataObj.fileToPage.IMGID, dataObj.PM, dataObj.CN
+            dataObj.fileToPage.IMGID, parseInt(dataObj.PM), parseInt(dataObj.CN)
         ], callbackcompareBatchLearningData, dataObj, req, res);
     } else {
         res.send({ isContractMapping : false});
