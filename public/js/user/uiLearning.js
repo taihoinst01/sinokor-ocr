@@ -170,7 +170,7 @@ function processImage(fileName) {
     $('#progressMsgDetail').html(fileName);
     addProgressBar(21, 30);
     $.ajax({
-        url: '/proxy/ocr',
+        url: '/common/ocr',
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader('Content-Type', 'application/json');
         },
@@ -411,26 +411,22 @@ function executeML(totData) {
         targetUrl = '/uiLearning/typoSentence';
         $('#progressMsgTitle').html('오타 수정 처리 중..');
         addProgressBar(41, 50);
-    } else if (type == 'dd') {
-        targetUrl = '/uiLearning/domainDictionary';
-        $('#progressMsgTitle').html('도메인 사전 처리 중..');
+    } else if (type == 'fl') {
+        targetUrl = '/uiLearning/formLabelMapping';
+        $('#progressMsgTitle').html('양식 라벨 처리 중..');
         addProgressBar(51, 60);
-    } else if (type == 'tc') {
-        targetUrl = '/uiLearning/textClassification';
-        $('#progressMsgTitle').html('텍스트 분류 처리 중..');
+    } else if (type == 'fm') {
+        targetUrl = '/uiLearning/formMapping';
+        $('#progressMsgTitle').html('양식 분류 처리 중..');
         addProgressBar(61, 70);
-    } else if (type == 'st') {
-        targetUrl = '/uiLearning/statementClassification';
-        $('#progressMsgTitle').html('계산서 분류 처리 중..');
+    } else if (type == 'cm') {
+        targetUrl = '/uiLearning/columnMapping';
+        $('#progressMsgTitle').html('라벨 분류 처리 중..');
         addProgressBar(71, 75);
-    } else if (type == 'lm') {
-        targetUrl = '/uiLearning/labelMapping';
-        $('#progressMsgTitle').html('라벨 매핑 처리 중..');
-        addProgressBar(76, 80);
     } else {
         targetUrl = '/uiLearning/searchDBColumns';
         $('#progressMsgTitle').html('DB 컬럼 조회 중..');
-        addProgressBar(81, 90);
+        addProgressBar(76, 90);
     }
 
     $.ajax({

@@ -61,6 +61,7 @@ router.get('/login', function (req, res) {
 // 로그인 (확장)
 router.post("/login",
     function (req, res, next) {
+        console.log("login...");
         var sess;
         sess = req.session;
         var loginMessage = {};

@@ -643,21 +643,35 @@ router.post('/execBatchLearningData', function (req, res) {
 
 });
 
-router.post('/selectOcrSymSpell', function (req, res) {
-    var data = req.body.data;
-    var querycount = 0;
-    console.log(data);
-    console.log('시작');
-    for (var i in data) {
-        commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectExportSentenceSid, [data[i].text], function (rows, i, req, res) {
-            console.log(querycount);
-            querycount++;
-            data[i].typoData = rows[0].WORD;
-            if (querycount == data.length) {
-                res.send({ code: 200, 'data': data });
-            }
-        }, i, req, res);
-    }
+router.post('/uitraining', function (req, res) {
+
+    var exeLabelString = 'python ' + appRoot + '\\ml\\FormLabelMapping\\train.py'
+    exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
+        if (err1) {
+            console.error(err1);
+            res.send({ code:500, message: 'Form Label Mapping training error' });
+        } else {
+            exeLabelString = 'python ' + appRoot + '\\ml\\FormMapping\\train.py'
+            exec(exeLabelString, defaults, function (err2, stdout2, stderr2) {
+                if (err2) {
+                    console.error(err2);
+                    res.send({ code: 500, message: 'Form  Mapping training error' });
+                } else {
+                    exeLabelString = 'python ' + appRoot + '\\ml\\ColumnMapping\\train.py'
+                    exec(exeLabelString, defaults, function (err3, stdout3, stderr3) {
+                        if (err3) {
+                            console.error(err3);
+                            res.send({ code: 500, message: 'Column Mapping training error' });
+                        } else {
+                            res.send({ code: 200, message: 'training OK' });
+                        }
+                    });
+                }
+            });
+        }
+        
+    });
+
 });
 
 var callbackSelDbColumns = function (rows, req, res) {
@@ -670,17 +684,25 @@ router.post('/selectColMappingCls', function (req, res) {
 
 router.post('/insertDocLabelMapping', function (req, res) {
     var data = req.body.data;
-    var insertCount = 0;
+    var params = [];
 
-    for (var i in data) {
-        var item = data[i].x + ',' + data[i].y + ',' + data[i].word;
-        commonDB.queryNoRows(queryConfig.mlConfig.insertDocLabelMapping, [item, data[i].label], function () {
-            insertCount++;
-            if (insertCount == data.length) {
-                res.send({ code: 200, message: 'form label mapping insert' });
-            }
-        });
+    for (var i in data.data) {
+        var classData = 0;
+        if (data.data[i].column == 0 || data.data[i].column == 1) {            
+            classData = String(Number(data.data[i].column) + 1);
+        } else {
+            classData = String(3);
+        }
+        params.push([data.data[i].sid, classData]);
     }
+
+    var options = {
+        autoCommit: true
+    };
+    commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertDocLabelMapping, params, options, function (rowsAffected, req, res) {
+        res.send({ code: 200, message: 'form label mapping insert' });
+    }, req, res);
+
     
 });
 
@@ -693,8 +715,7 @@ router.post('/insertDocMapping', function (req, res) {
 
     var item = '';
     for (var i in data) {
-        item += data[i].x + ',' + data[i].y + ',' + data[i].word;;
-        item += (i == data.length - 1) ? '' : ',';
+        item += (item == '')? data[i].sid : ',' + data[i].sid;
     }
 
     commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertDocMapping, req, res);
@@ -704,19 +725,48 @@ router.post('/insertColMapping', function (req, res) {
     var data = req.body.data;
     var docCategory = req.body.docCategory;
     var colMappingCount = 0;
+    var params = [];
 
     for (var i in data) {
-        if (data[i].column != 'UNKOWN') {
+        if (data[i].column != 999) {
             var item = '';
-            item += docCategory.DOCTYPE + ',' + data[i].x + ',' + data[i].y + ',' + data[i].word;
-            commonDB.reqQueryParam(queryConfig.mlConfig.insertColMapping, [item, data[i].colNum], function (rows, req, res) {
-                colMappingCount++;
-                if (colMappingCount == data.length) {
-                    res.send({ code: 200, message: 'column mapping insert' });
-                }
-            }, req, res);
+            item += docCategory.DOCTYPE + ',' + data[i].sid;
+            params.push([item, data[i].column]);
         }
     }
+
+    var options = {
+        autoCommit: true
+    };
+    commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertColMapping, params, options, function (rowsAffected, req, res) {
+        res.send({ code: 200, message: 'column mapping insert' });
+    }, req, res);
+});
+
+var callbackInsertContractMapping = function (rows, req, res) {
+    res.send({ code: 200, message: 'contract mapping insert'})
+};
+var callbackSelectBatchAnswerDataToFilePath = function (rows, data, req, res) {
+    var extOgcompanyName, extCtnm, asOgcompanyName, asCtnm;
+
+    if (rows.length > 0) {
+        for (var i in data.data) {
+            if (data.data[i].column == 0) {
+                extOgcompanyName = data.data[i].text;
+            } else if (data.data[i].column == 1) {
+                extCtnm = data.data[i].text;
+            }
+        }
+        asOgcompanyName = rows[0].OGCOMPANYNAME;
+        asCtnm = rows[0].CTNM;
+        commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertContractMapping, [extOgcompanyName, extCtnm, asOgcompanyName, asCtnm], callbackInsertContractMapping, req, res);
+    }
+};
+router.post('/insertContractMapping', function (req, res) {
+    var data = req.body.data;
+    var fileName = req.body.fileName;
+    console.log(fileName);
+    commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectBatchAnswerDataToFilePath, [fileName], callbackSelectBatchAnswerDataToFilePath, data, req, res);
 });
 
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
@@ -1071,9 +1121,9 @@ router.post('/syncFile', function (req, res) {
 
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-    //console.log(dataObj);
     var query = queryConfig.batchLearningConfig.selectContractMapping;
     var param;
+
     if (dataObj.CTOGCOMPANYNAMENM && dataObj.CTNM) {
         if (typeof dataObj.CTNM == 'string') { // 단일 계약명
             param = [dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM];
@@ -1092,6 +1142,7 @@ router.post('/compareBatchLearningData', function (req, res) {
 
 var callbackSelectContractMapping = function (rows, dataObj, req, res) {
     if (rows.length > 0) {
+
         dataObj.ASOGCOMPANYNAME = rows[0].ASOGCOMPANYNAME;
         dataObj.ASCTNM = rows[0].ASCTNM;
         dataObj.MAPPINGCTNM = rows[0].EXTCTNM

@@ -80,6 +80,14 @@ var dbcolumnsConfig = {
             tbl_column_mapping_cls `
 };
 
+var invoiceRegistrationConfig = {
+    selectDocumentList:
+        `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO,
+                DECODE(APPROVALSTATE, 'P', 'P', 'C', 'C', 'R', 'R', 'U', 'U', '') AS APPROVALSTATE_STR
+            FROM TBL_DOCUMENT
+           WHERE 1=1 `
+}
+
 var myApprovalConfig = {
     selectApprovalList:
         `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO,
@@ -338,6 +346,21 @@ var batchLearningConfig = {
             tbl_document_category
          WHERE
             docType != 999 `,
+    selectBatchAnswerDataToFilePath:
+        `SELECT
+            D.*
+         FROM
+            (SELECT
+                SUBSTR(filePath, INSTR(filePath, '/', -1) + 1, LENGTH(filePath)) AS filePath,
+                imgId
+             FROM
+                TBL_BATCH_ANSWER_FILE 
+            ) F,
+            TBL_BATCH_ANSWER_DATA D
+        WHERE
+            F.imgId = D.imgId
+            AND
+            F.filePath = :filePath `
 }
 
 var uiLearningConfig = {
@@ -488,6 +511,7 @@ module.exports = {
     userMngConfig: userMngConfig,
     dbcolumnsConfig: dbcolumnsConfig,
     documentConfig: documentConfig,
+    invoiceRegistrationConfig: invoiceRegistrationConfig,
     myApprovalConfig: myApprovalConfig,
     batchLearningConfig: batchLearningConfig,
     uiLearningConfig: uiLearningConfig,
