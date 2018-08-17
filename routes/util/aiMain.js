@@ -4,11 +4,14 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var logger = require('./logger.js');
+var oracledb = require('oracledb');
+var dbConfig = require(appRoot + '/config/dbConfig');
 
 const defaults = {
     encoding: 'utf8',
 };
 
+// [step1] typo sentence ML
 exports.typoSentenceEval = function (data, callback) {
     /*
     setTimeout(function () {
@@ -49,9 +52,204 @@ exports.typoSentenceEval = function (data, callback) {
                 }
             }
         }
-        callback(retData);
+
+        getSymspellSID(retData, function (sidData) {
+            callback(sidData);
+        });
+        
     });
 };
+
+async function getSymspellSID(data, callbackTypoDomainTrain) {
+    let res;
+    try {
+        res = await runSymspellSID(data);
+        //console.log(res);
+        callbackTypoDomainTrain(res);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function runSymspellSID(data) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            //console.log(data);
+
+            for (var i in data) {
+                var sid = "";
+                locSplit = data[i].location.split(",");
+                sid += locSplit[0] + "," + locSplit[1];
+
+                let result = await conn.execute("SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL", [data[i].text.toLowerCase()]);
+
+                if (result.rows[0] != null) {
+                    sid += "," + result.rows[0].SID;
+                }
+
+                data[i].sid = sid;
+            }
+            resolve(data);
+
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
+
+// [step2] form label mapping ML
+exports.formLabelMapping = function (data, callback) {
+    var args = dataToSidArgs(data, false);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\FormLabelMapping\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+        if (err) console.error(err);
+        callback(stdout);
+    });
+
+}
+
+// [step3] form mapping ML
+exports.formMapping = function (data, callback) {
+    var args = dataToForm(data);
+
+    var exeformMapping = 'python ' + appRoot + '\\ml\\FormMapping\\eval.py ' + args;
+    exec(exeformMapping, defaults, function (err, stdout, stderr) {
+        if (err) {
+            logger.error.info(`formMapping ml model exec error: ${stderr}`);
+            return;
+        }
+
+        var retSplit = stdout.split("^");
+        var formSplit = retSplit[0].split("||");
+        var scoreSplit = retSplit[1].split("||");
+
+        if (formSplit[1] != null) {
+            var param = formSplit[1].trim();
+            commonDB.queryParam("select docname, doctype, sampleimagepath from tbl_document_category where doctype = to_number(:doctype)", [param], function (ret, retData) {
+                obj = {};
+                obj.data = retData;
+                obj.docCategory = ret;
+                obj.score = scoreSplit[1] * 100;
+
+                callback(obj);
+            }, data)
+        }
+    });
+}
+
+// [step4] column mapping ML
+exports.columnMapping = function (data, callback) {
+    var args = dataToformSidArgs(data);
+
+    var exeTypoString = 'python ' + appRoot + '\\ml\\ColumnMapping\\eval.py ' + args;
+    exec(exeTypoString, defaults, function (err, stdout, stderr) {
+        if (err) console.error(err);
+        callback(stdout);
+    });
+}
+
+function dataToArgs(data) {
+
+    var args = '';
+    for (var i = 0; i < data.length; i++) {
+        args += '"' + commonUtil.nvl(data[i].text).toLowerCase() + '"' + ' ';
+    }
+
+    return args;
+}
+
+function dataToLocationArgs(data) {
+    var args = '';
+
+    for (var i in data) {
+        var loc = data[i].location.split(",");
+        var text = data[i].text;
+
+        args += '"' + loc[0] + ' ' + loc[1] + ' ' + commonUtil.nvl(text).toLowerCase() + '"' + ' ';
+    }
+
+    return args;
+}
+
+function dataToAllLocationArgs(data) {
+    var args = '"';
+
+    for (var i in data) {
+        var loc = data[i].location.split(",");
+        var text = data[i].text;
+
+        args += loc[0] + ' ' + loc[1] + ' ' + text + ' ';
+    }
+
+    args += '"';
+
+    return args;
+}
+
+function dataToSidArgs(data, isFormMapping) {
+    var args = '';
+
+    for (var i in data) {
+        if (isFormMapping) {
+            if (data[i].formLabel == 1) {
+                args += '"' + data[i].sid;
+            } else if (data[i].formLabel == 2) {
+                args += ',' + data[i].sid + '"' + ' ';
+            }           
+            continue;
+        } else {
+            args += '"' + data[i].sid + '"' + ' ';
+        }
+    }
+
+    return args;
+}
+
+function dataToformSidArgs(data) {
+    var args = '';
+
+    for (var i in data.data) {
+        args += '"' + data.docCategory[0].DOCTYPE + ',' + data.data[i].sid + '"' + ' ';
+    }
+
+    return args;
+}
+
+function dataToForm(data) {
+    var args = '"';
+    var ctog = '';
+    var ctnm = '';
+
+    for (var i in data) {
+        if (data[i].formLabel == '1') {
+            ctog = data[i].sid;
+        }
+    }
+
+    for (var i in data) {
+        if (data[i].formLabel == '2') {
+            ctnm = data[i].sid;
+        }
+    }
+
+    args = '"' + ctog + ',' + ctnm + '"';
+
+    return args;
+}
+
 
 exports.domainDictionaryEval = function (data, callback) {
     var args = dataToArgs(data);
@@ -87,8 +285,11 @@ exports.domainDictionaryEval = function (data, callback) {
     });
 };
 
+/*
+ *  ML OLD
+ * 
 //text classification eval
-exports.textClassificationEval = function(data, callback) {
+exports.textClassificationEval = function (data, callback) {
 
     var args = dataToArgs(data);
 
@@ -149,7 +350,7 @@ exports.statementClassificationEval = function (data, callback) {
 };
 
 //label mapping eval
-exports.labelMappingEval = function(data, callback) {
+exports.labelMappingEval = function (data, callback) {
 
     var labelData = [];
 
@@ -301,41 +502,4 @@ exports.labelClassificationEval = function (data, callback) {
         callback(data);
     });
 }
-
-function dataToArgs(data) {
-
-    var args = '';
-    for (var i = 0; i < data.length; i++) {
-        args += '"' + commonUtil.nvl(data[i].text).toLowerCase() + '"' + ' ';
-    }
-
-    return args;
-}
-
-function dataToLocationArgs(data) {
-    var args = '';
-
-    for (var i in data) {
-        var loc = data[i].location.split(",");
-        var text = data[i].text;
-
-        args += '"' + loc[0] + ' ' + loc[1] + ' ' + commonUtil.nvl(text).toLowerCase() + '"' + ' ';
-    }
-
-    return args;
-}
-
-function dataToAllLocationArgs(data) {
-    var args = '"';
-
-    for (var i in data) {
-        var loc = data[i].location.split(",");
-        var text = data[i].text;
-
-        args += loc[0] + ' ' + loc[1] + ' ' + text + ' ';
-    }
-
-    args += '"';
-
-    return args;
-}
+*/

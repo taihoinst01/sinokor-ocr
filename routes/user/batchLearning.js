@@ -427,11 +427,150 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningBaseData, data, callbackInsertBatchLearningBaseData, req, res);
 });
 
+
+// test ml - 18.08.16 hyj
+router.get('/test', function (req, res) {
+    var arg = [{ "location": "1018,240,411,87", "text": "APEX" }, { "location": "1019,338,409,23", "text": "Partner of Choice" }, { "location": "1562,509,178,25", "text": "Voucher No" }, { "location": "1562,578,206,25", "text": "Voucher Date" }, { "location": "206,691,274,27", "text": "4153 Korean Re" }, { "location": "208,756,525,34", "text": "Proportional Treaty Statement" }, { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626" }, { "location": "1840,575,169,25", "text": "01105/2018" }, { "location": "206,848,111,24", "text": "Cedant" }, { "location": "206,908,285,24", "text": "Class of Business" }, { "location": "210,963,272,26", "text": "Period of Quarter" }, { "location": "207,1017,252,31", "text": "Period of Treaty" }, { "location": "206,1066,227,24", "text": "Our Reference" }, { "location": "226,1174,145,31", "text": "Currency" }, { "location": "227,1243,139,24", "text": "Premium" }, { "location": "226,1303,197,24", "text": "Commission" }, { "location": "226,1366,107,24", "text": "Claims" }, { "location": "227,1426,126,24", "text": "Reserve" }, { "location": "227,1489,123,24", "text": "Release" }, { "location": "227,1549,117,24", "text": "Interest" }, { "location": "227,1609,161,31", "text": "Brokerage" }, { "location": "233,1678,134,24", "text": "Portfolio" }, { "location": "227,1781,124,24", "text": "Balance" }, { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018" }, { "location": "574,907,636,26", "text": ": Fire QS EQ 2018 W HOS BK UNI HTEL" }, { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018" }, { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018" }, { "location": "574,1065,304,25", "text": ": APEX/BORD/2727" }, { "location": "629,1173,171,25", "text": "JOD 1.00" }, { "location": "639,1239,83,25", "text": "30.02" }, { "location": "639,1299,58,25", "text": "9.01" }, { "location": "639,1362,64,25", "text": "0.00" }, { "location": "639,1422,58,25", "text": "9.01" }, { "location": "639,1485,64,25", "text": "0.00" }, { "location": "639,1545,64,25", "text": "0.00" }, { "location": "639,1605,64,25", "text": "0.75" }, { "location": "648,1677,64,25", "text": "0.00" }, { "location": "1706,1908,356,29", "text": "APEX INSURANCE" }];
+
+    aimain.typoSentenceEval(arg, function (typoResult) {
+        arg = typoResult;
+        console.log('execute typo ML');
+        //console.log(arg);
+        aimain.formLabelMapping(arg, function (formLabelResult) {
+            var formLabelArr = formLabelResult.split('^');
+            for (var i in formLabelArr) {
+                for (var j in arg) {
+                    if (formLabelArr[i].split('||')[0] == arg[j].sid) {
+                        arg[j].formLabel = Number(formLabelArr[i].split('||')[1].replace(/\r\n/g, ''));
+                        break;
+                    }
+                }
+            }
+            console.log('execute formLabelMapping ML');
+            //console.log(arg);
+            aimain.formMapping(arg, function (formResult) {
+                console.log('execute formMapping ML');
+                arg = formResult;
+                //console.log(arg);
+                aimain.columnMapping(arg, function (columnResult) {
+                    var columnArr = columnResult.split('^');
+                    for (var i in columnArr) {
+                        for (var j in arg.data) {
+                            var columnSid = columnArr[i].split('||')[0];
+                            if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
+                                arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
+                                break;
+                            }
+                        }
+                    }
+                    console.log('execute columnMapping ML');
+                    //console.log(arg);
+
+                    // DB select (extraction OgCompanyName And ContractName)
+                    var ctOgCompanyName = '';
+                    var contractNames = []; // contractName Array
+                    var exeQueryCount = 0; // query execute count 
+                    var result = []; // function output
+                    for (var i in arg.data) {
+                        if (arg.data[i].formLabel == 1) {
+                            ctOgCompanyName = arg.data[i].text;
+                        } else if (arg.data[i].formLabel == 2) {
+                            contractNames.push(arg.data[i].text);
+                        } else {
+                        }
+                    }
+
+                    for (var i in contractNames) {
+                        commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
+                            exeQueryCount++;
+                            if (rows.length > 0) {
+                                result = rows;
+                            }
+                            if (exeQueryCount == contractNames.length) {
+                                arg.extOgAndCtnm = result;
+                                res.send(arg);
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    })
+});
+
+
 // RUN batchLearningData
 router.post('/execBatchLearningData', function (req, res) {
     var arg = req.body.data;
 
-    /*
+    // Machine Learning v1.2
+    aimain.typoSentenceEval(arg, function (typoResult) {
+        arg = typoResult;
+        console.log('execute typo ML');
+        //console.log(arg);
+        aimain.formLabelMapping(arg, function (formLabelResult) {
+            var formLabelArr = formLabelResult.split('^');
+            for (var i in formLabelArr) {
+                for (var j in arg) {
+                    if (formLabelArr[i].split('||')[0] == arg[j].sid) {
+                        arg[j].formLabel = Number(formLabelArr[i].split('||')[1].replace(/\r\n/g, ''));
+                        break;
+                    }
+                }
+            }
+            console.log('execute formLabelMapping ML');
+            //console.log(arg);
+            aimain.formMapping(arg, function (formResult) {
+                console.log('execute formMapping ML');
+                arg = formResult;
+                //console.log(arg);
+                aimain.columnMapping(arg, function (columnResult) {
+                    var columnArr = columnResult.split('^');
+                    for (var i in columnArr) {
+                        for (var j in arg.data) {
+                            var columnSid = columnArr[i].split('||')[0];
+                            if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
+                                arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
+                                break;
+                            }
+                        }
+                    }
+                    console.log('execute columnMapping ML');
+                    //console.log(arg);
+
+                    // DB select (extraction OgCompanyName And ContractName)
+                    var ctOgCompanyName = '';
+                    var contractNames = []; // contractName Array
+                    var exeQueryCount = 0; // query execute count 
+                    var result = []; // function output
+                    for (var i in arg.data) {
+                        if (arg.data[i].formLabel == 1) {
+                            ctOgCompanyName = arg.data[i].text;
+                        } else if (arg.data[i].formLabel == 2) {
+                            contractNames.push(arg.data[i].text);
+                        } else {
+                        }
+                    }
+
+                    for (var i in contractNames) {
+                        commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
+                            exeQueryCount++;
+                            if (rows.length > 0) {
+                                result = rows;
+                            }
+                            if (exeQueryCount == contractNames.length) {
+                                arg.extOgAndCtnm = result;
+                                res.send(arg);
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    })
+
+    /* 
+    // Machine Learning v.1.0
     aimain.typoSentenceEval(arg, function (result1) {
         console.log("typo ML");
         aimain.domainDictionaryEval(result1, function (result2) {
@@ -450,6 +589,9 @@ router.post('/execBatchLearningData', function (req, res) {
         })
     });
     */
+
+    /*
+    // Machine Learning v.1.1
     console.log("bill ML");
     aimain.billClassificationEval(arg, function (result1) {
         console.log(result1);
@@ -491,49 +633,45 @@ router.post('/execBatchLearningData', function (req, res) {
                     }
                 }
 
-                /*
-                for (var i in data) {
-                    if (data[i].column == "CTNM") {
-
-                        var ctnmLoc = data[i].location.split(",");
-
-                        for (var j in dataArr) {
-
-                            var loc = dataArr[j][0].location.split(",");
-
-                            if (loc[1] - ctnmLoc[1] > 0) {
-                                dataArr[j].push(data[i]);
-                            }
-                        }
-                    }
-                }
-                */
-
-                //console.log(dataArr);
                 result2.data = dataArr;
             }
             res.send(result2);
         });
         
     });
+    */
 
 });
 
-router.post('/selectOcrSymSpell', function (req, res) {
-    var data = req.body.data;
-    var querycount = 0;
-    console.log(data);
-    console.log('시작');
-    for (var i in data) {
-        commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectExportSentenceSid, [data[i].text], function (rows, i, req, res) {
-            console.log(querycount);
-            querycount++;
-            data[i].typoData = rows[0].WORD;
-            if (querycount == data.length) {
-                res.send({ code: 200, 'data': data });
-            }
-        }, i, req, res);
-    }
+router.post('/uitraining', function (req, res) {
+
+    var exeLabelString = 'python ' + appRoot + '\\ml\\FormLabelMapping\\train.py'
+    exec(exeLabelString, defaults, function (err1, stdout1, stderr1) {
+        if (err1) {
+            console.error(err1);
+            res.send({ code:500, message: 'Form Label Mapping training error' });
+        } else {
+            exeLabelString = 'python ' + appRoot + '\\ml\\FormMapping\\train.py'
+            exec(exeLabelString, defaults, function (err2, stdout2, stderr2) {
+                if (err2) {
+                    console.error(err2);
+                    res.send({ code: 500, message: 'Form  Mapping training error' });
+                } else {
+                    exeLabelString = 'python ' + appRoot + '\\ml\\ColumnMapping\\train.py'
+                    exec(exeLabelString, defaults, function (err3, stdout3, stderr3) {
+                        if (err3) {
+                            console.error(err3);
+                            res.send({ code: 500, message: 'Column Mapping training error' });
+                        } else {
+                            res.send({ code: 200, message: 'training OK' });
+                        }
+                    });
+                }
+            });
+        }
+        
+    });
+
 });
 
 var callbackSelDbColumns = function (rows, req, res) {
@@ -546,17 +684,25 @@ router.post('/selectColMappingCls', function (req, res) {
 
 router.post('/insertDocLabelMapping', function (req, res) {
     var data = req.body.data;
-    var insertCount = 0;
+    var params = [];
 
-    for (var i in data) {
-        var item = data[i].x + ',' + data[i].y + ',' + data[i].word;
-        commonDB.queryNoRows(queryConfig.mlConfig.insertDocLabelMapping, [item, data[i].label], function () {
-            insertCount++;
-            if (insertCount == data.length) {
-                res.send({ code: 200, message: 'form label mapping insert' });
-            }
-        });
+    for (var i in data.data) {
+        var classData = 0;
+        if (data.data[i].column == 0 || data.data[i].column == 1) {            
+            classData = String(Number(data.data[i].column) + 1);
+        } else {
+            classData = String(3);
+        }
+        params.push([data.data[i].sid, classData]);
     }
+
+    var options = {
+        autoCommit: true
+    };
+    commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertDocLabelMapping, params, options, function (rowsAffected, req, res) {
+        res.send({ code: 200, message: 'form label mapping insert' });
+    }, req, res);
+
     
 });
 
@@ -569,8 +715,7 @@ router.post('/insertDocMapping', function (req, res) {
 
     var item = '';
     for (var i in data) {
-        item += data[i].x + ',' + data[i].y + ',' + data[i].word;;
-        item += (i == data.length - 1) ? '' : ',';
+        item += (item == '')? data[i].sid : ',' + data[i].sid;
     }
 
     commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertDocMapping, req, res);
@@ -580,19 +725,48 @@ router.post('/insertColMapping', function (req, res) {
     var data = req.body.data;
     var docCategory = req.body.docCategory;
     var colMappingCount = 0;
+    var params = [];
 
     for (var i in data) {
-        if (data[i].column != 'UNKOWN') {
+        if (data[i].column != 999) {
             var item = '';
-            item += docCategory.DOCTYPE + ',' + data[i].x + ',' + data[i].y + ',' + data[i].word;
-            commonDB.reqQueryParam(queryConfig.mlConfig.insertColMapping, [item, data[i].colNum], function (rows, req, res) {
-                colMappingCount++;
-                if (colMappingCount == data.length) {
-                    res.send({ code: 200, message: 'column mapping insert' });
-                }
-            }, req, res);
+            item += docCategory.DOCTYPE + ',' + data[i].sid;
+            params.push([item, data[i].column]);
         }
     }
+
+    var options = {
+        autoCommit: true
+    };
+    commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertColMapping, params, options, function (rowsAffected, req, res) {
+        res.send({ code: 200, message: 'column mapping insert' });
+    }, req, res);
+});
+
+var callbackInsertContractMapping = function (rows, req, res) {
+    res.send({ code: 200, message: 'contract mapping insert'})
+};
+var callbackSelectBatchAnswerDataToFilePath = function (rows, data, req, res) {
+    var extOgcompanyName, extCtnm, asOgcompanyName, asCtnm;
+
+    if (rows.length > 0) {
+        for (var i in data.data) {
+            if (data.data[i].column == 0) {
+                extOgcompanyName = data.data[i].text;
+            } else if (data.data[i].column == 1) {
+                extCtnm = data.data[i].text;
+            }
+        }
+        asOgcompanyName = rows[0].OGCOMPANYNAME;
+        asCtnm = rows[0].CTNM;
+        commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertContractMapping, [extOgcompanyName, extCtnm, asOgcompanyName, asCtnm], callbackInsertContractMapping, req, res);
+    }
+};
+router.post('/insertContractMapping', function (req, res) {
+    var data = req.body.data;
+    var fileName = req.body.fileName;
+    console.log(fileName);
+    commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectBatchAnswerDataToFilePath, [fileName], callbackSelectBatchAnswerDataToFilePath, data, req, res);
 });
 
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
@@ -947,9 +1121,9 @@ router.post('/syncFile', function (req, res) {
 
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-    //console.log(dataObj);
     var query = queryConfig.batchLearningConfig.selectContractMapping;
     var param;
+
     if (dataObj.CTOGCOMPANYNAMENM && dataObj.CTNM) {
         if (typeof dataObj.CTNM == 'string') { // 단일 계약명
             param = [dataObj.CTOGCOMPANYNAMENM, dataObj.CTNM];
@@ -968,6 +1142,7 @@ router.post('/compareBatchLearningData', function (req, res) {
 
 var callbackSelectContractMapping = function (rows, dataObj, req, res) {
     if (rows.length > 0) {
+
         dataObj.ASOGCOMPANYNAME = rows[0].ASOGCOMPANYNAME;
         dataObj.ASCTNM = rows[0].ASCTNM;
         dataObj.MAPPINGCTNM = rows[0].EXTCTNM
@@ -1729,5 +1904,25 @@ function callbackInsLabelMap(rows, data) {
 }
 
 //---------------------------- // train test 영역 --------------------------------------------//
+
+
+// 신규문서 양식 등록
+var callbackInsertDocCategory = function (rows, req, res) {
+    res.send({ code: 200, message: 'document Category insert success' });
+};
+var callbackSelectMaxDocType = function (rows, req, res) {
+    var docName = req.body.docName;
+    var sampleImagePath = req.body.sampleImagePath;
+    var docType = rows[0].DOCTYPE;
+    if (docType == 998) { // unk 가 999이므로 피하기 위함
+        docType++;
+    }
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertDocCategory, [docName, (docType + 1), sampleImagePath], callbackInsertDocCategory, req, res);
+};
+router.post('/insertDocCategory', function (req, res) {
+
+    commonDB.reqQuery(queryConfig.batchLearningConfig.selectMaxDocType, callbackSelectMaxDocType, req, res);
+});
+// end 신규문서 양식 등록 
 
 module.exports = router;

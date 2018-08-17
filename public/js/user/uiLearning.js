@@ -170,7 +170,7 @@ function processImage(fileName) {
     $('#progressMsgDetail').html(fileName);
     addProgressBar(21, 30);
     $.ajax({
-        url: '/proxy/ocr',
+        url: '/common/ocr',
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader('Content-Type', 'application/json');
         },
@@ -411,26 +411,22 @@ function executeML(totData) {
         targetUrl = '/uiLearning/typoSentence';
         $('#progressMsgTitle').html('오타 수정 처리 중..');
         addProgressBar(41, 50);
-    } else if (type == 'dd') {
-        targetUrl = '/uiLearning/domainDictionary';
-        $('#progressMsgTitle').html('도메인 사전 처리 중..');
+    } else if (type == 'fl') {
+        targetUrl = '/uiLearning/formLabelMapping';
+        $('#progressMsgTitle').html('양식 라벨 처리 중..');
         addProgressBar(51, 60);
-    } else if (type == 'tc') {
-        targetUrl = '/uiLearning/textClassification';
-        $('#progressMsgTitle').html('텍스트 분류 처리 중..');
+    } else if (type == 'fm') {
+        targetUrl = '/uiLearning/formMapping';
+        $('#progressMsgTitle').html('양식 분류 처리 중..');
         addProgressBar(61, 70);
-    } else if (type == 'st') {
-        targetUrl = '/uiLearning/statementClassification';
-        $('#progressMsgTitle').html('계산서 분류 처리 중..');
+    } else if (type == 'cm') {
+        targetUrl = '/uiLearning/columnMapping';
+        $('#progressMsgTitle').html('라벨 분류 처리 중..');
         addProgressBar(71, 75);
-    } else if (type == 'lm') {
-        targetUrl = '/uiLearning/labelMapping';
-        $('#progressMsgTitle').html('라벨 매핑 처리 중..');
-        addProgressBar(76, 80);
     } else {
         targetUrl = '/uiLearning/searchDBColumns';
         $('#progressMsgTitle').html('DB 컬럼 조회 중..');
-        addProgressBar(81, 90);
+        addProgressBar(76, 90);
     }
 
     $.ajax({
@@ -463,10 +459,10 @@ function executeML(totData) {
                     thumnImg();
                     $('#imageBox > li').eq(0).addClass('on');
                     $('#mlPredictionDocName').val(data.docCategory.DOCNAME);
-                    $('#mlPredictionPercent').val(data.docCategory.score + '%');
+                    $('#mlPredictionPercent').val(data.score + '%');
                     $('#docName').html(data.docCategory.DOCNAME);
-                    $('#docPredictionScore').html(data.docCategory.score + '%');
-                    if (data.docCategory.score >= 90) {
+                    $('#docPredictionScore').html(data.score + '%');
+                    if (data.score >= 90) {
                         $('#docName').css('color', 'dodgerblue');
                         $('#docPredictionScore').css('color', 'dodgerblue');
                     } else {
@@ -520,7 +516,13 @@ function detailTable(fileName) {
                         tblSortTag += '<dl>';
                         tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
                         tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-                        tblSortTag += '<input type="text" value="' + item.data[dataN].text + '" style="width:100%; border:0;" />';
+                        if (item.data[dataN].text.length > 34) {
+                            tblSortTag += '<label class="iclick">'
+                            tblSortTag += '<input type="text" value="' + item.data[dataN].text + '" class="inputst_box01"/>';
+                            tblSortTag += '</label>'
+                        } else {
+                            tblSortTag += '<input type="text" value="' + item.data[dataN].text + '" class="inputst_box01"/>';
+                        }
                         tblSortTag += '<input type="hidden" value="' + item.data[dataN].location + '" />';
                         tblSortTag += '</label>';
                         tblSortTag += '</dt>';
@@ -627,19 +629,19 @@ function dbColumnsOption(data, column) {
             gubun = "::VALUE";
         }
 
-        optionTag += '<li>';
+        optionTag += '<li class="secondLi">';
         optionTag += '<a href="javascript:void(0);"><span>' + row.KOKEYWORD + gubun +'</span></a>';
         optionTag += '<ul>';
-        optionTag += '<li><a href="javascript:void(0);">키워드</a></li>';
-        optionTag += '<li><a href="javascript:void(0);">가변값</a></li>';
+        optionTag += '<li class="thirdLi"><a href="javascript:void(0);">키워드</a></li>';
+        optionTag += '<li class="thirdLi"><a href="javascript:void(0);">가변값</a></li>';
         optionTag += '</ul>';
         optionTag += '</li>';
     }
-    optionTag += '<li>';
+    optionTag += '<li class="secondLi">';
     optionTag += '<a href="javascript:void(0);"><span>none</span></a>';
     optionTag += '<ul>';
-    optionTag += '<li><a href="javascript:void(0);">키워드</a></li>';
-    optionTag += '<li><a href="javascript:void(0);">가변값</a></li>';
+    optionTag += '<li class="thirdLi"><a href="javascript:void(0);">키워드</a></li>';
+    optionTag += '<li class="thirdLi"><a href="javascript:void(0);">가변값</a></li>';
     optionTag += '</ul>';
     optionTag += '</li>';
 

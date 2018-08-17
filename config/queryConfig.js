@@ -80,6 +80,14 @@ var dbcolumnsConfig = {
             tbl_column_mapping_cls `
 };
 
+var invoiceRegistrationConfig = {
+    selectDocumentList:
+        `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO,
+                DECODE(APPROVALSTATE, 'P', 'P', 'C', 'C', 'R', 'R', 'U', 'U', '') AS APPROVALSTATE_STR
+            FROM TBL_DOCUMENT
+           WHERE 1=1 `
+}
+
 var myApprovalConfig = {
     selectApprovalList:
         `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO,
@@ -325,7 +333,34 @@ var batchLearningConfig = {
         `INSERT INTO
             tbl_contract_mapping(extOgcompanyName, extCtnm, asOgcompanyName, asCtnm)
          VALUES(:extOgcompanyName, :extCtnm, :asOgcompanyName, :asCtnm)
-        `
+        `,
+    insertDocCategory:
+        `INSERT INTO
+            tbl_document_category
+         VALUES
+            (seq_document_category.nextval, :docName, :docType, :sampleImagePath) `,
+    selectMaxDocType:
+        `SELECT
+            MAX(docType) AS docType
+         FROM
+            tbl_document_category
+         WHERE
+            docType != 999 `,
+    selectBatchAnswerDataToFilePath:
+        `SELECT
+            D.*
+         FROM
+            (SELECT
+                SUBSTR(filePath, INSTR(filePath, '/', -1) + 1, LENGTH(filePath)) AS filePath,
+                imgId
+             FROM
+                TBL_BATCH_ANSWER_FILE 
+            ) F,
+            TBL_BATCH_ANSWER_DATA D
+        WHERE
+            F.imgId = D.imgId
+            AND
+            F.filePath = :filePath `
 }
 
 var uiLearningConfig = {
@@ -453,6 +488,21 @@ var mlConfig = {
             tbl_column_mapping_train
          VALUES
             (seq_column_mapping_train.nextval, :data, :class, sysdate) `,
+    selectContractMapping:
+        `SELECT
+            extOgcompanyName, extCtnm, asOgcompanyName, asCtnm
+         FROM
+            tbl_contract_mapping
+         WHERE
+            extOgcompanyName = :extOgcompanyName AND extCtnm = :extCtnm
+        `,
+    selectdocCategory:
+        `SELECT
+            seqNum, docName, docType, sampleImagePath
+         FROM
+            tbl_document_category
+         WHERE
+            docType = :docType `
 }
 
 module.exports = {
@@ -461,6 +511,7 @@ module.exports = {
     userMngConfig: userMngConfig,
     dbcolumnsConfig: dbcolumnsConfig,
     documentConfig: documentConfig,
+    invoiceRegistrationConfig: invoiceRegistrationConfig,
     myApprovalConfig: myApprovalConfig,
     batchLearningConfig: batchLearningConfig,
     uiLearningConfig: uiLearningConfig,

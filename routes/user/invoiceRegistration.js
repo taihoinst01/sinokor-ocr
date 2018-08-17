@@ -56,6 +56,30 @@ router.post('/', function (req, res) {
     else res.redirect("/logout");
 });
 
+// [POST] 문서 리스트 조회 
+router.post('/searchDocumentList', function (req, res) {
+    if (req.isAuthenticated()) fnSearchDocumentList(req, res);
+});
+var callbackDocumentList = function (rows, req, res) {
+    if (req.isAuthenticated()) res.send(rows);
+};
+var fnSearchDocumentList = function (req, res) {
+    var condQuery = ``;
+    var orderQuery = ` ORDER BY DEADLINEDT ASC `;
+    var param = {
+        docNum: commonUtil.nvl(req.body.docNum),
+        documentManager: commonUtil.nvl(req.body.documentManager)
+    };
+    if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
+    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND DOCUMENTMANAGER = '${param["documentManager"]}' `;
+
+    var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
+    var listQuery = documentListQuery + condQuery + orderQuery;
+    console.log("base listQuery : " + listQuery);
+    commonDB.reqQuery(listQuery, callbackDocumentList, req, res);
+    
+}
+
 /****************************************************************************************
  * FILE UPLOAD
  ****************************************************************************************/

@@ -127,6 +127,11 @@ var buttonEvent = function () {
     $("#btn_pop_ui_close").on("click", function () {
         popupEvent.closePopup();
     });
+
+    // UI train 실행
+    $('#uiTrainBtn').on("click", function () {
+        uiTrainingBtn();
+    });
     
 
 
@@ -326,10 +331,10 @@ var imageUploadEvent = function () {
                
 // [파일정보 -> OCR API]
 function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
-    console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
-    console.log("processImage fileName : " + fileName);
-    console.log("processImage lastYn : " + lastYn);
-    console.log("processImage answerRows : " + JSON.stringify(answerRows));
+    //console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
+    //console.log("processImage fileName : " + fileName);
+    //console.log("processImage lastYn : " + lastYn);
+    //console.log("processImage answerRows : " + JSON.stringify(answerRows));
 
     //$("#progressMsgTitle").html("processing ocr api...");
     //addProgressBar(51, 60);
@@ -503,39 +508,50 @@ function execBatchLearning() {
 
 // UI레이어 작업 함수
 function popUpLayer2(ocrData) {
+
     fn_initUiTraining(); // 팝업 초기화
     layer_open('layer2'); // ui 학습레이어 띄우기
     $("#layer2.poplayer").css("display", "block");
-    $('#docName').text(modifyData.docCategory.DOCNAME);
+    $('#docName').text(modifyData.docCategory[0].DOCNAME);
+    $('#docPredictionScore').text(modifyData.score + '%');
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
-    $("#uiImg").attr("src", "./uploads/" + ocrData.fileInfo[0].convertFileName);   
-    $.ajax({
-        url: '/batchLearning/selectColMappingCls',
-        type: 'post',
-        datatype: "json",
-        contentType: 'application/json; charset=UTF-8',
-        success: function (columns) {
-            columnArr = columns.data;
-            var tblTag = '';
-            for (var i in modifyData.data) {
-                tblTag += '<dl>';
-                tblTag += '<dt onmouseover="" onmouseout="">';
-                tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-                tblTag += '<input type="text" value="' + modifyData.data[i].text + '" style="width:100%; border:0;" />';
-                tblTag += '<input type="hidden" value="' + modifyData.data[i].location + '" />';
-                tblTag += '</label>';
-                tblTag += '</dt>';
-                tblTag += '<dd>';
-                tblTag += appendOptionHtml(modifyData.data[i].column, columns.data)
-                tblTag += '</dd>';
-                tblTag += '</dl>';
-            }
-            $('#textResultTbl').append(tblTag);
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
+
+    if (modifyData.score >= 90) {
+        $('#docName').css('color', 'dodgerblue');
+        $('#docPredictionScore').css('color', 'dodgerblue');
+    } else {
+        $('#docName').css('color', 'darkred');
+        $('#docPredictionScore').css('color', 'darkred');
+    }
+
+
+    var mainImgHtml = '';
+    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
+    mainImgHtml += '<div id="redNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    mainImgHtml += '<div id="imageZoom">';
+    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    $('#img_content').html(mainImgHtml);
+    $('#mainImage').css('background-image', 'url("../../uploads/' + ocrData.fileInfo[0].convertFileName + '")');
+
+    var tblTag = '';
+    for (var i in modifyData.data) {
+        tblTag += '<dl>';
+        tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+        tblTag += '<input type="text" value="' + modifyData.data[i].text + '" style="width:100%; border:0;" />';
+        tblTag += '<input type="hidden" value="' + modifyData.data[i].location + '" />';
+        tblTag += '</label>';
+        tblTag += '</dt>';
+        tblTag += '<dd>';
+        tblTag += appendOptionHtml(modifyData.data[i].column, columnArr)
+        tblTag += '</dd>';
+        tblTag += '</dl>';
+    }
+    $('#textResultTbl').append(tblTag);
 
 }
 
@@ -544,10 +560,10 @@ function appendOptionHtml(targetColumn, columns) {
     var selectHTML = '<select>';
     for (var i in columns) {
         var optionHTML = '';
-        if (targetColumn == columns[i].COLTYPE) {
-            optionHTML = '<option value="' + columns[i].COLTYPE + '" selected>' + columns[i].COLNAME + '</option>';
+        if (targetColumn == columns[i].COLNUM) {
+            optionHTML = '<option value="' + columns[i].COLNUM + '" selected>' + columns[i].COLNAME + '</option>';
         } else {
-            optionHTML = '<option value="' + columns[i].COLTYPE + '">' + columns[i].COLNAME + '</option>';
+            optionHTML = '<option value="' + columns[i].COLNUM + '">' + columns[i].COLNAME + '</option>';
         }
         selectHTML += optionHTML
     }
@@ -557,154 +573,6 @@ function appendOptionHtml(targetColumn, columns) {
 }
 
 function execBatchLearningData(ocrData, data) {
-    /*
-    // 다중 계약서 샘플
-    var data = `{ "data": [
-    {"location":"2974,20,66,31","text":"Page","column": "UNKOWN"},
-    {"location":"1594,201,683,47","text":"Reinsurers Outstanding Losses","column": "UNKOWN"},
-    {"location":"1596,259,174,29","text":"28/06/2018","column": "UNKOWN"},
-    {"location":"3178,16,11,26","text":"1","column": "UNKOWN"},
-    {"location":"3072,392,149,27","text":"Remarks","column": "UNKOWN"},
-    {"location":"3296,20,10,24","text":"1","column": "UNKOWN"},
-    {"location":"218,305,1136,39","text":"010 872 2079 OO KOREAN REINSURANCE CO.","column": "UNKOWN"},
-    {"location":"208,385,191,31","text":"AL SAGR", "column": "CTOGCOMPANYNAMENM"},
-    {"location":"1154,384,470,32","text":"Share os Losses 100%","column": "UNKOWN"},
-    {"location":"1741,385,258,31","text":"os Losses/Shr","column": "UNKOWN"},
-    {"location":"1946,536,77,24","text":"2120","column": "UNKOWN"},
-    {"location":"1929,616,92,24","text":"303.70","column": "UNKOWN"},
-    {"location":"1963,696,58,26","text":"3.65","column": "UNKOWN"},
-    {"location":"1932,777,92,28","text":"115.80","column": "CN"},
-    {"location":"1932,859,90,25","text":"124.29","column": "UNKOWN"},
-    {"location":"1906,940,116,30","text":"1,069.76","column": "UNKOWN"},
-    {"location":"1905,1025,117,31","text":"1,638.40","column": "UNKOWN"},
-    {"location":"1930,1144,93,24","text":"350.00","column": "UNKOWN"},
-    {"location":"1928,1228,94,25","text":"350.00","column": "UNKOWN"},
-    {"location":"1930,1345,91,26","text":"418.15","column": "UNKOWN"},
-    {"location":"1929,1432,95,24","text":"418.15","column": "UNKOWN"},
-    {"location":"1902,1502,121,31","text":"2,406.55","column": "UNKOWN"},
-    {"location":"2269,385,110,33","text":"IBNR","column": "UNKOWN"},
-    {"location":"220,474,32,24","text":"72","column": "UNKOWN"},
-    {"location":"336,473,248,25","text":"ENGINEERING", "column": "CTNM"},
-    {"location":"228,536,212,24","text":"P 2004 01377","column": "UNKOWN"},
-    {"location":"227,697,213,27","text":"P 2005 01377","column": "UNKOWN"},
-    {"location":"225,860,215,27","text":"P 2006 01377","column": "UNKOWN"},
-    {"location":"221,1080,241,24","text":"74 CARGO", "column": "CTNM"},
-    {"location":"228,1144,212,24","text":"P 2005 01377","column": "UNKOWN"},
-    {"location":"221,1283,211,28","text":"75 HULL", "column": "CTNM"},
-    {"location":"227,1345,213,27","text":"P 2004 01377","column": "UNKOWN"},
-    {"location":"476,1144,39,24","text":"co","column": "UNKOWN"},
-    {"location":"560,534,211,27","text":"QUOTA SHARE","column": "UNKOWN"},
-    {"location":"560,616,132,23","text":"SURPLUS","column": "UNKOWN"},
-    {"location":"560,696,211,27","text":"QUOTA SHARE","column": "UNKOWN"},
-    {"location":"560,776,131,24","text":"SURPLUS","column": "UNKOWN"},
-    {"location":"560,856,211,30","text":"QUOTA SHARE","column": "UNKOWN"},
-    {"location":"562,937,129,23","text":"SURPLUS","column": "UNKOWN"},
-    {"location":"560,1140,241,29","text":"CARGO Q/SHARE","column": "UNKOWN"},
-    {"location":"560,1344,216,32","text":"HULL Q/SHARE","column": "UNKOWN"},
-    {"location":"1165,536,109,24","text":"005.000","column": "UNKOWN"},
-    {"location":"1165,616,109,24","text":"005.000","column": "UNKOWN"},
-    {"location":"1165,697,109,25","text":"005.000","column": "UNKOWN"},
-    {"location":"1165,776,110,28","text":"005.000","column": "UNKOWN"},
-    {"location":"1165,858,109,30","text":"002.500","column": "UNKOWN"},
-    {"location":"1165,936,109,30","text":"002.500","column": "UNKOWN"},
-    {"location":"844,1024,275,32","text":"Sub Total By COB","column": "UNKOWN"},
-    {"location":"1165,1144,109,24","text":"005.000","column": "UNKOWN"},
-    {"location":"844,1227,275,33","text":"Sub Total By COB","column": "UNKOWN"},
-    {"location":"1165,1344,110,28","text":"005.000","column": "UNKOWN"},
-    {"location":"843,1430,275,33","text":"Sub Total By COB","column": "UNKOWN"},
-    {"location":"1525,536,93,24","text":"424.00","column": "PM"},
-    {"location":"1499,616,119,30","text":"6,074.00","column": "UNKOWN"},
-    {"location":"1543,696,74,26","text":"73.00","column": "UNKOWN"},
-    {"location":"1498,776,119,31","text":"2,316.00","column": "UNKOWN"},
-    {"location":"1499,859,119,29","text":"4, 971.54","column": "UNKOWN"},
-    {"location":"1480,938,139,32","text":"42,790.57","column": "UNKOWN"},
-    {"location":"1482,1025,134,31","text":"56,649.11","column": "UNKOWN"},
-    {"location":"1500,1228,118,33","text":"7,000.00","column": "UNKOWN"},
-    {"location":"1500,1344,117,32","text":"8,363.00","column": "UNKOWN"},
-    {"location":"1498,1432,120,30","text":"8,363.00","column": "UNKOWN"},
-    {"location":"1482,1502,134,33","text":"72,012.11","column": "UNKOWN"},
-    {"location":"2488,1025,41,27","text":".00","column": "UNKOWN"},
-    {"location":"2488,1228,41,25","text":".00","column": "UNKOWN"},
-    {"location":"2488,1432,42,23","text":".00","column": "UNKOWN"},
-    {"location":"2488,1503,41,23","text":".00","column": "UNKOWN"},
-    {"location":"2581,393,62,35","text":"ccy","column": "UNKOWN"},
-    {"location":"2576,536,70,24","text":"AED","column": "UNKOWN"},
-    {"location":"2576,616,70,24","text":"AED","column": "UNKOWN"},
-    {"location":"2576,696,69,26","text":"AED","column": "UNKOWN"},
-    {"location":"2576,776,69,28","text":"AED","column": "UNKOWN"},
-    {"location":"2576,858,71,26","text":"AED","column": "UNKOWN"},
-    {"location":"2576,940,71,27","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1026,71,25","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1144,70,24","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1228,72,25","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1344,69,28","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1432,72,24","text":"AED","column": "UNKOWN"},
-    {"location":"2576,1502,72,26","text":"AED","column": "UNKOWN"},
-    {"location":"2712,534,154,26","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,614,154,26","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,696,154,26","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,776,154,26","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,858,153,30","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,938,153,30","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,1140,153,28","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"2712,1344,154,26","text":"31/03/2018","column": "UNKOWN"},
-    {"location":"832,1501,277,31","text":"Total By Cedant in","column": "UNKOWN"},
-    {"location":"656,2238,481,42","text":"Nasco Karaoglan France","column": "UNKOWN"},
-    {"location":"656,2286,678,34","text":"171 rue de Euzenval 92380 Garches","column": "UNKOWN"},
-    {"location":"652,2334,370,34","text":"T +33 147 OO","column": "UNKOWN"},
-    {"location":"652,2380,359,33","text":"mm.nkfrance.com","column": "UNKOWN"},
-    {"location":"2432,2331,180,23","text":"CSO'S 31","column": "UNKOWN"},
-    {"location":"1911,2360,670,21","text":"it. ZZZZ","column": "UNKOWN"},
-    {"location":"1967,2389,323,21","text":"ZZZ z-0i.AE •Z:","column": "UNKOWN"}
-    ], "docCategory": { "SEQNUM": 4, "DOCNAME": "Nasco 계산서", "DOCTYPE": 2, "SAMPLEIMAGEPATH": "sample/nasco.jpg" } }`
-    data = JSON.parse(data);
-    
-    //var data = { "data": [{ "location": "1018,240,411,87", "text": "APEX", "column": "UNKOWN" }, { "location": "1019,338,409,23", "text": "Partner of Choice", "column": "UNKOWN" }, { "location": "1562,509,178,25", "text": "Voucher No", "column": "UNKOWN" }, { "location": "1562,578,206,25", "text": "Voucher Date", "column": "UNKOWN" }, { "location": "206,691,274,27", "text": "4153 Korean Re", "column": "UNKOWN" }, { "location": "208,756,525,34", "text": "Proportional Treaty Statement", "column": "UNKOWN" }, { "location": "1842,506,344,25", "text": "BV/HEO/2018/05/0626", "column": "UNKOWN" }, { "location": "1840,575,169,25", "text": "01105/2018", "column": "UNKOWN" }, { "location": "206,848,111,24", "text": "Cedant", "column": "UNKOWN" }, { "location": "206,908,285,24", "text": "Class of Business", "column": "UNKOWN" }, { "location": "210,963,272,26", "text": "Period of Quarter", "column": "UNKOWN" }, { "location": "207,1017,252,31", "text": "Period of Treaty", "column": "UNKOWN" }, { "location": "206,1066,227,24", "text": "Our Reference", "column": "UNKOWN" }, { "location": "226,1174,145,31", "text": "Currency", "column": "UNKOWN" }, { "location": "227,1243,139,24", "text": "Premium", "column": "UNKOWN" }, { "location": "226,1303,197,24", "text": "Commission", "column": "UNKOWN" }, { "location": "226,1366,107,24", "text": "Claims", "column": "UNKOWN" }, { "location": "227,1426,126,24", "text": "Reserve", "column": "UNKOWN" }, { "location": "227,1489,123,24", "text": "Release", "column": "UNKOWN" }, { "location": "227,1549,117,24", "text": "Interest", "column": "UNKOWN" }, { "location": "227,1609,161,31", "text": "Brokerage", "column": "UNKOWN" }, { "location": "233,1678,134,24", "text": "Portfolio", "column": "UNKOWN" }, { "location": "227,1781,124,24", "text": "Balance", "column": "UNKOWN" }, { "location": "574,847,492,32", "text": ": Solidarity- First Insurance 2018", "column": "CTOGCOMPANYNAMENM" }, { "location": "574,907,568,32", "text": ": Marine Cargo Surplus 2018 - Inward", "column": "CTNM" }, { "location": "598,959,433,25", "text": "01-01-2018 TO 31-03-2018", "column": "PERIODQ" }, { "location": "574,1010,454,25", "text": ": 01-01-2018 TO 31-12-2018", "column": "PERIODT" }, { "location": "574,1065,304,25", "text": ": APEX/BORD/2727", "column": "CSCOSARFRNCNNT2" }, { "location": "629,1173,171,25", "text": "JOD 1.00", "column": "CURCD" }, { "location": "639,1239,83,25", "text": "25.53", "column": "PM" }, { "location": "639,1299,64,25", "text": "5.74", "column": "CN" }, { "location": "639,1362,64,25", "text": "0.00", "column": "CLAIM" }, { "location": "639,1422,64,25", "text": "7.66", "column": "PMRESERVERTD" }, { "location": "639,1485,64,25", "text": "0.00", "column": "PMRESERVERLD" }, { "location": "639,1545,64,25", "text": "0.00", "column": "INTEREST" }, { "location": "639,1605,64,25", "text": "0.64", "column": "BROKERAGE" }, { "location": "648,1677,64,25", "text": "0.00", "column": "PROFITCN" }, { "location": "641,1774,81,25", "text": "11 .49", "column": "NTBL" }, { "location": "1706,1908,356,29", "text": "APEX INSURANCE", "column": "UNKOWN\r\n" }], "docCategory": { "SEQNUM": 2, "DOCNAME": "Apex 계산서", "DOCTYPE": 1, "SAMPLEIMAGEPATH": "sample/apex.jpg" } };
-    compareBatchLearningData(ocrData, data);
-    */
-    /*
-    var data = {"data":[
-    {"location":"1018,240,411,87","text":"APEX","column":"UNKOWN"},
-    {"location":"1019,338,409,23","text":"Partner of Choice","column":"UNKOWN"},
-    {"location":"1562,509,178,25","text":"Voucher No","column":"UNKOWN"},
-    {"location":"1562,578,206,25","text":"Voucher Date","column":"UNKOWN"},
-    {"location":"206,691,274,27","text":"4153 Korean Re","column":"UNKOWN"},
-    {"location":"208,756,525,34","text":"Proportional Treaty Statement","column":"UNKOWN"},
-    {"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","column":"UNKOWN"},
-    {"location":"1840,575,169,25","text":"01105/2018","column":"UNKOWN"},
-    {"location":"206,848,111,24","text":"Cedant","column":"UNKOWN"},
-    {"location":"206,908,285,24","text":"Class of Business","column":"UNKOWN"},
-    {"location":"210,963,272,26","text":"Period of Quarter","column":"UNKOWN"},
-    {"location":"207,1017,252,31","text":"Period of Treaty","column":"UNKOWN"},
-    {"location":"206,1066,227,24","text":"Our Reference","column":"UNKOWN"},
-    {"location":"226,1174,145,31","text":"Currency","column":"UNKOWN"},
-    {"location":"227,1243,139,24","text":"Premium","column":"UNKOWN"},
-    {"location":"226,1303,197,24","text":"Commission","column":"UNKOWN"},
-    {"location":"226,1366,107,24","text":"Claims","column":"UNKOWN"},
-    {"location":"227,1426,126,24","text":"Reserve","column":"UNKOWN"},
-    {"location":"227,1489,123,24","text":"Release","column":"UNKOWN"},
-    {"location":"227,1549,117,24","text":"Interest","column":"UNKOWN"},
-    {"location":"227,1609,161,31","text":"Brokerage","column":"UNKOWN"},
-    {"location":"233,1678,134,24","text":"Portfolio","column":"UNKOWN"},
-    {"location":"227,1781,124,24","text":"Balance","column":"UNKOWN"},
-    {"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","column":"CTOGCOMPANYNAMENM"},
-    {"location":"574,907,636,26","text":": Fire QS EQ 2018 W HOS BK UNI HTEL","column":"CTNM"},
-    {"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","column":"PERIODQ"},
-    {"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018","column":"PERIODT"},
-    {"location":"574,1065,304,25","text":": APEX/BORD/2727","column":"CSCOSARFRNCNNT2"},
-    {"location":"629,1173,171,25","text":"JOD 1.00","column":"CURCD"},
-    {"location":"639,1239,83,25","text":"30.02","column":"PM"},
-    {"location":"639,1299,58,25","text":"9.01","column":"UNKOWN"},
-    {"location":"639,1362,64,25","text":"0.00","column":"CLAIM"},
-    {"location":"639,1422,58,25","text":"9.01","column":"UNKOWN"},
-    {"location":"639,1485,64,25","text":"0.00","column":"PMRESERVERLD"},
-    {"location":"639,1545,64,25","text":"0.00","column":"INTEREST"},
-    {"location":"639,1605,64,25","text":"0.75","column":"BROKERAGE"},
-    {"location":"648,1677,64,25","text":"0.00","column":"PROFITCN"},
-    {"location":"1706,1908,356,29","text":"APEX INSURANCE","column":"UNKOWN\r\n"}
-    ],"docCategory":{"SEQNUM":2,"DOCNAME":"Apex 계산서","DOCTYPE":1,"SAMPLEIMAGEPATH":"sample/apex.jpg"}};
-    compareBatchLearningData(ocrData, data);
-    */
     
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
@@ -717,7 +585,7 @@ function execBatchLearningData(ocrData, data) {
         beforeSend: function () {
         },
         success: function (data) {
-            console.log(JSON.stringify(data));
+            //console.log(JSON.stringify(data));
             
             modifyData = data;
             batchCount++;
@@ -736,16 +604,6 @@ function execBatchLearningData(ocrData, data) {
                 compareBatchLearningData(ocrData, data);
             }
             
-
-            //compareBatchLearningData(fileInfo, data, isUiTraining);
-            //updateBatchLearningData(fileName, data);
-            
-            //if (totCount = batchCount) {
-                //$("#progressMsgTitle").html("success...");
-                //addProgressBar(91, 100);               
-            //}
-            
-            
         },
         error: function (err) {
             console.log(err);
@@ -755,70 +613,83 @@ function execBatchLearningData(ocrData, data) {
 }
 
 function compareBatchLearningData(ocrData, data) {
-    //var data = JSON.parse('[{"location":"300,51,370,44","text":"123123123213123","label":"entryrowlabel","column":"PRRS_CF"},{"location":"252,57,480,46","text":"abcdqwjlvasmlkfsdafasd","label":"entryrowlabel","column":"PRRS_CF"},{"location":"1018,240,411,87","text":"APEX","label":""},{"location":"1019,338,409,23","text":"Partner of Choice","label":""},{"location":"1562,509,178,25","text":"Voucher No","label":""},{"location":"1562,578,206,25","text":"Voucher Date","label":""},{"location":"206,691,274,27","text":"4153 Korean Re","label":""},{"location":"208,756,525,34","text":"Proportional Treaty Statement","label":""},{"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626","label":""},{"location":"1840,575,169,25","text":"01105/2018","label":""},{"location":"206,848,111,24","text":"decant","label":"entryrowlabel","column":"PRRS_CF"},{"location":"206,908,285,24","text":"Class of Business","label":"fixlabel","column":"CT_NM"},{"location":"210,963,272,26","text":"Period of Quarter","label":"fixlabel","column":"INS_ST_DT"},{"location":"207,1017,252,31","text":"Period of Treaty","label":"fixlabel","column":"CUR_CD"},{"location":"206,1066,227,24","text":"Our Reference","label":"fixlabel","column":"CSCO_SA_RFRN_CNNT2"},{"location":"226,1174,145,31","text":"Currency","label":"entryrowlabel","column":"CUR_CD"},{"location":"227,1243,139,24","text":"Premium","label":"entryrowlabel","column":"PRE"},{"location":"226,1303,197,24","text":"Commission","label":"entryrowlabel","column":"COM"},{"location":"226,1366,107,24","text":"Claims","label":"entryrowlabel","column":"CLA"},{"location":"227,1426,126,24","text":"Reserve","label":"entryrowlabel","column":"PRRS_CF"},{"location":"227,1489,123,24","text":"Release","label":"entryrowlabel","column":"PRRS_RLS"},{"location":"227,1549,117,24","text":"Interest","label":"entryrowlabel","column":"EXEX"},{"location":"227,1609,161,31","text":"Brokerage","label":"entryrowlabel","column":"BRKG"},{"location":"233,1678,134,24","text":"Portfolio","label":"entryrowlabel","column":"SVF"},{"location":"227,1781,124,24","text":"Balance","label":"entryrowlabel","column":"NTBL"},{"location":"574,847,492,32","text":": Solidarity- First Insurance 2018","label":""},{"location":"574,907,568,32","text":": Marine Cargo Surplus 2018 - Inward","label":""},{"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018","label":"fixvalue","column":"INS_ST_DT_VALUE"},{"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018","label":"fixvalue","column":"CUR_CD_VALUE"},{"location":"574,1065,304,25","text":": APEX/BORD/2727","label":""},{"location":"629,1173,171,25","text":"jody 1.00","label":"entryvalue","column":"CUR_CD_VALUE"},{"location":"639,1239,83,25","text":"25.53","label":"entryvalue","column":"PRE_VALUE"},{"location":"639,1299,64,25","text":"5.74","label":"entryvalue","column":"COM_VALUE"},{"location":"639,1362,64,25","text":"0.00","label":"entryvalue","column":"CLA_VALUE"},{"location":"639,1422,64,25","text":"7.66","label":"entryvalue","column":"PRRS_CF_VALUE"},{"location":"639,1485,64,25","text":"0.00","label":"entryvalue","column":"PRRS_RLS_VALUE"},{"location":"639,1545,64,25","text":"0.00","label":"entryvalue","column":"EXEX_VALUE"},{"location":"639,1605,64,25","text":"0.64","label":"entryvalue","column":"BRKG_VALUE"},{"location":"648,1677,64,25","text":"0.00","label":"entryvalue","column":"SVF_VALUE"},{"location":"641,1774,81,25","text":"11 .49","label":"entryvalue","column":"NTBL_VALUE"},{"location":"1706,1908,356,29","text":"APEX INSURANCE","label":"UNKOWN"}]');
     var dataObj = {};
     var dataVal = data.data;
 
-    for (var i = 0, x = dataVal.length; i < x; i++) {
-        var location = nvl(dataVal[i]["location"]);
-        var label = nvl(dataVal[i]["label"]);
-        var text = nvl(dataVal[i]["text"]);
-        var column = nvl(dataVal[i]["column"]);
+    $.ajax({
+        url: '/batchLearning/selectColMappingCls',
+        type: 'post',
+        datatype: "json",
+        contentType: 'application/json; charset=UTF-8',
+        success: function (columns) {
+            columnArr = columns.data;
 
-        if (column != "UNKOWN") {
-            if (dataObj[column]) {
-                if (typeof dataObj[column] == 'string') {
-                    dataObj[column] = [dataObj[column]]
+            for (var i = 0; i < dataVal.length; i++) {
+                var location = dataVal[i].location;
+                var text = dataVal[i].text;
+                var column = dataVal[i].column;
+
+                if (column != 999) {
+                    for (var j in columnArr) {
+                        if (column == columnArr[j].COLNUM) {
+                            if (dataObj[column]) {
+                                if (typeof dataObj[columnArr[j].COLTYPE] == 'string') {
+                                    dataObj[columnArr[j].COLTYPE] = [dataObj[columnArr[j].COLTYPE]]
+                                }
+                                dataObj[columnArr[j].COLTYPE].push(dataVal[i].text);
+                            } else {
+                                dataObj[columnArr[j].COLTYPE] = dataVal[i].text;
+                            }
+                            break;
+                        }
+                    }
                 }
-                dataObj[column].push(dataVal[i]["text"]);                
-            } else {
-                dataObj[column] = dataVal[i]["text"];
+            }
+            //console.log("결과 : ");
+            //console.log(dataObj);
+
+            // BatchLearning Data Insert
+            if (dataObj) {
+                dataObj.fileToPage = ocrData.fileToPage;
+
+                var param = { dataObj: dataObj };
+                $.ajax({
+                    url: '/batchLearning/compareBatchLearningData',
+                    type: 'post',
+                    datatype: "json",
+                    data: JSON.stringify(param),
+                    contentType: 'application/json; charset=UTF-8',
+                    async: false,
+                    success: function (retData) {
+                        console.log("----- retData -----");
+                        console.log(retData);
+                        if (retData.isContractMapping) {
+                            if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
+                                ocrData.exeML = "Y";
+                                isFullMatch = (dataObj.length != 53) ? false : true;
+                                //ui팝업 로직
+                                //if (retData.rows[0].IMGID == dataObj["imgId"]) {
+                                //    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
+                                //        uiPopUpTrain(data, fileInfo);
+                                //    }
+                                //}
+                            } else {// UI Training 체크박스 체크 없으면
+                                isFullMatch = true;
+                                comparedMLAndAnswer(retData, data, ocrData);
+                                //updateBatchLearningData(retData, ocrData, data);
+                            }
+                        } else {
+                            popUpLayer2(ocrData);
+                        }
+
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
             }
         }
-    }
-    //console.log("결과 : ");
-    //console.log(dataObj);
-    
-    // BatchLearning Data Insert
-    if (dataObj) {
-        dataObj["fileToPage"] = ocrData.fileToPage;
-       
-        var param = { dataObj: dataObj };
-        $.ajax({
-            url: '/batchLearning/compareBatchLearningData',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify(param),
-            contentType: 'application/json; charset=UTF-8',
-            async: false,
-            success: function (retData) {
-                console.log("----- retData -----");
-                console.log(retData);
-                if (retData.isContractMapping) {
-                    if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
-                        ocrData.exeML = "Y";
-                        isFullMatch = (dataObj.length != 53) ? false : true;
-                        //ui팝업 로직
-                        //if (retData.rows[0].IMGID == dataObj["imgId"]) {
-                        //    if (retData.rows[0].NTBL != dataObj["NTBL"]) {
-                        //        uiPopUpTrain(data, fileInfo);
-                        //    }
-                        //}
-                    } else {// UI Training 체크박스 체크 없으면
-                        isFullMatch = true;
-                        comparedMLAndAnswer(retData, data, ocrData);
-                        //updateBatchLearningData(retData, ocrData, data);
-                    }
-                } else {
-                    popUpLayer2(ocrData);
-                }
-                
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    }
+    });
     
 }
 
@@ -826,6 +697,15 @@ function compareBatchLearningData(ocrData, data) {
 function comparedMLAndAnswer(retData, mlData, ocrData) {
     var answerData = retData.rows[0];   
     var fileInfo = ocrData.fileInfo;
+
+    for (var i in mlData.data) {
+        for (var j in columnArr) {
+            if (mlData.data[i].column == columnArr[j].COLNUM) {
+                mlData.data[i].columnName = columnArr[j].COLTYPE;
+                break;
+            }
+        }
+    }
 
     $('input[name="listCheck_before"]').each(function (index, element) {
         for (var i in fileInfo) {
@@ -841,17 +721,17 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
                     }
                 }
                 for (var j in mlData.data) {
-                    if (mlData.data[j].column != 'UNKOWN') {
+                    if (mlData.data[j].column != 999) {
                         for (var answerKey in answerData) {
                             if (answerKey == 'EXTCTNM' || answerKey == 'EXTOGCOMPANYNAME' ||
                                 answerKey == 'CTNM' || answerKey == 'OGCOMPANYNAME' || answerKey == 'MAPPINGCTNM') {
                                 continue;
                             }
-                            if (mlData.data[j].column == answerKey) { // 컬럼이 같으면
+                            if (mlData.data[j].columnName == answerKey) { // 컬럼이 같으면
                                 if (mlData.data[j].text == answerData[answerKey]) { // 값이 같으면
-                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text, 'isMapping' : true });
+                                    matchingColumn.push({ 'column': mlData.data[j].columnName, 'text': mlData.data[j].text, 'isMapping' : true });
                                 } else { // 값이 다르면
-                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text, 'isMapping': false });
+                                    matchingColumn.push({ 'column': mlData.data[j].columnName, 'text': mlData.data[j].text, 'isMapping': false });
                                 }
                                 break;
                             }
@@ -1322,8 +1202,8 @@ var searchBatchLearnData = function (imgIdArray, flag) {
         success: function (data) {
             //$("#progressMsgTitle").html("processing learn data...");
             //addProgressBar(31, 50);
-            console.log("/batchLearning/searchBatchLearnData result :");
-            console.log(data);
+            //console.log("/batchLearning/searchBatchLearnData result :");
+            //console.log(data);
             
             if (flag == "PROCESS_IMAGE") {  // 배치학습 실행
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
@@ -1697,40 +1577,31 @@ var fn_batchUiTraining = function () {
 
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
-    var returnObj = [];
-    var docCategory = data.docCategory;
+
+    insertDocLabelMapping(data);
+    insertDocMapping(data);
+    insertColMapping(data);
+    insertContractMapping(data);
+    
+}
+
+// UI레이어 학습 버튼 클릭 이벤트
+var uiTrainingBtn = function () {
     $.ajax({
-        url: '/batchLearning/selectOcrSymSpell',
+        url: '/batchLearning/uitraining',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data' : data.data }),
+        data: null,
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            var mlParams = [];
-            for (var i in data.data) {
-                var returnItem = {};
-                returnItem.x = data.data[i].location.split(',')[0];
-                returnItem.y = data.data[i].location.split(',')[1];
-                returnItem.word = data.data[i].typoData;
-                if (data.data[i].column == 'CTOGCOMPANYNAMENM') { // 출재사명 이면
-                    returnItem.label = 1;
-                } else if (data.data[i].column == 'CTNM') {// 계약명 이면
-                    returnItem.label = 2;
-                } else {
-                    returnItem.label = 3;
-                }
-                mlParams.push(returnItem);
+            if (data.code == 200) {
+                alert(data.message);
             }
-
-            insertDocLabelMapping(mlParams);
-            insertDocMapping(mlParams, docCategory);
-            insertColMapping(mlParams, data.data, docCategory);
         },
         error: function (err) {
             console.log(err);
         }
     });
-    
 }
 
 // 양식 레이블 매핑 ml 데이터 insert
@@ -1739,7 +1610,7 @@ function insertDocLabelMapping(data) {
         url: '/batchLearning/insertDocLabelMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': data }),
+        data: JSON.stringify({ 'data': data  }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);
@@ -1751,18 +1622,18 @@ function insertDocLabelMapping(data) {
 }
 
 // 양식 매핑 ml 데이터 insert
-function insertDocMapping(data, docCategory) {
+function insertDocMapping(data) {
     var param = [];
-    for (var i in data) {
-        if (data[i].label != 3) {
-            param.push(data[i]);
+    for (var i in data.data) {
+        if (data.data[i].column == 0 || data.data[i].column == 1) {
+            param.push(data.data[i]);
         }
     }
     $.ajax({
         url: '/batchLearning/insertDocMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param ,'docCategory': docCategory}),
+        data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);
@@ -1774,16 +1645,11 @@ function insertDocMapping(data, docCategory) {
 }
 
 // 컬럼 매핑 ml 데이터 insert
-function insertColMapping(data, mlData, docCategory) {
+function insertColMapping(data) {
     var param = [];
-    for (var i in mlData) {
-        for (var j in columnArr) {
-            if (mlData[i].column != 'UNKOWN' && mlData[i].column == columnArr[j].COLTYPE) {
-                var item = data[i];
-                item.colNum = columnArr[j].COLNUM;
-                param.push(item);
-                break;
-            }
+    for (var i in data.data) {
+        if (data.data[i].column != 999) {
+            param.push(data.data[i]);
         }
     }
 
@@ -1791,7 +1657,24 @@ function insertColMapping(data, mlData, docCategory) {
         url: '/batchLearning/insertColMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': docCategory }),
+        data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// 계약명 매핑 insert
+function insertContractMapping(data) {
+    $.ajax({
+        url: '/batchLearning/insertContractMapping',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': data, 'fileName': $('#imgNameTag').text().split('.')[0] + '.tif' }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);
@@ -1810,6 +1693,58 @@ function docComparePopup(imgIndex, obj) {
     //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
     layer_open('layer4');
 }
+
+//문서 비교 popup 버튼 클릭 이벤트
+function docComparePopup2() {
+    var imgId = $('#docName').html();
+    $('#originImg').attr('src', '../../' + modifyData.docCategory[0].SAMPLEIMAGEPATH);
+    $('#mlPredictionPercent').val($('#docPredictionScore').html());
+    $('#mlPredictionDocName').val($('#docName').html());
+    //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+    layer_open('layer4');
+}
+
+// 문서 양식 조회 이미지 좌우 버튼 이벤트
+function changeDocPopupImage() {
+    $('#docSearchResultImg_thumbPrev').click(function () {
+        $('#docSearchResultImg_thumbNext').attr('disabled', false);
+        if (docPopImagesCurrentCount == 1) {
+            return false;
+        } else {
+            docPopImagesCurrentCount--;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            if (docPopImagesCurrentCount == 1) {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+            }
+        }
+    })
+
+    $('#docSearchResultImg_thumbNext').click(function () {
+        var totalCount = $('#countLast').html();
+        $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+        if (docPopImagesCurrentCount == totalCount) {
+            return false;
+        } else {
+            docPopImagesCurrentCount++;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+
+            if (docPopImagesCurrentCount == totalCount) {
+                $('#docSearchResultImg_thumbNext').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbNext').attr('disabled', false);
+            }
+        }
+    })
+}
+
 
 function popUpEvent() {
     popUpSearchDocCategory();
@@ -1835,6 +1770,9 @@ function popUpSearchDocCategory() {
                     if (data.length == 0) {
                         $('#docSearchResultImg_thumbCount').hide();
                         $('#docSearchResultMask').hide();
+                        $('#searchResultDocName').html('');
+                        $('#orgDocName').val('');
+                        $('#searchResultDocName').val('');
                         return false;
                     } else {
                         /**
@@ -1862,43 +1800,13 @@ function popUpSearchDocCategory() {
     });
 }
 
-// 문서 양식 조회 이미지 좌우 버튼 이벤트
-function changeDocPopupImage() {
-    $('#docSearchResultImg_thumbPrev').click(function () {
-        $('#docSearchResultImg_thumbNext').attr('disabled', false);
-        if (docPopImagesCurrentCount == 1) {
-            return false;
-        } else {
-            docPopImagesCurrentCount--;
-            $('#countCurrent').html(docPopImagesCurrentCount);
-            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
-            if (docPopImagesCurrentCount == 1) {
-                $('#docSearchResultImg_thumbPrev').attr('disabled', true);
-            } else {
-                $('#docSearchResultImg_thumbPrev').attr('disabled', false);
-            }
-        }
-    })
+// 팝업 확인 이벤트
+function popUpRunEvent() {
+    $('#btn_pop_doc_run').click(function (e) {
 
-    $('#docSearchResultImg_thumbNext').click(function () {
-        var totalCount = $('#countLast').html();
-        $('#docSearchResultImg_thumbPrev').attr('disabled', false);
-        if (docPopImagesCurrentCount == totalCount) {
-            return false;
-        } else {
-            docPopImagesCurrentCount++;
-            $('#countCurrent').html(docPopImagesCurrentCount);
-            $('#searchResultDocName').html(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
-
-            if (docPopImagesCurrentCount == totalCount) {
-                $('#docSearchResultImg_thumbNext').attr('disabled', true);
-            } else {
-                $('#docSearchResultImg_thumbNext').attr('disabled', false);
-            }
-        }
-    })
+        e.stopPropagation();
+        e.preventDefault();
+    });
 }
 
 //팝업 문서 양식 등록
@@ -1908,7 +1816,7 @@ function popUpInsertDocCategory() {
             var docName = $('#newDocName').val();
             var sampleImagePath = $('#originImg').attr('src').split('/')[2] + '/' + $('#originImg').attr('src').split('/')[3];
             $.ajax({
-                url: '/uiLearning/insertDocCategory',
+                url: '/batchLearning/insertDocCategory',
                 type: 'post',
                 datatype: 'json',
                 data: JSON.stringify({ 'docName': docName, 'sampleImagePath': sampleImagePath }),
@@ -1958,7 +1866,10 @@ function _init() {
     searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
     changeDocPopupImage();      // 문서 양식 조회 이미지 좌우 버튼 이벤트
     changeDocPopRadio();        // 문서 양식 조회 팝업 라디오 이벤트
+    popUpRunEvent();            // 문서 양식 조회 기존 양식 확인
+    popUpInsertDocCategory();   // 문서 양식 조회 신규 등록 확인
     selectLearningMethod();     //학습실행팝업
+
 }
 
 
@@ -2315,4 +2226,56 @@ function selectLearningMethod() {
     })
 }
 
+// 마우스 오버 이벤트
+function hoverSquare(e) {
+    // 해당 페이지로 이동
+    /* 몇 페이지 어디인지 표시
+    var fileName = $(e).find('input[type=hidden]').attr('alt');
+    $('.thumb-img').each(function (i, el) {
+        if ($(this).attr('src').split('/')[3] == fileName) {
+            $(this).click();
+        }
+    });
+    */
 
+    $('#mainImage').hide();
+    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).show();
+
+    // 사각형 좌표값
+    var location, x, y, textWidth, textHeight;
+    location = $(e).find('input[type=hidden]').val().split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+    //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
+
+    // 해당 텍스트 x y좌표 원본 이미지에서 찾기
+    $('#imageZoom').css('background-position', '-' + (x - 5) + 'px -' + (y - 205) + 'px');
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    //var reImg = new Image();
+    //var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    //imgPath = imgPath.split('")')[0];
+    //reImg.src = imgPath;
+    //var width = reImg.width;
+    //var height = reImg.height;
+
+    // 선택한 글씨에 빨간 네모 그리기
+    //$('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 10) + 'px');
+    //$('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 10) + 'px');
+    //$('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
+    //$('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
+    //$('#redNemo').show();
+    $('#redZoomNemo').css('width', textWidth + 10);
+    $('#redZoomNemo').css('height', textHeight + 10);
+    $('#redZoomNemo').show();
+}
+
+// 마우스 아웃 이벤트
+function moutSquare(e) {
+    //$('#redNemo').hide();
+    $('#redZoomNemo').hide();
+    $('#imageZoom').hide();
+    $('#mainImage').show();
+}

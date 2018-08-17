@@ -120,13 +120,12 @@ function insertTypoCorrect(req, res, result) {
     };
 
     commonDB.reqBatchQueryParam(queryConfig.uiLearningConfig.insertTypoCorrect, arr, options, function (rows, req, res) {
-        res.send({ 'fileName': fileName, 'data': result, nextType: 'dd' });
+        res.send({ 'fileName': fileName, 'data': result, nextType: 'fl' });
     }, req, res);
 
 }
 
-// domainDictionary ML
-router.post('/domainDictionary', function (req, res) {
+router.post('/formLabelMapping', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
 
@@ -135,36 +134,28 @@ router.post('/domainDictionary', function (req, res) {
     });
 
     try {
-        aimain.domainDictionaryEval(data, function (result) {
-            res.send({ 'fileName': fileName, 'data': result, nextType: 'tc' });
-        });
-    } catch (exception) {
-        console.log(exception);
-    }
+        aimain.formLabelMapping(data, function (formLabelResult) {
+
+            var formLabelArr = formLabelResult.split('^');
+            for (var i in formLabelArr) {
+                for (var j in data) {
+                    if (formLabelArr[i].split('||')[0] == data[j].sid) {
+                        data[j].formLabel = Number(formLabelArr[i].split('||')[1].replace(/\r\n/g, ''));
+                        break;
+                    }
+                }
+            }
+            console.log('execute formLabelMapping ML');
 
 
-});
-
-// textClassification ML
-router.post('/textClassification', function (req, res) {
-    var fileName = req.body.fileName;
-    var data = req.body.data;
-
-    process.on('uncaughtException', function (err) {
-        console.log('uncaughtException : ' + err);
-    });
-
-    try {
-        aimain.textClassificationEval(data, function (result) {
-            res.send({ 'fileName': fileName, 'data': result, nextType: 'st' });
+            res.send({ 'fileName': fileName, 'data': data, nextType: 'fm' });
         });
     } catch (exception) {
         console.log(exception);
     }
 });
 
-// statement classifiction ML
-router.post('/statementClassification', function (req, res) {
+router.post('/formMapping', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
 
@@ -173,31 +164,72 @@ router.post('/statementClassification', function (req, res) {
     });
 
     try {
-        aimain.statementClassificationEval(data, function (result) {
-            res.send({ 'fileName': fileName, 'data': result.data, 'docCategory': result.docCategory, nextType: 'lm' });
+        aimain.formMapping(data, function (formMappingResult) {
+
+            res.send({ 'fileName': fileName, 'data': formMappingResult, nextType: 'cm' });
         });
     } catch (exception) {
         console.log(exception);
     }
 });
 
-// labelMapping ML
-router.post('/labelMapping', function (req, res) {
+router.post('/columnMapping', function (req, res) {
     var fileName = req.body.fileName;
-    var data = req.body.data;
-    var docCategory = (req.body.docCategory) ? req.body.docCategory : null;
+    var arg = req.body.data;
 
     process.on('uncaughtException', function (err) {
         console.log('uncaughtException : ' + err);
     });
 
     try {
-        aimain.labelMappingEval(data, function (result) {
-            res.send({ 'fileName': fileName, 'data': result, 'docCategory': docCategory, nextType: 'sc' });
+        aimain.columnMapping(arg, function (columnResult) {
+            var columnArr = columnResult.split('^');
+            for (var i in columnArr) {
+                for (var j in arg.data) {
+                    var columnSid = columnArr[i].split('||')[0];
+                    if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
+                        arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
+                        break;
+                    }
+                }
+            }
+            console.log('execute columnMapping ML');
+            //console.log(arg);
+
+            // DB select (extraction OgCompanyName And ContractName)
+            var ctOgCompanyName = '';
+            var contractNames = []; // contractName Array
+            var exeQueryCount = 0; // query execute count 
+            var result = []; // function output
+            for (var i in arg.data) {
+                if (arg.data[i].formLabel == 1) {
+                    ctOgCompanyName = arg.data[i].text;
+                } else if (arg.data[i].formLabel == 2) {
+                    contractNames.push(arg.data[i].text);
+                } else {
+                }
+            }
+
+            for (var i in contractNames) {
+                commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
+                    exeQueryCount++;
+                    if (rows.length > 0) {
+                        result = rows;
+                    }
+                    if (exeQueryCount == contractNames.length) {
+                        arg.extOgAndCtnm = result;
+                        res.send({ 'fileName': fileName, 'data': arg.data, 'docCategory': arg.docCategory, nextType: 'sc' });
+                    }
+                });
+            }
+
+            
         });
     } catch (exception) {
         console.log(exception);
     }
+
+
 });
 
 // DB Columns select
@@ -601,6 +633,81 @@ function textLabelTrain(data) {
         }
     });
 }
+
+// domainDictionary ML
+router.post('/domainDictionary', function (req, res) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+
+    process.on('uncaughtException', function (err) {
+        console.log('uncaughtException : ' + err);
+    });
+
+    try {
+        aimain.domainDictionaryEval(data, function (result) {
+            res.send({ 'fileName': fileName, 'data': result, nextType: 'tc' });
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
+
+
+});
+
+// textClassification ML
+router.post('/textClassification', function (req, res) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+
+    process.on('uncaughtException', function (err) {
+        console.log('uncaughtException : ' + err);
+    });
+
+    try {
+        aimain.textClassificationEval(data, function (result) {
+            res.send({ 'fileName': fileName, 'data': result, nextType: 'st' });
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
+});
+
+// statement classifiction ML
+router.post('/statementClassification', function (req, res) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+
+    process.on('uncaughtException', function (err) {
+        console.log('uncaughtException : ' + err);
+    });
+
+    try {
+        aimain.statementClassificationEval(data, function (result) {
+            res.send({ 'fileName': fileName, 'data': result.data, 'docCategory': result.docCategory, nextType: 'lm' });
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
+});
+
+// labelMapping ML
+router.post('/labelMapping', function (req, res) {
+    var fileName = req.body.fileName;
+    var data = req.body.data;
+    var docCategory = (req.body.docCategory) ? req.body.docCategory : null;
+
+    process.on('uncaughtException', function (err) {
+        console.log('uncaughtException : ' + err);
+    });
+
+    try {
+        aimain.labelMappingEval(data, function (result) {
+            res.send({ 'fileName': fileName, 'data': result, 'docCategory': docCategory, nextType: 'sc' });
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
+});
 
 
 module.exports = router;
