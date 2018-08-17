@@ -521,10 +521,10 @@ function execBatchLearning() {
                 popUpLayer2(ocrDataArr[i]);
                 break;
             }
-        }
 
-        if (ocrDataArr.length == i) {
-            ocrDataArr = [];
+            if (ocrDataArr.length - 1 == i) {
+                location.reload();
+            }
         }
     }
 }
@@ -698,7 +698,7 @@ function compareBatchLearningData(ocrData, data) {
                                 //}
                             } else {// UI Training 체크박스 체크 없으면
                                 isFullMatch = true;
-                                updateBatchLearningData(retData, ocrData, mlData);
+                                updateBatchLearningData(retData, ocrData, data);
                                 //comparedMLAndAnswer(retData, data, ocrData);
                             }
                         } else {
