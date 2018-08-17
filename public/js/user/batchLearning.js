@@ -119,9 +119,10 @@ var buttonEvent = function () {
         popupEvent.closePopup();
     });
 
-    // [UI학습팝업] 저장
+    // [UI학습팝업] 학습 진행
     $("#btn_pop_ui_run").on("click", function () {
-        fn_batchUiTraining();
+        //fn_batchUiTraining();
+        execBatchLearning();
     });
     // [UI학습팝업] close popup
     $("#btn_pop_ui_close").on("click", function () {
@@ -130,7 +131,7 @@ var buttonEvent = function () {
 
     // UI train 실행
     $('#uiTrainBtn').on("click", function () {
-        uiTrainingBtn();
+        fn_batchUiTraining();
     });
     
 
@@ -503,6 +504,10 @@ function execBatchLearning() {
                 break;
             }
         }
+
+        if (ocrDataArr.length == i) {
+            ocrDataArr = [];
+        }
     }
 }
 
@@ -676,7 +681,7 @@ function compareBatchLearningData(ocrData, data) {
                             } else {// UI Training 체크박스 체크 없으면
                                 isFullMatch = true;
                                 comparedMLAndAnswer(retData, data, ocrData);
-                                //updateBatchLearningData(retData, ocrData, data);
+                                updateBatchLearningData(retData, ocrData, data);
                             }
                         } else {
                             popUpLayer2(ocrData);
@@ -1577,12 +1582,33 @@ var fn_batchUiTraining = function () {
 
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
+    startProgressBar();
+    $('#progressMsgTitle').html('양식 라벨 처리 중..');
+    addProgressBar(1, 20);
+    insertDocLabelMapping(data, callbackInsertDocLabelMapping);
+}
 
-    insertDocLabelMapping(data);
-    insertDocMapping(data);
-    insertColMapping(data);
-    insertContractMapping(data);
-    
+var callbackInsertDocLabelMapping = function (data) {
+    $('#progressMsgTitle').html('양식 분류 처리 중..');
+    addProgressBar(21, 40);
+    insertDocMapping(data, callbackInsertDocMapping);
+}
+
+var callbackInsertDocMapping = function (data) {
+    $('#progressMsgTitle').html('라벨 분류 처리 중..');
+    addProgressBar(41, 60);
+    insertColMapping(data, callbackInsertColMapping);
+}
+
+var callbackInsertColMapping = function (data) {
+    $('#progressMsgTitle').html('DB 컬럼 조회 중..');
+    addProgressBar(61, 80);
+    insertContractMapping(data, callbackInsertContractMapping);
+}
+
+var callbackInsertContractMapping = function () {
+    $('#progressMsgTitle').html('UI TRAINING..');
+    uiTrainingBtn();
 }
 
 // UI레이어 학습 버튼 클릭 이벤트
@@ -1595,6 +1621,7 @@ var uiTrainingBtn = function () {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             if (data.code == 200) {
+                addProgressBar(81, 100);
                 alert(data.message);
             }
         },
@@ -1605,15 +1632,16 @@ var uiTrainingBtn = function () {
 }
 
 // 양식 레이블 매핑 ml 데이터 insert
-function insertDocLabelMapping(data) {
+function insertDocLabelMapping(data, callback) {
     $.ajax({
         url: '/batchLearning/insertDocLabelMapping',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': data  }),
         contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log(data);
+        success: function (res) {
+            console.log(res);
+            callback(data);
         },
         error: function (err) {
             console.log(err);
@@ -1622,7 +1650,7 @@ function insertDocLabelMapping(data) {
 }
 
 // 양식 매핑 ml 데이터 insert
-function insertDocMapping(data) {
+function insertDocMapping(data, callback) {
     var param = [];
     for (var i in data.data) {
         if (data.data[i].column == 0 || data.data[i].column == 1) {
@@ -1635,8 +1663,9 @@ function insertDocMapping(data) {
         datatype: "json",
         data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
         contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log(data);
+        success: function (res) {
+            console.log(res);
+            callback(data);
         },
         error: function (err) {
             console.log(err);
@@ -1645,7 +1674,7 @@ function insertDocMapping(data) {
 }
 
 // 컬럼 매핑 ml 데이터 insert
-function insertColMapping(data) {
+function insertColMapping(data, callback) {
     var param = [];
     for (var i in data.data) {
         if (data.data[i].column != 999) {
@@ -1659,8 +1688,9 @@ function insertColMapping(data) {
         datatype: "json",
         data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
         contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log(data);
+        success: function (res) {
+            console.log(res);
+            callback(data);
         },
         error: function (err) {
             console.log(err);
@@ -1669,15 +1699,16 @@ function insertColMapping(data) {
 }
 
 // 계약명 매핑 insert
-function insertContractMapping(data) {
+function insertContractMapping(data,callback) {
     $.ajax({
         url: '/batchLearning/insertContractMapping',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': data, 'fileName': $('#imgNameTag').text().split('.')[0] + '.tif' }),
         contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log(data);
+        success: function (res) {
+            console.log(res);
+            callback(data);
         },
         error: function (err) {
             console.log(err);
