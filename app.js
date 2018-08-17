@@ -11,7 +11,6 @@ var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var router = express.Router();
-var flash = require('connect-flash');
 // Session
 var session = require('express-session');
 var flash = require('connect-flash');
