@@ -690,6 +690,15 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
     var answerData = retData.rows[0];   
     var fileInfo = ocrData.fileInfo;
 
+    for (var i in mlData.data) {
+        for (var j in columnArr) {
+            if (mlData.data[i].column == columnArr[j].COLNUM) {
+                mlData.data[i].columnName = columnArr[j].COLTYPE;
+                break;
+            }
+        }
+    }
+
     $('input[name="listCheck_before"]').each(function (index, element) {
         for (var i in fileInfo) {
             if ($(this).val() == fileInfo[i].imgId) {
@@ -704,17 +713,17 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
                     }
                 }
                 for (var j in mlData.data) {
-                    if (mlData.data[j].column != 'UNKOWN') {
+                    if (mlData.data[j].column != 999) {
                         for (var answerKey in answerData) {
                             if (answerKey == 'EXTCTNM' || answerKey == 'EXTOGCOMPANYNAME' ||
                                 answerKey == 'CTNM' || answerKey == 'OGCOMPANYNAME' || answerKey == 'MAPPINGCTNM') {
                                 continue;
                             }
-                            if (mlData.data[j].column == answerKey) { // 컬럼이 같으면
+                            if (mlData.data[j].columnName == answerKey) { // 컬럼이 같으면
                                 if (mlData.data[j].text == answerData[answerKey]) { // 값이 같으면
-                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text, 'isMapping' : true });
+                                    matchingColumn.push({ 'column': mlData.data[j].columnName, 'text': mlData.data[j].text, 'isMapping' : true });
                                 } else { // 값이 다르면
-                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text, 'isMapping': false });
+                                    matchingColumn.push({ 'column': mlData.data[j].columnName, 'text': mlData.data[j].text, 'isMapping': false });
                                 }
                                 break;
                             }

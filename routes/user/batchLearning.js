@@ -1121,7 +1121,6 @@ router.post('/syncFile', function (req, res) {
 
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-
     var query = queryConfig.batchLearningConfig.selectContractMapping;
     var param;
 
@@ -1143,6 +1142,7 @@ router.post('/compareBatchLearningData', function (req, res) {
 
 var callbackSelectContractMapping = function (rows, dataObj, req, res) {
     if (rows.length > 0) {
+
         dataObj.ASOGCOMPANYNAME = rows[0].ASOGCOMPANYNAME;
         dataObj.ASCTNM = rows[0].ASCTNM;
         dataObj.MAPPINGCTNM = rows[0].EXTCTNM
