@@ -687,8 +687,7 @@ function compareBatchLearningData(ocrData, data) {
                                 //}
                             } else {// UI Training 체크박스 체크 없으면
                                 isFullMatch = true;
-                                comparedMLAndAnswer(retData, data, ocrData);
-                                //updateBatchLearningData(retData, ocrData, data);
+                                //comparedMLAndAnswer(retData, data, ocrData);
                             }
                         } else {
                             popUpLayer2(ocrData);
@@ -705,6 +704,7 @@ function compareBatchLearningData(ocrData, data) {
     
 }
 
+/*
 // ML 데이터와 정답 데이터를 비교해여 색상 표시
 function comparedMLAndAnswer(retData, mlData, ocrData) {
     var answerData = retData.rows[0];   
@@ -786,6 +786,7 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
         }
     });
 }
+*/
 
 function columToTableNumber(column) {
     switch (column) {
@@ -1091,8 +1092,12 @@ var searchBatchLearnDataList = function (addCond) {
                 appendHtml += `<tr><td colspan="53">조회할 데이터가 없습니다.</td></tr>`;
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
-            if (addCond == "LEARN_N") $("#tbody_batchList_before").empty().append(appendHtml);
-            else $("#tbody_batchList_after").empty().append(appendHtml);
+            if (addCond == "LEARN_N") {
+                $("#tbody_batchList_before").empty().append(appendHtml);
+            } else {
+                $("#tbody_batchList_after").empty().append(appendHtml);
+                compareMLAndAnswer(data);
+            }
             endProgressBar(); // end progressbar
             checkboxEvent(); // refresh checkbox event
             $('input[type=checkbox]').ezMark();
@@ -1104,6 +1109,82 @@ var searchBatchLearnDataList = function (addCond) {
         }
     });
 };
+
+function compareMLAndAnswer(mlData) {
+    if (mlData.length != 0) {
+        var queryIn = "(";
+        for (var i in mlData) {
+            queryIn += "'" + mlData[i].ORIGINFILENAME + "'";
+            queryIn += (i == mlData.length - 1) ? "" : ",";
+        }
+        queryIn += ")";
+        $.ajax({
+            url: '/batchLearning/selectMultiBatchAnswerDataToFilePath',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({ 'queryIn': queryIn }),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+            },
+            success: function (data) {
+                $('#tbody_batchList_after tr').each(function (i, el) {
+                    for (var i in data) {
+                        if ($(el).children('td').eq(0).text().trim() == data[i].FILENAME) {
+                            for (var j = 2; j < $(el).children('td').length; j++) {
+                                if (j == 4 || j == 5) {
+                                    $(el).children('td').eq(j).css('background-color', 'lightgray');
+                                    continue;
+                                }      
+                                if ($(el).children('td').eq(j).text() == '') {
+                                    $(el).children('td').eq(j).css('background-color', 'red');
+                                }
+                            }
+
+
+                            break;
+                        }
+                    }
+                    // ML과 정답 데이터 값이 다른 것 표시    
+                    var misMatch = [];
+                    for (var i in mlData) {
+                        for (var j in data) {
+                            if (mlData[i].ORIGINFILENAME == data[j].FILENAME) {
+                                var keyArr = Object.keys(mlData[i]);
+                                for (var k in keyArr) {
+                                    console.log(keyArr[k]);
+                                    if (mlData[i][keyArr[k]] && data[j][keyArr[k]] && mlData[i][keyArr[k]] != '' &&
+                                        data[j][keyArr[k]] != '' && data[j][keyArr[k]] != mlData[i][keyArr[k]]) {
+                                        misMatch.push(keyArr[k]);
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    for (var i in misMatch) {
+                        $(el).children('td').eq(columToTableNumber(misMatch[i])).css('background-color', 'red');
+                    }
+                });
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
+    /*
+    $('#tbody_batchList_after tr').each(function (i, el) {
+        if (i == 4 || i == 5) {
+            $(el).children('td').css('background-color', 'lightgray');
+        }
+        if ($(el).children('td').text() == '') {
+            $(el).children('td').css('background-color', 'red');
+        } else {
+
+        }
+    });
+    */
+}
 
 function fn_viewImageData(fileName, obj) {
     

@@ -1192,6 +1192,15 @@ router.post('/uiTrainBatchLearningData', function (req, res) {
 
 });
 
+var callbackSelectMultiBatchAnswerDataToFilePath = function (rows, req, res) {
+    res.send(rows);
+};
+router.post('/selectMultiBatchAnswerDataToFilePath', function (req, res) {
+    var queryIn = req.body.queryIn;
+
+    commonDB.reqQuery(queryConfig.batchLearningConfig.selectMultiBatchAnswerDataToFilePath + queryIn, callbackSelectMultiBatchAnswerDataToFilePath, req, res);
+});
+
 async function runTypoDomainTrain(data, callbackTypoDomainTrain) {
     let res;
     try {
