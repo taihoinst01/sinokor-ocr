@@ -459,10 +459,10 @@ function executeML(totData) {
                     thumnImg();
                     $('#imageBox > li').eq(0).addClass('on');
                     $('#mlPredictionDocName').val(data.docCategory.DOCNAME);
-                    $('#mlPredictionPercent').val(data.docCategory.score + '%');
+                    $('#mlPredictionPercent').val(data.score + '%');
                     $('#docName').html(data.docCategory.DOCNAME);
-                    $('#docPredictionScore').html(data.docCategory.score + '%');
-                    if (data.docCategory.score >= 90) {
+                    $('#docPredictionScore').html(data.score + '%');
+                    if (data.score >= 90) {
                         $('#docName').css('color', 'dodgerblue');
                         $('#docPredictionScore').css('color', 'dodgerblue');
                     } else {
