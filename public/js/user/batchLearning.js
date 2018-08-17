@@ -1468,7 +1468,7 @@ var fn_uiTraining = function () {
     //if (addCond == "LEARN_Y") {
        //let imgId = "";
        //let chkCnt = 0;
-        $("input[name=listCheck_after]").each(function (index, entry) {
+        $("input[name=listCheck_before]").each(function (index, entry) {
             if ($(this).is(":checked")) {
                 imgId = $(this).val();
                 chkCnt++;
