@@ -516,6 +516,14 @@ function popUpLayer2(ocrData) {
     $('#docPredictionScore').text(modifyData.score + '%');
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
 
+    if (modifyData.score >= 90) {
+        $('#docName').css('color', 'dodgerblue');
+        $('#docPredictionScore').css('color', 'dodgerblue');
+    } else {
+        $('#docName').css('color', 'darkred');
+        $('#docPredictionScore').css('color', 'darkred');
+    }
+
 
     var mainImgHtml = '';
     mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
@@ -690,6 +698,15 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
     var answerData = retData.rows[0];   
     var fileInfo = ocrData.fileInfo;
 
+    for (var i in mlData.data) {
+        for (var j in columnArr) {
+            if (mlData.data[i].column == columnArr[j].COLNUM) {
+                mlData.data[i].columnName = columnArr[j].COLTYPE;
+                break;
+            }
+        }
+    }
+
     $('input[name="listCheck_before"]').each(function (index, element) {
         for (var i in fileInfo) {
             if ($(this).val() == fileInfo[i].imgId) {
@@ -704,17 +721,17 @@ function comparedMLAndAnswer(retData, mlData, ocrData) {
                     }
                 }
                 for (var j in mlData.data) {
-                    if (mlData.data[j].column != 'UNKOWN') {
+                    if (mlData.data[j].column != 999) {
                         for (var answerKey in answerData) {
                             if (answerKey == 'EXTCTNM' || answerKey == 'EXTOGCOMPANYNAME' ||
                                 answerKey == 'CTNM' || answerKey == 'OGCOMPANYNAME' || answerKey == 'MAPPINGCTNM') {
                                 continue;
                             }
-                            if (mlData.data[j].column == answerKey) { // 컬럼이 같으면
+                            if (mlData.data[j].columnName == answerKey) { // 컬럼이 같으면
                                 if (mlData.data[j].text == answerData[answerKey]) { // 값이 같으면
-                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text, 'isMapping' : true });
+                                    matchingColumn.push({ 'column': mlData.data[j].columnName, 'text': mlData.data[j].text, 'isMapping' : true });
                                 } else { // 값이 다르면
-                                    matchingColumn.push({ 'column': mlData.data[j].column, 'text': mlData.data[j].text, 'isMapping': false });
+                                    matchingColumn.push({ 'column': mlData.data[j].columnName, 'text': mlData.data[j].text, 'isMapping': false });
                                 }
                                 break;
                             }
@@ -1564,6 +1581,7 @@ var docLabelMapping = function (data) {
     insertDocLabelMapping(data);
     insertDocMapping(data);
     insertColMapping(data);
+    insertContractMapping(data);
     
 }
 
@@ -1592,7 +1610,7 @@ function insertDocLabelMapping(data) {
         url: '/batchLearning/insertDocLabelMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': data }),
+        data: JSON.stringify({ 'data': data  }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);
@@ -1640,6 +1658,23 @@ function insertColMapping(data) {
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// 계약명 매핑 insert
+function insertContractMapping(data) {
+    $.ajax({
+        url: '/batchLearning/insertContractMapping',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': data, 'fileName': $('#imgNameTag').text().split('.')[0] + '.tif' }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);

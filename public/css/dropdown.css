@@ -4,7 +4,7 @@
 }
 
 .selectBox li {
-    width: 167px;
+    width: 200px;
     list-style: none;
     display: block;
     float: left;
@@ -21,7 +21,7 @@
     margin: 0 0 0 0;
     padding: 0 0 0 5px;
     line-height: 30px;
-    border: 1px solid #ddd;
+    /*border: 1px solid #ddd;*/
     height: 28px;
     text-decoration: none;
     color: black;
@@ -44,12 +44,12 @@
 .selectBox > li > ul > li > ul {
     width: 100px;
     z-index: 999;
-}   
-
-.selectBox ul li a {
-	border-right: none;
-	border-bottom: 1px solid #FFFFFF;
 }
+
+    .selectBox ul li a {
+        border-right: none;
+        /*border-bottom: 1px solid #FFFFFF;*/
+    }
 
 .selectBox ul {
 	display: none;
@@ -74,3 +74,11 @@
 	visibility: hidden;
 	border: 1px solid #DDDDDD;
 }
+
+    .selectBox .secondLi:hover {
+        background: #edf2f6;
+    }
+
+    .selectBox .thirdLi:hover {
+        background: #6db1e8;
+    }

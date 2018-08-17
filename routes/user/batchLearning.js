@@ -743,6 +743,32 @@ router.post('/insertColMapping', function (req, res) {
     }, req, res);
 });
 
+var callbackInsertContractMapping = function (rows, req, res) {
+    res.send({ code: 200, message: 'contract mapping insert'})
+};
+var callbackSelectBatchAnswerDataToFilePath = function (rows, data, req, res) {
+    var extOgcompanyName, extCtnm, asOgcompanyName, asCtnm;
+
+    if (rows.length > 0) {
+        for (var i in data.data) {
+            if (data.data[i].column == 0) {
+                extOgcompanyName = data.data[i].text;
+            } else if (data.data[i].column == 1) {
+                extCtnm = data.data[i].text;
+            }
+        }
+        asOgcompanyName = rows[0].OGCOMPANYNAME;
+        asCtnm = rows[0].CTNM;
+        commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertContractMapping, [extOgcompanyName, extCtnm, asOgcompanyName, asCtnm], callbackInsertContractMapping, req, res);
+    }
+};
+router.post('/insertContractMapping', function (req, res) {
+    var data = req.body.data;
+    var fileName = req.body.fileName;
+    console.log(fileName);
+    commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectBatchAnswerDataToFilePath, [fileName], callbackSelectBatchAnswerDataToFilePath, data, req, res);
+});
+
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
 var callbackInsertBatchLearningBaseData = function (rows, req, res) {
     //console.log("upload batchLearningBaseData finish..");
@@ -1095,7 +1121,6 @@ router.post('/syncFile', function (req, res) {
 
 router.post('/compareBatchLearningData', function (req, res) {
     var dataObj = req.body.dataObj;
-
     var query = queryConfig.batchLearningConfig.selectContractMapping;
     var param;
 
@@ -1117,6 +1142,7 @@ router.post('/compareBatchLearningData', function (req, res) {
 
 var callbackSelectContractMapping = function (rows, dataObj, req, res) {
     if (rows.length > 0) {
+
         dataObj.ASOGCOMPANYNAME = rows[0].ASOGCOMPANYNAME;
         dataObj.ASCTNM = rows[0].ASCTNM;
         dataObj.MAPPINGCTNM = rows[0].EXTCTNM

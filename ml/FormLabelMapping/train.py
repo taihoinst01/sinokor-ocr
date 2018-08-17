@@ -19,7 +19,7 @@ for word in sys.argv[1:]:
     userData.append(wordData)
 
 config = configparser.ConfigParser()
-config.read('./ml/config.ini')
+config.read('config.ini')
 
 id = config['ORACLE']['ID']
 pw = config['ORACLE']['PW']

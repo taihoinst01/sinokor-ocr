@@ -516,7 +516,13 @@ function detailTable(fileName) {
                         tblSortTag += '<dl>';
                         tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
                         tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-                        tblSortTag += '<input type="text" value="' + item.data[dataN].text + '" style="width:100%; border:0;" />';
+                        if (item.data[dataN].text.length > 34) {
+                            tblSortTag += '<label class="iclick">'
+                            tblSortTag += '<input type="text" value="' + item.data[dataN].text + '" class="inputst_box01"/>';
+                            tblSortTag += '</label>'
+                        } else {
+                            tblSortTag += '<input type="text" value="' + item.data[dataN].text + '" class="inputst_box01"/>';
+                        }
                         tblSortTag += '<input type="hidden" value="' + item.data[dataN].location + '" />';
                         tblSortTag += '</label>';
                         tblSortTag += '</dt>';
@@ -623,19 +629,19 @@ function dbColumnsOption(data, column) {
             gubun = "::VALUE";
         }
 
-        optionTag += '<li>';
+        optionTag += '<li class="secondLi">';
         optionTag += '<a href="javascript:void(0);"><span>' + row.KOKEYWORD + gubun +'</span></a>';
         optionTag += '<ul>';
-        optionTag += '<li><a href="javascript:void(0);">키워드</a></li>';
-        optionTag += '<li><a href="javascript:void(0);">가변값</a></li>';
+        optionTag += '<li class="thirdLi"><a href="javascript:void(0);">키워드</a></li>';
+        optionTag += '<li class="thirdLi"><a href="javascript:void(0);">가변값</a></li>';
         optionTag += '</ul>';
         optionTag += '</li>';
     }
-    optionTag += '<li>';
+    optionTag += '<li class="secondLi">';
     optionTag += '<a href="javascript:void(0);"><span>none</span></a>';
     optionTag += '<ul>';
-    optionTag += '<li><a href="javascript:void(0);">키워드</a></li>';
-    optionTag += '<li><a href="javascript:void(0);">가변값</a></li>';
+    optionTag += '<li class="thirdLi"><a href="javascript:void(0);">키워드</a></li>';
+    optionTag += '<li class="thirdLi"><a href="javascript:void(0);">가변값</a></li>';
     optionTag += '</ul>';
     optionTag += '</li>';
 
