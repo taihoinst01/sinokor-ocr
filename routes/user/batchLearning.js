@@ -111,7 +111,11 @@ router.post('/searchBatchLearnData', function (req, res) {
     if (req.isAuthenticated()) fnSearchBatchLearningData(req, res);
 }); 
 var callbackSelectBatchAnswerDataToImgId = function (rows, req, res, fileInfoList, orderbyRows) {
-    res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows, fileToPage: rows });
+    if (rows.length == 0) {
+        res.send({ code: 400, msg: "정답파일을 찾을 수 없습니다." });
+    } else {
+        res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows, fileToPage: rows });
+    }
 };
 var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
     var orderbyRows = [];
@@ -560,6 +564,45 @@ router.post('/execBatchLearningData', function (req, res) {
                             }
                             if (exeQueryCount == contractNames.length) {
                                 arg.extOgAndCtnm = result;
+
+                                /*
+                                if (arg.docCategory[0].DOCTYPE == 2) {
+                                    var data = arg.data;
+                                    var dataArr = [];
+
+                                    for (var i in data) {
+                                        if (data[i].column == "CTNM2") {
+                                            var colData = [];
+                                            colData.push(data[i]);
+
+                                            var ctnmLoc = data[i].location.split(",");
+
+                                            for (var j in data) {
+                                                var loc = data[j].location.split(",");
+
+                                                if (data[j].column == "PAIDSHARE" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                                                    colData.push(data[j]);
+                                                }
+
+                                                if (data[j].column == "OSLPERCENT" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                                                    colData.push(data[j]);
+                                                }
+
+                                                if (data[j].column == "OSLSHARE" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                                                    colData.push(data[j]);
+                                                }
+
+                                                if (data[j].column == "CURCD" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                                                    colData.push(data[j]);
+                                                }
+                                            }
+                                            dataArr.push(colData);
+                                        }
+                                    }
+
+                                    arg.data = dataArr;
+                                }*/
+
                                 res.send(arg);
                             }
                         });
@@ -1145,9 +1188,11 @@ var callbackSelectContractMapping = function (rows, dataObj, req, res) {
 
         dataObj.ASOGCOMPANYNAME = rows[0].ASOGCOMPANYNAME;
         dataObj.ASCTNM = rows[0].ASCTNM;
-        dataObj.MAPPINGCTNM = rows[0].EXTCTNM
+        dataObj.MAPPINGCTNM = rows[0].EXTCTNM;
+        var PM = commonUtil.nvl2(dataObj.PM == undefined ? 0:dataObj.PM.replace(",", "").replace(/(\s*)/g, "").trim(), 0);
+        var CN = commonUtil.nvl2(dataObj.CN == undefined ? 0 :dataObj.CN.replace(",", "").replace(/(\s*)/g, "").trim(), 0);
         commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
-            dataObj.fileToPage.IMGID, commonUtil.nvl2(dataObj.PM.replace(",", "").replace(/(\s*)/g, "").trim(), 0), commonUtil.nvl2(dataObj.CN.replace(",", "").replace(/(\s*)/g, "").trim(), 0)
+            dataObj.fileToPage.IMGID, PM, CN
         ], callbackcompareBatchLearningData, dataObj, req, res);
     } else {
         res.send({ isContractMapping : false});

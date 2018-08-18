@@ -124,7 +124,6 @@ var buttonEvent = function () {
     $("#btn_pop_ui_run").on("click", function () {
         //fn_batchUiTraining();
         popupEvent.closePopup();
-        execBatchLearning();
     });
     // [UI학습팝업] close popup
     $("#btn_pop_ui_close").on("click", function () {
@@ -1326,6 +1325,11 @@ var searchBatchLearnData = function (imgIdArray, flag) {
             //addProgressBar(31, 50);
             //console.log("/batchLearning/searchBatchLearnData result :");
             //console.log(data);
+
+            if (data.code == 400) {
+                alert(data.msg);
+                return;
+            }
             
             if (flag == "PROCESS_IMAGE") {  // 배치학습 실행
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
@@ -1742,7 +1746,7 @@ var uiTrainingBtn = function () {
             if (data.code == 200) {
                 addProgressBar(81, 100);
                 alert(data.message);
-                popupEvent.batchClosePopup('retrain');
+                //popupEvent.batchClosePopup('retrain');
             }
         },
         error: function (err) {
@@ -1783,13 +1787,13 @@ function insertDocMapping(data, callback) {
             param.push(data.data[i]);
         }
     }
-    var dacCategory = JSON.parse($('#docData').val());
+    //var dacCategory = JSON.parse($('#docData').val());
 
     $.ajax({
         url: '/batchLearning/insertDocMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': dacCategory }),
+        data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
@@ -1810,13 +1814,13 @@ function insertColMapping(data, callback) {
         }
     }
 
-    var dacCategory = JSON.parse($('#docData').val());
+    //var dacCategory = JSON.parse($('#docData').val());
 
     $.ajax({
         url: '/batchLearning/insertColMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': dacCategory }),
+        data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
