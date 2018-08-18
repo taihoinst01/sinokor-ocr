@@ -193,7 +193,9 @@ var batchLearningConfig = {
             A.brokerAge, A.tax, A.overridingCom, A.charge, A.pmReserveRTD, A.pfPmReserveRTD,A.pmReserveRTD2,
             A.pfPmReserveRTD2, A.claim, A.lossRecovery, A.cashLoss, A.cashLossRD, A.lossRR, A.lossRR2, A.lossPFEnd,
             A.lossPFWoa, A.interest, A.taxOn, A.miscellaneous, A.pmbl, A.cmbl, A.ntbl, A.cscosarfrncnnt2,          
-            A.regId, A.regDate
+            A.regId, A.regDate,
+            (select max(ASOGCOMPANYNAME) from TBL_CONTRACT_MAPPING where EXTOGCOMPANYNAME = A.ogCompanyName and EXTCTNM = A.ctnm) as OGCONTRACTNAME,
+            (select max(ASCTNM) from TBL_CONTRACT_MAPPING where EXTOGCOMPANYNAME = A.ogCompanyName and EXTCTNM = A.ctnm) as CONTRACTNAMESUMMARY
 	     FROM
             tbl_ocr_file F
 		    LEFT OUTER JOIN 
