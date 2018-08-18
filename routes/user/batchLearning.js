@@ -757,7 +757,7 @@ router.post('/updateBatchLearningData', function (req, res) {
     } else {
         status = 'N';
     }
-
+    /*
     var dataCod = {};
 
     dataCod.STATEMENTDIV = billInfo.DOCNAME;
@@ -906,7 +906,7 @@ router.post('/updateBatchLearningData', function (req, res) {
         condImgIdQuery += fileInfos[i].imgId;
         condImgIdQuery += (i != fileInfos.length - 1) ? "'," : "')";
     }
-
+    */
     if (billInfo.DOCTYPE == 2) {
 
         var dataArr = [];
@@ -941,86 +941,384 @@ router.post('/updateBatchLearningData', function (req, res) {
             }
         }
 
-        console.log(dataArr);
-
         runInsertLearnData(dataArr, req, res, function () {
             console.log("UpdateBatchLearningData finish..");
             res.send({ code: 200});
         });
 
-        /*
-        var condSubNum = ' and subNum = ' + fileToPage.IMGFILESTARTNO;
-
-        commonDB.reqQueryParam(selectBatchLearningDataQuery + condSubNum, [fileInfos[0].imgId], function (rows, req, res) {
-            if (rows.length == 0) {
-                var regId = req.session.userId;
-
-                var insArr = [
-                    fileInfos[0].imgId,
-                    commonUtil.nvl(dataCod.entryNo),
-                    commonUtil.nvl(dataCod.STATEMENTDIV),
-                    commonUtil.nvl(dataCod.CONTRACTNUM),
-                    commonUtil.nvl(dataCod.ogCompanyCode),
-                    commonUtil.nvl(dataCod.CTOGCOMPANYNAMENM),
-                    commonUtil.nvl(dataCod.brokerCode),
-                    commonUtil.nvl(dataCod.brokerName),
-                    commonUtil.nvl(dataCod.CTNM),
-                    commonUtil.nvl(dataCod.insstdt),
-                    commonUtil.nvl(dataCod.insenddt),
-                    commonUtil.nvl(dataCod.UY),
-                    commonUtil.nvl(dataCod.CURCD),
-                    commonUtil.nvl2(dataCod.PAIDPERCENT, 0),
-                    commonUtil.nvl2(dataCod.PAIDSHARE, 0),
-                    commonUtil.nvl2(dataCod.OSLPERCENT, 0),
-                    commonUtil.nvl2(dataCod.OSLSHARE, 0),
-                    commonUtil.nvl2(dataCod.GROSSPM, 0),
-                    commonUtil.nvl2(dataCod.PM, 0),
-                    commonUtil.nvl2(dataCod.PMPFEND, 0),
-                    commonUtil.nvl2(dataCod.PMPFWOS, 0),
-                    commonUtil.nvl2(dataCod.XOLPM, 0),
-                    commonUtil.nvl2(dataCod.RETURNPM, 0),
-                    commonUtil.nvl2(dataCod.GROSSCN, 0),
-                    commonUtil.nvl2(dataCod.CN, 0),
-                    commonUtil.nvl2(dataCod.PROFITCN, 0),
-                    commonUtil.nvl2(dataCod.BROKERAGE, 0),
-                    commonUtil.nvl2(dataCod.TAX, 0),
-                    commonUtil.nvl2(dataCod.OVERRIDINGCOM, 0),
-                    commonUtil.nvl2(dataCod.CHARGE, 0),
-                    commonUtil.nvl2(dataCod.PMRESERVERTD, 0),
-                    commonUtil.nvl2(dataCod.PFPMRESERVERTD, 0),
-                    commonUtil.nvl2(dataCod.PMRESERVERLD, 0),
-                    commonUtil.nvl2(dataCod.PFPMRESERVERLD, 0),
-                    commonUtil.nvl2(dataCod.CLAIM, 0),
-                    commonUtil.nvl2(dataCod.LOSSRECOVERY, 0),
-                    commonUtil.nvl2(dataCod.CASHLOSS, 0),
-                    commonUtil.nvl2(dataCod.CASHLOSSRD, 0),
-                    commonUtil.nvl2(dataCod.LOSSRR, 0),
-                    commonUtil.nvl2(dataCod.LOSSRR2, 0),
-                    commonUtil.nvl2(dataCod.LOSSPFEND, 0),
-                    commonUtil.nvl2(dataCod.LOSSPFWOA, 0),
-                    commonUtil.nvl2(dataCod.INTEREST, 0),
-                    commonUtil.nvl2(dataCod.TAXON, 0),
-                    commonUtil.nvl2(dataCod.MISCELLANEOUS, 0),
-                    commonUtil.nvl2(dataCod.PMBL, 0),
-                    commonUtil.nvl2(dataCod.CMBL, 0),
-                    commonUtil.nvl2(dataCod.NTBL, 0),
-                    commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0),
-                    regId,
-                    fileToPage.IMGFILESTARTNO
-                ];
-
-                commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, insArr, callbackInsertBatchLearningData, req, res);
-            } else {
-                commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, dataArr, callbackUpdateBatchLearningData, req, res);
-            }
-        }, req, res);
-        */
-
-
     } else {
-        commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, dataArr, callbackUpdateBatchLearningData, req, res);
+
+        runUpdateLearnData(data, req, res, function () {
+            console.log("UpdateBatchLearningData finish..");
+            res.send({ code: 200 });
+        }); 
+
+        //commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, dataArr, callbackUpdateBatchLearningData, req, res);
     }
 });
+
+async function runUpdateLearnData(data, req, res, callbackRunUpdateLearnData) {
+    let ret;
+    try {
+        ret = await updateLearnData(data, req, res);
+        console.log(ret);
+        callbackRunUpdateLearnData(ret);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function updateLearnData(data, req, res) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var fileInfos = req.body.ocrData.fileInfo;
+            var billInfo = req.body.mldata.docCategory[0];
+
+            var cond = "('" + fileInfos[0].oriFileName + "')";
+
+            let selAnswerRes = await conn.execute(queryConfig.batchLearningConfig.selectMultiBatchAnswerDataToFilePath + cond);
+
+            var dataCod = {};
+
+            dataCod.STATEMENTDIV = billInfo.DOCNAME;
+
+            for (var i in data) {
+                if (data[i].column == "CTOGCOMPANYNAMENM" || data[i].column == "0") {
+                    dataCod.CTOGCOMPANYNAMENM = data[i].text;
+                } else if (data[i].column == "CTNM" || data[i].column == "1") {
+                    dataCod.CTNM = data[i].text;
+                } else if (data[i].column == "UY" || data[i].column == "2") {
+                    dataCod.UY = data[i].text;
+                } else if (data[i].column == "CONTRACTNUM" || data[i].column == "3") {
+                    dataCod.CONTRACTNUM = data[i].text;
+                } else if (data[i].column == "CURCD" || data[i].column == "4") {
+                    dataCod.CURCD = data[i].text;
+                } else if (data[i].column == "PAIDPERCENT" || data[i].column == "5") {
+                    dataCod.PAIDPERCENT = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "PAIDSHARE" || data[i].column == "6") {
+                    dataCod.PAIDSHARE = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "OSLPERCENT" || data[i].column == "7") {
+                    dataCod.OSLPERCENT = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "OSLSHARE" || data[i].column == "8") {
+                    dataCod.OSLSHARE = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "GROSSPM") {
+                    dataCod.GROSSPM = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "PM" || data[i].column == "9") {
+                    dataCod.PM = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "PMPFEND" || data[i].column == "10") {
+                    dataCod.PMPFEND = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "PMPFWOS" || data[i].column == "11") {
+                    dataCod.PMPFWOS = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "XOLPM" || data[i].column == "12") {
+                    dataCod.XOLPM = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "RETURNPM" || data[i].column == "13") {
+                    dataCod.RETURNPM = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "GROSSCN") {
+                    dataCod.GROSSCN = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "CN" || data[i].column == "14") {
+                    dataCod.CN = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "PROFITCN" || data[i].column == "15") {
+                    dataCod.PROFITCN = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "BROKERAGE" || data[i].column == "16") {
+                    dataCod.BROKERAGE = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "TAX" || data[i].column == "17") {
+                    dataCod.TAX = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "OVERRIDINGCOM" || data[i].column == "18") {
+                    dataCod.OVERRIDINGCOM = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "CHARGE" || data[i].column == "19") {
+                    dataCod.CHARGE = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "PMRESERVERTD" || data[i].column == "20") {
+                    dataCod.PMRESERVERTD = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "PFPMRESERVERTD" || data[i].column == "21") {
+                    dataCod.PFPMRESERVERTD = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "PMRESERVERLD" || data[i].column == "22") {
+                    dataCod.PMRESERVERLD = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "PFPMRESERVERLD" || data[i].column == "23") {
+                    dataCod.PFPMRESERVERLD = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "CLAIM" || data[i].column == "24") {
+                    dataCod.CLAIM = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "LOSSRECOVERY" || data[i].column == "25") {
+                    dataCod.LOSSRECOVERY = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "CASHLOSS" || data[i].column == "26") {
+                    dataCod.CASHLOSS = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "CASHLOSSRD" || data[i].column == "27") {
+                    dataCod.CASHLOSSRD = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "LOSSRR" || data[i].column == "28") {
+                    dataCod.LOSSRR = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "LOSSRR2" || data[i].column == "29") {
+                    dataCod.LOSSRR2 = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "LOSSPFEND" || data[i].column == "30") {
+                    dataCod.LOSSPFEND = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "LOSSPFWOA" || data[i].column == "31") {
+                    dataCod.LOSSPFWOA = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "INTEREST" || data[i].column == "32") {
+                    dataCod.INTEREST = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "TAXON" || data[i].column == "33") {
+                    dataCod.TAXON = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "MISCELLANEOUS" || data[i].column == "34") {
+                    dataCod.MISCELLANEOUS = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "PMBL") {
+                    dataCod.PMBL = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "CMBL") {
+                    dataCod.CMBL = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "NTBL") {
+                    dataCod.NTBL = data[i].text.replace(/ |,/g, '');
+                } else if (data[i].column == "CSCOSARFRNCNNT2" || data[i].column == "35") {
+                    dataCod.CSCOSARFRNCNNT2 = data[i].text;
+                }
+            }
+
+            var dataArr = [
+                "N",
+                commonUtil.nvl(dataCod.entryNo),
+                commonUtil.nvl(dataCod.STATEMENTDIV),
+                commonUtil.nvl(dataCod.CONTRACTNUM),
+                commonUtil.nvl(dataCod.ogCompanyCode),
+                commonUtil.nvl(dataCod.CTOGCOMPANYNAMENM),
+                commonUtil.nvl(dataCod.brokerCode),
+                commonUtil.nvl(dataCod.brokerName),
+                commonUtil.nvl(dataCod.CTNM),
+                commonUtil.nvl(dataCod.insstdt),
+                commonUtil.nvl(dataCod.insenddt),
+                commonUtil.nvl(dataCod.UY),
+                commonUtil.nvl(dataCod.CURCD),
+                commonUtil.nvl2(dataCod.PAIDPERCENT, 0),
+                commonUtil.nvl2(dataCod.PAIDSHARE, 0),
+                commonUtil.nvl2(dataCod.OSLPERCENT, 0),
+                commonUtil.nvl2(dataCod.OSLSHARE, 0),
+                commonUtil.nvl2(dataCod.GROSSPM, 0),
+                commonUtil.nvl2(dataCod.PM, 0),
+                commonUtil.nvl2(dataCod.PMPFEND, 0),
+                commonUtil.nvl2(dataCod.PMPFWOS, 0),
+                commonUtil.nvl2(dataCod.XOLPM, 0),
+                commonUtil.nvl2(dataCod.RETURNPM, 0),
+                commonUtil.nvl2(dataCod.GROSSCN, 0),
+                commonUtil.nvl2(dataCod.CN, 0),
+                commonUtil.nvl2(dataCod.PROFITCN, 0),
+                commonUtil.nvl2(dataCod.BROKERAGE, 0),
+                commonUtil.nvl2(dataCod.TAX, 0),
+                commonUtil.nvl2(dataCod.OVERRIDINGCOM, 0),
+                commonUtil.nvl2(dataCod.CHARGE, 0),
+                commonUtil.nvl2(dataCod.PMRESERVERTD, 0),
+                commonUtil.nvl2(dataCod.PFPMRESERVERTD, 0),
+                commonUtil.nvl2(dataCod.PMRESERVERLD, 0),
+                commonUtil.nvl2(dataCod.PFPMRESERVERLD, 0),
+                commonUtil.nvl2(dataCod.CLAIM, 0),
+                commonUtil.nvl2(dataCod.LOSSRECOVERY, 0),
+                commonUtil.nvl2(dataCod.CASHLOSS, 0),
+                commonUtil.nvl2(dataCod.CASHLOSSRD, 0),
+                commonUtil.nvl2(dataCod.LOSSRR, 0),
+                commonUtil.nvl2(dataCod.LOSSRR2, 0),
+                commonUtil.nvl2(dataCod.LOSSPFEND, 0),
+                commonUtil.nvl2(dataCod.LOSSPFWOA, 0),
+                commonUtil.nvl2(dataCod.INTEREST, 0),
+                commonUtil.nvl2(dataCod.TAXON, 0),
+                commonUtil.nvl2(dataCod.MISCELLANEOUS, 0),
+                commonUtil.nvl2(dataCod.PMBL, 0),
+                commonUtil.nvl2(dataCod.CMBL, 0),
+                commonUtil.nvl2(dataCod.NTBL, 0),
+                commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0)
+            ];
+
+            if (selAnswerRes.rows[0] != null) {
+                //정답파일 비교
+                var answerData = getAnswerData(selAnswerRes);
+                var boolAnswer = getAnswerBool(answerData, dataCod);
+
+                if (boolAnswer) {
+                    //정답 Y update
+                    if (dataArr[0] == "N") {
+                        dataArr[0] = "Y";
+                    }
+                }
+            }
+
+            var condImgIdQuery = '('
+            for (var i in fileInfos) {
+                condImgIdQuery += "'";
+                condImgIdQuery += fileInfos[i].imgId;
+                condImgIdQuery += (i != fileInfos.length - 1) ? "'," : "')";
+            }
+
+            let updAnswerRes = await conn.execute(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, dataArr);
+            resolve("true");
+
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
+
+function getAnswerBool(answerData, dataCod) {
+    var boolAnswer = true;
+
+    if (answerData.UY != null && answerData.UY != dataCod.UY) {
+        return boolAnswer = false;
+    }
+    if (answerData.CURCD != null && answerData.CURCD != dataCod.CURCD) {
+        return boolAnswer = false;
+    }
+    if (answerData.PAIDPERCENT != null && answerData.PAIDPERCENT != dataCod.PAIDPERCENT) {
+        return boolAnswer = false;
+    }
+    if (answerData.PAIDSHARE != null && answerData.PAIDSHARE != dataCod.PAIDSHARE) {
+        return boolAnswer = false;
+    }
+    if (answerData.OSLPERCENT != null && answerData.OSLPERCENT != dataCod.OSLPERCENT) {
+        return boolAnswer = false;
+    }
+    if (answerData.OSLSHARE != null && answerData.OSLSHARE != dataCod.OSLSHARE) {
+        return boolAnswer = false;
+    }
+    if (answerData.GROSSPM != null && answerData.GROSSPM != dataCod.GROSSPM) {
+        return boolAnswer = false;
+    }
+    if (answerData.PM != null && answerData.PM != dataCod.PM) {
+        return boolAnswer = false;
+    }
+    if (answerData.PMPFEND != null && answerData.PMPFEND != dataCod.PMPFEND) {
+        return boolAnswer = false;
+    }
+    if (answerData.PMPFWOS != null && answerData.PMPFWOS != dataCod.PMPFWOS) {
+        return boolAnswer = false;
+    }
+    if (answerData.XOLPM != null && answerData.XOLPM != dataCod.XOLPM) {
+        return boolAnswer = false;
+    }
+    if (answerData.RETURNPM != null && answerData.RETURNPM != dataCod.RETURNPM) {
+        return boolAnswer = false;
+    }
+    if (answerData.GROSSCN != null && answerData.GROSSCN != dataCod.GROSSCN) {
+        return boolAnswer = false;
+    }
+    if (answerData.PROFITCN != null && answerData.PROFITCN != dataCod.PROFITCN) {
+        return boolAnswer = false;
+    }
+    if (answerData.BROKERAGE != null && answerData.BROKERAGE != dataCod.BROKERAGE) {
+        return boolAnswer = false;
+    }
+    if (answerData.TAX != null && answerData.TAX != dataCod.TAX) {
+        return boolAnswer = false;
+    }
+    if (answerData.OVERRIDINGCOM != null && answerData.OVERRIDINGCOM != dataCod.OVERRIDINGCOM) {
+        return boolAnswer = false;
+    }
+    if (answerData.PMRESERVERTD1 != null && answerData.PMRESERVERTD1 != dataCod.PMRESERVERTD1) {
+        return boolAnswer = false;
+    }
+    if (answerData.PFPMRESERVERTD1 != null && answerData.PFPMRESERVERTD1 != dataCod.PFPMRESERVERTD1) {
+        return boolAnswer = false;
+    }
+    if (answerData.PMRESERVERTD2 != null && answerData.PMRESERVERTD2 != dataCod.PMRESERVERTD2) {
+        return boolAnswer = false;
+    }
+    if (answerData.PFPMRESERVERTD2 != null && answerData.PFPMRESERVERTD2 != dataCod.PFPMRESERVERTD2) {
+        return boolAnswer = false;
+    }
+    if (answerData.CLAIM != null && answerData.CLAIM != dataCod.CLAIM) {
+        return boolAnswer = false;
+    }
+    if (answerData.LOSSRECOVERY != null && answerData.LOSSRECOVERY != dataCod.LOSSRECOVERY) {
+        return boolAnswer = false;
+    }
+    if (answerData.CASHLOSS != null && answerData.CASHLOSS != dataCod.CASHLOSS) {
+        return boolAnswer = false;
+    }
+    if (answerData.CASHLOSSRD != null && answerData.CASHLOSSRD != dataCod.CASHLOSSRD) {
+        return boolAnswer = false;
+    }
+    if (answerData.LOSSRR != null && answerData.LOSSRR != dataCod.LOSSRR) {
+        return boolAnswer = false;
+    }
+    if (answerData.LOSSRR2 != null && answerData.LOSSRR2 != dataCod.LOSSRR2) {
+        return boolAnswer = false;
+    }
+    if (answerData.LOSSPFEND != null && answerData.LOSSPFEND != dataCod.LOSSPFEND) {
+        return boolAnswer = false;
+    }
+    if (answerData.LOSSPFWOA != null && answerData.LOSSPFWOA != dataCod.LOSSPFWOA) {
+        return boolAnswer = false;
+    }
+    if (answerData.INTEREST != null && answerData.INTEREST != dataCod.INTEREST) {
+        return boolAnswer = false;
+    }
+    if (answerData.TAXON != null && answerData.TAXON != dataCod.TAXON) {
+        return boolAnswer = false;
+    }
+    if (answerData.MISCELLANEOUS != null && answerData.MISCELLANEOUS != dataCod.MISCELLANEOUS) {
+        return boolAnswer = false;
+    }
+    if (answerData.PMBL != null && answerData.PMBL != dataCod.PMBL) {
+        return boolAnswer = false;
+    }
+    if (answerData.CMBL != null && answerData.CMBL != dataCod.CMBL) {
+        return boolAnswer = false;
+    }
+    if (answerData.NTBL != null && answerData.NTBL != dataCod.NTBL) {
+        return boolAnswer = false;
+    }
+    if (answerData.CSCOSARFRNCNNT2 != null && answerData.CSCOSARFRNCNNT2 != dataCod.CSCOSARFRNCNNT2) {
+        return boolAnswer = false;
+    }
+
+    return boolAnswer;
+}
+
+function getAnswerData(selAnswerRes) {
+    var answerData = {};
+    answerData.UY = selAnswerRes.rows[0].UY;
+    answerData.CURCD = selAnswerRes.rows[0].CURCD;
+    answerData.PAIDPERCENT = selAnswerRes.rows[0].PAIDPERCENT;
+    answerData.PAIDSHARE = selAnswerRes.rows[0].PAIDSHARE;
+    answerData.OSLPERCENT = selAnswerRes.rows[0].OSLPERCENT;
+    answerData.OSLSHARE = selAnswerRes.rows[0].OSLSHARE;
+    answerData.GROSSPM = selAnswerRes.rows[0].GROSSPM;
+    answerData.PM = selAnswerRes.rows[0].PM;
+    answerData.PMPFEND = selAnswerRes.rows[0].PMPFEND;
+    answerData.PMPFWOS = selAnswerRes.rows[0].PMPFWOS;
+    answerData.XOLPM = selAnswerRes.rows[0].XOLPM;
+    answerData.RETURNPM = selAnswerRes.rows[0].RETURNPM;
+    answerData.GROSSCN = selAnswerRes.rows[0].GROSSCN;
+    answerData.CN = selAnswerRes.rows[0].CN;
+    answerData.PROFITCN = selAnswerRes.rows[0].PROFITCN;
+    answerData.BROKERAGE = selAnswerRes.rows[0].BROKERAGE;
+    answerData.TAX = selAnswerRes.rows[0].TAX;
+    answerData.OVERRIDINGCOM = selAnswerRes.rows[0].OVERRIDINGCOM;
+    answerData.CHARGE = selAnswerRes.rows[0].CHARGE;
+    answerData.PMRESERVERTD1 = selAnswerRes.rows[0].PMRESERVERTD1;
+    answerData.PFPMRESERVERTD1 = selAnswerRes.rows[0].PFPMRESERVERTD1;
+    answerData.PMRESERVERTD2 = selAnswerRes.rows[0].PMRESERVERTD2;
+    answerData.PFPMRESERVERTD2 = selAnswerRes.rows[0].PFPMRESERVERTD2;
+    answerData.CLAIM = selAnswerRes.rows[0].CLAIM;
+    answerData.LOSSRECOVERY = selAnswerRes.rows[0].LOSSRECOVERY;
+    answerData.CASHLOSS = selAnswerRes.rows[0].CASHLOSS;
+    answerData.CASHLOSSRD = selAnswerRes.rows[0].CASHLOSSRD;
+    answerData.LOSSRR = selAnswerRes.rows[0].LOSSRR;
+    answerData.LOSSRR2 = selAnswerRes.rows[0].LOSSRR2;
+    answerData.LOSSPFEND = selAnswerRes.rows[0].LOSSPFEND;
+    answerData.LOSSPFWOA = selAnswerRes.rows[0].LOSSPFWOA;
+    answerData.INTEREST = selAnswerRes.rows[0].INTEREST;
+    answerData.TAXON = selAnswerRes.rows[0].TAXON;
+    answerData.MISCELLANEOUS = selAnswerRes.rows[0].MISCELLANEOUS;
+    answerData.PMBL = selAnswerRes.rows[0].PMBL;
+    answerData.CMBL = selAnswerRes.rows[0].CMBL;
+    answerData.NTBL = selAnswerRes.rows[0].NTBL;
+    answerData.CSCOSARFRNCNNT2 = selAnswerRes.rows[0].CSCOSARFRNCNNT2;
+
+    return answerData;
+}
+
 
 async function runInsertLearnData(data, req, res, callbackRunInsertLearnData) {
     let ret;

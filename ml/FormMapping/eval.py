@@ -74,7 +74,7 @@ new_samples = np.array(
     userData, dtype=float)
 y = list(classifier.predict(new_samples, as_iterable=True))
 
-selLabel = "SELECT SEQNUM, DATA, CLASS FROM TBL_FORM_MAPPING WHERE DATA = :selData"
+selLabel = "SELECT SEQNUM, DATA, CLASS FROM TBL_FORM_MAPPING WHERE DATA = :selData ORDER BY REGDATE DESC"
 
 retText = ''
 for word in enumerate(sys.argv[1:]):

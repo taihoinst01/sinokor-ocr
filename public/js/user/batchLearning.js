@@ -510,19 +510,22 @@ function convertLineOcrData(ocrData) {
 function execBatchLearning() {
     var dataArr = convertOcrData();
     if (exeBatchLearningCount <= ocrDataArr.length - 1) {
-        for (var i = exeBatchLearningCount; i < ocrDataArr.length; i++) {            
+
+        for (var i = exeBatchLearningCount; i < ocrDataArr.length; i++) {
             exeBatchLearningCount = i;
             console.log(exeBatchLearningCount);
             execBatchLearningData(ocrDataArr[i], dataArr[i]);
             if ($('#layer2').css('display') != 'none') break;
             if (isFullMatch) { // 모든 컬럼 매핑이 되었거나 계산서가 아닌 경우
             } else {
+                endProgressBar();
                 popUpLayer2(ocrDataArr[i]);
                 break;
             }
 
             if (ocrDataArr.length - 1 == i) {
-                location.reload();
+                ocrDataArr = [];
+                searchBatchLearnDataList(addCond);
             }
         }
     }
@@ -627,6 +630,7 @@ function execBatchLearningData(ocrData, data) {
             
         },
         error: function (err) {
+            popUpLayer2(ocrData);
             console.log(err);
         }
     });
@@ -1705,6 +1709,7 @@ var fn_batchUiTraining = function () {
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
     startProgressBar();
+    $('#progressMsgTitle').css("color", "black");
     $('#progressMsgTitle').html('양식 라벨 처리 중..');
     addProgressBar(1, 20);
     insertDocLabelMapping(data, callbackInsertDocLabelMapping);
