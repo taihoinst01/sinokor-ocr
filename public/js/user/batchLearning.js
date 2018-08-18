@@ -1151,16 +1151,7 @@ function compareMLAndAnswer(mlData) {
                                     break;
                                 }
                             }
-                            if (isTraining) {
-                                for (var j = 2; j < $(el).children('td').length; j++) {
-                                    /*if (j == 4 || j == 5) {
-                                        $(el).children('td').eq(j).css('background-color', 'lightgray');
-                                        continue;
-                                    }*/
-                                    if ($(el).children('td').eq(j).text() == '') {
-                                        $(el).children('td').eq(j).css('background-color', 'red');
-                                    }
-                                }
+                            if (isTraining) {                               
                                 var misMatch = [];
                                 for (var j in mlData) {
                                     if (mlData[j].ORIGINFILENAME == data[i].FILENAME) {
@@ -1171,10 +1162,20 @@ function compareMLAndAnswer(mlData) {
                                                 misMatch.push(keyArr[k]);
                                             }
                                         }
+                                        console.log(misMatch);
                                         for (var k in misMatch) {
                                             $(el).children('td').eq(columToTableNumber(misMatch[k])).css('background-color', 'red');
                                         }
                                         break;
+                                    }
+                                }
+                                for (var j = 2; j < $(el).children('td').length; j++) {
+                                    if ((j == 4 || j == 5) && $(el).children('td').eq(j).text() != '') {
+                                        $(el).children('td').eq(j).css('background-color', 'lightgray');
+                                        continue;
+                                    }
+                                    if ($(el).children('td').eq(j).text() == '') {
+                                        $(el).children('td').eq(j).css('background-color', 'red');
                                     }
                                 }
                             }                                  
