@@ -564,45 +564,6 @@ router.post('/execBatchLearningData', function (req, res) {
                             }
                             if (exeQueryCount == contractNames.length) {
                                 arg.extOgAndCtnm = result;
-
-                                /*
-                                if (arg.docCategory[0].DOCTYPE == 2) {
-                                    var data = arg.data;
-                                    var dataArr = [];
-
-                                    for (var i in data) {
-                                        if (data[i].column == "CTNM2") {
-                                            var colData = [];
-                                            colData.push(data[i]);
-
-                                            var ctnmLoc = data[i].location.split(",");
-
-                                            for (var j in data) {
-                                                var loc = data[j].location.split(",");
-
-                                                if (data[j].column == "PAIDSHARE" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
-                                                    colData.push(data[j]);
-                                                }
-
-                                                if (data[j].column == "OSLPERCENT" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
-                                                    colData.push(data[j]);
-                                                }
-
-                                                if (data[j].column == "OSLSHARE" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
-                                                    colData.push(data[j]);
-                                                }
-
-                                                if (data[j].column == "CURCD" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
-                                                    colData.push(data[j]);
-                                                }
-                                            }
-                                            dataArr.push(colData);
-                                        }
-                                    }
-
-                                    arg.data = dataArr;
-                                }*/
-
                                 res.send(arg);
                             }
                         });
@@ -630,57 +591,6 @@ router.post('/execBatchLearningData', function (req, res) {
                 })
             })
         })
-    });
-    */
-
-    /*
-    // Machine Learning v.1.1
-    console.log("bill ML");
-    aimain.billClassificationEval(arg, function (result1) {
-        console.log(result1);
-
-        aimain.labelClassificationEval(result1, function (result2) {
-
-            //다중 계산서 처리
-            if (result2.docCategory.DOCTYPE == 2) {
-                var data = result2.data;
-                var dataArr = [];
-
-                for (var i in data) {
-                    if (data[i].column == "CTNM2") {
-                        var colData = [];
-                        colData.push(data[i]);
-
-                        var ctnmLoc = data[i].location.split(",");
-
-                        for (var j in data) {
-                            var loc = data[j].location.split(",");
-
-                            if (data[j].column == "PAIDSHARE" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
-                                colData.push(data[j]);
-                            }
-
-                            if (data[j].column == "OSLPERCENT" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
-                                colData.push(data[j]);
-                            }
-
-                            if (data[j].column == "OSLSHARE" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
-                                colData.push(data[j]);
-                            }
-
-                            if (data[j].column == "CURCD" && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
-                                colData.push(data[j]);
-                            }
-                        }
-                        dataArr.push(colData);
-                    }
-                }
-
-                result2.data = dataArr;
-            }
-            res.send(result2);
-        });
-        
     });
     */
 
@@ -998,6 +908,47 @@ router.post('/updateBatchLearningData', function (req, res) {
     }
 
     if (billInfo.DOCTYPE == 2) {
+
+        var dataArr = [];
+
+        for (var i in data) {
+            if (data[i].column == "CONTRACTNUM" || data[i].column == "3") {
+                var colData = [];
+                colData.push(data[i]);
+
+                var ctnmLoc = data[i].location.split(",");
+
+                for (var j in data) {
+                    var loc = data[j].location.split(",");
+
+                    if ((data[j].column == "PAIDSHARE" || data[j].column == "6") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                        colData.push(data[j]);
+                    }
+
+                    if ((data[j].column == "OSLPERCENT" || data[j].column == "7") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                        colData.push(data[j]);
+                    }
+
+                    if ((data[j].column == "OSLSHARE" || data[j].column == "8") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                        colData.push(data[j]);
+                    }
+
+                    if ((data[j].column == "CURCD" || data[j].column == "4") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                        colData.push(data[j]);
+                    }
+                }
+                dataArr.push(colData);
+            }
+        }
+
+        console.log(dataArr);
+
+        runInsertLearnData(dataArr, req, res, function () {
+            console.log("UpdateBatchLearningData finish..");
+            res.send({ code: 200});
+        });
+
+        /*
         var condSubNum = ' and subNum = ' + fileToPage.IMGFILESTARTNO;
 
         commonDB.reqQueryParam(selectBatchLearningDataQuery + condSubNum, [fileInfos[0].imgId], function (rows, req, res) {
@@ -1063,10 +1014,265 @@ router.post('/updateBatchLearningData', function (req, res) {
                 commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, dataArr, callbackUpdateBatchLearningData, req, res);
             }
         }, req, res);
+        */
+
+
     } else {
         commonDB.reqQueryParam(queryConfig.batchLearningConfig.updateBatchLearningData + condImgIdQuery, dataArr, callbackUpdateBatchLearningData, req, res);
     }
 });
+
+async function runInsertLearnData(data, req, res, callbackRunInsertLearnData) {
+    let ret;
+    try {
+        ret = await insertLearnData(data, req, res);
+        console.log(ret);
+        callbackRunInsertLearnData(ret);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function insertLearnData(data, req, res) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            console.log(data);
+            var fileInfos = req.body.ocrData.fileInfo;
+            var billInfo = req.body.mldata.docCategory[0];
+
+            for (var j in data) {
+                let LearnDataRes = await conn.execute("select count(*) as count from tbl_batch_learn_data where imgid = :imgid", [fileInfos[0].imgId]);
+                var rowData = data[j];
+                var dataCod = {};
+
+                dataCod.STATEMENTDIV = billInfo.DOCNAME;
+
+                for (var i in rowData) {
+                    if (rowData[i].column == "CTOGCOMPANYNAMENM" || rowData[i].column == "0") {
+                        dataCod.CTOGCOMPANYNAMENM = rowData[i].text;
+                    } else if (rowData[i].column == "CTNM" || rowData[i].column == "1") {
+                        dataCod.CTNM = rowData[i].text;
+                    } else if (rowData[i].column == "UY" || rowData[i].column == "2") {
+                        dataCod.UY = rowData[i].text;
+                    } else if (rowData[i].column == "CONTRACTNUM" || rowData[i].column == "3") {
+                        dataCod.CONTRACTNUM = rowData[i].text;
+                    } else if (rowData[i].column == "CURCD" || rowData[i].column == "4") {
+                        dataCod.CURCD = rowData[i].text;
+                    } else if (rowData[i].column == "PAIDPERCENT" || rowData[i].column == "5") {
+                        dataCod.PAIDPERCENT = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "PAIDSHARE" || rowData[i].column == "6") {
+                        dataCod.PAIDSHARE = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "OSLPERCENT" || rowData[i].column == "7") {
+                        dataCod.OSLPERCENT = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "OSLSHARE" || rowData[i].column == "8") {
+                        dataCod.OSLSHARE = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "GROSSPM") {
+                        dataCod.GROSSPM = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "PM" || rowData[i].column == "9") {
+                        dataCod.PM = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "PMPFEND" || rowData[i].column == "10") {
+                        dataCod.PMPFEND = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "PMPFWOS" || rowData[i].column == "11") {
+                        dataCod.PMPFWOS = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "XOLPM" || rowData[i].column == "12") {
+                        dataCod.XOLPM = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "RETURNPM" || rowData[i].column == "13") {
+                        dataCod.RETURNPM = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "GROSSCN") {
+                        dataCod.GROSSCN = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "CN" || rowData[i].column == "14") {
+                        dataCod.CN = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "PROFITCN" || rowData[i].column == "15") {
+                        dataCod.PROFITCN = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "BROKERAGE" || rowData[i].column == "16") {
+                        dataCod.BROKERAGE = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "TAX" || rowData[i].column == "17") {
+                        dataCod.TAX = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "OVERRIDINGCOM" || rowData[i].column == "18") {
+                        dataCod.OVERRIDINGCOM = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "CHARGE" || rowData[i].column == "19") {
+                        dataCod.CHARGE = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "PMRESERVERTD" || rowData[i].column == "20") {
+                        dataCod.PMRESERVERTD = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "PFPMRESERVERTD" || rowData[i].column == "21") {
+                        dataCod.PFPMRESERVERTD = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "PMRESERVERLD" || rowData[i].column == "22") {
+                        dataCod.PMRESERVERLD = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "PFPMRESERVERLD" || rowData[i].column == "23") {
+                        dataCod.PFPMRESERVERLD = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "CLAIM" || rowData[i].column == "24") {
+                        dataCod.CLAIM = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "LOSSRECOVERY" || rowData[i].column == "25") {
+                        dataCod.LOSSRECOVERY = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "CASHLOSS" || rowData[i].column == "26") {
+                        dataCod.CASHLOSS = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "CASHLOSSRD" || rowData[i].column == "27") {
+                        dataCod.CASHLOSSRD = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "LOSSRR" || rowData[i].column == "28") {
+                        dataCod.LOSSRR = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "LOSSRR2" || rowData[i].column == "29") {
+                        dataCod.LOSSRR2 = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "LOSSPFEND" || rowData[i].column == "30") {
+                        dataCod.LOSSPFEND = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "LOSSPFWOA" || rowData[i].column == "31") {
+                        dataCod.LOSSPFWOA = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "INTEREST" || rowData[i].column == "32") {
+                        dataCod.INTEREST = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "TAXON" || rowData[i].column == "33") {
+                        dataCod.TAXON = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "MISCELLANEOUS" || rowData[i].column == "34") {
+                        dataCod.MISCELLANEOUS = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "PMBL") {
+                        dataCod.PMBL = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "CMBL") {
+                        dataCod.CMBL = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "NTBL") {
+                        dataCod.NTBL = rowData[i].text.replace(/ |,/g, '');
+                    } else if (rowData[i].column == "CSCOSARFRNCNNT2" || rowData[i].column == "35") {
+                        dataCod.CSCOSARFRNCNNT2 = rowData[i].text;
+                    }
+                }
+
+                if (j + 1 <= LearnDataRes.rows[0].COUNT) {
+
+                    var dataArr = [
+                        "N",
+                        commonUtil.nvl(dataCod.entryNo),
+                        commonUtil.nvl(dataCod.STATEMENTDIV),
+                        commonUtil.nvl(dataCod.CONTRACTNUM),
+                        commonUtil.nvl(dataCod.ogCompanyCode),
+                        commonUtil.nvl(dataCod.CTOGCOMPANYNAMENM),
+                        commonUtil.nvl(dataCod.brokerCode),
+                        commonUtil.nvl(dataCod.brokerName),
+                        commonUtil.nvl(dataCod.CTNM),
+                        commonUtil.nvl(dataCod.insstdt),
+                        commonUtil.nvl(dataCod.insenddt),
+                        commonUtil.nvl(dataCod.UY),
+                        commonUtil.nvl(dataCod.CURCD),
+                        commonUtil.nvl2(dataCod.PAIDPERCENT, 0),
+                        commonUtil.nvl2(dataCod.PAIDSHARE, 0),
+                        commonUtil.nvl2(dataCod.OSLPERCENT, 0),
+                        commonUtil.nvl2(dataCod.OSLSHARE, 0),
+                        commonUtil.nvl2(dataCod.GROSSPM, 0),
+                        commonUtil.nvl2(dataCod.PM, 0),
+                        commonUtil.nvl2(dataCod.PMPFEND, 0),
+                        commonUtil.nvl2(dataCod.PMPFWOS, 0),
+                        commonUtil.nvl2(dataCod.XOLPM, 0),
+                        commonUtil.nvl2(dataCod.RETURNPM, 0),
+                        commonUtil.nvl2(dataCod.GROSSCN, 0),
+                        commonUtil.nvl2(dataCod.CN, 0),
+                        commonUtil.nvl2(dataCod.PROFITCN, 0),
+                        commonUtil.nvl2(dataCod.BROKERAGE, 0),
+                        commonUtil.nvl2(dataCod.TAX, 0),
+                        commonUtil.nvl2(dataCod.OVERRIDINGCOM, 0),
+                        commonUtil.nvl2(dataCod.CHARGE, 0),
+                        commonUtil.nvl2(dataCod.PMRESERVERTD, 0),
+                        commonUtil.nvl2(dataCod.PFPMRESERVERTD, 0),
+                        commonUtil.nvl2(dataCod.PMRESERVERLD, 0),
+                        commonUtil.nvl2(dataCod.PFPMRESERVERLD, 0),
+                        commonUtil.nvl2(dataCod.CLAIM, 0),
+                        commonUtil.nvl2(dataCod.LOSSRECOVERY, 0),
+                        commonUtil.nvl2(dataCod.CASHLOSS, 0),
+                        commonUtil.nvl2(dataCod.CASHLOSSRD, 0),
+                        commonUtil.nvl2(dataCod.LOSSRR, 0),
+                        commonUtil.nvl2(dataCod.LOSSRR2, 0),
+                        commonUtil.nvl2(dataCod.LOSSPFEND, 0),
+                        commonUtil.nvl2(dataCod.LOSSPFWOA, 0),
+                        commonUtil.nvl2(dataCod.INTEREST, 0),
+                        commonUtil.nvl2(dataCod.TAXON, 0),
+                        commonUtil.nvl2(dataCod.MISCELLANEOUS, 0),
+                        commonUtil.nvl2(dataCod.PMBL, 0),
+                        commonUtil.nvl2(dataCod.CMBL, 0),
+                        commonUtil.nvl2(dataCod.NTBL, 0),
+                        commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0)
+                    ];
+
+                    //update
+                    console.log("update");
+                    var andCond = "('" + fileInfos[0].imgId + "') and subnum = " + (parseInt(j) + 1);  
+                    let updLearnDataRes = await conn.execute(queryConfig.batchLearningConfig.updateBatchLearningData + andCond, dataArr);
+                } else {
+                    //insert
+                    var regId = req.session.userId;
+
+                    var insArr = [
+                        fileInfos[0].imgId,
+                        commonUtil.nvl(dataCod.entryNo),
+                        commonUtil.nvl(dataCod.STATEMENTDIV),
+                        commonUtil.nvl(dataCod.CONTRACTNUM),
+                        commonUtil.nvl(dataCod.ogCompanyCode),
+                        commonUtil.nvl(dataCod.CTOGCOMPANYNAMENM),
+                        commonUtil.nvl(dataCod.brokerCode),
+                        commonUtil.nvl(dataCod.brokerName),
+                        commonUtil.nvl(dataCod.CTNM),
+                        commonUtil.nvl(dataCod.insstdt),
+                        commonUtil.nvl(dataCod.insenddt),
+                        commonUtil.nvl(dataCod.UY),
+                        commonUtil.nvl(dataCod.CURCD),
+                        commonUtil.nvl2(dataCod.PAIDPERCENT, 0),
+                        commonUtil.nvl2(dataCod.PAIDSHARE, 0),
+                        commonUtil.nvl2(dataCod.OSLPERCENT, 0),
+                        commonUtil.nvl2(dataCod.OSLSHARE, 0),
+                        commonUtil.nvl2(dataCod.GROSSPM, 0),
+                        commonUtil.nvl2(dataCod.PM, 0),
+                        commonUtil.nvl2(dataCod.PMPFEND, 0),
+                        commonUtil.nvl2(dataCod.PMPFWOS, 0),
+                        commonUtil.nvl2(dataCod.XOLPM, 0),
+                        commonUtil.nvl2(dataCod.RETURNPM, 0),
+                        commonUtil.nvl2(dataCod.GROSSCN, 0),
+                        commonUtil.nvl2(dataCod.CN, 0),
+                        commonUtil.nvl2(dataCod.PROFITCN, 0),
+                        commonUtil.nvl2(dataCod.BROKERAGE, 0),
+                        commonUtil.nvl2(dataCod.TAX, 0),
+                        commonUtil.nvl2(dataCod.OVERRIDINGCOM, 0),
+                        commonUtil.nvl2(dataCod.CHARGE, 0),
+                        commonUtil.nvl2(dataCod.PMRESERVERTD, 0),
+                        commonUtil.nvl2(dataCod.PFPMRESERVERTD, 0),
+                        commonUtil.nvl2(dataCod.PMRESERVERLD, 0),
+                        commonUtil.nvl2(dataCod.PFPMRESERVERLD, 0),
+                        commonUtil.nvl2(dataCod.CLAIM, 0),
+                        commonUtil.nvl2(dataCod.LOSSRECOVERY, 0),
+                        commonUtil.nvl2(dataCod.CASHLOSS, 0),
+                        commonUtil.nvl2(dataCod.CASHLOSSRD, 0),
+                        commonUtil.nvl2(dataCod.LOSSRR, 0),
+                        commonUtil.nvl2(dataCod.LOSSRR2, 0),
+                        commonUtil.nvl2(dataCod.LOSSPFEND, 0),
+                        commonUtil.nvl2(dataCod.LOSSPFWOA, 0),
+                        commonUtil.nvl2(dataCod.INTEREST, 0),
+                        commonUtil.nvl2(dataCod.TAXON, 0),
+                        commonUtil.nvl2(dataCod.MISCELLANEOUS, 0),
+                        commonUtil.nvl2(dataCod.PMBL, 0),
+                        commonUtil.nvl2(dataCod.CMBL, 0),
+                        commonUtil.nvl2(dataCod.NTBL, 0),
+                        commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0),
+                        regId,
+                        (parseInt(j) + 1)
+                    ];
+
+                    console.log("insert");
+                    let insLearnDataRes = await conn.execute(queryConfig.batchLearningConfig.insertBatchLearningData, insArr);
+                }
+            }
+
+            resolve("true");
+
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
 
 var callbackUpdateBatchLearningData = function (rows, req, res) {
     console.log("UpdateBatchLearningData finish..");
