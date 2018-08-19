@@ -112,7 +112,7 @@ router.post('/searchBatchLearnData', function (req, res) {
 }); 
 var callbackSelectBatchAnswerDataToImgId = function (rows, req, res, fileInfoList, orderbyRows) {
     if (rows.length == 0) {
-        res.send({ code: 400, msg: "정답파일을 찾을 수 없습니다." });
+        res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows, fileToPage: [] });
     } else {
         res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows, fileToPage: rows });
     }
@@ -143,7 +143,7 @@ var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
             }
         }
     }
-    /*
+    
     var condQuery = "";
     if (imgIdArr.length > 0) {
         condQuery = "(";
@@ -154,10 +154,9 @@ var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
         condQuery = "(null)";
     }
     console.log(selectBatchAnswerDataToImgId + condQuery);
-    */
-    res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows });
-    //commonDB.reqQueryF2param(selectBatchAnswerDataToImgId + condQuery, callbackSelectBatchAnswerDataToImgId, req, res, fileInfoList, orderbyRows);
-    //res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows});
+    
+    //res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows });
+    commonDB.reqQueryF2param(selectBatchAnswerDataToImgId + condQuery, callbackSelectBatchAnswerDataToImgId, req, res, fileInfoList, orderbyRows);
 };
 var callbackBatchLearningData = function (rows, req, res) {
     var fileInfoList = [];
@@ -1764,9 +1763,13 @@ var callbackSelectContractMapping = function (rows, dataObj, req, res) {
         dataObj.MAPPINGCTNM = rows[0].EXTCTNM;
         //var PM = commonUtil.nvl2(dataObj.PM == undefined ? 0:dataObj.PM.replace(",", "").replace(/(\s*)/g, "").trim(), 0);
         //var CN = commonUtil.nvl2(dataObj.CN == undefined ? 0 :dataObj.CN.replace(",", "").replace(/(\s*)/g, "").trim(), 0);
-        commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
-            dataObj.fileToPage.IMGID
-        ], callbackcompareBatchLearningData, dataObj, req, res);
+        if (dataObj.fileToPage.IMGID) {
+            commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
+                dataObj.fileToPage.IMGID
+            ], callbackcompareBatchLearningData, dataObj, req, res);
+        } else {
+            res.send({ isContractMapping: false });
+        }
     } else {
         res.send({ isContractMapping : false});
     }

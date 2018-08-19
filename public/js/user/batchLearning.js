@@ -368,60 +368,79 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
         data: JSON.stringify({ 'fileName': fileName }),
     }).done(function (data) {          
         ocrCount++;
-        //console.log(data);
+        console.log(data);
         if (!data.code) { // 에러가 아니면
+            /*
             ocrDataArr.push({
                 fileInfo: [fileInfo],
                 fileName: [fileName],
                 regions: data.regions,
                 lastYn: lastYn
             });
-            /*
-            if (ocrCount == 1) {
-               
-                for (var i in fileToPage) {
-                    if (fileToPage[i].IMGID == answerRows.IMGID &&
-                        fileToPage[i].IMGFILESTARTNO <= answerRows.PAGENUM &&
-                        answerRows.PAGENUM <= fileToPage[i].IMGFILEENDNO) {
-                        ocrDataArr.push({
-                            answerImgId: answerRows.IMGID,
-                            fileInfo: [fileInfo],
-                            fileName: [fileName],
-                            regions: data.regions,
-                            fileToPage: fileToPage[i],
-                            lastYn: lastYn
-                        });
+            */
+            if (ocrCount == 1) {   
+                if (fileToPage.length > 0) {
+                    for (var i in fileToPage) {
+                        if (fileToPage[i].IMGID == answerRows.IMGID &&
+                            fileToPage[i].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                            answerRows.PAGENUM <= fileToPage[i].IMGFILEENDNO) {
+                            console.log('1');
+                            ocrDataArr.push({
+                                answerImgId: answerRows.IMGID,
+                                fileInfo: [fileInfo],
+                                fileName: [fileName],
+                                regions: data.regions,
+                                fileToPage: fileToPage[i],
+                                lastYn: lastYn
+                            });
+                        }
                     }
-                }                
+                } else {
+                    ocrDataArr.push({
+                        fileInfo: [fileInfo],
+                        fileName: [fileName],
+                        regions: data.regions,
+                        fileToPage: [],
+                        lastYn: lastYn
+                    });
+                }
             } else {
-                for (var i in ocrDataArr) {                          
-                    if (ocrDataArr[i].answerImgId == answerRows.IMGID &&
-                        ocrDataArr[i].fileToPage.IMGFILESTARTNO <= answerRows.PAGENUM &&
-                        answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
-                        var totRegions = (ocrDataArr[i].regions).concat(data.regions);
-                        ocrDataArr[i].regions = totRegions;
-                        ocrDataArr[i].fileName.push(fileName);
-                        ocrDataArr[i].fileInfo.push(fileInfo);
-                        break;
-                    } else if (i == ocrDataArr.length - 1) {                     
-                        for (var j in fileToPage) {
-                            if (fileToPage[j].IMGID == answerRows.IMGID &&
-                                fileToPage[j].IMGFILESTARTNO <= answerRows.PAGENUM &&
-                                answerRows.PAGENUM <= fileToPage[j].IMGFILEENDNO) {
-                                ocrDataArr.push({
-                                    answerImgId: answerRows.IMGID,
-                                    fileInfo: [fileInfo],
-                                    fileName: [fileName],
-                                    regions: data.regions,
-                                    fileToPage: fileToPage[j],
-                                    lastYn: lastYn
-                                });
+                if (fileToPage.length > 0) {
+                    for (var i in ocrDataArr) {
+                        if (ocrDataArr[i].answerImgId == answerRows.IMGID &&
+                            ocrDataArr[i].fileToPage.IMGFILESTARTNO <= answerRows.PAGENUM &&
+                            answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
+                            var totRegions = (ocrDataArr[i].regions).concat(data.regions);
+                            ocrDataArr[i].regions = totRegions;
+                            ocrDataArr[i].fileName.push(fileName);
+                            ocrDataArr[i].fileInfo.push(fileInfo);
+                            break;
+                        } else if (i == ocrDataArr.length - 1) {
+                            for (var j in fileToPage) {
+                                if (fileToPage[j].IMGID == answerRows.IMGID &&
+                                    fileToPage[j].IMGFILESTARTNO <= answerRows.PAGENUM &&
+                                    answerRows.PAGENUM <= fileToPage[j].IMGFILEENDNO) {
+                                    ocrDataArr.push({
+                                        answerImgId: answerRows.IMGID,
+                                        fileInfo: [fileInfo],
+                                        fileName: [fileName],
+                                        regions: data.regions,
+                                        fileToPage: fileToPage[j],
+                                        lastYn: lastYn
+                                    });
+                                }
                             }
-                        }                       
-                    }                    
+                        }
+                    }
+                } else {
+                    ocrDataArr.push({
+                        fileInfo: [fileInfo],
+                        fileName: [fileName],
+                        regions: data.regions,
+                        lastYn: lastYn
+                    });
                 }
             }
-            */
             //console.log(ocrDataArr);
             if (totCount == ocrCount) {
                 execBatchLearning();
@@ -1396,8 +1415,8 @@ var searchBatchLearnData = function (imgIdArray, flag) {
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
                     var lastYn = "N";
                     if (i == data.fileInfoList.length - 1) lastYn = "Y";
-                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i]);
-                    //processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i], data.fileToPage);
+                    //processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i]);
+                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i], data.fileToPage);
                 }
                 
             } else {
