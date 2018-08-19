@@ -601,6 +601,46 @@ function appendOptionHtml(targetColumn, columns) {
 }
 
 function execBatchLearningData(ocrData, data) {
+    var data = [
+        { "location": "342,542,411,87", "text": "TEST" },
+        { "location": "1045,294,409,23", "text": "Partner of Test" },
+        { "location": "1923,543,178,25", "text": "Test No" },
+        { "location": "1849,403,206,25", "text": "Test Date" },
+        { "location": "234,546,274,27", "text": "7933 Korean Re" },
+        { "location": "198,649,525,34", "text": "Proportional Treaty Statement" },
+        { "location": "2390,409,344,25", "text": "BV/HEO/2018/08/0819" },
+        { "location": "2101,534,169,25", "text": "01442/2018" },
+        { "location": "211,858,111,24", "text": "Cedant" },
+        { "location": "211,918,285,24", "text": "Class of Business" },
+        { "location": "218,1001,272,26", "text": "Period of Quarter" },
+        { "location": "212,1104,252,31", "text": "Period of Treaty" },
+        { "location": "210,1066,227,24", "text": "Our Reference" },
+        { "location": "210,1174,145,31", "text": "Currency" },
+        { "location": "211,1243,139,24", "text": "Premium" },
+        { "location": "220,1403,197,24", "text": "Commission" },
+        { "location": "220,1466,107,24", "text": "Claims" },
+        { "location": "222,1526,126,24", "text": "Reserve" },
+        { "location": "222,1389,123,24", "text": "Release" },
+        { "location": "222,1619,117,24", "text": "Interest" },
+        { "location": "222,1509,161,31", "text": "Brokerage" },
+        { "location": "235,1878,134,24", "text": "Portfolio" },
+        { "location": "222,1481,124,24", "text": "Balance" },
+        { "location": "440,899,492,32", "text": ": Test- First Insurance 2018" },
+        { "location": "440,912,636,26", "text": ": Test contract 2018" },
+        { "location": "708,888,433,25", "text": "07-05-2018 TO 19-08-2018" },
+        { "location": "708,920,454,25", "text": ": 22-03-2018 TO 30-09-2018" },
+        { "location": "475,998,304,25", "text": ": TEST/CTNM/8403" },
+        { "location": "829,1173,171,25", "text": "JOD 1.50" },
+        { "location": "839,1239,83,25", "text": "4.32" },
+        { "location": "839,1299,58,25", "text": "34.21" },
+        { "location": "839,1362,64,25", "text": "4.25" },
+        { "location": "839,1422,58,25", "text": "1.65" },
+        { "location": "839,1485,64,25", "text": "0.00" },
+        { "location": "839,1545,64,25", "text": "2.38" },
+        { "location": "839,1605,64,25", "text": "71.65" },
+        { "location": "848,1677,64,25", "text": "33.10" },
+        { "location": "1956,1879,356,29", "text": "TEST CONTRACT" }
+    ];
 
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
@@ -633,8 +673,8 @@ function execBatchLearningData(ocrData, data) {
             
         },
         error: function (err) {
-            popUpLayer2(ocrData);
             console.log(err);
+            popUpLayer2(ocrData);            
         }
     });
     
@@ -1168,7 +1208,7 @@ function compareMLAndAnswer(mlData) {
                                                 misMatch.push(keyArr[k]);
                                             }
                                         }
-                                        console.log(misMatch);
+
                                         for (var k in misMatch) {
                                             $(el).children('td').eq(columToTableNumber(misMatch[k])).css('background-color', 'red');
                                         }
@@ -1671,6 +1711,14 @@ var fn_processUiTraining = function (fileInfoList) {
 // UI학습 팝업 실행
 var fn_batchUiTraining = function () {
     var data = modifyData;
+
+    if ($('#docData').val() != '') { // 문서 종류를 수정했다면
+        if (data.docCategory) { // 추출된 문서가 있을 경우
+            data.docCategory[0] = JSON.parse($('#docData').val());
+        } else {
+            data.docCategory = [JSON.parse($('#docData').val())];
+        }
+    }
     $('#textResultTbl > dl').each(function (i, el) {
         var location = $(el).find('input')[1].value;
         var text = $(el).find('input')[0].value;
@@ -1711,19 +1759,6 @@ var fn_batchUiTraining = function () {
 
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
-    if (data.docCategory == undefined) {
-        var docArr = [];
-        var docData = {};
-
-        docData.DOCNAME = "Apex 계산서";
-        docData.DOCTYPE = "1";
-        docData.SAMPLEIMAGEPATH = "sample/apex.jpg";
-
-        docArr.push(docData);
-
-        data.docCategory = docArr;
-    }
-
     startProgressBar();
     $('#progressMsgTitle').css("color", "black");
     $('#progressMsgTitle').html('양식 라벨 처리 중..');
@@ -1988,7 +2023,7 @@ function popUpSearchDocCategory() {
     });
 }
 
-// 팝업 확인 이벤트
+// 팝업 확인 및 취소 이벤트
 function popUpRunEvent() {
     $('#btn_pop_doc_run').click(function (e) {
         var docData = JSON.parse($('#docData').val());
@@ -1999,6 +2034,13 @@ function popUpRunEvent() {
                 break;
             }
         }
+        $(this).parents('.poplayer').fadeOut();
+        e.stopPropagation();
+        e.preventDefault();
+    });
+    $('#btn_pop_doc_cancel').click(function (e) {
+        $('#docData').val('');
+
         e.stopPropagation();
         e.preventDefault();
     });

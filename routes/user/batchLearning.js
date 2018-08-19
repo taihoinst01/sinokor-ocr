@@ -433,7 +433,7 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 
 
 // test ml - 18.08.16 hyj
-router.get('/test', function (req, res) {
+router.post('/test', function (req, res) {
     var arg = [
         { "location": "342,542,411,87", "text": "TEST" },
         { "location": "1045,294,409,23", "text": "Partner of Test" },
@@ -495,57 +495,69 @@ router.get('/test', function (req, res) {
                 console.log('execute formMapping ML');
                 arg = formResult;
                 //console.log(arg);
-                aimain.columnMapping(arg, function (columnResult) {
-                    var columnArr = columnResult.split('^');
-                    for (var i in columnArr) {
-                        for (var j in arg.data) {
-                            var columnSid = columnArr[i].split('||')[0];
-                            if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
-                                arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
-                                break;
+                if (arg != null) {
+                    aimain.columnMapping(arg, function (columnResult) {
+                        if (columnResult) {
+                            var columnArr = columnResult.split('^');
+                            for (var i in columnArr) {
+                                for (var j in arg.data) {
+                                    var columnSid = columnArr[i].split('||')[0];
+                                    if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
+                                        arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
+                                        break;
+                                    }
+                                }
                             }
-                        }
-                    }
-                    console.log('execute columnMapping ML');
-                    //console.log(arg);
+                            console.log('execute columnMapping ML');
+                            //console.log(arg);
 
-                    // DB select (extraction OgCompanyName And ContractName)
-                    var ctOgCompanyName = '';
-                    var contractNames = []; // contractName Array
-                    var exeQueryCount = 0; // query execute count 
-                    var result = []; // function output
-                    for (var i in arg.data) {
-                        if (arg.data[i].formLabel == 1) {
-                            ctOgCompanyName = arg.data[i].text;
-                        } else if (arg.data[i].formLabel == 2) {
-                            contractNames.push(arg.data[i].text);
+                            // DB select (extraction OgCompanyName And ContractName)
+                            var ctOgCompanyName = '';
+                            var contractNames = []; // contractName Array
+                            var exeQueryCount = 0; // query execute count 
+                            var result = []; // function output
+                            for (var i in arg.data) {
+                                if (arg.data[i].formLabel == 1) {
+                                    ctOgCompanyName = arg.data[i].text;
+                                } else if (arg.data[i].formLabel == 2) {
+                                    contractNames.push(arg.data[i].text);
+                                } else {
+                                }
+                            }
+
+                            for (var i in contractNames) {
+                                commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
+                                    exeQueryCount++;
+                                    if (rows.length > 0) {
+                                        result = rows;
+                                    }
+                                    if (exeQueryCount == contractNames.length) {
+                                        arg.extOgAndCtnm = result;
+                                        res.send(arg);
+                                    }
+                                });
+                            }
                         } else {
+                            var data = {};
+                            data.data = req.body.data;
+                            res.send(data);
                         }
-                    }
-
-                    for (var i in contractNames) {
-                        commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
-                            exeQueryCount++;
-                            if (rows.length > 0) {
-                                result = rows;
-                            }
-                            if (exeQueryCount == contractNames.length) {
-                                arg.extOgAndCtnm = result;
-                                res.send(arg);
-                            }
-                        });
-                    }
-                });
+                    });
+                } else {
+                    var data = {};
+                    data.data = req.body.data;
+                    res.send(data);
+                }
             });
         });
-    })
+    });
 });
 
 
 // RUN batchLearningData
 router.post('/execBatchLearningData', function (req, res) {
     var arg = req.body.data;
-
+    
     // Machine Learning v1.2
     aimain.typoSentenceEval(arg, function (typoResult) {
         arg = typoResult;
@@ -569,44 +581,50 @@ router.post('/execBatchLearningData', function (req, res) {
                 //console.log(arg);
                 if (arg != null) {
                     aimain.columnMapping(arg, function (columnResult) {
-                        var columnArr = columnResult.split('^');
-                        for (var i in columnArr) {
-                            for (var j in arg.data) {
-                                var columnSid = columnArr[i].split('||')[0];
-                                if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
-                                    arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
-                                    break;
+                        if (columnResult) {
+                            var columnArr = columnResult.split('^');
+                            for (var i in columnArr) {
+                                for (var j in arg.data) {
+                                    var columnSid = columnArr[i].split('||')[0];
+                                    if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
+                                        arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        console.log('execute columnMapping ML');
-                        //console.log(arg);
+                            console.log('execute columnMapping ML');
+                            //console.log(arg);
 
-                        // DB select (extraction OgCompanyName And ContractName)
-                        var ctOgCompanyName = '';
-                        var contractNames = []; // contractName Array
-                        var exeQueryCount = 0; // query execute count 
-                        var result = []; // function output
-                        for (var i in arg.data) {
-                            if (arg.data[i].formLabel == 1) {
-                                ctOgCompanyName = arg.data[i].text;
-                            } else if (arg.data[i].formLabel == 2) {
-                                contractNames.push(arg.data[i].text);
-                            } else {
+                            // DB select (extraction OgCompanyName And ContractName)
+                            var ctOgCompanyName = '';
+                            var contractNames = []; // contractName Array
+                            var exeQueryCount = 0; // query execute count 
+                            var result = []; // function output
+                            for (var i in arg.data) {
+                                if (arg.data[i].formLabel == 1) {
+                                    ctOgCompanyName = arg.data[i].text;
+                                } else if (arg.data[i].formLabel == 2) {
+                                    contractNames.push(arg.data[i].text);
+                                } else {
+                                }
                             }
-                        }
 
-                        for (var i in contractNames) {
-                            commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
-                                exeQueryCount++;
-                                if (rows.length > 0) {
-                                    result = rows;
-                                }
-                                if (exeQueryCount == contractNames.length) {
-                                    arg.extOgAndCtnm = result;
-                                    res.send(arg);
-                                }
-                            });
+                            for (var i in contractNames) {
+                                commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
+                                    exeQueryCount++;
+                                    if (rows.length > 0) {
+                                        result = rows;
+                                    }
+                                    if (exeQueryCount == contractNames.length) {
+                                        arg.extOgAndCtnm = result;
+                                        res.send(arg);
+                                    }
+                                });
+                            }
+                        } else {
+                            var data = {};
+                            data.data = typoResult;
+                            res.send(data);
                         }
                     });
                 } else {
@@ -617,7 +635,7 @@ router.post('/execBatchLearningData', function (req, res) {
 
             });
         });
-    })
+    });
 
     /* 
     // Machine Learning v.1.0
