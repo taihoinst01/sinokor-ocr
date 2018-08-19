@@ -1923,7 +1923,7 @@ function changeDocPopupImage() {
 
 function popUpEvent() {
     popUpSearchDocCategory();
-    popUpInsertDocCategory();
+    //popUpInsertDocCategory();
 }
 
 //팝업 문서 양식 LIKE 조회
