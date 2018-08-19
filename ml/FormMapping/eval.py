@@ -25,6 +25,13 @@ sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_FORM_MAPPING"
 curs.execute(sql)
 rows = curs.fetchall()
 
+selDoc = "SELECT MAX(DOCTYPE) as DOCTYPE FROM TBL_DOCUMENT_CATEGORY"
+curs.execute(selDoc)
+resDoc = curs.fetchall()
+
+clsNum = resDoc[0][0]
+clsNum += 1
+
 userData = []
 
 for word in sys.argv[1:]:
@@ -63,7 +70,7 @@ feature_columns = [tf.contrib.layers.real_valued_column("", dimension=14)]
 # 10, 20, 10개의 유닛을 가진 3층 DNN를 만듭니다
 classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns,
                                             hidden_units=[10, 20, 10],
-                                            n_classes=3,
+                                            n_classes=clsNum,
                                             model_dir="/tmp/FormMapping")
 
 # 정확도를 평가합니다.

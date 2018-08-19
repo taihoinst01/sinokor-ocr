@@ -16,6 +16,7 @@ var ocrDataArr = []; //ocr 학습한 데이터 배열
 var addCond = "LEARN_N"; // LEARN_N:학습미완료, LEARN_Y:학습완료, default:학습미완료
 var startNum = 0;
 var moreNum = 20;
+var uiFlag = "N";
 
 var ocrPopData; //UI Popup DATA
 
@@ -414,6 +415,8 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
             //console.log(ocrDataArr);
             if (totCount == ocrCount) {
                 execBatchLearning();
+                ocrCount = 0;
+                totCount = 0;
             }
             //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
         } else if (data.error) { //ocr 이외 에러이면
@@ -689,10 +692,10 @@ function compareBatchLearningData(ocrData, data) {
                     data: JSON.stringify(param),
                     contentType: 'application/json; charset=UTF-8',
                     async: false,
-                    success: function (retData) {                        
+                    success: function (retData) {
                         console.log("----- retData -----");
                         console.log(retData);
-                        if (retData.isContractMapping) {
+                        if (retData.isContractMapping && uiFlag == "N") {
                             if ($('#uiTrainingChk').is(':checked')) {// UI Training 체크박스 체크 있으면
                                 ocrData.exeML = "Y";
                                 isFullMatch = (dataObj.length != 53) ? false : true;
@@ -708,6 +711,7 @@ function compareBatchLearningData(ocrData, data) {
                                 //comparedMLAndAnswer(retData, data, ocrData);
                             }
                         } else {
+                            uiFlag = "N";
                             popUpLayer2(ocrData);
                         }
 
@@ -1344,8 +1348,6 @@ var searchBatchLearnData = function (imgIdArray, flag) {
                     if (i == data.fileInfoList.length - 1) lastYn = "Y";
                     processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i], data.fileToPage);
                 }
-            } else if (flag == "UI_TRAINING") {
-                fn_processUiTraining(data.fileInfoList);
             } else {
                 alert("잘못된 요청입니다.");
                 return;
@@ -1616,7 +1618,9 @@ var fn_uiTraining = function () {
             return;
         } else {
             imgIdArray.push(imgId);
-            searchBatchLearnData(imgIdArray, "UI_TRAINING");
+            totCount++;
+            uiFlag = "Y";
+            searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
         }
     //} else {
     //    alert("After Training 상태에서만 UI학습이 가능합니다.");
