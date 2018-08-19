@@ -780,6 +780,8 @@ var callbackSelectBatchAnswerDataToFilePath = function (rows, data, req, res) {
         asOgcompanyName = rows[0].OGCOMPANYNAME;
         asCtnm = rows[0].CTNM;
         commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertContractMapping, [extOgcompanyName, extCtnm, asOgcompanyName, asCtnm], callbackInsertContractMapping, req, res);
+    } else {
+        res.send({ code: 200, message: 'contract mapping insert (not Answer)' })
     }
 };
 router.post('/insertContractMapping', function (req, res) {
