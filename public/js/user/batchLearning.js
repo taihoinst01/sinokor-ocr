@@ -1180,9 +1180,9 @@ function compareMLAndAnswer(mlData) {
                                         $(el).children('td').eq(j).css('background-color', 'lightgray');
                                         continue;
                                     }
-                                    if ($(el).children('td').eq(j).text() == '') {
+                                    /*if ($(el).children('td').eq(j).text() == '') {
                                         $(el).children('td').eq(j).css('background-color', 'red');
-                                    }
+                                    }*/
                                 }
                             }                                  
                             /*
@@ -1936,7 +1936,7 @@ function changeDocPopupImage() {
 
 function popUpEvent() {
     popUpSearchDocCategory();
-    popUpInsertDocCategory();
+    //popUpInsertDocCategory();
 }
 
 //팝업 문서 양식 LIKE 조회
