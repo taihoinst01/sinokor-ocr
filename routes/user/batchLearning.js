@@ -557,7 +557,7 @@ router.post('/test', function (req, res) {
 // RUN batchLearningData
 router.post('/execBatchLearningData', function (req, res) {
     var arg = req.body.data;
-    
+
     // Machine Learning v1.2
     aimain.typoSentenceEval(arg, function (typoResult) {
         arg = typoResult;
