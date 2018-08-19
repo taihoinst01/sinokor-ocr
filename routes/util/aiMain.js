@@ -125,7 +125,7 @@ exports.formLabelMapping = function (data, callback) {
 exports.formMapping = function (data, callback) {
     var args = dataToSidArgs(data, true);
 
-    if (isNaN(args)) {
+    if (args.length == undefined) {
         callback(null);
     } else {
         var isValid = (args.split(',').length == 14) ? true : false;
