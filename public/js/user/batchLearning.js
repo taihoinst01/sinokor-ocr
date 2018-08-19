@@ -176,12 +176,14 @@ var popupEvent = (function () {
 
     var batchClosePopup = function (type) {
         $('.poplayer').fadeOut();
+        /*
         setTimeout(function () {
             if (!type) {
                 exeBatchLearningCount++;
             }
             execBatchLearning();
         }, 2000);
+        */
     }
 
     return {
@@ -536,7 +538,7 @@ function execBatchLearning() {
 
 // UI레이어 작업 함수
 function popUpLayer2(ocrData) {
-
+    ocrDataArr = [];
     fn_initUiTraining(); // 팝업 초기화
     layer_open('layer2'); // ui 학습레이어 띄우기
     $("#layer2.poplayer").css("display", "block");
@@ -1673,6 +1675,7 @@ var fn_uiTraining = function () {
 var fn_initUiTraining = function () {
     $('#imgNameTag').text('');
     $("#uiImg").html('');
+    $("#textResultTbl").html('');
 }
 // UI학습 팝업 값 대입
 var fn_processUiTraining = function (fileInfoList) {

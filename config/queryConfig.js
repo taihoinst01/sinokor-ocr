@@ -477,7 +477,7 @@ var uiLearningConfig = {
          FROM
             tbl_document_category
          WHERE
-            docName LIKE :docName AND docType != 999 `,
+            lower(docName) LIKE lower(:docName) AND docType != 999 `,
     selectMaxDocType:
         `SELECT
             MAX(docType) AS docType
