@@ -347,7 +347,7 @@ var batchLearningConfig = {
          FROM 
             tbl_batch_answer_data
          where 
-            imgId = :imgId AND pm = :pm And cn = :cn `,
+            imgId = :imgId `,
     selectContractMapping:
         `SELECT
             extOgcompanyName, extCtnm, asOgcompanyName, asCtnm
