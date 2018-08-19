@@ -16,6 +16,7 @@ var exceljs = require('exceljs');
 var oracledb = require('oracledb');
 oracledb.autoCommit = true;
 oracledb.outFormat = oracledb.OBJECT;
+oracledb.fetchAsString = [oracledb.NUMBER]; // 숫자반환을 문자열로 전환 (xx.99 -> xx.99000002 와 같은 반환오류 때문)
 var dbConfig = require(appRoot + '/config/dbConfig');
 //var pool = mysql.createPool(dbConfig);
 oracledb.createPool(dbConfig, function (err, pool) {

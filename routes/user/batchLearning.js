@@ -1757,10 +1757,10 @@ var callbackSelectContractMapping = function (rows, dataObj, req, res) {
         dataObj.ASOGCOMPANYNAME = rows[0].ASOGCOMPANYNAME;
         dataObj.ASCTNM = rows[0].ASCTNM;
         dataObj.MAPPINGCTNM = rows[0].EXTCTNM;
-        var PM = commonUtil.nvl2(dataObj.PM == undefined ? 0:dataObj.PM.replace(",", "").replace(/(\s*)/g, "").trim(), 0);
-        var CN = commonUtil.nvl2(dataObj.CN == undefined ? 0 :dataObj.CN.replace(",", "").replace(/(\s*)/g, "").trim(), 0);
+        //var PM = commonUtil.nvl2(dataObj.PM == undefined ? 0:dataObj.PM.replace(",", "").replace(/(\s*)/g, "").trim(), 0);
+        //var CN = commonUtil.nvl2(dataObj.CN == undefined ? 0 :dataObj.CN.replace(",", "").replace(/(\s*)/g, "").trim(), 0);
         commonDB.reqQueryParam2(queryConfig.batchLearningConfig.compareBatchLearningData, [
-            dataObj.fileToPage.IMGID, PM, CN
+            dataObj.fileToPage.IMGID
         ], callbackcompareBatchLearningData, dataObj, req, res);
     } else {
         res.send({ isContractMapping : false});
