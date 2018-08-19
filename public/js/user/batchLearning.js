@@ -537,17 +537,20 @@ function popUpLayer2(ocrData) {
     fn_initUiTraining(); // 팝업 초기화
     layer_open('layer2'); // ui 학습레이어 띄우기
     $("#layer2.poplayer").css("display", "block");
-    $('#docName').text(modifyData.docCategory[0].DOCNAME);
-    $('#docPredictionScore').text(modifyData.score + '%');
-    $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
-
-    if (modifyData.score >= 90) {
-        $('#docName').css('color', 'dodgerblue');
-        $('#docPredictionScore').css('color', 'dodgerblue');
-    } else {
-        $('#docName').css('color', 'darkred');
-        $('#docPredictionScore').css('color', 'darkred');
+    
+    if (modifyData.docCategory != undefined) {
+        $('#docName').text(modifyData.docCategory[0].DOCNAME);
+        $('#docPredictionScore').text(modifyData.score + '%');
+        if (modifyData.score >= 90) {
+            $('#docName').css('color', 'dodgerblue');
+            $('#docPredictionScore').css('color', 'dodgerblue');
+        } else {
+            $('#docName').css('color', 'darkred');
+            $('#docPredictionScore').css('color', 'darkred');
+        }
     }
+    
+    $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
 
     var mainImgHtml = '';
     mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
