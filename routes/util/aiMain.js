@@ -134,6 +134,7 @@ exports.formMapping = function (data, callback) {
             exec(exeformMapping, defaults, function (err, stdout, stderr) {
                 if (err) {
                     logger.error.info(`formMapping ml model exec error: ${stderr}`);
+                    callback(null);
                     return;
                 }
 
