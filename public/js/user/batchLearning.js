@@ -1180,9 +1180,9 @@ function compareMLAndAnswer(mlData) {
                                         $(el).children('td').eq(j).css('background-color', 'lightgray');
                                         continue;
                                     }
-                                    if ($(el).children('td').eq(j).text() == '') {
+                                    /*if ($(el).children('td').eq(j).text() == '') {
                                         $(el).children('td').eq(j).css('background-color', 'red');
-                                    }
+                                    }*/
                                 }
                             }                                  
                             /*
