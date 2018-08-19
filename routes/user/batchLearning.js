@@ -143,6 +143,7 @@ var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
             }
         }
     }
+    /*
     var condQuery = "";
     if (imgIdArr.length > 0) {
         condQuery = "(";
@@ -153,7 +154,9 @@ var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
         condQuery = "(null)";
     }
     console.log(selectBatchAnswerDataToImgId + condQuery);
-    commonDB.reqQueryF2param(selectBatchAnswerDataToImgId + condQuery, callbackSelectBatchAnswerDataToImgId, req, res, fileInfoList, orderbyRows);
+    */
+    res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows });
+    //commonDB.reqQueryF2param(selectBatchAnswerDataToImgId + condQuery, callbackSelectBatchAnswerDataToImgId, req, res, fileInfoList, orderbyRows);
     //res.send({ code: 200, fileInfoList: fileInfoList, answerRows: orderbyRows});
 };
 var callbackBatchLearningData = function (rows, req, res) {

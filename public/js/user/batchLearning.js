@@ -370,7 +370,15 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
         ocrCount++;
         //console.log(data);
         if (!data.code) { // 에러가 아니면
+            ocrDataArr.push({
+                fileInfo: [fileInfo],
+                fileName: [fileName],
+                regions: data.regions,
+                lastYn: lastYn
+            });
+            /*
             if (ocrCount == 1) {
+               
                 for (var i in fileToPage) {
                     if (fileToPage[i].IMGID == answerRows.IMGID &&
                         fileToPage[i].IMGFILESTARTNO <= answerRows.PAGENUM &&
@@ -384,9 +392,9 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                             lastYn: lastYn
                         });
                     }
-                }
+                }                
             } else {
-                for (var i in ocrDataArr) {
+                for (var i in ocrDataArr) {                          
                     if (ocrDataArr[i].answerImgId == answerRows.IMGID &&
                         ocrDataArr[i].fileToPage.IMGFILESTARTNO <= answerRows.PAGENUM &&
                         answerRows.PAGENUM <= ocrDataArr[i].fileToPage.IMGFILEENDNO) {
@@ -395,7 +403,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                         ocrDataArr[i].fileName.push(fileName);
                         ocrDataArr[i].fileInfo.push(fileInfo);
                         break;
-                    } else if (i == ocrDataArr.length - 1) {
+                    } else if (i == ocrDataArr.length - 1) {                     
                         for (var j in fileToPage) {
                             if (fileToPage[j].IMGID == answerRows.IMGID &&
                                 fileToPage[j].IMGFILESTARTNO <= answerRows.PAGENUM &&
@@ -409,11 +417,11 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                                     lastYn: lastYn
                                 });
                             }
-                        }
-                    }
+                        }                       
+                    }                    
                 }
-
             }
+            */
             //console.log(ocrDataArr);
             if (totCount == ocrCount) {
                 execBatchLearning();
@@ -1378,18 +1386,20 @@ var searchBatchLearnData = function (imgIdArray, flag) {
             //addProgressBar(31, 50);
             //console.log("/batchLearning/searchBatchLearnData result :");
             //console.log(data);
-
+            console.log(data);
             if (data.code == 400) {
                 alert(data.msg);
                 return;
             }
             
-            if (flag == "PROCESS_IMAGE") {  // 배치학습 실행
+            if (flag == "PROCESS_IMAGE") {  // 배치학습 실행             
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
                     var lastYn = "N";
                     if (i == data.fileInfoList.length - 1) lastYn = "Y";
-                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i], data.fileToPage);
+                    processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i]);
+                    //processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i], data.fileToPage);
                 }
+                
             } else {
                 alert("잘못된 요청입니다.");
                 return;
