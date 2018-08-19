@@ -1711,6 +1711,19 @@ var fn_batchUiTraining = function () {
 
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
+    if (data.docCategory == undefined) {
+        var docArr = [];
+        var docData = {};
+
+        docData.DOCNAME = "Apex 계산서";
+        docData.DOCTYPE = "1";
+        docData.SAMPLEIMAGEPATH = "sample/apex.jpg";
+
+        docArr.push(docData);
+
+        data.docCategory = docArr;
+    }
+
     startProgressBar();
     $('#progressMsgTitle').css("color", "black");
     $('#progressMsgTitle').html('양식 라벨 처리 중..');
