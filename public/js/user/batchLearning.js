@@ -601,7 +601,7 @@ function appendOptionHtml(targetColumn, columns) {
 }
 
 function execBatchLearningData(ocrData, data) {
-    /*var data = [
+    var data = [
         { "location": "342,542,411,87", "text": "TEST" },
         { "location": "1045,294,409,23", "text": "Partner of Test" },
         { "location": "1923,543,178,25", "text": "Test No" },
@@ -640,7 +640,7 @@ function execBatchLearningData(ocrData, data) {
         { "location": "839,1605,64,25", "text": "71.65" },
         { "location": "848,1677,64,25", "text": "33.10" },
         { "location": "1956,1879,356,29", "text": "TEST CONTRACT" }
-    ];*/
+    ];
 
     $.ajax({
         url: '/batchLearning/execBatchLearningData',
@@ -1920,6 +1920,8 @@ function docComparePopup2() {
     var imgId = $('#docName').html();
     if (modifyData.docCategory) {
         $('#originImg').attr('src', '../../' + modifyData.docCategory[0].SAMPLEIMAGEPATH);
+    } else {
+        $('#originImg').attr('src', '../../uploads/' + $('#mainImage').css('background-image').split('"')[1].split('/')[4]);
     }
     $('#mlPredictionPercent').val($('#docPredictionScore').html());
     $('#mlPredictionDocName').val($('#docName').html());
@@ -2060,6 +2062,11 @@ function popUpInsertDocCategory() {
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
                     if (data.code == 200) {
+                        console.log(data);
+                        $('#docData').val(JSON.stringify(data.docCategory[0]));
+                        $('#docName').text(data.docCategory[0].DOCNAME);
+                        $('#layer4').fadeOut();
+                    } else {
                         alert(data.message);
                     }
                 },

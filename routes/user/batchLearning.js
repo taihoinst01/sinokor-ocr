@@ -2529,8 +2529,17 @@ function callbackInsLabelMap(rows, data) {
 
 
 // 신규문서 양식 등록
-var callbackInsertDocCategory = function (rows, req, res) {
-    res.send({ code: 200, message: 'document Category insert success' });
+var callbackSelectDocCategory = function (rows, req, res) {
+    if (rows.length > 0) {
+        res.send({ code: 200, docCategory: rows, message: 'document Category insert success' });
+    } else {
+        res.send({ code: 500, message: 'document Category select error' });
+    }
+};
+var callbackInsertDocCategory = function (rows, docType, req, res) {
+
+    commonDB.reqQueryParam(queryConfig.mlConfig.selectDocCategory, [docType], callbackSelectDocCategory, req, res);
+    //res.send({ code: 200, message: 'document Category insert success' });
 };
 var callbackSelectMaxDocType = function (rows, req, res) {
     var docName = req.body.docName;
@@ -2539,7 +2548,7 @@ var callbackSelectMaxDocType = function (rows, req, res) {
     if (docType == 998) { // unk 가 999이므로 피하기 위함
         docType++;
     }
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertDocCategory, [docName, (docType + 1), sampleImagePath], callbackInsertDocCategory, req, res);
+    commonDB.reqQueryParam2(queryConfig.batchLearningConfig.insertDocCategory, [docName, (docType + 1), sampleImagePath], callbackInsertDocCategory, (docType + 1), req, res);
 };
 router.post('/insertDocCategory', function (req, res) {
 
