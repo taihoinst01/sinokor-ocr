@@ -3381,6 +3381,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="sample\apex.jpg" />
+    <Content Include="uploads\noImage.jpg" />
     <Content Include="uploads\SHIPPING_REQUEST.pdf" />
     <Content Include="views\admin\adminDashboard.html" />
     <Content Include="views\admin\userManagement.html" />
