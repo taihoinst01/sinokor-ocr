@@ -458,9 +458,9 @@ function executeML(totData) {
                     $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
                     thumnImg();
                     $('#imageBox > li').eq(0).addClass('on');
-                    $('#mlPredictionDocName').val(data.docCategory.DOCNAME);
+                    $('#mlPredictionDocName').val(data.docCategory[0].DOCNAME);
                     $('#mlPredictionPercent').val(data.score + '%');
-                    $('#docName').html(data.docCategory.DOCNAME);
+                    $('#docName').html(data.docCategory[0].DOCNAME);
                     $('#docPredictionScore').html(data.score + '%');
                     if (data.score >= 90) {
                         $('#docName').css('color', 'dodgerblue');
@@ -507,6 +507,26 @@ function detailTable(fileName) {
     var tblTag = '';
     for (var i = 0; i < lineText.length; i++) {
         if (lineText[i].fileName == fileName) {
+
+            var item = lineText[i];
+            var data = item.data.data;
+            var columnArr = item.column;
+
+            for (var i in data) {
+                tblTag += '<dl>';
+                tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
+                tblTag += '<input type="hidden" value="' + data[i].location + '" />';
+                tblTag += '</label>';
+                tblTag += '</dt>';
+                tblTag += '<dd>';
+                tblTag += appendOptionHtml((data[i].column + '') ? data[i].column : 999, columnArr)
+                tblTag += '</dd>';
+                tblTag += '</dl>';
+            }
+
+            /*
             var item = lineText[i];
             var sort = item.column;
             var sortBool = true;
@@ -564,6 +584,8 @@ function detailTable(fileName) {
                 }
             }
             break;
+            */
+            
         }
 
         /* 몇 페이지 어디인지 표시
@@ -590,6 +612,24 @@ function detailTable(fileName) {
     $('input[type=checkbox]').ezMark();
     new $.Zebra_Tooltips($('.tip'));
     dbSelectClickEvent();
+}
+
+// 컬럼 select html 가공 함수
+function appendOptionHtml(targetColumn, columns) {
+
+    var selectHTML = '<select>';
+    for (var i in columns) {
+        var optionHTML = '';
+        if (targetColumn == columns[i].COLNUM) {
+            optionHTML = '<option value="' + columns[i].COLNUM + '" selected>' + columns[i].COLNAME + '</option>';
+        } else {
+            optionHTML = '<option value="' + columns[i].COLNUM + '">' + columns[i].COLNAME + '</option>';
+        }
+        selectHTML += optionHTML
+    }
+    selectHTML += '</select>'
+
+    return selectHTML;
 }
 
 // DB 컬럼 option 렌더링
