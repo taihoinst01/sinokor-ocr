@@ -6,18 +6,67 @@ var queryConfig = require(appRoot + '/config/queryConfig.js');
 var logger = require('./logger.js');
 var oracledb = require('oracledb');
 var dbConfig = require(appRoot + '/config/dbConfig');
+var pythonConfig = require(appRoot + '/config/pythonConfig');
+var sync = require('./sync.js');
+var PythonShell = require('python-shell')
+var oracle = require('./oracle.js');
 
 const defaults = {
     encoding: 'utf8',
 };
 
+exports.typoSentenceEval2 = function (data, callback) {
+    sync.fiber(function () {
+        pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(data)));
+        var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
+
+        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+
+        var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+
+        callback(sidData);
+    });
+};
+
+exports.formLabelMapping2 = function (data, callback) {
+    sync.fiber(function () {
+        pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(data));
+        
+        var resPyStr = sync.await(PythonShell.run('eval.py', pythonConfig.formLabelMappingOptions, sync.defer()));
+
+        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+
+        callback(resPyArr);
+    });
+};
+
+exports.formMapping2 = function (data, callback) {
+    sync.fiber(function () {
+        pythonConfig.formMappingOptions.args = JSON.stringify(data);
+
+        var resPyStr = sync.await(PythonShell.run('eval.py', pythonConfig.formMappingOptions, sync.defer()));
+
+        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+
+        callback(resPyArr);
+    });
+};
+
+exports.columnMapping2 = function (data, callback) {
+    sync.fiber(function () {
+        pythonConfig.columnMappingOptions.args = JSON.stringify(data);
+
+        var resPyStr = sync.await(PythonShell.run('eval.py', pythonConfig.columnMappingOptions, sync.defer()));
+
+        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+
+        callback(resPyArr);
+
+    });
+};
+
 // [step1] typo sentence ML
 exports.typoSentenceEval = function (data, callback) {
-    /*
-    setTimeout(function () {
-        throw new Error('unexpected error in typo ML model');
-    }, 2000);
-    */
     var args = dataToArgs(data);
 
     var exeTypoString = 'python ' + appRoot + '\\ml\\typosentence\\typo.py ' + args;
@@ -184,6 +233,14 @@ exports.columnMapping = function (data, callback) {
     } else {
         callback(null);
     }
+}
+
+function dataToTypoArgs(data) {
+
+    for (var i in data) {
+        data[i].text = data[i].text.toLowerCase().replace("'", "`");
+    }
+    return data;
 }
 
 function dataToArgs(data) {
