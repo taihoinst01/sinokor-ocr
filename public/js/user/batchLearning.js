@@ -35,7 +35,7 @@ $(function () {
 var selectViewCount = function (value) {
     $("#select_view_count").val(value);
     searchBatchLearnDataList(addCond);
-}
+};
 
 // [Checkbox Event]
 var checkboxEvent = function () {
@@ -64,7 +64,7 @@ var checkboxEvent = function () {
         });
         $("#choose_cnt_after").html(chkCnt);
     });
-}
+};
 
 // [Button Event]
 var buttonEvent = function () {
@@ -78,7 +78,7 @@ var buttonEvent = function () {
     });
     // 학습완료 보기
     $("#tab_after").on("click", function () {
-        $("#listCheckAll_before").prop("checked", false);        
+        $("#listCheckAll_before").prop("checked", false);
         addCond = "LEARN_Y";
         searchBatchLearnDataList(addCond);
     });
@@ -100,7 +100,7 @@ var buttonEvent = function () {
         fn_imageDelete();
     });
     // 배치실행
-    $("#btn_batchTraining").on("click", function () {       
+    $("#btn_batchTraining").on("click", function () {
         fn_batchTraining();
     });
     // 최종학습
@@ -135,10 +135,10 @@ var buttonEvent = function () {
     $('#uiTrainBtn').on("click", function () {
         fn_batchUiTraining();
     });
-    
 
 
-}
+
+};
 
 // [popup event]
 var popupEvent = (function () {
@@ -157,22 +157,22 @@ var popupEvent = (function () {
             //    "top": newPosition
             //}, 10);
         }).scroll();
-    }
+    };
 
     // open popup
     var openPopup = function () {
         if ($('#choose_cnt_before').html() > 0) {
             $('#selectFileLearning').click();
-        } else {          
+        } else {
             $('#allLaerning').click();
         }
         layer_open('layer1');
-    }
+    };
 
     // close popup
     var closePopup = function () {
         $('.poplayer').fadeOut();
-    }
+    };
 
     var batchClosePopup = function (type) {
         $('.poplayer').fadeOut();
@@ -184,7 +184,7 @@ var popupEvent = (function () {
             execBatchLearning();
         }, 2000);
         */
-    }
+    };
 
     return {
         scrollPopup: scrollPopup,
@@ -224,7 +224,7 @@ var fn_excelUpload = function () {
             console.log(err);
         }
     });
-}
+};
 // excel upload (deprecate)
 var excelUploadEvent = function () {
     var multiUploadForm = $("#multiUploadForm");
@@ -240,7 +240,7 @@ var excelUploadEvent = function () {
 
     // FILE UPLOAD
     fileUpload();
-}
+};
 
 function fileUpload() {
     var multiUploadForm = $("#multiUploadForm");
@@ -304,7 +304,7 @@ var insertFileDB = function (fileInfo, fileName, lastYN) {
             }
         });
     }
-}
+};
 
 // INSERT DB BATCH LEARNING BASE DATA
 var insertBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
@@ -332,7 +332,7 @@ var insertBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
             }
         });
     }
-}
+};
 
 // UPLOAD IMAGE ON SERVER
 var imageUploadEvent = function () {
@@ -348,7 +348,7 @@ var imageUploadEvent = function () {
     });
     // FILE UPLOAD
     fileUpload();
-}
+};
                
 // [파일정보 -> OCR API]
 function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
@@ -479,7 +479,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
         }
     });
     */
-};
+}
 
 
 function insertCommError(eCode, type) {
@@ -1387,7 +1387,7 @@ function imgPopupEvent() {
 // [Select] 배치학습데이터 조회
 var searchBatchLearnData = function (imgIdArray, flag) {
     var param = {
-        imgIdArray : imgIdArray
+        imgIdArray: imgIdArray
     };
     $.ajax({
         url: '/batchLearning/searchBatchLearnData',
@@ -1411,7 +1411,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
                 alert(data.msg);
                 return;
             }
-            
+
             if (flag == "PROCESS_IMAGE") {  // 배치학습 실행             
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
                     var lastYn = "N";
@@ -1419,19 +1419,19 @@ var searchBatchLearnData = function (imgIdArray, flag) {
                     //processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i]);
                     processImage(data.fileInfoList[i], data.fileInfoList[i].convertFileName, lastYn, data.answerRows[i], data.fileToPage);
                 }
-                
+
             } else {
                 alert("잘못된 요청입니다.");
                 return;
             }
-            
+
         },
         error: function (err) {
             endProgressBar(); // end progressbar
             console.log(err);
         }
     });
-}
+};
 
 // syncServerFile (서버의 이미지가 DB에 등록이 안되어있다면 DB에 등록처리)
 var fn_syncServerFile = function () {
@@ -1513,7 +1513,7 @@ var insertSyncFileDB = function (fileInfo, fileName, lastYN) {
             }
         });
     }
-}
+};
 
 // INSERT DB BATCH LEARNING BASE DATA
 var insertSyncBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
@@ -1541,7 +1541,7 @@ var insertSyncBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
             }
         });
     }
-}
+};
 
 // 정답엑셀 업로드
 var fn_rightExcelUpload = function() {
@@ -1707,7 +1707,7 @@ var fn_initUiTraining = function () {
     $('#imgNameTag').text('');
     $("#uiImg").html('');
     $("#textResultTbl").html('');
-}
+};
 // UI학습 팝업 값 대입
 var fn_processUiTraining = function (fileInfoList) {
     fn_initUiTraining(); // 팝업 초기화
@@ -1744,7 +1744,7 @@ var fn_processUiTraining = function (fileInfoList) {
     $("#updDate").val(fileInfo["updDate"]);
 
     layer_open('layer2');
-}
+};
 
 // UI학습 팝업 실행
 var fn_batchUiTraining = function () {
@@ -1793,7 +1793,7 @@ var fn_batchUiTraining = function () {
         }
     });
     */
-}
+};
 
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
@@ -1802,34 +1802,34 @@ var docLabelMapping = function (data) {
     $('#progressMsgTitle').html('양식 라벨 처리 중..');
     addProgressBar(1, 20);
     insertDocLabelMapping(data, callbackInsertDocLabelMapping);
-}
+};
 
 var callbackInsertDocLabelMapping = function (data) {
     $('#progressMsgTitle').html('양식 분류 처리 중..');
     addProgressBar(21, 40);
     insertDocMapping(data, callbackInsertDocMapping);
-}
+};
 
 var callbackInsertDocMapping = function (data) {
     $('#progressMsgTitle').html('라벨 분류 처리 중..');
     addProgressBar(41, 60);
     insertColMapping(data, callbackInsertColMapping);
-}
+};
 
 var callbackInsertColMapping = function (data) {
     $('#progressMsgTitle').html('DB 컬럼 조회 중..');
     addProgressBar(61, 80);
     insertContractMapping(data, callbackInsertContractMapping);
-}
+};
 
 var callbackInsertContractMapping = function () {
     $('#progressMsgTitle').html('UI TRAINING..');
     uiTrainingBtn();
-}
+};
 
 // UI레이어 학습 버튼 클릭 이벤트
 var uiTrainingBtn = function () {
-    
+
     $.ajax({
         url: '/batchLearning/uitraining',
         type: 'post',
@@ -1847,8 +1847,8 @@ var uiTrainingBtn = function () {
             console.log(err);
         }
     });
-    
-}
+
+};
 
 // 양식 레이블 매핑 ml 데이터 insert
 function insertDocLabelMapping(data, callback) {
@@ -1985,7 +1985,7 @@ function changeDocPopupImage() {
                 $('#docSearchResultImg_thumbPrev').attr('disabled', false);
             }
         }
-    })
+    });
 
     $('#docSearchResultImg_thumbNext').click(function () {
         var totalCount = $('#countLast').html();
@@ -2005,7 +2005,7 @@ function changeDocPopupImage() {
                 $('#docSearchResultImg_thumbNext').attr('disabled', false);
             }
         }
-    })
+    });
 }
 
 
@@ -2058,8 +2058,7 @@ function popUpSearchDocCategory() {
                     console.log(err);
                 }
             });
-        } else {
-        }
+        } 
     });
 }
 
@@ -2112,8 +2111,7 @@ function popUpInsertDocCategory() {
                     console.log(err);
                 }
             });
-        } else {
-        }
+        } 
     });
 }
 
@@ -2122,12 +2120,12 @@ function changeDocPopRadio() {
     $('#orgDocSearchRadio').click(function () {
         $('#orgDocSearch').show();
         $('#newDocRegistration').hide();
-    })
+    });
 
     $('#newDocRegistrationRadio').click(function () {
         $('#newDocRegistration').show();
         $('#orgDocSearch').hide();
-    })
+    });
 }
 
 // init
