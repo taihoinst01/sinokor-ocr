@@ -31,6 +31,13 @@ var sessionConfig = {
             FROM TBL_DOCUMENT
            WHERE APPROVALSTATE = 'P'
              AND DOCUMENTMANAGER = :id
+        `,
+    updateOcrCount:
+        ` UPDATE TBL_OCR_COMM_USER
+             SET
+                OCRUSECOUNT = OCRUSECOUNT + :count
+            WHERE 
+                USERID = :userId
         `
 };
 
