@@ -1666,10 +1666,9 @@ router.post('/syncFile', function (req, res) {
             // rows = DB에 저장된 파일, result = 서버에서 읽어온 파일
             for (var i = 0, x = rows.length; i < x; i++) {
                 console.log("rows[i] : " + JSON.stringify(rows[i]));
-                let rows_file_path = testFolder + '\\' + rows[i].FILEPATH;
+                //let rows_file_path = testFolder + '\\' + rows[i].FILEPATH;
+                let rows_file_path = rows[i].ORIGINFILENAME;
                 var _result = result.filter(function (_fileObj) {
-                    console.log("_fileObj------ : " + _fileObj);
-                    console.log("rows_file_path : " + rows_file_path);
                     return _fileObj != rows_file_path; // 같지 않은것만 배열에 남김
                 });
                 result = _result;
