@@ -7,6 +7,13 @@ import numpy as np
 import cx_Oracle
 import configparser
 import sys
+import os
+import json
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+tf.logging.set_verbosity(tf.logging.ERROR)
+isTraning = True if sys.argv[1] == 'Y' else False
+
 config = configparser.ConfigParser()
 config.read('./ml/config.ini')
 
@@ -44,22 +51,22 @@ testNpTarget = np.array(dbDataLabel)
 
 feature_columns = [tf.contrib.layers.real_valued_column("", dimension=14)]
 
-checkpointDir = os.getcwd() + '\\checkpoint'
+checkpointDir = os.getcwd() + '\\ml\\FormMapping\\checkpoint'
 if not os.path.isdir(checkpointDir):
     os.mkdir(checkpointDir)
 else:
     #training이 필요한 시점만 True로 전환 기존 모델 삭제
-    if (False):
+    if (isTraning):
         shutil.rmtree(checkpointDir, False)
 
 classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hidden_units=[10, 20, 10],
                                             n_classes=300, model_dir=checkpointDir)
 
 #training이 필요한 시점만 True로 전환
-if (False):
+if (isTraning):
     classifier.fit(x=testNpData, y=testNpTarget, steps=2000)
 
-inputArr = json.loads(sys.argv[1].replace(u"\u2022", u""))
+inputArr = json.loads(sys.argv[2].replace(u"\u2022", u""))
 
 companySid = ''
 contractSid = ''
@@ -95,7 +102,7 @@ for row in rows:
 #db에 일치하는 sid가 없을 경우 ML predict 결과를 리턴
 if 'docType' not in predictDocType:
     predictArr.append(predictData)
-    resultArr = list(classifier.predict(np.array(predictArr, dtype=float), as_iterable=True))
+    resultArr = list(classifier.predict(np.array(predictArr, dtype=np.float32), as_iterable=True))
     predictDocType['docType'] = resultArr[0]
 
 inputArr.append(predictDocType)

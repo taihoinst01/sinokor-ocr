@@ -488,11 +488,11 @@ router.get('/test', function (req, res) {
             arg = formLabelResult;
             console.log('execute formLabelMapping ML');
             //console.log(arg);
-            aimain.formMapping(arg, function (formResult) {
+            aimain.formMapping2(arg, function (formResult) {
                 arg = formResult;
                 console.log('execute formMapping ML');
                 //console.log(arg);
-                aimain.columnMapping(arg, function (columnResult) {
+                aimain.columnMapping2(arg, function (columnResult) {
                     arg = columnResult;
                     console.log('execute columnMapping ML');
                     //console.log(arg);
