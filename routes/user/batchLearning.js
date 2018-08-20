@@ -60,8 +60,6 @@ router.get('/', function (req, res) {                           // 배치학습 
 // BLANK CALLBACK
 var callbackBlank = function () { };
 
-
-
 // [POST] 배치학습데이터 이미지 데이터 조회 
 router.post('/viewImageData', function (req, res) {
     if (req.isAuthenticated()) fnViewImageData(req, res);
@@ -69,13 +67,13 @@ router.post('/viewImageData', function (req, res) {
 var callbackViewImageData = function (rows, req, res) {
     console.log("rows : " + JSON.stringify(rows));
     if (req.isAuthenticated()) res.send(rows);
-}
+};
 var fnViewImageData = function (req, res) {
     console.log("filePath : " + req.body.filePath);
     var data = [req.body.filePath];
     var query = queryConfig.batchLearningConfig.selectViewImageData;
     commonDB.reqQueryParam(query, data, callbackViewImageData, req, res);
-}
+};
 
 
 
@@ -83,9 +81,9 @@ var fnViewImageData = function (req, res) {
 router.post('/searchBatchLearnDataList', function (req, res) {   
     if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
 }); 
-var callbackBatchLearningDataList = function (rows, req, res) {    
+var callbackBatchLearningDataList = function (rows, req, res) {
     if (req.isAuthenticated()) res.send(rows);
-}
+};
 var fnSearchBatchLearningDataList = function (req, res) {
     // 조건절
     var condQuery = "";
@@ -99,11 +97,11 @@ var fnSearchBatchLearningDataList = function (req, res) {
     if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) {
         listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
     }
-  
 
-	console.log("리스트 조회 쿼리 : " + listQuery);
+
+    console.log("리스트 조회 쿼리 : " + listQuery);
     commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
-}
+};
 
 
 // [POST] 배치학습데이터 조회
@@ -160,7 +158,7 @@ var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
 };
 var callbackBatchLearningData = function (rows, req, res) {
     var fileInfoList = [];
-	console.log("배치학습데이터 : " + rows.length);
+    console.log("배치학습데이터 : " + rows.length);
     for (var i = 0, x = rows.length; i < x; i++) {
         var oriFileName = rows[i].ORIGINFILENAME;
         var _lastDot = oriFileName.lastIndexOf('.');
@@ -213,7 +211,7 @@ var callbackBatchLearningData = function (rows, req, res) {
     commonDB.reqQueryF1param(answerQuery, callbackSelectBatchAnswerFile, req, res, fileInfoList);
 
     //res.send({ code: 200, fileInfoList: fileInfoList });
-}
+};
 var fnSearchBatchLearningData = function (req, res) {
     var condition = " AND F.imgId IN (";
     for (var i = 0, x = req.body.imgIdArray.length; i < x; i++) {
@@ -222,9 +220,9 @@ var fnSearchBatchLearningData = function (req, res) {
     condition = condition.slice(0, -1);
     condition += ")";
     var query = selectBatchLearningDataListQuery + condition;
-	console.log("단건 조회 쿼리 : " + query);
+    console.log("단건 조회 쿼리 : " + query);
     commonDB.reqQuery(query, callbackBatchLearningData, req, res);
-}
+};
 
 // [POST] delete batchlearningdata (UPDATE)
 var callbackDeleteBatchLearningData = function (rows, req, res) {
@@ -399,7 +397,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 var callbackInsertFileInfo = function (rows, req, res) {
     //console.log("upload fileInfo finish..");
     res.send({ code: 200, rows: rows });
-}
+};
 router.post('/insertFileInfo', function (req, res) {
     //console.log("insert FILE INFO : " + JSON.stringify(req.body.fileInfo));
     var fileInfo = req.body.fileInfo;
@@ -423,7 +421,7 @@ router.post('/insertFileInfo', function (req, res) {
 var callbackInsertBatchLearningBaseData = function (rows, req, res) {
     //console.log("upload batchLearningBaseData finish..");
     res.send({ code: 200, rows: rows });
-}
+};
 router.post('/insertBatchLearningBaseData', function (req, res) {
     //console.log("insert BATCH LEARNING BASE DATA : " + JSON.stringify(req.body.fileInfo));
     var fileInfo = req.body.fileInfo;
@@ -523,7 +521,6 @@ router.post('/test', function (req, res) {
                                     ctOgCompanyName = arg.data[i].text;
                                 } else if (arg.data[i].formLabel == 2) {
                                     contractNames.push(arg.data[i].text);
-                                } else {
                                 }
                             }
 
@@ -599,7 +596,6 @@ router.post('/execBatchLearningData', function (req, res) {
                                     ctOgCompanyName = arg.data[i].text;
                                 } else if (arg.data[i].formLabel == 2) {
                                     contractNames.push(arg.data[i].text);
-                                } else {
                                 }
                             }
 
@@ -783,21 +779,21 @@ router.post('/insertContractMapping', function (req, res) {
 });
 
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
-var callbackInsertBatchLearningBaseData = function (rows, req, res) {
-    //console.log("upload batchLearningBaseData finish..");
-    res.send({ code: 200, rows: rows });
-};
-router.post('/insertBatchLearningBaseData', function (req, res) {
-    var dataObj = req.body.dataObj;
-    //console.log("insert dataObj " + JSON.stringify(dataObj));
-    var imgId = dataObj.imgId; 
-    var oriFileName = dataObj.oriFileName; 
-    var regId = req.session.userId;
+//var callbackInsertBatchLearningBaseData = function (rows, req, res) {
+//    //console.log("upload batchLearningBaseData finish..");
+//    res.send({ code: 200, rows: rows });
+//};
+//router.post('/insertBatchLearningBaseData', function (req, res) {
+//    var dataObj = req.body.dataObj;
+//    //console.log("insert dataObj " + JSON.stringify(dataObj));
+//    var imgId = dataObj.imgId; 
+//    var oriFileName = dataObj.oriFileName; 
+//    var regId = req.session.userId;
 
-    var data = [imgId, imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, regId];
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
+//    var data = [imgId, imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, regId];
+//    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
 
-});
+//});
 
 // [POST] insert batchLearningData (tbl_batch_learning_data 전체정보)
 var callbackInsertBatchLearningData = function (rows, req, res) {
@@ -1635,7 +1631,7 @@ function insertLearnData(data, req, res) {
 var callbackUpdateBatchLearningData = function (rows, req, res) {
     console.log("UpdateBatchLearningData finish..");
     res.send({ code: 200, rows: rows });
-}
+};
 
 // [POST] syncFile
 router.post('/syncFile', function (req, res) {
@@ -1656,7 +1652,8 @@ router.post('/syncFile', function (req, res) {
     files.then(function (result) {
         var del_result = [];
 
-		console.log(JSON.stringify(result));
+        console.log(JSON.stringify(result));
+        console.log("파일 총 갯수 : " + result.length);
         // 파일테이블 리스트를 가져와서 존재여부 검사
         var callbackSelectFileNameList = function (rows, req, res) {
             for (var i = 0, x = result.length; i < x; i++) {
@@ -1664,7 +1661,7 @@ router.post('/syncFile', function (req, res) {
                 result[i] = _compareValue;
             }
             // rows = DB에 저장된 파일, result = 서버에서 읽어온 파일
-            for (var i = 0, x = rows.length ; i < x ; i++) {
+            for (var i = 0, x = rows.length; i < x; i++) {
                 let rows_file_path = appRoot + '\\' + rows[i].FILE_PATH;
                 var _result = result.filter(function (_fileObj) {
                     return _fileObj != rows_file_path; // 같지 않은것만 배열에 남김
@@ -1673,7 +1670,7 @@ router.post('/syncFile', function (req, res) {
             }
             if (result.length > 0) fileProcess(result); // DB에 저장되지 않은 서버 파일을 DB에 저장
             else res.send({ code: 200, message: null, fileInfo: null });
-        }
+        };
         var fileList = commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectFileNameList, [], callbackSelectFileNameList, req, res);
         
         // 디렉토리에만 존재하는 파일 저장
