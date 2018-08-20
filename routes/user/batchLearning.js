@@ -566,15 +566,7 @@ router.post('/execBatchLearningData', function (req, res) {
         console.log('execute typo ML');
         //console.log(arg);
         aimain.formLabelMapping(arg, function (formLabelResult) {
-            var formLabelArr = formLabelResult.split('^');
-            for (var i in formLabelArr) {
-                for (var j in arg) {
-                    if (formLabelArr[i].split('||')[0] == arg[j].sid) {
-                        arg[j].formLabel = Number(formLabelArr[i].split('||')[1].replace(/\r\n/g, ''));
-                        break;
-                    }
-                }
-            }
+            arg = formLabelResult;
             console.log('execute formLabelMapping ML');
             //console.log(arg);
             aimain.formMapping(arg, function (formResult) {

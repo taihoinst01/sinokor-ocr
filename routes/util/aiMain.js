@@ -116,7 +116,18 @@ exports.formLabelMapping = function (data, callback) {
     var exeTypoString = 'python ' + appRoot + '\\ml\\FormLabelMapping\\eval.py ' + args;
     exec(exeTypoString, defaults, function (err, stdout, stderr) {
         if (err) console.error(err);
-        callback(stdout);
+
+        var formLabelArr = stdout.split('^');
+        for (var i in formLabelArr) {
+            for (var j in data) {
+                if (formLabelArr[i].split('||')[0] == data[j].sid) {
+                    data[j].formLabel = Number(formLabelArr[i].split('||')[1].replace(/\r\n/g, ''));
+                    break;
+                }
+            }
+        }
+
+        callback(data);
     });
 
 }
