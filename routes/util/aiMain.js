@@ -30,12 +30,12 @@ exports.typoSentenceEval2 = function (data, callback) {
 
 exports.formLabelMapping2 = function (data, callback) {
     sync.fiber(function () {
+        pythonConfig.formLabelMappingOptions.args.push('N');
         pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(data));
         
         var resPyStr = sync.await(PythonShell.run('eval.py', pythonConfig.formLabelMappingOptions, sync.defer()));
 
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-
         callback(resPyArr);
     });
 };
