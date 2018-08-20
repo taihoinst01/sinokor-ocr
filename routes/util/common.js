@@ -155,4 +155,21 @@ router.post('/leftSideBarMyApproval', function (req, res) {
     commonDB.reqCountQueryParam(queryConfig.sessionConfig.leftSideBarMyApproval, param, callbackLeftSideBarMyApproval, req, res);
 });
 
+// [POST] Increase OCR COUNT
+// ocrCount : 증가시킬 OCR COUNT
+// userId : 사용자 ID
+var callbackUpdateOcrCount = function (rows, req, res) {
+    res.send({ code: 200, cnt: rows });
+};
+// server에서 호출하여 증가
+var updateOcrCount = function (req, res, ocrCount) {
+    var param = [ocrCount, req.session.userId];
+    commonDB.reqQueryParam(queryConfig.sessionConfig.updateOcrCount, param, callbackUpdateOcrCount, req, res);
+};
+// client에서 호출하여 증가
+router.post('/updateOcrCount', function (req, res) {
+    var param = [req.body.ocrCount, req.session.userId];
+    commonDB.reqQueryParam(queryConfig.sessionConfig.updateOcrCount, param, callbackUpdateOcrCount, req, res);
+});
+
 module.exports = router;

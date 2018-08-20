@@ -452,21 +452,5 @@ var _init = function () {
     datePickerEvent();
 };
 
-// [화면 테스트]
-var screenTest = function (flag) {
-    switch (flag) {
-        case "base":
-            $("#div_base").fadeToggle();
-            break;
-        case "dtl":
-            $("#div_dtl").fadeToggle();
-            break;
-        case "image":
-            $("#div_image").fadeToggle();
-            break;
-        default:
-            break;
-    }
-};
 
 
