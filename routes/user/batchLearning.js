@@ -1657,7 +1657,7 @@ router.post('/syncFile', function (req, res) {
         .ext('tif', 'tiff')
         .find();
 
-	 console.log("filehound : " + JSON.stringify(files));
+	console.log("filehound : " + JSON.stringify(files));
 
     var resText = [];
 
@@ -1731,6 +1731,7 @@ router.post('/syncFile', function (req, res) {
     });
 
     files.done(function () {
+        //res.send({ code: 201, message: returnObj, fileInfo: fileInfo });
     });
 });
 

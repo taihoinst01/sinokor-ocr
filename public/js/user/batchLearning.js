@@ -1445,6 +1445,7 @@ var fn_syncServerFile = function () {
         contentType: 'application/json; charset=UTF-8',
         success: function (responseText, statusText) {
             console.log("responseText : " + JSON.stringify(responseText));
+            console.log("file count : " + responseText.fileInfo.length);
             // FILE INSERT
             if (isNull(responseText.fileInfo)) {
                 alert("신규 등록할 파일이 존재하지 않습니다.");
@@ -1486,7 +1487,7 @@ var fn_syncServerFile = function () {
             console.log(err);
         }
     });
-}
+};
 
 // [imageUpload event]
 // INSERT DB IMAGE

@@ -21,10 +21,16 @@ var propertiesConfig = {
         //realExcelPath: 'C:\\Users\\Taiho\\Desktop\\labeled_data',
         //product
         //logfilepath: 'c:/logs'
-        excelBatchFilePath: '/ICR/labeled_data/filepath_mapping_20180720.xlsx',
-        excelBatchFileData: '/ICR/labeled_data/labeled_data_20180723.xlsx',
-        realExcelPath: '/image/labeled_data',
-        imagePath: '/ICR/image'
+
+        //excelBatchFilePath: '/ICR/labeled_data/filepath_mapping_20180720.xlsx',
+        //excelBatchFileData: '/ICR/labeled_data/labeled_data_20180723.xlsx',
+        //realExcelPath: '/image/labeled_data',
+        //imagePath: '/ICR/image'
+
+        excelBatchFilePath: 'C:\\ICR\\labeled_data\\filepath_mapping_20180720.xlsx',
+        excelBatchFileData: 'C:\\ICR\\labeled_data\\labeled_data_20180723.xlsx',
+        realExcelPath: 'C:\\ICR\\labeled_data',
+        imagePath: 'C:\\ICR\\image'
     }
 };
 
