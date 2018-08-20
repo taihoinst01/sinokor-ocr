@@ -132,7 +132,7 @@ create table TBL_BATCH_LEARN_DATA (
 create sequence seq_ocr_domain_dic_trans start with 1 increment by 1 nocache;
 
 -- 도메인 딕셔너리 번역 테이블 생성
-create tableTBL_OCR_DOMAIN_DIC_TRANS(
+create table TBL_OCR_DOMAIN_DIC_TRANS(
  seqNum NUMBER NOT NULL PRIMARY KEY,
  frontWord VARCHAR2(50),
  originWord VARCHAR2(50),
@@ -290,25 +290,7 @@ CREATE TABLE TBL_KEYWORD_MAPPING(
 CREATE SEQUENCE SEQ_KEYWORD_MAPPING
 START WITH 1 INCREMENT BY 1 NOCACHE;
 
-SELECT *
-FROM TBL_BATCH_LEARN_DATA;
 
-
-
-UPDATE tbl_batch_learn_data
-            SET
-				ntbl = 0.00
-            WHERE
-                imgId IN ('42lyhdhxtc8');
-
-ROLLBACK;
-
-
-SELECT *
-FROM TBL_BATCH_LEARN_DATA;
-
-SELECT *
-FROM TBL_DOCUMENT_category;
 
 
 
