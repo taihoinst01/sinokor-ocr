@@ -268,11 +268,15 @@ function fileUpload() {
                     var fileName = responseText.message[i];
                     console.log("fileInfo : " + JSON.stringify(fileInfo));
                     console.log("fileName : " + JSON.stringify(fileName));
-                    if (i == (totCount - 1)) lastYN = true;
-                    insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
-                    insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
+                    if (i === (totCount - 1)) {
+                        //lastYN = true;
+                        alert("등록이 완료되었습니다.");
+                        endProgressBar();
+                    }
+                    //insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
+                    //insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
                 }
-                endProgressBar();
+                //endProgressBar();
             }
         },
         error: function (e) {
@@ -1460,7 +1464,7 @@ var fn_syncServerFile = function () {
                         console.log("fileInfo " + i + " : " + JSON.stringify(fileInfo));
                         console.log("fileName " + i + " : " + JSON.stringify(fileName));
                         if (i == (totCount - 1)) lastYN = true;
-                        insertSyncFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
+                        //insertSyncFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
                         //insertSyncBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
                     }
                     addProgressBar(2, 50);
@@ -1472,7 +1476,7 @@ var fn_syncServerFile = function () {
                     for (var i = 0; i < totCount; i++) {
                         var lastYN = false;
                         if (i == (totCount - 1)) lastYN = true;
-                        insertSyncBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);
+                        //insertSyncBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);
                     }
                     //alert("완료");
                 }, function (err) {

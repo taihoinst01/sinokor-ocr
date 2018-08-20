@@ -269,6 +269,11 @@ var batchLearningConfig = {
             tbl_ocr_file(seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize, contentType, fileType, regId, regDate)
          VALUES
             (seq_ocr_file.nextval, :imgId, :filePath, :originFileName, :serverFileName, :fileExtension, :fileSize, :contentType, :fileType, :regId, sysdate) `,
+    insertFileDtlInfo:
+        `INSERT INTO
+            tbl_ocr_file_dtl(seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize, contentType, fileType, regId, regDate)
+         VALUES
+            (seq_ocr_file_dtl.nextval, :imgId, :filePath, :originFileName, :serverFileName, :fileExtension, :fileSize, :contentType, :fileType, :regId, sysdate) `,
     insertBatchAnswerFile:
         `INSERT INTO
             tbl_batch_answer_file (imgId,pageNum,filePath,totalCount)
