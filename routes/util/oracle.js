@@ -2,7 +2,7 @@ var oracledb = require('oracledb');
 var appRoot = require('app-root-path').path;
 var dbConfig = require(appRoot + '/config/dbConfig');
 
-let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
+
 
 exports.select = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -10,7 +10,7 @@ exports.select = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-
+            let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
             for (var i in req) {
                 var sid = "";
                 locSplit = req[i].location.split(",");
@@ -39,4 +39,106 @@ exports.select = function (req, done) {
     });
 }
 
+exports.insertLabelMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = `INSERT INTO TBL_FORM_LABEL_MAPPING (DATA, CLASS, REGDATE) VALUES (:DATA,:CLASS,SYSDATE);`;
+            for (var i in req) {
+                labelClass = 3
+                //출재사명
+                if (req[i].ColLbl && req[i].ColLbl == 0) {
+                    labelClass = 1
+                }
+                //계약명
+                if (req[i].ColLbl && req[i].ColLbl == 1) {
+                    labelClass = 2
+                }
 
+                await conn.execute(sqltext, [req[i].SID, labelClass]);
+            }
+            return done(null, req);
+        } catch (err) { 
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
+
+exports.insertDocMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = `INSERT INTO TBL_FORM_MAPPING (DATA, CLASS, REGDATE) VALUES (:DATA,:CLASS,SYSDATE);`;
+            insClass = 0;
+            insCompanyData = '0,0,0,0,0,0,0';
+            insContractData = '0,0,0,0,0,0,0';
+            for (var i in req) {
+                if (req[i].docType) {
+                    insClass = req[i].docType
+                } 
+                //출재사명
+                if (req[i].ColLbl && req[i].ColLbl == 0) {
+                    insCompanyData = req[i].SID
+                }
+                //계약명
+                if (req[i].ColLbl && req[i].ColLbl == 1) {
+                    insContractData = req[i].SID
+                }
+            }
+
+            await conn.execute(sqltext, [insCompanyData + "," + insContractData, insClass]);
+
+            return done(null, req);
+        } catch (err) { 
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
+
+exports.insertColumnMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN (DATA, CLASS, REGDATE) VALUES (:DATA,:CLASS,SYSDATE);`;
+            fullData = '0,'
+            for (var i in req) {
+                if (req[i].docType) {
+                    fullData = req[i].docType + ','
+                } 
+            }
+            for (var i in req) {
+                await conn.execute(sqltext, [fullData + req[i].SID, req[i].ColLbl]);
+            }
+            return done(null, req);
+        } catch (err) { 
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
