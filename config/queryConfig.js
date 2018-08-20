@@ -35,7 +35,7 @@ var sessionConfig = {
     updateOcrCount:
         ` UPDATE TBL_OCR_COMM_USER
              SET
-                OCRUSECOUNT = OCRUSECOUNT + :count
+                OCRUSECOUNT = OCRUSECOUNT + :ocrCount
             WHERE 
                 USERID = :userId
         `
