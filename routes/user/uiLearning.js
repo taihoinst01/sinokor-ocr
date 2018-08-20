@@ -151,7 +151,11 @@ router.post('/formMapping', function (req, res) {
 
     try {
         aimain.formMapping(data, function (formMappingResult) {
-            res.send({ 'fileName': fileName, 'data': formMappingResult, nextType: 'cm' });
+            if (formMappingResult == null) {
+                res.send({ 'fileName': fileName, 'data': data, nextType: 'sc' });
+            } else {
+                res.send({ 'fileName': fileName, 'data': formMappingResult, nextType: 'cm' });
+            }
         });
     } catch (exception) {
         console.log(exception);
