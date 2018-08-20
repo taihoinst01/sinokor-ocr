@@ -42,7 +42,8 @@ exports.formLabelMapping2 = function (data, callback) {
 
 exports.formMapping2 = function (data, callback) {
     sync.fiber(function () {
-        pythonConfig.formMappingOptions.args = JSON.stringify(data);
+        pythonConfig.formMappingOptions.args.push('N');
+        pythonConfig.formMappingOptions.args.push(JSON.stringify(data));
 
         var resPyStr = sync.await(PythonShell.run('eval.py', pythonConfig.formMappingOptions, sync.defer()));
 
