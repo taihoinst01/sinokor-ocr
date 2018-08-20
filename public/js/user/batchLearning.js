@@ -6,6 +6,8 @@ var exeBatchLearningCount = 0 // 배치실행 횟수
 var totCount = 0; // 총 이미지 분석 개수
 var ocrCount = 0; // ocr 수행 횟수
 var batchCount = 0; // ml 학습 횟수
+var updateBatchLearningDataCount = 0;
+
 var grid;
 var isFullMatch = true; // UI training 체크 중 모든 컬럼 매치 유무
 var modifyData = []; // UI 수정할 데이터 
@@ -372,7 +374,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
         data: JSON.stringify({ 'fileName': fileName }),
     }).done(function (data) {          
         ocrCount++;
-        console.log(data);
+        //console.log(data);
         if (!data.code) { // 에러가 아니면
             /*
             ocrDataArr.push({
@@ -388,7 +390,6 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                         if (fileToPage[i].IMGID == answerRows.IMGID &&
                             fileToPage[i].IMGFILESTARTNO <= answerRows.PAGENUM &&
                             answerRows.PAGENUM <= fileToPage[i].IMGFILEENDNO) {
-                            console.log('1');
                             ocrDataArr.push({
                                 answerImgId: answerRows.IMGID,
                                 fileInfo: [fileInfo],
@@ -447,9 +448,14 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
             }
             //console.log(ocrDataArr);
             if (totCount == ocrCount) {
-                execBatchLearning();
-                ocrCount = 0;
-                totCount = 0;
+                $("#progressMsgTitle").html("processing ML ...");
+                addProgressBar(51, 80);
+
+                setTimeout(function () {
+                    execBatchLearning();
+                    ocrCount = 0;
+                    totCount = 0;
+                }, 1500);
             }
             //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
         } else if (data.error) { //ocr 이외 에러이면
@@ -483,7 +489,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
         }
     });
     */
-}
+};
 
 
 function insertCommError(eCode, type) {
@@ -785,12 +791,14 @@ function compareBatchLearningData(ocrData, data) {
                             }
                         } else {
                             uiFlag = "N";
+							endProgressBar();
                             popUpLayer2(ocrData);
                         }
 
                     },
                     error: function (err) {
                         console.log(err);
+						endProgressBar();
                     }
                 });
             }
@@ -1021,9 +1029,16 @@ function updateBatchLearningData(retData, ocrData, mlData) {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
+			updateBatchLearningDataCount++;
+            if (totCount == updateBatchLearningDataCount) {
+                $("#progressMsgTitle").html("update learn data...");
+                addProgressBar(81, 100);
+				updateBatchLearningDataCount = 0;
+            }
             //comparedMLAndAnswer(retData, mlData, ocrData.fileInfo);
         },
         error: function (err) {
+			endProgressBar();
             console.log(err);
         }
     });
@@ -1401,22 +1416,24 @@ var searchBatchLearnData = function (imgIdArray, flag) {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $('#btn_pop_batch_close').click();
-            //$("#progressMsgTitle").html("retrieving learn data...");
-            //startProgressBar(); // start progressbar
-            //addProgressBar(0, 30); // proceed progressbar
+            $("#progressMsgTitle").html("retrieving learn data...");
+            startProgressBar();
+            addProgressBar(0, 30);
         },
         success: function (data) {
-            //$("#progressMsgTitle").html("processing learn data...");
-            //addProgressBar(31, 50);
+            $("#progressMsgTitle").html("processing learn data...");
+            addProgressBar(31, 40);
             //console.log("/batchLearning/searchBatchLearnData result :");
             //console.log(data);
-            console.log(data);
+
             if (data.code == 400) {
                 alert(data.msg);
                 return;
             }
 
             if (flag == "PROCESS_IMAGE") {  // 배치학습 실행             
+				$("#progressMsgTitle").html("processing OCR ...");
+                addProgressBar(41, 50);
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
                     var lastYn = "N";
                     if (i == data.fileInfoList.length - 1) lastYn = "Y";

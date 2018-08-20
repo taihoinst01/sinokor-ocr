@@ -204,12 +204,12 @@ router.post('/columnMapping', function (req, res) {
                         }
                         if (exeQueryCount == contractNames.length) {
                             arg.extOgAndCtnm = result;
-                            res.send({ 'fileName': fileName, 'data': arg.data, 'docCategory': arg.docCategory, nextType: 'sc' });
+                            res.send({ 'fileName': fileName, 'data': arg, nextType: 'sc' });
                         }
                     });
                 }
             } else {
-                res.send({ 'fileName': fileName, 'data': arg.data, 'docCategory': arg.docCategory, nextType: 'sc' });
+                res.send({ 'fileName': fileName, 'data': arg, nextType: 'sc' });
             }
             
         });
@@ -224,10 +224,10 @@ router.post('/columnMapping', function (req, res) {
 router.post('/searchDBColumns', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
-    var docCategory = (req.body.docCategory) ? req.body.docCategory : null;
+    var docCategory = (req.body.data.docCategory) ? req.body.data.docCategory : null;
 
-    commonDB.reqQuery(selectColumn, function (rows, req, res) {
-        res.send({ 'fileName': fileName, 'data': data, 'docCategory': docCategory, 'column': rows });
+    commonDB.reqQuery(queryConfig.dbcolumnsConfig.selectColMappingCls, function (rows, req, res) {
+        res.send({ 'fileName': fileName, 'data': data, 'docCategory': docCategory, 'column': rows, 'score': data.score });
     }, req, res);
 });
 
