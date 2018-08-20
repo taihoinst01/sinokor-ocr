@@ -68,9 +68,7 @@ router.post('/typoSentence', function (req, res) {
     
     try {
         aimain.typoSentenceEval(data, function (result) {
-
-            insertTypoCorrect(req, res, result);
-
+            res.send({ 'fileName': fileName, 'data': result, nextType: 'fl' });
         });
     }
     catch (exception) {

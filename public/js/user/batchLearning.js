@@ -1143,6 +1143,7 @@ var searchBatchLearnDataList = function (addCond) {
                         <td>${nvl(entry.INSSTDT)}</td> <!--보험개시일-->
                         <td>${nvl(entry.INSENDDT)}</td> <!--보험종료일-->
                         <td>${nvl(entry.CURCD)}</td> <!--화폐코드-->
+                        <td>${nvl(entry.CURUNIT)}</td> <!--화폐단위-->
                         <td>${nvl(entry.PAIDPERCENT)}</td> <!--Paid(100%)-->
                         <td>${nvl(entry.PAIDSHARE)}</td> <!--Paid(Our Share)-->
                         <td>${nvl(entry.GROSSPM)}</td> <!--GROSS PREMIUM-->
