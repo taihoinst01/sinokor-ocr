@@ -438,7 +438,7 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 
 
 // test ml - 18.08.16 hyj
-router.post('/test', function (req, res) {
+router.get('/test', function (req, res) {
     var arg = [
         { "location": "342,542,411,87", "text": "TEST" },
         { "location": "1045,294,409,23", "text": "Partner of Test" },
@@ -480,78 +480,70 @@ router.post('/test', function (req, res) {
         { "location": "1956,1879,356,29", "text": "TEST CONTRACT" }
     ];
 
-    aimain.typoSentenceEval(arg, function (typoResult) {
+    aimain.typoSentenceEval2(arg, function (typoResult) {
         arg = typoResult;
         console.log('execute typo ML');
         //console.log(arg);
-        aimain.formLabelMapping(arg, function (formLabelResult) {
-            var formLabelArr = formLabelResult.split('^');
-            for (var i in formLabelArr) {
-                for (var j in arg) {
-                    if (formLabelArr[i].split('||')[0] == arg[j].sid) {
-                        arg[j].formLabel = Number(formLabelArr[i].split('||')[1].replace(/\r\n/g, ''));
-                        break;
-                    }
-                }
-            }
+        aimain.formLabelMapping2(arg, function (formLabelResult) {
+            arg = formLabelResult;
             console.log('execute formLabelMapping ML');
             //console.log(arg);
-            aimain.formMapping(arg, function (formResult) {
-                console.log('execute formMapping ML');
+            aimain.formMapping2(arg, function (formResult) {
                 arg = formResult;
+                console.log('execute formMapping ML');
                 //console.log(arg);
-                if (arg != null) {
-                    aimain.columnMapping(arg, function (columnResult) {
-                        if (columnResult) {
-                            var columnArr = columnResult.split('^');
-                            for (var i in columnArr) {
-                                for (var j in arg.data) {
-                                    var columnSid = columnArr[i].split('||')[0];
-                                    if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
-                                        arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
-                                        break;
-                                    }
+                aimain.columnMapping2(arg, function (columnResult) {
+                    arg = columnResult;
+                    console.log('execute columnMapping ML');
+                    //console.log(arg);
+                    /*
+                    if (columnResult) {
+                        var columnArr = columnResult.split('^');
+                        for (var i in columnArr) {
+                            for (var j in arg.data) {
+                                var columnSid = columnArr[i].split('||')[0];
+                                if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
+                                    arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
+                                    break;
                                 }
                             }
-                            console.log('execute columnMapping ML');
-                            //console.log(arg);
-
-                            // DB select (extraction OgCompanyName And ContractName)
-                            var ctOgCompanyName = '';
-                            var contractNames = []; // contractName Array
-                            var exeQueryCount = 0; // query execute count 
-                            var result = []; // function output
-                            for (var i in arg.data) {
-                                if (arg.data[i].formLabel == 1) {
-                                    ctOgCompanyName = arg.data[i].text;
-                                } else if (arg.data[i].formLabel == 2) {
-                                    contractNames.push(arg.data[i].text);
-                                }
-                            }
-
-                            for (var i in contractNames) {
-                                commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
-                                    exeQueryCount++;
-                                    if (rows.length > 0) {
-                                        result = rows;
-                                    }
-                                    if (exeQueryCount == contractNames.length) {
-                                        arg.extOgAndCtnm = result;
-                                        res.send(arg);
-                                    }
-                                });
-                            }
-                        } else {
-                            var data = {};
-                            data.data = req.body.data;
-                            res.send(data);
                         }
-                    });
-                } else {
-                    var data = {};
-                    data.data = req.body.data;
-                    res.send(data);
-                }
+                        console.log('execute columnMapping ML');
+                        //console.log(arg);
+
+                        // DB select (extraction OgCompanyName And ContractName)
+                        var ctOgCompanyName = '';
+                        var contractNames = []; // contractName Array
+                        var exeQueryCount = 0; // query execute count 
+                        var result = []; // function output
+                        for (var i in arg.data) {
+                            if (arg.data[i].formLabel == 1) {
+                                ctOgCompanyName = arg.data[i].text;
+                            } else if (arg.data[i].formLabel == 2) {
+                                contractNames.push(arg.data[i].text);
+                            } else {
+                            }
+                        }
+
+                        for (var i in contractNames) {
+                            commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
+                                exeQueryCount++;
+                                if (rows.length > 0) {
+                                    result = rows;
+                                }
+                                if (exeQueryCount == contractNames.length) {
+                                    arg.extOgAndCtnm = result;
+                                    res.send(arg);
+                                }
+                            });
+                        }
+                    } else {
+                        var data = {};
+                        data.data = req.body.data;
+                        res.send(data);
+                    }
+                    */
+                });
             });
         });
     });
@@ -783,22 +775,24 @@ router.post('/insertContractMapping', function (req, res) {
     commonDB.reqQueryParam2(queryConfig.batchLearningConfig.selectBatchAnswerDataToFilePath, [fileName], callbackSelectBatchAnswerDataToFilePath, data, req, res);
 });
 
+/*
 // [POST] insert batchLearningBaseData (tbl_batch_learning_data 기초정보)
-//var callbackInsertBatchLearningBaseData = function (rows, req, res) {
-//    //console.log("upload batchLearningBaseData finish..");
-//    res.send({ code: 200, rows: rows });
-//};
-//router.post('/insertBatchLearningBaseData', function (req, res) {
-//    var dataObj = req.body.dataObj;
-//    //console.log("insert dataObj " + JSON.stringify(dataObj));
-//    var imgId = dataObj.imgId; 
-//    var oriFileName = dataObj.oriFileName; 
-//    var regId = req.session.userId;
+var callbackInsertBatchLearningBaseData = function (rows, req, res) {
+    //console.log("upload batchLearningBaseData finish..");
+    res.send({ code: 200, rows: rows });
+};
+router.post('/insertBatchLearningBaseData', function (req, res) {
+    var dataObj = req.body.dataObj;
+    //console.log("insert dataObj " + JSON.stringify(dataObj));
+    var imgId = dataObj.imgId; 
+    var oriFileName = dataObj.oriFileName; 
+    var regId = req.session.userId;
 
-//    var data = [imgId, imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, regId];
-//    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
+    var data = [imgId, imgFileStNo, imgFileEndNo, cscoNm, ctNm, insStDt, insEndDt, curCd, pre, com, brkg, txam, prrsCf, prrsRls, lsresCf, lsresRls, cla, exex, svf, cas, ntbl, cscoSaRfrnCnnt2, regId];
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningData, data, callbackInsertBatchLearningData, req, res);
 
-//});
+});
+*/
 
 // [POST] insert batchLearningData (tbl_batch_learning_data 전체정보)
 var callbackInsertBatchLearningData = function (rows, req, res) {
@@ -2558,7 +2552,7 @@ var callbackInsertDocCategory = function (rows, docType, req, res) {
 var callbackSelectMaxDocType = function (rows, req, res) {
     var docName = req.body.docName;
     var sampleImagePath = req.body.sampleImagePath;
-    var docType = rows[0].DOCTYPE;
+    var docType = parseInt(rows[0].DOCTYPE);
     if (docType == 998) { // unk 가 999이므로 피하기 위함
         docType++;
     }

@@ -32,6 +32,7 @@
   <ItemGroup>
     <Compile Include="app.js" />
     <Compile Include="config\propertiesConfig.js" />
+    <Compile Include="config\pythonConfig.js" />
     <Compile Include="config\queryConfig.js" />
     <Compile Include="config\dbConfig.js" />
     <Compile Include="node_modules\filehound\docconfig\template\publish.js" />
@@ -895,8 +896,11 @@
     <Compile Include="routes\user\ocrHistorySearch.js" />
     <Compile Include="routes\user\uiLearning.js" />
     <Compile Include="routes\util\aiMain.js" />
+    <Compile Include="routes\util\callPython.js" />
     <Compile Include="routes\util\common.js" />
     <Compile Include="routes\util\logger.js" />
+    <Compile Include="routes\util\oracle.js" />
+    <Compile Include="routes\util\sync.js" />
     <Content Include="excel\data.xlsx" />
     <Content Include="excel\filepath.xlsx" />
     <Content Include="excel\template.xlsx" />
@@ -1114,6 +1118,7 @@
     <Content Include="ml\typosentence\main.py" />
     <Content Include="ml\typosentence\symspell.py" />
     <Content Include="ml\typosentence\typo.py" />
+    <Content Include="ml\typosentence\typo2.py" />
     <Content Include="ml\typosentence\venv\Lib\site-packages\easy-install.pth" />
     <Content Include="ml\typosentence\venv\Lib\site-packages\numpy-1.14.5.dist-info\DESCRIPTION.rst" />
     <Content Include="ml\typosentence\venv\Lib\site-packages\numpy-1.14.5.dist-info\INSTALLER" />
