@@ -68,9 +68,7 @@ router.post('/typoSentence', function (req, res) {
     
     try {
         aimain.typoSentenceEval(data, function (result) {
-
-            insertTypoCorrect(req, res, result);
-
+            res.send({ 'fileName': fileName, 'data': result, nextType: 'fl' });
         });
     }
     catch (exception) {
@@ -135,20 +133,8 @@ router.post('/formLabelMapping', function (req, res) {
 
     try {
         aimain.formLabelMapping(data, function (formLabelResult) {
-
-            var formLabelArr = formLabelResult.split('^');
-            for (var i in formLabelArr) {
-                for (var j in data) {
-                    if (formLabelArr[i].split('||')[0] == data[j].sid) {
-                        data[j].formLabel = Number(formLabelArr[i].split('||')[1].replace(/\r\n/g, ''));
-                        break;
-                    }
-                }
-            }
             console.log('execute formLabelMapping ML');
-
-
-            res.send({ 'fileName': fileName, 'data': data, nextType: 'fm' });
+            res.send({ 'fileName': fileName, 'data': formLabelResult, nextType: 'fm' });
         });
     } catch (exception) {
         console.log(exception);
@@ -165,7 +151,6 @@ router.post('/formMapping', function (req, res) {
 
     try {
         aimain.formMapping(data, function (formMappingResult) {
-
             res.send({ 'fileName': fileName, 'data': formMappingResult, nextType: 'cm' });
         });
     } catch (exception) {
@@ -210,19 +195,22 @@ router.post('/columnMapping', function (req, res) {
                 }
             }
 
-            for (var i in contractNames) {
-                commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
-                    exeQueryCount++;
-                    if (rows.length > 0) {
-                        result = rows;
-                    }
-                    if (exeQueryCount == contractNames.length) {
-                        arg.extOgAndCtnm = result;
-                        res.send({ 'fileName': fileName, 'data': arg.data, 'docCategory': arg.docCategory, nextType: 'sc' });
-                    }
-                });
+            if (contractNames.length > 0) {
+                for (var i in contractNames) {
+                    commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
+                        exeQueryCount++;
+                        if (rows.length > 0) {
+                            result = rows;
+                        }
+                        if (exeQueryCount == contractNames.length) {
+                            arg.extOgAndCtnm = result;
+                            res.send({ 'fileName': fileName, 'data': arg.data, 'docCategory': arg.docCategory, nextType: 'sc' });
+                        }
+                    });
+                }
+            } else {
+                res.send({ 'fileName': fileName, 'data': arg.data, 'docCategory': arg.docCategory, nextType: 'sc' });
             }
-
             
         });
     } catch (exception) {
