@@ -67,8 +67,9 @@ router.post('/typoSentence', function (req, res) {
     });
     
     try {
-        aimain.typoSentenceEval(data, function (result) {
-            res.send({ 'fileName': fileName, 'data': result, nextType: 'fl' });
+        aimain.typoSentenceEval2(data, function (typoResult) {
+            console.log('execute typo ML');
+            res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'fl' });
         });
     }
     catch (exception) {
@@ -132,7 +133,7 @@ router.post('/formLabelMapping', function (req, res) {
     });
 
     try {
-        aimain.formLabelMapping(data, function (formLabelResult) {
+        aimain.formLabelMapping2(data, function (formLabelResult) {
             console.log('execute formLabelMapping ML');
             res.send({ 'fileName': fileName, 'data': formLabelResult, nextType: 'fm' });
         });
@@ -150,12 +151,9 @@ router.post('/formMapping', function (req, res) {
     });
 
     try {
-        aimain.formMapping(data, function (formMappingResult) {
-            if (formMappingResult == null) {
-                res.send({ 'fileName': fileName, 'data': data, nextType: 'sc' });
-            } else {
-                res.send({ 'fileName': fileName, 'data': formMappingResult, nextType: 'cm' });
-            }
+        aimain.formMapping2(data, function (formMappingResult) {
+            console.log('execute formMapping ML');
+            res.send({ 'fileName': fileName, 'data': formMappingResult, nextType: 'cm' });
         });
     } catch (exception) {
         console.log(exception);
@@ -171,57 +169,13 @@ router.post('/columnMapping', function (req, res) {
     });
 
     try {
-        aimain.columnMapping(arg, function (columnResult) {
-            var columnArr = columnResult.split('^');
-            for (var i in columnArr) {
-                for (var j in arg.data) {
-                    var columnSid = columnArr[i].split('||')[0];
-                    if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
-                        arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
-                        break;
-                    }
-                }
-            }
+        aimain.columnMapping2(arg, function (columnResult) {
             console.log('execute columnMapping ML');
-            //console.log(arg);
-
-            // DB select (extraction OgCompanyName And ContractName)
-            var ctOgCompanyName = '';
-            var contractNames = []; // contractName Array
-            var exeQueryCount = 0; // query execute count 
-            var result = []; // function output
-            for (var i in arg.data) {
-                if (arg.data[i].formLabel == 1) {
-                    ctOgCompanyName = arg.data[i].text;
-                } else if (arg.data[i].formLabel == 2) {
-                    contractNames.push(arg.data[i].text);
-                } else {
-                }
-            }
-
-            if (contractNames.length > 0) {
-                for (var i in contractNames) {
-                    commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
-                        exeQueryCount++;
-                        if (rows.length > 0) {
-                            result = rows;
-                        }
-                        if (exeQueryCount == contractNames.length) {
-                            arg.extOgAndCtnm = result;
-                            res.send({ 'fileName': fileName, 'data': arg, nextType: 'sc' });
-                        }
-                    });
-                }
-            } else {
-                res.send({ 'fileName': fileName, 'data': arg, nextType: 'sc' });
-            }
-            
+            res.send({ 'fileName': fileName, 'data': columnResult, nextType: 'sc' });          
         });
     } catch (exception) {
         console.log(exception);
     }
-
-
 });
 
 // DB Columns select

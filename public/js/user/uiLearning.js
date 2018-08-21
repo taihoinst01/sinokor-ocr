@@ -555,7 +555,7 @@ function detailTable(fileName) {
                 tblTag += '</label>';
                 tblTag += '</dt>';
                 tblTag += '<dd>';
-                tblTag += appendOptionHtml((data[i].column + '') ? data[i].column : 999, columnArr)
+                tblTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr)
                 tblTag += '</dd>';
                 tblTag += '</dl>';
             }
