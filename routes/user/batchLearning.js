@@ -21,8 +21,6 @@ const flatten = require('flatten');
 const mz = require('mz/fs');
 const async = require("async");
 
-
-
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
 var selectBatchLearningDataQuery = queryConfig.batchLearningConfig.selectBatchLearningData;
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
@@ -1562,6 +1560,15 @@ router.post('/selectMultiBatchAnswerDataToFilePath', function (req, res) {
     var queryIn = req.body.queryIn;
 
     commonDB.reqQuery(queryConfig.batchLearningConfig.selectMultiBatchAnswerDataToFilePath + queryIn, callbackSelectMultiBatchAnswerDataToFilePath, req, res);
+});
+
+var test = require('../util/python-shell');
+router.get('/convertMLDataToImgSid', function (req, res) {
+    var data = "q5jjv7slub";
+
+    test.convertMLDataToImgSid(data, function (result) {
+        res.send({});
+    });
 });
 
 async function runTypoDomainTrain(data, callbackTypoDomainTrain) {
