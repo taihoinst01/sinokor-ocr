@@ -437,48 +437,10 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 });
 
 
-// test ml - 18.08.16 hyj
-router.get('/test', function (req, res) {
-    var arg = [
-        { "location": "342,542,411,87", "text": "TEST" },
-        { "location": "1045,294,409,23", "text": "Partner of Test" },
-        { "location": "1923,543,178,25", "text": "Test No" },
-        { "location": "1849,403,206,25", "text": "Test Date" },
-        { "location": "234,546,274,27", "text": "7933 Korean Re" },
-        { "location": "198,649,525,34", "text": "Proportional Treaty Statement" },
-        { "location": "2390,409,344,25", "text": "BV/HEO/2018/08/0819" },
-        { "location": "2101,534,169,25", "text": "01442/2018" },
-        { "location": "211,858,111,24", "text": "Cedant" },
-        { "location": "211,918,285,24", "text": "Class of Business" },
-        { "location": "218,1001,272,26", "text": "Period of Quarter" },
-        { "location": "212,1104,252,31", "text": "Period of Treaty" },
-        { "location": "210,1066,227,24", "text": "Our Reference" },
-        { "location": "210,1174,145,31", "text": "Currency" },
-        { "location": "211,1243,139,24", "text": "Premium" },
-        { "location": "220,1403,197,24", "text": "Commission" },
-        { "location": "220,1466,107,24", "text": "Claims" },
-        { "location": "222,1526,126,24", "text": "Reserve" },
-        { "location": "222,1389,123,24", "text": "Release" },
-        { "location": "222,1619,117,24", "text": "Interest" },
-        { "location": "222,1509,161,31", "text": "Brokerage" },
-        { "location": "235,1878,134,24", "text": "Portfolio" },
-        { "location": "222,1481,124,24", "text": "Balance" },
-        { "location": "440,899,492,32", "text": ": Test- First Insurance 2018" },
-        { "location": "440,912,636,26", "text": ": Test contract 2018" },
-        { "location": "708,888,433,25", "text": "07-05-2018 TO 19-08-2018" },
-        { "location": "708,920,454,25", "text": ": 22-03-2018 TO 30-09-2018" },
-        { "location": "475,998,304,25", "text": ": TEST/CTNM/8403" },
-        { "location": "829,1173,171,25", "text": "JOD 1.50" },
-        { "location": "839,1239,83,25", "text": "4.32" },
-        { "location": "839,1299,58,25", "text": "34.21" },
-        { "location": "839,1362,64,25", "text": "4.25" },
-        { "location": "839,1422,58,25", "text": "1.65" },
-        { "location": "839,1485,64,25", "text": "0.00" },
-        { "location": "839,1545,64,25", "text": "2.38" },
-        { "location": "839,1605,64,25", "text": "71.65" },
-        { "location": "848,1677,64,25", "text": "33.10" },
-        { "location": "1956,1879,356,29", "text": "TEST CONTRACT" }
-    ];
+//
+router.post('/execBatchLearningData2', function (req, res) {
+    console.log('--execBatchLearningDataV1.3');
+    var arg = req.body.data;
 
     aimain.typoSentenceEval2(arg, function (typoResult) {
         arg = typoResult;
@@ -495,54 +457,8 @@ router.get('/test', function (req, res) {
                 aimain.columnMapping2(arg, function (columnResult) {
                     arg = columnResult;
                     console.log('execute columnMapping ML');
-                    //console.log(arg);
-                    /*
-                    if (columnResult) {
-                        var columnArr = columnResult.split('^');
-                        for (var i in columnArr) {
-                            for (var j in arg.data) {
-                                var columnSid = columnArr[i].split('||')[0];
-                                if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
-                                    arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
-                                    break;
-                                }
-                            }
-                        }
-                        console.log('execute columnMapping ML');
-                        //console.log(arg);
-
-                        // DB select (extraction OgCompanyName And ContractName)
-                        var ctOgCompanyName = '';
-                        var contractNames = []; // contractName Array
-                        var exeQueryCount = 0; // query execute count 
-                        var result = []; // function output
-                        for (var i in arg.data) {
-                            if (arg.data[i].formLabel == 1) {
-                                ctOgCompanyName = arg.data[i].text;
-                            } else if (arg.data[i].formLabel == 2) {
-                                contractNames.push(arg.data[i].text);
-                            } else {
-                            }
-                        }
-
-                        for (var i in contractNames) {
-                            commonDB.queryNoRows2(queryConfig.mlConfig.selectContractMapping, [ctOgCompanyName, contractNames[i]], function (rows) {
-                                exeQueryCount++;
-                                if (rows.length > 0) {
-                                    result = rows;
-                                }
-                                if (exeQueryCount == contractNames.length) {
-                                    arg.extOgAndCtnm = result;
-                                    res.send(arg);
-                                }
-                            });
-                        }
-                    } else {
-                        var data = {};
-                        data.data = req.body.data;
-                        res.send(data);
-                    }
-                    */
+                    //console.log(arg);                   
+					res.send(arg);
                 });
             });
         });
@@ -552,6 +468,7 @@ router.get('/test', function (req, res) {
 
 // RUN batchLearningData
 router.post('/execBatchLearningData', function (req, res) {
+	console.log('--execBatchLearningDataV1.2');
     var arg = req.body.data;
 
     // Machine Learning v1.2
@@ -575,7 +492,7 @@ router.post('/execBatchLearningData', function (req, res) {
                                 for (var j in arg.data) {
                                     var columnSid = columnArr[i].split('||')[0];
                                     if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
-                                        arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
+                                        arg.data[j].colLbl = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
                                         break;
                                     }
                                 }
@@ -693,22 +610,28 @@ router.post('/insertDocLabelMapping', function (req, res) {
         console.log('insertDocLabelMapping ML');
         res.send({ code: 200, message: 'insertDocLabelMapping ML', data: resData });
     });
-    // for (var i in data.data) {
-    //     var classData = 0;
-    //     if (data.data[i].column == 0 || data.data[i].column == 1) {            
-    //         classData = String(Number(data.data[i].column) + 1);
-    //     } else {
-    //         classData = String(3);
-    //     }
-    //     params.push([data.data[i].sid, classData]);
-    // }
+    
+	/*
+    var params = [];
 
-    // var options = {
-    //     autoCommit: true
-    // };
-    // commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertDocLabelMapping, params, options, function (rowsAffected, req, res) {
-    //     res.send({ code: 200, message: 'form label mapping insert' });
-    // }, req, res);
+    for (var i in data.data) {
+        var classData = 0;
+        if (data.data[i].column == 0 || data.data[i].column == 1) {            
+            classData = String(Number(data.data[i].column) + 1);
+        } else {
+            classData = String(3);
+        }
+        params.push([data.data[i].sid, classData]);
+    }
+
+    var options = {
+        autoCommit: true
+    };
+    commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertDocLabelMapping, params, options, function (rowsAffected, req, res) {
+        res.send({ code: 200, message: 'form label mapping insert' });
+    }, req, res);
+	*/
+
 });
 
 var callbackInsertDocMapping = function (rows, req, res) {
@@ -721,14 +644,18 @@ router.post('/insertDocMapping', function (req, res) {
         console.log('insertDocMapping ML');
         res.send({ code: 200, message: 'insertDocMapping ML', data: resData });
     });
-    // var docCategory = req.body.docCategory;
+	
+	/*
+    var docCategory = req.body.docCategory;
 
-    // var item = '';
-    // for (var i in data) {
-    //     item += (item == '')? data[i].sid : ',' + data[i].sid;
-    // }
+    var item = '';
+    for (var i in data) {
+        item += (item == '')? data[i].sid : ',' + data[i].sid;
+    }
 
-    // commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertDocMapping, req, res);
+    commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertDocMapping, req, res);
+	*/
+
 });
 
 router.post('/insertColMapping', function (req, res) {
@@ -739,24 +666,26 @@ router.post('/insertColMapping', function (req, res) {
         res.send({ code: 200, message: 'insertColMapping ML' });
     });
 
-    // var docCategory = req.body.docCategory;
-    // var colMappingCount = 0;
-    // var params = [];
+    /*
+    var docCategory = req.body.docCategory;
+    var colMappingCount = 0;
+    var params = [];
 
-    // for (var i in data) {
-    //     if (data[i].column != 999) {
-    //         var item = '';
-    //         item += docCategory.DOCTYPE + ',' + data[i].sid;
-    //         params.push([item, data[i].column]);
-    //     }
-    // }
+    for (var i in data) {
+        if (data[i].column != 999) {
+            var item = '';
+            item += docCategory.DOCTYPE + ',' + data[i].sid;
+            params.push([item, data[i].column]);
+        }
+    }
 
-    // var options = {
-    //     autoCommit: true
-    // };
-    // commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertColMapping, params, options, function (rowsAffected, req, res) {
-    //     res.send({ code: 200, message: 'column mapping insert' });
-    // }, req, res);
+    var options = {
+        autoCommit: true
+    };
+    commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertColMapping, params, options, function (rowsAffected, req, res) {
+        res.send({ code: 200, message: 'column mapping insert' });
+    }, req, res);
+	*/
 });
 
 var callbackInsertContractMapping = function (rows, req, res) {
@@ -824,162 +753,13 @@ router.post('/updateBatchLearningData', function (req, res) {
     } else {
         status = 'N';
     }
-    /*
-    var dataCod = {};
 
-    dataCod.STATEMENTDIV = billInfo.DOCNAME;
-
-    for (var i in data) {
-        if (data[i].column == "CTOGCOMPANYNAMENM" || data[i].column == "0") {
-            dataCod.CTOGCOMPANYNAMENM = data[i].text;
-        } else if (data[i].column == "CTNM" || data[i].column == "1") {
-            dataCod.CTNM = data[i].text;
-        } else if (data[i].column == "UY" || data[i].column == "2") {
-            dataCod.UY = data[i].text;
-        } else if (data[i].column == "CONTRACTNUM" || data[i].column == "3") {
-            dataCod.CONTRACTNUM = data[i].text;
-        } else if (data[i].column == "CURCD" || data[i].column == "4") {
-            dataCod.CURCD = data[i].text;
-        } else if (data[i].column == "PAIDPERCENT" || data[i].column == "5") {
-            dataCod.PAIDPERCENT = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PAIDSHARE" || data[i].column == "6") {
-            dataCod.PAIDSHARE = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "OSLPERCENT" || data[i].column == "7") {
-            dataCod.OSLPERCENT = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "OSLSHARE" || data[i].column == "8") {
-            dataCod.OSLSHARE = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "GROSSPM") {
-            dataCod.GROSSPM = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PM" || data[i].column == "9") {
-            dataCod.PM = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PMPFEND" || data[i].column == "10") {
-            dataCod.PMPFEND = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PMPFWOS" || data[i].column == "11") {
-            dataCod.PMPFWOS = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "XOLPM" || data[i].column == "12") {
-            dataCod.XOLPM = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "RETURNPM" || data[i].column == "13") {
-            dataCod.RETURNPM = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "GROSSCN") {
-            dataCod.GROSSCN = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CN" || data[i].column == "14") {
-            dataCod.CN = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PROFITCN" || data[i].column == "15") {
-            dataCod.PROFITCN = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "BROKERAGE" || data[i].column == "16") {
-            dataCod.BROKERAGE = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "TAX" || data[i].column == "17") {
-            dataCod.TAX = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "OVERRIDINGCOM" || data[i].column == "18") {
-            dataCod.OVERRIDINGCOM = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CHARGE" || data[i].column == "19") {
-            dataCod.CHARGE = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PMRESERVERTD" || data[i].column == "20") {
-            dataCod.PMRESERVERTD = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PFPMRESERVERTD" || data[i].column == "21") {
-            dataCod.PFPMRESERVERTD = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PMRESERVERLD" || data[i].column == "22") {
-            dataCod.PMRESERVERLD = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PFPMRESERVERLD" || data[i].column == "23") {
-            dataCod.PFPMRESERVERLD = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CLAIM" || data[i].column == "24") {
-            dataCod.CLAIM = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "LOSSRECOVERY" || data[i].column == "25") {
-            dataCod.LOSSRECOVERY = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CASHLOSS" || data[i].column == "26") {
-            dataCod.CASHLOSS = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CASHLOSSRD" || data[i].column == "27") {
-            dataCod.CASHLOSSRD = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "LOSSRR" || data[i].column == "28") {
-            dataCod.LOSSRR = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "LOSSRR2" || data[i].column == "29") {
-            dataCod.LOSSRR2 = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "LOSSPFEND" || data[i].column == "30") {
-            dataCod.LOSSPFEND = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "LOSSPFWOA" || data[i].column == "31") {
-            dataCod.LOSSPFWOA = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "INTEREST" || data[i].column == "32") {
-            dataCod.INTEREST = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "TAXON" || data[i].column == "33") {
-            dataCod.TAXON = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "MISCELLANEOUS" || data[i].column == "34") {
-            dataCod.MISCELLANEOUS = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "PMBL") {
-            dataCod.PMBL = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CMBL") {
-            dataCod.CMBL = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "NTBL") {
-            dataCod.NTBL = data[i].text.replace(/ |,/g, '');
-        } else if (data[i].column == "CSCOSARFRNCNNT2" || data[i].column == "35") {
-            dataCod.CSCOSARFRNCNNT2 = data[i].text;
-        }
-    }
-
-    var dataArr = [
-        "N",
-        commonUtil.nvl(dataCod.entryNo),
-        commonUtil.nvl(dataCod.STATEMENTDIV),
-        commonUtil.nvl(dataCod.CONTRACTNUM),
-        commonUtil.nvl(dataCod.ogCompanyCode),
-        commonUtil.nvl(dataCod.CTOGCOMPANYNAMENM),
-        commonUtil.nvl(dataCod.brokerCode),
-        commonUtil.nvl(dataCod.brokerName),
-        commonUtil.nvl(dataCod.CTNM),
-        commonUtil.nvl(dataCod.insstdt),
-        commonUtil.nvl(dataCod.insenddt),
-        commonUtil.nvl(dataCod.UY),
-        commonUtil.nvl(dataCod.CURCD),
-        commonUtil.nvl2(dataCod.PAIDPERCENT, 0),
-        commonUtil.nvl2(dataCod.PAIDSHARE, 0),
-        commonUtil.nvl2(dataCod.OSLPERCENT, 0),
-        commonUtil.nvl2(dataCod.OSLSHARE, 0),
-        commonUtil.nvl2(dataCod.GROSSPM, 0),
-        commonUtil.nvl2(dataCod.PM, 0),
-        commonUtil.nvl2(dataCod.PMPFEND, 0),
-        commonUtil.nvl2(dataCod.PMPFWOS, 0),
-        commonUtil.nvl2(dataCod.XOLPM, 0),
-        commonUtil.nvl2(dataCod.RETURNPM, 0),
-        commonUtil.nvl2(dataCod.GROSSCN, 0),
-        commonUtil.nvl2(dataCod.CN, 0),
-        commonUtil.nvl2(dataCod.PROFITCN, 0),
-        commonUtil.nvl2(dataCod.BROKERAGE, 0),
-        commonUtil.nvl2(dataCod.TAX, 0),
-        commonUtil.nvl2(dataCod.OVERRIDINGCOM, 0),
-        commonUtil.nvl2(dataCod.CHARGE, 0),
-        commonUtil.nvl2(dataCod.PMRESERVERTD, 0),
-        commonUtil.nvl2(dataCod.PFPMRESERVERTD, 0),
-        commonUtil.nvl2(dataCod.PMRESERVERLD, 0),
-        commonUtil.nvl2(dataCod.PFPMRESERVERLD, 0),
-        commonUtil.nvl2(dataCod.CLAIM, 0),
-        commonUtil.nvl2(dataCod.LOSSRECOVERY, 0),
-        commonUtil.nvl2(dataCod.CASHLOSS, 0),
-        commonUtil.nvl2(dataCod.CASHLOSSRD, 0),
-        commonUtil.nvl2(dataCod.LOSSRR, 0),
-        commonUtil.nvl2(dataCod.LOSSRR2, 0),
-        commonUtil.nvl2(dataCod.LOSSPFEND, 0),
-        commonUtil.nvl2(dataCod.LOSSPFWOA, 0),
-        commonUtil.nvl2(dataCod.INTEREST, 0),
-        commonUtil.nvl2(dataCod.TAXON, 0),
-        commonUtil.nvl2(dataCod.MISCELLANEOUS, 0),
-        commonUtil.nvl2(dataCod.PMBL, 0),
-        commonUtil.nvl2(dataCod.CMBL, 0),
-        commonUtil.nvl2(dataCod.NTBL, 0),
-        commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0)
-    ];
-
-    var condImgIdQuery = '('
-    for (var i in fileInfos) {
-        condImgIdQuery += "'";
-        condImgIdQuery += fileInfos[i].imgId;
-        condImgIdQuery += (i != fileInfos.length - 1) ? "'," : "')";
-    }
-    */
     if (billInfo.DOCTYPE == 2) {
 
         var dataArr = [];
 
         for (var i in data) {
-            if (data[i].column == "CONTRACTNUM" || data[i].column == "3") {
+            if (data[i].colLbl == "CONTRACTNUM" || data[i].colLbl == "3") {
                 var colData = [];
                 colData.push(data[i]);
 
@@ -988,19 +768,19 @@ router.post('/updateBatchLearningData', function (req, res) {
                 for (var j in data) {
                     var loc = data[j].location.split(",");
 
-                    if ((data[j].column == "PAIDSHARE" || data[j].column == "6") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                    if ((data[j].colLbl == "PAIDSHARE" || data[j].colLbl == "6") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
                         colData.push(data[j]);
                     }
 
-                    if ((data[j].column == "OSLPERCENT" || data[j].column == "7") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                    if ((data[j].colLbl == "OSLPERCENT" || data[j].colLbl == "7") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
                         colData.push(data[j]);
                     }
 
-                    if ((data[j].column == "OSLSHARE" || data[j].column == "8") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                    if ((data[j].colLbl == "OSLSHARE" || data[j].colLbl == "8") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
                         colData.push(data[j]);
                     }
 
-                    if ((data[j].column == "CURCD" || data[j].column == "4") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
+                    if ((data[j].colLbl == "CURCD" || data[j].colLbl == "4") && (Math.abs(ctnmLoc[1] - loc[1]) < 15)) {
                         colData.push(data[j]);
                     }
                 }
@@ -1053,87 +833,87 @@ function updateLearnData(data, req, res) {
             dataCod.STATEMENTDIV = billInfo.DOCNAME;
 
             for (var i in data) {
-                if (data[i].column == "CTOGCOMPANYNAMENM" || data[i].column == "0") {
+                if (data[i].colLbl == "CTOGCOMPANYNAMENM" || data[i].colLbl == "0") {
                     dataCod.CTOGCOMPANYNAMENM = data[i].text;
-                } else if (data[i].column == "CTNM" || data[i].column == "1") {
+                } else if (data[i].colLbl == "CTNM" || data[i].colLbl == "1") {
                     dataCod.CTNM = data[i].text;
-                } else if (data[i].column == "UY" || data[i].column == "2") {
+                } else if (data[i].colLbl == "UY" || data[i].colLbl == "2") {
                     dataCod.UY = data[i].text;
-                } else if (data[i].column == "CONTRACTNUM" || data[i].column == "3") {
+                } else if (data[i].colLbl == "CONTRACTNUM" || data[i].colLbl == "3") {
                     dataCod.CONTRACTNUM = data[i].text;
-                } else if (data[i].column == "CURCD" || data[i].column == "4") {
+                } else if (data[i].colLbl == "CURCD" || data[i].colLbl == "4") {
                     dataCod.CURCD = data[i].text;
-                } else if (data[i].column == "PAIDPERCENT" || data[i].column == "5") {
+                } else if (data[i].colLbl == "PAIDPERCENT" || data[i].colLbl == "5") {
                     dataCod.PAIDPERCENT = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "PAIDSHARE" || data[i].column == "6") {
+                } else if (data[i].colLbl == "PAIDSHARE" || data[i].colLbl == "6") {
                     dataCod.PAIDSHARE = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "OSLPERCENT" || data[i].column == "7") {
+                } else if (data[i].colLbl == "OSLPERCENT" || data[i].colLbl == "7") {
                     dataCod.OSLPERCENT = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "OSLSHARE" || data[i].column == "8") {
+                } else if (data[i].colLbl == "OSLSHARE" || data[i].colLbl == "8") {
                     dataCod.OSLSHARE = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "GROSSPM") {
+                } else if (data[i].colLbl == "GROSSPM") {
                     dataCod.GROSSPM = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "PM" || data[i].column == "9") {
+                } else if (data[i].colLbl == "PM" || data[i].colLbl == "9") {
                     dataCod.PM = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "PMPFEND" || data[i].column == "10") {
+                } else if (data[i].colLbl == "PMPFEND" || data[i].colLbl == "10") {
                     dataCod.PMPFEND = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "PMPFWOS" || data[i].column == "11") {
+                } else if (data[i].colLbl == "PMPFWOS" || data[i].colLbl == "11") {
                     dataCod.PMPFWOS = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "XOLPM" || data[i].column == "12") {
+                } else if (data[i].colLbl == "XOLPM" || data[i].colLbl == "12") {
                     dataCod.XOLPM = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "RETURNPM" || data[i].column == "13") {
+                } else if (data[i].colLbl == "RETURNPM" || data[i].colLbl == "13") {
                     dataCod.RETURNPM = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "GROSSCN") {
+                } else if (data[i].colLbl == "GROSSCN") {
                     dataCod.GROSSCN = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "CN" || data[i].column == "14") {
+                } else if (data[i].colLbl == "CN" || data[i].colLbl == "14") {
                     dataCod.CN = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "PROFITCN" || data[i].column == "15") {
+                } else if (data[i].colLbl == "PROFITCN" || data[i].colLbl == "15") {
                     dataCod.PROFITCN = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "BROKERAGE" || data[i].column == "16") {
+                } else if (data[i].colLbl == "BROKERAGE" || data[i].colLbl == "16") {
                     dataCod.BROKERAGE = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "TAX" || data[i].column == "17") {
+                } else if (data[i].colLbl == "TAX" || data[i].colLbl == "17") {
                     dataCod.TAX = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "OVERRIDINGCOM" || data[i].column == "18") {
+                } else if (data[i].colLbl == "OVERRIDINGCOM" || data[i].colLbl == "18") {
                     dataCod.OVERRIDINGCOM = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "CHARGE" || data[i].column == "19") {
+                } else if (data[i].colLbl == "CHARGE" || data[i].colLbl == "19") {
                     dataCod.CHARGE = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "PMRESERVERTD" || data[i].column == "20") {
+                } else if (data[i].colLbl == "PMRESERVERTD" || data[i].colLbl == "20") {
                     dataCod.PMRESERVERTD = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "PFPMRESERVERTD" || data[i].column == "21") {
+                } else if (data[i].colLbl == "PFPMRESERVERTD" || data[i].colLbl == "21") {
                     dataCod.PFPMRESERVERTD = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "PMRESERVERLD" || data[i].column == "22") {
+                } else if (data[i].colLbl == "PMRESERVERLD" || data[i].colLbl == "22") {
                     dataCod.PMRESERVERLD = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "PFPMRESERVERLD" || data[i].column == "23") {
+                } else if (data[i].colLbl == "PFPMRESERVERLD" || data[i].colLbl == "23") {
                     dataCod.PFPMRESERVERLD = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "CLAIM" || data[i].column == "24") {
+                } else if (data[i].colLbl == "CLAIM" || data[i].colLbl == "24") {
                     dataCod.CLAIM = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "LOSSRECOVERY" || data[i].column == "25") {
+                } else if (data[i].colLbl == "LOSSRECOVERY" || data[i].colLbl == "25") {
                     dataCod.LOSSRECOVERY = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "CASHLOSS" || data[i].column == "26") {
+                } else if (data[i].colLbl == "CASHLOSS" || data[i].colLbl == "26") {
                     dataCod.CASHLOSS = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "CASHLOSSRD" || data[i].column == "27") {
+                } else if (data[i].colLbl == "CASHLOSSRD" || data[i].colLbl == "27") {
                     dataCod.CASHLOSSRD = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "LOSSRR" || data[i].column == "28") {
+                } else if (data[i].colLbl == "LOSSRR" || data[i].colLbl == "28") {
                     dataCod.LOSSRR = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "LOSSRR2" || data[i].column == "29") {
+                } else if (data[i].colLbl == "LOSSRR2" || data[i].colLbl == "29") {
                     dataCod.LOSSRR2 = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "LOSSPFEND" || data[i].column == "30") {
+                } else if (data[i].colLbl == "LOSSPFEND" || data[i].colLbl == "30") {
                     dataCod.LOSSPFEND = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "LOSSPFWOA" || data[i].column == "31") {
+                } else if (data[i].colLbl == "LOSSPFWOA" || data[i].colLbl == "31") {
                     dataCod.LOSSPFWOA = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "INTEREST" || data[i].column == "32") {
+                } else if (data[i].colLbl == "INTEREST" || data[i].colLbl == "32") {
                     dataCod.INTEREST = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "TAXON" || data[i].column == "33") {
+                } else if (data[i].colLbl == "TAXON" || data[i].colLbl == "33") {
                     dataCod.TAXON = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "MISCELLANEOUS" || data[i].column == "34") {
+                } else if (data[i].colLbl == "MISCELLANEOUS" || data[i].colLbl == "34") {
                     dataCod.MISCELLANEOUS = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "PMBL") {
+                } else if (data[i].colLbl == "PMBL") {
                     dataCod.PMBL = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "CMBL") {
+                } else if (data[i].colLbl == "CMBL") {
                     dataCod.CMBL = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "NTBL") {
+                } else if (data[i].colLbl == "NTBL") {
                     dataCod.NTBL = data[i].text.replace(/ |,/g, '');
-                } else if (data[i].column == "CSCOSARFRNCNNT2" || data[i].column == "35") {
+                } else if (data[i].colLbl == "CSCOSARFRNCNNT2" || data[i].colLbl == "35") {
                     dataCod.CSCOSARFRNCNNT2 = data[i].text;
                 }
             }
@@ -1417,87 +1197,87 @@ function insertLearnData(data, req, res) {
                 dataCod.STATEMENTDIV = billInfo.DOCNAME;
 
                 for (var i in rowData) {
-                    if (rowData[i].column == "CTOGCOMPANYNAMENM" || rowData[i].column == "0") {
+                    if (rowData[i].colLbl == "CTOGCOMPANYNAMENM" || rowData[i].colLbl == "0") {
                         dataCod.CTOGCOMPANYNAMENM = rowData[i].text;
-                    } else if (rowData[i].column == "CTNM" || rowData[i].column == "1") {
+                    } else if (rowData[i].colLbl == "CTNM" || rowData[i].colLbl == "1") {
                         dataCod.CTNM = rowData[i].text;
-                    } else if (rowData[i].column == "UY" || rowData[i].column == "2") {
+                    } else if (rowData[i].colLbl == "UY" || rowData[i].colLbl == "2") {
                         dataCod.UY = rowData[i].text;
-                    } else if (rowData[i].column == "CONTRACTNUM" || rowData[i].column == "3") {
+                    } else if (rowData[i].colLbl == "CONTRACTNUM" || rowData[i].colLbl == "3") {
                         dataCod.CONTRACTNUM = rowData[i].text;
-                    } else if (rowData[i].column == "CURCD" || rowData[i].column == "4") {
+                    } else if (rowData[i].colLbl == "CURCD" || rowData[i].colLbl == "4") {
                         dataCod.CURCD = rowData[i].text;
-                    } else if (rowData[i].column == "PAIDPERCENT" || rowData[i].column == "5") {
+                    } else if (rowData[i].colLbl == "PAIDPERCENT" || rowData[i].colLbl == "5") {
                         dataCod.PAIDPERCENT = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "PAIDSHARE" || rowData[i].column == "6") {
+                    } else if (rowData[i].colLbl == "PAIDSHARE" || rowData[i].colLbl == "6") {
                         dataCod.PAIDSHARE = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "OSLPERCENT" || rowData[i].column == "7") {
+                    } else if (rowData[i].colLbl == "OSLPERCENT" || rowData[i].colLbl == "7") {
                         dataCod.OSLPERCENT = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "OSLSHARE" || rowData[i].column == "8") {
+                    } else if (rowData[i].colLbl == "OSLSHARE" || rowData[i].colLbl == "8") {
                         dataCod.OSLSHARE = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "GROSSPM") {
+                    } else if (rowData[i].colLbl == "GROSSPM") {
                         dataCod.GROSSPM = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "PM" || rowData[i].column == "9") {
+                    } else if (rowData[i].colLbl == "PM" || rowData[i].colLbl == "9") {
                         dataCod.PM = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "PMPFEND" || rowData[i].column == "10") {
+                    } else if (rowData[i].colLbl == "PMPFEND" || rowData[i].colLbl == "10") {
                         dataCod.PMPFEND = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "PMPFWOS" || rowData[i].column == "11") {
+                    } else if (rowData[i].colLbl == "PMPFWOS" || rowData[i].colLbl == "11") {
                         dataCod.PMPFWOS = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "XOLPM" || rowData[i].column == "12") {
+                    } else if (rowData[i].colLbl == "XOLPM" || rowData[i].colLbl == "12") {
                         dataCod.XOLPM = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "RETURNPM" || rowData[i].column == "13") {
+                    } else if (rowData[i].colLbl == "RETURNPM" || rowData[i].colLbl == "13") {
                         dataCod.RETURNPM = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "GROSSCN") {
+                    } else if (rowData[i].colLbl == "GROSSCN") {
                         dataCod.GROSSCN = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "CN" || rowData[i].column == "14") {
+                    } else if (rowData[i].colLbl == "CN" || rowData[i].colLbl == "14") {
                         dataCod.CN = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "PROFITCN" || rowData[i].column == "15") {
+                    } else if (rowData[i].colLbl == "PROFITCN" || rowData[i].colLbl == "15") {
                         dataCod.PROFITCN = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "BROKERAGE" || rowData[i].column == "16") {
+                    } else if (rowData[i].colLbl == "BROKERAGE" || rowData[i].colLbl == "16") {
                         dataCod.BROKERAGE = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "TAX" || rowData[i].column == "17") {
+                    } else if (rowData[i].colLbl == "TAX" || rowData[i].colLbl == "17") {
                         dataCod.TAX = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "OVERRIDINGCOM" || rowData[i].column == "18") {
+                    } else if (rowData[i].colLbl == "OVERRIDINGCOM" || rowData[i].colLbl == "18") {
                         dataCod.OVERRIDINGCOM = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "CHARGE" || rowData[i].column == "19") {
+                    } else if (rowData[i].colLbl == "CHARGE" || rowData[i].colLbl == "19") {
                         dataCod.CHARGE = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "PMRESERVERTD" || rowData[i].column == "20") {
+                    } else if (rowData[i].colLbl == "PMRESERVERTD" || rowData[i].colLbl == "20") {
                         dataCod.PMRESERVERTD = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "PFPMRESERVERTD" || rowData[i].column == "21") {
+                    } else if (rowData[i].colLbl == "PFPMRESERVERTD" || rowData[i].colLbl == "21") {
                         dataCod.PFPMRESERVERTD = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "PMRESERVERLD" || rowData[i].column == "22") {
+                    } else if (rowData[i].colLbl == "PMRESERVERLD" || rowData[i].colLbl == "22") {
                         dataCod.PMRESERVERLD = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "PFPMRESERVERLD" || rowData[i].column == "23") {
+                    } else if (rowData[i].colLbl == "PFPMRESERVERLD" || rowData[i].colLbl == "23") {
                         dataCod.PFPMRESERVERLD = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "CLAIM" || rowData[i].column == "24") {
+                    } else if (rowData[i].colLbl == "CLAIM" || rowData[i].colLbl == "24") {
                         dataCod.CLAIM = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "LOSSRECOVERY" || rowData[i].column == "25") {
+                    } else if (rowData[i].colLbl == "LOSSRECOVERY" || rowData[i].colLbl == "25") {
                         dataCod.LOSSRECOVERY = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "CASHLOSS" || rowData[i].column == "26") {
+                    } else if (rowData[i].colLbl == "CASHLOSS" || rowData[i].colLbl == "26") {
                         dataCod.CASHLOSS = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "CASHLOSSRD" || rowData[i].column == "27") {
+                    } else if (rowData[i].colLbl == "CASHLOSSRD" || rowData[i].colLbl == "27") {
                         dataCod.CASHLOSSRD = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "LOSSRR" || rowData[i].column == "28") {
+                    } else if (rowData[i].colLbl == "LOSSRR" || rowData[i].colLbl == "28") {
                         dataCod.LOSSRR = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "LOSSRR2" || rowData[i].column == "29") {
+                    } else if (rowData[i].colLbl == "LOSSRR2" || rowData[i].colLbl == "29") {
                         dataCod.LOSSRR2 = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "LOSSPFEND" || rowData[i].column == "30") {
+                    } else if (rowData[i].colLbl == "LOSSPFEND" || rowData[i].colLbl == "30") {
                         dataCod.LOSSPFEND = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "LOSSPFWOA" || rowData[i].column == "31") {
+                    } else if (rowData[i].colLbl == "LOSSPFWOA" || rowData[i].colLbl == "31") {
                         dataCod.LOSSPFWOA = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "INTEREST" || rowData[i].column == "32") {
+                    } else if (rowData[i].colLbl == "INTEREST" || rowData[i].colLbl == "32") {
                         dataCod.INTEREST = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "TAXON" || rowData[i].column == "33") {
+                    } else if (rowData[i].colLbl == "TAXON" || rowData[i].colLbl == "33") {
                         dataCod.TAXON = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "MISCELLANEOUS" || rowData[i].column == "34") {
+                    } else if (rowData[i].colLbl == "MISCELLANEOUS" || rowData[i].colLbl == "34") {
                         dataCod.MISCELLANEOUS = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "PMBL") {
+                    } else if (rowData[i].colLbl == "PMBL") {
                         dataCod.PMBL = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "CMBL") {
+                    } else if (rowData[i].colLbl == "CMBL") {
                         dataCod.CMBL = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "NTBL") {
+                    } else if (rowData[i].colLbl == "NTBL") {
                         dataCod.NTBL = rowData[i].text.replace(/ |,/g, '');
-                    } else if (rowData[i].column == "CSCOSARFRNCNNT2" || rowData[i].column == "35") {
+                    } else if (rowData[i].colLbl == "CSCOSARFRNCNNT2" || rowData[i].colLbl == "35") {
                         dataCod.CSCOSARFRNCNNT2 = rowData[i].text;
                     }
                 }

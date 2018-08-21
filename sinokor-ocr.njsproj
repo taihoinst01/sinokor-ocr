@@ -965,6 +965,7 @@
     <Content Include="ml\cnn-text-classification\__pycache__\data_helpers.cpython-35.pyc" />
     <Content Include="ml\cnn-text-classification\__pycache__\multi_class_data_loader.cpython-35.pyc" />
     <Content Include="ml\ColumnMapping\config.ini" />
+    <Content Include="ml\ColumnMapping\eval2.py" />
     <Content Include="ml\ColumnMapping\eval.py" />
     <Content Include="ml\ColumnMapping\iris_test.csv" />
     <Content Include="ml\ColumnMapping\iris_training.csv" />
@@ -1014,10 +1015,12 @@
     <Content Include="ml\FormLabelMapping\config.ini" />
     <Content Include="ml\FormLabelMapping\DataInsert.py" />
     <Content Include="ml\FormLabelMapping\eval.py" />
+    <Content Include="ml\FormLabelMapping\eval2.py" />
     <Content Include="ml\FormLabelMapping\iris_test.csv" />
     <Content Include="ml\FormLabelMapping\iris_training.csv" />
     <Content Include="ml\FormLabelMapping\train.py" />
     <Content Include="ml\FormMapping\config.ini" />
+    <Content Include="ml\FormMapping\eval2.py" />
     <Content Include="ml\FormMapping\eval.py" />
     <Content Include="ml\FormMapping\train.py" />
     <Content Include="ml\nmt\.gitignore" />

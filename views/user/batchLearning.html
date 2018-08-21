@@ -605,502 +605,504 @@
             <!-- // 본문영역 -->
         </div>
         <!-- // Content -->
-    </div>
-
-    <!-- 팝업_수동학습레이어팝업 -->
-    <div id="layer1" class="poplayer batch_pop1">
-        <div class="bg"></div>
-        <div class="pop_layer">
-            <div class="pop_popup0 pop_popup01">
-                <div class="pop_header">
-                    <h1>학습 실행</h1>
-                </div>
-                <div class="pop_content">
-                    <div>
-                        <!-- 0:전체학습     1:선택한 파일 학습     2:학습 범위 지정-->
-                        <input type="hidden" id="learningMethodNum" value="0" />
-                        <ul id="batchLearningUl" class="uiHorizontal">
-                            <li id="allLaerning" class="liStyle01 liSwitch on">
-                                <a>전체학습</a>
-                            </li>
-                            <li id="selectFileLearning" class="liStyle01 liSwitch">
-                                <a>선택한 파일 학습</a>
-                            </li>
-                            <li id="learningRange" class="liStyle01 liSwitch">
-                                <a>학습 범위 지정</a>
-                            </li>
-                        </ul>
+        <!-- 팝업_수동학습레이어팝업 -->
+        <div id="layer1" class="poplayer batch_pop1">
+            <div class="bg"></div>
+            <div class="pop_layer">
+                <div class="pop_popup0 pop_popup01">
+                    <div class="pop_header">
+                        <h1>학습 실행</h1>
                     </div>
-                    <div id="learningRange_content" class="clearfix inputst_box01 box_day" style="display:none">
-                        <span class="dset">
-                            <input type="text" class="datepicker inpType" name="searchStartDate" id="searchStartDate" readonly />
-                            <a href="#none" class="btncalendar dateclick">달력</a>
-                        </span>
-                        <span class="demi">-</span>
-                        <span class="dset dset2">
-                            <input type="text" class="datepicker inpType" name="searchEndDate" id="searchEndDate" readonly />
-                            <a href="#none" class="btncalendar dateclick">달력</a>
-                        </span>
+                    <div class="pop_content">
+                        <div>
+                            <!-- 0:전체학습     1:선택한 파일 학습     2:학습 범위 지정-->
+                            <input type="hidden" id="learningMethodNum" value="0" />
+                            <ul id="batchLearningUl" class="uiHorizontal">
+                                <li id="allLaerning" class="liStyle01 liSwitch on">
+                                    <a>전체학습</a>
+                                </li>
+                                <li id="selectFileLearning" class="liStyle01 liSwitch">
+                                    <a>선택한 파일 학습</a>
+                                </li>
+                                <li id="learningRange" class="liStyle01 liSwitch">
+                                    <a>학습 범위 지정</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="learningRange_content" class="clearfix inputst_box01 box_day" style="display:none">
+                            <span class="dset">
+                                <input type="text" class="datepicker inpType" name="searchStartDate" id="searchStartDate" readonly />
+                                <a href="#none" class="btncalendar dateclick">달력</a>
+                            </span>
+                            <span class="demi">-</span>
+                            <span class="dset dset2">
+                                <input type="text" class="datepicker inpType" name="searchEndDate" id="searchEndDate" readonly />
+                                <a href="#none" class="btncalendar dateclick">달력</a>
+                            </span>
+                        </div>
                     </div>
-                </div>
-                <div class="pop_footer">
-                    <button type="button" id="btn_pop_batch_close" class="button_st4 cbtn">취 소</button>
-                    <button type="button" id="btn_pop_batch_run" class="button_st1 cbtn">실 행</button>
+                    <div class="pop_footer">
+                        <button type="button" id="btn_pop_batch_close" class="button_st4 cbtn">취 소</button>
+                        <button type="button" id="btn_pop_batch_run" class="button_st1 cbtn">실 행</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- // 팝업_수동학습레이어팝업 -->
-    <!-- 팝업_수동레이어팝업  -->
-    <!--8/10일 전 버전
-    <div id="layer2" class="poplayer">
-        <div class="bg"></div>
-        <div class="pop_layer">
-            <div class="pop_popup0">
-                <div class="pop_header">
-                    <h1>수동학습 레이어 팝업</h1>
-                </div>
-                <div class="pop_content">
-                    <div class="pop_box_11">
-                        <img src="publish/image/sample01.jpg" id="uiImg" alt="샘플이미지" />
+        <!-- // 팝업_수동학습레이어팝업 -->
+        <!-- 팝업_수동레이어팝업  -->
+        <!--8/10일 전 버전
+        <div id="layer2" class="poplayer">
+            <div class="bg"></div>
+            <div class="pop_layer">
+                <div class="pop_popup0">
+                    <div class="pop_header">
+                        <h1>수동학습 레이어 팝업</h1>
                     </div>
-                    <div class="pop_box_12 box_txt_st01" style="overflow-y:scroll">
+                    <div class="pop_content">
+                        <div class="pop_box_11">
+                            <img src="publish/image/sample01.jpg" id="uiImg" alt="샘플이미지" />
+                        </div>
+                        <div class="pop_box_12 box_txt_st01" style="overflow-y:scroll">
+            -->
+        <!-- TODO: 스크롤바-->
+        <!--
+                            <dl>
+                                <dt><label for="imgId">이미지 ID</label></dt>
+                                <dd>
+                                    <input type="text" name="imgId" id="imgId" class="inputst_box01" value="" disabled="disabled" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="imgFileStNo">페이지번호 FROM</label></dt>
+                                <dd>
+                                    <input type="text" name="imgFileStartNo" id="imgFileStNo" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="imgFileEndNo">페이지번호 TO</label></dt>
+                                <dd>
+                                    <input type="text" name="imgFileEndNo" id="imgFileEndNo" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="cscoNm">거래사명</label></dt>
+                                <dd>
+                                    <input type="text" name="cscoNm" id="cscoNm" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="ctNm">계약명</label></dt>
+                                <dd>
+                                    <input type="text" name="ctNm" id="ctNm" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="insStDt">보험개시일</label></dt>
+                                <dd>
+                                    <input type="text" name="insStDt" id="insStDt" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="insEndDt">보험종료일</label></dt>
+                                <dd>
+                                    <input type="text" name="insEndDt" id="insEndDt" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="curCd">화폐코드</label></dt>
+                                <dd>
+                                    <input type="text" name="curCd" id="curCd" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+
+                            <dl>
+                                <dt><label for="pre">보험료</label></dt>
+                                <dd>
+                                    <input type="text" name="pre" id="pre" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="com">일반수수료</label></dt>
+                                <dd>
+                                    <input type="text" name="com" id="com" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="brkg">중개수수료</label></dt>
+                                <dd>
+                                    <input type="text" name="brkg" id="brkg" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="txam">세금</label></dt>
+                                <dd>
+                                    <input type="text" name="txam" id="txam" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="prrsCf">보험금유보금적립액</label></dt>
+                                <dd>
+                                    <input type="text" name="prrsCf" id="prrsCf" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="prrsRls">보험료유보금해제액</label></dt>
+                                <dd>
+                                    <input type="text" name="prrsRls" id="prrsRls" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="lsresCf">보험금유보금적립액</label></dt>
+                                <dd>
+                                    <input type="text" name="lsresCf" id="lsresCf" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="lsresRls">보험금유보금해제액</label></dt>
+                                <dd>
+                                    <input type="text" name="lsresRls" id="lsresRls" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="cla">보험금</label></dt>
+                                <dd>
+                                    <input type="text" name="cla" id="cla" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="exex">부대비</label></dt>
+                                <dd>
+                                    <input type="text" name="exex" id="exex" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="svf">손해조사비</label></dt>
+                                <dd>
+                                    <input type="text" name="svf" id="svf" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="cas">즉시불보험금(CASH)</label></dt>
+                                <dd>
+                                    <input type="text" name="cas" id="cas" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="ntbl">NET BALANCE</label></dt>
+                                <dd>
+                                    <input type="text" name="ntbl" id="ntbl" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="cscoSaRfrnCnnt2">Your Reference</label></dt>
+                                <dd>
+                                    <input type="text" name="cscoSaRfrnCnnt2" id="cscoSaRfrnCnnt2" class="inputst_box01" value="" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="regId">최초등록 ID</label></dt>
+                                <dd>
+                                    <input type="text" name="regId" id="regId" class="inputst_box01" value="" disabled="disabled" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="regDate">최초등록일자</label></dt>
+                                <dd>
+                                    <input type="text" name="regDate" id="regDate" class="inputst_box01" value="" disabled="disabled" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="updId">최종수정 ID</label></dt>
+                                <dd>
+                                    <input type="text" name="updId" id="updId" class="inputst_box01" value="" disabled="disabled" />
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><label for="updDate">최종수정일자</label></dt>
+                                <dd>
+                                    <input type="text" name="updDate" id="updDate" class="inputst_box01" value="" disabled="disabled" />
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="pop_footer">
+                        <button type="button" id="btn_pop_ui_run" class="button_st1">학습 진행</button>
+                        <button type="button" id="btn_pop_ui_close" class="button_st2 cbtn">취 소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         -->
-                        <!-- TODO: 스크롤바-->
-    <!--
-                        <dl>
-                            <dt><label for="imgId">이미지 ID</label></dt>
-                            <dd>
-                                <input type="text" name="imgId" id="imgId" class="inputst_box01" value="" disabled="disabled" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="imgFileStNo">페이지번호 FROM</label></dt>
-                            <dd>
-                                <input type="text" name="imgFileStartNo" id="imgFileStNo" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="imgFileEndNo">페이지번호 TO</label></dt>
-                            <dd>
-                                <input type="text" name="imgFileEndNo" id="imgFileEndNo" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="cscoNm">거래사명</label></dt>
-                            <dd>
-                                <input type="text" name="cscoNm" id="cscoNm" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="ctNm">계약명</label></dt>
-                            <dd>
-                                <input type="text" name="ctNm" id="ctNm" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="insStDt">보험개시일</label></dt>
-                            <dd>
-                                <input type="text" name="insStDt" id="insStDt" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="insEndDt">보험종료일</label></dt>
-                            <dd>
-                                <input type="text" name="insEndDt" id="insEndDt" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="curCd">화폐코드</label></dt>
-                            <dd>
-                                <input type="text" name="curCd" id="curCd" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-
-                        <dl>
-                            <dt><label for="pre">보험료</label></dt>
-                            <dd>
-                                <input type="text" name="pre" id="pre" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="com">일반수수료</label></dt>
-                            <dd>
-                                <input type="text" name="com" id="com" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="brkg">중개수수료</label></dt>
-                            <dd>
-                                <input type="text" name="brkg" id="brkg" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="txam">세금</label></dt>
-                            <dd>
-                                <input type="text" name="txam" id="txam" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="prrsCf">보험금유보금적립액</label></dt>
-                            <dd>
-                                <input type="text" name="prrsCf" id="prrsCf" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="prrsRls">보험료유보금해제액</label></dt>
-                            <dd>
-                                <input type="text" name="prrsRls" id="prrsRls" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="lsresCf">보험금유보금적립액</label></dt>
-                            <dd>
-                                <input type="text" name="lsresCf" id="lsresCf" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="lsresRls">보험금유보금해제액</label></dt>
-                            <dd>
-                                <input type="text" name="lsresRls" id="lsresRls" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="cla">보험금</label></dt>
-                            <dd>
-                                <input type="text" name="cla" id="cla" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="exex">부대비</label></dt>
-                            <dd>
-                                <input type="text" name="exex" id="exex" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="svf">손해조사비</label></dt>
-                            <dd>
-                                <input type="text" name="svf" id="svf" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="cas">즉시불보험금(CASH)</label></dt>
-                            <dd>
-                                <input type="text" name="cas" id="cas" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="ntbl">NET BALANCE</label></dt>
-                            <dd>
-                                <input type="text" name="ntbl" id="ntbl" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="cscoSaRfrnCnnt2">Your Reference</label></dt>
-                            <dd>
-                                <input type="text" name="cscoSaRfrnCnnt2" id="cscoSaRfrnCnnt2" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="regId">최초등록 ID</label></dt>
-                            <dd>
-                                <input type="text" name="regId" id="regId" class="inputst_box01" value="" disabled="disabled" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="regDate">최초등록일자</label></dt>
-                            <dd>
-                                <input type="text" name="regDate" id="regDate" class="inputst_box01" value="" disabled="disabled" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="updId">최종수정 ID</label></dt>
-                            <dd>
-                                <input type="text" name="updId" id="updId" class="inputst_box01" value="" disabled="disabled" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="updDate">최종수정일자</label></dt>
-                            <dd>
-                                <input type="text" name="updDate" id="updDate" class="inputst_box01" value="" disabled="disabled" />
-                            </dd>
-                        </dl>
+        <div id="layer2" class="poplayer batch_pop2">
+            <div class="bg"></div>
+            <div class="pop_layer">
+                <div class="pop_popup0">
+                    <div class="pop_header">
+                        <h1>수동 레이어 팝업</h1>
                     </div>
-                </div>
-                <div class="pop_footer">
-                    <button type="button" id="btn_pop_ui_run" class="button_st1">학습 진행</button>
-                    <button type="button" id="btn_pop_ui_close" class="button_st2 cbtn">취 소</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    -->
-    <div id="layer2" class="poplayer batch_pop2">
-        <div class="bg"></div>
-        <div class="pop_layer">
-            <div class="pop_popup0">
-                <div class="pop_header">
-                    <h1>수동 레이어 팝업</h1>
-                </div>
-                <div class="pop_content">
-                    <div class="box_content_L st_last">
-                        <div class="tits">
-                            <span>양식이미지</span>
-                        </div>
-                        <div class="imgName">
-                            <span id="imgNameTag"></span>
-                        </div>
-                        <div class="box_content_bg">
+                    <div class="pop_content">
+                        <div class="box_content_L st_last">
+                            <div class="tits">
+                                <span>양식이미지</span>
+                            </div>
+                            <div class="imgName">
+                                <span id="imgNameTag"></span>
+                            </div>
+                            <div class="box_content_bg">
 
-                            <div class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
-                                <div id="img_content">
-                            
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 양식분석상세 -->
-                    <div class="box_content_R st_last">
-                        <div class="box_content_bg">
-                            <div class="title">
-                                <h3 class="tits">
-                                    <span class="mr10">문서 양식 예측</span>
-                                    <b id="docName" class="mr5"></b>   <b id="docPredictionScore"></b>
-                                </h3>
-                                <button type="button" id="docCompareBtn" class="tits11_btn01" onclick="docComparePopup2();"></button>
-                                <div class="fr">
-                                    <button type="button" id="uiTrainBtn" class="button_st1">UI Training</button>
-                                </div>
-                            </div>
-                            <div class="mCustomScrollbar box_scroll_st99" data-mcs-theme="dark-3">
-                                <input type="hidden" id="resultJson" />
-                                <div class="table_style02">
-                                    <table>
-                                        <caption>양식 분석 상세 정보</caption>
-                                        <colgroup>
-                                            <col style="width:65%" />
-                                            <col style="width:35%" />
-                                        </colgroup>
-                                        <thead>
-                                            <tr>
-                                                <th scope="row">추출 텍스트</th>
-                                                <th scope="row">DB 컬럼</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                    <div id="textResultTbl" class="box_table_st box_table_st04">
+                                <div class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                                    <div id="img_content">
+
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <!-- 양식분석상세 -->
+                        <div class="box_content_R st_last">
+                            <div class="box_content_bg">
+                                <div class="title">
+                                    <h3 class="tits">
+                                        <span class="mr10">문서 양식 예측</span>
+                                        <b id="docName" class="mr5"></b>   <b id="docPredictionScore"></b>
+                                    </h3>
+                                    <button type="button" id="docCompareBtn" class="tits11_btn01" onclick="docComparePopup2();"></button>
+                                    <div class="fr">
+                                        <button type="button" id="uiTrainBtn" class="button_st1">UI Training</button>
+                                    </div>
+                                </div>
+                                <div class="mCustomScrollbar box_scroll_st99" data-mcs-theme="dark-3">
+                                    <input type="hidden" id="resultJson" />
+                                    <div class="table_style02">
+                                        <table>
+                                            <caption>양식 분석 상세 정보</caption>
+                                            <colgroup>
+                                                <col style="width:65%" />
+                                                <col style="width:35%" />
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="row">추출 텍스트</th>
+                                                    <th scope="row">DB 컬럼</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                        <div id="textResultTbl" class="box_table_st box_table_st04">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- // 양식분석상세 -->
                     </div>
-                    <!-- // 양식분석상세 -->
-                </div>
-                <div class="pop_footer">
+                    <div class="pop_footer">
 
-                    <button type="button" id="btn_pop_ui_close" class="button_st4 cbtn">닫기</button>
-                    <!--<button type="button" id="btn_pop_ui_run" class="button_st1">학습 진행</button>-->
+                        <button type="button" id="btn_pop_ui_close" class="button_st4 cbtn">닫기</button>
+                        <!--<button type="button" id="btn_pop_ui_run" class="button_st1">학습 진행</button>-->
 
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- // 팝업_수동학습레이어팝업 -->
-    <!-- 팝업_이미지뷰레이어팝업 -->
-    <div id="layer3" class="poplayer">
-        <div class="bg"></div>
-        <div class="pop_image_data" style="position:fixed;background-color:#fff;top:44px;left:770px;width:1020px;height:858px;z-index:30000;overflow:scroll">
-            <table class="popTable_K01">
-                <caption>파일 정보</caption>
-                <colgroup>
-                    <col style="width:150px" />
-                    <col style="width:150px" />
-                    <col style="width:100px" />
-                    <col style="width:150px" />
-                    <col style="width:100px" />
-                    <col style="width:150px" />
-                    <col style="width:100px" />
-                    <col style="width:250px" />
-                    <col style="width:100px" />
-                    <col style="width:150px" />
-                    <col style="width:150px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                    <col style="width:100px" />
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th scope="row">파일명</th>
-                        <th scope="row">이미지ID</th>
-                        <th scope="row">계산서 구분</th>
-                        <th scope="row">계약번호</th>
-                        <th scope="row">계약명</th>
-                        <th scope="row">출재사코드</th>
-                        <th scope="row">출재사명</th>
-                        <th scope="row">중개사코드</th>
-                        <th scope="row">중개사명</th>
-                        <th scope="row">보험개시일</th>
-                        <th scope="row">보험종료일</th>
-                        <th scope="row">화폐코드</th>
-                        <th scope="row">Paid(100%)</th>
-                        <th scope="row">Paid(Our Share)</th>
-                        <th scope="row">GROSS PREMIUM</th>
-                        <th scope="row">PREMIUM</th>
-                        <th scope="row">PREMIUM P/F ENT</th>
-                        <th scope="row">PREMIUM P/F WOS</th>
-                        <th scope="row">XOL PREMIUM</th>
-                        <th scope="row">RETURN PREMIUM</th>
-                        <th scope="row">GROSS COMMISSION</th>
-                        <th scope="row">COMMISSION</th>
-                        <th scope="row">PROFIT COMMISSION</th>
-                        <th scope="row">BROKERAGE</th>
-                        <th scope="row">TEX</th>
-                        <th scope="row">OVERRIDING COM</th>
-                        <th scope="row">CHARGE</th>
-                        <th scope="row">PREMUIM RESERVE RTD</th>
-                        <th scope="row">P/F PREMIUM RESERVE RTD</th>
-                        <th scope="row">PREMIUM RESERVE RLD</th>
-                        <th scope="row">P/F PREMIUM RESERVE RLD</th>
-                        <th scope="row">CLAIM</th>
-                        <th scope="row">LOSS RECOVERY</th>
-                        <th scope="row">CASH LOSS</th>
-                        <th scope="row">CASH LOSS REFUND</th>
-                        <th scope="row">LOSS RESERVE RTD</th>
-                        <th scope="row">LOSS RESERVE RLD</th>
-                        <th scope="row">LOSS P/F ENT</th>
-                        <th scope="row">LOSS P/F WOA</th>
-                        <th scope="row">INTEREST</th>
-                        <th scope="row">TAX ON</th>
-                        <th scope="row">MISCELLANEOUS</th>
-                        <th scope="row">PREMIUM BALANCE</th>
-                        <th scope="row">CLAIM BALANCE</th>
-                        <th scope="row">NET BALANCE</th>
-                        <th scope="row">Your Ref</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody_batchList_answer"></tbody>
-            </table>
-        </div>
-        <div class="pop_layer pop_layer_K01">
-            <div class="w600 pop_popup0">
-                <div class="pop_header">
-                    <button class="pop_close_btn cbtn">×</button>
-                </div>
-                <div class="pop_content">
-                    <img id="viewImage" src="" />
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- // 팝업_이미지뷰레이어팝업 -->
-    <!-- 팝업_문서비교레이어팝업 -->
-    <div id="layer4" class="poplayer">
-        <input type="hidden" id="docData"/>
-        <div class="bg"></div>
-        <div class="pop_layer">
-            <div class="pop_popup0 doc_popup">
-                <div class="pop_header">
-                    <h1>문서 양식 조회</h1>
-                </div>
-                <div class="tits22">
-                    <div class="inputst_role">
-                        <input type="radio" id="orgDocSearchRadio" value="choice-1" class="custom" name="radio_batch" checked="checked" />
-                        <label for="orgDocSearchRadio">기존문서 양식조회</label>
-                        <input type="radio" id="newDocRegistrationRadio" value="choice-2" class="custom" name="radio_batch" />
-                        <label for="newDocRegistrationRadio">신규문서 양식등록</label>
-                    </div>
-                    <div id="orgDocSearch" class="inputst_role2">
-                        <input type="text" name="orgDocName" id="orgDocName" class="inputst_box01 ui_doc_pop_ipt" value="" />
-                        <button type="button" id="btn_pop_doc_cancel" class="ui_doc_pop_btn2 cbtn">취 소</button>
-                        <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1 ml5">확 인</button>
-                    </div>
-                    <div id="newDocRegistration" class="inputst_role2" style="display:none;">
-                        <input type="text" name="newDocName" id="newDocName" class="inputst_box01 ui_doc_pop_ipt2" value="" placeholder="신규문서명을 입력해 주세요" />
-                        <button type="button" id="" class="ui_doc_pop_btn2 cbtn">취 소</button>
-                        <button type="button" id="insertDocCategoryBtn" class="ui_doc_pop_btn1 ml5">신규등록</button>
-                    </div>
-                </div>
-                <div class="pop_content">
-                    <div class="ui_doc_pop_div fl">
-                        <div class="ui_doc_pop_div00">
-                            <div class="ui_doc_pop_div01">
-                                <span>머신러닝 예측 문서</span>
-                                <input type="text" id="mlPredictionDocName" disabled="disabled">
-                            </div>
-                            <div class="ui_doc_pop_div01">
-                                <span>정확도</span>
-                                <input type="text" id="mlPredictionPercent" disabled="disabled">
-                            </div>
-                        </div>
-                        <div class="imgbox">
-                            <img id="originImg" src="" style="width: 100%;height: 480px;">
-                        </div>
-                    </div>
-                    <div class="ui_doc_pop_div fr">
-                        <div class="ui_doc_pop_div00">
-                            <div class="ui_doc_pop_div01">
-                                <label class="searchIcon"></label>
-                                <input type="text" id="searchDocCategoryKeyword" class="ipt83" placeholder="검색할 단어를 입력해 주세요">
-                                <button type="button" id="searchDocCategoryBtn" class="ui_doc_pop_btn3">검색</button>
-                            </div>
-                            <div class="ui_doc_pop_div01">
-                                <input type="text" id="searchResultDocName" disabled="disabled">
-                            </div>
-                        </div>
-                        <div id="docSearchResult" class="imgbox">
-
-                        </div>
-                        <button type="button" id="docSearchResultImg_thumbPrev" class="button_control10 button_control11" disabled="disabled"><span class="blind">왼쪽이동</span></button>
-                        <button type="button" id="docSearchResultImg_thumbNext" class="button_control10 button_control12" disabled="disabled"><span class="blind">오른쪽이동</span></button>
-                        <div id="docSearchResultImg_thumbCount" class="docSearchResultImg_count"><span id="countCurrent">1</span><span> / </span><span id="countLast"></span></div>
-                        <div id="docSearchResultMask"></div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- // 팝업_수동학습레이어팝업 -->
+        <!-- 팝업_이미지뷰레이어팝업 -->
+        <div id="layer3" class="poplayer">
+            <div class="bg"></div>
+            <div class="pop_image_data" style="position:fixed;background-color:#fff;top:44px;left:770px;width:1020px;height:858px;z-index:30000;overflow:scroll">
+                <table class="popTable_K01">
+                    <caption>파일 정보</caption>
+                    <colgroup>
+                        <col style="width:150px" />
+                        <col style="width:150px" />
+                        <col style="width:100px" />
+                        <col style="width:150px" />
+                        <col style="width:100px" />
+                        <col style="width:150px" />
+                        <col style="width:100px" />
+                        <col style="width:250px" />
+                        <col style="width:100px" />
+                        <col style="width:150px" />
+                        <col style="width:150px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                        <col style="width:100px" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="row">파일명</th>
+                            <th scope="row">이미지ID</th>
+                            <th scope="row">계산서 구분</th>
+                            <th scope="row">계약번호</th>
+                            <th scope="row">계약명</th>
+                            <th scope="row">출재사코드</th>
+                            <th scope="row">출재사명</th>
+                            <th scope="row">중개사코드</th>
+                            <th scope="row">중개사명</th>
+                            <th scope="row">보험개시일</th>
+                            <th scope="row">보험종료일</th>
+                            <th scope="row">화폐코드</th>
+                            <th scope="row">Paid(100%)</th>
+                            <th scope="row">Paid(Our Share)</th>
+                            <th scope="row">GROSS PREMIUM</th>
+                            <th scope="row">PREMIUM</th>
+                            <th scope="row">PREMIUM P/F ENT</th>
+                            <th scope="row">PREMIUM P/F WOS</th>
+                            <th scope="row">XOL PREMIUM</th>
+                            <th scope="row">RETURN PREMIUM</th>
+                            <th scope="row">GROSS COMMISSION</th>
+                            <th scope="row">COMMISSION</th>
+                            <th scope="row">PROFIT COMMISSION</th>
+                            <th scope="row">BROKERAGE</th>
+                            <th scope="row">TEX</th>
+                            <th scope="row">OVERRIDING COM</th>
+                            <th scope="row">CHARGE</th>
+                            <th scope="row">PREMUIM RESERVE RTD</th>
+                            <th scope="row">P/F PREMIUM RESERVE RTD</th>
+                            <th scope="row">PREMIUM RESERVE RLD</th>
+                            <th scope="row">P/F PREMIUM RESERVE RLD</th>
+                            <th scope="row">CLAIM</th>
+                            <th scope="row">LOSS RECOVERY</th>
+                            <th scope="row">CASH LOSS</th>
+                            <th scope="row">CASH LOSS REFUND</th>
+                            <th scope="row">LOSS RESERVE RTD</th>
+                            <th scope="row">LOSS RESERVE RLD</th>
+                            <th scope="row">LOSS P/F ENT</th>
+                            <th scope="row">LOSS P/F WOA</th>
+                            <th scope="row">INTEREST</th>
+                            <th scope="row">TAX ON</th>
+                            <th scope="row">MISCELLANEOUS</th>
+                            <th scope="row">PREMIUM BALANCE</th>
+                            <th scope="row">CLAIM BALANCE</th>
+                            <th scope="row">NET BALANCE</th>
+                            <th scope="row">Your Ref</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody_batchList_answer"></tbody>
+                </table>
+            </div>
+            <div class="pop_layer pop_layer_K01">
+                <div class="w600 pop_popup0">
+                    <div class="pop_header">
+                        <button class="pop_close_btn cbtn">×</button>
+                    </div>
+                    <div class="pop_content">
+                        <img id="viewImage" src="" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- // 팝업_이미지뷰레이어팝업 -->
+        <!-- 팝업_문서비교레이어팝업 -->
+        <div id="layer4" class="poplayer">
+            <input type="hidden" id="docData" />
+            <div class="bg"></div>
+            <div class="pop_layer">
+                <div class="pop_popup0 doc_popup">
+                    <div class="pop_header">
+                        <h1>문서 양식 조회</h1>
+                    </div>
+                    <div class="tits22">
+                        <div class="inputst_role">
+                            <input type="radio" id="orgDocSearchRadio" value="choice-1" class="custom" name="radio_batch" checked="checked" />
+                            <label for="orgDocSearchRadio">기존문서 양식조회</label>
+                            <input type="radio" id="newDocRegistrationRadio" value="choice-2" class="custom" name="radio_batch" />
+                            <label for="newDocRegistrationRadio">신규문서 양식등록</label>
+                        </div>
+                        <div id="orgDocSearch" class="inputst_role2">
+                            <input type="text" name="orgDocName" id="orgDocName" class="inputst_box01 ui_doc_pop_ipt" value="" />
+                            <button type="button" id="btn_pop_doc_cancel" class="ui_doc_pop_btn2 cbtn">취 소</button>
+                            <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1 ml5">확 인</button>
+                        </div>
+                        <div id="newDocRegistration" class="inputst_role2" style="display:none;">
+                            <input type="text" name="newDocName" id="newDocName" class="inputst_box01 ui_doc_pop_ipt2" value="" placeholder="신규문서명을 입력해 주세요" />
+                            <button type="button" id="" class="ui_doc_pop_btn2 cbtn">취 소</button>
+                            <button type="button" id="insertDocCategoryBtn" class="ui_doc_pop_btn1 ml5">신규등록</button>
+                        </div>
+                    </div>
+                    <div class="pop_content">
+                        <div class="ui_doc_pop_div fl">
+                            <div class="ui_doc_pop_div00">
+                                <div class="ui_doc_pop_div01">
+                                    <span>머신러닝 예측 문서</span>
+                                    <input type="text" id="mlPredictionDocName" disabled="disabled">
+                                </div>
+                                <div class="ui_doc_pop_div01">
+                                    <span>정확도</span>
+                                    <input type="text" id="mlPredictionPercent" disabled="disabled">
+                                </div>
+                            </div>
+                            <div class="imgbox">
+                                <img id="originImg" src="" style="width: 100%;height: 480px;">
+                            </div>
+                        </div>
+                        <div class="ui_doc_pop_div fr">
+                            <div class="ui_doc_pop_div00">
+                                <div class="ui_doc_pop_div01">
+                                    <label class="searchIcon"></label>
+                                    <input type="text" id="searchDocCategoryKeyword" class="ipt83" placeholder="검색할 단어를 입력해 주세요">
+                                    <button type="button" id="searchDocCategoryBtn" class="ui_doc_pop_btn3">검색</button>
+                                </div>
+                                <div class="ui_doc_pop_div01">
+                                    <input type="text" id="searchResultDocName" disabled="disabled">
+                                </div>
+                            </div>
+                            <div id="docSearchResult" class="imgbox">
+
+                            </div>
+                            <button type="button" id="docSearchResultImg_thumbPrev" class="button_control10 button_control11" disabled="disabled"><span class="blind">왼쪽이동</span></button>
+                            <button type="button" id="docSearchResultImg_thumbNext" class="button_control10 button_control12" disabled="disabled"><span class="blind">오른쪽이동</span></button>
+                            <div id="docSearchResultImg_thumbCount" class="docSearchResultImg_count"><span id="countCurrent">1</span><span> / </span><span id="countLast"></span></div>
+                            <div id="docSearchResultMask"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+
     <!-- // 팝업_문서비교레이어팝업 -->
     <!--
     <script type="text/javascript">
-            layer_open('layer4');
+            layer_open('layer1');
         </script>
-     -->
+         -->
+
 </body>
 </html>

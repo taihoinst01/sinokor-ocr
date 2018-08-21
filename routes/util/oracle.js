@@ -1,6 +1,7 @@
 var oracledb = require('oracledb');
 var appRoot = require('app-root-path').path;
 var dbConfig = require(appRoot + '/config/dbConfig');
+var queryConfig = require(appRoot + '/config/queryConfig');
 
 
 
@@ -26,6 +27,77 @@ exports.select = function (req, done) {
 
             return done(null, req);
         } catch (err) { 
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
+
+exports.selectDocCategory = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        var returnReq = {};        
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = queryConfig.mlConfig.selectDocCategory;
+
+            let result = await conn.execute(sqltext, [req[req.length - 1].docType]);
+
+            returnReq.data = req;
+            returnReq.data.splice(req.length - 1, 1);           
+            if (result.rows[0] != null) {
+                returnReq.docCategory = result.rows;
+            }
+
+            return done(null, returnReq);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
+
+exports.selectContractMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = queryConfig.mlConfig.selectContractMapping;
+            var extOgCompanyName;
+            var extCtnm;
+
+            for (var i in req.data) {
+                if (req.data[i].colLbl && req.data[i].colLbl == 0) {
+                    extOgCompanyName = req.data[i].text;
+                } else if (req.data[i].colLbl && req.data[i].colLbl == 1) {
+                    extCtnm = req.data[i].text;
+                }
+            }
+
+            if (extOgCompanyName && extCtnm) {
+                let result = await conn.execute(sqltext, [extOgCompanyName, extCtnm]);
+                if (result.rows[0] != null) {
+                    req.extOgAndCtnm = result.rows;
+                }
+            }
+
+            return done(null, req);
+        } catch (err) {
             reject(err);
         } finally {
             if (conn) {

@@ -7,6 +7,8 @@ import numpy as np
 import cx_Oracle
 import configparser
 import sys
+import os
+
 config = configparser.ConfigParser()
 config.read('./ml/config.ini')
 
@@ -18,73 +20,73 @@ port = config['ORACLE']['PORT']
 
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
-#DB에서 training에 필요한 데이터 추출 후 가공
-#추후 모델에 새로운 데이터만 추가학습하는 로직 구축
 conn = cx_Oracle.connect(connInfo)
 curs = conn.cursor()
+
 sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_COLUMN_MAPPING_TRAIN"
 curs.execute(sql)
 rows = curs.fetchall()
 
-dbData = []
-dbDataLabel = []
+userData = []
 
-for row in rows:
-    floatArr = []
-    num = str(row[1]).split(",")
+for word in sys.argv[1:]:
+    wordSplit = word.split(",")
+    wordData = []
+    for s in wordSplit:
+        wordData.append(float(s))
+
+    userData.append(wordData)
+
+data = []
+target = []
+
+testData = []
+testTarget = []
+
+for i, r in enumerate(rows):
+    arr = []
+    num = str(r[1]).split(",")
     for n in num:
-        floatArr.append(float(n))
+        arr.append(float(n))
+    target.append(int(r[2]))
 
-    dbData.append(floatArr)
-    dbDataLabel.append(int(row[2]))
+    if i % 3 == 0:
+        testData.append(arr)
+        testTarget.append(int(r[2]))
 
-testNpData = np.array(dbData)
-testNpTarget = np.array(dbDataLabel)
+    data.append(arr)
 
+testNpData = np.array(testData)
+testNpTarget = np.array(testTarget)
+
+# 모든 특성이 실수값을 가지고 있다고 지정합니다
 feature_columns = [tf.contrib.layers.real_valued_column("", dimension=8)]
 
-checkpointDir = os.getcwd() + '\\checkpoint'
-if not os.path.isdir(checkpointDir):
-    os.mkdir(checkpointDir)
-else:
-    #training이 필요한 시점만 True로 전환 기존 모델 삭제
-    if (True):
-        shutil.rmtree(checkpointDir, False)
+# 10, 20, 10개의 유닛을 가진 3층 DNN를 만듭니다
+classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns,
+                                            hidden_units=[10, 20, 10],
+                                            n_classes=100,
+                                            model_dir=os.getcwd() + '\\ml\\FormLabelMapping\\checkpoint')
 
-classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hidden_units=[10, 20, 10],
-                                            n_classes=40, model_dir=checkpointDir)
+# 정확도를 평가합니다.
+accuracy_score = classifier.evaluate(x=testNpData,
+                                     y=testNpTarget)["accuracy"]
 
-#training이 필요한 시점만 True로 전환
-if (True):
-    classifier.fit(x=testNpData, y=testNpTarget, steps=2000)
+new_samples = np.array(
+    userData, dtype=float)
+y = list(classifier.predict(new_samples, as_iterable=True))
 
-inputArr = json.loads(sys.argv[1].replace(u"\u2022", u""))
+selLabel = "SELECT SEQNUM, DATA, CLASS FROM TBL_COLUMN_MAPPING_TRAIN WHERE DATA = :selData ORDER BY REGDATE DESC"
 
-docType = 0
-for inputItem in inputArr:
-    if 'docType' in inputItem:
-        docType = inputItem['docType']
+retText = ''
+for word in enumerate(sys.argv[1:]):
+    curs.execute(selLabel, selData=word[1])
+    selLabelRes = curs.fetchall()
 
-for inputItem in inputArr:
-    predictArr = []
-    predictData = [float(docType)]
+    if len(selLabelRes) > 0:
+        retText += word[1] + "||" + selLabelRes[0][2] + "^"
+    else:
+        retText += word[1] + "||" + str(y[word[0]]) + "^"
 
-    for sidItem in inputItem['sid'].split(","):
-        predictData.append(float(sidItem))
-
-    # db에 일치하는 sid가 있는 경우 db의 label값을 가져와서 리턴
-    for row in rows:
-        floatArr = []
-        num = str(row[1]).split(",")
-        for n in num:
-            floatArr.append(float(n))
-        if floatArr == predictData:
-            inputItem['columnLabel'] = int(row[2])
-
-    # db에 일치하는 sid가 없을 경우 ML predict 결과를 리턴
-    if 'columnLabel' not in inputItem:
-        predictArr.append(predictData)
-        resultArr = list(classifier.predict(np.array(predictArr, dtype=float), as_iterable=True))
-        inputItem['columnLabel'] = resultArr[0]
-
-print(str(inputArr))
+retText = retText[:-1]
+print(retText)

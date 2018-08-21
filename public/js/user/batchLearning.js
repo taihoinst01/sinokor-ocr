@@ -119,11 +119,13 @@ var buttonEvent = function () {
     $("#btn_pop_batch_close").on("click", function () {
         popupEvent.closePopup();
     });
-    $(".poplayer .bg").on("click", function () {
-        popupEvent.closePopup();
-    });
 
-    // [UI학습팝업] 학습 진행
+
+    /*$(".poplayer .bg").on("click", function () {
+        popupEvent.closePopup();
+    });*/
+
+    // [UI학습팝업] 학습 진행closePopup
     $("#btn_pop_ui_run").on("click", function () {
         //fn_batchUiTraining();
         popupEvent.closePopup();
@@ -578,7 +580,7 @@ function popUpLayer2(ocrData) {
     ocrDataArr = [];
     fn_initUiTraining(); // 팝업 초기화
     layer_open('layer2'); // ui 학습레이어 띄우기
-    $("#layer2.poplayer").css("display", "block");
+    //$("#layer2.poplayer").css("display", "block");
     
     if (modifyData.docCategory != undefined) {
         $('#docName').text(modifyData.docCategory[0].DOCNAME);
@@ -643,49 +645,10 @@ function appendOptionHtml(targetColumn, columns) {
 }
 
 function execBatchLearningData(ocrData, data) {
-    /*var data = [
-        { "location": "342,542,411,87", "text": "TEST" },
-        { "location": "1045,294,409,23", "text": "Partner of Test" },
-        { "location": "1923,543,178,25", "text": "Test No" },
-        { "location": "1849,403,206,25", "text": "Test Date" },
-        { "location": "234,546,274,27", "text": "7933 Korean Re" },
-        { "location": "198,649,525,34", "text": "Proportional Treaty Statement" },
-        { "location": "2390,409,344,25", "text": "BV/HEO/2018/08/0819" },
-        { "location": "2101,534,169,25", "text": "01442/2018" },
-        { "location": "211,858,111,24", "text": "Cedant" },
-        { "location": "211,918,285,24", "text": "Class of Business" },
-        { "location": "218,1001,272,26", "text": "Period of Quarter" },
-        { "location": "212,1104,252,31", "text": "Period of Treaty" },
-        { "location": "210,1066,227,24", "text": "Our Reference" },
-        { "location": "210,1174,145,31", "text": "Currency" },
-        { "location": "211,1243,139,24", "text": "Premium" },
-        { "location": "220,1403,197,24", "text": "Commission" },
-        { "location": "220,1466,107,24", "text": "Claims" },
-        { "location": "222,1526,126,24", "text": "Reserve" },
-        { "location": "222,1389,123,24", "text": "Release" },
-        { "location": "222,1619,117,24", "text": "Interest" },
-        { "location": "222,1509,161,31", "text": "Brokerage" },
-        { "location": "235,1878,134,24", "text": "Portfolio" },
-        { "location": "222,1481,124,24", "text": "Balance" },
-        { "location": "440,899,492,32", "text": ": Test- First Insurance 2018" },
-        { "location": "440,912,636,26", "text": ": Test contract 2018" },
-        { "location": "708,888,433,25", "text": "07-05-2018 TO 19-08-2018" },
-        { "location": "708,920,454,25", "text": ": 22-03-2018 TO 30-09-2018" },
-        { "location": "475,998,304,25", "text": ": TEST/CTNM/8403" },
-        { "location": "829,1173,171,25", "text": "JOD 1.50" },
-        { "location": "839,1239,83,25", "text": "4.32" },
-        { "location": "839,1299,58,25", "text": "34.21" },
-        { "location": "839,1362,64,25", "text": "4.25" },
-        { "location": "839,1422,58,25", "text": "1.65" },
-        { "location": "839,1485,64,25", "text": "0.00" },
-        { "location": "839,1545,64,25", "text": "2.38" },
-        { "location": "839,1605,64,25", "text": "71.65" },
-        { "location": "848,1677,64,25", "text": "33.10" },
-        { "location": "1956,1879,356,29", "text": "TEST CONTRACT" }
-    ];*/
+    var learningUrl = (uiFlag == 'Y') ? '/batchLearning/execBatchLearningData2' : '/batchLearning/execBatchLearningData';
 
     $.ajax({
-        url: '/batchLearning/execBatchLearningData',
+        url: learningUrl,
         type: 'post',
         datatype: "json",
         timeout: 0,
@@ -695,10 +658,11 @@ function execBatchLearningData(ocrData, data) {
         beforeSend: function () {
         },
         success: function (data) {       
-
+            console.log(data);
+            
             modifyData = data;
             batchCount++;
-            
+
             if (data.docCategory && data.docCategory.DOCTYPE == 2) {
                 var docData = data.data;
                 for (var i in docData) {
@@ -711,7 +675,7 @@ function execBatchLearningData(ocrData, data) {
                 }
             } else {
                 compareBatchLearningData(ocrData, data);
-            }          
+            }
             
         },
         error: function (err) {
@@ -738,7 +702,7 @@ function compareBatchLearningData(ocrData, data) {
             for (var i = 0; i < dataVal.length; i++) {
                 var location = dataVal[i].location;
                 var text = dataVal[i].text;
-                var column = dataVal[i].column;
+                var column = dataVal[i].colLbl;
 
                 if (column != 999) {
                     for (var j in columnArr) {
@@ -787,7 +751,6 @@ function compareBatchLearningData(ocrData, data) {
                             } else {// UI Training 체크박스 체크 없으면
                                 isFullMatch = true;
                                 updateBatchLearningData(retData, ocrData, data);
-                                //comparedMLAndAnswer(retData, data, ocrData);
                             }
                         } else {
                             uiFlag = "N";
@@ -1014,7 +977,7 @@ function uiPopUpTrain(data, fileInfo) {
     $("#svf").val(data["SVF"]);//손해조사비
     $("#cas").val(data["CAS"]);//즉시불보험금
     $("#ntbl").val(data["NTBL"]);//NET BALANCE
-    $("#layer2").css("display", "block");
+    layer_open('layer2');
     return;
 }
 
@@ -1408,6 +1371,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
     var param = {
         imgIdArray: imgIdArray
     };
+
     $.ajax({
         url: '/batchLearning/searchBatchLearnData',
         type: 'post',
