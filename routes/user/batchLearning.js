@@ -315,36 +315,37 @@ router.post('/excelUpload', upload.any(), function (req, res) {
         dataResult.push(dataRow);
     }
 
+    commonDB.reqInsertExcelDataPath(pathResult, dataResult, req, res);
+    //commonDB.reqInsertExcelData(dataResult);
     // insert filepath.xlsx 
-    for (var i = 1, x = pathResult.length; i < x; i++) { // 첫번째 행은 무시
-        if (!commonUtil.isNull(pathResult[i][0])) {
-            var data = [];
-            for (var j = 0, y = pathResult[i].length; j < y; j++) {
-                data.push(commonUtil.nvl(pathResult[i][j]));
-            }
-            commonDB.queryNoRows(queryConfig.batchLearningConfig.insertBatchAnswerFile, data, callbackBlank);
-        } else {
-            continue;
-        }
-    }
+    //for (var i = 1, x = pathResult.length; i < x; i++) { // 첫번째 행은 무시
+    //    if (!commonUtil.isNull(pathResult[i][0])) {
+    //        let data = [];
+    //        for (var j = 0, y = pathResult[i].length; j < y; j++) {
+    //            data.push(commonUtil.nvl(pathResult[i][j]));
+    //        }
+    //        console.log(`insert pathResult : ` + i);
+    //        commonDB.queryNoRows(queryConfig.batchLearningConfig.insertBatchAnswerFile, data, callbackBlank);
+    //    } else {
+    //        console.log(`finish insert pathResult...`);
+    //        continue;
+    //    }
+    //}
     // insert data.xlsx
-    for (var i = 1, x = dataResult.length; i < x; i++) { // 첫번째 행은 무시
-        if (!commonUtil.isNull(dataResult[i][0])) {
-            var data = [];
-            for (var j = 0, y = dataResult[i].length; j < y; j++) {
-                data.push(commonUtil.nvl(dataResult[i][j]));
-            }
-            console.log("data.. : " + JSON.stringify(data));
-            commonDB.queryNoRows(queryConfig.batchLearningConfig.insertBatchAnswerData, data, callbackBlank);
-        } else {
-            continue;
-        }
-    }
-    if (pathResult.length > 0 || dataResult.length > 0) {
-        res.send({ code: 200, pathCnt: pathResult.length, dataCnt: dataResult.length });
-    } else {
-        res.send({ code: 300, pathCnt: 0, dataCnt: 0 });
-    }
+    //for (var i = 1, x = dataResult.length; i < x; i++) { // 첫번째 행은 무시
+    //    if (!commonUtil.isNull(dataResult[i][0])) {
+    //        let data = [];
+    //        for (var j = 0, y = dataResult[i].length; j < y; j++) {
+    //            data.push(commonUtil.nvl(dataResult[i][j]));
+    //        }
+    //        console.log(`insert dataResult : ` + x);
+    //        commonDB.queryNoRows(queryConfig.batchLearningConfig.insertBatchAnswerData, data, callbackBlank);
+    //    } else {
+    //        console.log(`finish insert dataResult...`);
+    //        continue;
+    //    }
+    //}
+    
 });
 
 // [POST] 이미지 업로드
