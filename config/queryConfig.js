@@ -233,7 +233,7 @@ var batchLearningConfig = {
             F.imgId = :imgId AND A.status != 'D' `,
     selectFileNameList:
         `SELECT 
-            ORIGINFILENAME
+            FILEPATH
          FROM
             tbl_ocr_file `,
     selectFileData:
