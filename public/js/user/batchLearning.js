@@ -119,11 +119,13 @@ var buttonEvent = function () {
     $("#btn_pop_batch_close").on("click", function () {
         popupEvent.closePopup();
     });
-    $(".poplayer .bg").on("click", function () {
-        popupEvent.closePopup();
-    });
 
-    // [UI학습팝업] 학습 진행
+
+    /*$(".poplayer .bg").on("click", function () {
+        popupEvent.closePopup();
+    });*/
+
+    // [UI학습팝업] 학습 진행closePopup
     $("#btn_pop_ui_run").on("click", function () {
         //fn_batchUiTraining();
         popupEvent.closePopup();
@@ -578,7 +580,7 @@ function popUpLayer2(ocrData) {
     ocrDataArr = [];
     fn_initUiTraining(); // 팝업 초기화
     layer_open('layer2'); // ui 학습레이어 띄우기
-    $("#layer2.poplayer").css("display", "block");
+    //$("#layer2.poplayer").css("display", "block");
     
     if (modifyData.docCategory != undefined) {
         $('#docName').text(modifyData.docCategory[0].DOCNAME);
@@ -1014,7 +1016,7 @@ function uiPopUpTrain(data, fileInfo) {
     $("#svf").val(data["SVF"]);//손해조사비
     $("#cas").val(data["CAS"]);//즉시불보험금
     $("#ntbl").val(data["NTBL"]);//NET BALANCE
-    $("#layer2").css("display", "block");
+    layer_open('layer2');
     return;
 }
 
