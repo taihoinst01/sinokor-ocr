@@ -277,10 +277,12 @@ function layer_open(el) {
         $(this).parents('.poplayer').fadeOut();
         e.preventDefault();
     });
+    /*
     $('.poplayer .bg_click').click(function (e) {	//배경을 클릭하면 레이어를 사라지게 하는 이벤트 핸들러
         $('.poplayer').fadeOut();
         e.preventDefault();
     });
+    */
 
 }
 
