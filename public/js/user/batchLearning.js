@@ -750,7 +750,7 @@ function compareBatchLearningData(ocrData, data) {
                                 //}
                             } else {// UI Training 체크박스 체크 없으면
                                 isFullMatch = true;
-                                //updateBatchLearningData(retData, ocrData, data);
+                                updateBatchLearningData(retData, ocrData, data);
                             }
                         } else {
                             uiFlag = "N";
