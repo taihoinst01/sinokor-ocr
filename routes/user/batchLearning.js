@@ -492,7 +492,7 @@ router.post('/execBatchLearningData', function (req, res) {
                                 for (var j in arg.data) {
                                     var columnSid = columnArr[i].split('||')[0];
                                     if (columnSid.substring(columnSid.indexOf(',') + 1, columnSid.length) == arg.data[j].sid) {
-                                        arg.data[j].column = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
+                                        arg.data[j].colLbl = Number(columnArr[i].split('||')[1].replace(/\r\n/g, ''));
                                         break;
                                     }
                                 }

@@ -659,24 +659,22 @@ function execBatchLearningData(ocrData, data) {
         },
         success: function (data) {       
             console.log(data);
+            
             modifyData = data;
             batchCount++;
-            if (uiFlag == 'Y') { // UI training
-                compareBatchLearningData2(ocrData, data);
-            } else { //Batch training
-                if (data.docCategory && data.docCategory.DOCTYPE == 2) {
-                    var docData = data.data;
-                    for (var i in docData) {
-                        data.data = docData[i];
-                        if (i > 0) {
-                            ocrData.fileToPage.IMGFILEENDNO = ocrData.fileToPage.IMGFILEENDNO + 1;
-                            ocrData.fileToPage.IMGFILESTARTNO = ocrData.fileToPage.IMGFILESTARTNO + 1;
-                        }
-                        compareBatchLearningData(ocrData, data);
+
+            if (data.docCategory && data.docCategory.DOCTYPE == 2) {
+                var docData = data.data;
+                for (var i in docData) {
+                    data.data = docData[i];
+                    if (i > 0) {
+                        ocrData.fileToPage.IMGFILEENDNO = ocrData.fileToPage.IMGFILEENDNO + 1;
+                        ocrData.fileToPage.IMGFILESTARTNO = ocrData.fileToPage.IMGFILESTARTNO + 1;
                     }
-                } else {
                     compareBatchLearningData(ocrData, data);
                 }
+            } else {
+                compareBatchLearningData(ocrData, data);
             }
             
         },
@@ -704,7 +702,7 @@ function compareBatchLearningData(ocrData, data) {
             for (var i = 0; i < dataVal.length; i++) {
                 var location = dataVal[i].location;
                 var text = dataVal[i].text;
-                var column = dataVal[i].column;
+                var column = dataVal[i].colLbl;
 
                 if (column != 999) {
                     for (var j in columnArr) {
@@ -752,8 +750,7 @@ function compareBatchLearningData(ocrData, data) {
                                 //}
                             } else {// UI Training 체크박스 체크 없으면
                                 isFullMatch = true;
-                                updateBatchLearningData(retData, ocrData, data);
-                                //comparedMLAndAnswer(retData, data, ocrData);
+                                //updateBatchLearningData(retData, ocrData, data);
                             }
                         } else {
                             uiFlag = "N";
@@ -771,10 +768,6 @@ function compareBatchLearningData(ocrData, data) {
         }
     });
     
-}
-
-function compareBatchLearningData2(ocrData, data) {
-
 }
 
 /*
