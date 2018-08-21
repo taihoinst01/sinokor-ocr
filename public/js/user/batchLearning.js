@@ -1822,7 +1822,8 @@ var callbackInsertDocLabelMapping = function (data) {
 var callbackInsertDocMapping = function (data) {
     $('#progressMsgTitle').html('라벨 분류 처리 중..');
     addProgressBar(41, 60);
-    insertColMapping(data, callbackInsertColMapping);
+    //insertColMapping(data, callbackInsertColMapping);
+    insertColMapping(data);
 };
 
 var callbackInsertColMapping = function (data) {
@@ -1911,7 +1912,7 @@ function insertDocMapping(data, callback) {
 }
 
 // 컬럼 매핑 ml 데이터 insert
-function insertColMapping(data, callback) {
+function insertColMapping(data) {
 
     /*
     var param = [];
@@ -1931,7 +1932,9 @@ function insertColMapping(data, callback) {
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
-            callback(data);
+            addProgressBar(81, 100);
+            alert("success training");
+            //callback(data);
         },
         error: function (err) {
             console.log(err);
