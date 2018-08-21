@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /runs
 .vscode/settings.json
+/archive_20180821.zip
