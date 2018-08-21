@@ -18,10 +18,9 @@ const defaults = {
 exports.typoSentenceEval2 = function (data, callback) {
     sync.fiber(function () {
         pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(data)));
+
         var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
-
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-
         var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
 
         callback(sidData);
@@ -45,19 +44,21 @@ exports.formMapping2 = function (data, callback) {
 
         var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+        var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer()));
 
-        callback(resPyArr);
+        callback(docData);
     });
 };
 
 exports.columnMapping2 = function (data, callback) {
     sync.fiber(function () {
-        pythonConfig.columnMappingOptions.args.push(JSON.stringify(data));
+        pythonConfig.columnMappingOptions.args.push(JSON.stringify(data.data));
 
         var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
-        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));       
+        data.data = resPyArr;
 
-        callback(resPyArr);
+        callback(data);
     });
 };
 

@@ -39,6 +39,37 @@ exports.select = function (req, done) {
     });
 }
 
+exports.selectDocCategory = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        var returnReq = {};        
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = `SELECT seqNum, docName, docType, sampleImagePath FROM tbl_document_category WHERE docType = :docType`;
+
+            let result = await conn.execute(sqltext, [req[req.length - 1].docType]);
+
+            returnReq.data = req;
+            returnReq.data.splice(req.length - 1, 1);           
+            if (result.rows[0] != null) {
+                returnReq.docCategory = result.rows[0];
+            }
+
+            return done(null, returnReq);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
+
 exports.insertLabelMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;

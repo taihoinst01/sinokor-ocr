@@ -78,13 +78,13 @@ try:
                     for n in num:
                         floatArr.append(float(n))
                     if floatArr == predictData:
-                        inputItem['colLbl'] = int(row[2])
+                        inputItem['ColLbl'] = int(row[2])
 
                 # db에 일치하는 sid가 없을 경우 ML predict 결과를 리턴
-                if 'colLbl' not in inputItem:
+                if 'ColLbl' not in inputItem:
                     predictArr.append(predictData)
                     resultArr = list(classifier.predict(np.array(predictArr, dtype=np.float32), as_iterable=True))
-                    inputItem['colLbl'] = resultArr[0]
+                    inputItem['ColLbl'] = resultArr[0]
 
         print(str(inputArr))
     except Exception as e:
