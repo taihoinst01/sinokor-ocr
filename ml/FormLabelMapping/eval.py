@@ -9,10 +9,11 @@ import configparser
 import sys 
 import os
 import json
+import shutil
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.logging.set_verbosity(tf.logging.ERROR)
-isTraning = True if sys.argv[1] == 'Y' else False
+isTraning = True if sys.argv[1] == 'training' else False
 
 config = configparser.ConfigParser() 
 config.read('./ml/config.ini') 
@@ -64,29 +65,29 @@ classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hid
 #training이 필요한 시점만 True로 전환 
 if (isTraning): 
     classifier.fit(x=testNpData, y=testNpTarget, steps=2000)  
+else:
+    inputArr = json.loads(sys.argv[2].replace(u"\u2022", u""))
 
-inputArr = json.loads(sys.argv[2].replace(u"\u2022", u"")) 
+    for inputItem in inputArr:
+        predictArr = []
+        predictData = []
+        for sidItem in inputItem['sid'].split(","):
+            predictData.append(float(sidItem))
 
-for inputItem in inputArr: 
-    predictArr = [] 
-    predictData = [] 
-    for sidItem in inputItem['sid'].split(","): 
-        predictData.append(float(sidItem))
+        # db에 일치하는 sid가 있는 경우 db의 label값을 가져와서 리턴
+        for row in rows:
+            floatArr = []
+            num = str(row[1]).split(",")
+            for n in num:
+                floatArr.append(float(n))
 
-    #db에 일치하는 sid가 있는 경우 db의 label값을 가져와서 리턴 
-    for row in rows: 
-        floatArr = [] 
-        num = str(row[1]).split(",") 
-        for n in num: 
-            floatArr.append(float(n))  
+            if floatArr == predictData:
+                inputItem['formLabel'] = int(row[2])
 
-        if floatArr == predictData: 
-            inputItem['formLabel'] = int(row[2]) 
-  
-    #db에 일치하는 sid가 없을 경우 ML predict 결과를 리턴 
-    if 'formLabel' not in inputItem: 
-        predictArr.append(predictData) 
-        resultArr = list(classifier.predict(np.array(predictArr, dtype=np.float32), as_iterable=True)) 
-        inputItem['formLabel'] = resultArr[0]
+                # db에 일치하는 sid가 없을 경우 ML predict 결과를 리턴
+        if 'formLabel' not in inputItem:
+            predictArr.append(predictData)
+            resultArr = list(classifier.predict(np.array(predictArr, dtype=np.float32), as_iterable=True))
+            inputItem['formLabel'] = resultArr[0]
 
-print(str(inputArr)) 
+    print(str(inputArr))

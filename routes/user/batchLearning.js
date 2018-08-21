@@ -691,7 +691,7 @@ router.post('/insertDocLabelMapping', function (req, res) {
 
     aimain.addLabelMappingTrain(data, function (resData) {
         console.log('insertDocLabelMapping ML');
-        res.send({ code: 200, message: 'insertDocLabelMapping ML' });
+        res.send({ code: 200, message: 'insertDocLabelMapping ML', data: resData });
     });
     // for (var i in data.data) {
     //     var classData = 0;
@@ -719,7 +719,7 @@ router.post('/insertDocMapping', function (req, res) {
     
     aimain.addDocMappingTrain(data, function (resData) {
         console.log('insertDocMapping ML');
-        res.send({ code: 200, message: 'insertDocMapping ML' });
+        res.send({ code: 200, message: 'insertDocMapping ML', data: resData });
     });
     // var docCategory = req.body.docCategory;
 
@@ -734,7 +734,7 @@ router.post('/insertDocMapping', function (req, res) {
 router.post('/insertColMapping', function (req, res) {
     var data = req.body.data;
 
-    aimain.addDocMappingTrain(data, function (resData) {
+    aimain.addColumnMappingTrain(data, function (resData) {
         console.log('insertColMapping ML');
         res.send({ code: 200, message: 'insertColMapping ML' });
     });

@@ -616,7 +616,7 @@ function popUpLayer2(ocrData) {
         tblTag += '</label>';
         tblTag += '</dt>';
         tblTag += '<dd>';
-        tblTag += appendOptionHtml((modifyData.data[i].column + '') ? modifyData.data[i].column : 999, columnArr)
+        tblTag += appendOptionHtml((modifyData.data[i].column != undefined) ? modifyData.data[i].column : 36, columnArr)
         tblTag += '</dd>';
         tblTag += '</dl>';
     }
@@ -1769,27 +1769,50 @@ var fn_processUiTraining = function (fileInfoList) {
 
 // UI학습 팝업 실행
 var fn_batchUiTraining = function () {
-    var data = modifyData;
+    var mldata = modifyData;
+    var data = {};
+    var arr = [];
+
+    if (mldata.docCategory) { // 추출된 문서가 있을 경우
+        mldata.docCategory[0] = JSON.parse($('#docData').val());
+        data.mlDocCategory = mldata.docCategory[0];
+    } else {
+        data.mlDocCategory = null;
+    }
 
     if ($('#docData').val() != '') { // 문서 종류를 수정했다면
-        if (data.docCategory) { // 추출된 문서가 있을 경우
-            data.docCategory[0] = JSON.parse($('#docData').val());
+        if (mldata.docCategory) { // 추출된 문서가 있을 경우
+            mldata.docCategory[0] = JSON.parse($('#docData').val());
         } else {
-            data.docCategory = [JSON.parse($('#docData').val())];
+            mldata.docCategory = [JSON.parse($('#docData').val())];
         }
     }
     $('#textResultTbl > dl').each(function (i, el) {
         var location = $(el).find('input')[1].value;
         var text = $(el).find('input')[0].value;
         var column = $(el).find('select').find('option:selected').val();
-        for (var i in data.data) {
-            if (data.data[i].location == location) {
-                data.data[i].text = text;
-                data.data[i].column = column;
+        for (var i in mldata.data) {
+            var obj = {};
+            if (mldata.data[i].location == location) {
+                obj.location = location;
+                obj.text = text;
+                obj.ColLbl = column;
+
+                if (mldata.data[i].column == undefined) {
+                    obj.oriColLbl = null;
+                } else if (mldata.data[i].column && mldata.data[i].column != column) {
+                    obj.oriColLbl = mldata.data[i].column;
+                } else {
+                    obj.oriColLbl = column;
+                }
+
+                arr.push(obj);
                 break;
             }
         }
     });
+    data.data = arr;
+    data.docCategory = mldata.docCategory;
     //console.log(data);
     docLabelMapping(data);
 
@@ -1845,7 +1868,7 @@ var callbackInsertColMapping = function (data) {
 
 var callbackInsertContractMapping = function () {
     $('#progressMsgTitle').html('UI TRAINING..');
-    uiTrainingBtn();
+    addProgressBar(81, 100);
 };
 
 // UI레이어 학습 버튼 클릭 이벤트
@@ -1881,7 +1904,7 @@ function insertDocLabelMapping(data, callback) {
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
-            callback(data);
+            callback(res.data);
         },
         error: function (err) {
             console.log(err);
@@ -1891,6 +1914,8 @@ function insertDocLabelMapping(data, callback) {
 
 // 양식 매핑 ml 데이터 insert
 function insertDocMapping(data, callback) {
+
+    /*
     var param = [];
     for (var i in data.data) {
         if (data.data[i].column == 0) {
@@ -1901,18 +1926,18 @@ function insertDocMapping(data, callback) {
         if (data.data[i].column == 1) {
             param.push(data.data[i]);
         }
-    }
+    }*/
     //var dacCategory = JSON.parse($('#docData').val());
 
     $.ajax({
         url: '/batchLearning/insertDocMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
+        data: JSON.stringify({ 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
-            callback(data);
+            callback(res.data);
         },
         error: function (err) {
             console.log(err);
@@ -1922,20 +1947,22 @@ function insertDocMapping(data, callback) {
 
 // 컬럼 매핑 ml 데이터 insert
 function insertColMapping(data, callback) {
+
+    /*
     var param = [];
     for (var i in data.data) {
         if (data.data[i].column != 999) {
             param.push(data.data[i]);
         }
     }
-
+    */
     //var dacCategory = JSON.parse($('#docData').val());
 
     $.ajax({
         url: '/batchLearning/insertColMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': data.docCategory[0] }),
+        data: JSON.stringify({ 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);

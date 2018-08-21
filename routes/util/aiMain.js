@@ -68,6 +68,11 @@ exports.columnMapping2 = function (data, callback) {
 
 exports.addLabelMappingTrain = function (data, callback) {
     sync.fiber(function () {
+        
+        var sidData = sync.await(oracle.select(data.data, sync.defer()));
+
+        data.data = sidData;
+
         sync.await(oracle.insertLabelMapping(data, sync.defer()));
 
         pythonConfig.formLabelMappingOptions.args = ["training"];

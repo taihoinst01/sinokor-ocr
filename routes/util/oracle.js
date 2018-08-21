@@ -44,19 +44,28 @@ exports.insertLabelMapping = function (req, done) {
         let conn;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sqltext = `INSERT INTO TBL_FORM_LABEL_MAPPING (DATA, CLASS, REGDATE) VALUES (:DATA,:CLASS,SYSDATE);`;
-            for (var i in req) {
+            let sqltext = `INSERT INTO TBL_FORM_LABEL_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_LABEL_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            var userModifyData = [];
+            for (var i in req.data) {
                 labelClass = 3
                 //출재사명
-                if (req[i].ColLbl && req[i].ColLbl == 0) {
+                if (req.data[i].ColLbl && req.data[i].ColLbl == 0) {
                     labelClass = 1
+
+                    if (req.data[i].oriColLbl != null && req.data[i].ColLbal != req.data[i].oriColLbl) {
+                        userModifyData.push(req.data[i]);
+                    }
                 }
                 //계약명
-                if (req[i].ColLbl && req[i].ColLbl == 1) {
+                if (req.data[i].ColLbl && req.data[i].ColLbl == 1) {
                     labelClass = 2
+
+                    if (req.data[i].oriColLbl != null && req.data[i].ColLbal != req.data[i].oriColLbl) {
+                        userModifyData.push(req.data[i]);
+                    }
                 }
 
-                await conn.execute(sqltext, [req[i].SID, labelClass]);
+                await conn.execute(sqltext, [req.data[i].sid, labelClass]);
             }
             return done(null, req);
         } catch (err) { 
@@ -78,21 +87,29 @@ exports.insertDocMapping = function (req, done) {
         let conn;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sqltext = `INSERT INTO TBL_FORM_MAPPING (DATA, CLASS, REGDATE) VALUES (:DATA,:CLASS,SYSDATE);`;
+            let sqltext = `INSERT INTO TBL_FORM_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
             insClass = 0;
             insCompanyData = '0,0,0,0,0,0,0';
             insContractData = '0,0,0,0,0,0,0';
-            for (var i in req) {
-                if (req[i].docType) {
-                    insClass = req[i].docType
-                } 
+
+            var userModifyData = [];
+
+            if (req.mlDocCategory != null && req.mlDocCategory[0].DOCTYPE != req.docCategory[0].DOCTYPE) {
+                userModifyData.push(req.docCategory);
+            }
+
+            if (req.docCategory[0]) {
+                insClass = req.docCategory[0].DOCTYPE;
+            }
+
+            for (var i in req.data) {
                 //출재사명
-                if (req[i].ColLbl && req[i].ColLbl == 0) {
-                    insCompanyData = req[i].SID
+                if (req.data[i].ColLbl && req.data[i].ColLbl == 0) {
+                    insCompanyData = req.data[i].sid;
                 }
                 //계약명
-                if (req[i].ColLbl && req[i].ColLbl == 1) {
-                    insContractData = req[i].SID
+                if (req.data[i].ColLbl && req.data[i].ColLbl == 1) {
+                    insContractData = req.data[i].sid;
                 }
             }
 
@@ -118,15 +135,13 @@ exports.insertColumnMapping = function (req, done) {
         let conn;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sqltext = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN (DATA, CLASS, REGDATE) VALUES (:DATA,:CLASS,SYSDATE);`;
+            let sqltext = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
             fullData = '0,'
-            for (var i in req) {
-                if (req[i].docType) {
-                    fullData = req[i].docType + ','
-                } 
+            if (req.docCategory[0]) {
+                fullData = req.docCategory[0].DOCTYPE + ',';
             }
             for (var i in req) {
-                await conn.execute(sqltext, [fullData + req[i].SID, req[i].ColLbl]);
+                await conn.execute(sqltext, [fullData + req.data[i].sid, req.data[i].ColLbl]);
             }
             return done(null, req);
         } catch (err) { 
