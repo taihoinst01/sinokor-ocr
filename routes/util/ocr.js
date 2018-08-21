@@ -53,9 +53,9 @@ exports.localOcr = function (req, done) {
                         throw err;
                     } else {
                         if ((JSON.parse(body)).code) { // ocr api error
-                            return done(null, { code: (JSON.parse(body)).code, message: (JSON.parse(body)).message });
+                            return done(null, { code: parseInt((JSON.parse(body)).code), message: (JSON.parse(body)).message });
                         } else { // 성공
-                            return done(null, { code: '200', message: JSON.parse(body) });
+                            return done(null, { code: 200, message: JSON.parse(body) });
                         }
                     }
                 });
@@ -63,7 +63,7 @@ exports.localOcr = function (req, done) {
 
         } catch (err) {
             reject(err);
-            return done(null, { code: '500', message: err });
+            return done(null, { code: 500, message: err });
         } finally {           
         }
     });

@@ -264,7 +264,6 @@ exports.selectLegacyData = function (req, done) {
 
             var tempImageFileName;
             for (image in req) {
-                //image ?뚯씪紐?異붿텧
                 var items = req[image]['mlexport']
                 for (var item = 0; item < req[image]['mlexport'].length; item++) {
                     if (req[image][item]['ORIGINFILENAME']) {
@@ -272,10 +271,8 @@ exports.selectLegacyData = function (req, done) {
                     }
 
                 }
-                //image id 異붿텧
                 let result = await conn.execute(`SELECT IMGID, PAGENUM FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
                 result.rows[0][0] = 154384
-                //image data 異붿텧
                 result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILEENDNO >= :PAGEEND AND IMGFILESTARTNO <= :PAGESTART`, [result.rows[0][0], result.rows[0][1], result.rows[0][1]]);
                 image.push(result.rows);
                 console.log(result.rows[0][1])
@@ -306,4 +303,35 @@ exports.selectLegacyData = function (req, done) {
             }
         }
     });
-}
+};
+
+/*
+exports.selectOcrFile = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var res = [];
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let result = await conn.execute(`SELECT SEQNUM, FILEPATH, ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID = :imgId`, [req[0]]);
+
+            if (result.rows.length > 0) {
+                res.push(result.rows[0]);
+                res.push(req[1]);
+            }
+
+            return done(null, res);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+*/
