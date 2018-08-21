@@ -1,4 +1,4 @@
-var appRoot = require('app-root-path').path;
+﻿var appRoot = require('app-root-path').path;
 var exec = require('child_process').exec;
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
@@ -30,23 +30,20 @@ exports.typoSentenceEval2 = function (data, callback) {
 
 exports.formLabelMapping2 = function (data, callback) {
     sync.fiber(function () {
-        pythonConfig.formLabelMappingOptions.args.push('N');
         pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(data));
-        
-        var resPyStr = sync.await(PythonShell.run('eval.py', pythonConfig.formLabelMappingOptions, sync.defer()));
 
+        var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+
         callback(resPyArr);
     });
 };
 
 exports.formMapping2 = function (data, callback) {
     sync.fiber(function () {
-        pythonConfig.formMappingOptions.args.push('N');
         pythonConfig.formMappingOptions.args.push(JSON.stringify(data));
 
-        var resPyStr = sync.await(PythonShell.run('eval.py', pythonConfig.formMappingOptions, sync.defer()));
-
+        var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
 
         callback(resPyArr);
@@ -55,14 +52,12 @@ exports.formMapping2 = function (data, callback) {
 
 exports.columnMapping2 = function (data, callback) {
     sync.fiber(function () {
-        pythonConfig.columnMappingOptions.args = JSON.stringify(data);
+        pythonConfig.columnMappingOptions.args.push(JSON.stringify(data));
 
-        var resPyStr = sync.await(PythonShell.run('eval.py', pythonConfig.columnMappingOptions, sync.defer()));
-
+        var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
 
         callback(resPyArr);
-
     });
 };
 
@@ -446,30 +441,27 @@ exports.textClassificationEval = function (data, callback) {
     });
 }
 
-// ��꼭 �з� �ӽŷ��� -- �ӽ�
 exports.statementClassificationEval = function (data, callback) {
     var returnObj = {};
     var number = 0;
-    var score = 0; // �������ھ�
+    var score = 0;
 
-    // �ӽŷ����� ����� �κ� START
     for (var i in data) {
-        if (data[i].text.trim() == 'APEX') { // APEX ��꼭 �̸�
+        if (data[i].text.trim() == 'APEX') { 
             number = 1;
             score = 98.8;
             break;
-        } else { // �� ��
+        } else {
             number = 999;
             score = 97.4;
         }
     }
-    // �ӽŷ����� ����� �κ� END
 
     returnObj.data = data;
     commonDB.queryParam2(queryConfig.mlConfig.selectDocCategory, [number], function (rows, returnObj, score) {
         if (rows.length > 0) {
             returnObj.docCategory = rows[0];
-            returnObj.docCategory.score = score; // ���� ���ھ�
+            returnObj.docCategory.score = score;
         }
         callback(returnObj);
     }, returnObj, score);
@@ -538,10 +530,8 @@ exports.labelMappingEval = function (data, callback) {
                         var diffX = xCoodi - xNum;
                         var diffY = yCoodi - yNum;
 
-                        //�� �ּ� �Ÿ�
                         //var dis = Math.sqrt(Math.abs(diffX * diffX) + Math.abs(diffY * diffY));
 
-                        //y��ǥ �ּ� �Ÿ�
                         var dis = Math.abs(yCoodi - yNum);
 
                         if (minDis > dis) {
@@ -611,7 +601,7 @@ exports.labelClassificationEval = function (data, callback) {
         for (var i in outData) {
             var sData = outData[i].split("||");
 
-            var textData = sData[0].split(" ");//x��ǥ y��ǥ text
+            var textData = sData[0].split(" ");
             var colData = sData[1];//column
 
             for (var j in rData) {
