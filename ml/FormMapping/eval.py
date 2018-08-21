@@ -7,6 +7,7 @@ import numpy as np
 import cx_Oracle
 import configparser
 import sys
+import os
 
 config = configparser.ConfigParser()
 config.read('./ml/config.ini')
@@ -72,7 +73,7 @@ feature_columns = [tf.contrib.layers.real_valued_column("", dimension=14)]
 classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns,
                                             hidden_units=[10, 20, 10],
                                             n_classes=clsNum,
-                                            model_dir="/tmp/FormMapping")
+                                            model_dir=os.getcwd() + '\\ml\\FormLabelMapping\\checkpoint')
 
 # 정확도를 평가합니다.
 accuracy_score = classifier.evaluate(x=testNpData,

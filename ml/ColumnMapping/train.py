@@ -8,6 +8,7 @@ import cx_Oracle
 import configparser
 import sys
 import shutil
+import os
 
 userData = []
 
@@ -61,7 +62,7 @@ npTarget = np.array(target)
 
 testNpData = np.array(testData)
 testNpTarget = np.array(testTarget)
-shutil.rmtree("/tmp/columnMapping", False)
+shutil.rmtree(os.getcwd() + '\\ml\\FormLabelMapping\\checkpoint', False)
 # 모든 특성이 실수값을 가지고 있다고 지정합니다
 feature_columns = [tf.contrib.layers.real_valued_column("", dimension=8)]
 
@@ -69,7 +70,7 @@ feature_columns = [tf.contrib.layers.real_valued_column("", dimension=8)]
 classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns,
                                             hidden_units=[10, 20, 10],
                                             n_classes=100,
-                                            model_dir="/tmp/columnMapping")
+                                            model_dir=os.getcwd() + '\\ml\\FormLabelMapping\\checkpoint')
 
 # classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns,
 #                                             hidden_units=[10, 20, 10, 10, 10, 10, 10, 10, 10, 10,
