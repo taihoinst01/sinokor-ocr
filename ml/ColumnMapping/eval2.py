@@ -91,17 +91,19 @@ try:
         print(str({'code': 500, 'message': 'column mapping predict fail', 'error': e}))
 
 except Exception as e:
+    if inputArr == 'training':
+        try:
+            if not os.path.isdir(checkpointDir):
+                os.mkdir(checkpointDir)
+            else:
+                #training이 필요한 시점만 True로 전환 기존 모델 삭제
+                shutil.rmtree(checkpointDir, False)
 
-    try:
-        if not os.path.isdir(checkpointDir):
-            os.mkdir(checkpointDir)
-        else:
-            #training이 필요한 시점만 True로 전환 기존 모델 삭제
-            shutil.rmtree(checkpointDir, False)
+            #training이 필요한 시점만 True로 전환
+            classifier.fit(x=testNpData, y=testNpTarget, steps=2000)
 
-        #training이 필요한 시점만 True로 전환
-        classifier.fit(x=testNpData, y=testNpTarget, steps=2000)
-
-        print(str({'code': 200, 'message': 'column mapping train success'}))
-    except Exception as e:
-        print(str({'code': 500, 'message': 'column mapping train fail', 'error': e}))
+            print(str({'code': 200, 'message': 'column mapping train success'}))
+        except Exception as e:
+            print(str({'code': 500, 'message': 'column mapping train fail', 'error': e}))
+    else:
+        print(str({'code': 400, 'message': 'invalid column mapping parameter Only "training" or "JSON Array"'}))
