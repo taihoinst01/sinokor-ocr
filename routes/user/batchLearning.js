@@ -688,26 +688,27 @@ router.post('/selectColMappingCls', function (req, res) {
 
 router.post('/insertDocLabelMapping', function (req, res) {
     var data = req.body.data;
-    var params = [];
 
-    for (var i in data.data) {
-        var classData = 0;
-        if (data.data[i].column == 0 || data.data[i].column == 1) {            
-            classData = String(Number(data.data[i].column) + 1);
-        } else {
-            classData = String(3);
-        }
-        params.push([data.data[i].sid, classData]);
-    }
+    aimain.addLabelMappingTrain(data, function (resData) {
+        console.log('insertDocLabelMapping ML');
+        res.send({ code: 200, message: 'insertDocLabelMapping ML' });
+    });
+    // for (var i in data.data) {
+    //     var classData = 0;
+    //     if (data.data[i].column == 0 || data.data[i].column == 1) {            
+    //         classData = String(Number(data.data[i].column) + 1);
+    //     } else {
+    //         classData = String(3);
+    //     }
+    //     params.push([data.data[i].sid, classData]);
+    // }
 
-    var options = {
-        autoCommit: true
-    };
-    commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertDocLabelMapping, params, options, function (rowsAffected, req, res) {
-        res.send({ code: 200, message: 'form label mapping insert' });
-    }, req, res);
-
-    
+    // var options = {
+    //     autoCommit: true
+    // };
+    // commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertDocLabelMapping, params, options, function (rowsAffected, req, res) {
+    //     res.send({ code: 200, message: 'form label mapping insert' });
+    // }, req, res);
 });
 
 var callbackInsertDocMapping = function (rows, req, res) {
@@ -715,36 +716,47 @@ var callbackInsertDocMapping = function (rows, req, res) {
 };
 router.post('/insertDocMapping', function (req, res) {
     var data = req.body.data;
-    var docCategory = req.body.docCategory;
+    
+    aimain.addDocMappingTrain(data, function (resData) {
+        console.log('insertDocMapping ML');
+        res.send({ code: 200, message: 'insertDocMapping ML' });
+    });
+    // var docCategory = req.body.docCategory;
 
-    var item = '';
-    for (var i in data) {
-        item += (item == '')? data[i].sid : ',' + data[i].sid;
-    }
+    // var item = '';
+    // for (var i in data) {
+    //     item += (item == '')? data[i].sid : ',' + data[i].sid;
+    // }
 
-    commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertDocMapping, req, res);
+    // commonDB.reqQueryParam(queryConfig.mlConfig.insertDocMapping, [item, docCategory.DOCTYPE], callbackInsertDocMapping, req, res);
 });
 
 router.post('/insertColMapping', function (req, res) {
     var data = req.body.data;
-    var docCategory = req.body.docCategory;
-    var colMappingCount = 0;
-    var params = [];
 
-    for (var i in data) {
-        if (data[i].column != 999) {
-            var item = '';
-            item += docCategory.DOCTYPE + ',' + data[i].sid;
-            params.push([item, data[i].column]);
-        }
-    }
+    aimain.addDocMappingTrain(data, function (resData) {
+        console.log('insertColMapping ML');
+        res.send({ code: 200, message: 'insertColMapping ML' });
+    });
 
-    var options = {
-        autoCommit: true
-    };
-    commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertColMapping, params, options, function (rowsAffected, req, res) {
-        res.send({ code: 200, message: 'column mapping insert' });
-    }, req, res);
+    // var docCategory = req.body.docCategory;
+    // var colMappingCount = 0;
+    // var params = [];
+
+    // for (var i in data) {
+    //     if (data[i].column != 999) {
+    //         var item = '';
+    //         item += docCategory.DOCTYPE + ',' + data[i].sid;
+    //         params.push([item, data[i].column]);
+    //     }
+    // }
+
+    // var options = {
+    //     autoCommit: true
+    // };
+    // commonDB.reqBatchQueryParam(queryConfig.mlConfig.insertColMapping, params, options, function (rowsAffected, req, res) {
+    //     res.send({ code: 200, message: 'column mapping insert' });
+    // }, req, res);
 });
 
 var callbackInsertContractMapping = function (rows, req, res) {

@@ -66,6 +66,46 @@ exports.columnMapping2 = function (data, callback) {
     });
 };
 
+exports.addLabelMappingTrain = function (data, callback) {
+    sync.fiber(function () {
+        sync.await(oracle.insertLabelMapping(data, sync.defer()));
+
+        pythonConfig.formLabelMappingOptions.args = ["training"];
+
+        sync.await(PythonShell.run('eval.py', pythonConfig.formLabelMappingOptions, sync.defer()));
+
+        callback(data);
+    });
+};
+
+exports.addDocMappingTrain = function (data, callback) {
+    sync.fiber(function () {
+        sync.await(oracle.insertDocMapping(data, sync.defer()));
+
+        pythonConfig.formMappingOptions.args = ["training"];
+
+        sync.await(PythonShell.run('eval.py', pythonConfig.formMappingOptions, sync.defer()));
+
+        callback(data);
+    });
+};
+
+exports.addColumnMappingTrain = function (data, callback) {
+    sync.fiber(function () {
+        sync.await(oracle.insertColumnMapping(data, sync.defer()));
+
+        pythonConfig.columnMappingOptions.args = ["training"];
+
+        sync.await(PythonShell.run('eval.py', pythonConfig.columnMappingOptions, sync.defer()));
+
+        callback(data);
+    });
+};
+
+
+
+
+
 // [step1] typo sentence ML
 exports.typoSentenceEval = function (data, callback) {
     var args = dataToArgs(data);
@@ -406,30 +446,30 @@ exports.textClassificationEval = function (data, callback) {
     });
 }
 
-// °è»ê¼­ ºÐ·ù ¸Ó½Å·¯´× -- ÀÓ½Ã
+// ï¿½ï¿½ê¼­ ï¿½Ð·ï¿½ ï¿½Ó½Å·ï¿½ï¿½ï¿½ -- ï¿½Ó½ï¿½
 exports.statementClassificationEval = function (data, callback) {
     var returnObj = {};
     var number = 0;
-    var score = 0; // ¿¹Ãø½ºÄÚ¾î
+    var score = 0; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¾ï¿½
 
-    // ¸Ó½Å·¯´×ÀÌ ´ã´çÇÒ ºÎºÐ START
+    // ï¿½Ó½Å·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½ START
     for (var i in data) {
-        if (data[i].text.trim() == 'APEX') { // APEX °è»ê¼­ ÀÌ¸é
+        if (data[i].text.trim() == 'APEX') { // APEX ï¿½ï¿½ê¼­ ï¿½Ì¸ï¿½
             number = 1;
             score = 98.8;
             break;
-        } else { // ±× ¿Ü
+        } else { // ï¿½ï¿½ ï¿½ï¿½
             number = 999;
             score = 97.4;
         }
     }
-    // ¸Ó½Å·¯´×ÀÌ ´ã´çÇÒ ºÎºÐ END
+    // ï¿½Ó½Å·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½ END
 
     returnObj.data = data;
     commonDB.queryParam2(queryConfig.mlConfig.selectDocCategory, [number], function (rows, returnObj, score) {
         if (rows.length > 0) {
             returnObj.docCategory = rows[0];
-            returnObj.docCategory.score = score; // ¿¹Ãø ½ºÄÚ¾î
+            returnObj.docCategory.score = score; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¾ï¿½
         }
         callback(returnObj);
     }, returnObj, score);
@@ -498,10 +538,10 @@ exports.labelMappingEval = function (data, callback) {
                         var diffX = xCoodi - xNum;
                         var diffY = yCoodi - yNum;
 
-                        //Á¡ ÃÖ¼Ò °Å¸®
+                        //ï¿½ï¿½ ï¿½Ö¼ï¿½ ï¿½Å¸ï¿½
                         //var dis = Math.sqrt(Math.abs(diffX * diffX) + Math.abs(diffY * diffY));
 
-                        //yÁÂÇ¥ ÃÖ¼Ò °Å¸®
+                        //yï¿½ï¿½Ç¥ ï¿½Ö¼ï¿½ ï¿½Å¸ï¿½
                         var dis = Math.abs(yCoodi - yNum);
 
                         if (minDis > dis) {
@@ -571,7 +611,7 @@ exports.labelClassificationEval = function (data, callback) {
         for (var i in outData) {
             var sData = outData[i].split("||");
 
-            var textData = sData[0].split(" ");//xÁÂÇ¥ yÁÂÇ¥ text
+            var textData = sData[0].split(" ");//xï¿½ï¿½Ç¥ yï¿½ï¿½Ç¥ text
             var colData = sData[1];//column
 
             for (var j in rData) {

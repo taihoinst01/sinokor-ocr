@@ -231,7 +231,7 @@ router.post('/searchDBColumns', function (req, res) {
     var docCategory = (req.body.data.docCategory) ? req.body.data.docCategory : null;
 
     commonDB.reqQuery(queryConfig.dbcolumnsConfig.selectColMappingCls, function (rows, req, res) {
-        res.send({ 'fileName': fileName, 'data': data, 'docCategory': docCategory, 'column': rows, 'score': data.score });
+        res.send({ 'fileName': fileName, 'data': data, 'docCategory': docCategory, 'column': rows, 'score': data.score == undefined ? 0 : data.score });
     }, req, res);
 });
 
@@ -368,6 +368,138 @@ router.post('/insertDocCategory', function (req, res) {
 
     commonDB.reqQuery(queryConfig.uiLearningConfig.selectMaxDocType, callbackSelectMaxDocType, req, res);
 });
+
+router.post('/insertTypoTrain', function (req, res) {
+    var data = req.body.data;
+
+    runInsertTypoTrain(data, req, res, function (ret) {
+        res.send(ret);
+    });
+});
+
+async function runInsertTypoTrain(data, req, res, callback) {
+    try {
+        let ret = await insertTypoTrain(data, req, res);
+        callback(ret);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function insertTypoTrain(data, req, res) {
+
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].typoText != null && (data[i].typoText != data[i].text)) {
+
+                    var typoSplit = data[i].typoText.split(" ");
+                    var textSplit = data[i].text.split(" ");
+
+                    for (var ty = 0; ty < textSplit.length; ty++) {
+                        if (typoSplit[ty] != textSplit[ty]) {
+                            var selTypoCond = [];
+                            selTypoCond.push(textSplit[ty].toLowerCase());
+                            let selTypoRes = await conn.execute(selectTypo, selTypoCond);
+
+                            if (selTypoRes.rows[0] == null) {
+                                //insert
+                                let insTypoRes = await conn.execute(insertTypo, selTypoCond);
+                            } else {
+                                //update
+                                var updTypoCond = [];
+                                updTypoCond.push(selTypoRes.rows[0].KEYWORD);
+                                let updTypoRes = await conn.execute(updateTypo, updTypoCond);
+                            }
+
+                            var insTypoCorCond = [];
+                            insTypoCorCond.push(req.session.userId);
+                            insTypoCorCond.push(typoSplit[ty]);//originWord
+                            insTypoCorCond.push(textSplit[ty]);//correctWord
+                            insTypoCorCond.push("");//fileName
+                            insTypoCorCond.push("U");
+                            var insTypoCorRes = await conn.execute(queryConfig.uiLearningConfig.insertTypoCorrect, insTypoCorCond);
+                        }
+                    }
+
+                }
+            }
+
+            resolve(data);
+
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
+
+router.post('/makeTrainingSidData', function (req, res) {
+    var data = req.body.data;
+
+    runMakeTrainingSidData(data, req, res, function (retData) {
+        res.send(retData);
+    });
+});
+
+async function runMakeTrainingSidData(data, req, res, callback) {
+    try {
+        let ret = await makeTrainingSidData(data, req, res);
+        callback(ret);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function makeTrainingSidData(data, req, res) {
+
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            for (var i in data) {
+                var sid = "";
+                locSplit = data[i].location.split(",");
+                sid += locSplit[0] + "," + locSplit[1];
+
+                let result = await conn.execute("SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL", [data[i].text.toLowerCase()]);
+
+                if (result.rows[0] != null) {
+                    sid += "," + result.rows[0].SID;
+                }
+
+                data[i].sid = sid;
+            }
+
+            resolve(data);
+
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}
+
 
 // uiTrain
 router.post('/uiTrain', function (req, res) {
