@@ -101,13 +101,13 @@ else:
                     predictArr.append(predictData)
                     resultArr = list(classifier.predict(np.array(predictArr, dtype=np.float32), as_iterable=True))
                     inputItem['colLbl'] = resultArr[0]
-                    
+                    accLabel = []
                     accLabel.append(int(resultArr[0]))
                     accTarget = np.array(accLabel)
                     accuracy_score = classifier.evaluate(x=np.array(predictArr, dtype=float), y=np.array(accTarget, dtype=int))["accuracy"]
                     if accuracy_score > 0.02:
                         accuracy_score -= 0.01
-                    inputItem['colAccu'] = resultArr[0]
+                    inputItem['colAccu'] = accuracy_score
         print(str(inputArr))
     except Exception as e:
         print(str({'code': 500, 'message': 'column mapping predict fail', 'error': e}))
