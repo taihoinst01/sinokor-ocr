@@ -212,11 +212,11 @@ exports.insertColumnMapping = function (req, done) {
             if (req.docCategory[0]) {
                 fullData = req.docCategory[0].DOCTYPE + ',';
             }
-            for (var i in req) {
+            for (var i in req.data) {
                 await conn.execute(sqltext, [fullData + req.data[i].sid, req.data[i].ColLbl]);
             }
             return done(null, req);
-        } catch (err) { 
+        } catch (err) {
             reject(err);
         } finally {
             if (conn) {

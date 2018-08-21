@@ -54,7 +54,23 @@ checkpointDir = os.getcwd() + '\\ml\\ColumnMapping\\checkpoint'
 classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hidden_units=[10, 20, 10],
                                             n_classes=40, model_dir=checkpointDir)
 
-try:
+arg = sys.argv[1].replace(u"\u2022", u"")
+
+if arg == "training":
+    try:
+        if not os.path.isdir(checkpointDir):
+            os.mkdir(checkpointDir)
+        else:
+            # training이 필요한 시점만 True로 전환 기존 모델 삭제
+            shutil.rmtree(checkpointDir, False)
+
+        # training이 필요한 시점만 True로 전환
+        classifier.fit(x=testNpData, y=testNpTarget, steps=2000)
+
+        print(str({'code': 200, 'message': 'column mapping train success'}))
+    except Exception as e:
+        print(str({'code': 500, 'message': 'column mapping train fail', 'error': e}))
+else:
     inputArr = json.loads(sys.argv[1].replace(u"\u2022", u""))
     docType = 0
 
@@ -89,21 +105,3 @@ try:
         print(str(inputArr))
     except Exception as e:
         print(str({'code': 500, 'message': 'column mapping predict fail', 'error': e}))
-
-except Exception as e:
-    if inputArr == 'training':
-        try:
-            if not os.path.isdir(checkpointDir):
-                os.mkdir(checkpointDir)
-            else:
-                #training이 필요한 시점만 True로 전환 기존 모델 삭제
-                shutil.rmtree(checkpointDir, False)
-
-            #training이 필요한 시점만 True로 전환
-            classifier.fit(x=testNpData, y=testNpTarget, steps=2000)
-
-            print(str({'code': 200, 'message': 'column mapping train success'}))
-        except Exception as e:
-            print(str({'code': 500, 'message': 'column mapping train fail', 'error': e}))
-    else:
-        print(str({'code': 400, 'message': 'invalid column mapping parameter Only "training" or "JSON Array"'}))

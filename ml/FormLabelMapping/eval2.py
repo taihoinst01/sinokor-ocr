@@ -52,50 +52,47 @@ checkpointDir = os.getcwd() + '\\ml\\FormLabelMapping\\checkpoint'
 classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hidden_units=[10, 20, 10], 
                                                     n_classes=4, model_dir=checkpointDir) 
 
-try:
-    inputArr = json.loads(sys.argv[1].replace(u"\u2022", u""))
+arg = sys.argv[1].replace(u"\u2022", u"")
 
+if arg == "training":
     try:
-        for inputItem in inputArr: 
-            predictArr = [] 
-            predictData = [] 
-            for sidItem in inputItem['sid'].split(","): 
+        if not os.path.isdir(checkpointDir):
+            os.mkdir(checkpointDir)
+        else:
+            # training이 필요한 시점만 True로 전환 기존 모델 삭제
+            shutil.rmtree(checkpointDir, False)
+
+            # training이 필요한 시점만 True로 전환
+        classifier.fit(x=testNpData, y=testNpTarget, steps=2000)
+
+        print(str({'code': 200, 'message': 'form label mapping train success'}))
+    except Exception as e:
+        print(str({'code': 500, 'message': 'form label mapping train fail', 'error': e}))
+else:
+    inputArr = json.loads(sys.argv[1].replace(u"\u2022", u""))
+    try:
+        for inputItem in inputArr:
+            predictArr = []
+            predictData = []
+            for sidItem in inputItem['sid'].split(","):
                 predictData.append(float(sidItem))
 
-            #db에 일치하는 sid가 있는 경우 db의 label값을 가져와서 리턴 
-            for row in rows: 
-                floatArr = [] 
-                num = str(row[1]).split(",") 
-                for n in num: 
-                    floatArr.append(float(n))  
+            # db에 일치하는 sid가 있는 경우 db의 label값을 가져와서 리턴
+            for row in rows:
+                floatArr = []
+                num = str(row[1]).split(",")
+                for n in num:
+                    floatArr.append(float(n))
 
-                if floatArr == predictData: 
-                    inputItem['formLabel'] = int(row[2]) 
-  
-            #db에 일치하는 sid가 없을 경우 ML predict 결과를 리턴 
-            if 'formLabel' not in inputItem: 
-                predictArr.append(predictData) 
-                resultArr = list(classifier.predict(np.array(predictArr, dtype=np.float32), as_iterable=True)) 
+                if floatArr == predictData:
+                    inputItem['formLabel'] = int(row[2])
+
+                    # db에 일치하는 sid가 없을 경우 ML predict 결과를 리턴
+            if 'formLabel' not in inputItem:
+                predictArr.append(predictData)
+                resultArr = list(classifier.predict(np.array(predictArr, dtype=np.float32), as_iterable=True))
                 inputItem['formLabel'] = resultArr[0]
 
         print(str(inputArr))
-    except Exception as e: 
+    except Exception as e:
         print(str({'code': 500, 'message': 'form label mapping predict fail', 'error': e}))
-
-except Exception as e:
-    if inputArr == 'training':
-        try:
-            if not os.path.isdir(checkpointDir): 
-                os.mkdir(checkpointDir) 
-            else: 
-                #training이 필요한 시점만 True로 전환 기존 모델 삭제 
-                shutil.rmtree(checkpointDir, False)                
-
-            #training이 필요한 시점만 True로 전환 
-            classifier.fit(x=testNpData, y=testNpTarget, steps=2000)
-
-            print(str({'code': 200, 'message': 'form label mapping train success'}))
-        except Exception as e:
-            print(str({'code': 500, 'message': 'form label mapping train fail', 'error': e}))
-    else:
-        print(str({'code': 400, 'message': 'invalid form label mapping parameter Only "training" or "JSON Array"'}))

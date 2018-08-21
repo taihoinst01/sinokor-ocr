@@ -74,7 +74,7 @@ exports.addLabelMappingTrain = function (data, callback) {
 
         pythonConfig.formLabelMappingOptions.args = ["training"];
 
-        sync.await(PythonShell.run('eval.py', pythonConfig.formLabelMappingOptions, sync.defer()));
+        sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
 
         callback(data);
     });
@@ -86,7 +86,7 @@ exports.addDocMappingTrain = function (data, callback) {
 
         pythonConfig.formMappingOptions.args = ["training"];
 
-        sync.await(PythonShell.run('eval.py', pythonConfig.formMappingOptions, sync.defer()));
+        sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
 
         callback(data);
     });
@@ -98,7 +98,7 @@ exports.addColumnMappingTrain = function (data, callback) {
 
         pythonConfig.columnMappingOptions.args = ["training"];
 
-        sync.await(PythonShell.run('eval.py', pythonConfig.columnMappingOptions, sync.defer()));
+        sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
 
         callback(data);
     });
