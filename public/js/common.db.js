@@ -3,7 +3,9 @@
 /******************************************
  * server database function js
  * ****************************************/
+var fs = require("fs");
 var async = require("async");
+var exec = require("child_process").exec;
 
 var commonUtil = require(require('app-root-path').path + '/public/js/common.util.js');
 var commModule = require(require('app-root-path').path + '/public/js/import.js');
@@ -238,7 +240,7 @@ module.exports = function (pool) {
         });
     };
 
-    // upload excelpath (2018-08-21)
+    // upload excelpath & exceldata (2018-08-21)
     var reqInsertExcelDataPath = function (pathResult, dataResult, req, res) {
         pool.getConnection(function (err, connection) {
             async.forEachOf(pathResult, function (dataElement, i, inner_callback) {
@@ -334,6 +336,80 @@ module.exports = function (pool) {
     //        });
     //    });
     //};
+
+    // sync batch files
+    var syncBatchFiles = function (files, req, res) {
+        //
+        var fileInfo = [];
+        var returnObj = [];
+        // querys
+        var insertBatchLearningBaseData = queryConfig.batchLearningConfig.insertBatchLearningBaseData;
+        var insertFileInfo = queryConfig.batchLearningConfig.insertFileInfo;
+        var insertFileDtlInfo = queryConfig.batchLearningConfig.insertFileDtlInfo;
+
+        pool.getConnection(function (err, connection) {
+            async.forEachOf(files, function (file, index, inner_callback) {
+                var data = fs.readFileSync(file, 'utf-8');
+                var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성
+                var _lastSeparator = file.lastIndexOf('\\');
+                var oriFileName = file.substring(_lastSeparator + 1, file.length);
+                var convertFileName = oriFileName.split('.')[0] + '.jpg';
+                var filePath = file; // 업로드할 경로
+                var _lastDot = oriFileName.lastIndexOf('.');
+                var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
+                var fileSize = file.length;
+                var contentType = file.mimetype ? file.mimetype : ""; // 컨텐트타입
+                var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
+                var ifile = filePath;
+                var ofile = filePath.split('.')[0] + '.jpg';
+                var regId = req.session.userId;
+
+                var fileParam = {
+                    imgId: imgId,
+                    filePath: filePath,
+                    oriFileName: oriFileName,
+                    convertFileName: convertFileName,
+                    fileExt: fileExt,
+                    fileSize: fileSize,
+                    contentType: contentType,
+                    svrFileName: svrFileName
+                };
+
+                var data_batch = [imgId, regId];
+                var data_file = [imgId, filePath, oriFileName, svrFileName, fileExt, fileSize, contentType, 'B', regId];
+                var data_file_dtl = [imgId, filePath.replace(oriFileName, convertFileName), convertFileName, svrFileName, 'jpg', 0, '', 'B', regId];
+
+                connection.execute(insertFileInfo, data_file, function (err, result) {
+                    //if (err) inner_callback(err);
+                    //else inner_callback(null);
+                });
+                connection.execute(insertFileDtlInfo, data_file_dtl, function (err, result) {
+                    //if (err) inner_callback(err);
+                    //else inner_callback(null);
+                });
+                connection.execute(insertBatchLearningBaseData, data_batch, function (err, result) {
+                    //if (err) inner_callback(err);
+                    //else inner_callback(null);
+                });
+
+                fileInfo.push(fileParam);
+                returnObj.push(oriFileName.split('.')[0] + '.jpg');
+                if (oriFileName.split('.')[1].toLowerCase() === 'tif' || oriFileName.split('.')[1].toLowerCase() === 'tiff') {
+                    exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
+                        if (index === files.length - 1) { // 모든 파일 변환이 완료되면
+                            res.send({ code: 200, message: returnObj, fileInfo: fileInfo });
+                        }
+                    });
+                }
+            }, function (err) {
+                if (err) {
+                    //handle the error if the query throws an error
+                } else {
+                    //whatever you wanna do after all the iterations are done
+                }
+            });
+        });
+    };
     
 
     module.exports.makePagingQuery = makePagingQuery;
@@ -351,4 +427,5 @@ module.exports = function (pool) {
     module.exports.insertFileInfo = insertFileInfo;
     module.exports.reqBatchQueryParam = reqBatchQueryParam;
     module.exports.reqInsertExcelDataPath = reqInsertExcelDataPath;
+    module.exports.syncBatchFiles = syncBatchFiles;
 }

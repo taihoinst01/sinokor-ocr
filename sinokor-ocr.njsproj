@@ -176,6 +176,13 @@
     <Compile Include="node_modules\filehound\lib\functions.js" />
     <Compile Include="node_modules\filehound\test\filehound.js" />
     <Compile Include="node_modules\filehound\test\files.js" />
+    <Compile Include="node_modules\mz\child_process.js" />
+    <Compile Include="node_modules\mz\crypto.js" />
+    <Compile Include="node_modules\mz\dns.js" />
+    <Compile Include="node_modules\mz\fs.js" />
+    <Compile Include="node_modules\mz\index.js" />
+    <Compile Include="node_modules\mz\readline.js" />
+    <Compile Include="node_modules\mz\zlib.js" />
     <Compile Include="node_modules\xlsx\dist\cpexcel.js" />
     <Compile Include="node_modules\xlsx\dist\jszip.js" />
     <Compile Include="node_modules\xlsx\dist\shim.min.js" />
@@ -2203,6 +2210,10 @@
     <Content Include="node_modules\filehound\test\fixtures\visibility\visible\.hidden.json" />
     <Content Include="node_modules\filehound\test\mocha.opts" />
     <Content Include="node_modules\filehound\_config.yml" />
+    <Content Include="node_modules\mz\HISTORY.md" />
+    <Content Include="node_modules\mz\LICENSE" />
+    <Content Include="node_modules\mz\package.json" />
+    <Content Include="node_modules\mz\README.md" />
     <Content Include="node_modules\xlsx\bin\xlsx.njs" />
     <Content Include="node_modules\xlsx\bower.json" />
     <Content Include="node_modules\xlsx\CHANGELOG.md" />
@@ -3526,6 +3537,8 @@
     <Folder Include="node_modules\filehound\test\fixtures\visibility\" />
     <Folder Include="node_modules\filehound\test\fixtures\visibility\.hidden\" />
     <Folder Include="node_modules\filehound\test\fixtures\visibility\visible\" />
+    <Folder Include="node_modules\flatten\" />
+    <Folder Include="node_modules\mz\" />
     <Folder Include="node_modules\xlsx\" />
     <Folder Include="node_modules\xlsx\bin\" />
     <Folder Include="node_modules\xlsx\dist\" />

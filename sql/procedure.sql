@@ -67,3 +67,20 @@ BEGIN
 END;
 
 select export_keyword_sid('valuable') from dual;
+
+
+CREATE OR REPLACE FUNCTION export_filename(fullpath IN NVARCHAR2)
+RETURN NVARCHAR2
+IS
+return_val NVARCHAR2(1000);
+BEGIN
+    IF(INSTR(fullpath, '/', -1) > 0) THEN
+        return_val := SUBSTR(fullpath,INSTR(fullpath, '/', -1)+1);
+    ELSE
+        return_val := fullpath;            
+    END IF;
+    RETURN return_val;
+    EXCEPTION
+        WHEN OTHERS THEN
+               DBMS_OUTPUT.PUT_LINE('check function name : export_sentence_sid');
+END;

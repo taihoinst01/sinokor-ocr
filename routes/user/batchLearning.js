@@ -17,6 +17,10 @@ const FileHound = require('filehound');
 const xlsx = require('xlsx');
 var oracledb = require('oracledb');
 var path = require('path');
+const flatten = require('flatten');
+const mz = require('mz/fs');
+const async = require("async");
+
 
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
@@ -1426,104 +1430,50 @@ var callbackUpdateBatchLearningData = function (rows, req, res) {
 };
 
 // [POST] syncFile
+async function isDirectory(f) {
+    return (await mz.stat(f)).isDirectory();
+}
+async function readdir(filePath) {
+    const files = await Promise.all((await mz.readdir(filePath)).map(async f => {
+        const fullPath = path.join(filePath, f);
+        return (await isDirectory(fullPath)) ? await readdir(fullPath) : fullPath;
+    }));
+    return flatten(files);
+}
 router.post('/syncFile', function (req, res) {
     const testFolder = propertiesConfig.filepath.imagePath;
 
-    const files = FileHound.create()
-        .paths(testFolder)
-        //.ext('jpg', 'tif')
-        .ext('tif', 'tiff')
-        .find();
-
-    console.log("filehound : " + JSON.stringify(files));
-
-    var resText = [];
-    var returnObj = [];
-    var fileInfo = [];
-
-    files.then(function (result) {
-        var del_result = [];
-
-        // 파일테이블 리스트를 가져와서 존재여부 검사
-        var callbackSelectFileNameList = function (rows, req, res) {
-            for (var i = 0, x = result.length; i < x; i++) {
-                var _compareValue = result[i].replace(/\\\\/g, '\\');
-                result[i] = _compareValue;
-            }
-            // rows = DB에 저장된 파일, result = 서버에서 읽어온 파일
-            for (var i = 0, x = rows.length; i < x; i++) {
-                console.log("rows[i] : " + JSON.stringify(rows[i]));
-                //let rows_file_path = testFolder + '\\' + rows[i].FILEPATH;
-                let rows_file_path = rows[i].ORIGINFILENAME;
-                var _result = result.filter(function (_fileObj) {
-                    return _fileObj != rows_file_path; // 같지 않은것만 배열에 남김
-                });
-                result = _result;
-            }
-            console.log("result.. length : " + result.length);
-            if (result.length > 0) fileProcess(result); // DB에 저장되지 않은 서버 파일을 DB에 저장
-            else res.send({ code: 200, message: null, fileInfo: null });
-        };
-        commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectFileNameList, [], callbackSelectFileNameList, req, res);
-
-        // 디렉토리에만 존재하는 파일 저장
-        function fileProcess(result) {
-            if (result.length > 0) {
-                //console.log("남은 result " + result.length + "개의 처리를 시작합니다. ");
-                var endCount = 0;
-                for (var i = 0; i < result.length; i++) {
-                    var data = fs.readFileSync(result[i], 'utf-8');
-                    var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성
-                    var _lastSeparator = result[i].lastIndexOf('\\');
-                    var oriFileName = result[i].substring(_lastSeparator + 1, result[i].length);
-                    var convertFileName = oriFileName.split('.')[0] + '.jpg';
-                    var filePath = "uploads\\" + oriFileName; // 업로드할 경로
-                    var _lastDot = oriFileName.lastIndexOf('.');
-                    var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
-                    var fileSize = data.length;
-                    var contentType = data.mimetype ? data.mimetype : ""; // 컨텐트타입
-                    var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
-                    var ifile = appRoot + '\\' + filePath;
-                    var ofile = appRoot + '\\' + filePath.split('.')[0] + '.jpg';
-                    var regId = req.session.userId;
-
-                    var data_batch = [imgId, regId];
-                    var data_file = [imgId, filePath, oriFileName, svrFileName, fileExt, fileSize, contentType, 'B', regId];
-                    var data_file_dtl = [imgId, filePath.replace(oriFileName, convertFileName), convertFileName, svrFileName, 'jpg', 0, '', 'B', regId];
-
-                    // INSERT TBL_OCR_FILE_DTL, TBL_OCR_FILE, TBL_BATCH_LEARN_DATA
-                    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertFileDtlInfo, data_file_dtl, callbackBlank, req, res);
-                    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertFileInfo, data_file, callbackBlank, req, res);
-                    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningBaseData, data_batch, callbackBlank, req, res);
-
-                    var fileParam = {
-                        imgId: imgId,
-                        filePath: filePath,
-                        oriFileName: oriFileName,
-                        convertFileName: convertFileName,
-                        fileExt: fileExt,
-                        fileSize: fileSize,
-                        contentType: contentType,
-                        svrFileName: svrFileName
-                    };
-                    fileInfo.push(fileParam);
-                    returnObj.push(oriFileName.split('.')[0] + '.jpg');
-                    if (oriFileName.split('.')[1].toLowerCase() === 'tif' || oriFileName.split('.')[1].toLowerCase() === 'tiff') {
-                        exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
-                            if (endCount === result.length - 1) { // 모든 파일 변환이 완료되면
-                                res.send({ code: 200, message: returnObj, fileInfo: fileInfo });
-                            }
-                            endCount++;
-                        });
-                    }
+    // files : 디렉토리에서 읽어온 파일들,  rows: TBL_BATCH_LEARN_DATA 파일들
+    var fileProcess = function (files, rows, req, res) {
+        console.log("files.... : " + files.length);
+        console.log("rows.... : " + rows.length);
+        let filePath = "";
+        for (var i = 0; i < rows.length; i++) { // 현재 데이터에 존재하는 파일은 제거
+            filePath = rows[i].FILEPATH;
+            let _result = files.filter(function (_fileObj) {
+                return _fileObj != filePath;
+            });
+            if (i == rows.length - 1) {
+                if (files.length > 0) {
+                    commonDB.syncBatchFiles(files, req, res);
+                } else {
+                    res.send({ code: 200, message: null, fileInfo: null });
                 }
             }
         }
-    });
+    };
 
-    files.done(function () {
-        //res.send({ code: 201, message: returnObj, fileInfo: fileInfo });
-    });
+    var callbackSelectFileNameList = function (rows, req, res) {
+        console.log(rows);
+        readdir(testFolder)
+            .then(files => {
+                //files.forEach(f => console.log(f));
+                fileProcess(files, rows, req, res);
+            })
+            .catch(console.error);
+    };
+
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectFileNameList, [], callbackSelectFileNameList, req, res);
 });
 
 router.post('/compareBatchLearningData', function (req, res) {

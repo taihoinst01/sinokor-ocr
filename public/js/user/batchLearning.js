@@ -1448,7 +1448,7 @@ var fn_syncServerFile = function () {
                         //insertSyncFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
                         //insertSyncBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
                     }
-                    addProgressBar(2, 50);
+                    addProgressBar(2, 99);
                     resolve(responseText, statusText);
                 });
                 insertPromise.then(function (responseText, statusText) {
@@ -1459,6 +1459,7 @@ var fn_syncServerFile = function () {
                         if (i == (totCount - 1)) lastYN = true;
                         //insertSyncBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);
                     }
+                    alert("백그라운드에서 파일을 처리중입니다.");
                     //alert("완료");
                 }, function (err) {
                     alert("파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + err);
