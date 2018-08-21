@@ -36,7 +36,15 @@ function popUpEvent() {
 // 팝업 확인 이벤트
 function popUpRunEvent() {
     $('#btn_pop_doc_run').click(function (e) {
-
+        var docData = JSON.parse($('#docData').val());
+        for (var i in docData) {
+            if ($('#searchResultDocName').val() == docData[i].DOCNAME) {
+                $('#docName').text(docData[i].DOCNAME);
+                $('#docData').val(JSON.stringify(docData[i]));
+                break;
+            }
+        }
+        $(this).parents('.poplayer').fadeOut();
         e.stopPropagation();
         e.preventDefault();
     });
@@ -54,7 +62,7 @@ function popUpSearchDocCategory() {
                 data: JSON.stringify({ 'keyword': keyword }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
-                    console.log(data);
+                    $('#docData').val(JSON.stringify(data));
                     $('#docSearchResult').html('');
                     $('#countCurrent').html('1');
                     $('.button_control10').attr('disabled', true);
@@ -105,6 +113,11 @@ function popUpInsertDocCategory() {
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
                     if (data.code == 200) {
+                        //console.log(data);
+                        $('#docData').val(JSON.stringify(data.docCategory[0]));
+                        $('#docName').text(data.docCategory[0].DOCNAME);
+                        $('#layer1').fadeOut();
+                    } else {
                         alert(data.message);
                     }
                 },
@@ -445,6 +458,19 @@ function executeML(totData) {
                 lineText.push(data);                
 
                 if (searchDBColumnsCount == 1) {
+
+                    var docName = '';
+                    var docScore = '';
+                    
+                    if (data.docCategory != null) {
+                        docName = data.docCategory[0].DOCNAME;
+                        $('#docData').val(JSON.stringify(data.docCategory[0]));
+                    }
+
+                    if (data.score) {
+                        docScore = data.score;
+                    }
+
                     var mainImgHtml = '';
                     mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
                     mainImgHtml += '<div id="redNemo">';
@@ -458,11 +484,11 @@ function executeML(totData) {
                     $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
                     thumnImg();
                     $('#imageBox > li').eq(0).addClass('on');
-                    $('#mlPredictionDocName').val(data.docCategory[0].DOCNAME);
-                    $('#mlPredictionPercent').val(data.score + '%');
-                    $('#docName').html(data.docCategory[0].DOCNAME);
-                    $('#docPredictionScore').html(data.score + '%');
-                    if (data.score >= 90) {
+                    $('#mlPredictionDocName').val(docName);
+                    $('#mlPredictionPercent').val(docScore + '%');
+                    $('#docName').html(docName);
+                    $('#docPredictionScore').html(docScore + '%');
+                    if (docScore >= 90) {
                         $('#docName').css('color', 'dodgerblue');
                         $('#docPredictionScore').css('color', 'dodgerblue');
                     } else {
@@ -509,7 +535,15 @@ function detailTable(fileName) {
         if (lineText[i].fileName == fileName) {
 
             var item = lineText[i];
-            var data = item.data.data;
+
+            var data;
+
+            if (item.data.data) {
+                data = item.data.data;
+            } else {
+                data = item.data;
+            }
+            
             var columnArr = item.column;
 
             for (var i in data) {
@@ -521,7 +555,7 @@ function detailTable(fileName) {
                 tblTag += '</label>';
                 tblTag += '</dt>';
                 tblTag += '<dd>';
-                tblTag += appendOptionHtml((data[i].column + '') ? data[i].column : 999, columnArr)
+                tblTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr)
                 tblTag += '</dd>';
                 tblTag += '</dl>';
             }
@@ -831,11 +865,12 @@ function imageMove(xDistance, yDistance) {
 
 function uiTrainEvent() {
     $("#uiTrainBtn").click(function (e) {
-        uiTrainAjax();
+        makeTrainingData();
+        //uiTrainAjax();
     });
 }
 
-function uiTrainAjax() {
+function makeTrainingData() {
 
     if (lineText[0] == null) {
         alert("학습할 데이터가 없습니다.");
@@ -849,32 +884,29 @@ function uiTrainAjax() {
     //console.log(td.eq(0).text());
 
     for (var i = 0; i < tr.length; i++) {
-        /*
-        var td = tr.eq(i).children();
-        var text = td.eq(0).children('input[type="text"]').val();
-        var location = td.eq(0).children('input[type="hidden"]').val();
-        var column = td.eq(1).children().find("a.dbColumnText").text();
-        */
         var text = tr.eq(i).find('input[type="text"]').val();
         var location = tr.eq(i).find('input[type="hidden"]').val();
-        var column = tr.eq(i).find('a.dbColumnText').text();
-        var columnSplit = column.split("::");
-        //var textClassi = td.eq(1).children();
+        var column = tr.eq(i).find('select option:selected').val();
 
         var obj = {}
         obj.text = text;
         obj.location = location;
-        obj.column = columnSplit[0];
-        //obj.textClassi = textClassi;
+        obj.column = column;
 
         dataArray.push(obj);
     }
 
-    for (var i = 0; i < lineText[0].data.length; i++) {
+    var mlData = lineText[0].data.data;
+
+    for (var i = 0; i < mlData.length; i++) {
         for (var j = 0; j < dataArray.length; j++) {
-            if (lineText[0].data[i].location == dataArray[j].location) {
-                if (lineText[0].data[i].text != dataArray[j].text) {
-                    dataArray[j].originText = lineText[0].data[i].text;
+            if (mlData[i].location == dataArray[j].location) {
+                if (mlData[i].text != dataArray[j].text) {
+                    dataArray[j].typoText = mlData[i].text;
+                }
+
+                if (mlData[i].originText != null) {
+                    dataArray[j].originText = mlData[i].originText;
                 }
             }
         }
@@ -882,6 +914,9 @@ function uiTrainAjax() {
     startProgressBar();
     addProgressBar(1, 20);
 
+    insertTrainingData(dataArray);
+
+    /*
     $.ajax({
         url: '/uiLearning/uiTrain',
         type: 'post',
@@ -896,7 +931,165 @@ function uiTrainAjax() {
             console.log(err);
         }
     });
+    */
 }
+
+function insertTrainingData(data) {
+    insertTypoTrain(data, callbackInsertTypoTrain);
+}
+
+function callbackInsertTypoTrain(data) {
+    makeTrainingSidData(data, callbackMakeTrainingSidData);
+}
+
+function callbackMakeTrainingSidData(data) {
+    insertDocLabelMapping(data, callbackInsertDocLabelMapping);
+}
+
+var callbackInsertDocLabelMapping = function (data) {
+    insertDocMapping(data, callbackInsertDocMapping);
+};
+
+var callbackInsertDocMapping = function (data) {
+    insertColMapping(data, callbackInsertColMapping);
+};
+
+function callbackInsertColMapping(data) {
+    uiTrainAjax();
+}
+
+function uiTrainAjax() {
+    $.ajax({
+        url: '/batchLearning/uitraining',
+        type: 'post',
+        datatype: "json",
+        data: null,
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            if (data.code == 200) {
+                addProgressBar(81, 100);
+                alert(data.message);
+                //popupEvent.batchClosePopup('retrain');
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+function insertTypoTrain(data, callback) {
+    $.ajax({
+        url: '/uiLearning/insertTypoTrain',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': data }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (res) {
+            callback(res);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+function makeTrainingSidData(data, callback) {
+    $.ajax({
+        url: '/uiLearning/makeTrainingSidData',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': data }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (res) {
+            callback(res);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// 양식 레이블 매핑 ml 데이터 insert
+function insertDocLabelMapping(data, callback) {
+    var param = {};
+    param.data = data;
+
+    $.ajax({
+        url: '/batchLearning/insertDocLabelMapping',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': param }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (res) {
+            console.log(res);
+            callback(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// 양식 매핑 ml 데이터 insert
+function insertDocMapping(data, callback) {
+    var param = [];
+    for (var i in data) {
+        if (data[i].column == 0) {
+            param.push(data[i]);
+        }
+    }
+    for (var i in data) {
+        if (data[i].column == 1) {
+            param.push(data[i]);
+        }
+    }
+
+    var dacCategory = JSON.parse($('#docData').val());
+
+    $.ajax({
+        url: '/batchLearning/insertDocMapping',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': param, 'docCategory': dacCategory }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (res) {
+            console.log(res);
+            callback(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// 컬럼 매핑 ml 데이터 insert
+function insertColMapping(data, callback) {
+    var param = [];
+    for (var i in data) {
+        if (data[i].column != 999) {
+            param.push(data[i]);
+        }
+    }
+
+    var dacCategory = JSON.parse($('#docData').val());
+
+    $.ajax({
+        url: '/batchLearning/insertColMapping',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'data': param, 'docCategory': dacCategory }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (res) {
+            console.log(res);
+            callback(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
 
 // 문서 양식 조회 팝업 라디오 이벤트
 function changeDocPopRadio() {
