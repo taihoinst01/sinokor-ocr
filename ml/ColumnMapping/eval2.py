@@ -95,13 +95,19 @@ else:
                         floatArr.append(float(n))
                     if floatArr == predictData:
                         inputItem['colLbl'] = int(row[2])
-
+                        inputItem['colAccu'] = 0.99
                 # db에 일치하는 sid가 없을 경우 ML predict 결과를 리턴
                 if 'colLbl' not in inputItem:
                     predictArr.append(predictData)
                     resultArr = list(classifier.predict(np.array(predictArr, dtype=np.float32), as_iterable=True))
                     inputItem['colLbl'] = resultArr[0]
-
+                    
+                    accLabel.append(int(resultArr[0]))
+                    accTarget = np.array(accLabel)
+                    accuracy_score = classifier.evaluate(x=np.array(predictArr, dtype=float), y=np.array(accTarget, dtype=int))["accuracy"]
+                    if accuracy_score > 0.02:
+                        accuracy_score -= 0.01
+                    inputItem['colAccu'] = resultArr[0]
         print(str(inputArr))
     except Exception as e:
         print(str({'code': 500, 'message': 'column mapping predict fail', 'error': e}))
