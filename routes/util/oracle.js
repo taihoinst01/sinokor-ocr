@@ -2,7 +2,7 @@ var oracledb = require('oracledb');
 var appRoot = require('app-root-path').path;
 var dbConfig = require(appRoot + '/config/dbConfig');
 var queryConfig = require(appRoot + '/config/queryConfig');
-
+var sync = require('./sync.js');
 
 
 exports.select = function (req, done) {
@@ -38,7 +38,7 @@ exports.select = function (req, done) {
             }
         }
     });
-}
+};
 
 exports.selectDocCategory = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -69,7 +69,7 @@ exports.selectDocCategory = function (req, done) {
             }
         }
     });
-}
+};
 
 exports.selectContractMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -109,7 +109,31 @@ exports.selectContractMapping = function (req, done) {
             }
         }
     });
-}
+};
+
+exports.selectOcrFilePaths = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let result = await conn.execute(`SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID = :imgId `, [req])
+
+            //resolve(result.rows);
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
 
 exports.insertLabelMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -152,7 +176,7 @@ exports.insertLabelMapping = function (req, done) {
             }
         }
     });
-}
+};
 
 exports.insertDocMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -200,7 +224,7 @@ exports.insertDocMapping = function (req, done) {
             }
         }
     });
-}
+};
 
 exports.insertColumnMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -220,6 +244,60 @@ exports.insertColumnMapping = function (req, done) {
             reject(err);
         } finally {
             if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectLegacyData = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var res = [];
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var tempImageFileName;
+            for (image in req) {
+                //image ?뚯씪紐?異붿텧
+                var items = req[image]['mlexport']
+                for (var item = 0; item < req[image]['mlexport'].length; item++) {
+                    if (req[image][item]['ORIGINFILENAME']) {
+                        tempImageFileName = req[image][item]['ORIGINFILENAME']
+                    }
+
+                }
+                //image id 異붿텧
+                let result = await conn.execute(`SELECT IMGID, PAGENUM FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
+                result.rows[0][0] = 154384
+                //image data 異붿텧
+                result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILEENDNO >= :PAGEEND AND IMGFILESTARTNO <= :PAGESTART`, [result.rows[0][0], result.rows[0][1], result.rows[0][1]]);
+                image.push(result.rows);
+                console.log(result.rows[0][1])
+
+            }
+
+
+
+            for (var row = 0; row < result.rows.length; row++) {
+                var dict = {};
+                for (var colName = 0; colName < colNameArr.length; colName++) {
+                    dict[colNameArr[colName]] = result.rows[row][colName];
+                }
+                res.push(dict);
+            }
+
+            //resolve(result.rows);
+            return done(null, res);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
                 try {
                     await conn.release();
                 } catch (e) {

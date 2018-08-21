@@ -399,14 +399,6 @@ function insertTypoTrain(data, req, res) {
     });
 }
 
-router.post('/makeTrainingSidData', function (req, res) {
-    var data = req.body.data;
-
-    runMakeTrainingSidData(data, req, res, function (retData) {
-        res.send(retData);
-    });
-});
-
 async function runMakeTrainingSidData(data, req, res, callback) {
     try {
         let ret = await makeTrainingSidData(data, req, res);

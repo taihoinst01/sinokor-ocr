@@ -261,4 +261,8 @@ __pycache__/
 *.pyc
 /runs
 .vscode/settings.json
+/ml/ColumnMapping/checkpoint
+/ml/FormLabelMapping/checkpoint
+/ml/FormMapping/checkpoint
+/uploads
 /archive_20180821.zip

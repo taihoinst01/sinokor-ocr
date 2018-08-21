@@ -891,7 +891,7 @@ function makeTrainingData() {
         var obj = {}
         obj.text = text;
         obj.location = location;
-        obj.column = column;
+        obj.ColLbl = column;
 
         dataArray.push(obj);
     }
@@ -914,49 +914,33 @@ function makeTrainingData() {
     startProgressBar();
     addProgressBar(1, 20);
 
-    insertTrainingData(dataArray);
+    var data = {}
+    data.data = dataArray;
 
-    /*
-    $.ajax({
-        url: '/uiLearning/uiTrain',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify({ "data": dataArray }),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            addProgressBar(21, 100);
-            alert(data);
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
-    */
+    data.docCategory = JSON.parse($('#docData').val());
+
+    insertTrainingData(data);
 }
 
 function insertTrainingData(data) {
-    insertTypoTrain(data, callbackInsertTypoTrain);
+    //insertTypoTrain(data, callbackInsertTypoTrain);
+    $('#progressMsgTitle').html('라벨 분류 처리 중..');
+    addProgressBar(21, 40);
+    addLabelMappingTrain(data, callbackAddLabelMapping);
 }
 
-function callbackInsertTypoTrain(data) {
-    makeTrainingSidData(data, callbackMakeTrainingSidData);
+function callbackAddLabelMapping(data) {
+    $('#progressMsgTitle').html('양식 분류 처리 중..');
+    addProgressBar(41, 60);
+    addDocMappingTrain(data, callbackAddDocMappingTrain);
 }
 
-function callbackMakeTrainingSidData(data) {
-    insertDocLabelMapping(data, callbackInsertDocLabelMapping);
+function callbackAddDocMappingTrain(data) {
+    $('#progressMsgTitle').html('컬럼 분류 처리 중..');
+    addProgressBar(61, 80);
+    addColumnMappingTrain(data);
 }
 
-var callbackInsertDocLabelMapping = function (data) {
-    insertDocMapping(data, callbackInsertDocMapping);
-};
-
-var callbackInsertDocMapping = function (data) {
-    insertColMapping(data, callbackInsertColMapping);
-};
-
-function callbackInsertColMapping(data) {
-    uiTrainAjax();
-}
 
 function uiTrainAjax() {
     $.ajax({
@@ -994,15 +978,15 @@ function insertTypoTrain(data, callback) {
     });
 }
 
-function makeTrainingSidData(data, callback) {
+function addLabelMappingTrain(data, callback) {
     $.ajax({
-        url: '/uiLearning/makeTrainingSidData',
+        url: '/batchLearning/insertDocLabelMapping',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
-            callback(res);
+            callback(res.data);
         },
         error: function (err) {
             console.log(err);
@@ -1011,51 +995,16 @@ function makeTrainingSidData(data, callback) {
 }
 
 // 양식 레이블 매핑 ml 데이터 insert
-function insertDocLabelMapping(data, callback) {
-    var param = {};
-    param.data = data;
-
-    $.ajax({
-        url: '/batchLearning/insertDocLabelMapping',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify({ 'data': param }),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (res) {
-            console.log(res);
-            callback(data);
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
-}
-
-// 양식 매핑 ml 데이터 insert
-function insertDocMapping(data, callback) {
-    var param = [];
-    for (var i in data) {
-        if (data[i].column == 0) {
-            param.push(data[i]);
-        }
-    }
-    for (var i in data) {
-        if (data[i].column == 1) {
-            param.push(data[i]);
-        }
-    }
-
-    var dacCategory = JSON.parse($('#docData').val());
-
+function addDocMappingTrain(data, callback) {
     $.ajax({
         url: '/batchLearning/insertDocMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': dacCategory }),
+        data: JSON.stringify({ 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
-            callback(data);
+            callback(res.data);
         },
         error: function (err) {
             console.log(err);
@@ -1063,33 +1012,25 @@ function insertDocMapping(data, callback) {
     });
 }
 
-// 컬럼 매핑 ml 데이터 insert
-function insertColMapping(data, callback) {
-    var param = [];
-    for (var i in data) {
-        if (data[i].column != 999) {
-            param.push(data[i]);
-        }
-    }
-
-    var dacCategory = JSON.parse($('#docData').val());
+function addColumnMappingTrain(data, callback) {
 
     $.ajax({
         url: '/batchLearning/insertColMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': dacCategory }),
+        data: JSON.stringify({ 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
-            callback(data);
+            alert("success training");
+            addProgressBar(81, 100);
+            //callback(data);
         },
         error: function (err) {
             console.log(err);
         }
     });
 }
-
 
 // 문서 양식 조회 팝업 라디오 이벤트
 function changeDocPopRadio() {
