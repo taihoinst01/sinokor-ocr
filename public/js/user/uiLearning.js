@@ -517,7 +517,9 @@ function executeML(totData) {
 function docComparePopup(imgIndex) {
     $('#docCompareBtn').unbind('click');
     $('#docCompareBtn').click(function (e) {
-        $('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
+        var appendImg = '<img id="originImg" src="../../uploads/' + lineText[imgIndex].fileName + '" style="width: 100%;height: 480px;">'
+        $('#ui_pop_MlImg').html(appendImg);
+        //$('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
         //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
         layer_open('layer1');
         e.preventDefault();
@@ -547,17 +549,32 @@ function detailTable(fileName) {
             var columnArr = item.column;
 
             for (var i in data) {
-                tblTag += '<dl>';
-                tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
-                tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-                tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
-                tblTag += '<input type="hidden" value="' + data[i].location + '" />';
-                tblTag += '</label>';
-                tblTag += '</dt>';
-                tblTag += '<dd>';
-                tblTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr)
-                tblTag += '</dd>';
-                tblTag += '</dl>';
+
+                if (data[i].colLbl == 36) {
+                    tblSortTag += '<dl>';
+                    tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                    tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
+                    tblSortTag += '<input type="hidden" value="' + data[i].location + '" />';
+                    tblSortTag += '</label>';
+                    tblSortTag += '</dt>';
+                    tblSortTag += '<dd>';
+                    tblSortTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr)
+                    tblSortTag += '</dd>';
+                    tblSortTag += '</dl>';
+                } else {
+                    tblTag += '<dl>';
+                    tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                    tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
+                    tblTag += '<input type="hidden" value="' + data[i].location + '" />';
+                    tblTag += '</label>';
+                    tblTag += '</dt>';
+                    tblTag += '<dd>';
+                    tblTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr)
+                    tblTag += '</dd>';
+                    tblTag += '</dl>';
+                }
             }
 
             /*
@@ -640,8 +657,7 @@ function detailTable(fileName) {
         }
         */
     }
-    $('#textResultTbl').append(tblSortTag);
-    $('#textResultTbl').append(tblTag);
+    $('#textResultTbl').append(tblTag).append(tblSortTag);
     // input 태그 마우스오버 말풍선 Tooltip 적용
     $('input[type=checkbox]').ezMark();
     new $.Zebra_Tooltips($('.tip'));
