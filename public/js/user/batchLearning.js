@@ -1114,7 +1114,7 @@ var searchBatchLearnDataList = function (addCond) {
                         <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
                         <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
                         <td>${nvl(entry.IMGID)}</td> <!--이미지ID-->
-                        <td><a onclick="javascript:docComparePopup('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.STATEMENTDIV)}</a></td> <!--계산서 구분-->
+                        <!-- <td><a onclick="javascript:docComparePopup('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.STATEMENTDIV)}</a></td>--> <!--계산서 구분-->
                         <td>${nvl(entry.CONTRACTNUM)}</td> <!--계약번호-->
                         <td>${nvl(entry.OGCOMPANYCODE)}</td> <!--출재사코드-->
                         <td>${nvl(entry.BROKERCODE)}</td> <!--중개사코드-->
@@ -1627,6 +1627,7 @@ var fn_popBatchRun = function () {
                     return;
                 } else {
                     searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+                    //batchLearnTraing(imgIdArray, "PROCESS_IMAGE");
                 }
             } else {
                 alert("Before Training 상태에서만 배치학습이 가능합니다.");
@@ -1640,6 +1641,8 @@ var fn_popBatchRun = function () {
             break;
     }
 };
+
+
 
 // UI 학습 (학습결과 수정)
 var fn_uiTraining = function () {
@@ -1683,6 +1686,39 @@ var fn_uiTraining = function () {
     //    return;
     //}
 
+};
+
+// [Select] 배치학습데이터 조회
+var batchLearnTraing = function (imgIdArray, flag) {
+    var param = {
+        imgIdArray: imgIdArray
+    };
+
+    $.ajax({
+        url: '/batchLearning/batchLearnTraing',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $('#btn_pop_batch_close').click();
+            $("#progressMsgTitle").html("retrieving learn data...");
+            startProgressBar();
+            addProgressBar(0, 30);
+        },
+        success: function (data) {
+            $("#progressMsgTitle").html("processing learn data...");
+            addProgressBar(31, 40);
+
+            console.log(data);
+
+            addProgressBar(41, 100);
+        },
+        error: function (err) {
+            endProgressBar(); // end progressbar
+            console.log(err);
+        }
+    });
 };
 
 // UI학습 팝업 초기화

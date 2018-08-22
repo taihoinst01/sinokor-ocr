@@ -285,7 +285,7 @@ exports.convertTiftoJpg = function (originFilePath, done) {
     } catch (err) {
         console.log(err);
     } finally {
-        console.log('end');
+        console.log('convertTiftoJpg end');
     }
 };
 
@@ -314,8 +314,9 @@ exports.callApiOcr = function (originImageArr, done) {
         return done(null, pharsedOcrJson);
     } catch (err) {
         console.log(err);
+        return done(null, 'error');
     } finally {
-        console.log('end');
+        console.log('callApiOcr end');
     }
 };
 
@@ -376,6 +377,63 @@ exports.selectLegacyData = function (req, done) {
 
             let colData = await conn.execute(`SELECT COLNAME, COLTYPE, COLNUM FROM TBL_COLUMN_MAPPING_CLS`);
 
+
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertRegacyData = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var res = [];
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            insSql = queryConfig.batchLearing.insertBatchLearningData;
+
+            for (var i = 0; i < req.length; i++) {
+                var cond = [];
+                let colData = await conn.execute(insSql, cond);
+
+
+            }
+
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertMLData = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var res = [];
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            insSql = queryConfig.batchLearing.insertBatchLearningData;
 
             return done(null, result.rows);
         } catch (err) { // catches errors in getConnection and the query
