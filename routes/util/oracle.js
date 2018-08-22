@@ -116,30 +116,6 @@ exports.selectContractMapping = function (req, done) {
     });
 };
 
-exports.selectOcrFilePaths = function (req, done) {
-    return new Promise(async function (resolve, reject) {
-        let conn;
-
-        try {
-            conn = await oracledb.getConnection(dbConfig);
-            let result = await conn.execute(`SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID = :imgId `, [req])
-
-            //resolve(result.rows);
-            return done(null, result.rows);
-        } catch (err) { // catches errors in getConnection and the query
-            reject(err);
-        } finally {
-            if (conn) {   // the conn assignment worked, must release
-                try {
-                    await conn.release();
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        }
-    });
-};
-
 exports.insertLabelMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -257,7 +233,7 @@ exports.insertColumnMapping = function (req, done) {
             }
         }
     });
-}
+};
 
 exports.selectOcrFilePaths = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -297,7 +273,7 @@ exports.selectOcrFilePaths = function (req, done) {
             }
         }
     });
-}
+};
 
 exports.convertTiftoJpg = function (originFilePath, done) {
     try {
@@ -311,7 +287,7 @@ exports.convertTiftoJpg = function (originFilePath, done) {
     } finally {
         console.log('end');
     }
-}
+};
 
 exports.callApiOcr = function (originImageArr, done) {
     var pharsedOcrJson = "";
@@ -341,7 +317,7 @@ exports.callApiOcr = function (originImageArr, done) {
     } finally {
         console.log('end');
     }
-}
+};
 
 function ocrJson(regions) {
     var data = [];
@@ -414,4 +390,4 @@ exports.selectLegacyData = function (req, done) {
             }
         }
     });
-}
+};
