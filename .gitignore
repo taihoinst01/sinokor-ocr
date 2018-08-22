@@ -266,3 +266,5 @@ __pycache__/
 /ml/FormMapping/checkpoint
 /uploads
 /archive_20180821.zip
+/excel
+/routes/util/excel
