@@ -881,7 +881,7 @@ function imageMove(xDistance, yDistance) {
 
 function uiTrainEvent() {
     $("#uiTrainBtn").click(function (e) {
-        //modifyTextData();
+        modifyTextData();
         makeTrainingData();
     });
 }
