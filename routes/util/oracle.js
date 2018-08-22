@@ -124,7 +124,6 @@ exports.insertLabelMapping = function (req, done) {
             var userModifyData = [];
             for (var i in req.data) {
                 labelClass = 3
-                //출재사명
                 if (req.data[i].ColLbl && req.data[i].ColLbl == 0) {
                     labelClass = 1
 
@@ -132,7 +131,6 @@ exports.insertLabelMapping = function (req, done) {
                         userModifyData.push(req.data[i]);
                     }
                 }
-                //계약명
                 if (req.data[i].ColLbl && req.data[i].ColLbl == 1) {
                     labelClass = 2
 
@@ -179,11 +177,9 @@ exports.insertDocMapping = function (req, done) {
             }
 
             for (var i in req.data) {
-                //출재사명
                 if (req.data[i].ColLbl && req.data[i].ColLbl == 0) {
                     insCompanyData = req.data[i].sid;
                 }
-                //계약명
                 if (req.data[i].ColLbl && req.data[i].ColLbl == 1) {
                     insContractData = req.data[i].sid;
                 }
@@ -257,7 +253,6 @@ exports.selectOcrFilePaths = function (req, done) {
                 */
                 res.push(dict);
             }
-
             //resolve(result.rows);
             return done(null, res);
         } catch (err) { // catches errors in getConnection and the query
@@ -276,7 +271,6 @@ exports.selectOcrFilePaths = function (req, done) {
 
 exports.convertTiftoJpg = function (originFilePath, done) {
     try {
-        //출력파일은 서버의 절대 경로 c/ImageTemp/오늘날짜/originFile명 으로 저장
         convertedFileName = originFilePath.split('.')[0] + '.jpg';
         execSync('module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
         return done(null, convertedFileName);
@@ -343,7 +337,6 @@ exports.selectLegacyData = function (req, done) {
             var tempImageFileName = req;
             /*
             for (image in req) {
-                //image 파일명 추출
                 var items = req[image]['mlexport']
                 for (var item = 0; item < req[image]['mlexport'].length; item++) {
                     if (req[image][item]['ORIGINFILENAME']) {
@@ -351,10 +344,9 @@ exports.selectLegacyData = function (req, done) {
                     }
 
                 }
-                //image id 추출
                 let result = await conn.execute(`SELECT IMGID, PAGENUM FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
                 result.rows[0][0] = 154384
-                //image data 추출
+
                 result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILEENDNO >= :PAGEEND AND IMGFILESTARTNO <= :PAGESTART`, [result.rows[0][0], result.rows[0][1], result.rows[0][1]]);
                 image.push(result.rows);
                 console.log(result.rows[0][1])
@@ -362,13 +354,13 @@ exports.selectLegacyData = function (req, done) {
             }
             */
 
-            //image id 추출
+
             //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
             let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, ['204d61.tif']);
             result.rows[0]["IMGID"] = 154384;
             result.rows[0]["PAGENUM"] = 1;
             result.rows[0]["TOTALCOUNT"] = 5;
-            //image data 추출
+
             result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [result.rows[0]["IMGID"], result.rows[0]["PAGENUM"], result.rows[0]["TOTALCOUNT"]]);
             //image.push(result.rows);
             console.log(result.rows);
@@ -377,6 +369,38 @@ exports.selectLegacyData = function (req, done) {
 
 
             return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertOcrSymspell = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            for (var i in req.split(' ')) {
+                result = await conn.execute(queryConfig.uiLearningConfig.selectTypo, [req[i]]);
+
+                if (result.rows.length == 0) {
+                    result = await conn.execute(queryConfig.uiLearningConfig.insertTypo, [req[i]]);
+                } else {
+                    result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [req[i]]);
+                }
+            }
+            var res = { 'code': 200, message: 'insert ocr symspell success' };
+            return done(null, res);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {

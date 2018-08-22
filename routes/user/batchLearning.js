@@ -1607,15 +1607,6 @@ router.post('/selectMultiBatchAnswerDataToFilePath', function (req, res) {
     commonDB.reqQuery(queryConfig.batchLearningConfig.selectMultiBatchAnswerDataToFilePath + queryIn, callbackSelectMultiBatchAnswerDataToFilePath, req, res);
 });
 
-var test = require('../util/python-shell');
-router.get('/convertMLDataToImgSid', function (req, res) {
-    var data = "q5jjv7slub";
-
-    test.convertMLDataToImgSid(data, function (result) {
-        res.send({});
-    });
-});
-
 async function runTypoDomainTrain(data, callbackTypoDomainTrain) {
     let res;
     try {
