@@ -881,8 +881,7 @@ function imageMove(xDistance, yDistance) {
 
 function uiTrainEvent() {
     $("#uiTrainBtn").click(function (e) {
-        modifyTextData();
-        makeTrainingData();
+        modifyTextData();       
     });
 }
 
@@ -913,7 +912,7 @@ function modifyTextData() {
                 data: JSON.stringify({ 'beforeData': beforeData[i], 'afterData': afterData }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
-                    console.log(data);
+                    makeTrainingData();
                 },
                 error: function (err) {
                     console.log(err);
