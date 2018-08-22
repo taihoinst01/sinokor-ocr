@@ -20,8 +20,9 @@ var path = require('path');
 const flatten = require('flatten');
 const mz = require('mz/fs');
 const async = require("async");
-
-
+var oracle = require('../util/oracle.js');
+var sync = require('../util/sync.js');
+var pythonConfig = require(appRoot + '/config/pythonConfig');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
 var selectBatchLearningDataQuery = queryConfig.batchLearningConfig.selectBatchLearningData;
@@ -444,6 +445,48 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 
 //
 router.post('/execBatchLearningData2', function (req, res) {
+    /*
+    var arg = [
+        { "location": "342,542,411,87", "text": "TEST" },
+        { "location": "1045,294,409,23", "text": "Partner of Test" },
+        { "location": "1923,543,178,25", "text": "Test No" },
+        { "location": "1849,403,206,25", "text": "Test Date" },
+        { "location": "234,546,274,27", "text": "7933 Korean Re" },
+        { "location": "198,649,525,34", "text": "Proportional Treaty Statement" },
+        { "location": "2390,409,344,25", "text": "BV/HEO/2018/08/0819" },
+        { "location": "2101,534,169,25", "text": "01442/2018" },
+        { "location": "211,858,111,24", "text": "Cedant" },
+        { "location": "211,918,285,24", "text": "Class of Business" },
+        { "location": "218,1001,272,26", "text": "Period of Quarter" },
+        { "location": "212,1104,252,31", "text": "Period of Treaty" },
+        { "location": "210,1066,227,24", "text": "Our Reference" },
+        { "location": "210,1174,145,31", "text": "Currency" },
+        { "location": "211,1243,139,24", "text": "Premium" },
+        { "location": "220,1403,197,24", "text": "Commission" },
+        { "location": "220,1466,107,24", "text": "Claims" },
+        { "location": "222,1526,126,24", "text": "Reserve" },
+        { "location": "222,1389,123,24", "text": "Release" },
+        { "location": "222,1619,117,24", "text": "Interest" },
+        { "location": "222,1509,161,31", "text": "Brokerage" },
+        { "location": "235,1878,134,24", "text": "Portfolio" },
+        { "location": "222,1481,124,24", "text": "Balance" },
+        { "location": "440,899,492,32", "text": ": Test- First Insurance 2018" },
+        { "location": "440,912,636,26", "text": ": Test contract 2018" },
+        { "location": "708,888,433,25", "text": "07-05-2018 TO 19-08-2018" },
+        { "location": "708,920,454,25", "text": ": 22-03-2018 TO 30-09-2018" },
+        { "location": "475,998,304,25", "text": ": TEST/CTNM/8403" },
+        { "location": "829,1173,171,25", "text": "JOD 1.50" },
+        { "location": "839,1239,83,25", "text": "4.32" },
+        { "location": "839,1299,58,25", "text": "34.21" },
+        { "location": "839,1362,64,25", "text": "4.25" },
+        { "location": "839,1422,58,25", "text": "1.65" },
+        { "location": "839,1485,64,25", "text": "0.00" },
+        { "location": "839,1545,64,25", "text": "2.38" },
+        { "location": "839,1605,64,25", "text": "71.65" },
+        { "location": "848,1677,64,25", "text": "33.10" },
+        { "location": "1956,1879,356,29", "text": "TEST CONTRACT" }
+    ];
+    */
     console.log('--execBatchLearningDataV1.3');
     var arg = req.body.data;
 
@@ -1820,7 +1863,97 @@ function labelMappingTrain(data) {
     });
 }
 
+router.get('/batchMlTest', function (req, res) {
+    var imgId = "doie3vqw0hv";
+    //var imgId = "doie3vqw0h22222v";
+    batchMlTest(imgId, function (retData) {
+        console.log(retData);
+        res.send('test');
+    });
+});
 
+function batchMlTest(imgId, callback) {
+    sync.fiber(function () {
+        var retData = {};
+
+        var originArr = [imgId];
+
+        var originImageArr = sync.await(oracle.selectOcrFilePaths(originArr, sync.defer()));
+
+        //tif파일일 경우 이미지 파일로 전환
+        for (var item in originImageArr) {
+            if (originImageArr[item].ORIGINFILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].ORIGINFILENAME.split('.')[1].toLowerCase() === 'tiff') {
+                let result = sync.await(oracle.convertTiftoJpg(originImageArr[item].FILEPATH, sync.defer()));
+                if (!result) {
+                    //추후 변경전 파일명 저장
+                    originImageArr[item]['ORIGINFILEPATH'] = originImageArr[item]['FILEPATH'];
+                    originImageArr[item]['FILEPATH'] = result;
+                }
+            }
+        }
+
+        //ocr처리
+        originImageArr[0]['ORIGINFILEPATH'] = originImageArr[0]['FILEPATH'];
+        //originImageArr[0]['FILEPATH'] = 'C:\\tmp\\temp.jpg';
+        var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
+
+        console.log("done ocr");
+
+        //결과값 머신러닝 처리
+        //typo ML
+        pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
+        var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
+        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+        var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+
+        console.log("done typo ML");
+
+        //form label mapping DL
+        pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
+        resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
+        resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+
+        console.log("done formLabelMapping ML");
+
+        //form mapping DL
+        pythonConfig.formMappingOptions.args.push(JSON.stringify(resPyArr));
+        resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
+        resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+        var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer()));
+
+        console.log("done formMapping ML");
+
+        //column mapping DL
+        pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
+        resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
+        resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+
+        var mlData = {};
+        mlData["mlData"] = resPyArr;
+        mlData["docCategory"] = docData.docCategory[0];
+
+        retData["mlexport"] = mlData;
+
+        console.log("done columnMapping ML");
+
+        //정답 테이블 데이터 추출
+        var cobineRegacyData = sync.await(oracle.selectLegacyData(originImageArr[0]['ORIGINFILENAME'], sync.defer()));
+
+        retData["regacy"] = cobineRegacyData;
+
+        console.log("done");
+
+        callback(retData);
+    });
+}
+
+function dataToTypoArgs(data) {
+
+    for (var i in data) {
+        data[i].text = data[i].text.toLowerCase().replace("'", "`");
+    }
+    return data;
+}
 
 
 

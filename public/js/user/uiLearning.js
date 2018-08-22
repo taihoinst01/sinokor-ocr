@@ -517,7 +517,9 @@ function executeML(totData) {
 function docComparePopup(imgIndex) {
     $('#docCompareBtn').unbind('click');
     $('#docCompareBtn').click(function (e) {
-        $('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
+        var appendImg = '<img id="originImg" src="../../uploads/' + lineText[imgIndex].fileName + '" style="width: 100%;height: 480px;">'
+        $('#ui_pop_MlImg').html(appendImg);
+        //$('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
         //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
         layer_open('layer1');
         e.preventDefault();
@@ -547,17 +549,32 @@ function detailTable(fileName) {
             var columnArr = item.column;
 
             for (var i in data) {
-                tblTag += '<dl>';
-                tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
-                tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-                tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
-                tblTag += '<input type="hidden" value="' + data[i].location + '" />';
-                tblTag += '</label>';
-                tblTag += '</dt>';
-                tblTag += '<dd>';
-                tblTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr)
-                tblTag += '</dd>';
-                tblTag += '</dl>';
+
+                if (data[i].colLbl == 36) {
+                    tblSortTag += '<dl>';
+                    tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                    tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
+                    tblSortTag += '<input type="hidden" value="' + data[i].location + '" />';
+                    tblSortTag += '</label>';
+                    tblSortTag += '</dt>';
+                    tblSortTag += '<dd>';
+                    tblSortTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr)
+                    tblSortTag += '</dd>';
+                    tblSortTag += '</dl>';
+                } else {
+                    tblTag += '<dl>';
+                    tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                    tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
+                    tblTag += '<input type="hidden" value="' + data[i].location + '" />';
+                    tblTag += '</label>';
+                    tblTag += '</dt>';
+                    tblTag += '<dd>';
+                    tblTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr)
+                    tblTag += '</dd>';
+                    tblTag += '</dl>';
+                }
             }
 
             /*
@@ -640,8 +657,7 @@ function detailTable(fileName) {
         }
         */
     }
-    $('#textResultTbl').append(tblSortTag);
-    $('#textResultTbl').append(tblTag);
+    $('#textResultTbl').append(tblTag).append(tblSortTag);
     // input 태그 마우스오버 말풍선 Tooltip 적용
     $('input[type=checkbox]').ezMark();
     new $.Zebra_Tooltips($('.tip'));
@@ -865,9 +881,48 @@ function imageMove(xDistance, yDistance) {
 
 function uiTrainEvent() {
     $("#uiTrainBtn").click(function (e) {
+        //modifyTextData();
         makeTrainingData();
-        //uiTrainAjax();
     });
+}
+
+function modifyTextData() {
+    var beforeData = lineText;
+    var afterData = [];
+    afterData.data = [];
+    beforeData = beforeData.slice(0);
+
+    // afterData Processing
+    $('#textResultTbl > dl').each(function (index, el) {
+        var location = $(el).find('label').children(1).val();
+        var text = $(el).find('label').children(0).val();
+        var colLbl = $(el).find('select').find('option:selected').val();
+        afterData.data.push({ 'location': location, 'text': text, 'colLbl': colLbl });
+    });
+    afterData.fileName = $('#imageBox > .on span').text();
+
+    // find an array of data with the same filename
+    for (var i in beforeData) {
+        if (beforeData[i].fileName === afterData.fileName) {
+            $.ajax({
+                url: '/uiLearning/modifyTextData',
+                type: 'post',
+                datatype: "json",
+                data: JSON.stringify({ 'beforeData': beforeData[i], 'afterData': afterData }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+            break;
+        }
+    }
+
+    console.log(beforeData);
+    console.log(afterData);
 }
 
 function makeTrainingData() {
@@ -891,7 +946,7 @@ function makeTrainingData() {
         var obj = {}
         obj.text = text;
         obj.location = location;
-        obj.column = column;
+        obj.ColLbl = column;
 
         dataArray.push(obj);
     }
@@ -914,49 +969,33 @@ function makeTrainingData() {
     startProgressBar();
     addProgressBar(1, 20);
 
-    insertTrainingData(dataArray);
+    var data = {}
+    data.data = dataArray;
 
-    /*
-    $.ajax({
-        url: '/uiLearning/uiTrain',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify({ "data": dataArray }),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            addProgressBar(21, 100);
-            alert(data);
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
-    */
+    data.docCategory = JSON.parse($('#docData').val());
+
+    insertTrainingData(data);
 }
 
 function insertTrainingData(data) {
-    insertTypoTrain(data, callbackInsertTypoTrain);
+    //insertTypoTrain(data, callbackInsertTypoTrain);
+    $('#progressMsgTitle').html('라벨 분류 처리 중..');
+    addProgressBar(21, 40);
+    addLabelMappingTrain(data, callbackAddLabelMapping);
 }
 
-function callbackInsertTypoTrain(data) {
-    makeTrainingSidData(data, callbackMakeTrainingSidData);
+function callbackAddLabelMapping(data) {
+    $('#progressMsgTitle').html('양식 분류 처리 중..');
+    addProgressBar(41, 60);
+    addDocMappingTrain(data, callbackAddDocMappingTrain);
 }
 
-function callbackMakeTrainingSidData(data) {
-    insertDocLabelMapping(data, callbackInsertDocLabelMapping);
+function callbackAddDocMappingTrain(data) {
+    $('#progressMsgTitle').html('컬럼 분류 처리 중..');
+    addProgressBar(61, 80);
+    addColumnMappingTrain(data);
 }
 
-var callbackInsertDocLabelMapping = function (data) {
-    insertDocMapping(data, callbackInsertDocMapping);
-};
-
-var callbackInsertDocMapping = function (data) {
-    insertColMapping(data, callbackInsertColMapping);
-};
-
-function callbackInsertColMapping(data) {
-    uiTrainAjax();
-}
 
 function uiTrainAjax() {
     $.ajax({
@@ -994,15 +1033,15 @@ function insertTypoTrain(data, callback) {
     });
 }
 
-function makeTrainingSidData(data, callback) {
+function addLabelMappingTrain(data, callback) {
     $.ajax({
-        url: '/uiLearning/makeTrainingSidData',
+        url: '/batchLearning/insertDocLabelMapping',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
-            callback(res);
+            callback(res.data);
         },
         error: function (err) {
             console.log(err);
@@ -1011,51 +1050,16 @@ function makeTrainingSidData(data, callback) {
 }
 
 // 양식 레이블 매핑 ml 데이터 insert
-function insertDocLabelMapping(data, callback) {
-    var param = {};
-    param.data = data;
-
-    $.ajax({
-        url: '/batchLearning/insertDocLabelMapping',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify({ 'data': param }),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (res) {
-            console.log(res);
-            callback(data);
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
-}
-
-// 양식 매핑 ml 데이터 insert
-function insertDocMapping(data, callback) {
-    var param = [];
-    for (var i in data) {
-        if (data[i].column == 0) {
-            param.push(data[i]);
-        }
-    }
-    for (var i in data) {
-        if (data[i].column == 1) {
-            param.push(data[i]);
-        }
-    }
-
-    var dacCategory = JSON.parse($('#docData').val());
-
+function addDocMappingTrain(data, callback) {
     $.ajax({
         url: '/batchLearning/insertDocMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': dacCategory }),
+        data: JSON.stringify({ 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
-            callback(data);
+            callback(res.data);
         },
         error: function (err) {
             console.log(err);
@@ -1063,33 +1067,25 @@ function insertDocMapping(data, callback) {
     });
 }
 
-// 컬럼 매핑 ml 데이터 insert
-function insertColMapping(data, callback) {
-    var param = [];
-    for (var i in data) {
-        if (data[i].column != 999) {
-            param.push(data[i]);
-        }
-    }
-
-    var dacCategory = JSON.parse($('#docData').val());
+function addColumnMappingTrain(data, callback) {
 
     $.ajax({
         url: '/batchLearning/insertColMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': param, 'docCategory': dacCategory }),
+        data: JSON.stringify({ 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
-            callback(data);
+            alert("success training");
+            addProgressBar(81, 100);
+            //callback(data);
         },
         error: function (err) {
             console.log(err);
         }
     });
 }
-
 
 // 문서 양식 조회 팝업 라디오 이벤트
 function changeDocPopRadio() {

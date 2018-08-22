@@ -49,6 +49,7 @@
     "request": "^2.87.0",
     "serve-favicon": "^2.3.0",
     "simple-oracledb": "^1.2.4",
+    "sync-exec": "^0.6.2",
     "sync-mysql": "^3.0.1",
     "winston": "^3.0.0",
     "winston-daily-rotate-file": "^3.3.0",

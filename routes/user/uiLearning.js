@@ -10,6 +10,9 @@ var request = require('request');
 var oracledb = require('oracledb');
 var dbConfig = require('../../config/dbConfig.js');
 var logger = require('../util/logger');
+var sync = require('../util/sync.js');
+var oracle = require('../util/oracle.js');
+
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -331,6 +334,47 @@ router.post('/insertTypoTrain', function (req, res) {
     });
 });
 
+router.post('/modifyTextData', function (req, res) {
+    var beforeData = req.body.beforeData;
+    var afterData = req.body.afterData;
+    var returnObj;
+    try {
+        for (var i in afterData) {
+            if (afterData[i].colLbl == 0 || afterData[i].colLbl == 1) { // 출재사명, 계약명 이면
+                for (var j in beforeData) {
+                    if (afterData[i].location == beforeData[j].location) {
+                        if (isWordLengthMatch(afterData[i], beforeData[j])) { // 수정 전 후 텍스트 길이 차이가 1 이하인 경우
+                            sync.await(oracle.insertOcrSymspell([afterData[i]], sync.defer()));
+                        } else { // 수정 전 후 텍스트 길이 차이가 2 이상인 경우
+                            sync.await(oracle.insertContractMapping([afterData[i], beforeData[j]], sync.defer()));
+                        }
+                    }
+                }
+            } else if (afterData[i].colLbl == 37) {// 화폐코드 이면
+                for (var j in beforeData) {
+                    if (afterData[i].location == beforeData[j].location) {
+                        sync.await(oracle.insertOcrSymspellForCurunit([afterData[i]], sync.defer()));
+                    }
+                }
+            }
+        }
+
+    } catch (e) {
+        returnObj = { code: '200', e };
+    } finally {
+        res.send(returnObj);
+    }
+});
+
+function isWordLengthMatch(afterDataItem, beforeDataItem) {
+    var lengthDifference = afterDataItem.text.length - beforeDataItem.text.length;
+    if (lengthDifference >= -1 && lengthDifference <= 1) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 async function runInsertTypoTrain(data, req, res, callback) {
     try {
         let ret = await insertTypoTrain(data, req, res);
@@ -398,14 +442,6 @@ function insertTypoTrain(data, req, res) {
         }
     });
 }
-
-router.post('/makeTrainingSidData', function (req, res) {
-    var data = req.body.data;
-
-    runMakeTrainingSidData(data, req, res, function (retData) {
-        res.send(retData);
-    });
-});
 
 async function runMakeTrainingSidData(data, req, res, callback) {
     try {
