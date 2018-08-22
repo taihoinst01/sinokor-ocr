@@ -906,7 +906,7 @@ function modifyTextData() {
         if (beforeData[i].fileName == afterData.fileName) {
 
             $.ajax({
-                url: '/uiLearning/modifyTextData',
+                url: '/common/modifyTextData',
                 type: 'post',
                 datatype: "json",
                 data: JSON.stringify({ 'beforeData': beforeData[i].data, 'afterData': afterData }),
