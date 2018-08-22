@@ -912,7 +912,7 @@ function modifyTextData() {
                 data: JSON.stringify({ 'beforeData': beforeData[i].data, 'afterData': afterData }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
-                    //makeTrainingData();
+                    makeTrainingData();
                 },
                 error: function (err) {
                     console.log(err);
