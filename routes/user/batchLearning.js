@@ -1863,87 +1863,101 @@ function labelMappingTrain(data) {
     });
 }
 
-router.get('/batchMlTest', function (req, res) {
-    var imgId = "doie3vqw0hv";
-    //var imgId = "doie3vqw0h22222v";
-    batchMlTest(imgId, function (retData) {
-        console.log(retData);
-        res.send('test');
-    });
-});
-
-function batchMlTest(imgId, callback) {
+router.post('/batchLearnTraing', function (req, res) {
     sync.fiber(function () {
-        var retData = {};
+        var imgId = req.body.imgIdArray;
+        var retData = [];
+        for (var i = 0; i < imgId.length; i++) {
+            var mlData = sync.await(batchLearnTraing(imgId[i], sync.defer()));
+            retData.push(mlData);
+        }
+        res.send({ data: retData });
+    });
+}); 
 
-        var originArr = [imgId];
 
-        var originImageArr = sync.await(oracle.selectOcrFilePaths(originArr, sync.defer()));
+function batchLearnTraing(imgId, done) {
+    sync.fiber(function () {
+        try {
+            var retData = {};
 
-        //tif파일일 경우 이미지 파일로 전환
-        for (var item in originImageArr) {
-            if (originImageArr[item].ORIGINFILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].ORIGINFILENAME.split('.')[1].toLowerCase() === 'tiff') {
-                let result = sync.await(oracle.convertTiftoJpg(originImageArr[item].FILEPATH, sync.defer()));
-                if (!result) {
-                    //추후 변경전 파일명 저장
-                    originImageArr[item]['ORIGINFILEPATH'] = originImageArr[item]['FILEPATH'];
-                    originImageArr[item]['FILEPATH'] = result;
+            var originArr = [imgId];
+
+            var originImageArr = sync.await(oracle.selectOcrFilePaths(originArr, sync.defer()));
+
+            //tif파일일 경우 이미지 파일로 전환
+            for (var item in originImageArr) {
+                if (originImageArr[item].ORIGINFILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].ORIGINFILENAME.split('.')[1].toLowerCase() === 'tiff') {
+                    let result = sync.await(oracle.convertTiftoJpg(originImageArr[item].FILEPATH, sync.defer()));
+                    if (!result) {
+                        //추후 변경전 파일명 저장
+                        originImageArr[item]['ORIGINFILEPATH'] = originImageArr[item]['FILEPATH'];
+                        originImageArr[item]['FILEPATH'] = result;
+                    }
                 }
             }
+
+            //ocr처리
+            originImageArr[0]['ORIGINFILEPATH'] = originImageArr[0]['FILEPATH'];
+            //originImageArr[0]['FILEPATH'] = 'C:\\tmp\\temp.jpg';
+            var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
+
+            console.log("done ocr");
+
+            //결과값 머신러닝 처리
+            //typo ML
+            pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
+            var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
+            var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+
+            console.log("done typo ML");
+
+            //form label mapping DL
+            pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
+            resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
+            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+
+            console.log("done formLabelMapping ML");
+
+            //form mapping DL
+            pythonConfig.formMappingOptions.args.push(JSON.stringify(resPyArr));
+            resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
+            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer()));
+
+            console.log("done formMapping ML");
+
+            //column mapping DL
+            pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
+            resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
+            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+
+            var mlData = {};
+            mlData["mlData"] = resPyArr;
+            mlData["docCategory"] = docData.docCategory[0];
+
+            retData["mlexport"] = mlData;
+
+            console.log("done columnMapping ML");
+
+            //정답 테이블 데이터 추출
+            var cobineRegacyData = sync.await(oracle.selectLegacyData(originImageArr[0]['ORIGINFILENAME'], sync.defer()));
+
+            retData["regacy"] = cobineRegacyData;
+
+            //정답 데이터 INSERT
+            //sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
+
+            //ML 데이터 INSERT
+            //sync.await(oracle.insertMLData(cobineRegacyData, sync.defer()));
+
+            console.log("done");
+
+            return done(null, retData);
+        }catch (e) {
+            return done(null, "error");
         }
-
-        //ocr처리
-        originImageArr[0]['ORIGINFILEPATH'] = originImageArr[0]['FILEPATH'];
-        //originImageArr[0]['FILEPATH'] = 'C:\\tmp\\temp.jpg';
-        var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
-
-        console.log("done ocr");
-
-        //결과값 머신러닝 처리
-        //typo ML
-        pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
-        var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
-        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-        var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
-
-        console.log("done typo ML");
-
-        //form label mapping DL
-        pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
-        resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
-        resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-
-        console.log("done formLabelMapping ML");
-
-        //form mapping DL
-        pythonConfig.formMappingOptions.args.push(JSON.stringify(resPyArr));
-        resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
-        resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-        var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer()));
-
-        console.log("done formMapping ML");
-
-        //column mapping DL
-        pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
-        resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
-        resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-
-        var mlData = {};
-        mlData["mlData"] = resPyArr;
-        mlData["docCategory"] = docData.docCategory[0];
-
-        retData["mlexport"] = mlData;
-
-        console.log("done columnMapping ML");
-
-        //정답 테이블 데이터 추출
-        var cobineRegacyData = sync.await(oracle.selectLegacyData(originImageArr[0]['ORIGINFILENAME'], sync.defer()));
-
-        retData["regacy"] = cobineRegacyData;
-
-        console.log("done");
-
-        callback(retData);
     });
 }
 

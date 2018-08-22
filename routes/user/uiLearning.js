@@ -335,35 +335,52 @@ router.post('/insertTypoTrain', function (req, res) {
 });
 
 router.post('/modifyTextData', function (req, res) {
+    var res = res;
     var beforeData = req.body.beforeData;
     var afterData = req.body.afterData;
+    var beforeOgAndCtnm = [];
+    var afterOgAndCtnm = [];
     var returnObj;
-    try {
-        for (var i in afterData) {
-            if (afterData[i].colLbl == 0 || afterData[i].colLbl == 1) { // 출재사명, 계약명 이면
-                for (var j in beforeData) {
-                    if (afterData[i].location == beforeData[j].location) {
-                        if (isWordLengthMatch(afterData[i], beforeData[j])) { // 수정 전 후 텍스트 길이 차이가 1 이하인 경우
-                            sync.await(oracle.insertOcrSymspell([afterData[i]], sync.defer()));
-                        } else { // 수정 전 후 텍스트 길이 차이가 2 이상인 경우
-                            sync.await(oracle.insertContractMapping([afterData[i], beforeData[j]], sync.defer()));
+    
+    sync.fiber(function () {
+        try {
+            for (var i in afterData.data) {
+                if (afterData.data[i].colLbl == 0 || afterData.data[i].colLbl == 1) { // ogCompany or contractName 
+                    for (var j in beforeData.data) {
+                        if (afterData.data[i].location == beforeData.data[j].location) {
+
+                            if (isWordLengthMatch(afterData.data[i], beforeData.data[j])) { // text length difference is less than 2
+                                sync.await(oracle.insertOcrSymspell([afterData.data[i]], sync.defer()));
+                            } else {
+                                beforeOgAndCtnm.push(beforeData.data[j]);
+                                afterOgAndCtnm.push(afterData.data[i]);
+                            }
+
                         }
                     }
-                }
-            } else if (afterData[i].colLbl == 37) {// 화폐코드 이면
-                for (var j in beforeData) {
-                    if (afterData[i].location == beforeData[j].location) {
-                        sync.await(oracle.insertOcrSymspellForCurunit([afterData[i]], sync.defer()));
-                    }
-                }
-            }
-        }
+                } else if (afterData.data[i].colLbl == 4) {// currency code
+                    for (var j in beforeData.data) {
+                        if (afterData.data[i].location == beforeData.data[j].location) {
 
-    } catch (e) {
-        returnObj = { code: '200', e };
-    } finally {
-        res.send(returnObj);
-    }
+                            sync.await(oracle.insertOcrSymspellForCurunit([afterData.data[i], beforeData.data[j]], sync.defer()));
+
+                        }
+                    }
+                }        
+            }   
+
+            var params = convertContractMappingData(beforeOgAndCtnm, afterOgAndCtnm);
+            if (params) {
+                sync.await(oracle.insertContractMapping(params, sync.defer()));
+            }
+            returnObj = { code: 200, message: 'modify textData success' };
+
+        } catch (e) {            
+            returnObj = { code: 500, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
 });
 
 function isWordLengthMatch(afterDataItem, beforeDataItem) {
@@ -372,6 +389,38 @@ function isWordLengthMatch(afterDataItem, beforeDataItem) {
         return true;
     } else {
         return false;
+    }
+}
+
+function convertContractMappingData(beforeOgAndCtnm, afterOgAndCtnm) {
+    var extOgComapnyName, extCtnm, asOgComapnyName, asCtnm;
+
+    if (beforeOgAndCtnm.length == 2 && afterOgAndCtnm.length == 2) {   
+        
+        for (var i in beforeOgAndCtnm) {
+            for (var j in afterOgAndCtnm) {
+                if (beforeOgAndCtnm[i].location == afterOgAndCtnm[j].location && afterOgAndCtnm[i].colLbl == 0) {
+                    extOgComapnyName = beforeOgAndCtnm[i].text;
+                    break;
+                } else if (beforeOgAndCtnm[i].location == afterOgAndCtnm[j].location && afterOgAndCtnm[i].colLbl == 1) {
+                    extCtnm = beforeOgAndCtnm[i].text;
+                    break;
+                }
+            }
+        }
+
+        for (var i in afterOgAndCtnm) {
+            if (afterOgAndCtnm[i].colLbl == 0) {
+                asOgComapnyName = afterOgAndCtnm[i].text;
+            } else {
+                asCtnm = afterOgAndCtnm[i].text;
+            }
+        }
+
+        return [extOgComapnyName, extCtnm, asOgComapnyName, asCtnm];
+        
+    } else {
+        return null;
     }
 }
 
