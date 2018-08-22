@@ -1626,8 +1626,8 @@ var fn_popBatchRun = function () {
                     alert("선택된 학습이 없습니다.");
                     return;
                 } else {
-                    searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-                    //batchLearnTraing(imgIdArray, "PROCESS_IMAGE");
+                    //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+                    batchLearnTraing(imgIdArray, "PROCESS_IMAGE");
                 }
             } else {
                 alert("Before Training 상태에서만 배치학습이 가능합니다.");

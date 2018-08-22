@@ -237,8 +237,8 @@ exports.selectOcrFilePaths = function (req, done) {
         let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let result = await conn.execute(`SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (${req.map((name, index) => `:${index}`).join(", ")})`, req);
-            //let result = await conn.execute("SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (:imgid)", [req[0]]);
+            //let result = await conn.execute(`SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (${req.map((name, index) => `:${index}`).join(", ")})`, req);
+            let result = await conn.execute("SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (:imgid)", ["10"]);
 
             for (var row = 0; row < result.rows.length; row++) {
                 var dict = {};
@@ -358,16 +358,12 @@ exports.selectLegacyData = function (req, done) {
 
             //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
             let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, ['204d61.tif']);
-            result.rows[0]["IMGID"] = 154384;
-            result.rows[0]["PAGENUM"] = 1;
-            result.rows[0]["TOTALCOUNT"] = 5;
+            result.rows[0]["IMGID"] = 153139;
+            result.rows[0]["PAGENUM"] = 2;
+            result.rows[0]["TOTALCOUNT"] = 2;
 
             result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [result.rows[0]["IMGID"], result.rows[0]["PAGENUM"], result.rows[0]["TOTALCOUNT"]]);
             //image.push(result.rows);
-            console.log(result.rows);
-
-            let colData = await conn.execute(`SELECT COLNAME, COLTYPE, COLNUM FROM TBL_COLUMN_MAPPING_CLS`);
-
 
             return done(null, result.rows);
         } catch (err) { // catches errors in getConnection and the query
@@ -392,12 +388,129 @@ exports.insertRegacyData = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            insSql = queryConfig.batchLearing.insertBatchLearningData;
-
             for (var i = 0; i < req.length; i++) {
-                var cond = [];
-                let colData = await conn.execute(insSql, cond);
 
+                let LearnDataRes = await conn.execute("select count(*) as count from tbl_batch_learn_data where imgid = :imgid", [fileInfos[0].imgId]);
+
+                if (j + 1 <= LearnDataRes.rows[0].COUNT) {
+
+                    var dataArr = [
+                        "N",
+                        commonUtil.nvl(dataCod.entryNo),
+                        commonUtil.nvl(dataCod.STATEMENTDIV),
+                        commonUtil.nvl(dataCod.CONTRACTNUM),
+                        commonUtil.nvl(dataCod.ogCompanyCode),
+                        commonUtil.nvl(dataCod.CTOGCOMPANYNAMENM),
+                        commonUtil.nvl(dataCod.brokerCode),
+                        commonUtil.nvl(dataCod.brokerName),
+                        commonUtil.nvl(dataCod.CTNM),
+                        commonUtil.nvl(dataCod.insstdt),
+                        commonUtil.nvl(dataCod.insenddt),
+                        commonUtil.nvl(dataCod.UY),
+                        commonUtil.nvl(dataCod.CURCD),
+                        commonUtil.nvl2(dataCod.PAIDPERCENT, 0),
+                        commonUtil.nvl2(dataCod.PAIDSHARE, 0),
+                        commonUtil.nvl2(dataCod.OSLPERCENT, 0),
+                        commonUtil.nvl2(dataCod.OSLSHARE, 0),
+                        commonUtil.nvl2(dataCod.GROSSPM, 0),
+                        commonUtil.nvl2(dataCod.PM, 0),
+                        commonUtil.nvl2(dataCod.PMPFEND, 0),
+                        commonUtil.nvl2(dataCod.PMPFWOS, 0),
+                        commonUtil.nvl2(dataCod.XOLPM, 0),
+                        commonUtil.nvl2(dataCod.RETURNPM, 0),
+                        commonUtil.nvl2(dataCod.GROSSCN, 0),
+                        commonUtil.nvl2(dataCod.CN, 0),
+                        commonUtil.nvl2(dataCod.PROFITCN, 0),
+                        commonUtil.nvl2(dataCod.BROKERAGE, 0),
+                        commonUtil.nvl2(dataCod.TAX, 0),
+                        commonUtil.nvl2(dataCod.OVERRIDINGCOM, 0),
+                        commonUtil.nvl2(dataCod.CHARGE, 0),
+                        commonUtil.nvl2(dataCod.PMRESERVERTD, 0),
+                        commonUtil.nvl2(dataCod.PFPMRESERVERTD, 0),
+                        commonUtil.nvl2(dataCod.PMRESERVERLD, 0),
+                        commonUtil.nvl2(dataCod.PFPMRESERVERLD, 0),
+                        commonUtil.nvl2(dataCod.CLAIM, 0),
+                        commonUtil.nvl2(dataCod.LOSSRECOVERY, 0),
+                        commonUtil.nvl2(dataCod.CASHLOSS, 0),
+                        commonUtil.nvl2(dataCod.CASHLOSSRD, 0),
+                        commonUtil.nvl2(dataCod.LOSSRR, 0),
+                        commonUtil.nvl2(dataCod.LOSSRR2, 0),
+                        commonUtil.nvl2(dataCod.LOSSPFEND, 0),
+                        commonUtil.nvl2(dataCod.LOSSPFWOA, 0),
+                        commonUtil.nvl2(dataCod.INTEREST, 0),
+                        commonUtil.nvl2(dataCod.TAXON, 0),
+                        commonUtil.nvl2(dataCod.MISCELLANEOUS, 0),
+                        commonUtil.nvl2(dataCod.PMBL, 0),
+                        commonUtil.nvl2(dataCod.CMBL, 0),
+                        commonUtil.nvl2(dataCod.NTBL, 0),
+                        commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0)
+                    ];
+
+                    //update
+                    console.log("update");
+                    var andCond = "('" + fileInfos[0].imgId + "') and subnum = " + (parseInt(j) + 1);
+                    let updLearnDataRes = await conn.execute(queryConfig.batchLearningConfig.updateBatchLearningData + andCond, dataArr);
+                } else {
+                    //insert
+                    var regId = req.session.userId;
+
+                    var insArr = [
+                        fileInfos[0].imgId,
+                        commonUtil.nvl(dataCod.entryNo),
+                        commonUtil.nvl(dataCod.STATEMENTDIV),
+                        commonUtil.nvl(dataCod.CONTRACTNUM),
+                        commonUtil.nvl(dataCod.ogCompanyCode),
+                        commonUtil.nvl(dataCod.CTOGCOMPANYNAMENM),
+                        commonUtil.nvl(dataCod.brokerCode),
+                        commonUtil.nvl(dataCod.brokerName),
+                        commonUtil.nvl(dataCod.CTNM),
+                        commonUtil.nvl(dataCod.insstdt),
+                        commonUtil.nvl(dataCod.insenddt),
+                        commonUtil.nvl(dataCod.UY),
+                        commonUtil.nvl(dataCod.CURCD),
+                        commonUtil.nvl2(dataCod.PAIDPERCENT, 0),
+                        commonUtil.nvl2(dataCod.PAIDSHARE, 0),
+                        commonUtil.nvl2(dataCod.OSLPERCENT, 0),
+                        commonUtil.nvl2(dataCod.OSLSHARE, 0),
+                        commonUtil.nvl2(dataCod.GROSSPM, 0),
+                        commonUtil.nvl2(dataCod.PM, 0),
+                        commonUtil.nvl2(dataCod.PMPFEND, 0),
+                        commonUtil.nvl2(dataCod.PMPFWOS, 0),
+                        commonUtil.nvl2(dataCod.XOLPM, 0),
+                        commonUtil.nvl2(dataCod.RETURNPM, 0),
+                        commonUtil.nvl2(dataCod.GROSSCN, 0),
+                        commonUtil.nvl2(dataCod.CN, 0),
+                        commonUtil.nvl2(dataCod.PROFITCN, 0),
+                        commonUtil.nvl2(dataCod.BROKERAGE, 0),
+                        commonUtil.nvl2(dataCod.TAX, 0),
+                        commonUtil.nvl2(dataCod.OVERRIDINGCOM, 0),
+                        commonUtil.nvl2(dataCod.CHARGE, 0),
+                        commonUtil.nvl2(dataCod.PMRESERVERTD, 0),
+                        commonUtil.nvl2(dataCod.PFPMRESERVERTD, 0),
+                        commonUtil.nvl2(dataCod.PMRESERVERLD, 0),
+                        commonUtil.nvl2(dataCod.PFPMRESERVERLD, 0),
+                        commonUtil.nvl2(dataCod.CLAIM, 0),
+                        commonUtil.nvl2(dataCod.LOSSRECOVERY, 0),
+                        commonUtil.nvl2(dataCod.CASHLOSS, 0),
+                        commonUtil.nvl2(dataCod.CASHLOSSRD, 0),
+                        commonUtil.nvl2(dataCod.LOSSRR, 0),
+                        commonUtil.nvl2(dataCod.LOSSRR2, 0),
+                        commonUtil.nvl2(dataCod.LOSSPFEND, 0),
+                        commonUtil.nvl2(dataCod.LOSSPFWOA, 0),
+                        commonUtil.nvl2(dataCod.INTEREST, 0),
+                        commonUtil.nvl2(dataCod.TAXON, 0),
+                        commonUtil.nvl2(dataCod.MISCELLANEOUS, 0),
+                        commonUtil.nvl2(dataCod.PMBL, 0),
+                        commonUtil.nvl2(dataCod.CMBL, 0),
+                        commonUtil.nvl2(dataCod.NTBL, 0),
+                        commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0),
+                        regId,
+                        (parseInt(j) + 1)
+                    ];
+
+                    console.log("insert");
+                    let insLearnDataRes = await conn.execute(queryConfig.batchLearningConfig.insertBatchLearningData, insArr);
+                }
 
             }
 
@@ -424,9 +537,21 @@ exports.insertMLData = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            insSql = queryConfig.batchLearing.insertBatchLearningData;
+            insSql = queryConfig.batchLearing.insertMlExport;
+            delSql = queryConfig.batchLearing.insertMlExport;
 
-            return done(null, result.rows);
+            let delRes = await conn.execute(delSql, imgId);
+
+            for (var i = 0; i < req.data.length; i++) {
+                var cond = [];
+                cond.push(imgid);
+                cond.push(req.data[i].column);
+                cond.push(req, data[i].text);
+
+                let colData = await conn.execute(insSql, cond);
+            }
+
+            return done(null, "mlExport");
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {

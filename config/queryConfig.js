@@ -427,7 +427,15 @@ var batchLearningConfig = {
         WHERE
             F.imgId = D.imgId
             AND
-            F.filePath IN `
+            F.filePath IN `,
+    insertMlExport:
+        `INSERT INTO TBL_BATCH_ML_EXPORT
+         VALUES(:imgId, :colLabel, :colValue)        
+        `,
+    deleteMlExport:
+        `DELETE FROM TBL_BATCH_ML_EXPORT
+         WHERE IMGID = :imgId
+        `
 };
 
 var uiLearningConfig = {

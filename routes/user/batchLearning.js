@@ -1867,13 +1867,16 @@ router.post('/batchLearnTraing', function (req, res) {
     sync.fiber(function () {
         var imgId = req.body.imgIdArray;
         var retData = [];
+        /*
         for (var i = 0; i < imgId.length; i++) {
             var mlData = sync.await(batchLearnTraing(imgId[i], sync.defer()));
             retData.push(mlData);
-        }
+        }*/
+        var mlData = sync.await(batchLearnTraing("10.jpg", sync.defer()));
+
         res.send({ data: retData });
     });
-}); 
+});
 
 
 function batchLearnTraing(imgId, done) {
@@ -1899,7 +1902,7 @@ function batchLearnTraing(imgId, done) {
 
             //ocr처리
             originImageArr[0]['ORIGINFILEPATH'] = originImageArr[0]['FILEPATH'];
-            //originImageArr[0]['FILEPATH'] = 'C:\\tmp\\temp.jpg';
+            //originImageArr[0]['FILEPATH'] = 'C:\\tmp\\10.jpg';
             var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
 
             console.log("done ocr");
@@ -1947,15 +1950,15 @@ function batchLearnTraing(imgId, done) {
             retData["regacy"] = cobineRegacyData;
 
             //정답 데이터 INSERT
-            //sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
+            sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
 
             //ML 데이터 INSERT
-            //sync.await(oracle.insertMLData(cobineRegacyData, sync.defer()));
+            sync.await(oracle.insertMLData(cobineRegacyData, sync.defer()));
 
             console.log("done");
 
             return done(null, retData);
-        }catch (e) {
+        } catch (e) {
             return done(null, "error");
         }
     });
