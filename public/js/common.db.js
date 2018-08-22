@@ -11,7 +11,10 @@ var commonUtil = require(require('app-root-path').path + '/public/js/common.util
 var commModule = require(require('app-root-path').path + '/public/js/import.js');
 var queryConfig = commModule.queryConfig;
 
+var SimpleOracleDB = require('simple-oracledb');
+
 module.exports = function (pool) {
+    SimpleOracleDB.extend(pool); // modify the original oracledb pool instance
 
     // Paing query 생성
     var makePagingQuery = function (req, targetQuery) {
@@ -243,66 +246,39 @@ module.exports = function (pool) {
     // upload excelpath & exceldata (2018-08-21)
     var reqInsertExcelDataPath = function (pathResult, dataResult, req, res) {
         pool.getConnection(function (err, connection) {
-            async.forEachOf(pathResult, function (dataElement, i, inner_callback) {
-                let data = [];
-                for (var j = 0, y = pathResult[i].length; j < y; j++) {
-                    data.push(commonUtil.nvl(pathResult[i][j]));
+            console.log("pathResult : " + pathResult.length);
+            console.log("dataResult : " + dataResult.length);
+         //   `INSERT INTO
+         //   tbl_batch_answer_file (imgId,pageNum,filePath,totalCount)
+         //VALUES
+         //   (:imgId, :pageNum, :filePath, :totalCount) `,
+            let pathOption = { autoCommit: true };
+            let pathCnt = 0;
+            while (pathCnt === pathResult.length) {
+                let pathList = [];
+                let pathData = {};
+                let subPathCnt = 0;
+                while (subPathCnt === 1000) {
+                    pathData = {
+                        imgId : commonUtil.nvl(pathResult[pathCnt + subPathCnt][0]),
+                        pageNum : commonUtil.nvl(pathResult[pathCnt + subPathCnt][1]),
+                        filePath : commonUtil.nvl(pathResult[pathCnt + subPathCnt][2]),
+                        totalCount : commonUtil.nvl(pathResult[pathCnt + subPathCnt][3])
+                    };
+                    pathList.push(pathData);
+                    subPathCnt++;
                 }
-                if (i != 0 && !commonUtil.isNull(pathResult[i][0])) {
-                    connection.execute(queryConfig.batchLearningConfig.insertBatchAnswerFile, data, function (err, result) {
-                        if (err) {
-                            console.log("err insert pathResult: " + i + " : " + JSON.stringify(data));
-                            inner_callback(err);
-                        } else {
-                            console.log(`insert pathResult : ` + JSON.stringify(data));
-                            inner_callback(callbackExcelDataPath);
-                        }
-                    });
-                }
-                if (i == pathResult.length - 1) insertData(pathResult, dataResult, req, res);
-            }, function (err) {
-                if (err) {
-                    //handle the error if the query throws an error
-                } else {
-                    //whatever you wanna do after all the iterations are done
-                }
-            });
-
-            function insertData(pathResult, dataResult, req, res) {
-                console.log("insert data 실행");
-                async.forEachOf(dataResult, function (dataElement, i, inner_callback) {
-                    let data = [];
-                    for (var j = 0, y = dataResult[i].length; j < y; j++) {
-                        data.push(commonUtil.nvl(dataResult[i][j]));
-                    }
-                    if (i != 0 && !commonUtil.isNull(dataResult[i][0])) {
-                        connection.execute(queryConfig.batchLearningConfig.insertBatchAnswerData, data, function (err, result) {
-                            if (err) {
-                                console.log("err insert dataResult: " + i + " : " + JSON.stringify(data));
-                                inner_callback(err);
-                            } else {
-                                console.log(`insert dataResult : ` + JSON.stringify(data));
-                                inner_callback(null);
-                            }
-                        });
-                    }
-                    if (i == dataResult.length - 1) callbackExcelDataPath(pathResult, dataResult, req, res);
-                }, function (err) {
+                connection.batchInsert(queryConfig.batchLearningConfig.insertBatchAnswerFile, pathList, pathOption, function onResults(err, output) {
                     if (err) {
-                        //handle the error if the query throws an error
+                        console.log("pathInsert error : " + err);
                     } else {
-                        //whatever you wanna do after all the iterations are done
+                        console.log("pathInsert finish : " + JSON.stringify(output));
+                        if (pathResult.length > 0 || dataResult.length > 0)
+                            res.send({ code: 200, pathCnt: pathResult.length, dataCnt: dataResult.length });
                     }
+                    connection.release();
                 });
-            }
-
-            function callbackExcelDataPath(pathResult, dataResult, req, res) {
-                console.log("inner.. callback ...");
-                if (pathResult.length > 0 || dataResult.length > 0) {
-                    res.send({ code: 200, pathCnt: pathResult.length, dataCnt: dataResult.length });
-                } else {
-                    res.send({ code: 300, pathCnt: 0, dataCnt: 0 });
-                }
+                pathCnt = pathCnt + subPathCnt;
             }
         });
     };
@@ -415,7 +391,7 @@ module.exports = function (pool) {
     module.exports.makePagingQuery = makePagingQuery;
     module.exports.reqListQuery = reqListQuery;
     module.exports.reqQueryParam = reqQueryParam;
-    module.exports.reqQueryParam2 = reqQueryParam2
+    module.exports.reqQueryParam2 = reqQueryParam2;
     module.exports.reqQuery = reqQuery;
     module.exports.reqQueryF1param = reqQueryF1param;
     module.exports.reqQueryF2param = reqQueryF2param;
