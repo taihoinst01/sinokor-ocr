@@ -881,9 +881,48 @@ function imageMove(xDistance, yDistance) {
 
 function uiTrainEvent() {
     $("#uiTrainBtn").click(function (e) {
+        //modifyTextData();
         makeTrainingData();
-        //uiTrainAjax();
     });
+}
+
+function modifyTextData() {
+    var beforeData = lineText;
+    var afterData = [];
+    afterData.data = [];
+    beforeData = beforeData.slice(0);
+
+    // afterData Processing
+    $('#textResultTbl > dl').each(function (index, el) {
+        var location = $(el).find('label').children(1).val();
+        var text = $(el).find('label').children(0).val();
+        var colLbl = $(el).find('select').find('option:selected').val();
+        afterData.data.push({ 'location': location, 'text': text, 'colLbl': colLbl });
+    });
+    afterData.fileName = $('#imageBox > .on span').text();
+
+    // find an array of data with the same filename
+    for (var i in beforeData) {
+        if (beforeData[i].fileName === afterData.fileName) {
+            $.ajax({
+                url: '/uiLearning/modifyTextData',
+                type: 'post',
+                datatype: "json",
+                data: JSON.stringify({ 'beforeData': beforeData[i], 'afterData': afterData }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+            break;
+        }
+    }
+
+    console.log(beforeData);
+    console.log(afterData);
 }
 
 function makeTrainingData() {

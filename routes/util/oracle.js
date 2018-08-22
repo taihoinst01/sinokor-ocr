@@ -2,6 +2,10 @@ var oracledb = require('oracledb');
 var appRoot = require('app-root-path').path;
 var dbConfig = require(appRoot + '/config/dbConfig');
 var queryConfig = require(appRoot + '/config/queryConfig');
+var execSync = require('child_process').execSync;
+var fs = require('fs');
+var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
+var request = require('request');
 var sync = require('./sync.js');
 
 
@@ -111,30 +115,6 @@ exports.selectContractMapping = function (req, done) {
     });
 };
 
-exports.selectOcrFilePaths = function (req, done) {
-    return new Promise(async function (resolve, reject) {
-        let conn;
-
-        try {
-            conn = await oracledb.getConnection(dbConfig);
-            let result = await conn.execute(`SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID = :imgId `, [req])
-
-            //resolve(result.rows);
-            return done(null, result.rows);
-        } catch (err) { // catches errors in getConnection and the query
-            reject(err);
-        } finally {
-            if (conn) {   // the conn assignment worked, must release
-                try {
-                    await conn.release();
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        }
-    });
-};
-
 exports.insertLabelMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -144,7 +124,6 @@ exports.insertLabelMapping = function (req, done) {
             var userModifyData = [];
             for (var i in req.data) {
                 labelClass = 3
-                //출재사명
                 if (req.data[i].ColLbl && req.data[i].ColLbl == 0) {
                     labelClass = 1
 
@@ -152,7 +131,6 @@ exports.insertLabelMapping = function (req, done) {
                         userModifyData.push(req.data[i]);
                     }
                 }
-                //계약명
                 if (req.data[i].ColLbl && req.data[i].ColLbl == 1) {
                     labelClass = 2
 
@@ -199,11 +177,9 @@ exports.insertDocMapping = function (req, done) {
             }
 
             for (var i in req.data) {
-                //출재사명
                 if (req.data[i].ColLbl && req.data[i].ColLbl == 0) {
                     insCompanyData = req.data[i].sid;
                 }
-                //계약명
                 if (req.data[i].ColLbl && req.data[i].ColLbl == 1) {
                     insContractData = req.data[i].sid;
                 }
@@ -254,41 +230,29 @@ exports.insertColumnMapping = function (req, done) {
     });
 };
 
-exports.selectLegacyData = function (req, done) {
+exports.selectOcrFilePaths = function (req, done) {
     return new Promise(async function (resolve, reject) {
         var res = [];
         let conn;
-
+        let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
         try {
             conn = await oracledb.getConnection(dbConfig);
-
-            var tempImageFileName;
-            for (image in req) {
-                var items = req[image]['mlexport']
-                for (var item = 0; item < req[image]['mlexport'].length; item++) {
-                    if (req[image][item]['ORIGINFILENAME']) {
-                        tempImageFileName = req[image][item]['ORIGINFILENAME']
-                    }
-
-                }
-                let result = await conn.execute(`SELECT IMGID, PAGENUM FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
-                result.rows[0][0] = 154384
-                result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILEENDNO >= :PAGEEND AND IMGFILESTARTNO <= :PAGESTART`, [result.rows[0][0], result.rows[0][1], result.rows[0][1]]);
-                image.push(result.rows);
-                console.log(result.rows[0][1])
-
-            }
-
-
+            let result = await conn.execute(`SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (${req.map((name, index) => `:${index}`).join(", ")})`, req);
+            //let result = await conn.execute("SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (:imgid)", [req[0]]);
 
             for (var row = 0; row < result.rows.length; row++) {
                 var dict = {};
+
+                dict.SEQNUM = result.rows[row].SEQNUM;
+                dict.FILEPATH = result.rows[row].FILEPATH;
+                dict.ORIGINFILENAME = result.rows[row].ORIGINFILENAME;
+                /*
                 for (var colName = 0; colName < colNameArr.length; colName++) {
-                    dict[colNameArr[colName]] = result.rows[row][colName];
+                    dict[colNameArr[colName]] = result.rows[row].colNameArr[colName];
                 }
+                */
                 res.push(dict);
             }
-
             //resolve(result.rows);
             return done(null, res);
         } catch (err) { // catches errors in getConnection and the query
@@ -305,21 +269,195 @@ exports.selectLegacyData = function (req, done) {
     });
 };
 
-/*
-exports.selectOcrFile = function (req, done) {
+exports.convertTiftoJpg = function (originFilePath, done) {
+    try {
+        convertedFileName = originFilePath.split('.')[0] + '.jpg';
+        execSync('module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
+        return done(null, convertedFileName);
+
+    } catch (err) {
+        console.log(err);
+    } finally {
+        console.log('convertTiftoJpg end');
+    }
+};
+
+exports.callApiOcr = function (originImageArr, done) {
+    var pharsedOcrJson = "";
+    try {
+        for (item in originImageArr) {
+            console.log(originImageArr[item]['FILEPATH'])
+            var uploadImage = fs.readFileSync(originImageArr[item]['FILEPATH'], 'binary');
+            var base64 = new Buffer(uploadImage, 'binary').toString('base64');
+            var binaryString = new Buffer(base64, 'base64').toString('binary');
+            uploadImage = new Buffer(binaryString, "binary");
+
+            var res = request('POST', propertiesConfig.ocr.uri, {
+                headers: {
+                    'Ocp-Apim-Subscription-Key': propertiesConfig.ocr.subscriptionKey,
+                    'Content-Type': 'application/octet-stream'
+                },
+                uri: propertiesConfig.ocr.uri + '?' + 'language=unk&detectOrientation=true',
+                body: uploadImage,
+                method: 'POST'
+            });
+            var resJson = JSON.parse(res.getBody('utf8'));
+            pharsedOcrJson = ocrJson(resJson.regions);
+        }
+        return done(null, pharsedOcrJson);
+    } catch (err) {
+        console.log(err);
+        return done(null, 'error');
+    } finally {
+        console.log('callApiOcr end');
+    }
+};
+
+function ocrJson(regions) {
+    var data = [];
+    for (var i = 0; i < regions.length; i++) {
+        for (var j = 0; j < regions[i].lines.length; j++) {
+            var item = '';
+            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
+                item += regions[i].lines[j].words[k].text + ' ';
+            }
+            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+        }
+    }
+    return data;
+}
+
+exports.selectLegacyData = function (req, done) {
     return new Promise(async function (resolve, reject) {
         var res = [];
         let conn;
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let result = await conn.execute(`SELECT SEQNUM, FILEPATH, ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID = :imgId`, [req[0]]);
 
-            if (result.rows.length > 0) {
-                res.push(result.rows[0]);
-                res.push(req[1]);
+            var tempImageFileName = req;
+            /*
+            for (image in req) {
+                var items = req[image]['mlexport']
+                for (var item = 0; item < req[image]['mlexport'].length; item++) {
+                    if (req[image][item]['ORIGINFILENAME']) {
+                        tempImageFileName = req[image][item]['ORIGINFILENAME']
+                    }
+
+                }
+                let result = await conn.execute(`SELECT IMGID, PAGENUM FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
+                result.rows[0][0] = 154384
+
+                result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILEENDNO >= :PAGEEND AND IMGFILESTARTNO <= :PAGESTART`, [result.rows[0][0], result.rows[0][1], result.rows[0][1]]);
+                image.push(result.rows);
+                console.log(result.rows[0][1])
+
+            }
+            */
+
+
+            //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
+            let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, ['204d61.tif']);
+            result.rows[0]["IMGID"] = 154384;
+            result.rows[0]["PAGENUM"] = 1;
+            result.rows[0]["TOTALCOUNT"] = 5;
+
+            result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [result.rows[0]["IMGID"], result.rows[0]["PAGENUM"], result.rows[0]["TOTALCOUNT"]]);
+            //image.push(result.rows);
+            console.log(result.rows);
+
+            let colData = await conn.execute(`SELECT COLNAME, COLTYPE, COLNUM FROM TBL_COLUMN_MAPPING_CLS`);
+
+
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertRegacyData = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var res = [];
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            insSql = queryConfig.batchLearing.insertBatchLearningData;
+
+            for (var i = 0; i < req.length; i++) {
+                var cond = [];
+                let colData = await conn.execute(insSql, cond);
+
+
             }
 
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertMLData = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var res = [];
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            insSql = queryConfig.batchLearing.insertBatchLearningData;
+
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertOcrSymspell = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            for (var i in req.split(' ')) {
+                result = await conn.execute(queryConfig.uiLearningConfig.selectTypo, [req[i]]);
+
+                if (result.rows.length == 0) {
+                    result = await conn.execute(queryConfig.uiLearningConfig.insertTypo, [req[i]]);
+                } else {
+                    result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [req[i]]);
+                }
+            }
+            var res = { 'code': 200, message: 'insert ocr symspell success' };
             return done(null, res);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -334,4 +472,3 @@ exports.selectOcrFile = function (req, done) {
         }
     });
 };
-*/
