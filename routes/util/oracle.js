@@ -7,6 +7,7 @@ var fs = require('fs');
 var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var request = require('request');
 var request = require('sync-request');
+var sync = require('./sync.js');
 
 
 exports.select = function (req, done) {
@@ -42,7 +43,7 @@ exports.select = function (req, done) {
             }
         }
     });
-}
+};
 
 exports.selectDocCategory = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -73,7 +74,7 @@ exports.selectDocCategory = function (req, done) {
             }
         }
     });
-}
+};
 
 exports.selectContractMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -113,7 +114,31 @@ exports.selectContractMapping = function (req, done) {
             }
         }
     });
-}
+};
+
+exports.selectOcrFilePaths = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let result = await conn.execute(`SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID = :imgId `, [req])
+
+            //resolve(result.rows);
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
 
 exports.insertLabelMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -156,7 +181,7 @@ exports.insertLabelMapping = function (req, done) {
             }
         }
     });
-}
+};
 
 exports.insertDocMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -204,7 +229,7 @@ exports.insertDocMapping = function (req, done) {
             }
         }
     });
-}
+};
 
 exports.insertColumnMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
