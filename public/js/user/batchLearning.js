@@ -1108,11 +1108,8 @@ var searchBatchLearnDataList = function (addCond) {
                     <tr>
                         ${checkboxHtml}
                         <td><a onclick="javascript:fn_viewImageData('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.ORIGINFILENAME)}</a></td> <!--파일명-->
-                        <td>${nvl(entry.STATUS)}</td> <!--학습여부-->
-                        <td>${nvl(entry.OGCOMPANYNAME)}</td> <!--추출 출재사명-->
-                        <td>${nvl(entry.CTNM)}</td> <!--추출 계약명-->
-                        <td>${nvl(entry.OGCONTRACTNAME)}</td> <!--출재사명 원본-->
-                        <td>${nvl(entry.CONTRACTNAMESUMMARY)}</td> <!--계약명 원본-->
+                        <td></td> <!--출재사명-->
+                        <td></td> <!--계약명-->
                         <td>${nvl(entry.UY)}</td> <!--UY-->
                         <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
                         <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
