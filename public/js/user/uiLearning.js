@@ -949,7 +949,7 @@ function makeTrainingData() {
         dataArray.push(obj);
     }
 
-    var mlData = lineText[0].data.data;
+    var mlData = lineText[0].data;
 
     for (var i = 0; i < mlData.length; i++) {
         for (var j = 0; j < dataArray.length; j++) {

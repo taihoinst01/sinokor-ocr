@@ -44,21 +44,22 @@ exports.formMapping2 = function (data, callback) {
 
         var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-        //var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer())); // select tbl_document_category
+        var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer())); // select tbl_document_category
 
-        callback(resPyArr);
+        callback(docData);
     });
 };
 
 exports.columnMapping2 = function (data, callback) {
     sync.fiber(function () {
-        pythonConfig.columnMappingOptions.args.push(JSON.stringify(data));
+        pythonConfig.columnMappingOptions.args.push(JSON.stringify(data.data));
 
         var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
-        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));       
+        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));   
+        data.data = resPyArr;
         //var answerData = sync.await(oracle.selectContractMapping(data, sync.defer())); // select tbl_contract_mapping
 
-        callback(resPyArr);
+        callback(data);
     });
 };
 
