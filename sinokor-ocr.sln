@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "sinokor-ocr", "sinokor-ocr.njsproj", "{DD51BC03-3D77-41F9-85E1-8534C6503F9C}"
 EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "ocr-batch", "..\ocr-batch\ocr-batch.njsproj", "{58C10D5A-7D39-4015-9C21-AAEE8AEB2550}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DD51BC03-3D77-41F9-85E1-8534C6503F9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD51BC03-3D77-41F9-85E1-8534C6503F9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD51BC03-3D77-41F9-85E1-8534C6503F9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58C10D5A-7D39-4015-9C21-AAEE8AEB2550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58C10D5A-7D39-4015-9C21-AAEE8AEB2550}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58C10D5A-7D39-4015-9C21-AAEE8AEB2550}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58C10D5A-7D39-4015-9C21-AAEE8AEB2550}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
