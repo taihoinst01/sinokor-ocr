@@ -511,7 +511,25 @@ var uiLearningConfig = {
         `INSERT INTO 
             TBL_OCR_TYPO_CORRECT(seqNum, userId, originWord, correctedWord, convertedImageFileName, correctorType) 
          VALUES
-            (seq_ocr_typo_correct.nextval, :userid, :originWord, :correctWord, :fileName, :correctorType) `
+            (seq_ocr_typo_correct.nextval, :userid, :originWord, :correctWord, :fileName, :correctorType) `,
+    selectCurunitMapping:
+        `SELECT
+            beforeText, afterText
+         FROM
+            tbl_curunit_mapping
+         WHERE
+            beforeText = :beforeText AND afterText = :afterText
+        `,
+    insertCurunitMapping:
+        `INSERT INTO 
+            tbl_curunit_mapping(beforeText, afterText)
+         VALUES
+            (:beforeText, :afterText) `,
+    insertContractMapping2:
+        `INSERT INTO
+            tbl_contract_mapping(extOgcompanyName, extCtnm, asOgcompanyName, asCtnm)
+         VALUES
+            (: extOgcompanyName, : extCtnm, : asOgcompanyName, : asCtnm) `
 };
 
 var commonConfig = {

@@ -888,22 +888,24 @@ function uiTrainEvent() {
 
 function modifyTextData() {
     var beforeData = lineText;
-    var afterData = [];
+    var afterData = {};
     afterData.data = [];
     beforeData = beforeData.slice(0);
 
     // afterData Processing
     $('#textResultTbl > dl').each(function (index, el) {
-        var location = $(el).find('label').children(1).val();
-        var text = $(el).find('label').children(0).val();
+        var location = $(el).find('label').children().eq(1).val();
+        var text = $(el).find('label').children().eq(0).val();
         var colLbl = $(el).find('select').find('option:selected').val();
         afterData.data.push({ 'location': location, 'text': text, 'colLbl': colLbl });
     });
+
     afterData.fileName = $('#imageBox > .on span').text();
 
     // find an array of data with the same filename
     for (var i in beforeData) {
-        if (beforeData[i].fileName === afterData.fileName) {
+        if (beforeData[i].fileName == afterData.fileName) {
+
             $.ajax({
                 url: '/uiLearning/modifyTextData',
                 type: 'post',
@@ -920,9 +922,6 @@ function modifyTextData() {
             break;
         }
     }
-
-    console.log(beforeData);
-    console.log(afterData);
 }
 
 function makeTrainingData() {

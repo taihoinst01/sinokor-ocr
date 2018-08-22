@@ -448,17 +448,83 @@ exports.insertOcrSymspell = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            for (var i in req.split(' ')) {
-                result = await conn.execute(queryConfig.uiLearningConfig.selectTypo, [req[i]]);
-
+            var reqArr = req[0].text.split(' ');
+            for (var i in reqArr) {
+                result = await conn.execute(queryConfig.uiLearningConfig.selectTypo, [reqArr[i]]);
                 if (result.rows.length == 0) {
-                    result = await conn.execute(queryConfig.uiLearningConfig.insertTypo, [req[i]]);
+                    result = await conn.execute(queryConfig.uiLearningConfig.insertTypo, [reqArr[i]]);
                 } else {
-                    result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [req[i]]);
+                    //result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [reqArr[i]]);
                 }
             }
-            var res = { 'code': 200, message: 'insert ocr symspell success' };
-            return done(null, res);
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertOcrSymspellForCurunit = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        var isTypoMapping = true;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var reqArr = req[0].text.split(' ');
+            for (var i in reqArr) {
+                result = await conn.execute(queryConfig.uiLearningConfig.selectTypo, [reqArr[i]]);
+                if (result.rows.length == 0) {
+                    await conn.execute(queryConfig.uiLearningConfig.insertTypo, [reqArr[i]]);
+                } else {
+                    //result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [reqArr[i]]);
+                    isTypoMapping = false;
+                }
+            }
+
+            // insert tbl_curunit_mapping
+            if (!isTypoMapping) {
+                result = await conn.execute(queryConfig.uiLearningConfig.selectCurunitMapping, [req[1].text, req[0].text]);
+                if (result.rows.length == 0) {
+                    await conn.execute(queryConfig.uiLearningConfig.insertCurunitMapping, [req[1].text, req[0].text]);
+                }
+            }
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertContractMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(queryConfig.uiLearningConfig.insertContractMapping2, [req[0], req[1], req[2], req[3]]);
+
+            return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
