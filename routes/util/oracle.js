@@ -6,7 +6,6 @@ var execSync = require('child_process').execSync;
 var fs = require('fs');
 var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var request = require('request');
-var request = require('sync-request');
 var sync = require('./sync.js');
 
 
