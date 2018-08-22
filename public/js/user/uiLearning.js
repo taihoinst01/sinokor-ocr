@@ -909,10 +909,10 @@ function modifyTextData() {
                 url: '/uiLearning/modifyTextData',
                 type: 'post',
                 datatype: "json",
-                data: JSON.stringify({ 'beforeData': beforeData[i], 'afterData': afterData }),
+                data: JSON.stringify({ 'beforeData': beforeData[i].data, 'afterData': afterData }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
-                    makeTrainingData();
+                    //makeTrainingData();
                 },
                 error: function (err) {
                     console.log(err);

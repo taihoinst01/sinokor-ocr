@@ -371,7 +371,10 @@ router.post('/modifyTextData', function (req, res) {
 
             var params = convertContractMappingData(beforeOgAndCtnm, afterOgAndCtnm);
             if (params) {
-                sync.await(oracle.insertContractMapping(params, sync.defer()));
+                for (var i in params) {
+                    var item = [params[i][0], params[i][1], params[i][2], params[i][3]];
+                    sync.await(oracle.insertContractMapping(item, sync.defer()));
+                }
             }
             returnObj = { code: 200, message: 'modify textData success' };
 
@@ -393,33 +396,62 @@ function isWordLengthMatch(afterDataItem, beforeDataItem) {
 }
 
 function convertContractMappingData(beforeOgAndCtnm, afterOgAndCtnm) {
-    var extOgComapnyName, extCtnm, asOgComapnyName, asCtnm;
+    var extOgComapnyName = [];
+    var extCtnm = [];
+    var asOgComapnyName = [];
+    var asCtnm = [];
+    var OgCount = 0;
+    var ctnmcount = 0;
+    var returnArray = [];
 
-    if (beforeOgAndCtnm.length == 2 && afterOgAndCtnm.length == 2) {   
-        
+    // ogComapanyName And contractName count
+    for (var i in afterOgAndCtnm) {
+        if (afterOgAndCtnm[i].colLbl == 0) {
+            OgCount++;
+        }
+    }
+    ctnmcount = afterOgAndCtnm.length - OgCount;
+
+    if (OgCount == 1 || ctnmcount == 1) { // not N:N (case 1:1, 1:N, N:1)
+
+        // add an array of before modifying data (ogComapanyName And contractName)
         for (var i in beforeOgAndCtnm) {
             for (var j in afterOgAndCtnm) {
                 if (beforeOgAndCtnm[i].location == afterOgAndCtnm[j].location && afterOgAndCtnm[i].colLbl == 0) {
-                    extOgComapnyName = beforeOgAndCtnm[i].text;
+                    extOgComapnyName.push(beforeOgAndCtnm[i].text);
                     break;
                 } else if (beforeOgAndCtnm[i].location == afterOgAndCtnm[j].location && afterOgAndCtnm[i].colLbl == 1) {
-                    extCtnm = beforeOgAndCtnm[i].text;
+                    extCtnm.push(beforeOgAndCtnm[i].text);
                     break;
                 }
             }
         }
 
+        // add an array of after modifying data (ogComapanyName And contractName)
         for (var i in afterOgAndCtnm) {
             if (afterOgAndCtnm[i].colLbl == 0) {
-                asOgComapnyName = afterOgAndCtnm[i].text;
+                asOgComapnyName.push(afterOgAndCtnm[i].text);
             } else {
-                asCtnm = afterOgAndCtnm[i].text;
+                asCtnm.push(afterOgAndCtnm[i].text);
             }
         }
 
-        return [extOgComapnyName, extCtnm, asOgComapnyName, asCtnm];
+        // determining relationships (1:1 or 1:N or N:N)
+        if (asOgComapnyName.length == asCtnm.length) { // 1:1
+            returnArray = [[extOgComapnyName[0], extCtnm[0], asOgComapnyName[0], asCtnm[0]]];
+        }else if (asOgComapnyName.length < asCtnm.length) { // 1:N
+            for (var i in asCtnm) {
+                returnArray.push([extOgComapnyName[0], extCtnm[i], asOgComapnyName[0], asCtnm[i]]);
+            }
+        } else { // N:1
+            for (var i in asOgComapnyName) {
+                returnArray.push([extOgComapnyName[i], extCtnm[0], asOgComapnyName[i], asCtnm[0]]);
+            }
+        }
+
+        return returnArray;
         
-    } else {
+    } else { // N:N
         return null;
     }
 }
