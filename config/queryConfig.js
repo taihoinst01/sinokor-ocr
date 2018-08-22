@@ -117,7 +117,7 @@ var invoiceRegistrationConfig = {
           WHERE 1=1 `,
     selectDocumentImageList:
         `SELECT A.SEQNUM, A.IMGID, A.FILEPATH, A.ORIGINFILENAME, A.SERVERFILENAME, A.FILEEXTENSION, 
-                A.FILESIZE, A.CONTENTTYPE, A.FILETYPE, A.FILEWIDTH, A.FILEHEIGHT, A.REGID, A.REGDATE 
+                A.FILESIZE, A.CONTENTTYPE, A.FILETYPE, A.FILEWIDTH, A.FILEHEIGHT, A.REGID A.REGDATE 
            FROM TBL_OCR_FILE_DTL A,
                 TBL_DOCUMENT_DTL B
           WHERE A.IMGID = B.IMGID `
@@ -200,7 +200,7 @@ var batchLearningConfig = {
             A.brokerAge, A.tax, A.overridingCom, A.charge, A.pmReserveRTD, A.pfPmReserveRTD,A.pmReserveRTD2,
             A.pfPmReserveRTD2, A.claim, A.lossRecovery, A.cashLoss, A.cashLossRD, A.lossRR, A.lossRR2, A.lossPFEnd,
             A.lossPFWoa, A.interest, A.taxOn, A.miscellaneous, A.pmbl, A.cmbl, A.ntbl, A.cscosarfrncnnt2,          
-            A.regId, A.regDate,
+            A.regDate,
             (select max(ASOGCOMPANYNAME) from TBL_CONTRACT_MAPPING where EXTOGCOMPANYNAME = A.ogCompanyName and EXTCTNM = A.ctnm) as OGCONTRACTNAME,
             (select max(ASCTNM) from TBL_CONTRACT_MAPPING where EXTOGCOMPANYNAME = A.ogCompanyName and EXTCTNM = A.ctnm) as CONTRACTNAMESUMMARY,
             A.curunit
@@ -222,7 +222,7 @@ var batchLearningConfig = {
             A.brokerAge, A.tax, A.overridingCom, A.charge, A.pmReserveRTD, A.pfPmReserveRTD,A.pmReserveRTD2,
             A.pfPmReserveRTD2, A.claim, A.lossRecovery, A.cashLoss, A.cashLossRD, A.lossRR, A.lossRR2, A.lossPFEnd,
             A.lossPFWoa, A.interest, A.taxOn, A.miscellaneous, A.pmbl, A.cmbl, A.ntbl, A.cscosarfrncnnt2,          
-            A.regId, A.regDate
+            A.regDate
 	     FROM
             tbl_ocr_file F
 		    LEFT OUTER JOIN
@@ -248,9 +248,9 @@ var batchLearningConfig = {
             seqNum desc `,
     insertBatchLearningBaseData:
         `INSERT INTO
-            tbl_batch_learn_data (imgId, status, regId, regDate)
+            tbl_batch_learn_data (imgId, status, regDate)
          VALUES
-            (:imgId, 'N', :regId, sysdate) `,
+            (:imgId, 'N', :regId sysdate) `,
     insertBatchLearningData:
         `INSERT INTO
             tbl_batch_learn_data (imgId, status, entryNo, statementDiv, contractNum, ogCompanyCode, ogCompanyName, brokerCode,
