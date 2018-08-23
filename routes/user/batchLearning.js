@@ -203,16 +203,17 @@ var callbackSelectBatchAnswerFile = function (rows, req, res, fileInfoList) {
 var callbackBatchLearningData = function (rows, req, res) {
     var fileInfoList = [];
     console.log("배치학습데이터 : " + rows.length);
+
     for (var i = 0, x = rows.length; i < x; i++) {
-        var oriFileName = rows[i].ORIGINFILENAME;
+        var oriFileName = rows[i].FILENAME;
         var _lastDot = oriFileName.lastIndexOf('.');
         var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
         var fileInfo = {
             imgId: rows[i].IMGID,
             filePath: rows[i].FILEPATH,
-            oriFileName: rows[i].ORIGINFILENAME,
+            oriFileName: rows[i].FILENAME,
             svrFileName: rows[i].SERVERFILENAME,
-            convertFileName: rows[i].ORIGINFILENAME.replace(rows[i].FILEEXTENSION, "jpg"),
+            convertFileName: rows[i].FILENAME.replace(fileExt, "jpg"),
             fileExt: rows[i].FILEEXTENSION,
             fileSize: rows[i].FILESIZE,
             contentType: rows[i].CONTENTTYPE ? rows[i].CONTENTTYPE : "",

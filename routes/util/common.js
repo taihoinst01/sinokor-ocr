@@ -155,44 +155,48 @@ router.post('/selectTypoData', function (req, res) {
 router.post('/ocr', function (req, res) {
     var fileName = req.body.fileName;
 
-    fs.readFile('./uploads/' + fileName, function (err, data) {
-        if (err) res.send({ error: '파일이 없습니다.' }); // fs error
+    fs.readFile(propertiesConfig.filepath.imagePath +'\\' + fileName, function (err, data) {
+        if (err) { // fs error
+            console.log(err);
+            res.send({ code: 404, error: '파일이 없습니다.' });
+        } else {
 
-        var buffer;
-        try {
-            var base64 = new Buffer(data, 'binary').toString('base64');
-            var binaryString = new Buffer(base64, 'base64').toString('binary');
-            buffer = new Buffer(binaryString, "binary");
-        } catch (e) {
-            res.send({ error: '파일 읽기 도중 버퍼 에러가 발생했습니다.' });
-        } finally {
-            if (!buffer) res.send({ error: '파일 버퍼가 비어있습니다.' });
-        }
-
-        var params = {
-            'language': 'unk',
-            'detectOrientation': 'true'
-        };
-
-        request({
-            headers: {
-                'Ocp-Apim-Subscription-Key': propertiesConfig.ocr.subscriptionKey,
-                'Content-Type': 'application/octet-stream'
-            },
-            uri: propertiesConfig.ocr.uri + '?' + 'language=' + params.language + '&detectOrientation=' + params.detectOrientation,
-            body: buffer,
-            method: 'POST'
-        }, function (err, response, body) {
-            if (err) { // request err
-                res.send({ error: '요청 에러가 발생했습니다.' });
-            } else {
-                if ((JSON.parse(body)).code) { // ocr api error
-                    res.send({ code: (JSON.parse(body)).code, message: (JSON.parse(body)).message });                   
-                } else { // 성공
-                    res.send(JSON.parse(body));
-                }
+            var buffer;
+            try {
+                var base64 = new Buffer(data, 'binary').toString('base64');
+                var binaryString = new Buffer(base64, 'base64').toString('binary');
+                buffer = new Buffer(binaryString, "binary");
+            } catch (e) {
+                res.send({ error: '파일 읽기 도중 버퍼 에러가 발생했습니다.' });
+            } finally {
+                if (!buffer) res.send({ error: '파일 버퍼가 비어있습니다.' });
             }
-        });
+
+            var params = {
+                'language': 'unk',
+                'detectOrientation': 'true'
+            };
+
+            request({
+                headers: {
+                    'Ocp-Apim-Subscription-Key': propertiesConfig.ocr.subscriptionKey,
+                    'Content-Type': 'application/octet-stream'
+                },
+                uri: propertiesConfig.ocr.uri + '?' + 'language=' + params.language + '&detectOrientation=' + params.detectOrientation,
+                body: buffer,
+                method: 'POST'
+            }, function (err, response, body) {
+                if (err) { // request err
+                    res.send({ error: '요청 에러가 발생했습니다.' });
+                } else {
+                    if ((JSON.parse(body)).code) { // ocr api error
+                        res.send({ code: (JSON.parse(body)).code, message: (JSON.parse(body)).message });
+                    } else { // 성공
+                        res.send(JSON.parse(body));
+                    }
+                }
+            });
+        }
     });
 });
 
