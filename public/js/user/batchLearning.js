@@ -1449,8 +1449,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
             $("#progressMsgTitle").html("processing learn data...");
             addProgressBar(31, 40);
             //console.log("/batchLearning/searchBatchLearnData result :");
-            //console.log(data);
-
+            //console.log(data);           
             if (data.code == 400) {
                 alert(data.msg);
                 return;
