@@ -274,7 +274,7 @@ function fileUpload() {
                         endProgressBar();
                     }
                     //insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
-                    //insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
+                    insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
                 }
                 //endProgressBar();
             }
@@ -1102,7 +1102,7 @@ var searchBatchLearnDataList = function (addCond) {
                     appendHtml += `
                     <tr>
                         ${checkboxHtml}
-                        <td><a onclick="javascript:fn_viewImageData('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.ORIGINFILENAME)}</a></td> <!--파일명-->
+                        <td><a onclick="javascript:fn_viewImageData('${entry.IMGID}', this)" href="javascript:void(0);">${nvl(entry.FILENAME)}</a></td> <!--파일명-->
                         <td></td> <!--출재사명-->
                         <td></td> <!--계약명-->
                         <td>${nvl(entry.UY)}</td> <!--UY-->
@@ -1269,87 +1269,115 @@ function compareMLAndAnswer(mlData) {
     }
 }
 
-function fn_viewImageData(fileName, obj) {
-    
-    $('#viewImage').attr('src', '../../uploads/' + $(obj).text().split('.')[0] + '.jpg');
-    layer_open('layer3');
+function fn_viewImageData(imgId, obj) {
 
-    // 2018-08-06
-    var param = {
-        filePath: fileName
+    //$('#viewImage').attr('src', '../../uploads/' + $(obj).text().split('.')[0] + '.jpg');
+    //layer_open('layer3');
+
+    var imgParam = {
+        imgId: imgId
     };
-    var appendHtml = ``;
-        
     $.ajax({
-        url: '/batchLearning/viewImageData',
+        url: '/batchLearning/viewImage',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify(param),
+        data: JSON.stringify(imgParam),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-                    
-            if (data.length > 0) {
-                $.each(data, function (index, entry) {
-                    appendHtml += `
-                    <tr>
-                        <td scope="row">${nvl(entry.FILEPATH)}</td>
-                        <td scope="row">${nvl(entry.IMGID)}</td>
-                        <td scope="row">${nvl(entry.STATEMENTDIV)}</td>
-                        <td scope="row">${nvl(entry.CONTRACTNUM)}</td>
-                        <td scope="row">${nvl(entry.CTNM)}</td>
-                        <td scope="row">${nvl(entry.OGCOMPANYCODE)}</td>
-                        <td scope="row">${nvl(entry.OGCOMPANYNAME)}</td>
-                        <td scope="row">${nvl(entry.BROKERCODE)}</td>
-                        <td scope="row">${nvl(entry.BROKERNAME)}</td>
-                        <td scope="row">${nvl(entry.INSSTDT)}</td>
-                        <td scope="row">${nvl(entry.INSENDDT)}</td>
-                        <td scope="row">${nvl(entry.CURCD)}</td>
-                        <td scope="row">${nvl(entry.PAIDPERCENT)}</td>
-                        <td scope="row">${nvl(entry.PAIDSHARE)}</td>
-                        <td scope="row">${nvl(entry.GROSSPM)}</td>
-                        <td scope="row">${nvl(entry.PM)}</td>
-                        <td scope="row">${nvl(entry.PMPFEND)}</td>
-                        <td scope="row">${nvl(entry.PMPFWOS)}</td>
-                        <td scope="row">${nvl(entry.XOLPM)}</td>
-                        <td scope="row">${nvl(entry.RETURNPM)}</td>
-                        <td scope="row">${nvl(entry.GROSSCN)}</td>
-                        <td scope="row">${nvl(entry.CN)}</td>
-                        <td scope="row">${nvl(entry.PROFITCN)}</td>
-                        <td scope="row">${nvl(entry.BROKERAGE)}</td>
-                        <td scope="row">${nvl(entry.TAX)}</td>
-                        <td scope="row">${nvl(entry.OVERRIDINGCOM)}</td>
-                        <td scope="row">${nvl(entry.CHARGE)}</td>
-                        <td scope="row">${nvl(entry.PMRESERVERTD1)}</td>
-                        <td scope="row">${nvl(entry.PFPMRESERVERTD1)}</td>
-                        <td scope="row">${nvl(entry.PMRESERVERTD2)}</td>
-                        <td scope="row">${nvl(entry.PFPMRESERVERTD2)}</td>
-                        <td scope="row">${nvl(entry.CLAIM)}</td>
-                        <td scope="row">${nvl(entry.LOSSRECOVERY)}</td>
-                        <td scope="row">${nvl(entry.CASHLOSS)}</td>
-                        <td scope="row">${nvl(entry.CASHLOSSRD)}</td>
-                        <td scope="row">${nvl(entry.LOSSRR)}</td>
-                        <td scope="row">${nvl(entry.LOSSRR2)}</td>
-                        <td scope="row">${nvl(entry.LOSSPFEND)}</td>
-                        <td scope="row">${nvl(entry.LOSSPFWOA)}</td>
-                        <td scope="row">${nvl(entry.INTEREST)}</td>
-                        <td scope="row">${nvl(entry.TAXON)}</td>
-                        <td scope="row">${nvl(entry.MISCELLANEOUS)}</td>
-                        <td scope="row">${nvl(entry.PMBL)}</td>
-                        <td scope="row">${nvl(entry.CMBL)}</td>
-                        <td scope="row">${nvl(entry.NTBL)}</td>
-                        <td scope="row">${nvl(entry.CSCOSARFRNCNNT2)}</td>
-                    </tr>
-                    `;
-                });
+            console.log("data : " + JSON.stringify(data));
+            if (data.code == "201") {
+                $("#span_view_image").remove();
+                $('#viewImage').after(`<span id="span_view_image">이미지를 변환중입니다. 다시 확인해주세요.<span>`);
             } else {
-                appendHtml += `<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>`
+                $("#span_view_image").remove();
+                $('#viewImage').attr('src', `${data.rows[0].CONVERTEDIMGPATH}`);
             }
-            $("#tbody_batchList_answer").empty().append(appendHtml);
+            
+            innerFn_ViewImageData();
         },
         error: function (err) {
             console.log(err);
         }
     });
+
+    // 2018-08-06
+    function innerFn_ViewImageData() {
+        var param = {
+            imgId: imgId
+        };
+        var appendHtml = ``;
+
+        $.ajax({
+            url: '/batchLearning/viewImageData',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                if (data.length > 0) {
+                    $.each(data, function (index, entry) {
+                        appendHtml += `
+                            <tr>
+                                <td scope="row">${nvl(entry.FILEPATH)}</td>
+                                <td scope="row">${nvl(entry.IMGID)}</td>
+                                <td scope="row">${nvl(entry.STATEMENTDIV)}</td>
+                                <td scope="row">${nvl(entry.CONTRACTNUM)}</td>
+                                <td scope="row">${nvl(entry.CTNM)}</td>
+                                <td scope="row">${nvl(entry.OGCOMPANYCODE)}</td>
+                                <td scope="row">${nvl(entry.OGCOMPANYNAME)}</td>
+                                <td scope="row">${nvl(entry.BROKERCODE)}</td>
+                                <td scope="row">${nvl(entry.BROKERNAME)}</td>
+                                <td scope="row">${nvl(entry.INSSTDT)}</td>
+                                <td scope="row">${nvl(entry.INSENDDT)}</td>
+                                <td scope="row">${nvl(entry.CURCD)}</td>
+                                <td scope="row">${nvl(entry.PAIDPERCENT)}</td>
+                                <td scope="row">${nvl(entry.PAIDSHARE)}</td>
+                                <td scope="row">${nvl(entry.GROSSPM)}</td>
+                                <td scope="row">${nvl(entry.PM)}</td>
+                                <td scope="row">${nvl(entry.PMPFEND)}</td>
+                                <td scope="row">${nvl(entry.PMPFWOS)}</td>
+                                <td scope="row">${nvl(entry.XOLPM)}</td>
+                                <td scope="row">${nvl(entry.RETURNPM)}</td>
+                                <td scope="row">${nvl(entry.GROSSCN)}</td>
+                                <td scope="row">${nvl(entry.CN)}</td>
+                                <td scope="row">${nvl(entry.PROFITCN)}</td>
+                                <td scope="row">${nvl(entry.BROKERAGE)}</td>
+                                <td scope="row">${nvl(entry.TAX)}</td>
+                                <td scope="row">${nvl(entry.OVERRIDINGCOM)}</td>
+                                <td scope="row">${nvl(entry.CHARGE)}</td>
+                                <td scope="row">${nvl(entry.PMRESERVERTD1)}</td>
+                                <td scope="row">${nvl(entry.PFPMRESERVERTD1)}</td>
+                                <td scope="row">${nvl(entry.PMRESERVERTD2)}</td>
+                                <td scope="row">${nvl(entry.PFPMRESERVERTD2)}</td>
+                                <td scope="row">${nvl(entry.CLAIM)}</td>
+                                <td scope="row">${nvl(entry.LOSSRECOVERY)}</td>
+                                <td scope="row">${nvl(entry.CASHLOSS)}</td>
+                                <td scope="row">${nvl(entry.CASHLOSSRD)}</td>
+                                <td scope="row">${nvl(entry.LOSSRR)}</td>
+                                <td scope="row">${nvl(entry.LOSSRR2)}</td>
+                                <td scope="row">${nvl(entry.LOSSPFEND)}</td>
+                                <td scope="row">${nvl(entry.LOSSPFWOA)}</td>
+                                <td scope="row">${nvl(entry.INTEREST)}</td>
+                                <td scope="row">${nvl(entry.TAXON)}</td>
+                                <td scope="row">${nvl(entry.MISCELLANEOUS)}</td>
+                                <td scope="row">${nvl(entry.PMBL)}</td>
+                                <td scope="row">${nvl(entry.CMBL)}</td>
+                                <td scope="row">${nvl(entry.NTBL)}</td>
+                                <td scope="row">${nvl(entry.CSCOSARFRNCNNT2)}</td>
+                            </tr>
+                            `;
+                    });
+                } else {
+                    appendHtml += `<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>`;
+                }
+                $("#tbody_batchList_answer").empty().append(appendHtml);
+                layer_open('layer3');
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
 }
 function imgPopupEvent() {
     //$('#tbody_batchList_before td > a').click(function () {

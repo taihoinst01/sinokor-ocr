@@ -116,6 +116,41 @@ exports.selectContractMapping = function (req, done) {
     });
 };
 
+exports.selectContractMapping2 = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        var returnObj;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = queryConfig.mlConfig.selectContractMapping;
+
+            if (req[0] && req[1]) {
+                let result = await conn.execute(sqltext, [req[0], req[1]]);
+                if (result.rows[0] != null) {
+                    returnObj = result.rows[0];
+                } else {
+                    returnObj = null;
+                }
+            } else {
+                returnObj = null;
+            }
+
+            return done(null, returnObj);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.insertLabelMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
