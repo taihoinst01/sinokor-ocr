@@ -613,7 +613,7 @@ function popUpLayer2(ocrData) {
         tblTag += '</label>';
         tblTag += '</dt>';
         tblTag += '<dd>';
-        tblTag += appendOptionHtml((modifyData.data[i].column != undefined) ? modifyData.data[i].column : 36, columnArr)
+        tblTag += appendOptionHtml((modifyData.data[i].colLbl != undefined) ? modifyData.data[i].colLbl : 36, columnArr)
         tblTag += '</dd>';
         tblTag += '</dl>';
     }
@@ -685,7 +685,6 @@ function execBatchLearningData(ocrData, data) {
 
 // html 렌더링 전처리 (출재사명, 계약명, 화폐코드 처리)
 function selectTypoText(ocrData, data) {
-    console.log(data);
 
     $.ajax({
         url: 'common/selectTypoData',
