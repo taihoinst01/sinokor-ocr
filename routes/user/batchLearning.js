@@ -39,7 +39,8 @@ var selectBatchAnswerDataToImgId = queryConfig.batchLearningConfig.selectBatchAn
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, 'uploads/');
+            //cb(null, 'uploads/');
+            cb(null, propertiesConfig.filepath.imagePath);
         },
         filename: function (req, file, cb) {
             cb(null, file.originalname);
@@ -47,7 +48,7 @@ const upload = multer({
     }),
 });
 const defaults = {
-    encoding: 'utf8',
+    encoding: 'utf8'
 };
 var router = express.Router();
 
@@ -65,6 +66,45 @@ router.get('/', function (req, res) {                           // 배치학습 
 // BLANK CALLBACK
 var callbackBlank = function () { };
 
+// [POST] 배치학습데이터 이미지 조회
+router.post('/viewImage', function (req, res) {
+    if (req.isAuthenticated()) fnViewImage(req, res);
+});
+var callbackViewImage = async function (rows, req, res) {
+    console.log("rows : " + JSON.stringify(rows));
+    
+    if (req.isAuthenticated()) {
+        if (commonUtil.isNull(rows[0].CONVERTEDIMGPATH)) {
+            
+            // 변환 이미지가 없을 경우 변환 후 UPDATE
+            var imgId = rows[0].IMGID;
+            var convertedImgPath = "/uploads/" + rows[0].FILENAME.split('.')[0] + '.jpg';
+            var data = [convertedImgPath, imgId];
+            var query = queryConfig.batchLearningConfig.updateConvertedImgPath;
+            console.log("update query : " + query + " data : " + JSON.stringify(data));
+            commonDB.reqQueryParam(query, data, callbackBlank, req, res);
+
+            // 이미지 변환
+            var ifile = rows[0].FILEPATH;
+            var ofile = appRoot + "" + convertedImgPath;
+            console.log("start convert img... " + ifile + " => " + ofile);
+            await exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
+                console.log("trans img err : " + err);
+                console.log("trans img out : " + out);
+                console.log("trans img code : " + code);
+                res.send({ rows: rows, code: 201 });
+            });
+        } else {
+            res.send({ rows: rows, code: 200 });
+        }
+    }
+};
+var fnViewImage = function (req, res) {
+    console.log(`imgId : ${req.body.imgId}`);
+    var data = [req.body.imgId];
+    var query = queryConfig.batchLearningConfig.selectViewImage;
+    commonDB.reqQueryParam(query, data, callbackViewImage, req, res);
+};
 // [POST] 배치학습데이터 이미지 데이터 조회 
 router.post('/viewImageData', function (req, res) {
     if (req.isAuthenticated()) fnViewImageData(req, res);
@@ -74,8 +114,7 @@ var callbackViewImageData = function (rows, req, res) {
     if (req.isAuthenticated()) res.send(rows);
 };
 var fnViewImageData = function (req, res) {
-    console.log("filePath : " + req.body.filePath);
-    var data = [req.body.filePath];
+    var data = [req.body.imgId];
     var query = queryConfig.batchLearningConfig.selectViewImageData;
     commonDB.reqQueryParam(query, data, callbackViewImageData, req, res);
 };
@@ -92,7 +131,7 @@ var callbackBatchLearningDataList = function (rows, req, res) {
 var fnSearchBatchLearningDataList = function (req, res) {
     // 조건절
     var condQuery = "";
-    var orderQuery = " ORDER BY A.regDate DESC, LENGTH(F.originFileName) ASC, F.originFileName ASC";
+    var orderQuery = " ORDER BY A.regDate DESC";
     if (!commonUtil.isNull(req.body.addCond)) {
         if (req.body.addCond == "LEARN_N") condQuery = " AND A.status != 'Y' ";
         else if (req.body.addCond == "LEARN_Y") condQuery = " AND A.status = 'Y' ";
@@ -363,15 +402,19 @@ router.post('/imageUpload', upload.any(), function (req, res) {
     for (var i = 0; i < files.length; i++) {
         if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
             files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff') {
-            var ifile = appRoot + '\\' + files[i].path;
-            var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
-            // 파일 정보 추출
-            var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성
-            //console.log("생성한 imgId와 길이 : " + imgId + " : " + imgId.length);
             var fileObj = files[i]; // 파일
-            var filePath = fileObj.path;    // 파일 경로
-            //var filePath = ifile;    // 파일 경로
             var oriFileName = fileObj.originalname; // 파일 원본명
+            var filePath = fileObj.path;    // 파일 경로
+            var ifile = filePath;
+            var ofile = "/uploads/" + oriFileName.split('.')[0] + '.jpg';
+            // 파일 정보 추출
+            //var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성
+            var d = new Date();
+            var imgId = d.isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000;
+            //console.log("생성한 imgId와 길이 : " + imgId + " : " + imgId.length);
+            
+            //var filePath = ifile;    // 파일 경로
+            
             var _lastDot = oriFileName.lastIndexOf('.');    
             var fileExt = oriFileName.substring(_lastDot+1, oriFileName.length).toLowerCase();        // 파일 확장자
             var fileSize = fileObj.size;  // 파일 크기
@@ -382,12 +425,14 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                 imgId: imgId,
                 filePath: filePath,
                 oriFileName: oriFileName,
-                convertFileName: oriFileName.split('.')[0] + '.jpg',
+                convertFileName: ofile.split('.')[0] + '.jpg',
                 fileExt: fileExt,
                 fileSize: fileSize,
                 contentType: contentType,
                 svrFileName: svrFileName
             };
+
+            console.log(`file Info : ${JSON.stringify(fileParam)}`);
             fileInfo.push(fileParam);
             returnObj.push(oriFileName.split('.')[0] + '.jpg');
             //console.log("upload ifile : " + ifile + " : oFile : " + ofile);
@@ -437,8 +482,10 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
     //console.log("insert BATCH LEARNING BASE DATA : " + JSON.stringify(req.body.fileInfo));
     var fileInfo = req.body.fileInfo;
     var imgId = fileInfo.imgId;
-    var regId = req.session.userId;
-    var data = [imgId, regId];
+    var convertedImgPath = fileInfo.convertFileName;
+    var fileName = fileInfo.oriFileName;
+    var filePath = fileInfo.filePath;
+    var data = [imgId, convertedImgPath, fileName, filePath];
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningBaseData, data, callbackInsertBatchLearningBaseData, req, res);
 });
 
@@ -1867,12 +1914,10 @@ router.post('/batchLearnTraing', function (req, res) {
     sync.fiber(function () {
         var imgId = req.body.imgIdArray;
         var retData = [];
-        /*
         for (var i = 0; i < imgId.length; i++) {
-            var mlData = sync.await(batchLearnTraing(imgId[i], sync.defer()));
-            retData.push(mlData);
-        }*/
-        var mlData = sync.await(batchLearnTraing("10", sync.defer()));
+            var batchData = sync.await(batchLearnTraing(imgId[i], sync.defer()));
+            retData.push(batchData);
+        }
 
         res.send({ data: retData });
     });
@@ -1888,9 +1933,13 @@ function batchLearnTraing(imgId, done) {
 
             var originImageArr = sync.await(oracle.selectOcrFilePaths(originArr, sync.defer()));
 
+            if (originImageArr == "error") {
+                return done(null, "error selectOcrFilePaths");
+            }
+
             //tif파일일 경우 이미지 파일로 전환
             for (var item in originImageArr) {
-                if (originImageArr[item].ORIGINFILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].ORIGINFILENAME.split('.')[1].toLowerCase() === 'tiff') {
+                if (originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
                     let result = sync.await(oracle.convertTiftoJpg(originImageArr[item].FILEPATH, sync.defer()));
                     if (!result) {
                         //추후 변경전 파일명 저장
@@ -1900,10 +1949,18 @@ function batchLearnTraing(imgId, done) {
                 }
             }
 
+            if (result == "error") {
+                return done(null, "error convertTiftoJpg");
+            }
+
             //ocr처리
-            originImageArr[0]['ORIGINFILEPATH'] = originImageArr[0]['FILEPATH'];
-            originImageArr[0]['FILEPATH'] = 'C:\\tmp\\1\\apex.jpg';
+            //originImageArr[0]['ORIGINFILEPATH'] = originImageArr[0]['FILEPATH'];
+            //originImageArr[0]['FILEPATH'] = 'C:\\tmp\\1\\apex.jpg';
             var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
+
+            if (ocrResult == "error") {
+                return done(null, "error ocr");
+            }
 
             console.log("done ocr");
 
@@ -1939,14 +1996,14 @@ function batchLearnTraing(imgId, done) {
             var mlData = {};
             mlData["mlData"] = resPyArr;
             mlData["docCategory"] = docData.docCategory[0];
-            mlData["imgId"] = 10;
+            mlData["imgId"] = imgId;
 
             retData["mlexport"] = mlData;
 
             console.log("done columnMapping ML");
 
             //정답 테이블 데이터 추출
-            var cobineRegacyData = sync.await(oracle.selectLegacyData(originImageArr[0]['ORIGINFILENAME'], sync.defer()));
+            var cobineRegacyData = sync.await(oracle.selectLegacyData(imgId, sync.defer()));
 
             retData["regacy"] = cobineRegacyData;
 
@@ -2457,5 +2514,12 @@ router.post('/insertDocCategory', function (req, res) {
     commonDB.reqQuery(queryConfig.batchLearningConfig.selectMaxDocType, callbackSelectMaxDocType, req, res);
 });
 // end 신규문서 양식 등록 
+
+Date.prototype.isoNum = function (n) {
+    var tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds
+    var localISOTime = (new Date(this - tzoffset)).toISOString().slice(0, -1);
+    return localISOTime.replace(/[-T:\.Z]/g, '').substring(0, n || 20); // YYYYMMDD
+};
+
 
 module.exports = router;
