@@ -5,7 +5,8 @@ var queryConfig = require(appRoot + '/config/queryConfig');
 var execSync = require('child_process').execSync;
 var fs = require('fs');
 var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
-var request = require('request');
+var commonUtil = require(appRoot + '/public/js/common.util.js');
+var request = require('sync-request');
 var sync = require('./sync.js');
 
 
@@ -357,13 +358,13 @@ exports.selectLegacyData = function (req, done) {
 
 
             //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
-            let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, ['204d61.tif']);
-            result.rows[0]["IMGID"] = 153139;
-            result.rows[0]["PAGENUM"] = 2;
-            result.rows[0]["TOTALCOUNT"] = 2;
+            //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, ['204d61.tif']);
+            //result.rows[0]["IMGID"] = 153139;
+            //result.rows[0]["PAGENUM"] = 2;
+            //result.rows[0]["TOTALCOUNT"] = 2;
 
-            result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [result.rows[0]["IMGID"], result.rows[0]["PAGENUM"], result.rows[0]["TOTALCOUNT"]]);
-            //image.push(result.rows);
+            //result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [result.rows[0]["IMGID"], result.rows[0]["PAGENUM"], result.rows[0]["TOTALCOUNT"]]);
+            let result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [10, 2, 2]);
 
             return done(null, result.rows);
         } catch (err) { // catches errors in getConnection and the query
@@ -390,122 +391,122 @@ exports.insertRegacyData = function (req, done) {
 
             for (var i = 0; i < req.length; i++) {
 
-                let LearnDataRes = await conn.execute("select count(*) as count from tbl_batch_learn_data where imgid = :imgid", [fileInfos[0].imgId]);
+                let LearnDataRes = await conn.execute("select count(*) as count from tbl_batch_learn_data where imgid = :imgid", [10]);
 
-                if (j + 1 <= LearnDataRes.rows[0].COUNT) {
+                if (i + 1 <= LearnDataRes.rows[0].COUNT) {
 
                     var dataArr = [
                         "N",
-                        commonUtil.nvl(dataCod.entryNo),
-                        commonUtil.nvl(dataCod.STATEMENTDIV),
-                        commonUtil.nvl(dataCod.CONTRACTNUM),
-                        commonUtil.nvl(dataCod.ogCompanyCode),
-                        commonUtil.nvl(dataCod.CTOGCOMPANYNAMENM),
-                        commonUtil.nvl(dataCod.brokerCode),
-                        commonUtil.nvl(dataCod.brokerName),
-                        commonUtil.nvl(dataCod.CTNM),
-                        commonUtil.nvl(dataCod.insstdt),
-                        commonUtil.nvl(dataCod.insenddt),
-                        commonUtil.nvl(dataCod.UY),
-                        commonUtil.nvl(dataCod.CURCD),
-                        commonUtil.nvl2(dataCod.PAIDPERCENT, 0),
-                        commonUtil.nvl2(dataCod.PAIDSHARE, 0),
-                        commonUtil.nvl2(dataCod.OSLPERCENT, 0),
-                        commonUtil.nvl2(dataCod.OSLSHARE, 0),
-                        commonUtil.nvl2(dataCod.GROSSPM, 0),
-                        commonUtil.nvl2(dataCod.PM, 0),
-                        commonUtil.nvl2(dataCod.PMPFEND, 0),
-                        commonUtil.nvl2(dataCod.PMPFWOS, 0),
-                        commonUtil.nvl2(dataCod.XOLPM, 0),
-                        commonUtil.nvl2(dataCod.RETURNPM, 0),
-                        commonUtil.nvl2(dataCod.GROSSCN, 0),
-                        commonUtil.nvl2(dataCod.CN, 0),
-                        commonUtil.nvl2(dataCod.PROFITCN, 0),
-                        commonUtil.nvl2(dataCod.BROKERAGE, 0),
-                        commonUtil.nvl2(dataCod.TAX, 0),
-                        commonUtil.nvl2(dataCod.OVERRIDINGCOM, 0),
-                        commonUtil.nvl2(dataCod.CHARGE, 0),
-                        commonUtil.nvl2(dataCod.PMRESERVERTD, 0),
-                        commonUtil.nvl2(dataCod.PFPMRESERVERTD, 0),
-                        commonUtil.nvl2(dataCod.PMRESERVERLD, 0),
-                        commonUtil.nvl2(dataCod.PFPMRESERVERLD, 0),
-                        commonUtil.nvl2(dataCod.CLAIM, 0),
-                        commonUtil.nvl2(dataCod.LOSSRECOVERY, 0),
-                        commonUtil.nvl2(dataCod.CASHLOSS, 0),
-                        commonUtil.nvl2(dataCod.CASHLOSSRD, 0),
-                        commonUtil.nvl2(dataCod.LOSSRR, 0),
-                        commonUtil.nvl2(dataCod.LOSSRR2, 0),
-                        commonUtil.nvl2(dataCod.LOSSPFEND, 0),
-                        commonUtil.nvl2(dataCod.LOSSPFWOA, 0),
-                        commonUtil.nvl2(dataCod.INTEREST, 0),
-                        commonUtil.nvl2(dataCod.TAXON, 0),
-                        commonUtil.nvl2(dataCod.MISCELLANEOUS, 0),
-                        commonUtil.nvl2(dataCod.PMBL, 0),
-                        commonUtil.nvl2(dataCod.CMBL, 0),
-                        commonUtil.nvl2(dataCod.NTBL, 0),
-                        commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0)
+                        commonUtil.nvl(req[i].ENTRYNO),
+                        commonUtil.nvl(req[i].STATEMENTDIV),
+                        commonUtil.nvl(req[i].CONTRACTNUM),
+                        commonUtil.nvl(req[i].OGCOMPANYCODE),
+                        commonUtil.nvl(req[i].OGCOMPANYNAME),
+                        commonUtil.nvl(req[i].BROKERCODE),
+                        commonUtil.nvl(req[i].BROKERNAME),
+                        commonUtil.nvl(req[i].CTNM),
+                        commonUtil.nvl(req[i].INSSTDT),
+                        commonUtil.nvl(req[i].INSENDDT),
+                        commonUtil.nvl(req[i].UY),
+                        commonUtil.nvl(req[i].CURCD),
+                        commonUtil.nvl2(req[i].PAIDPERCENT, 0),
+                        commonUtil.nvl2(req[i].PAIDSHARE, 0),
+                        commonUtil.nvl2(req[i].OSLPERCENT, 0),
+                        commonUtil.nvl2(req[i].OSLSHARE, 0),
+                        commonUtil.nvl2(req[i].GROSSPM, 0),
+                        commonUtil.nvl2(req[i].PM, 0),
+                        commonUtil.nvl2(req[i].PMPFEND, 0),
+                        commonUtil.nvl2(req[i].PMPFWOS, 0),
+                        commonUtil.nvl2(req[i].XOLPM, 0),
+                        commonUtil.nvl2(req[i].RETURNPM, 0),
+                        commonUtil.nvl2(req[i].GROSSCN, 0),
+                        commonUtil.nvl2(req[i].CN, 0),
+                        commonUtil.nvl2(req[i].PROFITCN, 0),
+                        commonUtil.nvl2(req[i].BROKERAGE, 0),
+                        commonUtil.nvl2(req[i].TAX, 0),
+                        commonUtil.nvl2(req[i].OVERRIDINGCOM, 0),
+                        commonUtil.nvl2(req[i].CHARGE, 0),
+                        commonUtil.nvl2(req[i].PMRESERVERTD, 0),
+                        commonUtil.nvl2(req[i].PFPMRESERVERTD, 0),
+                        commonUtil.nvl2(req[i].PMRESERVERLD, 0),
+                        commonUtil.nvl2(req[i].PFPMRESERVERLD, 0),
+                        commonUtil.nvl2(req[i].CLAIM, 0),
+                        commonUtil.nvl2(req[i].LOSSRECOVERY, 0),
+                        commonUtil.nvl2(req[i].CASHLOSS, 0),
+                        commonUtil.nvl2(req[i].CASHLOSSRD, 0),
+                        commonUtil.nvl2(req[i].LOSSRR, 0),
+                        commonUtil.nvl2(req[i].LOSSRR2, 0),
+                        commonUtil.nvl2(req[i].LOSSPFEND, 0),
+                        commonUtil.nvl2(req[i].LOSSPFWOA, 0),
+                        commonUtil.nvl2(req[i].INTEREST, 0),
+                        commonUtil.nvl2(req[i].TAXON, 0),
+                        commonUtil.nvl2(req[i].MISCELLANEOUS, 0),
+                        commonUtil.nvl2(req[i].PMBL, 0),
+                        commonUtil.nvl2(req[i].CMBL, 0),
+                        commonUtil.nvl2(req[i].NTBL, 0),
+                        commonUtil.nvl2(req[i].CSCOSARFRNCNNT2, 0),
+                        'L'
                     ];
 
                     //update
                     console.log("update");
-                    var andCond = "('" + fileInfos[0].imgId + "') and subnum = " + (parseInt(j) + 1);
+                    var andCond = "('" + req[i].IMGID + "') and subnum = " + (parseInt(i) + 1);
                     let updLearnDataRes = await conn.execute(queryConfig.batchLearningConfig.updateBatchLearningData + andCond, dataArr);
                 } else {
                     //insert
-                    var regId = req.session.userId;
 
                     var insArr = [
-                        fileInfos[0].imgId,
-                        commonUtil.nvl(dataCod.entryNo),
-                        commonUtil.nvl(dataCod.STATEMENTDIV),
-                        commonUtil.nvl(dataCod.CONTRACTNUM),
-                        commonUtil.nvl(dataCod.ogCompanyCode),
-                        commonUtil.nvl(dataCod.CTOGCOMPANYNAMENM),
-                        commonUtil.nvl(dataCod.brokerCode),
-                        commonUtil.nvl(dataCod.brokerName),
-                        commonUtil.nvl(dataCod.CTNM),
-                        commonUtil.nvl(dataCod.insstdt),
-                        commonUtil.nvl(dataCod.insenddt),
-                        commonUtil.nvl(dataCod.UY),
-                        commonUtil.nvl(dataCod.CURCD),
-                        commonUtil.nvl2(dataCod.PAIDPERCENT, 0),
-                        commonUtil.nvl2(dataCod.PAIDSHARE, 0),
-                        commonUtil.nvl2(dataCod.OSLPERCENT, 0),
-                        commonUtil.nvl2(dataCod.OSLSHARE, 0),
-                        commonUtil.nvl2(dataCod.GROSSPM, 0),
-                        commonUtil.nvl2(dataCod.PM, 0),
-                        commonUtil.nvl2(dataCod.PMPFEND, 0),
-                        commonUtil.nvl2(dataCod.PMPFWOS, 0),
-                        commonUtil.nvl2(dataCod.XOLPM, 0),
-                        commonUtil.nvl2(dataCod.RETURNPM, 0),
-                        commonUtil.nvl2(dataCod.GROSSCN, 0),
-                        commonUtil.nvl2(dataCod.CN, 0),
-                        commonUtil.nvl2(dataCod.PROFITCN, 0),
-                        commonUtil.nvl2(dataCod.BROKERAGE, 0),
-                        commonUtil.nvl2(dataCod.TAX, 0),
-                        commonUtil.nvl2(dataCod.OVERRIDINGCOM, 0),
-                        commonUtil.nvl2(dataCod.CHARGE, 0),
-                        commonUtil.nvl2(dataCod.PMRESERVERTD, 0),
-                        commonUtil.nvl2(dataCod.PFPMRESERVERTD, 0),
-                        commonUtil.nvl2(dataCod.PMRESERVERLD, 0),
-                        commonUtil.nvl2(dataCod.PFPMRESERVERLD, 0),
-                        commonUtil.nvl2(dataCod.CLAIM, 0),
-                        commonUtil.nvl2(dataCod.LOSSRECOVERY, 0),
-                        commonUtil.nvl2(dataCod.CASHLOSS, 0),
-                        commonUtil.nvl2(dataCod.CASHLOSSRD, 0),
-                        commonUtil.nvl2(dataCod.LOSSRR, 0),
-                        commonUtil.nvl2(dataCod.LOSSRR2, 0),
-                        commonUtil.nvl2(dataCod.LOSSPFEND, 0),
-                        commonUtil.nvl2(dataCod.LOSSPFWOA, 0),
-                        commonUtil.nvl2(dataCod.INTEREST, 0),
-                        commonUtil.nvl2(dataCod.TAXON, 0),
-                        commonUtil.nvl2(dataCod.MISCELLANEOUS, 0),
-                        commonUtil.nvl2(dataCod.PMBL, 0),
-                        commonUtil.nvl2(dataCod.CMBL, 0),
-                        commonUtil.nvl2(dataCod.NTBL, 0),
-                        commonUtil.nvl2(dataCod.cscosarfrncnnt2, 0),
-                        regId,
-                        (parseInt(j) + 1)
+                        req[i].IMGID,
+                        commonUtil.nvl(req[i].ENTRYNO),
+                        commonUtil.nvl(req[i].STATEMENTDIV),
+                        commonUtil.nvl(req[i].CONTRACTNUM),
+                        commonUtil.nvl(req[i].OGCOMPANYCODE),
+                        commonUtil.nvl(req[i].OGCOMPANYNAME),
+                        commonUtil.nvl(req[i].BROKERCODE),
+                        commonUtil.nvl(req[i].BROKERNAME),
+                        commonUtil.nvl(req[i].CTNM),
+                        commonUtil.nvl(req[i].INSSTDT),
+                        commonUtil.nvl(req[i].INSENDDT),
+                        commonUtil.nvl(req[i].UY),
+                        commonUtil.nvl(req[i].CURCD),
+                        commonUtil.nvl2(req[i].PAIDPERCENT, 0),
+                        commonUtil.nvl2(req[i].PAIDSHARE, 0),
+                        commonUtil.nvl2(req[i].OSLPERCENT, 0),
+                        commonUtil.nvl2(req[i].OSLSHARE, 0),
+                        commonUtil.nvl2(req[i].GROSSPM, 0),
+                        commonUtil.nvl2(req[i].PM, 0),
+                        commonUtil.nvl2(req[i].PMPFEND, 0),
+                        commonUtil.nvl2(req[i].PMPFWOS, 0),
+                        commonUtil.nvl2(req[i].XOLPM, 0),
+                        commonUtil.nvl2(req[i].RETURNPM, 0),
+                        commonUtil.nvl2(req[i].GROSSCN, 0),
+                        commonUtil.nvl2(req[i].CN, 0),
+                        commonUtil.nvl2(req[i].PROFITCN, 0),
+                        commonUtil.nvl2(req[i].BROKERAGE, 0),
+                        commonUtil.nvl2(req[i].TAX, 0),
+                        commonUtil.nvl2(req[i].OVERRIDINGCOM, 0),
+                        commonUtil.nvl2(req[i].CHARGE, 0),
+                        commonUtil.nvl2(req[i].PMRESERVERTD, 0),
+                        commonUtil.nvl2(req[i].PFPMRESERVERTD, 0),
+                        commonUtil.nvl2(req[i].PMRESERVERLD, 0),
+                        commonUtil.nvl2(req[i].PFPMRESERVERLD, 0),
+                        commonUtil.nvl2(req[i].CLAIM, 0),
+                        commonUtil.nvl2(req[i].LOSSRECOVERY, 0),
+                        commonUtil.nvl2(req[i].CASHLOSS, 0),
+                        commonUtil.nvl2(req[i].CASHLOSSRD, 0),
+                        commonUtil.nvl2(req[i].LOSSRR, 0),
+                        commonUtil.nvl2(req[i].LOSSRR2, 0),
+                        commonUtil.nvl2(req[i].LOSSPFEND, 0),
+                        commonUtil.nvl2(req[i].LOSSPFWOA, 0),
+                        commonUtil.nvl2(req[i].INTEREST, 0),
+                        commonUtil.nvl2(req[i].TAXON, 0),
+                        commonUtil.nvl2(req[i].MISCELLANEOUS, 0),
+                        commonUtil.nvl2(req[i].PMBL, 0),
+                        commonUtil.nvl2(req[i].CMBL, 0),
+                        commonUtil.nvl2(req[i].NTBL, 0),
+                        commonUtil.nvl2(req[i].CSCOSARFRNCNNT2, 0),
+                        (parseInt(i) + 1),
+                        'L'
                     ];
 
                     console.log("insert");
@@ -514,7 +515,7 @@ exports.insertRegacyData = function (req, done) {
 
             }
 
-            return done(null, result.rows);
+            return done(null, "done legary insert");
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
@@ -531,22 +532,21 @@ exports.insertRegacyData = function (req, done) {
 
 exports.insertMLData = function (req, done) {
     return new Promise(async function (resolve, reject) {
-        var res = [];
         let conn;
 
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            insSql = queryConfig.batchLearing.insertMlExport;
-            delSql = queryConfig.batchLearing.insertMlExport;
+            insSql = queryConfig.batchLearningConfig.insertMlExport;
+            delSql = queryConfig.batchLearningConfig.deleteMlExport;
 
-            let delRes = await conn.execute(delSql, imgId);
+            let delRes = await conn.execute(delSql, [req.imgId]);
 
-            for (var i = 0; i < req.data.length; i++) {
+            for (var i = 0; i < req.mlData.length; i++) {
                 var cond = [];
-                cond.push(imgid);
-                cond.push(req.data[i].column);
-                cond.push(req, data[i].text);
+                cond.push(req.imgId);
+                cond.push(req.mlData[i].colLbl);
+                cond.push(req.mlData[i].text);
 
                 let colData = await conn.execute(insSql, cond);
             }
