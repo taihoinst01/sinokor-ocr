@@ -34,7 +34,6 @@ var router = express.Router();
  * *************************************************************/
 
 router.post('/modifyTextData', function (req, res) {
-    var res = res;
     var beforeData = req.body.beforeData;
     var afterData = req.body.afterData;
     var beforeOgAndCtnm = [];
