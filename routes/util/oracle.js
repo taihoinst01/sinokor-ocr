@@ -426,7 +426,7 @@ exports.insertRegacyData = function (req, done) {
 
             for (var i = 0; i < req.length; i++) {
 
-                let LearnDataRes = await conn.execute("select count(*) as count from tbl_batch_learn_data where imgid = :imgid", [req[i].IMGID]);
+                let LearnDataRes = await conn.execute("select count(*) as COUNT, max(FILENAME) as FILENAME, max(FILEPATH) AS FILEPATH from tbl_batch_learn_data where imgid = :imgid", [req[i].IMGID]);
 
                 if (i + 1 <= LearnDataRes.rows[0].COUNT) {
 
@@ -480,7 +480,9 @@ exports.insertRegacyData = function (req, done) {
                         commonUtil.nvl2(req[i].CMBL, 0),
                         commonUtil.nvl2(req[i].NTBL, 0),
                         commonUtil.nvl2(req[i].CSCOSARFRNCNNT2, 0),
-                        'L'
+                        'L',
+                        LearnDataRes.rows[0].FILENAME,
+                        LearnDataRes.rows[0].FILEPATH
                     ];
 
                     //update
@@ -541,7 +543,9 @@ exports.insertRegacyData = function (req, done) {
                         commonUtil.nvl2(req[i].NTBL, 0),
                         commonUtil.nvl2(req[i].CSCOSARFRNCNNT2, 0),
                         (parseInt(i) + 1),
-                        'L'
+                        'L',
+                        LearnDataRes.rows[0].FILENAME,
+                        LearnDataRes.rows[0].FILEPATH
                     ];
 
                     console.log("insert");

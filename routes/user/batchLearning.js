@@ -1939,12 +1939,11 @@ function batchLearnTraing(imgId, done) {
                 return done(null, "error selectOcrFilePaths");
             }
 
-            //tif파일일 경우 이미지 파일로 전환
+            //tif to jpg
             for (var item in originImageArr) {
                 if (originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
                     let result = sync.await(oracle.convertTiftoJpg(originImageArr[item].FILEPATH, sync.defer()));
                     if (result) {
-                        //추후 변경전 파일명 저장
                         originImageArr[item]['ORIGINFILEPATH'] = originImageArr[item]['FILEPATH'];
                         originImageArr[item]['FILEPATH'] = result;
                     }
@@ -1956,9 +1955,7 @@ function batchLearnTraing(imgId, done) {
                 }
             }
 
-            //ocr처리
-            //originImageArr[0]['ORIGINFILEPATH'] = originImageArr[0]['FILEPATH'];
-            //originImageArr[0]['FILEPATH'] = 'C:\\tmp\\1\\apex.jpg';
+            //ocr
             var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
 
             if (ocrResult == "error") {
@@ -1967,7 +1964,6 @@ function batchLearnTraing(imgId, done) {
 
             console.log("done ocr");
 
-            //결과값 머신러닝 처리
             //typo ML
             pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
             var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
@@ -2005,15 +2001,15 @@ function batchLearnTraing(imgId, done) {
 
             console.log("done columnMapping ML");
 
-            //정답 테이블 데이터 추출
+            //select legacy data
             var cobineRegacyData = sync.await(oracle.selectLegacyData(imgId, sync.defer()));
 
             retData["regacy"] = cobineRegacyData;
 
-            //정답 데이터 INSERT
+            //insert legacy data to batchLearnData
             sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
 
-            //ML 데이터 INSERT
+            //insert MLexport data to batchMlExport
             sync.await(oracle.insertMLData(mlData, sync.defer()));
 
             console.log("done");
