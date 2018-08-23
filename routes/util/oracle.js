@@ -239,25 +239,28 @@ exports.selectOcrFilePaths = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             //let result = await conn.execute(`SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (${req.map((name, index) => `:${index}`).join(", ")})`, req);
-            let result = await conn.execute("SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (:imgid)", ["10"]);
+            //let result = await conn.execute("SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (:imgid)", ["10"]);
+            let resutl = await conn.execute(`SELECT FILENAME, FILEPATH FROM TBL_BATCH_LEARN_DATA WHERE IMGID = :imgId`, req[0].imgId);
 
             for (var row = 0; row < result.rows.length; row++) {
                 var dict = {};
 
-                dict.SEQNUM = result.rows[row].SEQNUM;
-                dict.FILEPATH = result.rows[row].FILEPATH;
-                dict.ORIGINFILENAME = result.rows[row].ORIGINFILENAME;
+                //dict.SEQNUM = result.rows[row].SEQNUM;
+                dict.FILEPATH = result.rows[row].FILENAME;
+                dict.ORIGINFILENAME = result.rows[row].FILEPATH;
                 /*
                 for (var colName = 0; colName < colNameArr.length; colName++) {
                     dict[colNameArr[colName]] = result.rows[row].colNameArr[colName];
                 }
                 */
                 res.push(dict);
+                
             }
-            //resolve(result.rows);
+
             return done(null, res);
         } catch (err) { // catches errors in getConnection and the query
-            reject(err);
+            console.log(err);
+            return done(null, "error");
         } finally {
             if (conn) {   // the conn assignment worked, must release
                 try {
@@ -274,10 +277,11 @@ exports.convertTiftoJpg = function (originFilePath, done) {
     try {
         convertedFileName = originFilePath.split('.')[0] + '.jpg';
         execSync('module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
+            
         return done(null, convertedFileName);
-
     } catch (err) {
         console.log(err);
+        return done(null, "err");
     } finally {
         console.log('convertTiftoJpg end');
     }
@@ -356,19 +360,15 @@ exports.selectLegacyData = function (req, done) {
             }
             */
 
-
             //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
             //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, ['204d61.tif']);
-            //result.rows[0]["IMGID"] = 153139;
-            //result.rows[0]["PAGENUM"] = 2;
-            //result.rows[0]["TOTALCOUNT"] = 2;
 
-            //result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [result.rows[0]["IMGID"], result.rows[0]["PAGENUM"], result.rows[0]["TOTALCOUNT"]]);
-            let result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [10, 2, 2]);
+            //let result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [10, 2, 2]);
+            let result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID`, [req.imgId]);
 
             return done(null, result.rows);
         } catch (err) { // catches errors in getConnection and the query
-            reject(err);
+            return done(null, "error");
         } finally {
             if (conn) {   // the conn assignment worked, must release
                 try {
