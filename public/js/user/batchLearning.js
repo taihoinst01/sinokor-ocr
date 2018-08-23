@@ -269,7 +269,7 @@ function fileUpload() {
                     console.log("fileInfo : " + JSON.stringify(fileInfo));
                     console.log("fileName : " + JSON.stringify(fileName));
                     if (i === (totCount - 1)) {
-                        //lastYN = true;
+                        lastYN = true;
                         alert("등록이 완료되었습니다.");
                         endProgressBar();
                     }
