@@ -34,7 +34,6 @@ var router = express.Router();
  * *************************************************************/
 
 router.post('/modifyTextData', function (req, res) {
-    var res = res;
     var beforeData = req.body.beforeData;
     var afterData = req.body.afterData;
     var beforeOgAndCtnm = [];
@@ -61,7 +60,7 @@ router.post('/modifyTextData', function (req, res) {
                     for (var j in beforeData.data) {
                         if (afterData.data[i].location == beforeData.data[j].location) {
 
-                            sync.await(oracle.insertOcrSymspellForCurunit([afterData.data[i], beforeData.data[j]], sync.defer()));
+                            sync.await(oracle.insertOcrSymspellForCurcd([afterData.data[i], beforeData.data[j]], sync.defer()));
 
                         }
                     }
@@ -77,6 +76,28 @@ router.post('/modifyTextData', function (req, res) {
             }
             returnObj = { code: 200, message: 'modify textData success' };
 
+        } catch (e) {
+            returnObj = { code: 500, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+router.post('/selectTypoData', function (req, res) {
+    var data = req.body.data;
+    var ogCompanyName = [];
+    var ctnm = [];
+    var curcd = [];
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            for (var i in data) {
+
+            }
+
+            returnObj = { code: 200, message: 'select tyop Data success' };
         } catch (e) {
             returnObj = { code: 500, error: e };
         } finally {

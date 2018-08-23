@@ -520,17 +520,17 @@ var uiLearningConfig = {
             TBL_OCR_TYPO_CORRECT(seqNum, userId, originWord, correctedWord, convertedImageFileName, correctorType) 
          VALUES
             (seq_ocr_typo_correct.nextval, :userid, :originWord, :correctWord, :fileName, :correctorType) `,
-    selectCurunitMapping:
+    selectCurcdMapping:
         `SELECT
             beforeText, afterText
          FROM
-            tbl_curunit_mapping
+            tbl_curcd_mapping
          WHERE
             beforeText = :beforeText AND afterText = :afterText
         `,
-    insertCurunitMapping:
+    insertCurcdMapping:
         `INSERT INTO 
-            tbl_curunit_mapping(beforeText, afterText)
+            tbl_curcd_mapping(beforeText, afterText)
          VALUES
             (:beforeText, :afterText) `,
     insertContractMapping2:
