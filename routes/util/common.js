@@ -94,10 +94,55 @@ router.post('/selectTypoData', function (req, res) {
     sync.fiber(function () {
         try {
             for (var i in data) {
-
+                if (data[i].colLbl == 0) {
+                    ogCompanyName.push(data[i]);
+                } else if (data[i].colLbl == 1) {
+                    ctnm.push(data[i]);
+                } else if (data[i].colLbl == 4) {
+                    curcd.push(data[i]);
+                }
+            }
+            if (ogCompanyName.length > ctnm.length) { // N:1
+                for (var i = 1; i < ogCompanyName.length; i++) ctnm.push(ctnm[0]);
+            } else if (ogCompanyName.length > ctnm.length) { // 1:N
+                for (var i = 1; i < ctnm.length; i++) ogCompanyName.push(ogCompanyName[0]);
             }
 
-            returnObj = { code: 200, message: 'select tyop Data success' };
+            // select tbl_contract_mapping And save modified text data (ogCompanyName, contractName)
+            for (var i in ogCompanyName) {
+                var result = sync.await(oracle.selectContractMapping2([ogCompanyName[i].text, ctnm[i].text], sync.defer()));
+                if (result) {
+                    ogCompanyName[i].text = result.ASOGCOMPANYNAME;
+                    ctnm[i].text = result.ASCTNM;
+                }
+            }
+
+            // select tbl_curcd_mapping And save modified text data (curcd)
+            for (var i in curcd) {
+                var result = sync.await(oracle.selectContractMapping2([curcd[i].text], sync.defer()));
+                if (result) {
+                    curcd[i].text = result.AFTERTEXT;
+                }
+            }
+
+            // save modified text data to return data
+            for (var i in data) {
+                if (data[i].colLbl == 0 || data[i].colLbl == 1) {
+                    for (var j in ogCompanyName) {
+                        if (data[i].location == ogCompanyName[j].location) {
+                            data[i].text = ogCompanyName[j].text;
+                        }
+                    }
+                } else if (data[i].colLbl == 4) {
+                    for (var j in curcd) {
+                        if (data[i].location == curcd[j].location) {
+                            data[i].text = curcd[j].text;
+                        }
+                    }
+                }
+            }
+
+            returnObj = { code: 200, data: data };
         } catch (e) {
             returnObj = { code: 500, error: e };
         } finally {
