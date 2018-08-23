@@ -658,6 +658,48 @@ function execBatchLearningData(ocrData, data) {
             modifyData = data;
             batchCount++;
 
+            //selectTypoText(ocrData, data);
+            
+            if (data.docCategory && data.docCategory.DOCTYPE == 2) {
+                var docData = data.data;
+                for (var i in docData) {
+                    data.data = docData[i];
+                    if (i > 0) {
+                        ocrData.fileToPage.IMGFILEENDNO = ocrData.fileToPage.IMGFILEENDNO + 1;
+                        ocrData.fileToPage.IMGFILESTARTNO = ocrData.fileToPage.IMGFILESTARTNO + 1;
+                    }
+                    compareBatchLearningData(ocrData, data);
+                }
+            } else {
+                compareBatchLearningData(ocrData, data);
+            }
+            
+            
+        },
+        error: function (err) {
+            console.log(err);
+            popUpLayer2(ocrData);            
+        }
+    });
+    
+}
+
+// html 렌더링 전처리 (출재사명, 계약명, 화폐코드 처리)
+function selectTypoText(ocrData, data) {
+    console.log(data);
+    /*
+    var item = data.data;
+    var param = [];
+
+    $.ajax({
+        url: 'common/selectTypoData',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify({ 'data': item }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            data.data = data;
+            
             if (data.docCategory && data.docCategory.DOCTYPE == 2) {
                 var docData = data.data;
                 for (var i in docData) {
@@ -675,10 +717,9 @@ function execBatchLearningData(ocrData, data) {
         },
         error: function (err) {
             console.log(err);
-            popUpLayer2(ocrData);            
         }
     });
-    
+    */
 }
 
 function compareBatchLearningData(ocrData, data) {
