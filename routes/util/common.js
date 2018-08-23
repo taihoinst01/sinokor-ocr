@@ -85,7 +85,7 @@ router.post('/modifyTextData', function (req, res) {
 });
 
 router.post('/selectTypoData', function (req, res) {
-    var data = req.body.data;
+    var data = req.body.data.data;
     var ogCompanyName = [];
     var ctnm = [];
     var curcd = [];
@@ -119,7 +119,7 @@ router.post('/selectTypoData', function (req, res) {
 
             // select tbl_curcd_mapping And save modified text data (curcd)
             for (var i in curcd) {
-                var result = sync.await(oracle.selectContractMapping2([curcd[i].text], sync.defer()));
+                var result = sync.await(oracle.selectCurcdMapping(curcd[i].text, sync.defer()));
                 if (result) {
                     curcd[i].text = result.AFTERTEXT;
                 }
