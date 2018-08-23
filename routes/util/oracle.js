@@ -599,7 +599,7 @@ exports.insertOcrSymspell = function (req, done) {
     });
 };
 
-exports.insertOcrSymspellForCurunit = function (req, done) {
+exports.insertOcrSymspellForCurcd = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let result;
@@ -617,11 +617,11 @@ exports.insertOcrSymspellForCurunit = function (req, done) {
                 }
             }
 
-            // insert tbl_curunit_mapping
+            // insert tbl_curcd_mapping
             if (!isTypoMapping) {
-                result = await conn.execute(queryConfig.uiLearningConfig.selectCurunitMapping, [req[1].text, req[0].text]);
+                result = await conn.execute(queryConfig.uiLearningConfig.selectCurcdMapping, [req[1].text, req[0].text]);
                 if (result.rows.length == 0) {
-                    await conn.execute(queryConfig.uiLearningConfig.insertCurunitMapping, [req[1].text, req[0].text]);
+                    await conn.execute(queryConfig.uiLearningConfig.insertCurcdMapping, [req[1].text, req[0].text]);
                 }
             }
 
