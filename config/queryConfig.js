@@ -539,6 +539,14 @@ var uiLearningConfig = {
          WHERE
             beforeText = :beforeText AND afterText = :afterText
         `,
+    selectCurcdMapping2:
+        `SELECT
+            beforeText, afterText
+         FROM
+            tbl_curcd_mapping
+         WHERE
+            beforeText = :beforeText
+        `,
     insertCurcdMapping:
         `INSERT INTO 
             tbl_curcd_mapping(beforeText, afterText)

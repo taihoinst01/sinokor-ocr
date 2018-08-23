@@ -66,7 +66,8 @@ router.post('/typoSentence', function (req, res) {
     var regId = req.session.userId;
     
     process.on('uncaughtException', function (err) {
-        console.log('uncaughtException : ' + err);
+        console.log('typo uncaughtException : ' + err);
+        console.log(data);
     });
     
     try {
@@ -132,7 +133,7 @@ router.post('/formLabelMapping', function (req, res) {
     var data = req.body.data;
 
     process.on('uncaughtException', function (err) {
-        console.log('uncaughtException : ' + err);
+        console.log('formLabelMapping uncaughtException : ' + err);
     });
 
     try {
@@ -150,7 +151,7 @@ router.post('/formMapping', function (req, res) {
     var data = req.body.data;
 
     process.on('uncaughtException', function (err) {
-        console.log('uncaughtException : ' + err);
+        console.log('formMapping uncaughtException : ' + err);
     });
 
     try {
@@ -168,7 +169,7 @@ router.post('/columnMapping', function (req, res) {
     var arg = req.body.data;
 
     process.on('uncaughtException', function (err) {
-        console.log('uncaughtException : ' + err);
+        console.log('columnMapping uncaughtException : ' + err);
     });
 
     try {

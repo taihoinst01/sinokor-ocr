@@ -415,6 +415,7 @@ function executeML(totData) {
 
     var targetUrl;
     var param;
+
     if (!docCategory) {
         param = { 'fileName': fileName, 'data': data };
     } else {
@@ -454,57 +455,61 @@ function executeML(totData) {
             if (data.nextType) {
                 executeML(data);
             } else {
-                //console.log(data);
-                lineText.push(data);                
+                //console.log(data)
+                if (data.message) {
+                    console.log(data);
+                } else {
+                    lineText.push(data);
 
-                if (searchDBColumnsCount == 1) {
+                    if (searchDBColumnsCount == 1) {
 
-                    var docName = '';
-                    var docScore = '';
-                    
-                    if (data.docCategory != null) {
-                        docName = data.docCategory[0].DOCNAME;
-                        $('#docData').val(JSON.stringify(data.docCategory[0]));
+                        var docName = '';
+                        var docScore = '';
+
+                        if (data.docCategory != null) {
+                            docName = data.docCategory[0].DOCNAME;
+                            $('#docData').val(JSON.stringify(data.docCategory[0]));
+                        }
+
+                        if (data.score) {
+                            docScore = data.score;
+                        }
+
+                        var mainImgHtml = '';
+                        mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
+                        mainImgHtml += '<div id="redNemo">';
+                        mainImgHtml += '</div>';
+                        mainImgHtml += '</div>';
+                        mainImgHtml += '<div id="imageZoom">';
+                        mainImgHtml += '<div id="redZoomNemo">';
+                        mainImgHtml += '</div>';
+                        mainImgHtml += '</div>';
+                        $('#img_content').html(mainImgHtml);
+                        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+                        thumnImg();
+                        $('#imageBox > li').eq(0).addClass('on');
+                        $('#mlPredictionDocName').val(docName);
+                        $('#mlPredictionPercent').val(docScore + '%');
+                        $('#docName').html(docName);
+                        $('#docPredictionScore').html(docScore + '%');
+                        if (docScore >= 90) {
+                            $('#docName').css('color', 'dodgerblue');
+                            $('#docPredictionScore').css('color', 'dodgerblue');
+                        } else {
+                            $('#docName').css('color', 'darkred');
+                            $('#docPredictionScore').css('color', 'darkred');
+                        }
+                        selectTypoText(0, fileName);
+                        //detailTable(fileName);
+                        //docComparePopup(0);
                     }
 
-                    if (data.score) {
-                        docScore = data.score;
+                    if (totCount == searchDBColumnsCount) {
+                        thumbImgEvent();
+                        addProgressBar(91, 100);
+                        $('#uploadForm').hide();
+                        $('#uploadSucessForm').show();
                     }
-
-                    var mainImgHtml = '';
-                    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
-                    mainImgHtml += '<div id="redNemo">';
-                    mainImgHtml += '</div>';
-                    mainImgHtml += '</div>';
-                    mainImgHtml += '<div id="imageZoom">';
-                    mainImgHtml += '<div id="redZoomNemo">';
-                    mainImgHtml += '</div>';
-                    mainImgHtml += '</div>';
-                    $('#img_content').html(mainImgHtml);
-                    $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
-                    thumnImg();
-                    $('#imageBox > li').eq(0).addClass('on');
-                    $('#mlPredictionDocName').val(docName);
-                    $('#mlPredictionPercent').val(docScore + '%');
-                    $('#docName').html(docName);
-                    $('#docPredictionScore').html(docScore + '%');
-                    if (docScore >= 90) {
-                        $('#docName').css('color', 'dodgerblue');
-                        $('#docPredictionScore').css('color', 'dodgerblue');
-                    } else {
-                        $('#docName').css('color', 'darkred');
-                        $('#docPredictionScore').css('color', 'darkred');
-                    }
-                    //selectTypoText(0, fileName);
-                    detailTable(fileName);
-                    docComparePopup(0);
-                }
-
-                if (totCount == searchDBColumnsCount) {
-                    thumbImgEvent();
-                    addProgressBar(91, 100);
-                    $('#uploadForm').hide();
-                    $('#uploadSucessForm').show();
                 }
             }
         },
@@ -526,9 +531,9 @@ function selectTypoText(index, fileName) {
         data: JSON.stringify({ 'data': item }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
-            //detailTable(fileName);
-            //docComparePopup(0);
+            lineText[index].data = data;
+            detailTable(fileName);
+            docComparePopup(0);
         },
         error: function (err) {
             console.log(err);

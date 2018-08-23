@@ -685,6 +685,33 @@ exports.insertContractMapping = function (req, done) {
             result = await conn.execute(queryConfig.uiLearningConfig.insertContractMapping2, [req[0], req[1], req[2], req[3]]);
 
             return done(null, null);
+		} catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+exports.selectCurcdMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(queryConfig.uiLearningConfig.selectCurcdMapping2, [req]);
+
+            if (result.rows) {
+                return done(null, result.rows[0]);
+            } else {
+                return done(null, null);
+            }
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
