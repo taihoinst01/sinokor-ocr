@@ -275,14 +275,14 @@ exports.selectOcrFilePaths = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
             //let result = await conn.execute(`SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (${req.map((name, index) => `:${index}`).join(", ")})`, req);
             //let result = await conn.execute("SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (:imgid)", ["10"]);
-            let resutl = await conn.execute(`SELECT FILENAME, FILEPATH FROM TBL_BATCH_LEARN_DATA WHERE IMGID = :imgId`, req[0].imgId);
+            let result = await conn.execute(`SELECT FILENAME, FILEPATH FROM TBL_BATCH_LEARN_DATA WHERE IMGID = :imgId`, [req[0]]);
 
             for (var row = 0; row < result.rows.length; row++) {
                 var dict = {};
 
                 //dict.SEQNUM = result.rows[row].SEQNUM;
-                dict.FILEPATH = result.rows[row].FILENAME;
-                dict.ORIGINFILENAME = result.rows[row].FILEPATH;
+                dict.FILENAME = result.rows[row].FILENAME;
+                dict.FILEPATH = result.rows[row].FILEPATH;
                 /*
                 for (var colName = 0; colName < colNameArr.length; colName++) {
                     dict[colNameArr[colName]] = result.rows[row].colNameArr[colName];
@@ -399,7 +399,7 @@ exports.selectLegacyData = function (req, done) {
             //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, ['204d61.tif']);
 
             //let result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [10, 2, 2]);
-            let result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID`, [req.imgId]);
+            let result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID`, [req]);
 
             return done(null, result.rows);
         } catch (err) { // catches errors in getConnection and the query
@@ -426,7 +426,7 @@ exports.insertRegacyData = function (req, done) {
 
             for (var i = 0; i < req.length; i++) {
 
-                let LearnDataRes = await conn.execute("select count(*) as count from tbl_batch_learn_data where imgid = :imgid", [10]);
+                let LearnDataRes = await conn.execute("select count(*) as count from tbl_batch_learn_data where imgid = :imgid", [req[i].IMGID]);
 
                 if (i + 1 <= LearnDataRes.rows[0].COUNT) {
 

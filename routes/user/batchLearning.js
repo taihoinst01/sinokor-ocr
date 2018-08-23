@@ -1946,11 +1946,12 @@ function batchLearnTraing(imgId, done) {
                         originImageArr[item]['ORIGINFILEPATH'] = originImageArr[item]['FILEPATH'];
                         originImageArr[item]['FILEPATH'] = result;
                     }
-                }
-            }
 
-            if (result == "error") {
-                return done(null, "error convertTiftoJpg");
+                    if (result == "error") {
+                        return done(null, "error convertTiftoJpg");
+                    }
+
+                }
             }
 
             //ocr처리
