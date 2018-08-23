@@ -1933,6 +1933,8 @@ function batchLearnTraing(imgId, done) {
 
             var originImageArr = sync.await(oracle.selectOcrFilePaths(originArr, sync.defer()));
 
+            originImageArr = [originImageArr[0]];
+
             if (originImageArr == "error") {
                 return done(null, "error selectOcrFilePaths");
             }
@@ -1941,7 +1943,7 @@ function batchLearnTraing(imgId, done) {
             for (var item in originImageArr) {
                 if (originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
                     let result = sync.await(oracle.convertTiftoJpg(originImageArr[item].FILEPATH, sync.defer()));
-                    if (!result) {
+                    if (result) {
                         //추후 변경전 파일명 저장
                         originImageArr[item]['ORIGINFILEPATH'] = originImageArr[item]['FILEPATH'];
                         originImageArr[item]['FILEPATH'] = result;
