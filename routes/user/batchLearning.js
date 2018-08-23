@@ -1914,12 +1914,10 @@ router.post('/batchLearnTraing', function (req, res) {
     sync.fiber(function () {
         var imgId = req.body.imgIdArray;
         var retData = [];
-        /*
         for (var i = 0; i < imgId.length; i++) {
-            var mlData = sync.await(batchLearnTraing(imgId[i], sync.defer()));
-            retData.push(mlData);
-        }*/
-        var mlData = sync.await(batchLearnTraing("10", sync.defer()));
+            var batchData = sync.await(batchLearnTraing(imgId[i], sync.defer()));
+            retData.push(batchData);
+        }
 
         res.send({ data: retData });
     });
@@ -1935,9 +1933,13 @@ function batchLearnTraing(imgId, done) {
 
             var originImageArr = sync.await(oracle.selectOcrFilePaths(originArr, sync.defer()));
 
+            if (originImageArr == "error") {
+                return done(null, "error selectOcrFilePaths");
+            }
+
             //tif파일일 경우 이미지 파일로 전환
             for (var item in originImageArr) {
-                if (originImageArr[item].ORIGINFILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].ORIGINFILENAME.split('.')[1].toLowerCase() === 'tiff') {
+                if (originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
                     let result = sync.await(oracle.convertTiftoJpg(originImageArr[item].FILEPATH, sync.defer()));
                     if (!result) {
                         //추후 변경전 파일명 저장
@@ -1947,10 +1949,18 @@ function batchLearnTraing(imgId, done) {
                 }
             }
 
+            if (result == "error") {
+                return done(null, "error convertTiftoJpg");
+            }
+
             //ocr처리
-            originImageArr[0]['ORIGINFILEPATH'] = originImageArr[0]['FILEPATH'];
-            originImageArr[0]['FILEPATH'] = 'C:\\tmp\\1\\apex.jpg';
+            //originImageArr[0]['ORIGINFILEPATH'] = originImageArr[0]['FILEPATH'];
+            //originImageArr[0]['FILEPATH'] = 'C:\\tmp\\1\\apex.jpg';
             var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
+
+            if (ocrResult == "error") {
+                return done(null, "error ocr");
+            }
 
             console.log("done ocr");
 
@@ -1986,14 +1996,14 @@ function batchLearnTraing(imgId, done) {
             var mlData = {};
             mlData["mlData"] = resPyArr;
             mlData["docCategory"] = docData.docCategory[0];
-            mlData["imgId"] = 10;
+            mlData["imgId"] = imgId;
 
             retData["mlexport"] = mlData;
 
             console.log("done columnMapping ML");
 
             //정답 테이블 데이터 추출
-            var cobineRegacyData = sync.await(oracle.selectLegacyData(originImageArr[0]['ORIGINFILENAME'], sync.defer()));
+            var cobineRegacyData = sync.await(oracle.selectLegacyData(imgId, sync.defer()));
 
             retData["regacy"] = cobineRegacyData;
 
