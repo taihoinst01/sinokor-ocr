@@ -245,7 +245,8 @@ var batchLearningConfig = {
         `SELECT 
             FILEPATH
          FROM
-            TBL_BATCH_LEARN_DATA `,
+            TBL_BATCH_LEARN_DATA
+        WHERE STATUS != 'D' `,
     //selectFileData:
     //    `SELECT
     //        seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize,
