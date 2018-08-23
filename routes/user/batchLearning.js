@@ -257,7 +257,7 @@ var callbackBatchLearningData = function (rows, req, res) {
     //res.send({ code: 200, fileInfoList: fileInfoList });
 };
 var fnSearchBatchLearningData = function (req, res) {
-    var condition = " AND F.imgId IN (";
+    var condition = " AND A.imgId IN (";
     for (var i = 0, x = req.body.imgIdArray.length; i < x; i++) {
         condition += "'" + req.body.imgIdArray[i] + "',";
     }
@@ -1946,11 +1946,12 @@ function batchLearnTraing(imgId, done) {
                         originImageArr[item]['ORIGINFILEPATH'] = originImageArr[item]['FILEPATH'];
                         originImageArr[item]['FILEPATH'] = result;
                     }
-                }
-            }
 
-            if (result == "error") {
-                return done(null, "error convertTiftoJpg");
+                    if (result == "error") {
+                        return done(null, "error convertTiftoJpg");
+                    }
+
+                }
             }
 
             //ocr처리

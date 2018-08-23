@@ -67,6 +67,7 @@ router.post('/typoSentence', function (req, res) {
     
     process.on('uncaughtException', function (err) {
         console.log('typo uncaughtException : ' + err);
+        console.log(data);
     });
     
     try {
