@@ -60,7 +60,7 @@ router.post('/modifyTextData', function (req, res) {
                     for (var j in beforeData.data) {
                         if (afterData.data[i].location == beforeData.data[j].location) {
 
-                            sync.await(oracle.insertOcrSymspellForCurunit([afterData.data[i], beforeData.data[j]], sync.defer()));
+                            sync.await(oracle.insertOcrSymspellForCurcd([afterData.data[i], beforeData.data[j]], sync.defer()));
 
                         }
                     }
@@ -76,6 +76,73 @@ router.post('/modifyTextData', function (req, res) {
             }
             returnObj = { code: 200, message: 'modify textData success' };
 
+        } catch (e) {
+            returnObj = { code: 500, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+router.post('/selectTypoData', function (req, res) {
+    var data = req.body.data;
+    var ogCompanyName = [];
+    var ctnm = [];
+    var curcd = [];
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            for (var i in data) {
+                if (data[i].colLbl == 0) {
+                    ogCompanyName.push(data[i]);
+                } else if (data[i].colLbl == 1) {
+                    ctnm.push(data[i]);
+                } else if (data[i].colLbl == 4) {
+                    curcd.push(data[i]);
+                }
+            }
+            if (ogCompanyName.length > ctnm.length) { // N:1
+                for (var i = 1; i < ogCompanyName.length; i++) ctnm.push(ctnm[0]);
+            } else if (ogCompanyName.length > ctnm.length) { // 1:N
+                for (var i = 1; i < ctnm.length; i++) ogCompanyName.push(ogCompanyName[0]);
+            }
+
+            // select tbl_contract_mapping And save modified text data (ogCompanyName, contractName)
+            for (var i in ogCompanyName) {
+                var result = sync.await(oracle.selectContractMapping2([ogCompanyName[i].text, ctnm[i].text], sync.defer()));
+                if (result) {
+                    ogCompanyName[i].text = result.ASOGCOMPANYNAME;
+                    ctnm[i].text = result.ASCTNM;
+                }
+            }
+
+            // select tbl_curcd_mapping And save modified text data (curcd)
+            for (var i in curcd) {
+                var result = sync.await(oracle.selectContractMapping2([curcd[i].text], sync.defer()));
+                if (result) {
+                    curcd[i].text = result.AFTERTEXT;
+                }
+            }
+
+            // save modified text data to return data
+            for (var i in data) {
+                if (data[i].colLbl == 0 || data[i].colLbl == 1) {
+                    for (var j in ogCompanyName) {
+                        if (data[i].location == ogCompanyName[j].location) {
+                            data[i].text = ogCompanyName[j].text;
+                        }
+                    }
+                } else if (data[i].colLbl == 4) {
+                    for (var j in curcd) {
+                        if (data[i].location == curcd[j].location) {
+                            data[i].text = curcd[j].text;
+                        }
+                    }
+                }
+            }
+
+            returnObj = { code: 200, data: data };
         } catch (e) {
             returnObj = { code: 500, error: e };
         } finally {

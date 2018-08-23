@@ -495,6 +495,7 @@ function executeML(totData) {
                         $('#docName').css('color', 'darkred');
                         $('#docPredictionScore').css('color', 'darkred');
                     }
+                    //selectTypoText(0, fileName);
                     detailTable(fileName);
                     docComparePopup(0);
                 }
@@ -506,6 +507,28 @@ function executeML(totData) {
                     $('#uploadSucessForm').show();
                 }
             }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// html 렌더링 전처리 (출재사명, 계약명, 화폐코드 처리)
+function selectTypoText(index, fileName) {
+    var item = lineText[index].data;
+    var param = [];
+
+    $.ajax({
+        url: 'common/selectTypoData',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify({ 'data': item }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+            //detailTable(fileName);
+            //docComparePopup(0);
         },
         error: function (err) {
             console.log(err);

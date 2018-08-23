@@ -1919,7 +1919,7 @@ router.post('/batchLearnTraing', function (req, res) {
             var mlData = sync.await(batchLearnTraing(imgId[i], sync.defer()));
             retData.push(mlData);
         }*/
-        var mlData = sync.await(batchLearnTraing("10.jpg", sync.defer()));
+        var mlData = sync.await(batchLearnTraing("10", sync.defer()));
 
         res.send({ data: retData });
     });
@@ -1949,7 +1949,7 @@ function batchLearnTraing(imgId, done) {
 
             //ocr처리
             originImageArr[0]['ORIGINFILEPATH'] = originImageArr[0]['FILEPATH'];
-            //originImageArr[0]['FILEPATH'] = 'C:\\tmp\\10.jpg';
+            originImageArr[0]['FILEPATH'] = 'C:\\tmp\\1\\apex.jpg';
             var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
 
             console.log("done ocr");
@@ -1986,6 +1986,7 @@ function batchLearnTraing(imgId, done) {
             var mlData = {};
             mlData["mlData"] = resPyArr;
             mlData["docCategory"] = docData.docCategory[0];
+            mlData["imgId"] = 10;
 
             retData["mlexport"] = mlData;
 
@@ -2000,7 +2001,7 @@ function batchLearnTraing(imgId, done) {
             sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
 
             //ML 데이터 INSERT
-            sync.await(oracle.insertMLData(cobineRegacyData, sync.defer()));
+            sync.await(oracle.insertMLData(mlData, sync.defer()));
 
             console.log("done");
 
