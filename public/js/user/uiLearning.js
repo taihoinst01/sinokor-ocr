@@ -415,6 +415,7 @@ function executeML(totData) {
 
     var targetUrl;
     var param;
+
     if (!docCategory) {
         param = { 'fileName': fileName, 'data': data };
     } else {
