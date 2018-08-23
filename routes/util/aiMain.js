@@ -33,8 +33,11 @@ exports.formLabelMapping2 = function (data, callback) {
 
         var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-
-        callback(resPyArr);
+        if (!resPyArr.code || (resPyArr.code && resPyArr.code == 200)) { 
+            callback(resPyArr);
+        } else {
+            callback(null);
+        }
     });
 };
 
@@ -44,9 +47,12 @@ exports.formMapping2 = function (data, callback) {
 
         var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-        var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer())); // select tbl_document_category
-
-        callback(docData);
+        if (!resPyArr.code || (resPyArr.code && resPyArr.code == 200)) {
+            var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer())); // select tbl_document_category  
+            callback(docData);
+        } else {
+            callback(null);
+        }
     });
 };
 
@@ -55,11 +61,14 @@ exports.columnMapping2 = function (data, callback) {
         pythonConfig.columnMappingOptions.args.push(JSON.stringify(data.data));
 
         var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
-        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));   
-        data.data = resPyArr;
+        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
         //var answerData = sync.await(oracle.selectContractMapping(data, sync.defer())); // select tbl_contract_mapping
-
-        callback(data);
+        if (!resPyArr.code || (resPyArr.code && resPyArr.code == 200)) {
+            data.data = resPyArr;
+            callback(data);
+        } else {
+            callback(null);
+        }
     });
 };
 

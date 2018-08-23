@@ -69,7 +69,7 @@ if arg == "training":
 
         print(str({'code': 200, 'message': 'column mapping train success'}))
     except Exception as e:
-        print(str({'code': 500, 'message': 'column mapping train fail', 'error': e}))
+        print(str({'code': 500, 'message': 'column mapping train fail', 'error': str(e)}))
 else:
     inputArr = json.loads(sys.argv[1].replace(u"\u2022", u""))
     docType = 0
@@ -110,4 +110,4 @@ else:
                     inputItem['colAccu'] = accuracy_score
         print(str(inputArr))
     except Exception as e:
-        print(str({'code': 500, 'message': 'column mapping predict fail', 'error': e}))
+        print(str({'code': 500, 'message': 'column mapping predict fail', 'error': str(e).replace("'","").replace('"','')}))

@@ -67,7 +67,7 @@ if arg == "training":
 
         print(str({'code': 200, 'message': 'form label mapping train success'}))
     except Exception as e:
-        print(str({'code': 500, 'message': 'form label mapping train fail', 'error': e}))
+        print(str({'code': 500, 'message': 'form label mapping train fail', 'error': str(e).replace("'","").replace('"','')}))
 else:
     inputArr = json.loads(sys.argv[1].replace(u"\u2022", u""))
     try:
@@ -95,4 +95,4 @@ else:
 
         print(str(inputArr))
     except Exception as e:
-        print(str({'code': 500, 'message': 'form label mapping predict fail', 'error': e}))
+        print(str({'code': 500, 'message': 'form label mapping predict fail', 'error': str(e).replace("'","").replace('"','')}))
