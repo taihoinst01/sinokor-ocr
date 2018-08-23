@@ -173,6 +173,14 @@ var myApprovalConfig = {
 var documentConfig = {};
 
 var batchLearningConfig = {
+    updateConvertedImgPath:
+        `UPDATE TBL_BATCH_LEARN_DATA
+            SET CONVERTEDIMGPATH = :convertedImgPath
+          WHERE IMGID = :imgId`,
+    selectViewImage:
+        `SELECT A.CONVERTEDIMGPATH, A.IMGID, A.FILEPATH, A.FILENAME
+           FROM TBL_BATCH_LEARN_DATA A
+          WHERE A.IMGID = :imgId `,
     selectViewImageData:
         `SELECT
             T.*
@@ -189,68 +197,70 @@ var batchLearningConfig = {
             WHERE
                 B.IMGID = A.IMGID) T
          WHERE
-            T.FILEPATH = : filePath `,
+            T.IMGID = : imgId `,
     selectBatchLearningDataList:
-        `SELECT
-            F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
-            F.fileSize, F.contentType, F.fileType, F.fileWidth, F.fileHeight,
-            A.status, A.entryNo, A.statementDiv, A.contractNum, A.ogCompanyCode, A.ogCompanyName, A.brokerCode,
-            A.brokerName, A.ctnm, A.insstdt, A.insenddt, A.uy, A.curcd, A.paidPercent, A.paidShare, A.oslPercent,
-            A.oslShare, A.grosspm, A.pm, A.pmPFEnd, A.pmPFWos, A.xolPm, A.returnPm, A.grosscn, A.cn, A.profitcn,
-            A.brokerAge, A.tax, A.overridingCom, A.charge, A.pmReserveRTD, A.pfPmReserveRTD,A.pmReserveRTD2,
-            A.pfPmReserveRTD2, A.claim, A.lossRecovery, A.cashLoss, A.cashLossRD, A.lossRR, A.lossRR2, A.lossPFEnd,
-            A.lossPFWoa, A.interest, A.taxOn, A.miscellaneous, A.pmbl, A.cmbl, A.ntbl, A.cscosarfrncnnt2,          
-            A.regDate,
-            (select max(ASOGCOMPANYNAME) from TBL_CONTRACT_MAPPING where EXTOGCOMPANYNAME = A.ogCompanyName and EXTCTNM = A.ctnm) as OGCONTRACTNAME,
-            (select max(ASCTNM) from TBL_CONTRACT_MAPPING where EXTOGCOMPANYNAME = A.ogCompanyName and EXTCTNM = A.ctnm) as CONTRACTNAMESUMMARY,
-            A.curunit
-	     FROM
-            tbl_ocr_file F
-		    LEFT OUTER JOIN 
-                tbl_batch_learn_data A
-            ON
-                A.imgId = F.imgId
-	     WHERE
-            A.status != 'D' `,
+        `SELECT A.IMGID, A.STATUS, A.ENTRYNO, A.STATEMENTDIV, A.CONTRACTNUM, A.OGCOMPANYCODE, A.OGCOMPANYNAME, 
+                A.BROKERCODE, A.BROKERNAME, A.CTNM, A.INSSTDT, A.INSENDDT, A.UY, A.CURCD, A.PAIDPERCENT, A.PAIDSHARE, 
+                A.OSLPERCENT, A.OSLSHARE, A.GROSSPM, A.PM, A.PMPFEND, A.PMPFWOS, A.XOLPM, A.RETURNPM, A.GROSSCN, A.CN, 
+                A.PROFITCN, A.BROKERAGE, A.TAX, A.OVERRIDINGCOM, A.CHARGE, A.PMRESERVERTD, A.PFPMRESERVERTD, A.PMRESERVERTD2, A.PFPMRESERVERTD2, 
+                A.CLAIM, A.LOSSRECOVERY, A.CASHLOSS, A.CASHLOSSRD, A.LOSSRR, A.LOSSRR2, A.LOSSPFEND, A.LOSSPFWOA, 
+                A.INTEREST, A.TAXON, A.MISCELLANEOUS, A.PMBL, A.CMBL, A.NTBL, A.CSCOSARFRNCNNT2, A.REGDATE, A.SUBNUM, A.CURUNIT, 
+                A.CONVERTEDIMGPATH, A.FILENAME, A.FILEPATH, A.EXPORTTYPE 
+        FROM TBL_BATCH_LEARN_DATA A
+        WHERE A.STATUS != 'D' `,
+    //selectBatchLearningDataList:
+    //    `SELECT
+    //        F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
+    //        F.fileSize, F.contentType, F.fileType, F.fileWidth, F.fileHeight,
+    //        A.status, A.entryNo, A.statementDiv, A.contractNum, A.ogCompanyCode, A.ogCompanyName, A.brokerCode,
+    //        A.brokerName, A.ctnm, A.insstdt, A.insenddt, A.uy, A.curcd, A.paidPercent, A.paidShare, A.oslPercent,
+    //        A.oslShare, A.grosspm, A.pm, A.pmPFEnd, A.pmPFWos, A.xolPm, A.returnPm, A.grosscn, A.cn, A.profitcn,
+    //        A.brokerAge, A.tax, A.overridingCom, A.charge, A.pmReserveRTD, A.pfPmReserveRTD,A.pmReserveRTD2,
+    //        A.pfPmReserveRTD2, A.claim, A.lossRecovery, A.cashLoss, A.cashLossRD, A.lossRR, A.lossRR2, A.lossPFEnd,
+    //        A.lossPFWoa, A.interest, A.taxOn, A.miscellaneous, A.pmbl, A.cmbl, A.ntbl, A.cscosarfrncnnt2,          
+    //        A.regDate,
+    //        (select max(ASOGCOMPANYNAME) from TBL_CONTRACT_MAPPING where EXTOGCOMPANYNAME = A.ogCompanyName and EXTCTNM = A.ctnm) as OGCONTRACTNAME,
+    //        (select max(ASCTNM) from TBL_CONTRACT_MAPPING where EXTOGCOMPANYNAME = A.ogCompanyName and EXTCTNM = A.ctnm) as CONTRACTNAMESUMMARY,
+    //        A.curunit
+	//  FROM
+    //        tbl_ocr_file F
+	//  LEFT OUTER JOIN 
+    //            tbl_batch_learn_data A
+    //        ON
+    //            A.imgId = F.imgId
+	//  WHERE
+    //        A.status != 'D' `,
     selectBatchLearningData:
-        `SELECT
-            F.seqNum, F.imgId, F.filePath, F.originFileName, F.serverFileName, F.fileExtension,
-            F.fileSize, F.contentType, F.fileType, F.fileWidth, F.fileHeight,
-            A.status, A.entryNo, A.statementDiv, A.contractNum, A.ogCompanyCode, A.ogCompanyName, A.brokerCode,
-            A.brokerName, A.ctnm, A.insstdt, A.insenddt, A.uy, A.curcd, A.paidPercent, A.paidShare, A.oslPercent,
-            A.oslShare, A.grosspm, A.pm, A.pmPFEnd, A.pmPFWos, A.xolPm, A.returnPm, A.grosscn, A.cn, A.profitcn,
-            A.brokerAge, A.tax, A.overridingCom, A.charge, A.pmReserveRTD, A.pfPmReserveRTD,A.pmReserveRTD2,
-            A.pfPmReserveRTD2, A.claim, A.lossRecovery, A.cashLoss, A.cashLossRD, A.lossRR, A.lossRR2, A.lossPFEnd,
-            A.lossPFWoa, A.interest, A.taxOn, A.miscellaneous, A.pmbl, A.cmbl, A.ntbl, A.cscosarfrncnnt2,          
-            A.regDate
-	     FROM
-            tbl_ocr_file F
-		    LEFT OUTER JOIN
-                tbl_batch_learn_data A
-            ON
-                A.imgId = F.imgId
-	     WHERE
-            F.imgId = :imgId AND A.status != 'D' `,
+        `SELECT A.IMGID, A.STATUS, A.ENTRYNO, A.STATEMENTDIV, A.CONTRACTNUM, A.OGCOMPANYCODE, A.OGCOMPANYNAME, 
+                A.BROKERCODE, A.BROKERNAME, A.CTNM, A.INSSTDT, A.INSENDDT, A.UY, A.CURCD, A.PAIDPERCENT, A.PAIDSHARE, 
+                A.OSLPERCENT, A.OSLSHARE, A.GROSSPM, A.PM, A.PMPFEND, A.PMPFWOS, A.XOLPM, A.RETURNPM, A.GROSSCN, A.CN, 
+                A.PROFITCN, A.BROKERAGE, A.TAX, A.OVERRIDINGCOM, A.CHARGE, A.PMRESERVERTD, A.PFPMRESERVERTD, A.PMRESERVERTD2, A.PFPMRESERVERTD2, 
+                A.CLAIM, A.LOSSRECOVERY, A.CASHLOSS, A.CASHLOSSRD, A.LOSSRR, A.LOSSRR2, A.LOSSPFEND, A.LOSSPFWOA, 
+                A.INTEREST, A.TAXON, A.MISCELLANEOUS, A.PMBL, A.CMBL, A.NTBL, A.CSCOSARFRNCNNT2, A.REGDATE, A.SUBNUM, A.CURUNIT, 
+                A.CONVERTEDIMGPATH, A.FILENAME, A.FILEPATH, A.EXPORTTYPE 
+        FROM TBL_BATCH_LEARN_DATA A
+        WHERE A.STATUS != 'D'
+          AND A.IMGID = :imgId `,
     selectFileNameList:
         `SELECT 
             FILEPATH
          FROM
-            tbl_ocr_file `,
-    selectFileData:
-        `SELECT
-            seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize,
-            contentType, fileType, fileWidth, fileHeight, regId, regDate
-         FROM
-             tbl_ocr_file
-         WHERE
-            imgId = :imgId
-         ORDER BY
-            seqNum desc `,
+            TBL_BATCH_LEARN_DATA `,
+    //selectFileData:
+    //    `SELECT
+    //        seqNum, imgId, filePath, originFileName, serverFileName, fileExtension, fileSize,
+    //        contentType, fileType, fileWidth, fileHeight, regId, regDate
+    //     FROM
+    //         tbl_ocr_file
+    //     WHERE
+    //        imgId = :imgId
+    //     ORDER BY
+    //        seqNum desc `,
     insertBatchLearningBaseData:
         `INSERT INTO
-            tbl_batch_learn_data (imgId, status, regDate)
+            tbl_batch_learn_data (imgId, status, regDate, CONVERTEDIMGPATH, FILENAME, FILEPATH)
          VALUES
-            (:imgId, 'N', :regId sysdate) `,
+            (:imgId, 'N', sysdate, :convertedImgPath, :fileName, :filePath) `,
     insertBatchLearningData:
         `INSERT INTO
             tbl_batch_learn_data (imgId, status, entryNo, statementDiv, contractNum, ogCompanyCode, ogCompanyName, brokerCode,
