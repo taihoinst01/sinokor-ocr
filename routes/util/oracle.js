@@ -48,17 +48,19 @@ exports.select = function (req, done) {
 exports.selectDocCategory = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
-        var returnReq = {};        
+        var returnReq = {};   
+        var docInfo = req[req.length - 1];
         try {
             conn = await oracledb.getConnection(dbConfig);
             let sqltext = queryConfig.mlConfig.selectDocCategory;
 
-            let result = await conn.execute(sqltext, [req[req.length - 1].docType]);
+            let result = await conn.execute(sqltext, [docInfo.docType]);
 
             returnReq.data = req;
             returnReq.data.splice(req.length - 1, 1);           
             if (result.rows[0] != null) {
                 returnReq.docCategory = result.rows;
+                returnReq.docCategory[0].score = docInfo.docAccu;
             }
 
             return done(null, returnReq);
