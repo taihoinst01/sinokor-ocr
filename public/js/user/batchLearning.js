@@ -136,7 +136,10 @@ var buttonEvent = function () {
         modifyTextData();
     });
 
-
+    
+    $('#btn_AddTraining').on("click", function () {
+        popupLegacy("test");
+    });
 
 };
 
@@ -571,7 +574,7 @@ function execBatchLearning() {
 }
 
 // UI레이어 작업 함수
-function popUpLayer2(ocrData) {
+function popUpLayer2(ocrData, legacy) {
     ocrDataArr = [];
     fn_initUiTraining(); // 팝업 초기화
     layer_open('layer2'); // ui 학습레이어 띄우기
@@ -619,6 +622,91 @@ function popUpLayer2(ocrData) {
     }
     $('#textResultTbl').append(tblTag);
 
+    popupLegacy(legacy);
+}
+
+function popupLegacy(legacy) {
+
+    console.log(legacy);
+
+    var appendHtml = ``;
+
+    if (legacy.data.length > 0) {
+        for (var i = 0; i < legacy.data.length; i++) {
+            appendHtml += `
+            <tr>
+                <td scope="row">${nvl(legacy.data[i].CONTRACTNUM)}</td>
+                <td scope="row">${nvl(legacy.data[i].CTNM)}</td>
+                <td scope="row">${nvl(legacy.data[i].OGCOMPANYCODE)}</td>
+                <td scope="row">${nvl(legacy.data[i].OGCOMPANYNAME)}</td>
+                <td scope="row">${nvl(legacy.data[i].BROKERCODE)}</td>
+                <td scope="row">${nvl(legacy.data[i].BROKERNAME)}</td>
+                <td scope="row">${nvl(legacy.data[i].INSSTDT)}</td>
+                <td scope="row">${nvl(legacy.data[i].INSENDDT)}</td>
+                <td scope="row">${nvl(legacy.data[i].CURCD)}</td>
+                <td scope="row">${nvl(legacy.data[i].PAIDPERCENT)}</td>
+                <td scope="row">${nvl(legacy.data[i].PAIDSHARE)}</td>
+                <td scope="row">${nvl(legacy.data[i].GROSSPM)}</td>
+                <td scope="row">${nvl(legacy.data[i].PM)}</td>
+                <td scope="row">${nvl(legacy.data[i].PMPFEND)}</td>
+                <td scope="row">${nvl(legacy.data[i].PMPFWOS)}</td>
+                <td scope="row">${nvl(legacy.data[i].XOLPM)}</td>
+                <td scope="row">${nvl(legacy.data[i].RETURNPM)}</td>
+                <td scope="row">${nvl(legacy.data[i].GROSSCN)}</td>
+                <td scope="row">${nvl(legacy.data[i].CN)}</td>
+                <td scope="row">${nvl(legacy.data[i].PROFITCN)}</td>
+                <td scope="row">${nvl(legacy.data[i].BROKERAGE)}</td>
+                <td scope="row">${nvl(legacy.data[i].TAX)}</td>
+                <td scope="row">${nvl(legacy.data[i].OVERRIDINGCOM)}</td>
+                <td scope="row">${nvl(legacy.data[i].CHARGE)}</td>
+                <td scope="row">${nvl(legacy.data[i].PMRESERVERTD1)}</td>
+                <td scope="row">${nvl(legacy.data[i].PFPMRESERVERTD1)}</td>
+                <td scope="row">${nvl(legacy.data[i].PMRESERVERTD2)}</td>
+                <td scope="row">${nvl(legacy.data[i].PFPMRESERVERTD2)}</td>
+                <td scope="row">${nvl(legacy.data[i].CLAIM)}</td>
+                <td scope="row">${nvl(legacy.data[i].LOSSRECOVERY)}</td>
+                <td scope="row">${nvl(legacy.data[i].CASHLOSS)}</td>
+                <td scope="row">${nvl(legacy.data[i].CASHLOSSRD)}</td>
+                <td scope="row">${nvl(legacy.data[i].LOSSRR)}</td>
+                <td scope="row">${nvl(legacy.data[i].LOSSRR2)}</td>
+                <td scope="row">${nvl(legacy.data[i].LOSSPFEND)}</td>
+                <td scope="row">${nvl(legacy.data[i].LOSSPFWOA)}</td>
+                <td scope="row">${nvl(legacy.data[i].INTEREST)}</td>
+                <td scope="row">${nvl(legacy.data[i].TAXON)}</td>
+                <td scope="row">${nvl(legacy.data[i].MISCELLANEOUS)}</td>
+                <td scope="row">${nvl(legacy.data[i].PMBL)}</td>
+                <td scope="row">${nvl(legacy.data[i].CMBL)}</td>
+                <td scope="row">${nvl(legacy.data[i].NTBL)}</td>
+                <td scope="row">${nvl(legacy.data[i].CSCOSARFRNCNNT2)}</td>
+            </tr>
+            `;
+        }
+    } else {
+        appendHtml += `<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>`;
+    }
+
+    $("#tbody_batchList_answer2").empty().append(appendHtml);
+
+/*
+    var settings = 'toolbar=0,directories=0,status=no,menubar=0,scrollbars=auto,resizable=no,height=400,width=600,left=0,top=0';
+    var title = "test";
+    var windowObj;
+    var windowObj = window.open("batchLearning/popUpLegacy", title, settings);
+    var form = document.createElement("form");
+    form.target = title;
+    form.method = "POST";
+    form.action = "batchLearning/popUpLegacy"; 
+
+    var element1 = document.createElement("input");
+
+    element1.value = "un";
+    element1.name = "un";
+    form.appendChild(element1);
+
+    document.body.appendChild(form);
+
+    form.submit();
+*/
 }
 
 // 컬럼 select html 가공 함수
@@ -655,7 +743,7 @@ function execBatchLearningData(ocrData, data) {
         success: function (data) {       
             //console.log(data);
             
-            modifyData = data;
+            modifyData = $.extend({}, data);
             batchCount++;
 
             selectTypoText(ocrData, data);
@@ -729,6 +817,23 @@ function compareBatchLearningData(ocrData, data) {
         success: function (columns) {
             columnArr = columns.data;
 
+            var param = { data: ocrData };
+            $.ajax({
+                url: '/batchLearning/selectBatchAnswerData',
+                type: 'post',
+                datatype: "json",
+                data: JSON.stringify(param),
+                contentType: 'application/json; charset=UTF-8',
+                async: false,
+                success: function (retData) {
+                    uiFlag = "N";
+                    endProgressBar();
+                    popUpLayer2(ocrData, retData);
+                }
+
+            });
+
+            /*
             for (var i = 0; i < dataVal.length; i++) {
                 var location = dataVal[i].location;
                 var text = dataVal[i].text;
@@ -750,8 +855,6 @@ function compareBatchLearningData(ocrData, data) {
                     }
                 }
             }
-            //console.log("결과 : ");
-            //console.log(dataObj);
 
             // BatchLearning Data Insert
             if (dataObj) {
@@ -795,6 +898,10 @@ function compareBatchLearningData(ocrData, data) {
                     }
                 });
             }
+            */
+
+
+
         }
     });
     

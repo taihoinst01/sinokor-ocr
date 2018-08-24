@@ -2214,6 +2214,32 @@ function getAnswerCheck(lagacy, ml) {
 }
 
 
+router.post('/selectBatchAnswerData', function (req, res) {
+    sync.fiber(function () {
+        var imgId = req.body.data.fileInfo[0].imgId;
+
+        //select legacy data
+        var cobineRegacyData = sync.await(oracle.selectLegacyData(imgId, sync.defer()));
+
+        res.send({ data: cobineRegacyData });
+    });
+});
+
+/*
+router.get('/popUpLegacy', function (req, res) {
+    console.log('test1');
+    res.render("user/popUpLegacy");
+});
+*/
+
+router.post('/popUpLegacy', function (req, res) {
+    //console.log(req);
+    res.render("user/popUpLegacy", { data:req });
+});
+
+
+
+
 
 
 
