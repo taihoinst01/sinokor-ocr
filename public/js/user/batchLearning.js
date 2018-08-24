@@ -1748,7 +1748,8 @@ var fn_uiTraining = function () {
 // [Select] 배치학습데이터 조회
 var batchLearnTraing = function (imgIdArray, flag) {
     var param = {
-        imgIdArray: imgIdArray
+        imgIdArray: imgIdArray,
+        uiCheck: $('#uiTrainingChk').is(':checked')
     };
 
     $.ajax({
@@ -1761,22 +1762,87 @@ var batchLearnTraing = function (imgIdArray, flag) {
             $('#btn_pop_batch_close').click();
             $("#progressMsgTitle").html("retrieving learn data...");
             startProgressBar();
-            addProgressBar(0, 30);
+            addProgressBar(0, 41);
         },
         success: function (data) {
             $("#progressMsgTitle").html("processing learn data...");
-            addProgressBar(31, 40);
-
             console.log(data);
 
-            addProgressBar(41, 100);
+            searchBatchLearnDataList(addCond);
+
+            if ($('#uiTrainingChk').is(':checked') && data.data[0].uiTraining == "uiTraining") {
+                compareLayer(data);
+            }
         },
         error: function (err) {
             endProgressBar(); // end progressbar
             console.log(err);
+        },
+        complete: function () {
+            console.log("done");
+            addProgressBar(41, 100);
+            endProgressBar();
         }
     });
 };
+
+function compareLayer(ocrData) {
+
+    var mlData = ocrData.data[0].mlexport.mlData;
+    var docCategory = ocrData.data[0].mlexport.docCategory;
+    var columnArr = ocrData.data[0].columnArr;
+    var fileInfo = ocrData.data[0].fileInfo[0];
+
+    ocrDataArr = [];
+    fn_initUiTraining(); // 팝업 초기화
+    layer_open('layer2'); // ui 학습레이어 띄우기
+    //$("#layer2.poplayer").css("display", "block");
+
+    if (docCategory != undefined) {
+        $('#docName').text(docCategory.DOCNAME);
+        /*
+        $('#docPredictionScore').text(modifyData.score + '%');
+        if (modifyData.score >= 90) {
+            $('#docName').css('color', 'dodgerblue');
+            $('#docPredictionScore').css('color', 'dodgerblue');
+        } else {
+            $('#docName').css('color', 'darkred');
+            $('#docPredictionScore').css('color', 'darkred');
+        }
+        */
+    }
+
+    $('#imgNameTag').text(fileInfo.FILENAME);
+
+    var mainImgHtml = '';
+    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
+    mainImgHtml += '<div id="redNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    mainImgHtml += '<div id="imageZoom">';
+    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    $('#img_content').html(mainImgHtml);
+    $('#mainImage').css('background-image', 'url("../..' + fileInfo.CONVERTEDIMGPATH + '")');
+
+    var tblTag = '';
+    for (var i in mlData) {
+        tblTag += '<dl>';
+        tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+        tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+        tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+        tblTag += '</label>';
+        tblTag += '</dt>';
+        tblTag += '<dd>';
+        tblTag += appendOptionHtml((mlData[i].colLbl != undefined) ? mlData[i].colLbl : 36, columnArr);
+        tblTag += '</dd>';
+        tblTag += '</dl>';
+    }
+    $('#textResultTbl').append(tblTag);
+
+}
 
 // UI학습 팝업 초기화
 var fn_initUiTraining = function () {
