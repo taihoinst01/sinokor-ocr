@@ -442,12 +442,10 @@ var batchLearningConfig = {
             F.filePath IN `,
     insertMlExport:
         `INSERT INTO TBL_BATCH_ML_EXPORT
-         VALUES(:imgId, :colLabel, :colValue)        
-        `,
+         VALUES(:imgId, :colLabel, :colValue)`,
     deleteMlExport:
         `DELETE FROM TBL_BATCH_ML_EXPORT
-         WHERE IMGID = :imgId
-        `
+         WHERE IMGID = :imgId `
 };
 
 var uiLearningConfig = {
