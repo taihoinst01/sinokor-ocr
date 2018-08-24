@@ -474,22 +474,42 @@ router.post('/insertFileInfo', function (req, res) {
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertFileInfo, data, callbackInsertFileInfo, req, res);
 });
 
-// [POST] INSERT batchLearningBaseData (기본정보)
-var callbackInsertBatchLearningBaseData = function (rows, req, res) {
-    //console.log("upload batchLearningBaseData finish..");
-    res.send({ code: 200, rows: rows });
-};
 router.post('/insertBatchLearningBaseData', function (req, res) {
     //console.log("insert BATCH LEARNING BASE DATA : " + JSON.stringify(req.body.fileInfo));
     var fileInfo = req.body.fileInfo;
-    var imgId = fileInfo.imgId;
+    var filePath = fileInfo.filePath;
+    filePath = filePath.replace("\\", "/");
+
+    var imagePath = propertiesConfig.filepath.imagePath;
+    imagePath = imagePath.replace("\\", "/");
+
+    var selAnswerFile = `SELECT IMGID FROM TBL_BATCH_ANSWER_FILE WHERE 'C:\\ICR\\image' || FILEPATH = :filepath `;
+
+    commonDB.reqQueryParam(selAnswerFile, [filePath], callbackSelectBatchLearningBaseData, req, res);
+
+});
+
+// [POST] INSERT batchLearningBaseData (기본정보)
+var callbackSelectBatchLearningBaseData = function (rows, req, res) {
+
+    var fileInfo = req.body.fileInfo;
     var convertedImgPath = fileInfo.convertFileName;
     var fileName = fileInfo.oriFileName;
     var filePath = fileInfo.filePath;
-    var data = [imgId, convertedImgPath, fileName, filePath];
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningBaseData, data, callbackInsertBatchLearningBaseData, req, res);
-});
+    var imgId = fileInfo.imgId;
 
+    if (rows.length > 0) {
+        imgId = rows[0].IMGID;
+    }
+
+    var data = [imgId, convertedImgPath, fileName, filePath];
+
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningBaseData, data, callbackInsertBatchLearningBaseData, req, res);
+};
+
+var callbackInsertBatchLearningBaseData = function (rows, req, res) {
+    res.send({ code: 200, rows: rows });
+};
 
 //
 router.post('/execBatchLearningData2', function (req, res) {
