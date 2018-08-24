@@ -1195,7 +1195,7 @@ var searchBatchLearnDataList = function (addCond) {
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
                 $("#tbody_batchList_before").empty().append(appendHtml);
-                compareMLAndAnswer(data);
+                //compareMLAndAnswer(data);
             } else {
                 $("#tbody_batchList_after").empty().append(appendHtml);               
             }
@@ -1748,7 +1748,8 @@ var fn_uiTraining = function () {
 // [Select] 배치학습데이터 조회
 var batchLearnTraing = function (imgIdArray, flag) {
     var param = {
-        imgIdArray: imgIdArray
+        imgIdArray: imgIdArray,
+        uiCheck: $('#uiTrainingChk').is(':checked')
     };
 
     $.ajax({
@@ -1761,22 +1762,87 @@ var batchLearnTraing = function (imgIdArray, flag) {
             $('#btn_pop_batch_close').click();
             $("#progressMsgTitle").html("retrieving learn data...");
             startProgressBar();
-            addProgressBar(0, 30);
+            addProgressBar(0, 41);
         },
         success: function (data) {
             $("#progressMsgTitle").html("processing learn data...");
-            addProgressBar(31, 40);
-
             console.log(data);
 
-            addProgressBar(41, 100);
+            searchBatchLearnDataList(addCond);
+
+            if ($('#uiTrainingChk').is(':checked') && data.data[0].uiTraining == "uiTraining") {
+                compareLayer(data);
+            }
         },
         error: function (err) {
             endProgressBar(); // end progressbar
             console.log(err);
+        },
+        complete: function () {
+            console.log("done");
+            addProgressBar(41, 100);
+            endProgressBar();
         }
     });
 };
+
+function compareLayer(ocrData) {
+
+    var mlData = ocrData.data[0].mlexport.mlData;
+    var docCategory = ocrData.data[0].mlexport.docCategory;
+    var columnArr = ocrData.data[0].columnArr;
+    var fileInfo = ocrData.data[0].fileInfo[0];
+
+    ocrDataArr = [];
+    fn_initUiTraining(); // 팝업 초기화
+    layer_open('layer2'); // ui 학습레이어 띄우기
+    //$("#layer2.poplayer").css("display", "block");
+
+    if (docCategory != undefined) {
+        $('#docName').text(docCategory.DOCNAME);
+        /*
+        $('#docPredictionScore').text(modifyData.score + '%');
+        if (modifyData.score >= 90) {
+            $('#docName').css('color', 'dodgerblue');
+            $('#docPredictionScore').css('color', 'dodgerblue');
+        } else {
+            $('#docName').css('color', 'darkred');
+            $('#docPredictionScore').css('color', 'darkred');
+        }
+        */
+    }
+
+    $('#imgNameTag').text(fileInfo.FILENAME);
+
+    var mainImgHtml = '';
+    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
+    mainImgHtml += '<div id="redNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    mainImgHtml += '<div id="imageZoom">';
+    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    $('#img_content').html(mainImgHtml);
+    $('#mainImage').css('background-image', 'url("../..' + fileInfo.CONVERTEDIMGPATH + '")');
+
+    var tblTag = '';
+    for (var i in mlData) {
+        tblTag += '<dl>';
+        tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+        tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+        tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+        tblTag += '</label>';
+        tblTag += '</dt>';
+        tblTag += '<dd>';
+        tblTag += appendOptionHtml((mlData[i].colLbl != undefined) ? mlData[i].colLbl : 36, columnArr);
+        tblTag += '</dd>';
+        tblTag += '</dl>';
+    }
+    $('#textResultTbl').append(tblTag);
+
+}
 
 // UI학습 팝업 초기화
 var fn_initUiTraining = function () {
@@ -1857,6 +1923,7 @@ var fn_batchUiTraining = function () {
     var mldata = modifyData;
     var data = {};
     var arr = [];
+    var trainData = {};
 
     if (mldata.docCategory) { // 추출된 문서가 있을 경우
         mldata.docCategory[0] = JSON.parse($('#docData').val());
@@ -1872,6 +1939,7 @@ var fn_batchUiTraining = function () {
             mldata.docCategory = [JSON.parse($('#docData').val())];
         }
     }
+
     $('#textResultTbl > dl').each(function (i, el) {
         var location = $(el).find('input')[1].value;
         var text = $(el).find('input')[0].value;
@@ -1881,30 +1949,46 @@ var fn_batchUiTraining = function () {
             if (mldata.data[i].location == location) {
                 obj.location = location;
                 obj.text = text;
-                obj.ColLbl = column;
-
-                if (mldata.data[i].column == undefined) {
-                    obj.oriColLbl = null;
-                } else if (mldata.data[i].column && mldata.data[i].column != column) {
-                    obj.oriColLbl = mldata.data[i].column;
-                } else {
-                    obj.oriColLbl = column;
-                }
+                obj.colLbl = column;
 
                 arr.push(obj);
                 break;
             }
         }
+
+        for (var i = 0; i < mlData.data.length; i++) {
+            for (var j = 0; j < arr.length; j++) {
+                if (mlData.data[i].location == arr[j].location) {
+
+                    if (dataArray[j].colLbl == 0 || arr[j].colLbl == 1 || arr[j].colLbl == 3) { // Only ogCompanyName, contractName, curCode
+                        if (mlData.data[i].text != arr[j].text || mlData.data[i].colLbl != arr[j].colLbl) {
+                            trainData.data.push(arr[j]);
+                        }
+                    } else { // etc
+                        if (mlData.data[i].colLbl != arr[j].colLbl) {
+                            arr[j].text = mlData.data[i].text // origin text (Does not reflect changes made by users) 
+                            trainData.data.push(arr[j]);
+                        }
+                    }
+
+                    if (mlData.data[i].originText != null) {
+                        arr[j].originText = mlData[i].originText;
+                    }
+
+                }
+            }
+        }
+
     });
+
     data.data = arr;
     data.docCategory = mldata.docCategory;
-    //console.log(data);
-    docLabelMapping(data);
+    console.log(data);
 
-    /*
-    var param = { "dataObj": ocrPopData };
-
-    $.ajax({
+    //docLabelMapping(data);
+	
+	/*
+	$.ajax({
         url: '/batchLearning/uiTrainBatchLearningData',
         type: 'post',
         datatype: "json",
@@ -1921,7 +2005,7 @@ var fn_batchUiTraining = function () {
             console.log(err);
         }
     });
-    */
+	*/
 };
 
 // 양식레이블 매핑

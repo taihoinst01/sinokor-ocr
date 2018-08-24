@@ -474,22 +474,42 @@ router.post('/insertFileInfo', function (req, res) {
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertFileInfo, data, callbackInsertFileInfo, req, res);
 });
 
-// [POST] INSERT batchLearningBaseData (기본정보)
-var callbackInsertBatchLearningBaseData = function (rows, req, res) {
-    //console.log("upload batchLearningBaseData finish..");
-    res.send({ code: 200, rows: rows });
-};
 router.post('/insertBatchLearningBaseData', function (req, res) {
     //console.log("insert BATCH LEARNING BASE DATA : " + JSON.stringify(req.body.fileInfo));
     var fileInfo = req.body.fileInfo;
-    var imgId = fileInfo.imgId;
+    var filePath = fileInfo.filePath;
+    filePath = filePath.replace("\\", "/");
+
+    var imagePath = propertiesConfig.filepath.imagePath;
+    imagePath = imagePath.replace("\\", "/");
+
+    var selAnswerFile = `SELECT IMGID FROM TBL_BATCH_ANSWER_FILE WHERE 'C:\\ICR\\image' || FILEPATH = :filepath `;
+
+    commonDB.reqQueryParam(selAnswerFile, [filePath], callbackSelectBatchLearningBaseData, req, res);
+
+});
+
+// [POST] INSERT batchLearningBaseData (기본정보)
+var callbackSelectBatchLearningBaseData = function (rows, req, res) {
+
+    var fileInfo = req.body.fileInfo;
     var convertedImgPath = fileInfo.convertFileName;
     var fileName = fileInfo.oriFileName;
     var filePath = fileInfo.filePath;
-    var data = [imgId, convertedImgPath, fileName, filePath];
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningBaseData, data, callbackInsertBatchLearningBaseData, req, res);
-});
+    var imgId = fileInfo.imgId;
 
+    if (rows.length > 0) {
+        imgId = rows[0].IMGID;
+    }
+
+    var data = [imgId, convertedImgPath, fileName, filePath];
+
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.insertBatchLearningBaseData, data, callbackInsertBatchLearningBaseData, req, res);
+};
+
+var callbackInsertBatchLearningBaseData = function (rows, req, res) {
+    res.send({ code: 200, rows: rows });
+};
 
 //
 router.post('/execBatchLearningData2', function (req, res) {
@@ -1914,9 +1934,18 @@ function labelMappingTrain(data) {
 router.post('/batchLearnTraing', function (req, res) {
     sync.fiber(function () {
         var imgId = req.body.imgIdArray;
+        var uiCheck = req.body.uiCheck;
         var retData = [];
+        var uiTraining = '';
         for (var i = 0; i < imgId.length; i++) {
-            var batchData = sync.await(batchLearnTraing(imgId[i], sync.defer()));
+            var batchData = sync.await(batchLearnTraing(imgId[i], uiCheck, sync.defer()));
+
+            if (batchData.uiTraining && batchData.uiTraining == "uiTraining") {
+                retData = [];
+                retData.push(batchData);
+                break;
+            }
+
             retData.push(batchData);
         }
 
@@ -1925,20 +1954,21 @@ router.post('/batchLearnTraing', function (req, res) {
 });
 
 
-function batchLearnTraing(imgId, done) {
+function batchLearnTraing(imgId, uiCheck, done) {
     sync.fiber(function () {
         try {
+
             var retData = {};
 
             var originArr = [imgId];
 
             var originImageArr = sync.await(oracle.selectOcrFilePaths(originArr, sync.defer()));
 
-            originImageArr = [originImageArr[0]];
-
             if (originImageArr == "error") {
                 return done(null, "error selectOcrFilePaths");
             }
+
+            originImageArr = [originImageArr[0]];
 
             //tif to jpg
             for (var item in originImageArr) {
@@ -1952,7 +1982,6 @@ function batchLearnTraing(imgId, done) {
                     if (result == "error") {
                         return done(null, "error convertTiftoJpg");
                     }
-
                 }
             }
 
@@ -2013,10 +2042,26 @@ function batchLearnTraing(imgId, done) {
             //insert MLexport data to batchMlExport
             sync.await(oracle.insertMLData(mlData, sync.defer()));
 
+            if (uiCheck == true) {
+                var compareML = getAnswerCheck(cobineRegacyData, mlData["mlData"]);
+
+                retData["uiTraining"] = "uiTraining";
+
+                if (compareML == false) {
+
+                    var columnArr = sync.await(oracle.selectColumn(null, sync.defer()));
+                    retData["columnArr"] = columnArr;
+                    retData["fileInfo"] = originImageArr;
+
+                    return done(null, retData);
+                }
+            }
+
             console.log("done");
 
             return done(null, retData);
         } catch (e) {
+            console.log(e);
             return done(null, "error");
         }
     });
@@ -2028,6 +2073,144 @@ function dataToTypoArgs(data) {
         data[i].text = data[i].text.toLowerCase().replace("'", "`");
     }
     return data;
+}
+
+function getAnswerCheck(lagacy, ml) {
+    var ogcomnm = [];
+    var ctnm = [];
+    var mlCheck = Array.apply(null, new Array(38)).map(Number.prototype.valueOf, 0);
+    var ogcomnCheck = 0;
+    var ctnmCheck = 0;
+    var numCheck = lagacy.length + 1;
+
+    for (var i = 0; i < lagacy.length; i++) {
+        ogcomnm.push(lagacy[i].OGCOMPANYNAME);
+        ctnm.push(lagacy[i].CTNM);
+    }
+
+    for (var i = 0; i < ml.length; i++) {
+        var colLbl = ml[i].colLbl;
+
+        if (ml[i].colLbl == "0") {
+            if (ogcomnm.indexOf(ml[i].text) > -1) {
+                mlCheck[colLbl] += 1;
+            }
+        }
+        if (ml[i].colLbl == "1") {
+            if (ctnm.indexOf(ml[i].text) > -1) {
+                mlCheck[colLbl] += 1;
+            }
+        }
+        if (ml[i].colLbl == "5") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "6") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "7") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "8") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "9") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "10") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "11") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "12") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "13") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "14") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "15") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "16") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "17") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "18") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "19") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "20") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "21") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "22") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "23") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "24") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "25") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "26") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "27") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "28") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "29") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "30") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "31") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "32") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "33") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "34") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "35") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "36") {
+            mlCheck[colLbl] += 1;
+        }
+        if (ml[i].colLbl == "37") {
+            mlCheck[colLbl] += 1;
+        }
+
+    }
+
+    for (var i = 0; i < mlCheck.length; i++) {
+        if (mlCheck.length != 36 && mlCheck[i] != numCheck) {
+            return false;
+        }
+    }
+
+    return true;
+
 }
 
 

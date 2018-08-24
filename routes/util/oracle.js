@@ -158,26 +158,38 @@ exports.insertLabelMapping = function (req, done) {
         let conn;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sqltext = `INSERT INTO TBL_FORM_LABEL_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_LABEL_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
-            var userModifyData = [];
+
+            var labelClass;
+            let selectSqlText = `SELECT SEQNUM FROM TBL_FORM_LABEL_MAPPING WHERE DATA = :DATA`;
+            let insertSqlText = `INSERT INTO TBL_FORM_LABEL_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_LABEL_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            let updateSqlText = `UPDATE TBL_FORM_LABEL_MAPPING SET DATA = :DATA , CLASS = :CLASS , REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
+
+            //var userModifyData = [];
             for (var i in req.data) {
                 labelClass = 3
-                if (req.data[i].ColLbl && req.data[i].ColLbl == 0) {
+                if (req.data[i].colLbl && req.data[i].colLbl == 0) {
                     labelClass = 1
-
-                    if (req.data[i].oriColLbl != null && req.data[i].ColLbal != req.data[i].oriColLbl) {
+                    /*
+                    if (req.data[i].oriColLbl != null && req.data[i].colLbal != req.data[i].oriColLbl) {
                         userModifyData.push(req.data[i]);
                     }
-                }
-                if (req.data[i].ColLbl && req.data[i].ColLbl == 1) {
+                    */
+                }else if(req.data[i].colLbl && req.data[i].colLbl == 1) {
                     labelClass = 2
-
+                    /*
                     if (req.data[i].oriColLbl != null && req.data[i].ColLbal != req.data[i].oriColLbl) {
                         userModifyData.push(req.data[i]);
                     }
+                    */
                 }
 
-                await conn.execute(sqltext, [req.data[i].sid, labelClass]);
+                var result = await conn.execute(selectSqlText, [req.data[i].sid]);
+                if (result.rows[0]) {
+                    await conn.execute(updateSqlText, [req.data[i].sid, labelClass, result.rows[0].SEQNUM]);
+                } else {
+                    await conn.execute(insertSqlText, [req.data[i].sid, labelClass]);
+                }
+
             }
             return done(null, req);
         } catch (err) { 
@@ -199,32 +211,44 @@ exports.insertDocMapping = function (req, done) {
         let conn;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sqltext = `INSERT INTO TBL_FORM_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            let selectSqlText = `SELECT SEQNUM FROM TBL_FORM_MAPPING WHERE DATA = :DATA`;
+            let insertSqlText = `INSERT INTO TBL_FORM_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            let updateSqlText = `UPDATE TBL_FORM_MAPPING SET DATA = :DATA , CLASS = :CLASS , REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
+
             insClass = 0;
             insCompanyData = '0,0,0,0,0,0,0';
             insContractData = '0,0,0,0,0,0,0';
 
+            /*
             var userModifyData = [];
 
             if (req.mlDocCategory != null && req.mlDocCategory[0].DOCTYPE != req.docCategory[0].DOCTYPE) {
                 userModifyData.push(req.docCategory);
             }
+            */
 
             if (req.docCategory[0]) {
                 insClass = req.docCategory[0].DOCTYPE;
             }
 
             for (var i in req.data) {
-                if (req.data[i].ColLbl && req.data[i].ColLbl == 0) {
+                if (req.data[i].colLbl && req.data[i].colLbl == 0) {
                     insCompanyData = req.data[i].sid;
                 }
-                if (req.data[i].ColLbl && req.data[i].ColLbl == 1) {
+                if (req.data[i].colLbl && req.data[i].colLbl == 1) {
                     insContractData = req.data[i].sid;
                 }
             }
 
-            await conn.execute(sqltext, [insCompanyData + "," + insContractData, insClass]);
-
+            if (insCompanyData && insContractData) {
+                var sid = insCompanyData + "," + insContractData;
+                var result = await conn.execute(selectSqlText, [sid]);
+                if (result.rows[0]) {
+                    await conn.execute(updateSqlText, [sid, insClass, result.rows[0].SEQNUM]);
+                } else {
+                    await conn.execute(insertSqlText, [sid, insClass]);
+                }
+            }
             return done(null, req);
         } catch (err) { 
             reject(err);
@@ -245,13 +269,23 @@ exports.insertColumnMapping = function (req, done) {
         let conn;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sqltext = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            let selectSqlText = `SELECT SEQNUM FROM TBL_COLUMN_MAPPING_TRAIN WHERE DATA = :DATA`;
+            let insertSqlText = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            let updateSqlText = `UPDATE TBL_COLUMN_MAPPING_TRAIN SET DATA = :DATA, CLASS = :CALSS, REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
             fullData = '0,'
             if (req.docCategory[0]) {
                 fullData = req.docCategory[0].DOCTYPE + ',';
             }
             for (var i in req.data) {
-                await conn.execute(sqltext, [fullData + req.data[i].sid, req.data[i].ColLbl]);
+                var docTypeAndSid = fullData + req.data[i].sid;
+
+                var result = await conn.execute(selectSqlText, [docTypeAndSid]);
+                if (result.rows[0]) {
+                    await conn.execute(updateSqlText, [docTypeAndSid, req.data[i].colLbl, result.rows[0].SEQNUM]);
+                } else {
+                    await conn.execute(insertSqlText, [docTypeAndSid, req.data[i].colLbl]);
+                }
+                    
             }
             return done(null, req);
         } catch (err) {
@@ -277,21 +311,16 @@ exports.selectOcrFilePaths = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
             //let result = await conn.execute(`SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (${req.map((name, index) => `:${index}`).join(", ")})`, req);
             //let result = await conn.execute("SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (:imgid)", ["10"]);
-            let result = await conn.execute(`SELECT FILENAME, FILEPATH FROM TBL_BATCH_LEARN_DATA WHERE IMGID = :imgId`, [req[0]]);
+            let result = await conn.execute(`SELECT FILENAME, FILEPATH, CONVERTEDIMGPATH FROM TBL_BATCH_LEARN_DATA WHERE IMGID = :imgId`, [req[0]]);
 
             for (var row = 0; row < result.rows.length; row++) {
                 var dict = {};
 
-                //dict.SEQNUM = result.rows[row].SEQNUM;
                 dict.FILENAME = result.rows[row].FILENAME;
                 dict.FILEPATH = result.rows[row].FILEPATH;
-                /*
-                for (var colName = 0; colName < colNameArr.length; colName++) {
-                    dict[colNameArr[colName]] = result.rows[row].colNameArr[colName];
-                }
-                */
+                dict.CONVERTEDIMGPATH = result.rows[row].CONVERTEDIMGPATH;
                 res.push(dict);
-                
+
             }
 
             return done(null, res);
@@ -508,42 +537,42 @@ exports.insertRegacyData = function (req, done) {
                         commonUtil.nvl(req[i].INSENDDT),
                         commonUtil.nvl(req[i].UY),
                         commonUtil.nvl(req[i].CURCD),
-                        commonUtil.nvl2(req[i].PAIDPERCENT, 0),
-                        commonUtil.nvl2(req[i].PAIDSHARE, 0),
-                        commonUtil.nvl2(req[i].OSLPERCENT, 0),
-                        commonUtil.nvl2(req[i].OSLSHARE, 0),
-                        commonUtil.nvl2(req[i].GROSSPM, 0),
-                        commonUtil.nvl2(req[i].PM, 0),
-                        commonUtil.nvl2(req[i].PMPFEND, 0),
-                        commonUtil.nvl2(req[i].PMPFWOS, 0),
-                        commonUtil.nvl2(req[i].XOLPM, 0),
-                        commonUtil.nvl2(req[i].RETURNPM, 0),
-                        commonUtil.nvl2(req[i].GROSSCN, 0),
-                        commonUtil.nvl2(req[i].CN, 0),
-                        commonUtil.nvl2(req[i].PROFITCN, 0),
-                        commonUtil.nvl2(req[i].BROKERAGE, 0),
-                        commonUtil.nvl2(req[i].TAX, 0),
-                        commonUtil.nvl2(req[i].OVERRIDINGCOM, 0),
-                        commonUtil.nvl2(req[i].CHARGE, 0),
-                        commonUtil.nvl2(req[i].PMRESERVERTD, 0),
-                        commonUtil.nvl2(req[i].PFPMRESERVERTD, 0),
-                        commonUtil.nvl2(req[i].PMRESERVERLD, 0),
-                        commonUtil.nvl2(req[i].PFPMRESERVERLD, 0),
-                        commonUtil.nvl2(req[i].CLAIM, 0),
-                        commonUtil.nvl2(req[i].LOSSRECOVERY, 0),
-                        commonUtil.nvl2(req[i].CASHLOSS, 0),
-                        commonUtil.nvl2(req[i].CASHLOSSRD, 0),
-                        commonUtil.nvl2(req[i].LOSSRR, 0),
-                        commonUtil.nvl2(req[i].LOSSRR2, 0),
-                        commonUtil.nvl2(req[i].LOSSPFEND, 0),
-                        commonUtil.nvl2(req[i].LOSSPFWOA, 0),
-                        commonUtil.nvl2(req[i].INTEREST, 0),
-                        commonUtil.nvl2(req[i].TAXON, 0),
-                        commonUtil.nvl2(req[i].MISCELLANEOUS, 0),
-                        commonUtil.nvl2(req[i].PMBL, 0),
-                        commonUtil.nvl2(req[i].CMBL, 0),
-                        commonUtil.nvl2(req[i].NTBL, 0),
-                        commonUtil.nvl2(req[i].CSCOSARFRNCNNT2, 0),
+                        commonUtil.nvl(req[i].PAIDPERCENT, 0),
+                        commonUtil.nvl(req[i].PAIDSHARE, 0),
+                        commonUtil.nvl(req[i].OSLPERCENT, 0),
+                        commonUtil.nvl(req[i].OSLSHARE, 0),
+                        commonUtil.nvl(req[i].GROSSPM, 0),
+                        commonUtil.nvl(req[i].PM, 0),
+                        commonUtil.nvl(req[i].PMPFEND, 0),
+                        commonUtil.nvl(req[i].PMPFWOS, 0),
+                        commonUtil.nvl(req[i].XOLPM, 0),
+                        commonUtil.nvl(req[i].RETURNPM, 0),
+                        commonUtil.nvl(req[i].GROSSCN, 0),
+                        commonUtil.nvl(req[i].CN, 0),
+                        commonUtil.nvl(req[i].PROFITCN, 0),
+                        commonUtil.nvl(req[i].BROKERAGE, 0),
+                        commonUtil.nvl(req[i].TAX, 0),
+                        commonUtil.nvl(req[i].OVERRIDINGCOM, 0),
+                        commonUtil.nvl(req[i].CHARGE, 0),
+                        commonUtil.nvl(req[i].PMRESERVERTD, 0),
+                        commonUtil.nvl(req[i].PFPMRESERVERTD, 0),
+                        commonUtil.nvl(req[i].PMRESERVERLD, 0),
+                        commonUtil.nvl(req[i].PFPMRESERVERLD, 0),
+                        commonUtil.nvl(req[i].CLAIM, 0),
+                        commonUtil.nvl(req[i].LOSSRECOVERY, 0),
+                        commonUtil.nvl(req[i].CASHLOSS, 0),
+                        commonUtil.nvl(req[i].CASHLOSSRD, 0),
+                        commonUtil.nvl(req[i].LOSSRR, 0),
+                        commonUtil.nvl(req[i].LOSSRR2, 0),
+                        commonUtil.nvl(req[i].LOSSPFEND, 0),
+                        commonUtil.nvl(req[i].LOSSPFWOA, 0),
+                        commonUtil.nvl(req[i].INTEREST, 0),
+                        commonUtil.nvl(req[i].TAXON, 0),
+                        commonUtil.nvl(req[i].MISCELLANEOUS, 0),
+                        commonUtil.nvl(req[i].PMBL, 0),
+                        commonUtil.nvl(req[i].CMBL, 0),
+                        commonUtil.nvl(req[i].NTBL, 0),
+                        commonUtil.nvl(req[i].CSCOSARFRNCNNT2, 0),
                         (parseInt(i) + 1),
                         'L',
                         LearnDataRes.rows[0].FILENAME,
@@ -558,7 +587,8 @@ exports.insertRegacyData = function (req, done) {
 
             return done(null, "done legary insert");
         } catch (err) { // catches errors in getConnection and the query
-            reject(err);
+            console.log(err);
+            return done(null, "error");
         } finally {
             if (conn) {   // the conn assignment worked, must release
                 try {
@@ -718,6 +748,29 @@ exports.selectCurcdMapping = function (req, done) {
             } else {
                 return done(null, null);
             }
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectColumn = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(queryConfig.dbcolumnsConfig.selectColMappingCls);
+            return done(null, result.rows);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {

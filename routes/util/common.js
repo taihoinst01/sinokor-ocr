@@ -56,7 +56,7 @@ router.post('/modifyTextData', function (req, res) {
 
                         }
                     }
-                } else if (afterData.data[i].colLbl == 4) {// currency code
+                } else if (afterData.data[i].colLbl == 3) {// currency code
                     for (var j in beforeData.data) {
                         if (afterData.data[i].location == beforeData.data[j].location) {
 
@@ -98,7 +98,7 @@ router.post('/selectTypoData', function (req, res) {
                     ogCompanyName.push(data[i]);
                 } else if (data[i].colLbl == 1) {
                     ctnm.push(data[i]);
-                } else if (data[i].colLbl == 4) {
+                } else if (data[i].colLbl == 3) {
                     curcd.push(data[i]);
                 }
             }
@@ -133,7 +133,7 @@ router.post('/selectTypoData', function (req, res) {
                             data[i].text = ogCompanyName[j].text;
                         }
                     }
-                } else if (data[i].colLbl == 4) {
+                } else if (data[i].colLbl == 3) {
                     for (var j in curcd) {
                         if (data[i].location == curcd[j].location) {
                             data[i].text = curcd[j].text;
