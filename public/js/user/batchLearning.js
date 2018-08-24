@@ -1195,7 +1195,7 @@ var searchBatchLearnDataList = function (addCond) {
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
                 $("#tbody_batchList_before").empty().append(appendHtml);
-                compareMLAndAnswer(data);
+                //compareMLAndAnswer(data);
             } else {
                 $("#tbody_batchList_after").empty().append(appendHtml);               
             }
