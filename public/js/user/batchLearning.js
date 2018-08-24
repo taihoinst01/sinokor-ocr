@@ -133,10 +133,17 @@ var buttonEvent = function () {
 
     // UI train 실행
     $('#uiTrainBtn').on("click", function () {
-        modifyTextData();
+        var docData = modifyData.docCategory;
+        if ($('#docData').val() != '') {
+            docData = JSON.parse($('#docData').val());
+        }
+        if (docData && docData.DOCTYPE != 0) {
+            modifyTextData();
+        } else {
+            alert('There is no document form, I do not training.');
+            return;
+        }
     });
-
-
 
 };
 
@@ -653,8 +660,8 @@ function execBatchLearningData(ocrData, data) {
         beforeSend: function () {
         },
         success: function (data) {       
-            //console.log(data);
-            
+            //console.log(data);            
+
             modifyData = data;
             batchCount++;
 
@@ -1920,23 +1927,23 @@ function modifyTextData() {
 
 // UI학습 팝업 실행
 var fn_batchUiTraining = function () {
+    console.log(JSON.stringify(modifyData))
     var mldata = modifyData;
-    var data = {};
+    var trainData = {};
     var arr = [];
     var trainData = {};
-
+    trainData.data = [];
     if (mldata.docCategory) { // 추출된 문서가 있을 경우
-        mldata.docCategory[0] = JSON.parse($('#docData').val());
-        data.mlDocCategory = mldata.docCategory[0];
+        trainData.docCategory = [mldata.docCategory[0]];
     } else {
-        data.mlDocCategory = null;
+        trainData.docCategory = null;
     }
 
     if ($('#docData').val() != '') { // 문서 종류를 수정했다면
         if (mldata.docCategory) { // 추출된 문서가 있을 경우
-            mldata.docCategory[0] = JSON.parse($('#docData').val());
+            trainData.docCategory[0] = JSON.parse($('#docData').val());
         } else {
-            mldata.docCategory = [JSON.parse($('#docData').val())];
+            trainData.docCategory = [JSON.parse($('#docData').val())];
         }
     }
 
@@ -1955,37 +1962,28 @@ var fn_batchUiTraining = function () {
                 break;
             }
         }
-
-        for (var i = 0; i < mlData.data.length; i++) {
-            for (var j = 0; j < arr.length; j++) {
-                if (mlData.data[i].location == arr[j].location) {
-
-                    if (dataArray[j].colLbl == 0 || arr[j].colLbl == 1 || arr[j].colLbl == 3) { // Only ogCompanyName, contractName, curCode
-                        if (mlData.data[i].text != arr[j].text || mlData.data[i].colLbl != arr[j].colLbl) {
-                            trainData.data.push(arr[j]);
-                        }
-                    } else { // etc
-                        if (mlData.data[i].colLbl != arr[j].colLbl) {
-                            arr[j].text = mlData.data[i].text // origin text (Does not reflect changes made by users) 
-                            trainData.data.push(arr[j]);
-                        }
-                    }
-
-                    if (mlData.data[i].originText != null) {
-                        arr[j].originText = mlData[i].originText;
-                    }
-
-                }
-            }
-        }
-
     });
 
-    data.data = arr;
-    data.docCategory = mldata.docCategory;
-    console.log(data);
+    for (var i = 0; i < mldata.data.length; i++) {
+        for (var j = 0; j < arr.length; j++) {
+            if (mldata.data[i].location == arr[j].location) {
 
-    //docLabelMapping(data);
+                if (arr[j].colLbl == 0 || arr[j].colLbl == 1 || arr[j].colLbl == 3) { // Only ogCompanyName, contractName, curCode
+                    if (mldata.data[i].text != arr[j].text || mldata.data[i].colLbl != arr[j].colLbl) {
+                        trainData.data.push(arr[j]);
+                    }
+                } else { // etc
+                    if (mldata.data[i].colLbl != arr[j].colLbl) {
+                        arr[j].text = mldata.data[i].text // origin text (Does not reflect changes made by users) 
+                        trainData.data.push(arr[j]);
+                    }
+                }
+
+            }
+        }
+    }
+
+    docLabelMapping(trainData);
 	
 	/*
 	$.ajax({
@@ -2012,34 +2010,35 @@ var fn_batchUiTraining = function () {
 var docLabelMapping = function (data) {
     startProgressBar();
     $('#progressMsgTitle').css("color", "black");
-    $('#progressMsgTitle').html('양식 라벨 처리 중..');
-    addProgressBar(1, 20);
+    $('#progressMsgTitle').html('문서 라벨 맵핑 학습 중..');
+    addProgressBar(1, 25);
     insertDocLabelMapping(data, callbackInsertDocLabelMapping);
 };
 
 var callbackInsertDocLabelMapping = function (data) {
-    $('#progressMsgTitle').html('양식 분류 처리 중..');
-    addProgressBar(21, 40);
+    $('#progressMsgTitle').html('문서 맵핑 학습 중..');
+    addProgressBar(26, 50);
     insertDocMapping(data, callbackInsertDocMapping);
 };
 
 var callbackInsertDocMapping = function (data) {
-    $('#progressMsgTitle').html('라벨 분류 처리 중..');
-    addProgressBar(41, 60);
-    //insertColMapping(data, callbackInsertColMapping);
-    insertColMapping(data);
+    $('#progressMsgTitle').html('컬럼 맵핑 학습 중..');
+    addProgressBar(51, 75);
+    insertColMapping(data, callbackInsertColMapping);
 };
 
 var callbackInsertColMapping = function (data) {
-    $('#progressMsgTitle').html('DB 컬럼 조회 중..');
-    addProgressBar(61, 80);
-    insertContractMapping(data, callbackInsertContractMapping);
+    $('#progressMsgTitle').html('학습 처리 중..');
+    addProgressBar(76, 100);
+    //insertContractMapping(data, callbackInsertContractMapping);
 };
 
+/*
 var callbackInsertContractMapping = function () {
     $('#progressMsgTitle').html('UI TRAINING..');
     addProgressBar(81, 100);
 };
+*/
 
 // UI레이어 학습 버튼 클릭 이벤트
 var uiTrainingBtn = function () {

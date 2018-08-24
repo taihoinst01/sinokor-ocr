@@ -1011,9 +1011,7 @@ function makeTrainingData() {
 
             }
         }
-    }
-    //startProgressBar();
-    //addProgressBar(1, 20);
+    }    
 
     var data = {}
     data.data = dataArray;
@@ -1025,7 +1023,9 @@ function makeTrainingData() {
     } else {
         trainData.docCategory.push(lineText[0].docCategory[0]);
     }
-    
+
+    startProgressBar();
+    addProgressBar(1, 20);
     insertTrainingData(trainData);
 }
 
