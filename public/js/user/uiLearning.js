@@ -994,7 +994,7 @@ function makeTrainingData() {
         for (var j = 0; j < dataArray.length; j++) {
             if (mlData[i].location == dataArray[j].location) {
 
-                if (dataArray[j].colLbl == 0 || dataArray[j].colLbl == 1 || dataArray[j].colLbl == 4) { // Only ogCompanyName, contractName, curCode
+                if (dataArray[j].colLbl == 0 || dataArray[j].colLbl == 1 || dataArray[j].colLbl == 3) { // Only ogCompanyName, contractName, curCode
                     if (mlData[i].text != dataArray[j].text || mlData[i].colLbl != dataArray[j].colLbl) {
                         trainData.data.push(dataArray[j]);
                     }

@@ -1960,7 +1960,7 @@ var fn_batchUiTraining = function () {
             for (var j = 0; j < arr.length; j++) {
                 if (mlData.data[i].location == arr[j].location) {
 
-                    if (dataArray[j].colLbl == 0 || arr[j].colLbl == 1 || arr[j].colLbl == 4) { // Only ogCompanyName, contractName, curCode
+                    if (dataArray[j].colLbl == 0 || arr[j].colLbl == 1 || arr[j].colLbl == 3) { // Only ogCompanyName, contractName, curCode
                         if (mlData.data[i].text != arr[j].text || mlData.data[i].colLbl != arr[j].colLbl) {
                             trainData.data.push(arr[j]);
                         }
@@ -1983,6 +1983,7 @@ var fn_batchUiTraining = function () {
 
     data.data = arr;
     data.docCategory = mldata.docCategory;
+    console.log(data);
 
     //docLabelMapping(data);
 	
