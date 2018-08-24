@@ -493,13 +493,16 @@ router.post('/insertBatchLearningBaseData', function (req, res) {
 var callbackSelectBatchLearningBaseData = function (rows, req, res) {
 
     var fileInfo = req.body.fileInfo;
-    var convertedImgPath = fileInfo.convertFileName;
+    var convertedImgPath = fileInfo.convertFilePath + '\\' + fileInfo.convertFileName;
     var fileName = fileInfo.oriFileName;
     var filePath = fileInfo.filePath;
     var imgId = fileInfo.imgId;
 
     if (rows.length > 0) {
         imgId = rows[0].IMGID;
+    }
+    if (fileName.split('.')[1] === 'jpg') {
+        convertedImgPath = '';
     }
 
     var data = [imgId, convertedImgPath, fileName, filePath];

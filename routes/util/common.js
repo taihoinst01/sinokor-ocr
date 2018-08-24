@@ -12,11 +12,12 @@ var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
+var execSync = require('sync-exec');
 
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, 'uploads/');
+            cb(null, propertiesConfig.filepath.imagePath);
         },
         filename: function (req, file, cb) {
             cb(null, file.originalname);
@@ -32,6 +33,101 @@ var router = express.Router();
 /***************************************************************
  * Router
  * *************************************************************/
+
+router.post('/imageUpload', upload.any(), function (req, res) {
+    var files = req.files;
+    var imagePath = propertiesConfig.filepath.imagePath;
+    var convertedImagePath = propertiesConfig.filepath.convertedImagePath;
+    var fileInfo = [];
+    var returnObj = [];
+
+    try {
+        for (var i = 0; i < files.length; i++) {
+            var fileObj = files[i];
+            var fileExt = fileObj.originalname.split('.')[1];
+
+            if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
+                var fileItem = {
+                    imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                    filePath: fileObj.path,
+                    oriFileName: fileObj.originalname,
+                    convertedFilePath: convertedImagePath,
+                    convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
+                    fileExt: fileExt,
+                    fileSize: fileObj.size,
+                    contentType: fileObj.mimetype,
+                    svrFileName: imagePath + '\\' + fileObj.originalname
+                };
+                fileInfo.push(fileItem);
+
+                var fileNames = [];
+                returnObj.push(fileItem.convertFileName);
+
+                var ifile = imagePath + '\\' + fileObj.originalname;
+                var ofile = convertedImagePath + '\\' + fileObj.originalname.split('.')[0] + '.jpg';
+                var result = execSync('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile);
+                if (result.status != 0) {
+                    throw new Error(result.stderr);
+                }
+            }
+        }
+        res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
+    } catch (e) {
+        console.log(e);
+        res.send({ code: 500, message: [], error: e });
+    }
+
+
+    /*
+    for (var i = 0; i < files.length; i++) {
+        if (files[i].originalname.split('.')[1].toLowerCase() === 'tif' ||
+            files[i].originalname.split('.')[1].toLowerCase() === 'tiff') {
+            var fileObj = files[i]; // 파일
+            var oriFileName = fileObj.originalname; // 파일 원본명
+            var filePath = fileObj.path;    // 파일 경로
+            var ifile = filePath;
+            var ofile = "/uploads/" + oriFileName.split('.')[0] + '.jpg';
+            // 파일 정보 추출
+            //var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성
+            var d = new Date();
+            var imgId = d.isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000;
+            //console.log("생성한 imgId와 길이 : " + imgId + " : " + imgId.length);
+
+            //var filePath = ifile;    // 파일 경로
+
+            var _lastDot = oriFileName.lastIndexOf('.');
+            var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
+            var fileSize = fileObj.size;  // 파일 크기
+            var contentType = fileObj.mimetype; // 컨텐트타입
+            var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
+
+            var fileParam = {
+                imgId: imgId,
+                filePath: filePath,
+                oriFileName: oriFileName,
+                convertFileName: ofile.split('.')[0] + '.jpg',
+                fileExt: fileExt,
+                fileSize: fileSize,
+                contentType: contentType,
+                svrFileName: svrFileName
+            };
+
+            //console.log(`file Info : ${JSON.stringify(fileParam)}`);
+            fileInfo.push(fileParam);
+            returnObj.push(oriFileName.split('.')[0] + '.jpg');
+
+            exec('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile, function (err, out, code) {
+                if (endCount === files.length - 1) {
+                    res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
+                }
+                endCount++;
+            });
+        } else if (files[i].originalname.split('.')[1].toLowerCase() === 'jpg') {
+
+        }
+    }
+    */
+});
 
 router.post('/modifyTextData', function (req, res) {
     var beforeData = req.body.beforeData;
@@ -155,7 +251,7 @@ router.post('/selectTypoData', function (req, res) {
 router.post('/ocr', function (req, res) {
     var fileName = req.body.fileName;
 
-    fs.readFile(propertiesConfig.filepath.imagePath +'\\' + fileName, function (err, data) {
+    fs.readFile(propertiesConfig.filepath.convertedImagePath +'\\' + fileName, function (err, data) {
         if (err) { // fs error
             console.log(err);
             res.send({ code: 404, error: '파일이 없습니다.' });

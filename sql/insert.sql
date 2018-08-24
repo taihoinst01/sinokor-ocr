@@ -162,40 +162,40 @@ insert into TBL_LABEL_MAPPING_TRAIN (SEQNUM,REGDATE,CLASS,TEXT) values (seq_labe
 insert into TBL_LABEL_MAPPING_TRAIN (SEQNUM,REGDATE,CLASS,TEXT) values (seq_label_mapping_train.nextval,sysdate,'NTBL','Balance')
 
 --TBL_EXTRACTION_KEYWORD
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixlabel','CSCO_NM','∞≈∑°ªÁ∏Ì')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixlabel','CT_NM','∞Ëæ‡∏Ì')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixlabel','INS_ST_DT','∫∏«Ë∞≥Ω√¿œ')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixlabel','INS_END_DT','∫∏«Ë¡æ∑·¿œ')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','CUR_CD','»≠∆Ûƒ⁄µÂ')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','PRE','∫∏«Ë∑·')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','COM','¿œπ›ºˆºˆ∑·')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','BRKG','¡ﬂ∞≥ºˆºˆ∑·')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','TXAM','ºº±›')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','PRRS_CF','∫∏«Ë∑·¿Ø∫∏±›¿˚∏≥æ◊')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','PRRS_RLS','∫∏«Ë∑·¿Ø∫∏±›«ÿ¡¶æ◊')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','CLA','∫∏«Ë±›')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','EXEX','∫Œ¥Î∫Ò')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','SVF','º’«ÿ¡∂ªÁ∫Ò')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','CAS','¡ÔΩ√∫“∫∏«Ë±›(CASH)')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','NTBL','º¯∆Ú±’')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixlabel','CSCO_SA_RFRN_CNNT2','¬¸∞Ì')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixvalue','CSCO_NM_VALUE','∞≈∑°ªÁ∏Ì ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixvalue','CT_NM_VALUE','∞Ëæ‡∏Ì ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixvalue','INS_ST_DT_VALUE','∫∏«Ë∞≥Ω√¿œ ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixvalue','INS_END_DT_VALUE','∫∏«Ë¡æ∑·¿œ ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','CUR_CD_VALUE','»≠∆Ûƒ⁄µÂ ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','PRE_VALUE','∫∏«Ë∑· ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','COM_VALUE','¿œπ›ºˆºˆ∑· ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','BRKG_VALUE','¡ﬂ∞≥ºˆºˆ∑· ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','TXAM_VALUE','ºº±› ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','PRRS_CF_VALUE','∫∏«Ë∑·¿Ø∫∏±›¿˚∏≥æ◊ ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','PRRS_RLS_VALUE','∫∏«Ë∑·¿Ø∫∏±›«ÿ¡¶æ◊ ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','CLA_VALUE','∫∏«Ë±› ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','EXEX_VALUE','∫Œ¥Î∫Ò ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','SVF_VALUE','º’«ÿ¡∂ªÁ∫Ò ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','CAS_VALUE','¡ÔΩ√∫“∫∏«Ë±›(CASH) ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','NTBL_VALUE','º¯∆Ú±’ ∞™')
-insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixvalue','CSCO_SA_RFRN_CNNT2_VALUE','¬¸∞Ì ∞™')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixlabel','CSCO_NM','ÔøΩ≈∑ÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixlabel','CT_NM','ÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixlabel','INS_ST_DT','ÔøΩÔøΩÔøΩË∞≥ÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixlabel','INS_END_DT','ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','CUR_CD','»≠ÔøΩÔøΩÔøΩ⁄µÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','PRE','ÔøΩÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','COM','ÔøΩœπ›ºÔøΩÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','BRKG','ÔøΩﬂ∞ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','TXAM','ÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','PRRS_CF','ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','PRRS_RLS','ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','CLA','ÔøΩÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','EXEX','ÔøΩŒ¥ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','SVF','ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','CAS','ÔøΩÔøΩ√∫“∫ÔøΩÔøΩÔøΩÔøΩ(CASH)')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryrowlabel','NTBL','ÔøΩÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixlabel','CSCO_SA_RFRN_CNNT2','ÔøΩÔøΩÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixvalue','CSCO_NM_VALUE','ÔøΩ≈∑ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixvalue','CT_NM_VALUE','ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixvalue','INS_ST_DT_VALUE','ÔøΩÔøΩÔøΩË∞≥ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixvalue','INS_END_DT_VALUE','ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','CUR_CD_VALUE','»≠ÔøΩÔøΩÔøΩ⁄µÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','PRE_VALUE','ÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','COM_VALUE','ÔøΩœπ›ºÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','BRKG_VALUE','ÔøΩﬂ∞ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','TXAM_VALUE','ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','PRRS_CF_VALUE','ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','PRRS_RLS_VALUE','ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','CLA_VALUE','ÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','EXEX_VALUE','ÔøΩŒ¥ÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','SVF_VALUE','ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','CAS_VALUE','ÔøΩÔøΩ√∫“∫ÔøΩÔøΩÔøΩÔøΩ(CASH) ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'entryvalue','NTBL_VALUE','ÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
+insert into TBL_EXTRACTION_KEYWORD (SEQNUM,LABEL,ENKEYWORD,KOKEYWORD) values (seq_extraction_keyword.nextval,'fixvalue','CSCO_SA_RFRN_CNNT2_VALUE','ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ')
 
 --TBL_OCR_COMM_USER
 insert into TBL_OCR_COMM_USER (SEQNUM,OCRUSECOUNT,LASTLOGINDATE,JOINDATE,EMAIL,AUTH,USERPW,USERID) values (seq_ocr_comm_user.nextval,'0','18/07/25 16:07:10.000000','18/07/23','admin@admin.com','','123','admin')
@@ -229,45 +229,6 @@ INSERT INTO tbl_form_mapping VALUES(SEQ_FORM_MAPPING.NEXTVAL, '208,385,15044,972
 INSERT INTO tbl_form_mapping VALUES(SEQ_FORM_MAPPING.NEXTVAL, '208,385,15044,97299,0,0,0,221,1080,20299,0,0,0,0', '2', SYSDATE);
 INSERT INTO tbl_form_mapping VALUES(SEQ_FORM_MAPPING.NEXTVAL, '208,385,15044,97299,0,0,0,221,1283,22045,0,0,0,0', '2', SYSDATE);
 INSERT INTO tbl_form_mapping VALUES(SEQ_FORM_MAPPING.NEXTVAL, '208,386,15044,97299,0,0,0,336,473,15349,0,0,0,0', '2', SYSDATE);
-
---TBL_COLUMN_MAPPING_CLS
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, '√‚¿ÁªÁ∏Ì', 'CTOGCOMPANYNAMENM','0');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, '∞Ëæ‡∏Ì', 'CTNM','1');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'UY', 'UY','2');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, '∞Ëæ‡π¯»£', 'CONTRACTNUM','3');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, '»≠∆Ûƒ⁄µÂ', 'CURCD','4');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'PAID(100%)', 'PAIDPERCENT','5');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'PAID(Our Share)', 'PAIDSHARE','6');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'OSL(100%)', 'OSLPERCENT','7');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'OSL(Our Share)', 'OSLSHARE','8');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'PREMIUM', 'PM','9');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'PREMIUM P/F ENT', 'PMPFEND','10');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'PREMIUM P/F WOS', 'PMPFWOS','11');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'XOL PREMIUM', 'XOLPM','12');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'RETURN PREMIUM', 'RETURNPM','13');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'COMMISSION', 'CN','14');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'PROFIT COMMISSION', 'PROFITCN','15');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'BROKERAGE', 'BROKERAGE','16');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'TAX', 'TAX','17');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'OVERRIDING COM', 'OVERRIDINGCOM','18');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'CHARGE', 'CHARGE','19');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'PREMUIM RESERVE RTD', 'PMRESERVERTD','20');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'P/F PREMIUM RESERVE RTD', 'PFPMRESERVERTD','21');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'PREMIUM RESERVE RLD', 'PMRESERVERLD','22');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'P/F PREMIUM RESERVE RLD', 'PFPMRESERVERLD','23');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'CLAIM', 'CLAIM','24');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'LOSS RECOVERY', 'LOSSRECOVERY','25');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'CASH LOSS', 'CASHLOSS','26');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'CASH LOSS REFUND', 'CASHLOSSRD','27');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'LOSS RESERVE RTD', 'LOSSRR','28');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'LOSS RESERVE RLD', 'LOSSRR2','29');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'LOSS P/F ENT', 'LOSSPFEND','30');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'LOSS P/F WOA', 'LOSSPFWOA','31');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'INTEREST', 'INTEREST','32');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'TAX ON INTEREST', 'TAXON','33');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'MISCELLANEOUS', 'MISCELLANEOUS','34');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'Your Refernece', 'CSCOSARFRNCNNT2','35');
-INSERT INTO TBL_COLUMN_MAPPING_CLS VALUES(SEQ_COLUMN_MAPPING_CLS.NEXTVAL, 'UNKOWN', 'UNKOWN','999');
 
 --TBL_COLUMN_MAPPING_TRAIN
 insert into TBL_COLUMN_MAPPING_TRAIN values(seq_column_mapping.nextval, '1,574,847,26392,14535,14813,0,0', '0', sysdate);
@@ -338,3 +299,41 @@ insert into TBL_COLUMN_MAPPING_TRAIN values(seq_column_mapping.nextval, '2,2576,
 insert into TBL_COLUMN_MAPPING_TRAIN values(seq_column_mapping.nextval, '2,2576,940,97302,0,0,0,0', '4', sysdate);
 insert into TBL_COLUMN_MAPPING_TRAIN values(seq_column_mapping.nextval, '2,2576,1144,97302,0,0,0,0', '4', sysdate);
 insert into TBL_COLUMN_MAPPING_TRAIN values(seq_column_mapping.nextval, '2,2576,1344,97302,0,0,0,0', '4', sysdate);
+
+insert TBL_COLUMN_MAPPING_CLS
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (1,'Ï∂úÏû¨ÏÇ¨Î™Ö','CTOGCOMPANYNAMENM','0');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (2,'Í≥ÑÏïΩÎ™Ö','CTNM','1');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (3,'UY','UY','2');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (4,'ÌôîÌèêÏΩîÎìú','CURCD','3');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (5,'ÌôîÌèêÎã®ÏúÑ','CURUNIT','4');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (6,'PAID(100%)','PAIDPERCENT','5');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (7,'PAID(Our Share)','PAIDSHARE','6');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (8,'OSL(100%)','OSLPERCENT','7');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (9,'OSL(Our Share)','OSLSHARE','8');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (10,'PREMIUM','PM','9');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (11,'PREMIUM P/F ENT','PMPFEND','10');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (12,'PREMIUM P/F WOS','PMPFWOS','11');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (13,'XOL PREMIUM','XOLPM','12');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (14,'RETURN PREMIUM','RETURNPM','13');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (15,'COMMISSION','CN','14');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (16,'PROFIT COMMISSION','PROFITCN','15');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (17,'BROKERAGE','BROKERAGE','16');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (18,'TAX','TAX','17');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (19,'OVERRIDING COM','OVERRIDINGCOM','18');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (20,'CHARGE','CHARGE','19');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (21,'PREMUIM RESERVE RTD','PMRESERVERTD','20');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (22,'P/F PREMIUM RESERVE RTD','PFPMRESERVERTD','21');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (23,'PREMIUM RESERVE RLD','PMRESERVERLD','22');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (24,'P/F PREMIUM RESERVE RLD','PFPMRESERVERLD','23');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (25,'CLAIM','CLAIM','24');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (26,'LOSS RECOVERY','LOSSRECOVERY','25');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (27,'CASH LOSS','CASHLOSS','26');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (28,'CASH LOSS REFUND','CASHLOSSRD','27');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (29,'LOSS RESERVE RTD','LOSSRR','28');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (30,'LOSS RESERVE RLD','LOSSRR2','29');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (31,'LOSS P/F ENT','LOSSPFENT','30');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (32,'LOSS P/F WOA','LOSSPFWOA','31');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (33,'INTEREST','INTEREST','32');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (34,'TAX ON','TAXON','33');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (35,'MISCELLANEOUS','MISCELLANEOUS','34');
+Insert into KOREANRE.TBL_COLUMN_MAPPING_CLS (SEQNUM,COLNAME,COLTYPE,COLNUM) values (36,'Your Reference','YOURREFERENCE','35');
