@@ -51,7 +51,8 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                     imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
                     filePath: fileObj.path,
                     oriFileName: fileObj.originalname,
-                    convertFileName: convertedImagePath + '\\' + fileObj.originalname.split('.')[0] + '.jpg',
+                    convertedFilePath: convertedImagePath,
+                    convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
                     fileExt: fileExt,
                     fileSize: fileObj.size,
                     contentType: fileObj.mimetype,
@@ -250,7 +251,7 @@ router.post('/selectTypoData', function (req, res) {
 router.post('/ocr', function (req, res) {
     var fileName = req.body.fileName;
 
-    fs.readFile(propertiesConfig.filepath.imagePath +'\\' + fileName, function (err, data) {
+    fs.readFile(propertiesConfig.filepath.convertedImagePath +'\\' + fileName, function (err, data) {
         if (err) { // fs error
             console.log(err);
             res.send({ code: 404, error: '파일이 없습니다.' });
