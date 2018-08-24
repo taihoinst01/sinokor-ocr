@@ -909,7 +909,16 @@ function imageMove(xDistance, yDistance) {
 
 function uiTrainEvent() {
     $("#uiTrainBtn").click(function (e) {
-        modifyTextData();       
+        var docData;
+        if ($('#docData').val() != '') {
+            docData = JSON.parse($('#docData').val());
+        }
+        if (docData && docData.DOCTYPE != 0) {
+            modifyTextData();
+        } else {
+            alert('There is no document form, I do not training.');
+            return;
+        }
     });
 }
 
@@ -952,6 +961,8 @@ function modifyTextData() {
 }
 
 function makeTrainingData() {
+    var trainData = {};
+    trainData.data = [];
 
     if (lineText[0] == null) {
         alert("학습할 데이터가 없습니다.");
@@ -972,52 +983,66 @@ function makeTrainingData() {
         var obj = {}
         obj.text = text;
         obj.location = location;
-        obj.ColLbl = column;
+        obj.colLbl = column;
 
         dataArray.push(obj);
     }
 
-    var mlData = lineText[0].data;
+    var mlData = lineText[0].data.data;
 
     for (var i = 0; i < mlData.length; i++) {
         for (var j = 0; j < dataArray.length; j++) {
             if (mlData[i].location == dataArray[j].location) {
-                if (mlData[i].text != dataArray[j].text) {
-                    dataArray[j].typoText = mlData[i].text;
+
+                if (dataArray[j].colLbl == 0 || dataArray[j].colLbl == 1 || dataArray[j].colLbl == 4) { // Only ogCompanyName, contractName, curCode
+                    if (mlData[i].text != dataArray[j].text || mlData[i].colLbl != dataArray[j].colLbl) {
+                        trainData.data.push(dataArray[j]);
+                    }
+                } else { // etc
+                    if (mlData[i].colLbl != dataArray[j].colLbl) {
+                        dataArray[j].text = mlData[i].text // origin text (Does not reflect changes made by users) 
+                        trainData.data.push(dataArray[j]);
+                    }
                 }
 
                 if (mlData[i].originText != null) {
                     dataArray[j].originText = mlData[i].originText;
                 }
+
             }
         }
     }
-    startProgressBar();
-    addProgressBar(1, 20);
+    //startProgressBar();
+    //addProgressBar(1, 20);
 
     var data = {}
     data.data = dataArray;
 
     data.docCategory = JSON.parse($('#docData').val());
-
-    insertTrainingData(data);
+    trainData.docCategory = [];
+    if (lineText[0].docCategory[0].DOCTYPE != data.docCategory.DOCTYPE) {
+        trainData.docCategory.push(JSON.parse($('#docData').val()));
+    } else {
+        trainData.docCategory.push(lineText[0].docCategory[0]);
+    }
+    
+    insertTrainingData(trainData);
 }
 
 function insertTrainingData(data) {
-    //insertTypoTrain(data, callbackInsertTypoTrain);
-    $('#progressMsgTitle').html('라벨 분류 처리 중..');
+    $('#progressMsgTitle').html('라벨 분류 학습 중..');
     addProgressBar(21, 40);
     addLabelMappingTrain(data, callbackAddLabelMapping);
 }
 
 function callbackAddLabelMapping(data) {
-    $('#progressMsgTitle').html('양식 분류 처리 중..');
+    $('#progressMsgTitle').html('양식 분류 학습 중..');
     addProgressBar(41, 60);
     addDocMappingTrain(data, callbackAddDocMappingTrain);
 }
 
 function callbackAddDocMappingTrain(data) {
-    $('#progressMsgTitle').html('컬럼 분류 처리 중..');
+    $('#progressMsgTitle').html('컬럼 분류 학습 중..');
     addProgressBar(61, 80);
     addColumnMappingTrain(data);
 }

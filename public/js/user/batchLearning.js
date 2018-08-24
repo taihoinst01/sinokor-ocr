@@ -1923,6 +1923,7 @@ var fn_batchUiTraining = function () {
     var mldata = modifyData;
     var data = {};
     var arr = [];
+    var trainData = {};
 
     if (mldata.docCategory) { // 추출된 문서가 있을 경우
         mldata.docCategory[0] = JSON.parse($('#docData').val());
@@ -1938,6 +1939,7 @@ var fn_batchUiTraining = function () {
             mldata.docCategory = [JSON.parse($('#docData').val())];
         }
     }
+
     $('#textResultTbl > dl').each(function (i, el) {
         var location = $(el).find('input')[1].value;
         var text = $(el).find('input')[0].value;
@@ -1947,30 +1949,45 @@ var fn_batchUiTraining = function () {
             if (mldata.data[i].location == location) {
                 obj.location = location;
                 obj.text = text;
-                obj.ColLbl = column;
-
-                if (mldata.data[i].column == undefined) {
-                    obj.oriColLbl = null;
-                } else if (mldata.data[i].column && mldata.data[i].column != column) {
-                    obj.oriColLbl = mldata.data[i].column;
-                } else {
-                    obj.oriColLbl = column;
-                }
+                obj.colLbl = column;
 
                 arr.push(obj);
                 break;
             }
         }
+
+        for (var i = 0; i < mlData.data.length; i++) {
+            for (var j = 0; j < arr.length; j++) {
+                if (mlData.data[i].location == arr[j].location) {
+
+                    if (dataArray[j].colLbl == 0 || arr[j].colLbl == 1 || arr[j].colLbl == 4) { // Only ogCompanyName, contractName, curCode
+                        if (mlData.data[i].text != arr[j].text || mlData.data[i].colLbl != arr[j].colLbl) {
+                            trainData.data.push(arr[j]);
+                        }
+                    } else { // etc
+                        if (mlData.data[i].colLbl != arr[j].colLbl) {
+                            arr[j].text = mlData.data[i].text // origin text (Does not reflect changes made by users) 
+                            trainData.data.push(arr[j]);
+                        }
+                    }
+
+                    if (mlData.data[i].originText != null) {
+                        arr[j].originText = mlData[i].originText;
+                    }
+
+                }
+            }
+        }
+
     });
+
     data.data = arr;
     data.docCategory = mldata.docCategory;
-    //console.log(data);
-    docLabelMapping(data);
 
-    /*
-    var param = { "dataObj": ocrPopData };
-
-    $.ajax({
+    //docLabelMapping(data);
+	
+	/*
+	$.ajax({
         url: '/batchLearning/uiTrainBatchLearningData',
         type: 'post',
         datatype: "json",
@@ -1987,7 +2004,7 @@ var fn_batchUiTraining = function () {
             console.log(err);
         }
     });
-    */
+	*/
 };
 
 // 양식레이블 매핑
