@@ -352,7 +352,8 @@ var imageUploadEvent = function () {
     $('#document_file').on("change", function () {
         startProgressBar();
         addProgressBar(1, 5);
-        multiUploadForm.attr("action", "/batchLearning/imageUpload");
+        //multiUploadForm.attr("action", "/batchLearning/imageUpload");
+        multiUploadForm.attr("action", "/common/imageUpload");
         if ($(this).val() !== '') {
             multiUploadForm.submit();
         }

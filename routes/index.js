@@ -10,6 +10,7 @@ var bodyParser = require('body-parser');
 var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
+var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var router = express.Router();
 // DB
 //var mysql = require('mysql');
@@ -29,13 +30,20 @@ router.get('/favicon.ico', function (req, res) {
 });
 
 // index.html
-router.get('/', function (req, res) {
+router.get('/', function (req, res) {   
     if (commonUtil.isNull(req.user)) {
         res.redirect("/logout");
     } else {
         var sess = req.session;
+
         if (req.isAuthenticated()) {
             //res.locals.currentUser = req.user;
+            if (!fs.existsSync(propertiesConfig.filepath.createImgDirPath)) {
+                fs.mkdir(propertiesConfig.filepath.createImgDirPath);
+            }
+            if (!fs.existsSync(propertiesConfig.filepath.createImgconvertedDirPath)) {
+                fs.mkdir(propertiesConfig.filepath.createImgconvertedDirPath);
+            }
             res.render('user/myApproval', { currentUser: req.user });
         } else {
             res.render("index", {

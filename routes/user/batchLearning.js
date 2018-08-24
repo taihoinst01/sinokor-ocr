@@ -501,6 +501,9 @@ var callbackSelectBatchLearningBaseData = function (rows, req, res) {
     if (rows.length > 0) {
         imgId = rows[0].IMGID;
     }
+    if (fileName.split('.')[1] === 'jpg') {
+        convertedImgPath = '';
+    }
 
     var data = [imgId, convertedImgPath, fileName, filePath];
 

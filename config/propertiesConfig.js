@@ -30,7 +30,10 @@ var propertiesConfig = {
         excelBatchFilePath: 'C:\\ICR\\labeled_data\\filepath_mapping_20180720.xlsx',
         excelBatchFileData: 'C:\\ICR\\labeled_data\\labeled_data_20180723.xlsx',
         realExcelPath: 'C:\\ICR\\labeled_data',
-        imagePath: 'C:\\ICR\\image'
+        imagePath: 'C:\\ICR\\image',
+        convertedImagePath: 'C:\\ICR\\convertedImage',
+        createImgDirPath: '/ICR/image',
+        createImgconvertedDirPath: '/ICR/convertedImage'
     }
 };
 
