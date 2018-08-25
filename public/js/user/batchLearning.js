@@ -1158,10 +1158,10 @@ function updateBatchLearningData(fileNames, data) {
     var dataObj = {};
     
     for (var i = 0, x = data.length; i < x; i++) {
-        var location = nvl(data[i]["location"]);
-        var label = nvl(data[i]["label"]);
-        var text = nvl(data[i]["text"]);
-        var column = nvl(data[i]["column"]);
+        var location = nvl(mlData["location"]);
+        var label = nvl(mlData["label"]);
+        var text = nvl(mlData["text"]);
+        var column = nvl(mlData["column"]);
         if (label == "fixlabel" || label == "entryrowlabel") {
             for (var j = 0, y = data.length; j < y; j++) {
                 if (data[j].column == column + "_VALUE") {
@@ -1237,59 +1237,205 @@ var searchBatchLearnDataList = function (addCond) {
             addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
+            var legacyData = data;
+            var mlData = data;
             //console.log(data);
             if (addCond == "LEARN_N") $("#total_cnt_before").html(data.length);
             else $("#total_cnt_after").html(data.length);
             addProgressBar(2, 100); // proceed progressbar
-            if (data.length > 0) {
-                $.each(data, function (index, entry) {
-                    // allow after or before checkbox name
-                    if (addCond == "LEARN_N") checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="sta00" name="listCheck_before" /></th>`;
-                    else checkboxHtml = `<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${entry.IMGID}" class="stb00" name="listCheck_after" /></div></th>`;
-                    appendHtml += `
-                    <tr>
-                        ${checkboxHtml}
-                        <td><a onclick="javascript:fn_viewImageData('${entry.IMGID}', this)" href="javascript:void(0);">${nvl(entry.FILENAME)}</a></td> <!--파일명-->
-                        <td></td> <!--출재사명-->
-                        <td></td> <!--계약명-->
-                        <td>${nvl(entry.UY)}</td> <!--UY-->
-                        <td>${nvl(entry.CURCD)}</td> <!--화폐코드-->
-                        <td>${nvl(entry.CURUNIT)}</td> <!--화폐단위-->
-                        <td>${nvl(entry.PAIDPERCENT)}</td> <!--Paid(100%)-->
-                        <td>${nvl(entry.PAIDSHARE)}</td> <!--Paid(Our Share)-->
-                        <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
-                        <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
-                        <td>${nvl(entry.PM)}</td> <!--PREMIUM-->
-                        <td>${nvl(entry.PMPFEND)}</td> <!--PREMIUM P/F ENT-->
-                        <td>${nvl(entry.PMPFWOS)}</td> <!--PREMIUM P/F WOS-->
-                        <td>${nvl(entry.XOLPM)}</td> <!--XOL PREMIUM-->
-                        <td>${nvl(entry.RETURNPM)}</td> <!--RETURN PREMIUM-->
-                        <td>${nvl(entry.CN)}</td> <!--COMMISSION-->
-                        <td>${nvl(entry.PROFITCN)}</td> <!--PROFIT COMMISION-->
-                        <td>${nvl(entry.BROKERAGE)}</td> <!--BROKERAGE-->
-                        <td>${nvl(entry.TAX)}</td> <!--TEX-->
-                        <td>${nvl(entry.OVERRIDINGCOM)}</td> <!-- OVERIDING COM-->
-                        <td>${nvl(entry.CHARGE)}</td> <!--CHARGE-->
-                        <td>${nvl(entry.PMRESERVERTD)}</td> <!--PREMIUM RESERVE RTD-->
-                        <td>${nvl(entry.PFPMRESERVERTD)}</td> <!--P/F PREMIUM RESERVE RTD-->
-                        <td>${nvl(entry.PMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
-                        <td>${nvl(entry.PFPMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
-                        <td>${nvl(entry.CLAIM)}</td> <!--CLAIM -->
-                        <td>${nvl(entry.LOSSRECOVERY)}</td> <!--LOSS RECOVERY -->
-                        <td>${nvl(entry.CASHLOSS)}</td> <!--CASH LOSS -->
-                        <td>${nvl(entry.CASHLOSSRD)}</td> <!--CASH LOSS REFUND -->
-                        <td>${nvl(entry.LOSSRR)}</td> <!--LOSS RESERVE RTD -->
-                        <td>${nvl(entry.LOSSRR2)}</td> <!--LOSS RESERVE RLD -->
-                        <td>${nvl(entry.LOSSPFEND)}</td> <!--LOSS P/F ENT -->
-                        <td>${nvl(entry.LOSSPFWOA)}</td> <!--LOSS P/F WOA -->
-                        <td>${nvl(entry.INTEREST)}</td> <!--INTEREST -->
-                        <td>${nvl(entry.TAXON)}</td> <!--TAX ON -->
-                        <td>${nvl(entry.MISCELLANEOUS)}</td> <!--MISCELLANEOUS -->
-                        <td>${nvl(entry.CSCOSARFRNCNNT2)}</td> <!--YOUR REF -->
-                        <!--<td>${nvl(entry.IMGID)}</td>--> <!--이미지ID-->
-                        <!-- <td><a onclick="javascript:docComparePopup('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.STATEMENTDIV)}</a></td>--> <!--계산서 구분-->
-                    </tr>`;
-                });
+            if (legacyData.length > 0) {
+                for (var i = 0; i < legacyData.length; i++) {
+                    var legacyCount = Number(legacyData[i].COUNT);
+                    var imgId = legacyData[i].IMGID.split('||')[0];
+                    var filename = legacyData[i].FILENAME.split('||')[0];
+
+                    if (legacyCount == 1) {
+                        if (addCond == "LEARN_N") checkboxHtml = `<th rowspan="2" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="sta00" name="listCheck_before" /></th>`;
+                        else checkboxHtml = `<th rowspan="2" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="stb00" name="listCheck_after" /></div></th>`;
+
+                        // legacy legacyData
+                        appendHtml += ` <tr>
+                                            ${checkboxHtml}
+                                            <td rowspan="2"><a onclick="javascript:fn_viewImagelegacyData('${filename}', this)" href="javascript:void(0);">${filename}</a></td> <!--파일명-->
+                                            <td>${nvl(legacyData[i].OGCOMPANYNAME)}</td> <!--출재사명-->
+                                            <td>${nvl(legacyData[i].CTNM)}</td> <!--계약명-->
+                                            <td>${nvl(legacyData[i].UY)}</td> <!--UY-->
+                                            <td>${nvl(legacyData[i].CURCD)}</td> <!--화폐코드-->
+                                            <td>${nvl(legacyData[i].CURUNIT)}</td> <!--화폐단위-->
+                                            <td>${nvl(legacyData[i].PAIDPERCENT)}</td> <!--Paid(100%)-->
+                                            <td>${nvl(legacyData[i].PAIDSHARE)}</td> <!--Paid(Our Share)-->
+                                            <td>${nvl(legacyData[i].OSLPERCENT)}</td> <!--OSL(100%)-->
+                                            <td>${nvl(legacyData[i].OSLSHARE)}</td> <!--OSL(Our Share)-->
+                                            <td>${nvl(legacyData[i].PM)}</td> <!--PREMIUM-->
+                                            <td>${nvl(legacyData[i].PMPFEND)}</td> <!--PREMIUM P/F ENT-->
+                                            <td>${nvl(legacyData[i].PMPFWOS)}</td> <!--PREMIUM P/F WOS-->
+                                            <td>${nvl(legacyData[i].XOLPM)}</td> <!--XOL PREMIUM-->
+                                            <td>${nvl(legacyData[i].RETURNPM)}</td> <!--RETURN PREMIUM-->
+                                            <td>${nvl(legacyData[i].CN)}</td> <!--COMMISSION-->
+                                            <td>${nvl(legacyData[i].PROFITCN)}</td> <!--PROFIT COMMISION-->
+                                            <td>${nvl(legacyData[i].BROKERAGE)}</td> <!--BROKERAGE-->
+                                            <td>${nvl(legacyData[i].TAX)}</td> <!--TEX-->
+                                            <td>${nvl(legacyData[i].OVERRIDINGCOM)}</td> <!-- OVERIDING COM-->
+                                            <td>${nvl(legacyData[i].CHARGE)}</td> <!--CHARGE-->
+                                            <td>${nvl(legacyData[i].PMRESERVERTD)}</td> <!--PREMIUM RESERVE RTD-->
+                                            <td>${nvl(legacyData[i].PFPMRESERVERTD)}</td> <!--P/F PREMIUM RESERVE RTD-->
+                                            <td>${nvl(legacyData[i].PMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
+                                            <td>${nvl(legacyData[i].PFPMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
+                                            <td>${nvl(legacyData[i].CLAIM)}</td> <!--CLAIM -->
+                                            <td>${nvl(legacyData[i].LOSSRECOVERY)}</td> <!--LOSS RECOVERY -->
+                                            <td>${nvl(legacyData[i].CASHLOSS)}</td> <!--CASH LOSS -->
+                                            <td>${nvl(legacyData[i].CASHLOSSRD)}</td> <!--CASH LOSS REFUND -->
+                                            <td>${nvl(legacyData[i].LOSSRR)}</td> <!--LOSS RESERVE RTD -->
+                                            <td>${nvl(legacyData[i].LOSSRR2)}</td> <!--LOSS RESERVE RLD -->
+                                            <td>${nvl(legacyData[i].LOSSPFEND)}</td> <!--LOSS P/F ENT -->
+                                            <td>${nvl(legacyData[i].LOSSPFWOA)}</td> <!--LOSS P/F WOA -->
+                                            <td>${nvl(legacyData[i].INTEREST)}</td> <!--INTEREST -->
+                                            <td>${nvl(legacyData[i].TAXON)}</td> <!--TAX ON -->
+                                            <td>${nvl(legacyData[i].MISCELLANEOUS)}</td> <!--MISCELLANEOUS -->
+                                            <td>${nvl(legacyData[i].CSCOSARFRNCNNT2)}</td> <!--YOUR REF -->
+                                        </tr>`;
+
+                        // ml data
+                        appendHtml += `<tr class="mlTr">`;
+                        if (imgId == "null") {
+                            appendHtml += `<td rowspan="36">no Data</td>`;
+                        } else {
+                            appendHtml +=
+                                `<td>` + makeMLSelect(mlData, 0, imgId) + `</td> <!--출재사명-->
+                                <td>` + makeMLSelect(mlData, 1, imgId) + `</td> <!--계약명-->
+                                <td>` + makeMLSelect(mlData, 2, imgId) + `</td> <!--UY-->
+                                <td>` + makeMLSelect(mlData, 3, imgId) + `</td> <!--화폐코드--> 
+                                <td>` + makeMLSelect(mlData, 4, imgId) + `</td> <!--화폐단위-->
+                                <td>` + makeMLSelect(mlData, 5, imgId) + `</td> <!--Paid(100%)-->
+                                <td>` + makeMLSelect(mlData, 6, imgId) + `</td> <!--Paid(Our Share)-->
+                                <td>` + makeMLSelect(mlData, 7, imgId) + `</td> <!--OSL(100%)-->
+                                <td>` + makeMLSelect(mlData, 8, imgId) + `</td> <!--OSL(Our Share)-->
+                                <td>` + makeMLSelect(mlData, 9, imgId) + `</td> <!--PREMIUM-->
+                                <td>` + makeMLSelect(mlData, 10, imgId) + `</td> <!--PREMIUM P/F ENT-->
+                                <td>` + makeMLSelect(mlData, 11, imgId) + `</td> <!--PREMIUM P/F WOS-->
+                                <td>` + makeMLSelect(mlData, 12, imgId) + `</td> <!--XOL PREMIUM-->
+                                <td>` + makeMLSelect(mlData, 13, imgId) + `</td> <!--RETURN PREMIUM-->
+                                <td>` + makeMLSelect(mlData, 14, imgId) + `</td> <!--COMMISSION--> 
+                                <td>` + makeMLSelect(mlData, 15, imgId) + `</td> <!--PROFIT COMMISION-->
+                                <td>` + makeMLSelect(mlData, 16, imgId) + `</td> <!--BROKERAGE-->
+                                <td>` + makeMLSelect(mlData, 17, imgId) + `</td> <!--TEX-->
+                                <td>` + makeMLSelect(mlData, 18, imgId) + `</td> <!-- OVERIDING COM-->
+                                <td>` + makeMLSelect(mlData, 19, imgId) + `</td> <!--CHARGE-->
+                                <td>` + makeMLSelect(mlData, 20, imgId) + `</td> <!--PREMIUM RESERVE RTD-->
+                                <td>` + makeMLSelect(mlData, 21, imgId) + `</td> <!--P/F PREMIUM RESERVE RTD-->
+                                <td>` + makeMLSelect(mlData, 22, imgId) + `</td> <!--PREMIUM RESERVE RLD-->
+                                <td>` + makeMLSelect(mlData, 23, imgId) + `</td> <!--P/F PREMIUM RESERVE RLD-->
+                                <td>` + makeMLSelect(mlData, 24, imgId) + `</td> <!--CLAIM -->
+                                <td>` + makeMLSelect(mlData, 25, imgId) + `</td> <!--LOSS RECOVERY -->
+                                <td>` + makeMLSelect(mlData, 26, imgId) + `</td> <!--CASH LOSS -->
+                                <td>` + makeMLSelect(mlData, 27, imgId) + `</td> <!--CASH LOSS REFUND -->
+                                <td>` + makeMLSelect(mlData, 28, imgId) + `</td> <!--LOSS RESERVE RTD --> 
+                                <td>` + makeMLSelect(mlData, 29, imgId) + `</td> <!--LOSS RESERVE RLD -->
+                                <td>` + makeMLSelect(mlData, 30, imgId) + `</td> <!--LOSS P/F ENT -->
+                                <td>` + makeMLSelect(mlData, 31, imgId) + `</td> <!--LOSS P/F WOA -->
+                                <td>` + makeMLSelect(mlData, 32, imgId) + `</td> <!--INTEREST -->
+                                <td>` + makeMLSelect(mlData, 33, imgId) + `</td> <!--TAX ON -->
+                                <td>` + makeMLSelect(mlData, 34, imgId) + `</td> <!--MISCELLANEOUS -->
+                                <td>` + makeMLSelect(mlData, 35, imgId) + `</td> <!--YOUR REF --> `;                        
+                        }
+                        appendHtml += "</tr>";
+                    } else {
+                        if (addCond == "LEARN_N") checkboxHtml = `<th rowspan="` + (legacyCount + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="sta00" name="listCheck_before" /></th>`;
+                        else checkboxHtml = `<th rowspan="` + (legacyCount + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="stb00" name="listCheck_after" /></div></th>`;
+
+                        for (var q = 0; q < legacyCount; q++) {
+                            appendHtml += `<tr>`;
+                            if (q == 0) {
+                                appendHtml += `
+                                                ${checkboxHtml}
+                                               <td rowspan = "` + (legacyCount + 1) + `" > <a onclick="javascript:fn_viewImageData('` + makeLegacyData(legacyData[i], 'FILENAME', q) + `', this)" href="javascript:void(0);">` + makeLegacyData(legacyData[i], 'FILENAME', q) + `</a></td > < !--파일명-->`;
+                            }
+                            appendHtml +=
+                                `<td>` + makeLegacyData(legacyData[i], 'OGCOMPANYNAME', q) + `</td> <!--출재사명-->
+                                <td>` + makeLegacyData(legacyData[i], 'CTNM', q) + `</td> <!--계약명-->
+                                <td>` + makeLegacyData(legacyData[i], 'UY', q) + `</td> <!--UY-->
+                                <td>` + makeLegacyData(legacyData[i], 'CURCD', q) + `</td> <!--화폐코드-->
+                                <td>` + makeLegacyData(legacyData[i], 'CURUNIT', q) + `</td> <!--화폐단위-->
+                                <td>` + makeLegacyData(legacyData[i], 'PAIDPERCENT', q) + `</td> <!--Paid(100%)-->
+                                <td>` + makeLegacyData(legacyData[i], 'PAIDSHARE', q) + `</td> <!--Paid(Our Share)-->
+                                <td>` + makeLegacyData(legacyData[i], 'OSLPERCENT', q) + `</td> <!--OSL(100%)-->
+                                <td>` + makeLegacyData(legacyData[i], 'OSLSHARE', q) + `</td> <!--OSL(Our Share)-->
+                                <td>` + makeLegacyData(legacyData[i], 'PM', q) + `</td> <!--PREMIUM-->
+                                <td>` + makeLegacyData(legacyData[i], 'PMPFEND', q) + `</td> <!--PREMIUM P/F ENT-->
+                                <td>` + makeLegacyData(legacyData[i], 'PMPFWOS', q) + `</td> <!--PREMIUM P/F WOS-->
+                                <td>` + makeLegacyData(legacyData[i], 'XOLPM', q) + `</td> <!--XOL PREMIUM-->
+                                <td>` + makeLegacyData(legacyData[i], 'RETURNPM', q) + `</td> <!--RETURN PREMIUM-->
+                                <td>` + makeLegacyData(legacyData[i], 'CN', q) + `</td> <!--COMMISSION-->
+                                <td>` + makeLegacyData(legacyData[i], 'PROFITCN', q) + `</td> <!--PROFIT COMMISION-->
+                                <td>` + makeLegacyData(legacyData[i], 'BROKERAGE', q) + `</td> <!--BROKERAGE-->
+                                <td>` + makeLegacyData(legacyData[i], 'TAX', q) + `</td> <!--TEX-->
+                                <td>` + makeLegacyData(legacyData[i], 'OVERRIDINGCOM', q) + `</td> <!-- OVERIDING COM-->
+                                <td>` + makeLegacyData(legacyData[i], 'CHARGE', q) + `</td> <!--CHARGE-->
+                                <td>` + makeLegacyData(legacyData[i], 'PMRESERVERTD', q) + `</td> <!--PREMIUM RESERVE RTD-->
+                                <td>` + makeLegacyData(legacyData[i], 'PFPMRESERVERTD', q) + `</td> <!--P/F PREMIUM RESERVE RTD-->
+                                <td>` + makeLegacyData(legacyData[i], 'PMRESERVERTD2', q) + `</td> <!--P/F PREMIUM RESERVE RLD-->
+                                <td>` + makeLegacyData(legacyData[i], 'PFPMRESERVERTD2', q) + `</td> <!--P/F PREMIUM RESERVE RLD-->
+                                <td>` + makeLegacyData(legacyData[i], 'CLAIM', q) + `</td> <!--CLAIM -->
+                                <td>` + makeLegacyData(legacyData[i], 'LOSSRECOVERY', q) + `</td> <!--LOSS RECOVERY -->
+                                <td>` + makeLegacyData(legacyData[i], 'CASHLOSS', q) + `</td> <!--CASH LOSS -->
+                                <td>` + makeLegacyData(legacyData[i], 'CASHLOSSRD', q) + `</td> <!--CASH LOSS REFUND -->
+                                <td>` + makeLegacyData(legacyData[i], 'LOSSRR', q) + `</td> <!--LOSS RESERVE RTD -->
+                                <td>` + makeLegacyData(legacyData[i], 'LOSSRR2', q) + `</td> <!--LOSS RESERVE RLD -->
+                                <td>` + makeLegacyData(legacyData[i], 'LOSSPFEND', q) + `</td> <!--LOSS P/F ENT -->
+                                <td>` + makeLegacyData(legacyData[i], 'LOSSPFWOA', q) + `</td> <!--LOSS P/F WOA -->
+                                <td>` + makeLegacyData(legacyData[i], 'INTEREST', q) + `</td> <!--INTEREST -->
+                                <td>` + makeLegacyData(legacyData[i], 'TAXON', q) + `</td> <!--TAX ON -->
+                                <td>` + makeLegacyData(legacyData[i], 'MISCELLANEOUS', q) + `</td> <!--MISCELLANEOUS -->
+                                <td>` + makeLegacyData(legacyData[i], 'CSCOSARFRNCNNT2', q) + `</td> <!--YOUR REF -->
+                            </tr>`;
+                        }
+
+                        // ml data
+                        appendHtml += `<tr class="mlTr">`;
+                        if (imgId == "null") {
+                            appendHtml += `<td rowspan="36">no Data</td>`;
+                        } else {
+                            appendHtml +=
+                                `<td>` + makeMLSelect(mlData, 0, imgId) + `</td> <!--출재사명-->
+                                <td>` + makeMLSelect(mlData, 1, imgId) + `</td> <!--계약명-->
+                                <td>` + makeMLSelect(mlData, 2, imgId) + `</td> <!--UY-->
+                                <td>` + makeMLSelect(mlData, 3, imgId) + `</td> <!--화폐코드--> 
+                                <td>` + makeMLSelect(mlData, 4, imgId) + `</td> <!--화폐단위-->
+                                <td>` + makeMLSelect(mlData, 5, imgId) + `</td> <!--Paid(100%)-->
+                                <td>` + makeMLSelect(mlData, 6, imgId) + `</td> <!--Paid(Our Share)-->
+                                <td>` + makeMLSelect(mlData, 7, imgId) + `</td> <!--OSL(100%)-->
+                                <td>` + makeMLSelect(mlData, 8, imgId) + `</td> <!--OSL(Our Share)-->
+                                <td>` + makeMLSelect(mlData, 9, imgId) + `</td> <!--PREMIUM-->
+                                <td>` + makeMLSelect(mlData, 10, imgId) + `</td> <!--PREMIUM P/F ENT-->
+                                <td>` + makeMLSelect(mlData, 11, imgId) + `</td> <!--PREMIUM P/F WOS-->
+                                <td>` + makeMLSelect(mlData, 12, imgId) + `</td> <!--XOL PREMIUM-->
+                                <td>` + makeMLSelect(mlData, 13, imgId) + `</td> <!--RETURN PREMIUM-->
+                                <td>` + makeMLSelect(mlData, 14, imgId) + `</td> <!--COMMISSION--> 
+                                <td>` + makeMLSelect(mlData, 15, imgId) + `</td> <!--PROFIT COMMISION-->
+                                <td>` + makeMLSelect(mlData, 16, imgId) + `</td> <!--BROKERAGE-->
+                                <td>` + makeMLSelect(mlData, 17, imgId) + `</td> <!--TEX-->
+                                <td>` + makeMLSelect(mlData, 18, imgId) + `</td> <!-- OVERIDING COM-->
+                                <td>` + makeMLSelect(mlData, 19, imgId) + `</td> <!--CHARGE-->
+                                <td>` + makeMLSelect(mlData, 20, imgId) + `</td> <!--PREMIUM RESERVE RTD-->
+                                <td>` + makeMLSelect(mlData, 21, imgId) + `</td> <!--P/F PREMIUM RESERVE RTD-->
+                                <td>` + makeMLSelect(mlData, 22, imgId) + `</td> <!--PREMIUM RESERVE RLD-->
+                                <td>` + makeMLSelect(mlData, 23, imgId) + `</td> <!--P/F PREMIUM RESERVE RLD-->
+                                <td>` + makeMLSelect(mlData, 24, imgId) + `</td> <!--CLAIM -->
+                                <td>` + makeMLSelect(mlData, 25, imgId) + `</td> <!--LOSS RECOVERY -->
+                                <td>` + makeMLSelect(mlData, 26, imgId) + `</td> <!--CASH LOSS -->
+                                <td>` + makeMLSelect(mlData, 27, imgId) + `</td> <!--CASH LOSS REFUND -->
+                                <td>` + makeMLSelect(mlData, 28, imgId) + `</td> <!--LOSS RESERVE RTD --> 
+                                <td>` + makeMLSelect(mlData, 29, imgId) + `</td> <!--LOSS RESERVE RLD -->
+                                <td>` + makeMLSelect(mlData, 30, imgId) + `</td> <!--LOSS P/F ENT -->
+                                <td>` + makeMLSelect(mlData, 31, imgId) + `</td> <!--LOSS P/F WOA -->
+                                <td>` + makeMLSelect(mlData, 32, imgId) + `</td> <!--INTEREST -->
+                                <td>` + makeMLSelect(mlData, 33, imgId) + `</td> <!--TAX ON -->
+                                <td>` + makeMLSelect(mlData, 34, imgId) + `</td> <!--MISCELLANEOUS -->
+                                <td>` + makeMLSelect(mlData, 35, imgId) + `</td> <!--YOUR REF --> `;
+                        }
+                        appendHtml += "</tr>";
+                    }
+                }
             } else {
                 appendHtml += `<tr><td colspan="38">조회할 데이터가 없습니다.</td></tr>`;
             }
@@ -1309,7 +1455,28 @@ var searchBatchLearnDataList = function (addCond) {
             endProgressBar(); // end progressbar
             console.log(err);
         }
+
     });
+
+    function makeLegacyData(object, colname, num) {
+        var values = object[colname].split('||');
+        return values[num] == "null" ? '' : values[num];
+    }
+
+    function makeMLSelect(mlData, collabel, imgId) {
+
+        var appendMLSelect = '<select>';
+        var hasImg = false;
+        for (var y = 0; y < mlData.length; y++) {
+
+            if (mlData[y].IMGID == imgId) {
+
+                appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';
+            }
+        }
+        appendMLSelect += '</select>';
+
+        return hasImg ? appendMLSelect : '';
 };
 
 function compareMLAndAnswer(mlData) {
