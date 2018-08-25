@@ -1239,7 +1239,7 @@ var searchBatchLearnDataList = function (addCond) {
         success: function (data) {
             var legacyData = data;
             var mlData = data;
-            //console.log(data);
+            console.log(data);
             if (addCond == "LEARN_N") $("#total_cnt_before").html(data.length);
             else $("#total_cnt_after").html(data.length);
             addProgressBar(2, 100); // proceed progressbar
