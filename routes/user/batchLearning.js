@@ -125,10 +125,35 @@ var fnViewImageData = function (req, res) {
 router.post('/searchBatchLearnDataList', function (req, res) {   
     if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
 }); 
+var callbackSelectBatchMLExportList = function (rows, req, res, batchData) {
+    if (rows.length > 0) {
+        res.send({ 'batchData': batchData, 'mlExportData': rows });
+    } else {
+        res.send(null);
+    }
+};
 var callbackBatchLearningDataList = function (rows, req, res) {
-    if (req.isAuthenticated()) res.send(rows);
+    if (req.isAuthenticated()) {
+        if (rows.length > 0) {
+            var imgId = '(';
+            for (var i in rows) {
+                if (!rows[i].IMGID || rows[i].IMGID == '') {
+                    continue;
+                } else {
+                    var temp = "'" + rows[i].IMGID.split('||')[0] + "',";
+                    imgId += temp;
+                }
+            }
+            imgId = imgId.substr(0, imgId.length - 1);
+            imgId += ')';
+            commonDB.reqQueryF1param(queryConfig.batchLearningConfig.selectBatchMLExportList + imgId, callbackSelectBatchMLExportList, req, res, rows);
+        } else {
+            res.send(null);
+        }
+    }
 };
 var fnSearchBatchLearningDataList = function (req, res) {
+    /*
     // 조건절
     var condQuery = "";
     var orderQuery = " ORDER BY A.regDate DESC";
@@ -141,10 +166,11 @@ var fnSearchBatchLearningDataList = function (req, res) {
     if (!commonUtil.isNull(req.body.startNum) || !commonUtil.isNull(req.body.moreNum)) {
         listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
     }
+    */
 
 
-    console.log("리스트 조회 쿼리 : " + listQuery);
-    commonDB.reqQuery(listQuery, callbackBatchLearningDataList, req, res);
+    //console.log("리스트 조회 쿼리 : " + listQuery);
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnDataList, [0, 12], callbackBatchLearningDataList, req, res);
 };
 
 

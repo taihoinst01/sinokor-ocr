@@ -1237,7 +1237,7 @@ var searchBatchLearnDataList = function (addCond) {
             addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
-            //console.log(data);
+            console.log(data);
             if (addCond == "LEARN_N") $("#total_cnt_before").html(data.length);
             else $("#total_cnt_after").html(data.length);
             addProgressBar(2, 100); // proceed progressbar

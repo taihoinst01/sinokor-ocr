@@ -445,7 +445,82 @@ var batchLearningConfig = {
          VALUES(:imgId, :colLabel, :colValue)`,
     deleteMlExport:
         `DELETE FROM TBL_BATCH_ML_EXPORT
-         WHERE IMGID = :imgId `
+         WHERE IMGID = :imgId `,
+    selectBatchLearnDataList:
+        `SELECT
+            T.*
+        FROM 
+          (SELECT
+                count(FILENAME) count,
+                LISTAGG(A.IMGID,'||') WITHIN GROUP(ORDER BY A.FILENAME) as IMGID,
+                LISTAGG(A.STATUS,'||') WITHIN GROUP(ORDER BY A.FILENAME) as STATUS, 
+                LISTAGG(nvl(A.ENTRYNO,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as ENTRYNO, 
+                LISTAGG(nvl(A.STATEMENTDIV,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as STATEMENTDIV, 
+                LISTAGG(nvl(A.CONTRACTNUM,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) CONTRACTNUM, 
+                LISTAGG(nvl(A.OGCOMPANYCODE,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as OGCOMPANYCODE, 
+                LISTAGG(nvl(A.OGCOMPANYNAME,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as OGCOMPANYNAME, 
+                LISTAGG(nvl(A.BROKERCODE,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as BROKERCODE, 
+                LISTAGG(nvl(A.BROKERNAME,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as BROKERNAME, 
+                LISTAGG(nvl(A.CTNM,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CTNM, 
+                LISTAGG(nvl(A.INSSTDT,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as INSSTDT, 
+                LISTAGG(nvl(A.INSENDDT,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as INSENDDT, 
+                LISTAGG(nvl(A.UY,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as UY, 
+                LISTAGG(nvl(A.CURCD,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CURCD, 
+                LISTAGG(nvl(A.PAIDPERCENT,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as PAIDPERCENT, 
+                LISTAGG(nvl(A.PAIDSHARE,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as PAIDSHARE, 
+                LISTAGG(nvl(A.OSLPERCENT,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as OSLPERCENT, 
+                LISTAGG(nvl(A.OSLSHARE,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as OSLSHARE, 
+                LISTAGG(nvl(A.GROSSPM,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as GROSSPM, 
+                LISTAGG(nvl(A.PM,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as PM, 
+                LISTAGG(nvl(A.PMPFEND,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as PMPFEND, 
+                LISTAGG(nvl(A.PMPFWOS,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as PMPFWOS, 
+                LISTAGG(nvl(A.XOLPM,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as XOLPM, 
+                LISTAGG(nvl(A.RETURNPM,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as RETURNPM, 
+                LISTAGG(nvl(A.GROSSCN,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as GROSSCN, 
+                LISTAGG(nvl(A.CN,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CN, 
+                LISTAGG(nvl(A.PROFITCN,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as PROFITCN, 
+                LISTAGG(nvl(A.BROKERAGE,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as BROKERAGE, 
+                LISTAGG(nvl(A.TAX,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as TAX, 
+                LISTAGG(nvl(A.OVERRIDINGCOM,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as OVERRIDINGCOM, 
+                LISTAGG(nvl(A.CHARGE,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CHARGE, 
+                LISTAGG(nvl(A.PMRESERVERTD,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as PMRESERVERTD, 
+                LISTAGG(nvl(A.PFPMRESERVERTD,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as PFPMRESERVERTD, 
+                LISTAGG(nvl(A.PMRESERVERTD2,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as PMRESERVERTD2, 
+                LISTAGG(nvl(A.PFPMRESERVERTD2,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as PFPMRESERVERTD2, 
+                LISTAGG(nvl(A.CLAIM,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CLAIM, 
+                LISTAGG(nvl(A.LOSSRECOVERY,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as LOSSRECOVERY, 
+                LISTAGG(nvl(A.CASHLOSS,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CASHLOSS, 
+                LISTAGG(nvl(A.CASHLOSSRD,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CASHLOSSRD, 
+                LISTAGG(nvl(A.LOSSRR,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as LOSSRR, 
+                LISTAGG(nvl(A.LOSSRR2,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as LOSSRR2, 
+                LISTAGG(nvl(A.LOSSPFEND,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as LOSSPFEND, 
+                LISTAGG(nvl(A.LOSSPFWOA,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as LOSSPFWOA, 
+                LISTAGG(nvl(A.INTEREST,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as INTEREST, 
+                LISTAGG(nvl(A.TAXON,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as TAXON, 
+                LISTAGG(nvl(A.MISCELLANEOUS,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as MISCELLANEOUS, 
+                LISTAGG(nvl(A.PMBL,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as PMBL, 
+                LISTAGG(nvl(A.CMBL,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CMBL, 
+                LISTAGG(nvl(A.NTBL,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as NTBL, 
+                LISTAGG(nvl(A.CSCOSARFRNCNNT2,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CSCOSARFRNCNNT2, 
+                LISTAGG(A.REGDATE,'||') WITHIN GROUP(ORDER BY A.FILENAME) as REGDATE, 
+                LISTAGG(nvl(A.SUBNUM,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as SUBNUM, 
+                LISTAGG(nvl(A.CURUNIT,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CURUNIT, 
+                LISTAGG(nvl(A.CONVERTEDIMGPATH,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CONVERTEDIMGPATH, 
+                LISTAGG(nvl(A.FILENAME,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as FILENAME, 
+                LISTAGG(nvl(A.FILEPATH,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as FILEPATH, 
+                LISTAGG(nvl(A.EXPORTTYPE,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as EXPORTTYPE  
+        FROM TBL_BATCH_LEARN_DATA A
+        WHERE A.STATUS != 'D'
+        GROUP BY A.FILENAME ORDER BY A.FILENAME) T WHERE rownum BETWEEN :startNum AND :endNum`,
+    selectBatchMLExportList:
+        `SELECT
+            IMGID, COLLABEL, COLVALUE
+         FROM
+            TBL_BATCH_ML_EXPORT
+         WHERE
+            COLLABEL != '36'
+            AND
+            IMGID IN `
 };
 
 var uiLearningConfig = {
