@@ -1237,17 +1237,21 @@ var searchBatchLearnDataList = function (addCond) {
             addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
-            var legacyData = data;
-            var mlData = data;
+            var legacyData = data.batchData;
+            var mlData = data.mlExportData;
             console.log(data);
             if (addCond == "LEARN_N") $("#total_cnt_before").html(data.length);
             else $("#total_cnt_after").html(data.length);
             addProgressBar(2, 100); // proceed progressbar
-            if (legacyData.length > 0) {
+            if (data != null) {
                 for (var i = 0; i < legacyData.length; i++) {
                     var legacyCount = Number(legacyData[i].COUNT);
-                    var imgId = legacyData[i].IMGID.split('||')[0];
                     var filename = legacyData[i].FILENAME.split('||')[0];
+                    var imgId = "null";
+                    if (legacyData[i].IMGID != null) {
+                        imgId = legacyData[i].IMGID.split('||')[0];
+                    }
+                   
 
                     if (legacyCount == 1) {
                         if (addCond == "LEARN_N") checkboxHtml = `<th rowspan="2" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="sta00" name="listCheck_before" /></th>`;
@@ -1298,7 +1302,7 @@ var searchBatchLearnDataList = function (addCond) {
                         // ml data
                         appendHtml += `<tr class="mlTr">`;
                         if (imgId == "null") {
-                            appendHtml += `<td rowspan="36">no Data</td>`;
+                            appendHtml += `<td colspan="36">no Data</td>`;
                         } else {
                             appendHtml +=
                                 `<td>` + makeMLSelect(mlData, 0, imgId) + `</td> <!--출재사명-->
@@ -1393,7 +1397,7 @@ var searchBatchLearnDataList = function (addCond) {
                         // ml data
                         appendHtml += `<tr class="mlTr">`;
                         if (imgId == "null") {
-                            appendHtml += `<td rowspan="36">no Data</td>`;
+                            appendHtml += `<td colspan="36">no Data</td>`;
                         } else {
                             appendHtml +=
                                 `<td>` + makeMLSelect(mlData, 0, imgId) + `</td> <!--출재사명-->
@@ -1466,17 +1470,20 @@ var searchBatchLearnDataList = function (addCond) {
     function makeMLSelect(mlData, collabel, imgId) {
 
         var appendMLSelect = '<select>';
-        var hasImg = false;
+        var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
             if (mlData[y].IMGID == imgId) {
-
-                appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';
+                if (mlData[y].COLLABEL == collabel) {
+                    hasColvalue = true;
+                    appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';
+                }
             }
         }
         appendMLSelect += '</select>';
 
-        return hasImg ? appendMLSelect : '';
+        return hasColvalue ? appendMLSelect : '';
+    }
 };
 
 function compareMLAndAnswer(mlData) {

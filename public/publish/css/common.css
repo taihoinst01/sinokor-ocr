@@ -5772,3 +5772,7 @@ input:disabled {
 .batch_pop2 .imgtmb_b {
     height: 596px !important;
 }
+
+.mlTr {
+    background-color: #e3f2fd;
+}

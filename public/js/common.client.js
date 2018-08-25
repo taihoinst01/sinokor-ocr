@@ -13,7 +13,7 @@ var MAX_ENTITY_IN_PAGE = 10;    // ÇÑ ÆäÀÌÁö ´ç ÄÁÅÙÃ÷ ¼ö
  */
 function nvl(str) {
     var defaultValue = "";
-    if (typeof str == "undefined" || str == null || str == '' || str == "undefined")
+    if (typeof str == "undefined" || str == null || str == 'null' || str == '' || str == "undefined")
         return defaultValue;
     return str;
 }
