@@ -1253,27 +1253,17 @@ var searchBatchLearnDataList = function (addCond) {
                         <td></td> <!--출재사명-->
                         <td></td> <!--계약명-->
                         <td>${nvl(entry.UY)}</td> <!--UY-->
-                        <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
-                        <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
-                        <td>${nvl(entry.IMGID)}</td> <!--이미지ID-->
-                        <!-- <td><a onclick="javascript:docComparePopup('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.STATEMENTDIV)}</a></td>--> <!--계산서 구분-->
-                        <td>${nvl(entry.CONTRACTNUM)}</td> <!--계약번호-->
-                        <td>${nvl(entry.OGCOMPANYCODE)}</td> <!--출재사코드-->
-                        <td>${nvl(entry.BROKERCODE)}</td> <!--중개사코드-->
-                        <td>${nvl(entry.BROKERNAME)}</td> <!--중개사명-->
-                        <td>${nvl(entry.INSSTDT)}</td> <!--보험개시일-->
-                        <td>${nvl(entry.INSENDDT)}</td> <!--보험종료일-->
                         <td>${nvl(entry.CURCD)}</td> <!--화폐코드-->
                         <td>${nvl(entry.CURUNIT)}</td> <!--화폐단위-->
                         <td>${nvl(entry.PAIDPERCENT)}</td> <!--Paid(100%)-->
                         <td>${nvl(entry.PAIDSHARE)}</td> <!--Paid(Our Share)-->
-                        <td>${nvl(entry.GROSSPM)}</td> <!--GROSS PREMIUM-->
+                        <td>${nvl(entry.OSLPERCENT)}</td> <!--OSL(100%)-->
+                        <td>${nvl(entry.OSLSHARE)}</td> <!--OSL(Our Share)-->
                         <td>${nvl(entry.PM)}</td> <!--PREMIUM-->
                         <td>${nvl(entry.PMPFEND)}</td> <!--PREMIUM P/F ENT-->
                         <td>${nvl(entry.PMPFWOS)}</td> <!--PREMIUM P/F WOS-->
                         <td>${nvl(entry.XOLPM)}</td> <!--XOL PREMIUM-->
                         <td>${nvl(entry.RETURNPM)}</td> <!--RETURN PREMIUM-->
-                        <td>${nvl(entry.GROSSCN)}</td> <!--GROSS COMMISION-->
                         <td>${nvl(entry.CN)}</td> <!--COMMISSION-->
                         <td>${nvl(entry.PROFITCN)}</td> <!--PROFIT COMMISION-->
                         <td>${nvl(entry.BROKERAGE)}</td> <!--BROKERAGE-->
@@ -1295,14 +1285,13 @@ var searchBatchLearnDataList = function (addCond) {
                         <td>${nvl(entry.INTEREST)}</td> <!--INTEREST -->
                         <td>${nvl(entry.TAXON)}</td> <!--TAX ON -->
                         <td>${nvl(entry.MISCELLANEOUS)}</td> <!--MISCELLANEOUS -->
-                        <td>${nvl(entry.PMBL)}</td> <!--PREMIUM BALANCE -->
-                        <td>${nvl(entry.CMBL)}</td> <!--CLAM BALANCE -->
-                        <td>${nvl(entry.NTBL)}</td> <!--NET BALANCE -->
                         <td>${nvl(entry.CSCOSARFRNCNNT2)}</td> <!--YOUR REF -->
+                        <!--<td>${nvl(entry.IMGID)}</td>--> <!--이미지ID-->
+                        <!-- <td><a onclick="javascript:docComparePopup('${entry.ORIGINFILENAME}', this)" href="javascript:void(0);">${nvl(entry.STATEMENTDIV)}</a></td>--> <!--계산서 구분-->
                     </tr>`;
                 });
             } else {
-                appendHtml += `<tr><td colspan="53">조회할 데이터가 없습니다.</td></tr>`;
+                appendHtml += `<tr><td colspan="38">조회할 데이터가 없습니다.</td></tr>`;
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
