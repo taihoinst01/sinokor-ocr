@@ -1302,7 +1302,7 @@ var searchBatchLearnDataList = function (addCond) {
                         // ml data
                         appendHtml += `<tr class="mlTr">`;
                         if (imgId == "null") {
-                            appendHtml += `<td colspan="36">no Data</td>`;
+                            appendHtml += `<td colspan="36"></td>`;
                         } else {
                             appendHtml +=
                                 `<td>` + makeMLSelect(mlData, 0, imgId) + `</td> <!--출재사명-->
@@ -1397,7 +1397,7 @@ var searchBatchLearnDataList = function (addCond) {
                         // ml data
                         appendHtml += `<tr class="mlTr">`;
                         if (imgId == "null") {
-                            appendHtml += `<td colspan="36">no Data</td>`;
+                            appendHtml += `<td colspan="36"></td>`;
                         } else {
                             appendHtml +=
                                 `<td>` + makeMLSelect(mlData, 0, imgId) + `</td> <!--출재사명-->
