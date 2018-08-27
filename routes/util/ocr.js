@@ -27,7 +27,7 @@ exports.localOcr = function (req, done) {
         var fileName = req;
 
         try {
-            fs.readFile('./uploads/' + fileName, function (err, data) {
+            fs.readFile(propertiesConfig.filepath.convertedImagePath + fileName, function (err, data) {
                 if (err) throw err;
 
                 var buffer;
@@ -77,7 +77,7 @@ exports.proxyOcr = function (req, done) {
         try {
             var formData = {
                 file: {
-                    value: fs.createReadStream('uploads/' + fileName),
+                    value: fs.createReadStream(fileName),
                     options: {
                         filename: fileName,
                         contentType: 'image/jpeg'
@@ -85,10 +85,10 @@ exports.proxyOcr = function (req, done) {
                 }
             };
 
-            request.post({ url: proxyConfig.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
+            request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
                 var data = JSON.parse(body);
                 //console.log(data);
-                return done(null, data);
+                return done(null, ocrJson(data.regions));
             });
 
         } catch (err) {
@@ -97,3 +97,17 @@ exports.proxyOcr = function (req, done) {
         }
     });
 };
+
+function ocrJson(regions) {
+    var data = [];
+    for (var i = 0; i < regions.length; i++) {
+        for (var j = 0; j < regions[i].lines.length; j++) {
+            var item = '';
+            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
+                item += regions[i].lines[j].words[k].text + ' ';
+            }
+            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+        }
+    }
+    return data;
+}
