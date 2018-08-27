@@ -15,7 +15,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 config = configparser.ConfigParser()
-config.read('./ml/config.ini')
+mlroot = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+config.read(mlroot + '\\config.ini')
 
 id = config['ORACLE']['ID']
 pw = config['ORACLE']['PW']
@@ -51,7 +52,8 @@ testNpTarget = np.array(dbDataLabel)
 
 feature_columns = [tf.contrib.layers.real_valued_column("", dimension=14)]
 
-checkpointDir = os.getcwd() + '\\ml\\FormMapping\\checkpoint'
+checkpointDir = mlroot + '\\FormMapping\\checkpoint'
+
 classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hidden_units=[10, 20, 10],
                                             n_classes=300, model_dir=checkpointDir)
 
