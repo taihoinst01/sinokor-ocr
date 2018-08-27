@@ -147,6 +147,9 @@ var callbackBatchLearningDataList = function (rows, req, res) {
             }
             imgId = imgId.substr(0, imgId.length - 1);
             imgId += ')';
+            if (imgId == ")") {
+                imgId = "('')";
+            }
             commonDB.reqQueryF1param(queryConfig.batchLearningConfig.selectBatchMLExportList + imgId, callbackSelectBatchMLExportList, req, res, rows);
         } else {
             res.send(null);
