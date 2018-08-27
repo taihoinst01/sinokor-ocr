@@ -1239,8 +1239,9 @@ var searchBatchLearnDataList = function (addCond) {
         success: function (data) {
             var legacyData = data.batchData;
             var mlData = data.mlExportData;
+
             console.log(data);
-            if (addCond == "LEARN_N") $("#total_cnt_before").html(data.length);
+            if (addCond == "LEARN_N") $("#total_cnt_before").html(legacyData.length);
             else $("#total_cnt_after").html(data.length);
             addProgressBar(2, 100); // proceed progressbar
             if (data != null && data != '') {
@@ -1254,8 +1255,8 @@ var searchBatchLearnDataList = function (addCond) {
                    
 
                     if (legacyCount == 1) {
-                        if (addCond == "LEARN_N") checkboxHtml = `<th rowspan="2" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="sta00" name="listCheck_before" /></th>`;
-                        else checkboxHtml = `<th rowspan="2" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="stb00" name="listCheck_after" /></div></th>`;
+                        if (addCond == "LEARN_N") checkboxHtml = `<td rowspan="2" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="sta00" name="listCheck_before" /></td>`;
+                        else checkboxHtml = `<td rowspan="2" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="stb00" name="listCheck_after" /></div></td>`;
 
                         // legacy legacyData
                         appendHtml += ` <tr>
@@ -1344,8 +1345,8 @@ var searchBatchLearnDataList = function (addCond) {
                         }
                         appendHtml += "</tr>";
                     } else {
-                        if (addCond == "LEARN_N") checkboxHtml = `<th rowspan="` + (legacyCount + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="sta00" name="listCheck_before" /></th>`;
-                        else checkboxHtml = `<th rowspan="` + (legacyCount + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="stb00" name="listCheck_after" /></div></th>`;
+                        if (addCond == "LEARN_N") checkboxHtml = `<td rowspan="` + (legacyCount + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="sta00" name="listCheck_before" /></td>`;
+                        else checkboxHtml = `<td rowspan="` + (legacyCount + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="stb00" name="listCheck_after" /></div></td>`;
 
                         for (var q = 0; q < legacyCount; q++) {
                             appendHtml += `<tr>`;
@@ -1441,7 +1442,7 @@ var searchBatchLearnDataList = function (addCond) {
                     }
                 }
             } else {
-                appendHtml += `<tr><td colspan="38">조회할 데이터가 없습니다.</td></tr>`;
+                appendHtml += `<tr><td colspan="39">조회할 데이터가 없습니다.</td></tr>`;
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
@@ -3046,3 +3047,5 @@ function moutSquare(e) {
     $('#imageZoom').hide();
     $('#mainImage').show();
 }
+
+
