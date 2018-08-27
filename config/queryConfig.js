@@ -510,7 +510,7 @@ var batchLearningConfig = {
                 LISTAGG(nvl(A.FILEPATH,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as FILEPATH, 
                 LISTAGG(nvl(A.EXPORTTYPE,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as EXPORTTYPE  
         FROM TBL_BATCH_LEARN_DATA A
-        WHERE A.STATUS != 'D'
+        WHERE A.STATUS != 'D' AND A.STATUS = :status
         GROUP BY A.FILENAME ORDER BY A.FILENAME) T WHERE rownum BETWEEN :startNum AND :endNum`,
     selectBatchMLExportList:
         `SELECT

@@ -168,10 +168,14 @@ var fnSearchBatchLearningDataList = function (req, res) {
         listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
     }
     */
-
-
+    var status;
+    if (!commonUtil.isNull(req.body.addCond)) {
+        if (req.body.addCond == "LEARN_N") status = 'N';
+        else if (req.body.addCond == "LEARN_Y") status = 'Y';
+    }
+   
     //console.log("리스트 조회 쿼리 : " + listQuery);
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnDataList, [0, 12], callbackBatchLearningDataList, req, res);
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnDataList, [ status, req.body.startNum, req.body.moreNum], callbackBatchLearningDataList, req, res);
 };
 
 
