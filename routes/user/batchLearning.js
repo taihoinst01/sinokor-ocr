@@ -153,6 +153,27 @@ var callbackBatchLearningDataList = function (rows, req, res) {
         }
     }
 };
+
+var callbackbatchLearnIdList = function (rows, req, res) {
+
+    var status;
+    if (!commonUtil.isNull(req.body.addCond)) {
+        if (req.body.addCond == "LEARN_N") status = 'N';
+        else if (req.body.addCond == "LEARN_Y") status = 'Y';
+    }
+
+    var cond = [];
+    cond.push(status);
+    var sql = "(";
+    for (var i = 0; i < rows.length; i++) {
+        cond.push(rows[i].FILEPATH);
+        sql += (i > 0) ? ", :" + i : ":" + i;
+    }
+    sql += ") GROUP BY A.FILENAME ORDER BY A.FILENAME) T";
+
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnDataList + sql, cond, callbackBatchLearningDataList, req, res);
+};
+
 var fnSearchBatchLearningDataList = function (req, res) {
     /*
     // 조건절
@@ -175,7 +196,10 @@ var fnSearchBatchLearningDataList = function (req, res) {
     }
    
     //console.log("리스트 조회 쿼리 : " + listQuery);
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnDataList, [ status, req.body.startNum, req.body.moreNum], callbackBatchLearningDataList, req, res);
+
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnIdList, [status, req.body.startNum, req.body.moreNum], callbackbatchLearnIdList, req, res);
+
+    //commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnDataList, [ status, req.body.startNum, req.body.moreNum], callbackBatchLearningDataList, req, res);
 };
 
 
@@ -2079,7 +2103,7 @@ function batchLearnTraing(imgId, uiCheck, done) {
 
             retData["mlexport"] = mlData;
 
-            console.timeEnd("columnMappint ML");
+            console.timeEnd("columnMapping ML");
 
             //select legacy data
             console.time("get legacy");
