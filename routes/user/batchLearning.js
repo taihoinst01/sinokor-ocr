@@ -2005,7 +2005,9 @@ function batchLearnTraing(imgId, uiCheck, done) {
             }
 
             originImageArr = [originImageArr[0]];
+            imgId = originImageArr[0].IMGID;
 
+            console.time("convertTiftoJpg");
             //tif to jpg
             for (var item in originImageArr) {
                 if (originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
@@ -2020,8 +2022,10 @@ function batchLearnTraing(imgId, uiCheck, done) {
                     }
                 }
             }
+            console.timeEnd("convertTiftoJpg");
 
             //ocr
+            console.time("ocr");
             var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
             //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
 
@@ -2029,39 +2033,42 @@ function batchLearnTraing(imgId, uiCheck, done) {
                 return done(null, "error ocr");
             }
 
-            console.log("done ocr");
+            console.timeEnd("ocr");
 
             //typo ML
+            console.time("typo ML");
             pythonConfig.typoOptions.args = [];
             pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
             var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+            console.timeEnd("typo ML");
 
-            console.log("done typo ML");
 
             //form label mapping DL
+            console.time("formLabelMapping ML");
             pythonConfig.formLabelMappingOptions.args = [];
             pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-
-            console.log("done formLabelMapping ML");
+            console.timeEnd("formLabelMapping ML");
 
             //form mapping DL
+            console.time("formMapping ML");
             pythonConfig.formMappingOptions.args = [];
             pythonConfig.formMappingOptions.args.push(JSON.stringify(resPyArr));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer()));
-
-            console.log("done formMapping ML");
+            console.timeEnd("formMapping ML");
 
             //column mapping DL
+            console.time("columnMappint ML");
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            
 
             var mlData = {};
             mlData["mlData"] = resPyArr;
@@ -2072,18 +2079,23 @@ function batchLearnTraing(imgId, uiCheck, done) {
 
             retData["mlexport"] = mlData;
 
-            console.log("done columnMapping ML");
+            console.timeEnd("columnMappint ML");
 
             //select legacy data
+            console.time("get legacy");
             var cobineRegacyData = sync.await(oracle.selectLegacyData(imgId, sync.defer()));
 
             retData["regacy"] = cobineRegacyData;
 
             //insert legacy data to batchLearnData
             var resRegacyData = sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
+            console.timeEnd("get legacy");
+
 
             //insert MLexport data to batchMlExport
+            console.time("insert MLExport");
             var resMLData = sync.await(oracle.insertMLData(mlData, sync.defer()));
+            console.timeEnd("insert MLExport");
 
             if (uiCheck == true) {
                 var compareML = getAnswerCheck(cobineRegacyData, mlData["mlData"]);
