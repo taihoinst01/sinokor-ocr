@@ -212,6 +212,7 @@ var fn_search = function () {
     };
     console.log("조건 : " + JSON.stringify(param)); 
 
+    var progressId;
     var appendHtml = "";
     $.ajax({
         url: '/myApproval/searchApprovalList',
@@ -221,12 +222,13 @@ var fn_search = function () {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $("#progressMsgTitle").html("retrieving document list...");
-            startProgressBar(); // start progressbar
-            addProgressBar(1, 1); // proceed progressbar
+            progressId = showProgressBar();
+            //startProgressBar(); // start progressbar
+            //addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
             //$("#div_base").hide();
-            addProgressBar(2, 99); // proceed progressbar
+            //addProgressBar(2, 99); // proceed progressbar
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     var state = "";
@@ -268,10 +270,10 @@ var fn_search = function () {
             $("#div_base").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
             $('input[type=checkbox]').ezMark();
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId); // end progressbar
         },
         error: function (err) {
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId); // end progressbar
             console.log(err);
         }
     });
@@ -283,6 +285,7 @@ var fn_search_dtl = function (seqNum, docNum) {
         seqNum: seqNum,
         docNum: docNum
     };
+    var progressId;
     var appendHtml = "";
     $.ajax({
         url: '/myApproval/searchApprovalDtlList',
@@ -292,11 +295,12 @@ var fn_search_dtl = function (seqNum, docNum) {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $("#progressMsgTitle").html("retrieving document detail list...");
-            startProgressBar(); // start progressbar
-            addProgressBar(1, 1); // proceed progressbar
+            progressId = showProgressBar();
+            //startProgressBar(); // start progressbar
+            //addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
-            addProgressBar(2, 99); // proceed progressbar
+            //addProgressBar(2, 99); // proceed progressbar
             console.log(data);
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
@@ -319,9 +323,9 @@ var fn_search_dtl = function (seqNum, docNum) {
             $("#span_document_dtl").empty().html(`결재리스트(상세) - ${data.length}건`);
             $("#div_dtl").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId); // end progressbar
         }, error: function (err) {
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId); // end progressbar
             console.log(err);
         }
     });
@@ -332,6 +336,7 @@ var fn_search_image = function (imgId) {
     var param = {
         imgId: imgId
     };
+    var progressId;
     var imageHtml = "";
     var appendHtml = "";
     $.ajax({
@@ -342,11 +347,12 @@ var fn_search_image = function (imgId) {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $("#progressMsgTitle").html("retrieving document image list...");
-            startProgressBar(); // start progressbar
-            addProgressBar(1, 1); // proceed progressbar
+            progressId = showProgressBar();
+            //startProgressBar(); // start progressbar
+            //addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
-            addProgressBar(2, 99); // proceed progressbar
+            //addProgressBar(2, 99); // proceed progressbar
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     if (index == 0) {
@@ -372,9 +378,9 @@ var fn_search_image = function (imgId) {
             $("#ul_image").empty().append(imageHtml);
             $("#div_image").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId); // end progressbar
         }, error: function (err) {
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId); // end progressbar
             console.log(err);
         }
     });
@@ -402,7 +408,7 @@ var fn_baseList_chk = function (flag) {
             chkCnt++;
         }
     });
-
+    var progressId; 
     if (chkCnt > 0) {
         var param = {
             flag: flag,
@@ -422,8 +428,9 @@ var fn_baseList_chk = function (flag) {
                 if (flag == "C") $("#progressMsgTitle").html("승인처리 중 입니다.");
                 else if (flag == "R") $("#progressMsgTitle").html("반려처리 중 입니다.");
                 else if (flag == "P") $("#progressMsgTitle").html("전달 중 입니다.");
-                startProgressBar(); // start progressbar
-                addProgressBar(1, 99); // proceed progressbar
+                progressId = showProgressBar();
+                //startProgressBar(); // start progressbar
+                //addProgressBar(1, 99); // proceed progressbar
             },
             success: function (data) {
                 if (flag == "C") alert("승인처리 되었습니다.");
@@ -431,11 +438,11 @@ var fn_baseList_chk = function (flag) {
                 else if (flag == "P") alert("전달되었습니다.");
                 else alert("잘못된 경로로 접근하였습니다.");
                 $("#btn_search").click();
-                endProgressBar();
+                endProgressBar(progressId);
             },
             error: function (err) {
                 console.log(err);
-                endProgressBar();
+                endProgressBar(progressId);
             }
         });
     } else {

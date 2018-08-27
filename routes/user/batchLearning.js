@@ -22,6 +22,7 @@ const mz = require('mz/fs');
 const async = require("async");
 var oracle = require('../util/oracle.js');
 var sync = require('../util/sync.js');
+var ocrUtil = require('../util/ocr.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
@@ -129,7 +130,7 @@ var callbackSelectBatchMLExportList = function (rows, req, res, batchData) {
     if (rows.length > 0) {
         res.send({ 'batchData': batchData, 'mlExportData': rows });
     } else {
-        res.send(null);
+        res.send({ 'batchData': batchData, 'mlExportData': [] });
     }
 };
 var callbackBatchLearningDataList = function (rows, req, res) {
@@ -167,10 +168,14 @@ var fnSearchBatchLearningDataList = function (req, res) {
         listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
     }
     */
-
-
+    var status;
+    if (!commonUtil.isNull(req.body.addCond)) {
+        if (req.body.addCond == "LEARN_N") status = 'N';
+        else if (req.body.addCond == "LEARN_Y") status = 'Y';
+    }
+   
     //console.log("리스트 조회 쿼리 : " + listQuery);
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnDataList, [0, 12], callbackBatchLearningDataList, req, res);
+    commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnDataList, [ status, req.body.startNum, req.body.moreNum], callbackBatchLearningDataList, req, res);
 };
 
 
@@ -1961,6 +1966,8 @@ function labelMappingTrain(data) {
 }
 
 router.post('/batchLearnTraing', function (req, res) {
+    req.setTimeout(500000);
+
     sync.fiber(function () {
         var imgId = req.body.imgIdArray;
         var uiCheck = req.body.uiCheck;
@@ -1998,7 +2005,9 @@ function batchLearnTraing(imgId, uiCheck, done) {
             }
 
             originImageArr = [originImageArr[0]];
+            imgId = originImageArr[0].IMGID;
 
+            console.time("convertTiftoJpg");
             //tif to jpg
             for (var item in originImageArr) {
                 if (originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
@@ -2013,63 +2022,80 @@ function batchLearnTraing(imgId, uiCheck, done) {
                     }
                 }
             }
+            console.timeEnd("convertTiftoJpg");
 
             //ocr
+            console.time("ocr");
             var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
+            //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
 
             if (ocrResult == "error") {
                 return done(null, "error ocr");
             }
 
-            console.log("done ocr");
+            console.timeEnd("ocr");
 
             //typo ML
+            console.time("typo ML");
+            pythonConfig.typoOptions.args = [];
             pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
             var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+            console.timeEnd("typo ML");
 
-            console.log("done typo ML");
 
             //form label mapping DL
+            console.time("formLabelMapping ML");
+            pythonConfig.formLabelMappingOptions.args = [];
             pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-
-            console.log("done formLabelMapping ML");
+            console.timeEnd("formLabelMapping ML");
 
             //form mapping DL
+            console.time("formMapping ML");
+            pythonConfig.formMappingOptions.args = [];
             pythonConfig.formMappingOptions.args.push(JSON.stringify(resPyArr));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer()));
-
-            console.log("done formMapping ML");
+            console.timeEnd("formMapping ML");
 
             //column mapping DL
+            console.time("columnMappint ML");
+            pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            
 
             var mlData = {};
             mlData["mlData"] = resPyArr;
-            mlData["docCategory"] = docData.docCategory[0];
+            if (docData.docCategory) {
+                mlData["docCategory"] = docData.docCategory[0];
+            }
             mlData["imgId"] = imgId;
 
             retData["mlexport"] = mlData;
 
-            console.log("done columnMapping ML");
+            console.timeEnd("columnMappint ML");
 
             //select legacy data
+            console.time("get legacy");
             var cobineRegacyData = sync.await(oracle.selectLegacyData(imgId, sync.defer()));
 
             retData["regacy"] = cobineRegacyData;
 
             //insert legacy data to batchLearnData
-            sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
+            var resRegacyData = sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
+            console.timeEnd("get legacy");
+
 
             //insert MLexport data to batchMlExport
-            sync.await(oracle.insertMLData(mlData, sync.defer()));
+            console.time("insert MLExport");
+            var resMLData = sync.await(oracle.insertMLData(mlData, sync.defer()));
+            console.timeEnd("insert MLExport");
 
             if (uiCheck == true) {
                 var compareML = getAnswerCheck(cobineRegacyData, mlData["mlData"]);
