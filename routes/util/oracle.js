@@ -310,12 +310,31 @@ exports.selectOcrFilePaths = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             //let result = await conn.execute(`SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (${req.map((name, index) => `:${index}`).join(", ")})`, req);
-            //let result = await conn.execute("SELECT SEQNUM,FILEPATH,ORIGINFILENAME FROM TBL_OCR_FILE WHERE IMGID IN (:imgid)", ["10"]);
-            let result = await conn.execute(`SELECT FILENAME, FILEPATH, CONVERTEDIMGPATH FROM TBL_BATCH_LEARN_DATA WHERE IMGID = :imgId`, [req[0]]);
+            //let result = await conn.execute(`SELECT FILENAME, FILEPATH, CONVERTEDIMGPATH FROM TBL_BATCH_LEARN_DATA WHERE IMGID = :imgId`, [req[0]]);
+            var dataImgPath = req[0];
+            var answerImgPath = dataImgPath.replace("/MIG", "");
+
+            let resAnswer = await conn.execute(`SELECT IMGID, FILEPATH FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH = :filepath`, [answerImgPath]);
+            let result = await conn.execute(`SELECT IMGID, FILENAME, FILEPATH, CONVERTEDIMGPATH FROM TBL_BATCH_LEARN_DATA WHERE filepath = :imgId`, [req[0]]);
+
+            var imgId = [];
+            if (resAnswer.rows.length > 0 && resAnswer.rows[0].IMGID != result.rows[0].IMGID) {
+                imgId.push(resAnswer.rows[0].IMGID);
+                imgId.push(dataImgPath);
+                let resUpd = await conn.execute(`UPDATE TBL_BATCH_LEARN_DATA SET IMGID = :imgId WHERE FILEPATH = :filepath`, imgId);
+            } else if (result.rows[0].IMGID == null) {
+                var d = new Date();
+                var tempId = d.isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000;
+                imgId.push(tempId);
+                imgId.push(dataImgPath);
+                let resUpd = await conn.execute(`UPDATE TBL_BATCH_LEARN_DATA SET IMGID = :imgId WHERE FILEPATH = :filepath`, imgId);
+            }
+
 
             for (var row = 0; row < result.rows.length; row++) {
                 var dict = {};
 
+                dict.IMGID = resAnswer.rows[0].IMGID;
                 dict.FILENAME = result.rows[row].FILENAME;
                 dict.FILEPATH = result.rows[row].FILEPATH;
                 dict.CONVERTEDIMGPATH = result.rows[row].CONVERTEDIMGPATH;

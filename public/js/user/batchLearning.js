@@ -1248,6 +1248,7 @@ var searchBatchLearnDataList = function (addCond) {
                 for (var i = 0; i < legacyData.length; i++) {
                     var legacyCount = Number(legacyData[i].COUNT);
                     var filename = legacyData[i].FILENAME.split('||')[0];
+                    var filepath = legacyData[i].FILEPATH.split('||')[0];
                     var imgId = "null";
                     if (legacyData[i].IMGID != null) {
                         imgId = legacyData[i].IMGID.split('||')[0];
@@ -1255,7 +1256,7 @@ var searchBatchLearnDataList = function (addCond) {
                    
 
                     if (legacyCount == 1) {
-                        if (addCond == "LEARN_N") checkboxHtml = `<td rowspan="2" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="sta00" name="listCheck_before" /></td>`;
+                        if (addCond == "LEARN_N") checkboxHtml = `<td rowspan="2" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="sta00" name="listCheck_before" /><input type="hidden" name="filepath" value="${filepath}"></td>`;
                         else checkboxHtml = `<td rowspan="2" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="stb00" name="listCheck_after" /></div></td>`;
 
                         // legacy legacyData
@@ -1345,7 +1346,7 @@ var searchBatchLearnDataList = function (addCond) {
                         }
                         appendHtml += "</tr>";
                     } else {
-                        if (addCond == "LEARN_N") checkboxHtml = `<td rowspan="` + (legacyCount + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="sta00" name="listCheck_before" /></td>`;
+                        if (addCond == "LEARN_N") checkboxHtml = `<td rowspan="` + (legacyCount + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="sta00" name="listCheck_before" /><input type="hidden" name="filepath" value="${filepath}"></td>`;
                         else checkboxHtml = `<td rowspan="` + (legacyCount + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${imgId}" class="stb00" name="listCheck_after" /></div></td>`;
 
                         for (var q = 0; q < legacyCount; q++) {
@@ -1952,7 +1953,9 @@ var fn_popBatchRun = function () {
                     if ($(this).is(":checked")) {
                         chkCnt++;
                         totCount++;
-                        imgIdArray.push($(this).val());
+                        //imgIdArray.push($(this).val());
+                        var filepath = $(this).parent().next().val();
+                        imgIdArray.push(filepath);
                     }
                 });
                 if (chkCnt == 0) {
