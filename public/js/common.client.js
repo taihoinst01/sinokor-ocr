@@ -135,6 +135,7 @@ function getNowTime(separator) {
  * getAddYear, getAddMonth, getAddDate
  * @param {val} 현재일자에서 계산할 yearVal-년, monthVal-월, dateVal-일
  * @param {separator} 구분자
+ * @return {date} 구분자를 포함한 일자
  */
 function getAddYear(yearVal, separator) {
     var date = new Date();
@@ -199,6 +200,44 @@ function wrapWindowByMask() {
     $('#mask').fadeTo("slow", 0.6);
 }
 
+// New Progress Bar (2018-08-27)
+function showProgressBar() {
+    $('body').css('overflow', 'hidden');
+
+    $('#loadingBackground').css('width', $('body').width());
+    $('#loadingBackground').css('height', $('body').height());
+    $('#loadingBackground').show();
+    wrapWindowByMask();
+    $("#ocrProgress").fadeIn("fast");
+
+    var fromVal = 0;
+    var toVal = 99;
+    var elem = document.getElementById("ocrBar");
+    var width = fromVal;
+    var percentNum = $('#ocrBar span');
+    elem.style.width = fromVal + '%';
+    console.log("formVal.. : " + fromVal);
+    percentNum.html(fromVal + '%');
+    console.log("toVal : " + toVal);
+    var id = setInterval(frame, 100);
+    function frame() {
+        console.log("width : " + width);
+        console.log("toVal : " + toVal);
+        if (width >= 100) {
+            endProgressBar();
+            clearInterval(id);
+        } else if (width >= toVal) {
+            clearInterval(id);
+        } else {
+            width++;
+            elem.style.width = width + '%';
+            percentNum.html(width + '%');
+        }
+    }
+
+    return id;
+}
+
 // Progress Bar
 function startProgressBar() {
     $('body').css('overflow', 'hidden');
@@ -229,12 +268,13 @@ function addProgressBar(fromVal, toVal) {
         }
     }
 }
-function endProgressBar() {
+function endProgressBar(progressId) {
     $("#ocrProgress").fadeOut("fast");
     document.getElementById("ocrBar").style.width = 1;
     $('body').css('overflow', 'auto');
     $('#mask').fadeOut("fast");
     $('#loadingBackground').hide();
+    if (!isNull(progressId)) clearInterval(progressId);
 }
 
 // li 선택시 input[type=hidden]에 값 넣어주기

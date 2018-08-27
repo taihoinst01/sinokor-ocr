@@ -4893,7 +4893,7 @@ thead .ez-checked {
     display: none;
     border: 2px solid red;
     position: absolute;
-    top: 200px;
+    top: 185px;
 }
 
 button[disabled] {
