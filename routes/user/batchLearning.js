@@ -22,6 +22,7 @@ const mz = require('mz/fs');
 const async = require("async");
 var oracle = require('../util/oracle.js');
 var sync = require('../util/sync.js');
+var ocrUtil = require('../util/ocr.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
@@ -129,7 +130,7 @@ var callbackSelectBatchMLExportList = function (rows, req, res, batchData) {
     if (rows.length > 0) {
         res.send({ 'batchData': batchData, 'mlExportData': rows });
     } else {
-        res.send(null);
+        res.send({ 'batchData': batchData, 'mlExportData': [] });
     }
 };
 var callbackBatchLearningDataList = function (rows, req, res) {
@@ -2016,6 +2017,7 @@ function batchLearnTraing(imgId, uiCheck, done) {
 
             //ocr
             var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
+            //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
 
             if (ocrResult == "error") {
                 return done(null, "error ocr");

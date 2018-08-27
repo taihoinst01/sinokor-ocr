@@ -1243,7 +1243,7 @@ var searchBatchLearnDataList = function (addCond) {
             if (addCond == "LEARN_N") $("#total_cnt_before").html(data.length);
             else $("#total_cnt_after").html(data.length);
             addProgressBar(2, 100); // proceed progressbar
-            if (data != null) {
+            if (data != null && data != '') {
                 for (var i = 0; i < legacyData.length; i++) {
                     var legacyCount = Number(legacyData[i].COUNT);
                     var filename = legacyData[i].FILENAME.split('||')[0];
