@@ -362,7 +362,7 @@ var imageUploadEvent = function () {
     fileUpload();
 };
                
-// [파일정보 -> OCR API]
+// batch learning 4 [파일정보 -> OCR API]
 function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     //console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
     //console.log("processImage fileName : " + fileName);
@@ -555,6 +555,7 @@ function convertLineOcrData(ocrData) {
     return convertArr;
 }
 
+//batch learning 5 
 function execBatchLearning() {
     var dataArr = convertOcrData();
     if (exeBatchLearningCount <= ocrDataArr.length - 1) {
@@ -1696,7 +1697,7 @@ function imgPopupEvent() {
     //});
 }
 
-// [Select] 배치학습데이터 조회
+// batch learning 2 배치학습데이터 조회
 var searchBatchLearnData = function (imgIdArray, flag) {
     var param = {
         imgIdArray: imgIdArray
@@ -1914,7 +1915,7 @@ var fn_imageDelete = function () {
 };
 
 
-// 배치학습 실행
+//  batch learning 1 배치학습 실행
 var fn_batchTraining = function () {
     //var top = ($(window).scrollTop() + ($(window).height() - $('#layerPopup').height()) / 2);
     popupEvent.openPopup();
@@ -2020,7 +2021,7 @@ var fn_uiTraining = function () {
 
 };
 
-// [Select] 배치학습데이터 조회
+// batch learning 2 [Select] 배치학습데이터 조회
 var batchLearnTraing = function (imgIdArray, flag) {
     var param = {
         imgIdArray: imgIdArray,
