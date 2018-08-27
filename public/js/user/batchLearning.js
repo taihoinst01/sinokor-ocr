@@ -1244,8 +1244,8 @@ var searchBatchLearnDataList = function (addCond) {
             var mlData = data.mlExportData;
 
             console.log(data);
-            if (addCond == "LEARN_N") $("#total_cnt_before").html(legacyData.length);
-            else $("#total_cnt_after").html(data.length);
+            if (addCond == "LEARN_N") $("#total_cnt_before").html(legacyData == undefined ? 0 : legacyData.length);
+            else $("#total_cnt_after").html(legacyData == undefined ? 0 : legacyData.length);
             //addProgressBar(2, 100); // proceed progressbar
             if (data != null && data != '') {
                 for (var i = 0; i < legacyData.length; i++) {
@@ -1265,7 +1265,7 @@ var searchBatchLearnDataList = function (addCond) {
                         // legacy legacyData
                         appendHtml += ` <tr>
                                             ${checkboxHtml}
-                                            <td rowspan="2"><a onclick="javascript:fn_viewImagelegacyData('${filename}', this)" href="javascript:void(0);">${filename}</a></td> <!--파일명-->
+                                            <td rowspan="2"><a onclick="javascript:fn_viewImageData('${filename}', this)" href="javascript:void(0);">${filename}</a></td> <!--파일명-->
                                             <td>${nvl(legacyData[i].OGCOMPANYNAME)}</td> <!--출재사명-->
                                             <td>${nvl(legacyData[i].CTNM)}</td> <!--계약명-->
                                             <td>${nvl(legacyData[i].UY)}</td> <!--UY-->
