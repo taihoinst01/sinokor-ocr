@@ -1962,6 +1962,8 @@ function labelMappingTrain(data) {
 }
 
 router.post('/batchLearnTraing', function (req, res) {
+    req.setTimeout(500000);
+
     sync.fiber(function () {
         var imgId = req.body.imgIdArray;
         var uiCheck = req.body.uiCheck;
