@@ -22,6 +22,7 @@ const mz = require('mz/fs');
 const async = require("async");
 var oracle = require('../util/oracle.js');
 var sync = require('../util/sync.js');
+var ocrUtil = require('../util/ocr.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
@@ -129,7 +130,7 @@ var callbackSelectBatchMLExportList = function (rows, req, res, batchData) {
     if (rows.length > 0) {
         res.send({ 'batchData': batchData, 'mlExportData': rows });
     } else {
-        res.send(null);
+        res.send({ 'batchData': batchData, 'mlExportData': [] });
     }
 };
 var callbackBatchLearningDataList = function (rows, req, res) {
@@ -2016,6 +2017,7 @@ function batchLearnTraing(imgId, uiCheck, done) {
 
             //ocr
             var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
+            //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
 
             if (ocrResult == "error") {
                 return done(null, "error ocr");
@@ -2024,6 +2026,7 @@ function batchLearnTraing(imgId, uiCheck, done) {
             console.log("done ocr");
 
             //typo ML
+            pythonConfig.typoOptions.args = [];
             pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
             var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
@@ -2032,6 +2035,7 @@ function batchLearnTraing(imgId, uiCheck, done) {
             console.log("done typo ML");
 
             //form label mapping DL
+            pythonConfig.formLabelMappingOptions.args = [];
             pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
@@ -2039,6 +2043,7 @@ function batchLearnTraing(imgId, uiCheck, done) {
             console.log("done formLabelMapping ML");
 
             //form mapping DL
+            pythonConfig.formMappingOptions.args = [];
             pythonConfig.formMappingOptions.args.push(JSON.stringify(resPyArr));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
@@ -2047,13 +2052,16 @@ function batchLearnTraing(imgId, uiCheck, done) {
             console.log("done formMapping ML");
 
             //column mapping DL
+            pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
 
             var mlData = {};
             mlData["mlData"] = resPyArr;
-            mlData["docCategory"] = docData.docCategory[0];
+            if (docData.docCategory) {
+                mlData["docCategory"] = docData.docCategory[0];
+            }
             mlData["imgId"] = imgId;
 
             retData["mlexport"] = mlData;
@@ -2066,10 +2074,10 @@ function batchLearnTraing(imgId, uiCheck, done) {
             retData["regacy"] = cobineRegacyData;
 
             //insert legacy data to batchLearnData
-            sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
+            var resRegacyData = sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
 
             //insert MLexport data to batchMlExport
-            sync.await(oracle.insertMLData(mlData, sync.defer()));
+            var resMLData = sync.await(oracle.insertMLData(mlData, sync.defer()));
 
             if (uiCheck == true) {
                 var compareML = getAnswerCheck(cobineRegacyData, mlData["mlData"]);

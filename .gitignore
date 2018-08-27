@@ -261,10 +261,11 @@ __pycache__/
 *.pyc
 /runs
 .vscode/settings.json
-/ml/ColumnMapping/checkpoint
-/ml/FormLabelMapping/checkpoint
-/ml/FormMapping/checkpoint
+ml/ColumnMapping/checkpoint/
+ml/FormLabelMapping/checkpoint/
+ml/FormMapping/checkpoint/
 /uploads
 /archive_20180821.zip
 /excel
 /routes/util/excel
+
