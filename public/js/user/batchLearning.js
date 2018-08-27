@@ -8,6 +8,7 @@ var ocrCount = 0; // ocr 수행 횟수
 var batchCount = 0; // ml 학습 횟수
 var updateBatchLearningDataCount = 0;
 
+var progressId; // progress Id
 var grid;
 var isFullMatch = true; // UI training 체크 중 모든 컬럼 매치 유무
 var modifyData = []; // UI 수정할 데이터 
@@ -211,7 +212,7 @@ var fn_excelUpload = function () {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
-            addProgressBar(1, 99);
+            //addProgressBar(1, 99);
         },
         success: function (data) {
             console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
@@ -237,8 +238,8 @@ var excelUploadEvent = function () {
     var multiUploadForm = $("#multiUploadForm");
 
     $('#excel_file').on("change", function () {
-        startProgressBar();
-        addProgressBar(1, 5);
+        //startProgressBar();
+        //addProgressBar(1, 5);
         multiUploadForm.attr("action", "/batchLearning/excelUpload");
         if ($(this).val() !== '') {
             multiUploadForm.submit();
@@ -251,19 +252,19 @@ var excelUploadEvent = function () {
 
 function fileUpload() {
     var multiUploadForm = $("#multiUploadForm");
-
     multiUploadForm.ajaxForm({
         beforeSubmit: function (data, frm, opt) {
             $("#progressMsgTitle").html("Preparing to upload files...");
-            startProgressBar();
-            addProgressBar(6, 99);
+            progressId = showProgressBar();
+            //startProgressBar();
+            //addProgressBar(6, 99);
             return true;
         },
         success: function getData(responseText, statusText) {
             if (responseText.type == 'excel') {
                 console.log("upload excel data : " + JSON.stringify(responseText));
                 $("#progressMsgTitle").html("uploading excel files...");
-                endProgressBar();
+                endProgressBar(progressId);
             } else if (responseText.type == 'image') {
                 console.log("upload image data : " + JSON.stringify(responseText));
                 $("#progressMsgTitle").html("uploading image files...");
@@ -278,7 +279,7 @@ function fileUpload() {
                     if (i === (totCount - 1)) {
                         lastYN = true;
                         alert("등록이 완료되었습니다.");
-                        endProgressBar();
+                        endProgressBar(progressId);
                     }
                     //insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
                     insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
@@ -288,7 +289,7 @@ function fileUpload() {
         },
         error: function (e) {
             console.log("File upload failed : " + e);
-            endProgressBar();
+            endProgressBar(progressId);
         }
     });
 }
@@ -305,7 +306,7 @@ var insertFileDB = function (fileInfo, fileName, lastYN) {
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             beforeSend: function () {
-                addProgressBar(81, 90);
+                //addProgressBar(81, 90);
             },
             success: function (data) {
                 console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
@@ -328,7 +329,7 @@ var insertBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             beforeSend: function () {
-                addProgressBar(91, 100);
+                //addProgressBar(91, 100);
             },
             success: function (data) {
                 console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
@@ -350,9 +351,10 @@ var imageUploadEvent = function () {
     var multiUploadForm = $("#multiUploadForm");
 
     $('#document_file').on("change", function () {
-        startProgressBar();
-        addProgressBar(1, 5);
+        //startProgressBar();
+        //addProgressBar(1, 5);
         //multiUploadForm.attr("action", "/batchLearning/imageUpload");
+        progressId = showProgressBar();
         multiUploadForm.attr("action", "/common/imageUpload");
         if ($(this).val() !== '') {
             multiUploadForm.submit();
@@ -455,7 +457,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
             //console.log(ocrDataArr);
             if (totCount == ocrCount) {
                 $("#progressMsgTitle").html("processing ML ...");
-                addProgressBar(51, 80);
+                //addProgressBar(51, 80);
 
                 setTimeout(function () {
                     execBatchLearning();
@@ -465,11 +467,11 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
             }
             //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
         } else if (data.error) { //ocr 이외 에러이면
-            endProgressBar();
+            endProgressBar(progressId);
             alert(data.error);
         } else { // ocr 에러 이면
             insertCommError(data.code, 'ocr');
-            endProgressBar();
+            endProgressBar(progressId);
             alert(data.message);
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -565,7 +567,7 @@ function execBatchLearning() {
             if ($('#layer2').css('display') != 'none') break;
             if (isFullMatch) { // 모든 컬럼 매핑이 되었거나 계산서가 아닌 경우
             } else {
-                endProgressBar();
+                endProgressBar(progressId);
                 popUpLayer2(ocrDataArr[i]);
                 break;
             }
@@ -832,7 +834,7 @@ function compareBatchLearningData(ocrData, data) {
                 async: false,
                 success: function (retData) {
                     uiFlag = "N";
-                    endProgressBar();
+                    endProgressBar(progressId);
                     popUpLayer2(ocrData, retData);
                 }
 
@@ -1137,13 +1139,13 @@ function updateBatchLearningData(retData, ocrData, mlData) {
 			updateBatchLearningDataCount++;
             if (totCount == updateBatchLearningDataCount) {
                 $("#progressMsgTitle").html("update learn data...");
-                addProgressBar(81, 100);
+                //addProgressBar(81, 100);
 				updateBatchLearningDataCount = 0;
             }
             //comparedMLAndAnswer(retData, mlData, ocrData.fileInfo);
         },
         error: function (err) {
-			endProgressBar();
+			endProgressBar(progressId);
             console.log(err);
         }
     });
@@ -1233,8 +1235,9 @@ var searchBatchLearnDataList = function (addCond) {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $("#progressMsgTitle").html("retrieving learn data...");            
-            startProgressBar(); // start progressbar
-            addProgressBar(1, 1); // proceed progressbar
+            progressId = showProgressBar();
+            //startProgressBar(); // start progressbar
+            //addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
             var legacyData = data.batchData;
@@ -1243,7 +1246,7 @@ var searchBatchLearnDataList = function (addCond) {
             console.log(data);
             if (addCond == "LEARN_N") $("#total_cnt_before").html(legacyData.length);
             else $("#total_cnt_after").html(data.length);
-            addProgressBar(2, 100); // proceed progressbar
+            //addProgressBar(2, 100); // proceed progressbar
             if (data != null && data != '') {
                 for (var i = 0; i < legacyData.length; i++) {
                     var legacyCount = Number(legacyData[i].COUNT);
@@ -1451,13 +1454,13 @@ var searchBatchLearnDataList = function (addCond) {
             } else {
                 $("#tbody_batchList_after").empty().append(appendHtml);               
             }
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId); // end progressbar
             checkboxEvent(); // refresh checkbox event
             $('input[type=checkbox]').ezMark();
             imgPopupEvent();
         },
         error: function (err) {
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId); // end progressbar
             console.log(err);
         }
 
@@ -1712,12 +1715,13 @@ var searchBatchLearnData = function (imgIdArray, flag) {
         beforeSend: function () {
             $('#btn_pop_batch_close').click();
             $("#progressMsgTitle").html("retrieving learn data...");
-            startProgressBar();
-            addProgressBar(0, 30);
+            progressId = showProgressBar();
+            //startProgressBar();
+            //addProgressBar(0, 30);
         },
         success: function (data) {
             $("#progressMsgTitle").html("processing learn data...");
-            addProgressBar(31, 40);
+            //addProgressBar(31, 40);
             //console.log("/batchLearning/searchBatchLearnData result :");
             //console.log(data);           
             if (data.code == 400) {
@@ -1727,7 +1731,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
 
             if (flag == "PROCESS_IMAGE") {  // 배치학습 실행             
 				$("#progressMsgTitle").html("processing OCR ...");
-                addProgressBar(41, 50);
+                //addProgressBar(41, 50);
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
                     var lastYn = "N";
                     if (i == data.fileInfoList.length - 1) lastYn = "Y";
@@ -1742,7 +1746,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
 
         },
         error: function (err) {
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId); // end progressbar
             console.log(err);
         }
     });
@@ -1751,8 +1755,9 @@ var searchBatchLearnData = function (imgIdArray, flag) {
 // syncServerFile (서버의 이미지가 DB에 등록이 안되어있다면 DB에 등록처리)
 var fn_syncServerFile = function () {
     var param = {};
-    startProgressBar(); // start progressbar
-    addProgressBar(1, 1); // proceed progressbar
+    //startProgressBar(); // start progressbar
+    //addProgressBar(1, 1); // proceed progressbar
+    progressId = showProgressBar();
     $.ajax({
         url: '/batchLearning/syncFile',
         type: 'post',
@@ -1778,7 +1783,7 @@ var fn_syncServerFile = function () {
                         //insertSyncFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
                         //insertSyncBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
                     }
-                    addProgressBar(2, 99);
+                    //addProgressBar(2, 99);
                     resolve(responseText, statusText);
                 });
                 insertPromise.then(function (responseText, statusText) {
@@ -1846,7 +1851,7 @@ var insertSyncBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
             },
             success: function (data) {
                 console.log("SUCCESS insertBatchLearningBaseData : " + JSON.stringify(data));
-                endProgressBar();
+                endProgressBar(progressId);
                 if (lastYN) {
                     alert("파일 등록이 완료되었습니다.");
                     searchBatchLearnDataList("LEARN_N");
@@ -2037,8 +2042,9 @@ var batchLearnTraing = function (imgIdArray, flag) {
         beforeSend: function () {
             $('#btn_pop_batch_close').click();
             $("#progressMsgTitle").html("retrieving learn data...");
-            startProgressBar();
-            addProgressBar(0, 41);
+            progressId = showProgressBar();
+            //startProgressBar();
+            //addProgressBar(0, 41);
         },
         success: function (data) {
             $("#progressMsgTitle").html("processing learn data...");
@@ -2051,13 +2057,13 @@ var batchLearnTraing = function (imgIdArray, flag) {
             }
         },
         error: function (err) {
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId); // end progressbar
             console.log(err);
         },
         complete: function () {
             console.log("done");
-            addProgressBar(41, 100);
-            endProgressBar();
+            //addProgressBar(41, 100);
+            endProgressBar(progressId);
         }
     });
 };
@@ -2277,28 +2283,29 @@ var fn_batchUiTraining = function () {
 
 // 양식레이블 매핑
 var docLabelMapping = function (data) {
-    startProgressBar();
+    //startProgressBar();
+    progressId = showProgressBar();
     $('#progressMsgTitle').css("color", "black");
     $('#progressMsgTitle').html('문서 라벨 맵핑 학습 중..');
-    addProgressBar(1, 25);
+    //addProgressBar(1, 25);
     insertDocLabelMapping(data, callbackInsertDocLabelMapping);
 };
 
 var callbackInsertDocLabelMapping = function (data) {
     $('#progressMsgTitle').html('문서 맵핑 학습 중..');
-    addProgressBar(26, 50);
+    //addProgressBar(26, 50);
     insertDocMapping(data, callbackInsertDocMapping);
 };
 
 var callbackInsertDocMapping = function (data) {
     $('#progressMsgTitle').html('컬럼 맵핑 학습 중..');
-    addProgressBar(51, 75);
+    //addProgressBar(51, 75);
     insertColMapping(data, callbackInsertColMapping);
 };
 
 var callbackInsertColMapping = function (data) {
     $('#progressMsgTitle').html('학습 처리 중..');
-    addProgressBar(76, 100);
+    //addProgressBar(76, 100);
     //insertContractMapping(data, callbackInsertContractMapping);
 };
 
@@ -2320,12 +2327,13 @@ var uiTrainingBtn = function () {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             if (data.code == 200) {
-                addProgressBar(81, 100);
+                //addProgressBar(81, 100);
                 alert(data.message);
                 //popupEvent.batchClosePopup('retrain');
             }
         },
         error: function (err) {
+            endProgressBar(progressId);
             console.log(err);
         }
     });
@@ -2345,6 +2353,7 @@ function insertDocLabelMapping(data, callback) {
             callback(res.data);
         },
         error: function (err) {
+            endProgressBar(progressId);
             console.log(err);
         }
     });
@@ -2378,6 +2387,7 @@ function insertDocMapping(data, callback) {
             callback(res.data);
         },
         error: function (err) {
+            endProgressBar(progressId);
             console.log(err);
         }
     });
@@ -2404,11 +2414,12 @@ function insertColMapping(data) {
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
-            addProgressBar(81, 100);
+            //addProgressBar(81, 100);
             alert("success training");
             //callback(data);
         },
         error: function (err) {
+            endProgressBar(progressId);
             console.log(err);
         }
     });
@@ -2427,6 +2438,7 @@ function insertContractMapping(data,callback) {
             callback(data);
         },
         error: function (err) {
+            endProgressBar(progressId);
             console.log(err);
         }
     });
@@ -2696,19 +2708,20 @@ function multiUploadEvent() {
     $('#multiUploadForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
             $("#progressMsgTitle").html("이미지를 분석 중 입니다.");
-            startProgressBar(); // 프로그레스바 시작
-            addProgressBar(1, 5); // 프로그레스바 진행
+            progressId = showProgressBar();
+            //startProgressBar(); // 프로그레스바 시작
+            //addProgressBar(1, 5); // 프로그레스바 진행
             return true;
         },
         success: function (responseText, statusText) {
-            addProgressBar(6, 30); // 프로그레스바 진행
+            //addProgressBar(6, 30); // 프로그레스바 진행
             totCount = responseText.message.length;
             for (var i = 0; i < responseText.message.length; i++) {
                 processImage(responseText.message[i]);
             }
         },
         error: function (e) {
-            endProgressBar(); // 에러 발생 시 프로그레스바 종료
+            endProgressBar(progressId); // 에러 발생 시 프로그레스바 종료
             console.log(e);
         }
     });
