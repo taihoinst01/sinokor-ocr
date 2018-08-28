@@ -115,10 +115,10 @@ exports.addColumnMappingTrain = function (data, callback) {
 };
 
 // ---- Marchine Learning Studio Version ----- //
-exports.addTrainFromMLStudio = function (data, type, callback) {
+exports.addTrainFromMLStudio = function (data, callback) {
     sync.fiber(function () {
 
-        var result = sync.await(mlStudio.train(data, type, sync.defer()));
+        var result = sync.await(mlStudio.train(data, sync.defer()));
         callback(result);
 
     });
