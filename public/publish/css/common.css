@@ -4732,6 +4732,7 @@ thead .ez-checked {
     font-size: 28px;
     margin-top: 20px;
     color: #fff;
+    word-break: break-all;
 }
 
 #ocrBar {
