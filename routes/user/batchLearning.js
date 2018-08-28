@@ -2080,27 +2080,31 @@ function batchLearnTraing(filepath, uiCheck, done) {
             var retData = {};
 
             var resLegacyData = sync.await(oracle.selectLegacyFilepath(filepath, sync.defer()));
+            
+
+            if (resLegacyData[0].rows[0].length < 0) {
+                return done(null, "error getLegacy");
+            }
 
             console.time("convertTiftoJpg");
-            //tif to jpg
-            for (var item in originImageArr) {
-                if (originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
-                    let result = sync.await(oracle.convertTiftoJpg(originImageArr[item].FILEPATH, sync.defer()));
-                    if (result) {
-                        originImageArr[item]['ORIGINFILEPATH'] = originImageArr[item]['FILEPATH'];
-                        originImageArr[item]['FILEPATH'] = result;
-                    }
+            var filename = resLegacyData[0].rows[0].FILENAME;
+            var convertFilename = '';
+            if (filename.split('.')[1].toLowerCase() === 'tif' || filename.split('.')[1].toLowerCase() === 'tiff') {
+                let result = sync.await(oracle.convertTiftoJpg(filepath, sync.defer()));
 
-                    if (result == "error") {
-                        return done(null, "error convertTiftoJpg");
-                    }
+                if (result == "error") {
+                    return done(null, "error convertTiftoJpg");
+                }
+
+                if (result) {
+                    convertFilename = result;
                 }
             }
             console.timeEnd("convertTiftoJpg");
 
             //ocr
             console.time("ocr");
-            var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
+            var ocrResult = sync.await(oracle.callApiOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilename, sync.defer()));
             //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
 
             if (ocrResult == "error") {
