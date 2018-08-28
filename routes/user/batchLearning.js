@@ -122,7 +122,7 @@ var fnViewImageData = function (req, res) {
 
 
 
-// [POST] 배치학습데이터리스트 조회 
+// main menu batch learning 2 [POST] 배치학습데이터리스트 조회 
 router.post('/searchBatchLearnDataList', function (req, res) {   
     if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
 }); 
@@ -133,6 +133,8 @@ var callbackSelectBatchMLExportList = function (rows, req, res, batchData) {
         res.send({ 'batchData': batchData, 'mlExportData': [] });
     }
 };
+
+//main menu batch learning 3 
 var callbackBatchLearningDataList = function (rows, req, res) {
     if (req.isAuthenticated()) {
         if (rows.length > 0) {
@@ -157,6 +159,7 @@ var callbackBatchLearningDataList = function (rows, req, res) {
     }
 };
 
+//main menu batch learning 3
 var callbackbatchLearnIdList = function (rows, req, res) {
 
     var status;
@@ -177,7 +180,22 @@ var callbackbatchLearnIdList = function (rows, req, res) {
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnDataList + sql, cond, callbackBatchLearningDataList, req, res);
 };
 
+//main menu batch learning 4 DB search
 var fnSearchBatchLearningDataList = function (req, res) {
+
+    sync.fiber(function () {
+        try {
+
+            var retData = {};
+            var reqNum = 12;
+            var originImageArr = sync.await(oracle.selectBatchLearnList(reqNum, sync.defer()));
+
+            res.send({ data: originImageArr, code: 200 });
+        } catch (e) {
+            console.log(e);
+            res.send({ code: 400 });
+        }
+    });
     /*
     // 조건절
     var condQuery = "";
@@ -192,15 +210,15 @@ var fnSearchBatchLearningDataList = function (req, res) {
         listQuery = "SELECT T.* FROM (" + listQuery + ") T WHERE rownum BETWEEN " + req.body.startNum + " AND " + req.body.moreNum;
     }
     */
-    var status;
-    if (!commonUtil.isNull(req.body.addCond)) {
-        if (req.body.addCond == "LEARN_N") status = 'N';
-        else if (req.body.addCond == "LEARN_Y") status = 'Y';
-    }
+    // var status;
+    // if (!commonUtil.isNull(req.body.addCond)) {
+    //     if (req.body.addCond == "LEARN_N") status = 'N';
+    //     else if (req.body.addCond == "LEARN_Y") status = 'Y';
+    // }
    
-    //console.log("리스트 조회 쿼리 : " + listQuery);
+    // //console.log("리스트 조회 쿼리 : " + listQuery);
 
-    commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnIdList, [status, req.body.startNum, req.body.moreNum], callbackbatchLearnIdList, req, res);
+    // commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnIdList, [status, req.body.startNum, req.body.moreNum], callbackbatchLearnIdList, req, res);
 
     //commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnDataList, [ status, req.body.startNum, req.body.moreNum], callbackBatchLearningDataList, req, res);
 };

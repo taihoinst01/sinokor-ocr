@@ -1219,7 +1219,7 @@ function updateBatchLearningData(fileNames, data) {
 */
 
 // [Function]
-// [List] 배치학습데이터 조회
+// main menu batch learning 1 [List] 배치학습데이터 조회
 var searchBatchLearnDataList = function (addCond) {
     var param = {
         'startNum' : startNum,

@@ -365,6 +365,38 @@ exports.selectOcrFilePaths = function (req, done) {
     });
 };
 
+exports.selectBatchLearnList = function (reqNum, done) {
+    return new Promise(async function (resolve, reject) {
+        var res = [];
+        let conn;
+        let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            let beforeLearnIdList = await conn.execute(`SELECT IMGID, STATUS FROM TBL_BATCH_LEARN_IMGID WHERE ROWNUM <= :reqNum`, [reqNum]);
+
+            for (var row = 0; row < beforeLearnIdList.rows.length; row++) {
+                console.log(beforeLearnIdList.rows[row].IMGID);
+                res.push(await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID`, [beforeLearnIdList.rows[row].IMGID]));
+                
+            }
+
+            return done(null, res);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.convertTiftoJpg = function (originFilePath, done) {
     try {
         convertedFileName = originFilePath.split('.')[0] + '.jpg';
