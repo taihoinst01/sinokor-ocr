@@ -428,39 +428,37 @@ exports.selectBatchLearnList = function (req, done) {
 exports.convertTiftoJpg = function (originFilePath, done) {
     try {
         convertedFileName = originFilePath.split('.')[0] + '.jpg';
-        execSync('module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
+        execSync('module\\imageMagick\\convert.exe -density 800x800 ' + propertiesConfig.filepath.answerFileFrontPath + originFilePath + ' ' + propertiesConfig.filepath.answerFileFrontPath + convertedFileName);
             
         return done(null, convertedFileName);
     } catch (err) {
         console.log(err);
-        return done(null, "err");
+        return done(null, "error");
     } finally {
         console.log('convertTiftoJpg end');
     }
 };
 
-exports.callApiOcr = function (originImageArr, done) {
+exports.callApiOcr = function (req, done) {
     var pharsedOcrJson = "";
     try {
-        for (item in originImageArr) {
-            console.log(originImageArr[item]['FILEPATH'])
-            var uploadImage = fs.readFileSync(originImageArr[item]['FILEPATH'], 'binary');
-            var base64 = new Buffer(uploadImage, 'binary').toString('base64');
-            var binaryString = new Buffer(base64, 'base64').toString('binary');
-            uploadImage = new Buffer(binaryString, "binary");
+        var uploadImage = fs.readFileSync(req, 'binary');
+        var base64 = new Buffer(uploadImage, 'binary').toString('base64');
+        var binaryString = new Buffer(base64, 'base64').toString('binary');
+        uploadImage = new Buffer(binaryString, "binary");
 
-            var res = request('POST', propertiesConfig.ocr.uri, {
-                headers: {
-                    'Ocp-Apim-Subscription-Key': propertiesConfig.ocr.subscriptionKey,
-                    'Content-Type': 'application/octet-stream'
-                },
-                uri: propertiesConfig.ocr.uri + '?' + 'language=unk&detectOrientation=true',
-                body: uploadImage,
-                method: 'POST'
-            });
-            var resJson = JSON.parse(res.getBody('utf8'));
-            pharsedOcrJson = ocrJson(resJson.regions);
-        }
+        var res = request('POST', propertiesConfig.ocr.uri, {
+            headers: {
+                'Ocp-Apim-Subscription-Key': propertiesConfig.ocr.subscriptionKey,
+                'Content-Type': 'application/octet-stream'
+            },
+            uri: propertiesConfig.ocr.uri + '?' + 'language=unk&detectOrientation=true',
+            body: uploadImage,
+            method: 'POST'
+        });
+        var resJson = JSON.parse(res.getBody('utf8'));
+        pharsedOcrJson = ocrJson(resJson.regions);
+
         return done(null, pharsedOcrJson);
     } catch (err) {
         console.log(err);
