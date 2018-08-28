@@ -1817,7 +1817,7 @@ var fn_popBatchRun = function () {
                         chkCnt++;
                         totCount++;
                         //imgIdArray.push($(this).val());
-                        var filepath = $(this).parent().next().val();
+                        var filepath = $(this).val();
                         imgIdArray.push(filepath);
                     }
                 });
