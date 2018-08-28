@@ -2119,6 +2119,9 @@ function batchLearnTraing(filepath, uiCheck, done) {
             console.timeEnd("typo ML");
 
 
+            //similarity result
+            //[{'label': '0', 'text': 'reinsurers outstanding losses', 'location': '1594,201,683,47'}, {'label': '1', 'text': '28/06/2018', 'location': '1596,259,174,29'}]
+
             //form label mapping DL
             console.time("formLabelMapping ML");
             pythonConfig.formLabelMappingOptions.args = [];
