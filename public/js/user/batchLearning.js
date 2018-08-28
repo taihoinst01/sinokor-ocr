@@ -1338,13 +1338,13 @@ var searchBatchLearnDataList = function (addCond) {
                                         <td>` + makeMLSelect(mlData.rows, 34, rows[0].FILEPATH) + `</td> <!--MISCELLANEOUS -->
                                         <td>` + makeMLSelect(mlData.rows, 35, rows[0].FILEPATH) + `</td> <!--YOUR REF -->
                                     </tr>`;
-                    }
-                    /*
-                     * appendHtml += `
+                    } else {                   
+                        appendHtml += `
                                     <tr class="mlTr">
                                         <td colspan="36"></td>            
                                     </tr>`;
-                    */
+                    
+                    }
                 }
             } else {
                 appendHtml += `<tr><td colspan="39">조회할 데이터가 없습니다.</td></tr>`;
