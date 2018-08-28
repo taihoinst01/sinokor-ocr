@@ -203,7 +203,6 @@ function wrapWindowByMask() {
 // New Progress Bar (2018-08-27)
 function showProgressBar() {
     $('body').css('overflow', 'hidden');
-
     $('#loadingBackground').css('width', $('body').width());
     $('#loadingBackground').css('height', $('body').height());
     $('#loadingBackground').show();
@@ -216,13 +215,9 @@ function showProgressBar() {
     var width = fromVal;
     var percentNum = $('#ocrBar span');
     elem.style.width = fromVal + '%';
-    console.log("formVal.. : " + fromVal);
     percentNum.html(fromVal + '%');
-    console.log("toVal : " + toVal);
     var id = setInterval(frame, 100);
     function frame() {
-        console.log("width : " + width);
-        console.log("toVal : " + toVal);
         if (width >= 100) {
             endProgressBar();
             clearInterval(id);
@@ -234,7 +229,6 @@ function showProgressBar() {
             percentNum.html(width + '%');
         }
     }
-
     return id;
 }
 
