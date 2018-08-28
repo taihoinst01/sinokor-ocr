@@ -2118,33 +2118,39 @@ function batchLearnTraing(filepath, uiCheck, done) {
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
             console.timeEnd("typo ML");
 
+            console.time("similarity ML");
+            pythonConfig.typoOptions.args = [];
+            pythonConfig.typoOptions.args.push(JSON.stringify(resLegacyData));
+            pythonConfig.typoOptions.args.push(JSON.stringify(sidData));
+            var resPyStr = sync.await(PythonShell.run('similarity.py', pythonConfig.typoOptions, sync.defer()));
+            var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+            console.timeEnd("similarity ML");
+            
 
-            //similarity result
-            //[{'label': '0', 'text': 'reinsurers outstanding losses', 'location': '1594,201,683,47'}, {'label': '1', 'text': '28/06/2018', 'location': '1596,259,174,29'}]
+            // //form label mapping DL
+            // console.time("formLabelMapping ML");
+            // pythonConfig.formLabelMappingOptions.args = [];
+            // pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
+            // resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
+            // resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            // console.timeEnd("formLabelMapping ML");
 
-            //form label mapping DL
-            console.time("formLabelMapping ML");
-            pythonConfig.formLabelMappingOptions.args = [];
-            pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
-            resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
-            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            console.timeEnd("formLabelMapping ML");
+            // //form mapping DL
+            // console.time("formMapping ML");
+            // pythonConfig.formMappingOptions.args = [];
+            // pythonConfig.formMappingOptions.args.push(JSON.stringify(resPyArr));
+            // resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
+            // resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            // var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer()));
+            // console.timeEnd("formMapping ML");
 
-            //form mapping DL
-            console.time("formMapping ML");
-            pythonConfig.formMappingOptions.args = [];
-            pythonConfig.formMappingOptions.args.push(JSON.stringify(resPyArr));
-            resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
-            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer()));
-            console.timeEnd("formMapping ML");
-
-            //column mapping DL
-            console.time("columnMapping ML");
-            pythonConfig.columnMappingOptions.args = [];
-            pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
-            resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
-            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            // //column mapping DL
+            // console.time("columnMapping ML");
+            // pythonConfig.columnMappingOptions.args = [];
+            // pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
+            // resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
+            // resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
 
 
             var mlData = {};
