@@ -223,8 +223,14 @@ var fnSearchBatchLearningDataList = function (req, res) {
             //hskim 20180828 일괄학습 화면 상단 셀렉트 버튼에서 값 가져오게 변경
             //var reqNum = 12;
             var originImageArr = sync.await(oracle.selectBatchLearnList(req, sync.defer()));
+            var filePathList = [];
+            for (var i = 0; i < originImageArr.length; i++) {
+                filePathList.push(originImageArr[i].rows[0].FILEPATH);
+            }
 
-            res.send({ data: originImageArr, code: 200 });
+            var mlData = sync.await(oracle.selectBatchLearnMlList(filePathList, sync.defer()));
+
+            res.send({ data: originImageArr, mlData: mlData, code: 200 });
         } catch (e) {
             console.log(e);
             res.send({ code: 400 });

@@ -529,7 +529,10 @@ var batchLearningConfig = {
             FROM TBL_BATCH_LEARN_ID
             WHERE STATUS = :status ) A
          WHERE ROWNUM >= :startNum and ROWNUM <= :endNum 
-        `
+        `,
+    selectBatchLearnMlList:
+        `SELECT IMGID, COLLABEL, COLVALUE, LOCATION, SID, FILEPATH 
+         FROM TBL_BATCH_ML_EXPORT WHERE FILEPATH IN `
 };
 
 var uiLearningConfig = {
