@@ -32,7 +32,7 @@ connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
 conn = cx_Oracle.connect(connInfo)
 curs = conn.cursor()
-sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_COLUMN_MAPPING_TRAIN_TEMP"
+sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_COLUMN_MAPPING_TRAIN"
 curs.execute(sql)
 rows = curs.fetchall()
 
