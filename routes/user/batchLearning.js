@@ -70,7 +70,7 @@ router.get('/stest', function (req, res) {
     });
 });
 */
-
+/*
 router.get('/stest2', function (req, res) {
     var arg = {
         data: [
@@ -89,7 +89,7 @@ router.get('/stest2', function (req, res) {
         });
     });
 });
-
+*/
 
 /***************************************************************
  * Router
