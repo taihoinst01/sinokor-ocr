@@ -365,7 +365,7 @@ exports.selectOcrFilePaths = function (req, done) {
     });
 };
 
-exports.selectBatchLearnList = function (reqNum, done) {
+exports.selectBatchLearnList = function (req, done) {
     return new Promise(async function (resolve, reject) {
         var res = [];
         let conn;
@@ -373,12 +373,40 @@ exports.selectBatchLearnList = function (reqNum, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            let beforeLearnIdList = await conn.execute(`SELECT IMGID, STATUS FROM TBL_BATCH_LEARN_IMGID WHERE ROWNUM <= :reqNum`, [reqNum]);
+            var idCond = [];
+            var status;
+            if (!commonUtil.isNull(req.body.addCond)) {
+                if (req.body.addCond == "LEARN_N") status = 'N';
+                else if (req.body.addCond == "LEARN_Y") status = 'Y';
+            }
 
-            for (var row = 0; row < beforeLearnIdList.rows.length; row++) {
-                console.log(beforeLearnIdList.rows[row].IMGID);
-                res.push(await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID`, [beforeLearnIdList.rows[row].IMGID]));
-                
+            idCond.push(status);
+            idCond.push(req.body.moreNum);
+            let resLearnId = await conn.execute(`SELECT FILEPATH, STATUS FROM TBL_BATCH_LEARN_ID WHERE STATUS = :status AND ROWNUM <= :num `, idCond);
+
+            var answerCond = [];
+            var answerFileSql = "(";
+            for (var i = 0; i < resLearnId.rows.length; i++) {
+                answerCond.push(resLearnId.rows[i].FILEPATH);
+                answerFileSql += (i > 0) ? ", :" + i : ":" + i;
+            }
+            answerFileSql += ")";
+
+            let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH IN` + answerFileSql, answerCond);
+
+            for (var i = 0; i < resAnswerFile.rows.length; i++) {
+                var imgId = resAnswerFile.rows[0].IMGID;
+                var imgStartNo = resAnswerFile.rows[0].PAGENUM;
+                var filepath = resAnswerFile.rows[0].FILEPATH;
+                var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
+
+                let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND IMGFILESTARTNO = :imgStartNo`, [imgId, imgStartNo]);
+
+                for (var row = 0; row < resAnswerData.rows.length; row++) {
+                    resAnswerData.rows[row].FILEPATH = filepath;
+                    resAnswerData.rows[row].FILENAME = filename;
+                    res.push(resAnswerData);
+                }
             }
 
             return done(null, res);
