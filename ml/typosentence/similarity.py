@@ -27,7 +27,7 @@ def text_to_vector(text):
 
 
 #similarity
-nltk.download('punkt') # if necessary...
+#nltk.download('punkt') # if necessary...
 
 stemmer = nltk.stem.porter.PorterStemmer()
 remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)

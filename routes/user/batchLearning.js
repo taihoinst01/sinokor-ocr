@@ -2121,7 +2121,7 @@ function batchLearnTraing(filepath, uiCheck, done) {
             pythonConfig.typoOptions.args.push(JSON.stringify(resLegacyData));
             pythonConfig.typoOptions.args.push(JSON.stringify(sidData));
             var resPyStr = sync.await(PythonShell.run('similarity.py', pythonConfig.typoOptions, sync.defer()));
-            var resPyArr = JSON.parse(resPyStr[3].replace(/'/g, '"'));
+            var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             //var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
             console.timeEnd("similarity ML");
             
