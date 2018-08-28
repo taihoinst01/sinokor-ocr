@@ -52,7 +52,7 @@ exports.train = function (req, done) {
             }
 
 
-            request.post('http://localhost:3001/ml/train', { json: true, body: formData }, function (err, httpRes, body) {
+            request.post('http://sinokor-rest.azurewebsites.net/ml/train', { json: true, body: formData }, function (err, httpRes, body) {
                 return done(null, body);
             });
             /*
@@ -65,6 +65,29 @@ exports.train = function (req, done) {
             reject(err);
         } finally {
             
+        }
+    });
+};
+
+exports.run = function (req, type, done) {
+    return new Promise(async function (resolve, reject) {
+        try {
+            let conn;
+            let result;
+            conn = await oracledb.getConnection(dbConfig);
+
+            var formData = {
+                data: req,
+                type: type
+            };
+
+            request.post('http://sinokor-rest.azurewebsites.net/ml/api', { json: true, body: formData }, function (err, httpRes, body) {
+                return done(null, body);
+            });
+        } catch (err) {
+            reject(err);
+        } finally {
+
         }
     });
 };

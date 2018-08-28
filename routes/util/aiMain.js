@@ -122,6 +122,37 @@ exports.addColumnMappingTrain = function (data, callback) {
 };
 
 // ---- Marchine Learning Studio Version ----- //
+exports.runFromMLStudio = function (data, callback) {
+    sync.fiber(function () {
+
+        try {
+            // Form Label Mapping
+            data = sync.await(oracle.selectFormLabelMappingFromMLStudio(data, sync.defer()));
+            data = sync.await(mlStudio.run(data, 'formLabelMapping', sync.defer()));
+            //console.log(data);
+
+            // Form Mapping
+            data = sync.await(oracle.selectFormMappingFromMLStudio(data, sync.defer()));
+            data = sync.await(mlStudio.run(data, 'formMapping', sync.defer()));
+            if (!data.docCategory.SEQNUM) {
+                data = sync.await(oracle.selectDocCategoryFromMLStudio(data, sync.defer()));
+            }
+            //console.log(data);
+
+            // column Mapping
+            data = sync.await(oracle.selectColumnMappingFromMLStudio(data, sync.defer()));
+            //console.log(data);
+            data = sync.await(mlStudio.run(data, 'columnMapping', sync.defer()));
+            //console.log(data);
+
+            callback(data);
+        } catch (e) {
+            console.log(e);
+            callback(data);
+        }
+    });
+};
+
 exports.addTrainFromMLStudio = function (data, callback) {
     sync.fiber(function () {
 
@@ -131,6 +162,34 @@ exports.addTrainFromMLStudio = function (data, callback) {
     });
 };
 
+exports.addLabelMappingTrainFromMLStudio = function (data, callback) {
+    sync.fiber(function () {
+
+        var sidData = sync.await(oracle.select(data.data, sync.defer()));
+        data.data = sidData;
+        sync.await(oracle.insertLabelMapping(data, sync.defer()));
+
+        callback(data);
+    });
+};
+
+exports.addDocMappingTrainFromMLStudio = function (data, callback) {
+    sync.fiber(function () {
+
+        sync.await(oracle.insertDocMapping(data, sync.defer()));
+
+        callback(data);
+    });
+};
+
+exports.addColumnMappingTrainFromMLStudio = function (data, callback) {
+    sync.fiber(function () {
+
+        sync.await(oracle.insertColumnMapping(data, sync.defer()));
+
+        callback(data);
+    });
+};
 // ---- Marchine Learning Studio Version ----- //
 
 // [step1] typo sentence ML

@@ -697,7 +697,26 @@ var mlConfig = {
          FROM
             tbl_document_category
          WHERE
-            docType = :docType `
+            docType = :docType `,
+    selectFormLabelMapping:
+        `SELECT
+            DATA, CLASS
+         FROM
+            TBL_FORM_LABEL_MAPPING
+         WHERE DATA IN `,
+    selectFormMapping:
+        `SELECT 
+            DATA, CLASS
+         FROM
+            TBL_FORM_MAPPING
+         WHERE DATA = :DATA `,
+    selectColumnMapping:
+        `SELECT
+            DATA, CLASS
+         FROM
+            TBL_COLUMN_MAPPING_TRAIN
+         WHERE DATA IN `
+
 };
 
 module.exports = {
