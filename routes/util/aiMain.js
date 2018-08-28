@@ -18,6 +18,7 @@ const defaults = {
 
 exports.typoSentenceEval2 = function (data, callback) {
     sync.fiber(function () {
+        pythonConfig.typoOptions.args = [];
         pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(data)));
 
         var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
@@ -30,6 +31,7 @@ exports.typoSentenceEval2 = function (data, callback) {
 
 exports.formLabelMapping2 = function (data, callback) {
     sync.fiber(function () {
+        pythonConfig.formLabelMappingOptions.args = [];
         pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(data));
 
         var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
@@ -44,6 +46,7 @@ exports.formLabelMapping2 = function (data, callback) {
 
 exports.formMapping2 = function (data, callback) {
     sync.fiber(function () {
+        pythonConfig.formMappingOptions.args = [];
         pythonConfig.formMappingOptions.args.push(JSON.stringify(data));
 
         var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
@@ -59,6 +62,7 @@ exports.formMapping2 = function (data, callback) {
 
 exports.columnMapping2 = function (data, callback) {
     sync.fiber(function () {
+        pythonConfig.columnMappingOptions.args = [];
         pythonConfig.columnMappingOptions.args.push(JSON.stringify(data.data));
 
         var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
@@ -75,7 +79,8 @@ exports.columnMapping2 = function (data, callback) {
 
 exports.addLabelMappingTrain = function (data, callback) {
     sync.fiber(function () {
-        
+        pythonConfig.formLabelMappingOptions.args = [];
+
         var sidData = sync.await(oracle.select(data.data, sync.defer()));
 
         data.data = sidData;
@@ -94,6 +99,7 @@ exports.addDocMappingTrain = function (data, callback) {
     sync.fiber(function () {
         sync.await(oracle.insertDocMapping(data, sync.defer()));
 
+        pythonConfig.formMappingOptions.args = [];
         pythonConfig.formMappingOptions.args = ["training"];
 
         sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
@@ -106,6 +112,7 @@ exports.addColumnMappingTrain = function (data, callback) {
     sync.fiber(function () {
         sync.await(oracle.insertColumnMapping(data, sync.defer()));
 
+        pythonConfig.columnMappingOptions.args = [];
         pythonConfig.columnMappingOptions.args = ["training"];
 
         sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));

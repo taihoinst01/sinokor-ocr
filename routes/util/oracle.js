@@ -54,6 +54,12 @@ exports.selectDocCategory = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
             let sqltext = queryConfig.mlConfig.selectDocCategory;
 
+            if (docInfo.docType) {
+
+            } else {
+                docInfo.docType = 0;
+            }
+
             let result = await conn.execute(sqltext, [docInfo.docType]);
 
             returnReq.data = req;
