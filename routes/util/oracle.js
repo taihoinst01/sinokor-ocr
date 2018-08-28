@@ -870,7 +870,7 @@ exports.selectColumn = function (req, done) {
         }
     });
 };
-
+/*
 exports.selectFormLabelMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -881,6 +881,172 @@ exports.selectFormLabelMapping = function (req, done) {
             result = await conn.execute(queryConfig.mlConfig.selectFormLabelMapping);
 
             return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+*/
+exports.selectFormLabelMappingFromMLStudio = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var inQuery = "(";
+            for (var i in req.data) {
+                inQuery += "'" + req.data[i].sid + "',";
+            }
+            inQuery = inQuery.substring(0, inQuery.length - 1);
+            inQuery += ")";
+            result = await conn.execute(queryConfig.mlConfig.selectFormLabelMapping + inQuery);
+            if (result.rows.length > 0) {
+                for (var i in req.data) {
+                    for (var j in result.rows) {
+                        var row = result.rows[j];
+                        if (req.data[i].sid == row.DATA) {
+                            req.data[i].formLabel = row.CLASS;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return done(null, req);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectFormMappingFromMLStudio = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var param = []
+            var ogCompany = [];
+            var ctnm = [];
+            for (var i in req.data) {
+                if (req.data[i].formLabel == 1) {
+                    ogCompany.push(req.data[i].sid);
+                } else if (req.data[i].formLabel == 2) {
+                    ctnm.push(req.data[i].sid);
+                }
+            }
+            if (ogCompany.length == 1 && ctnm.length == 1) {
+                param.push(ogCompany[0] + ',' + ctnm[0]);
+            } else if (ogCompany.length > 1 && ctnm.length == 1) {
+                for (var i in ogCompany) {
+                    param.push(ogCompany[i] + ',' + ctnm[0]);
+                }
+            } else if (ogCompany.length == 1 && ctnm.length > 1) {
+                for (var i in ctnm) {
+                    param.push(ogCompany[0] + ',' + ctnm[i]);
+                }
+            }
+            for (var i in param) {
+                result = await conn.execute(queryConfig.mlConfig.selectFormMapping, [param[i]]);
+                if (result.rows.length > 0) {
+                    result = await conn.execute(queryConfig.mlConfig.selectDocCategory, [result.rows[0].CLASS]);
+                    if (result.rows.length > 0) {
+                        req.docCategory = result.rows[0];
+                        break;
+                    }
+                }
+            }
+
+            return done(null, req);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectDocCategoryFromMLStudio = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            result = await conn.execute(queryConfig.mlConfig.selectDocCategory, [req.docCategory.DOCTYPE]);
+            if (result.rows.length > 0) {
+                req.docCategory = result.rows[0];
+            } 
+
+            return done(null, req);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+}; 
+exports.selectColumnMappingFromMLStudio = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var inQuery = "(";
+            for (var i in req.data) {
+                inQuery += "'" + req.docCategory.DOCTYPE + "," + req.data[i].sid + "',";
+            }
+            inQuery = inQuery.substring(0, inQuery.length - 1);
+            inQuery += ")";
+            result = await conn.execute(queryConfig.mlConfig.selectColumnMapping + inQuery);
+
+            if (result.rows.length > 0) {
+                for (var i in req.data) {
+                    for (var j in result.rows) {
+                        var row = result.rows[j];
+                        if (req.docCategory.DOCTYPE + "," + req.data[i].sid == row.DATA) {
+                            req.data[i].colLbl = row.CLASS;
+                            break;
+                        }
+                    }
+                }
+            }         
+
+            return done(null, req);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {

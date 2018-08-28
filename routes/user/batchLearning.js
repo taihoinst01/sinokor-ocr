@@ -53,6 +53,43 @@ const defaults = {
 };
 var router = express.Router();
 
+/*
+//ml studio train test 용
+router.get('/stest', function (req, res) {
+    var data = {
+        data: [
+            { location: "1018,240,411,87", text: "apex", formLabel: 3, colLbl: 36, sid: "1018,240,25767,0,0,0,0" },
+            { location: "574,847,492,32", text: "a solidarity- first insurance 2018", formLabel: 1, colLbl: 0, sid: "574,847,14459,97308,14535,14813,97309" },
+            { location: "574,907,568,32", text: "a marine cargo surplus 2018 a inward", formLabel: 2, colLbl: 1, sid: "574,907,14459,16518,20299,21636,97309" }
+        ],
+        docCategory: { SEQNUM: "4", DOCNAME: "Nasco 계산서", DOCTYPE: "2", SAMPLEIMAGEPATH: "sample/nasco.jpg", score: 0.99 }
+    };
+
+    aimain.addTrainFromMLStudio(data, function (result) {
+        res.send(result);
+    });
+});
+*/
+
+router.get('/stest2', function (req, res) {
+    var arg = {
+        data: [
+            { location: "1018,240,411,87", text: "apex" },
+            { location: "574,847,492,32", text: "a solidarity- first insurance 2018" },
+            { location: "574,907,568,32", text: "a marine cargo surplus 2018 a inward"}
+        ]
+    };
+
+    aimain.typoSentenceEval2(arg.data, function (typoResult) {
+        arg.data = typoResult;
+        console.log('execute typo ML');
+        //console.log(arg);
+        aimain.runFromMLStudio(arg, function (result) {
+            res.send(result);
+        });
+    });
+});
+
 
 /***************************************************************
  * Router
