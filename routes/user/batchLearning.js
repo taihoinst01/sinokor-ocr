@@ -2076,7 +2076,6 @@ function batchLearnTraing(filepath, uiCheck, done) {
             var retData = {};
 
             var resLegacyData = sync.await(oracle.selectLegacyFilepath(filepath, sync.defer()));
-            
 
             if (resLegacyData[0].rows[0].length < 0) {
                 return done(null, "error getLegacy");
@@ -2084,7 +2083,7 @@ function batchLearnTraing(filepath, uiCheck, done) {
 
             console.time("convertTiftoJpg");
             var filename = resLegacyData[0].rows[0].FILENAME;
-            var convertFilename = '';
+            var convertFilpath = filepath;
             if (filename.split('.')[1].toLowerCase() === 'tif' || filename.split('.')[1].toLowerCase() === 'tiff') {
                 let result = sync.await(oracle.convertTiftoJpg(filepath, sync.defer()));
 
@@ -2093,7 +2092,7 @@ function batchLearnTraing(filepath, uiCheck, done) {
                 }
 
                 if (result) {
-                    convertFilename = result;
+                    convertFilpath = result;
                 }
             }
             console.timeEnd("convertTiftoJpg");
@@ -2157,17 +2156,6 @@ function batchLearnTraing(filepath, uiCheck, done) {
             retData["mlexport"] = mlData;
 
             console.timeEnd("columnMapping ML");
-
-            //select legacy data
-            console.time("get legacy");
-            var cobineRegacyData = sync.await(oracle.selectLegacyData(imgId, sync.defer()));
-
-            retData["regacy"] = cobineRegacyData;
-
-            //insert legacy data to batchLearnData
-            var resRegacyData = sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
-            console.timeEnd("get legacy");
-
 
             //insert MLexport data to batchMlExport
             console.time("insert MLExport");

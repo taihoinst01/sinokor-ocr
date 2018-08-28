@@ -405,8 +405,9 @@ exports.selectBatchLearnList = function (req, done) {
                 for (var row = 0; row < resAnswerData.rows.length; row++) {
                     resAnswerData.rows[row].FILEPATH = filepath;
                     resAnswerData.rows[row].FILENAME = filename;
-                    res.push(resAnswerData);
                 }
+
+                res.push(resAnswerData);
             }
 
             return done(null, res);
@@ -491,29 +492,6 @@ exports.selectLegacyData = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
 
             var tempImageFileName = req;
-            /*
-            for (image in req) {
-                var items = req[image]['mlexport']
-                for (var item = 0; item < req[image]['mlexport'].length; item++) {
-                    if (req[image][item]['ORIGINFILENAME']) {
-                        tempImageFileName = req[image][item]['ORIGINFILENAME']
-                    }
-
-                }
-                let result = await conn.execute(`SELECT IMGID, PAGENUM FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
-                result.rows[0][0] = 154384
-
-                result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILEENDNO >= :PAGEEND AND IMGFILESTARTNO <= :PAGESTART`, [result.rows[0][0], result.rows[0][1], result.rows[0][1]]);
-                image.push(result.rows);
-                console.log(result.rows[0][1])
-
-            }
-            */
-
-            //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
-            //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, ['204d61.tif']);
-
-            //let result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [10, 2, 2]);
             let result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID`, [req]);
 
             return done(null, result.rows);
@@ -708,7 +686,8 @@ exports.insertMLData = function (req, done) {
 
             return done(null, "mlExport");
         } catch (err) { // catches errors in getConnection and the query
-            reject(err);
+            console.log(err);
+            return done(null, "error");
         } finally {
             if (conn) {   // the conn assignment worked, must release
                 try {
@@ -889,8 +868,9 @@ exports.selectLegacyFilepath = function (req, done) {
                 for (var row = 0; row < resAnswerData.rows.length; row++) {
                     resAnswerData.rows[row].FILEPATH = filepath;
                     resAnswerData.rows[row].FILENAME = filename;
-                    res.push(resAnswerData);
                 }
+
+                res.push(resAnswerData);
             }
 
             return done(null, res);
