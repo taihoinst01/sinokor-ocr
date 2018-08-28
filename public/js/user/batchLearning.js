@@ -1257,7 +1257,7 @@ var searchBatchLearnDataList = function (addCond) {
                             else checkboxHtml = `<td rowspan="` +(rows.length + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[y].IMGID)}" class="stb00" name="listCheck_after" /></div></td>`;
 
                             appendHtml += checkboxHtml;
-                            appendHtml += `<td rowspan="` + (rows.length + 1) + `">${nvl(rows[y].IMGID)}</td > < !--이미지ID-->`;
+                            appendHtml += `<td rowspan="` + (rows.length + 1) + `">${nvl(rows[y].FILENAME)}</td > < !--이미지ID-->`;
                         }
                         appendHtml += `                                    
                                         <td>${nvl(rows[y].OGCOMPANYNAME)}</td> <!--출재사명-->
