@@ -692,7 +692,9 @@ exports.insertMLData = function (req, done) {
                 cond.push(req.mlData[0][i].location);
                 cond.push(req.mlData[0][i].sid);
 
-                let colData = await conn.execute(insSql, cond);
+                if (cond.length == 6) {
+                    let colData = await conn.execute(insSql, cond);
+                }
             }
 
             return done(null, "mlExport");
