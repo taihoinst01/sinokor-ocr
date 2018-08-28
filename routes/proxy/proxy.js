@@ -5,7 +5,7 @@ var multer = require("multer");
 var request = require("request");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
-var proxyConfig = require('../../config/propertiesConfig.js').proxy;
+var propertiesConfig = require('../../config/propertiesConfig.js');
 var router = express.Router();
 
 router.get('/favicon.ico', function (req, res) {
@@ -18,7 +18,7 @@ router.post('/ocr', function (req, res) {
 
     var formData = {
         file: {
-            value: fs.createReadStream('uploads/' + fileName),
+            value: fs.createReadStream(propertiesConfig.filpath.convertedImagePath + '\\' + fileName),
             options: {
                 filename: fileName,
                 contentType: 'image/jpeg'
@@ -26,7 +26,7 @@ router.post('/ocr', function (req, res) {
         }
     };
 
-    request.post({ url: proxyConfig.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
+    request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
         var data = JSON.parse(body);
         //console.log(data);
         res.send(data);
