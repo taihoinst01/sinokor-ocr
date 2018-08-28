@@ -2049,7 +2049,6 @@ router.post('/batchLearnTraing', function (req, res) {
 
     sync.fiber(function () {
         var filepath = req.body.imgIdArray;
-        filepath[0] = '/MIG/2014/img1/7a/25b7a/209391.tif';
         var uiCheck = req.body.uiCheck;
         var retData = [];
         var uiTraining = '';
@@ -2122,8 +2121,8 @@ function batchLearnTraing(filepath, uiCheck, done) {
             pythonConfig.typoOptions.args.push(JSON.stringify(resLegacyData));
             pythonConfig.typoOptions.args.push(JSON.stringify(sidData));
             var resPyStr = sync.await(PythonShell.run('similarity.py', pythonConfig.typoOptions, sync.defer()));
-            var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+            var resPyArr = JSON.parse(resPyStr[3].replace(/'/g, '"'));
+            //var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
             console.timeEnd("similarity ML");
             
             // //form label mapping DL
@@ -2155,7 +2154,8 @@ function batchLearnTraing(filepath, uiCheck, done) {
             //if (docData.docCategory) {
             //    mlData["docCategory"] = docData.docCategory[0];
             //}
-            mlData["mlData"] = JSON.parse('[{ "label": "CTOGCOMPANYNAMENM", "text": "reinsurers outstanding losses", "location": "1594,201,683,47", "sid": "1594,201,0,17747,18754,0,0" }, { "label": "CTNM", "text": "28/06/2018", "location": "1596,259,174,29", "sid":"1596,259,0,0,0,0,0" }]');
+            //mlData["mlData"] = JSON.parse('[{ "label": "CTOGCOMPANYNAMENM", "text": "reinsurers outstanding losses", "location": "1594,201,683,47", "sid": "1594,201,0,17747,18754,0,0" }, { "label": "CTNM", "text": "28/06/2018", "location": "1596,259,174,29", "sid":"1596,259,0,0,0,0,0" }]');
+            mlData["mlData"] = resPyArr;
             mlData["filepath"] = filepath;
             mlData["imgId"] = imgId;
             retData["mlexport"] = mlData;
