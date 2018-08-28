@@ -405,8 +405,9 @@ exports.selectBatchLearnList = function (req, done) {
                 for (var row = 0; row < resAnswerData.rows.length; row++) {
                     resAnswerData.rows[row].FILEPATH = filepath;
                     resAnswerData.rows[row].FILENAME = filename;
-                    res.push(resAnswerData);
                 }
+
+                res.push(resAnswerData);
             }
 
             return done(null, res);
@@ -435,7 +436,7 @@ exports.convertTiftoJpg = function (originFilePath, done) {
         console.log(err);
         return done(null, "error");
     } finally {
-        console.log('convertTiftoJpg end');
+
     }
 };
 
@@ -464,7 +465,7 @@ exports.callApiOcr = function (req, done) {
         console.log(err);
         return done(null, 'error');
     } finally {
-        console.log('callApiOcr end');
+
     }
 };
 
@@ -491,29 +492,6 @@ exports.selectLegacyData = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
 
             var tempImageFileName = req;
-            /*
-            for (image in req) {
-                var items = req[image]['mlexport']
-                for (var item = 0; item < req[image]['mlexport'].length; item++) {
-                    if (req[image][item]['ORIGINFILENAME']) {
-                        tempImageFileName = req[image][item]['ORIGINFILENAME']
-                    }
-
-                }
-                let result = await conn.execute(`SELECT IMGID, PAGENUM FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
-                result.rows[0][0] = 154384
-
-                result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILEENDNO >= :PAGEEND AND IMGFILESTARTNO <= :PAGESTART`, [result.rows[0][0], result.rows[0][1], result.rows[0][1]]);
-                image.push(result.rows);
-                console.log(result.rows[0][1])
-
-            }
-            */
-
-            //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, [tempImageFileName]);
-            //let result = await conn.execute(`SELECT IMGID, PAGENUM, TOTALCOUNT  FROM TBL_BATCH_ANSWER_FILE WHERE export_filename(FILEPATH) = :PARAM AND ROWNUM = 1`, ['204d61.tif']);
-
-            //let result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID AND IMGFILESTARTNO >= :PAGESTART AND IMGFILEENDNO <= :PAGEEND`, [10, 2, 2]);
             let result = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :IMGID`, [req]);
 
             return done(null, result.rows);
@@ -692,23 +670,35 @@ exports.insertMLData = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
+            let resCol = await conn.execute("SELECT * FROM TBL_COLUMN_MAPPING_CLS");
+
             insSql = queryConfig.batchLearningConfig.insertMlExport;
             delSql = queryConfig.batchLearningConfig.deleteMlExport;
 
-            let delRes = await conn.execute(delSql, [req.imgId]);
+            let delRes = await conn.execute(delSql, [req.filepath]);
 
-            for (var i = 0; i < req.mlData.length; i++) {
+            for (var i = 0; i < req.mlData[0].length; i++) {
                 var cond = [];
                 cond.push(req.imgId);
-                cond.push(req.mlData[i].colLbl);
-                cond.push(req.mlData[i].text);
+                cond.push(req.filepath);
+
+                for (var row = 0; row < resCol.rows.length; row++) {
+                    if (req.mlData[0][i].label == resCol.rows[row].COLTYPE) {
+                        cond.push(resCol.rows[row].COLNUM);
+                    }
+                }
+
+                cond.push(req.mlData[0][i].text);
+                cond.push(req.mlData[0][i].location);
+                cond.push(req.mlData[0][i].sid);
 
                 let colData = await conn.execute(insSql, cond);
             }
 
             return done(null, "mlExport");
         } catch (err) { // catches errors in getConnection and the query
-            reject(err);
+            console.log(err);
+            return done(null, "error");
         } finally {
             if (conn) {   // the conn assignment worked, must release
                 try {
@@ -889,8 +879,9 @@ exports.selectLegacyFilepath = function (req, done) {
                 for (var row = 0; row < resAnswerData.rows.length; row++) {
                     resAnswerData.rows[row].FILEPATH = filepath;
                     resAnswerData.rows[row].FILENAME = filename;
-                    res.push(resAnswerData);
                 }
+
+                res.push(resAnswerData);
             }
 
             return done(null, res);
