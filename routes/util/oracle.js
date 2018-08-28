@@ -677,20 +677,20 @@ exports.insertMLData = function (req, done) {
 
             let delRes = await conn.execute(delSql, [req.filepath]);
 
-            for (var i = 0; i < req.mlData.length; i++) {
+            for (var i = 0; i < req.mlData[0].length; i++) {
                 var cond = [];
                 cond.push(req.imgId);
                 cond.push(req.filepath);
 
                 for (var row = 0; row < resCol.rows.length; row++) {
-                    if (req.mlData[i].label == resCol.rows[row].COLTYPE) {
+                    if (req.mlData[0][i].label == resCol.rows[row].COLTYPE) {
                         cond.push(resCol.rows[row].COLNUM);
                     }
                 }
 
-                cond.push(req.mlData[i].text);
-                cond.push(req.mlData[i].location);
-                cond.push(req.mlData[i].sid);
+                cond.push(req.mlData[0][i].text);
+                cond.push(req.mlData[0][i].location);
+                cond.push(req.mlData[0][i].sid);
 
                 let colData = await conn.execute(insSql, cond);
             }
