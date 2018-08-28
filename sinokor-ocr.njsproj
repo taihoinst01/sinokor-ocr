@@ -1035,6 +1035,7 @@
     <Compile Include="routes\util\largeExcelRead.js" />
     <Compile Include="routes\util\logger.js" />
     <Compile Include="routes\util\ocr.js" />
+    <Compile Include="routes\util\mlStudio.js" />
     <Compile Include="routes\util\oracle.js" />
     <Compile Include="routes\util\python-shell.js" />
     <Compile Include="routes\util\sync.js" />

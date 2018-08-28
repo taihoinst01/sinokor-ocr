@@ -10,6 +10,7 @@ var pythonConfig = require(appRoot + '/config/pythonConfig');
 var sync = require('./sync.js');
 var PythonShell = require('python-shell')
 var oracle = require('./oracle.js');
+var mlStudio = require('./mlStudio.js');
 
 const defaults = {
     encoding: 'utf8',
@@ -113,9 +114,17 @@ exports.addColumnMappingTrain = function (data, callback) {
     });
 };
 
+// ---- Marchine Learning Studio Version ----- //
+exports.addTrainFromMLStudio = function (data, type, callback) {
+    sync.fiber(function () {
 
+        var result = sync.await(mlStudio.train(data, type, sync.defer()));
+        callback(result);
 
+    });
+};
 
+// ---- Marchine Learning Studio Version ----- //
 
 // [step1] typo sentence ML
 exports.typoSentenceEval = function (data, callback) {
