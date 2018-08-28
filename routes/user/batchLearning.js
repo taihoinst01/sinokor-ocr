@@ -187,7 +187,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
         try {
 
             var retData = {};
-            var reqNum = 12;
+            var reqNum = req.body.moreNum;
             var originImageArr = sync.await(oracle.selectBatchLearnList(reqNum, sync.defer()));
 
             res.send({ data: originImageArr, code: 200 });

@@ -799,9 +799,9 @@ function hoverSquare(e) {
     y = parseInt(location[1]);
     textWidth = parseInt(location[2]);
     textHeight = parseInt(location[3]);
-    console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
+    //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
 
-    console.log("x: " + (x) + 'px y: ' + (y) + 'px');
+    //console.log("x: " + (x) + 'px y: ' + (y) + 'px');
     // 해당 텍스트 x y좌표 원본 이미지에서 찾기
 
     //var xPosition = (x * 0.4) > 0 ? '-' + ((x * 0.4) + 'px ') : (x * 0.4)  + 'px ';
@@ -809,7 +809,7 @@ function hoverSquare(e) {
 
     var xPosition =  (( - (x * 0.4)) + 300) + 'px ' ;
     var yPosition = (( - (y * 0.4)) + 200) + 'px';
-    console.log(xPosition + yPosition);
+    //console.log(xPosition + yPosition);
     $('#imageZoom').css('background-position', xPosition + yPosition);
 
     
