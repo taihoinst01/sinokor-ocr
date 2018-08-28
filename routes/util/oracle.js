@@ -1091,3 +1091,35 @@ exports.selectColumnMappingFromMLStudio = function (req, done) {
         }
     });
 };
+
+exports.selectBatchLearnMlList = function (filePathList, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var inQuery = "(";
+            for (var i in filePathList) {
+                inQuery += "'" + filePathList[i] + "',";
+            }
+            inQuery = inQuery.substring(0, inQuery.length - 1);
+            inQuery += ")";
+            result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnMlList + inQuery);
+
+
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
