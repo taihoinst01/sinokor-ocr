@@ -73,7 +73,8 @@ router.post('/typoSentence', function (req, res) {
     try {
         aimain.typoSentenceEval2(data, function (typoResult) {
             console.log('execute typo ML');
-            res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'fl' });
+            res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'cm'});
+            //res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'fl' });
         });
     }
     catch (exception) {
@@ -173,7 +174,7 @@ router.post('/columnMapping', function (req, res) {
     });
 
     try {
-        aimain.columnMapping2(arg, function (columnResult) {
+        aimain.columnMapping3(arg, function (columnResult) {
             console.log('execute columnMapping ML');
             res.send({ 'fileName': fileName, 'data': columnResult, nextType: 'sc' });          
         });
@@ -186,10 +187,11 @@ router.post('/columnMapping', function (req, res) {
 router.post('/searchDBColumns', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
-    var docCategory = (req.body.data.docCategory) ? req.body.data.docCategory : null;
+    //var docCategory = (req.body.data.docCategory) ? req.body.data.docCategory : null;
 
     commonDB.reqQuery(queryConfig.dbcolumnsConfig.selectColMappingCls, function (rows, req, res) {
-        res.send({ 'fileName': fileName, 'data': data, 'docCategory': docCategory, 'column': rows, 'score': data.score == undefined ? 0 : data.score });
+        res.send({ 'fileName': fileName, 'data': data, 'column': rows, });
+        //res.send({ 'fileName': fileName, 'data': data, 'docCategory': docCategory, 'column': rows, 'score': data.score == undefined ? 0 : data.score });
     }, req, res);
 });
 

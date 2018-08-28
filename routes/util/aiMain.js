@@ -63,13 +63,31 @@ exports.formMapping2 = function (data, callback) {
 exports.columnMapping2 = function (data, callback) {
     sync.fiber(function () {
         pythonConfig.columnMappingOptions.args = [];
-        pythonConfig.columnMappingOptions.args.push(JSON.stringify(data.data));
+        //pythonConfig.columnMappingOptions.args.push(JSON.stringify(data.data));
+        pythonConfig.columnMappingOptions.args.push(JSON.stringify(data));
 
         var resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
         //var answerData = sync.await(oracle.selectContractMapping(data, sync.defer())); // select tbl_contract_mapping
         if (!resPyArr.code || (resPyArr.code && resPyArr.code == 200)) {
-            data.data = resPyArr;
+            //data.data = resPyArr;
+            data = resPyArr;
+            callback(data);
+        } else {
+            callback(null);
+        }
+    });
+};
+
+exports.columnMapping3 = function (data, callback) {
+    sync.fiber(function () {
+        pythonConfig.columnMappingOptions.args = [];
+        pythonConfig.columnMappingOptions.args.push(JSON.stringify(data));
+
+        var resPyStr = sync.await(PythonShell.run('eval3.py', pythonConfig.columnMappingOptions, sync.defer()));
+        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+        if (!resPyArr.code || (resPyArr.code && resPyArr.code == 200)) {
+            data = resPyArr;
             callback(data);
         } else {
             callback(null);

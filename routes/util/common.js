@@ -240,6 +240,80 @@ router.post('/selectTypoData', function (req, res) {
 
             returnObj = { code: 200, data: data };
         } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+router.post('/selectTypoData2', function (req, res) {
+    var data = req.body.data.data;
+    var ogCompanyName = [];
+    var ctnm = [];
+    var curcd = [];
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            for (var i in data) {
+                if (data[i].colLbl == 0) {
+                    ogCompanyName.push(data[i]);
+                } else if (data[i].colLbl == 1) {
+                    ctnm.push(data[i]);
+                } else if (data[i].colLbl == 3) {
+                    curcd.push(data[i]);
+                }
+            }
+            if (ogCompanyName.length > 1 && ctnm.length == 1) { // N:1
+                for (var i = 1; i < ogCompanyName.length; i++) ctnm.push(ctnm[0]);
+            } else if (ogCompanyName.length == 1 && ctnm.length > 1) { // 1:N
+                for (var i = 1; i < ctnm.length; i++) ogCompanyName.push(ogCompanyName[0]);
+            }
+            // select tbl_contract_mapping And save modified text data (ogCompanyName, contractName)
+            if (ogCompanyName.length != 0 && ctnm.length != 0) {
+                for (var i in ogCompanyName) {
+                    var result = sync.await(oracle.selectContractMapping2([ogCompanyName[i].text, ctnm[i].text], sync.defer()));
+                    if (result) {
+                        ogCompanyName[i].text = result.ASOGCOMPANYNAME;
+                        ctnm[i].text = result.ASCTNM;
+                    }
+                }
+            }
+
+            // select tbl_curcd_mapping And save modified text data (curcd)
+            for (var i in curcd) {
+                var result = sync.await(oracle.selectCurcdMapping(curcd[i].text, sync.defer()));
+                if (result) {
+                    curcd[i].text = result.AFTERTEXT;
+                }
+            }
+
+            // save modified text data to return data           
+            for (var i in data) {
+                if (data[i].colLbl == 0 || data[i].colLbl == 1) {
+                    if (ogCompanyName.length != 0 && ctnm.length != 0) {
+                        for (var j in ogCompanyName) {
+                            if (data[i].location == ogCompanyName[j].location) {
+                                data[i].text = ogCompanyName[j].text;
+                            }
+                        }
+                    }
+                } else if (data[i].colLbl == 3) {
+                    if (curcd.length != 0) {
+                        for (var j in curcd) {
+                            if (data[i].location == curcd[j].location) {
+                                data[i].text = curcd[j].text;
+                            }
+                        }
+                    }
+                }
+            }
+
+            returnObj = { code: 200, data: data };
+        } catch (e) {
+            console.log(e);
             returnObj = { code: 500, error: e };
         } finally {
             res.send(returnObj);

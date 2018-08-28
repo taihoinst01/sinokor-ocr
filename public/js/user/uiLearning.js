@@ -411,38 +411,43 @@ function executeML(totData) {
     var fileName = totData.fileName;
     var data = totData.data;
     var type = totData.nextType;
-    var docCategory = (totData.docCategory) ? totData.docCategory : null
+    //var docCategory = (totData.docCategory) ? totData.docCategory : null
 
+    
     var targetUrl;
     var param;
-
+    param = { 'fileName': fileName, 'data': data };
+    /*
     if (!docCategory) {
         param = { 'fileName': fileName, 'data': data };
     } else {
         param = { 'fileName': fileName, 'data': data, 'docCategory': docCategory };
     }
+    */
     if (type == 'ts') {
         targetUrl = '/uiLearning/typoSentence';
         $('#progressMsgTitle').html('오타 수정 처리 중..');
         addProgressBar(41, 50);
     } else if (type == 'fl') {
         targetUrl = '/uiLearning/formLabelMapping';
-        $('#progressMsgTitle').html('양식 라벨 처리 중..');
+        $('#progressMsgTitle').html('양식 라벨 맴핑 처리 중..');
         addProgressBar(51, 60);
     } else if (type == 'fm') {
         targetUrl = '/uiLearning/formMapping';
-        $('#progressMsgTitle').html('양식 분류 처리 중..');
+        $('#progressMsgTitle').html('양식 맵핑 처리 중..');
         addProgressBar(61, 70);
     } else if (type == 'cm') {
         targetUrl = '/uiLearning/columnMapping';
-        $('#progressMsgTitle').html('라벨 분류 처리 중..');
-        addProgressBar(71, 75);
+        $('#progressMsgTitle').html('컬럼 맵핑 처리 중..');
+        addProgressBar(51, 70);
+        //addProgressBar(51, 75);
     } else {
         targetUrl = '/uiLearning/searchDBColumns';
         $('#progressMsgTitle').html('DB 컬럼 조회 중..');
-        addProgressBar(76, 90);
+        addProgressBar(71, 90);
+        //addProgressBar(76, 90);
     }
-
+    
     $.ajax({
         url: targetUrl,
         type: 'post',
@@ -460,12 +465,11 @@ function executeML(totData) {
                     console.log(data);
                 } else {
                     lineText.push(data);
-
                     if (searchDBColumnsCount == 1) {
-
+                        /*
                         var docName = '';
                         var docScore = '';
-
+                       
                         if (data.docCategory != null) {
                             docName = data.docCategory[0].DOCNAME;
                             $('#docData').val(JSON.stringify(data.docCategory[0]));
@@ -474,6 +478,7 @@ function executeML(totData) {
                         if (data.score) {
                             docScore = data.score;
                         }
+                        */
 
                         var mainImgHtml = '';
                         mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
@@ -488,6 +493,7 @@ function executeML(totData) {
                         $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
                         thumnImg();
                         $('#imageBox > li').eq(0).addClass('on');
+                        /*
                         $('#mlPredictionDocName').val(docName);
                         $('#mlPredictionPercent').val(docScore + '%');
                         $('#docName').html(docName);
@@ -499,6 +505,7 @@ function executeML(totData) {
                             $('#docName').css('color', 'darkred');
                             $('#docPredictionScore').css('color', 'darkred');
                         }
+                        */
                         selectTypoText(0, fileName);
                         //detailTable(fileName);
                         //docComparePopup(0);
@@ -521,11 +528,12 @@ function executeML(totData) {
 
 // html 렌더링 전처리 (출재사명, 계약명, 화폐코드 처리)
 function selectTypoText(index, fileName) {
-    var item = lineText[index].data;
+    //var item = lineText[index].data;
+    var item = lineText[index];
     var param = [];
 
     $.ajax({
-        url: 'common/selectTypoData',
+        url: 'common/selectTypoData2',
         type: 'post',
         datatype: 'json',
         data: JSON.stringify({ 'data': item }),
@@ -562,10 +570,11 @@ function detailTable(fileName) {
     var tblSortTag = '';
     var tblTag = '';
     for (var i = 0; i < lineText.length; i++) {
+        
         if (lineText[i].fileName == fileName) {
 
             var item = lineText[i];
-
+            
             var data;
 
             if (item.data.data) {
