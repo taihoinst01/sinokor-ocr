@@ -2048,12 +2048,13 @@ router.post('/batchLearnTraing', function (req, res) {
     req.setTimeout(500000);
 
     sync.fiber(function () {
-        var imgId = req.body.imgIdArray;
+        var filepath = req.body.imgIdArray;
+        filepath[0] = '/MIG/2014/img1/7a/25b7a/209391.tif';
         var uiCheck = req.body.uiCheck;
         var retData = [];
         var uiTraining = '';
-        for (var i = 0; i < imgId.length; i++) {
-            var batchData = sync.await(batchLearnTraing(imgId[i], uiCheck, sync.defer()));
+        for (var i = 0; i < filepath.length; i++) {
+            var batchData = sync.await(batchLearnTraing(filepath[i], uiCheck, sync.defer()));
 
             if (batchData.uiTraining && batchData.uiTraining == "uiTraining") {
                 retData = [];
@@ -2068,8 +2069,135 @@ router.post('/batchLearnTraing', function (req, res) {
     });
 });
 
+function batchLearnTraing(filepath, uiCheck, done) {
+    sync.fiber(function () {
+        try {
 
-function batchLearnTraing(imgId, uiCheck, done) {
+            var retData = {};
+
+            var resLegacyData = sync.await(oracle.selectLegacyFilepath(filepath, sync.defer()));
+
+            console.time("convertTiftoJpg");
+            //tif to jpg
+            for (var item in originImageArr) {
+                if (originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tif' || originImageArr[item].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
+                    let result = sync.await(oracle.convertTiftoJpg(originImageArr[item].FILEPATH, sync.defer()));
+                    if (result) {
+                        originImageArr[item]['ORIGINFILEPATH'] = originImageArr[item]['FILEPATH'];
+                        originImageArr[item]['FILEPATH'] = result;
+                    }
+
+                    if (result == "error") {
+                        return done(null, "error convertTiftoJpg");
+                    }
+                }
+            }
+            console.timeEnd("convertTiftoJpg");
+
+            //ocr
+            console.time("ocr");
+            var ocrResult = sync.await(oracle.callApiOcr(originImageArr, sync.defer()));
+            //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
+
+            if (ocrResult == "error") {
+                return done(null, "error ocr");
+            }
+
+            console.timeEnd("ocr");
+
+            //typo ML
+            console.time("typo ML");
+            pythonConfig.typoOptions.args = [];
+            pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
+            var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
+            var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+            console.timeEnd("typo ML");
+
+
+            //similarity result
+            //[{'label': '0', 'text': 'reinsurers outstanding losses', 'location': '1594,201,683,47'}, {'label': '1', 'text': '28/06/2018', 'location': '1596,259,174,29'}]
+
+            //form label mapping DL
+            console.time("formLabelMapping ML");
+            pythonConfig.formLabelMappingOptions.args = [];
+            pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
+            resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
+            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            console.timeEnd("formLabelMapping ML");
+
+            //form mapping DL
+            console.time("formMapping ML");
+            pythonConfig.formMappingOptions.args = [];
+            pythonConfig.formMappingOptions.args.push(JSON.stringify(resPyArr));
+            resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
+            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer()));
+            console.timeEnd("formMapping ML");
+
+            //column mapping DL
+            console.time("columnMapping ML");
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
+            resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
+            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+
+
+            var mlData = {};
+            mlData["mlData"] = resPyArr;
+            if (docData.docCategory) {
+                mlData["docCategory"] = docData.docCategory[0];
+            }
+            mlData["imgId"] = imgId;
+
+            retData["mlexport"] = mlData;
+
+            console.timeEnd("columnMapping ML");
+
+            //select legacy data
+            console.time("get legacy");
+            var cobineRegacyData = sync.await(oracle.selectLegacyData(imgId, sync.defer()));
+
+            retData["regacy"] = cobineRegacyData;
+
+            //insert legacy data to batchLearnData
+            var resRegacyData = sync.await(oracle.insertRegacyData(cobineRegacyData, sync.defer()));
+            console.timeEnd("get legacy");
+
+
+            //insert MLexport data to batchMlExport
+            console.time("insert MLExport");
+            var resMLData = sync.await(oracle.insertMLData(mlData, sync.defer()));
+            console.timeEnd("insert MLExport");
+
+            if (uiCheck == true) {
+                var compareML = getAnswerCheck(cobineRegacyData, mlData["mlData"]);
+
+                retData["uiTraining"] = "uiTraining";
+
+                if (compareML == false) {
+
+                    var columnArr = sync.await(oracle.selectColumn(null, sync.defer()));
+                    retData["columnArr"] = columnArr;
+                    retData["fileInfo"] = originImageArr;
+
+                    return done(null, retData);
+                }
+            }
+
+            console.log("done");
+
+            return done(null, retData);
+        } catch (e) {
+            console.log(e);
+            return done(null, e);
+        }
+    });
+}
+
+
+
+function batchLearnTraing2(imgId, uiCheck, done) {
     sync.fiber(function () {
         try {
 
@@ -2358,19 +2486,6 @@ router.post('/selectBatchAnswerData', function (req, res) {
         res.send({ data: cobineRegacyData });
     });
 });
-
-/*
-router.get('/popUpLegacy', function (req, res) {
-    console.log('test1');
-    res.render("user/popUpLegacy");
-});
-*/
-
-router.post('/popUpLegacy', function (req, res) {
-    //console.log(req);
-    res.render("user/popUpLegacy", { data:req });
-});
-
 
 
 

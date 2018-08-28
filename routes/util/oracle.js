@@ -870,6 +870,46 @@ exports.selectColumn = function (req, done) {
         }
     });
 };
+
+exports.selectLegacyFilepath = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var res = [];
+        let conn;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            console.log(req);
+            let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH = :filepath`, [req]);
+
+            for (var i = 0; i < resAnswerFile.rows.length; i++) {
+                var imgId = resAnswerFile.rows[i].IMGID;
+                var imgStartNo = resAnswerFile.rows[i].PAGENUM;
+                var filepath = resAnswerFile.rows[i].FILEPATH;
+                var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
+
+                let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND IMGFILESTARTNO = :imgStartNo`, [imgId, imgStartNo]);
+
+                for (var row = 0; row < resAnswerData.rows.length; row++) {
+                    resAnswerData.rows[row].FILEPATH = filepath;
+                    resAnswerData.rows[row].FILENAME = filename;
+                    res.push(resAnswerData);
+                }
+            }
+
+            return done(null, res);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error getlegacy");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
 /*
 exports.selectFormLabelMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
