@@ -395,9 +395,9 @@ exports.selectBatchLearnList = function (req, done) {
             let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH IN` + answerFileSql, answerCond);
 
             for (var i = 0; i < resAnswerFile.rows.length; i++) {
-                var imgId = resAnswerFile.rows[0].IMGID;
-                var imgStartNo = resAnswerFile.rows[0].PAGENUM;
-                var filepath = resAnswerFile.rows[0].FILEPATH;
+                var imgId = resAnswerFile.rows[i].IMGID;
+                var imgStartNo = resAnswerFile.rows[i].PAGENUM;
+                var filepath = resAnswerFile.rows[i].FILEPATH;
                 var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
 
                 let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND IMGFILESTARTNO = :imgStartNo`, [imgId, imgStartNo]);
