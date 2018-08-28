@@ -2083,6 +2083,7 @@ function batchLearnTraing(filepath, uiCheck, done) {
 
             console.time("convertTiftoJpg");
             var filename = resLegacyData[0].rows[0].FILENAME;
+            var imgId = resLegacyData[0].rows[0].IMGID;
             var convertFilpath = filepath;
             if (filename.split('.')[1].toLowerCase() === 'tif' || filename.split('.')[1].toLowerCase() === 'tiff') {
                 let result = sync.await(oracle.convertTiftoJpg(filepath, sync.defer()));
@@ -2099,13 +2100,12 @@ function batchLearnTraing(filepath, uiCheck, done) {
 
             //ocr
             console.time("ocr");
-            var ocrResult = sync.await(oracle.callApiOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilename, sync.defer()));
+            var ocrResult = sync.await(oracle.callApiOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));
             //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
 
             if (ocrResult == "error") {
                 return done(null, "error ocr");
             }
-
             console.timeEnd("ocr");
 
             //typo ML
@@ -2144,18 +2144,17 @@ function batchLearnTraing(filepath, uiCheck, done) {
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-
+            console.timeEnd("columnMapping ML");
 
             var mlData = {};
-            mlData["mlData"] = resPyArr;
-            if (docData.docCategory) {
-                mlData["docCategory"] = docData.docCategory[0];
-            }
+            //mlData["mlData"] = resPyArr;
+            //if (docData.docCategory) {
+            //    mlData["docCategory"] = docData.docCategory[0];
+            //}
+            mlData["mlData"] = JSON.parse('[{ "label": "CTOGCOMPANYNAMENM", "text": "reinsurers outstanding losses", "location": "1594,201,683,47", "sid": "1594,201,0,17747,18754,0,0" }, { "label": "CTNM", "text": "28/06/2018", "location": "1596,259,174,29", "sid":"1596,259,0,0,0,0,0" }]');
+            mlData["filepath"] = filepath;
             mlData["imgId"] = imgId;
-
             retData["mlexport"] = mlData;
-
-            console.timeEnd("columnMapping ML");
 
             //insert MLexport data to batchMlExport
             console.time("insert MLExport");

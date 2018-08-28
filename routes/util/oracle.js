@@ -436,7 +436,7 @@ exports.convertTiftoJpg = function (originFilePath, done) {
         console.log(err);
         return done(null, "error");
     } finally {
-        console.log('convertTiftoJpg end');
+
     }
 };
 
@@ -465,7 +465,7 @@ exports.callApiOcr = function (req, done) {
         console.log(err);
         return done(null, 'error');
     } finally {
-        console.log('callApiOcr end');
+
     }
 };
 
@@ -670,16 +670,27 @@ exports.insertMLData = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
+            let resCol = await conn.execute("SELECT * FROM TBL_COLUMN_MAPPING_CLS");
+
             insSql = queryConfig.batchLearningConfig.insertMlExport;
             delSql = queryConfig.batchLearningConfig.deleteMlExport;
 
-            let delRes = await conn.execute(delSql, [req.imgId]);
+            let delRes = await conn.execute(delSql, [req.filepath]);
 
             for (var i = 0; i < req.mlData.length; i++) {
                 var cond = [];
                 cond.push(req.imgId);
-                cond.push(req.mlData[i].colLbl);
+                cond.push(req.filepath);
+
+                for (var row = 0; row < resCol.rows.length; row++) {
+                    if (req.mlData[i].label == resCol.rows[row].COLTYPE) {
+                        cond.push(resCol.rows[row].COLNUM);
+                    }
+                }
+
                 cond.push(req.mlData[i].text);
+                cond.push(req.mlData[i].location);
+                cond.push(req.mlData[i].sid);
 
                 let colData = await conn.execute(insSql, cond);
             }
