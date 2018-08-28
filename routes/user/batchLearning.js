@@ -187,8 +187,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
         try {
 
             var retData = {};
-            //hskim 20180828 일괄학습 화면 상단 셀렉트 버튼에서 값 가져오게 변경
-            var reqNum = 12;
+            var reqNum = req.body.moreNum;
             var originImageArr = sync.await(oracle.selectBatchLearnList(reqNum, sync.defer()));
 
             res.send({ data: originImageArr, code: 200 });
