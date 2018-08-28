@@ -72,7 +72,7 @@ if arg == "training":
 
         print(str({'code': 200, 'message': 'column mapping train success'}))
     except Exception as e:
-        print(str({'code': 500, 'message': 'column mapping train fail', 'error': str(e)}))
+        print(str({'code': 500, 'message': 'column mapping train fail', 'error': str(e).replace("'","").replace('"','')}))
 else:
     inputArr = json.loads(sys.argv[1].replace(u"\u2022", u""))
     #docType = 0

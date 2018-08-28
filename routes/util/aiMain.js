@@ -90,6 +90,7 @@ exports.columnMapping3 = function (data, callback) {
             data = resPyArr;
             callback(data);
         } else {
+            console.log(resPyArr.e);
             callback(null);
         }
     });
