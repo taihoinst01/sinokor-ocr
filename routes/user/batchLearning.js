@@ -70,7 +70,7 @@ router.get('/stest', function (req, res) {
     });
 });
 */
-
+/*
 router.get('/stest2', function (req, res) {
     var arg = {
         data: [{"location":"1018,240,411,87","text":"APEX"},{"location":"1019,338,409,23","text":"Partner of Choice"},{"location":"1562,509,178,25","text":"Voucher No"},{"location":"1562,578,206,25","text":"Voucher Date"},{"location":"206,691,274,27","text":"4153 Korean Re"},{"location":"208,756,525,34","text":"Proportional Treaty Statement"},{"location":"1842,506,344,25","text":"BV/HEO/2018/05/0626"},{"location":"1840,575,169,25","text":"01105/2018"},{"location":"206,848,111,24","text":"Cedant"},{"location":"206,908,285,24","text":"Class of Business"},{"location":"210,963,272,26","text":"Period of Quarter"},{"location":"207,1017,252,31","text":"Period of Treaty"},{"location":"206,1066,227,24","text":"Our Reference"},{"location":"226,1174,145,31","text":"Currency"},{"location":"227,1243,139,24","text":"Premium"},{"location":"226,1303,197,24","text":"Commission"},{"location":"226,1366,107,24","text":"Claims"},{"location":"227,1426,126,24","text":"Reserve"},{"location":"227,1489,123,24","text":"Release"},{"location":"227,1549,117,24","text":"Interest"},{"location":"227,1609,161,31","text":"Brokerage"},{"location":"233,1678,134,24","text":"Portfolio"},{"location":"227,1781,124,24","text":"Balance"},{"location":"574,847,492,32","text":": Solidarity- First Insurance 2018"},{"location":"574,907,568,32","text":": Marine Cargo Surplus 2018 - Inward"},{"location":"598,959,433,25","text":"01-01-2018 TO 31-03-2018"},{"location":"574,1010,454,25","text":": 01-01-2018 TO 31-12-2018"},{"location":"574,1065,304,25","text":": APEX/BORD/2727"},{"location":"629,1173,171,25","text":"JOD 1.00"},{"location":"639,1239,83,25","text":"25.53"},{"location":"639,1299,64,25","text":"5.74"},{"location":"639,1362,64,25","text":"0.00"},{"location":"639,1422,64,25","text":"7.66"},{"location":"639,1485,64,25","text":"0.00"},{"location":"639,1545,64,25","text":"0.00"},{"location":"639,1605,64,25","text":"0.64"},{"location":"648,1677,64,25","text":"0.00"},{"location":"641,1774,81,25","text":"11 .49"},{"location":"1706,1908,356,29","text":"APEX INSURANCE"}]
@@ -85,7 +85,7 @@ router.get('/stest2', function (req, res) {
         });
     });
 });
-
+*/
 
 /***************************************************************
  * Router
