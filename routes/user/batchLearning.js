@@ -2090,7 +2090,7 @@ function batchLearnTraing(imgId, uiCheck, done) {
             console.timeEnd("formMapping ML");
 
             //column mapping DL
-            console.time("columnMappint ML");
+            console.time("columnMapping ML");
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
