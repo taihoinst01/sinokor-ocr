@@ -3788,6 +3788,7 @@
     <Content Include="views\user\ocrFormAnalysis.html" />
     <Content Include="views\user\ocrHistorySearch.html" />
     <Content Include="views\user\ocrImgJson.html" />
+    <Content Include="views\user\popUpLegacy.html" />
     <Content Include="views\user\uiLearning_before.html" />
     <Content Include="views\user\uiLearning.html" />
     <Content Include="Web.config" />
