@@ -129,6 +129,7 @@ exports.runFromMLStudio = function (data, callback) {
             // Form Label Mapping
             data = sync.await(oracle.selectFormLabelMappingFromMLStudio(data, sync.defer()));
             data = sync.await(mlStudio.run(data, 'formLabelMapping', sync.defer()));
+            console.log('execute formLabelMapping ML');
             //console.log(data);
 
             // Form Mapping
@@ -137,12 +138,14 @@ exports.runFromMLStudio = function (data, callback) {
             if (!data.docCategory.SEQNUM) {
                 data = sync.await(oracle.selectDocCategoryFromMLStudio(data, sync.defer()));
             }
+            console.log('execute formMapping ML');
             //console.log(data);
 
             // column Mapping
             data = sync.await(oracle.selectColumnMappingFromMLStudio(data, sync.defer()));
             //console.log(data);
             data = sync.await(mlStudio.run(data, 'columnMapping', sync.defer()));
+            console.log('execute columnMapping ML');
             //console.log(data);
 
             callback(data);
