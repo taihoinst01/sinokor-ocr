@@ -322,7 +322,7 @@ exports.selectOcrFilePaths = function (req, done) {
                 imgId.push(resAnswer.rows[0].IMGID);
                 imgId.push(dataImgPath);
                 let resUpd = await conn.execute(`UPDATE TBL_BATCH_LEARN_DATA SET IMGID = :imgId WHERE FILEPATH = :filepath`, imgId);
-            } else if (result.rows[0].IMGID == null) {
+            } else {
                 var d = new Date();
                 var tempId = d.isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000;
                 imgId.push(tempId);
@@ -331,10 +331,11 @@ exports.selectOcrFilePaths = function (req, done) {
             }
 
 
+
             for (var row = 0; row < result.rows.length; row++) {
                 var dict = {};
 
-                dict.IMGID = resAnswer.rows[0].IMGID;
+                dict.IMGID = imgId[0];
                 dict.FILENAME = result.rows[row].FILENAME;
                 dict.FILEPATH = result.rows[row].FILEPATH;
                 dict.CONVERTEDIMGPATH = result.rows[row].CONVERTEDIMGPATH;
@@ -789,6 +790,30 @@ exports.selectColumn = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             result = await conn.execute(queryConfig.dbcolumnsConfig.selectColMappingCls);
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectFormLabelMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(queryConfig.mlConfig.selectFormLabelMapping);
+
             return done(null, result.rows);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);

@@ -503,7 +503,7 @@ var batchLearningConfig = {
                 LISTAGG(nvl(A.NTBL,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as NTBL, 
                 LISTAGG(nvl(A.CSCOSARFRNCNNT2,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CSCOSARFRNCNNT2, 
                 LISTAGG(A.REGDATE,'||') WITHIN GROUP(ORDER BY A.FILENAME) as REGDATE, 
-                LISTAGG(nvl(A.SUBNUM,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as SUBNUM, 
+                LISTAGG(nvl(A.SUBNUM,1),'||') WITHIN GROUP(ORDER BY A.FILENAME) as SUBNUM, 
                 LISTAGG(nvl(A.CURUNIT,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CURUNIT, 
                 LISTAGG(nvl(A.CONVERTEDIMGPATH,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as CONVERTEDIMGPATH, 
                 LISTAGG(nvl(A.FILENAME,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as FILENAME, 
@@ -511,7 +511,8 @@ var batchLearningConfig = {
                 LISTAGG(nvl(A.EXPORTTYPE,'null'),'||') WITHIN GROUP(ORDER BY A.FILENAME) as EXPORTTYPE  
         FROM TBL_BATCH_LEARN_DATA A
         WHERE A.STATUS != 'D' AND A.STATUS = :status
-        GROUP BY A.FILENAME ORDER BY A.FILENAME) T WHERE rownum BETWEEN :startNum AND :endNum`,
+        AND FILEPATH IN 
+        `,
     selectBatchMLExportList:
         `SELECT
             IMGID, COLLABEL, COLVALUE
@@ -520,7 +521,15 @@ var batchLearningConfig = {
          WHERE
             COLLABEL != '36'
             AND
-            IMGID IN `
+            IMGID IN `,
+    selectBatchLearnIdList:
+        `SELECT ROWNUM, A.FILEPATH AS FILEPATH
+         FROM (
+            SELECT *
+            FROM TBL_BATCH_LEARN_ID
+            WHERE STATUS = :status ) A
+         WHERE ROWNUM >= :startNum and ROWNUM <= :endNum 
+        `
 };
 
 var uiLearningConfig = {
