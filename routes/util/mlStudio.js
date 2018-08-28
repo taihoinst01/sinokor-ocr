@@ -81,6 +81,11 @@ exports.run = function (req, type, done) {
                 type: type
             };
 
+            /*
+            request.post('http://localhost:3001/ml/api', { json: true, body: formData }, function (err, httpRes, body) {
+                return done(null, body);
+            });
+             */
             request.post('http://sinokor-rest.azurewebsites.net/ml/api', { json: true, body: formData }, function (err, httpRes, body) {
                 return done(null, body);
             });
