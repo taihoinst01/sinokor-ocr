@@ -1253,8 +1253,8 @@ var searchBatchLearnDataList = function (addCond) {
                     for (var y = 0; y < rows.length; y++) {
                         appendHtml += "<tr>";
                         if (y == 0) {
-                            if (addCond == "LEARN_N") checkboxHtml = `<td rowspan="` + (rows.length + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[y].IMGID)}" class="sta00" name="listCheck_before" /></td>`;
-                            else checkboxHtml = `<td rowspan="` +(rows.length + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[y].IMGID)}" class="stb00" name="listCheck_after" /></div></td>`;
+                            if (addCond == "LEARN_N") checkboxHtml = `<td rowspan="` + (rows.length + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[y].FILEPATH)}" class="sta00" name="listCheck_before" /></td>`;
+                            else checkboxHtml = `<td rowspan="` + (rows.length + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[y].FILEPATH)}" class="stb00" name="listCheck_after" /></div></td>`;
 
                             appendHtml += checkboxHtml;
                             appendHtml += `<td rowspan="` + (rows.length + 1) + `">${nvl(rows[y].FILENAME)}</td > < !--이미지ID-->`;
