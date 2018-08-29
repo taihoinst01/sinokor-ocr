@@ -56,9 +56,9 @@ exports.selectLegacyFileData = function (req, done) {
   
         for (let row in resAnswerFile.rows) {
           tempDictFile = {};
-          tempDictFile['IMGID'] = resAnswerFile.rows[row][0];
-          tempDictFile['PAGENUM'] = resAnswerFile.rows[row][1];
-          tempDictFile['FILEPATH'] = resAnswerFile.rows[row][2];
+          tempDictFile['IMGID'] = resAnswerFile.rows[row].IMGID;
+          tempDictFile['PAGENUM'] = resAnswerFile.rows[row].PAGENUM;
+          tempDictFile['FILEPATH'] = resAnswerFile.rows[row].FILEPATH;
           tempDictFile['FILENAME'] = tempDictFile['FILEPATH'].substring(tempDictFile['FILEPATH'].lastIndexOf('/') + 1, tempDictFile['FILEPATH'].length);
   
           let answerDataArr = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO)\
@@ -68,6 +68,7 @@ exports.selectLegacyFileData = function (req, done) {
             let tempdict = {};
             for (let i = 0; i < answerDataArr.metaData.length; i++) {
               tempdict[answerDataArr.metaData[i].name] = answerDataArr.rows[row2][i];
+              console.log(answerDataArr.rows[row2][i]);
             }
             tempDictFile['LEGACY'] = tempdict;
           }
@@ -484,7 +485,7 @@ exports.convertTiftoJpgCMD = function (originFilePath, done) {
     try {
         //출력파일은 서버의 절대 경로 c/ImageTemp/오늘날짜/originFile명 으로 저장
         convertedFileName = originFilePath.split('.')[0] + '.jpg';
-        execSync('module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
+        execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
         return done(null, convertedFileName);
 
     } catch (err) {
