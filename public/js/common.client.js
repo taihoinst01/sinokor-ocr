@@ -3,13 +3,13 @@
 /******************************************
  * client function js
  * ****************************************/
-var MAX_PAGE_IN_SET = 5;        // í˜ì´ì§€ ì¹´ìš´íŠ¸
-var MAX_ENTITY_IN_PAGE = 10;    // í•œ í˜ì´ì§€ ë‹¹ ì»¨í…ì¸  ìˆ˜
+var MAX_PAGE_IN_SET = 5;        // ÆäÀÌÁö Ä«¿îÆ®
+var MAX_ENTITY_IN_PAGE = 10;    // ÇÑ ÆäÀÌÁö ´ç ÄÁÅÙÃ÷ ¼ö
 
 /**
- * null ì´ë‚˜ ë¹ˆê°’ì„ ë¹ˆê°’ìœ¼ë¡œ ë³€ê²½
- * @param str       ì…ë ¥ê°’
-  * @returns {String}    ì²´í¬ ê²°ê³¼ê°’
+ * null ÀÌ³ª ºó°ªÀ» ºó°ªÀ¸·Î º¯°æ
+ * @param str       ÀÔ·Â°ª
+  * @returns {String}    Ã¼Å© °á°ú°ª
  */
 function nvl(str) {
     var defaultValue = "";
@@ -19,10 +19,10 @@ function nvl(str) {
 }
 
 /**
- * null ì´ë‚˜ ë¹ˆê°’ì„ ê¸°ë³¸ê°’ìœ¼ë¡œ ë³€ê²½
- * @param str       ì…ë ¥ê°’
- * @param defaultVal    ê¸°ë³¸ê°’(ì˜µì…˜)
- * @returns {String}    ì²´í¬ ê²°ê³¼ê°’
+ * null ÀÌ³ª ºó°ªÀ» ±âº»°ªÀ¸·Î º¯°æ
+ * @param str       ÀÔ·Â°ª
+ * @param defaultVal    ±âº»°ª(¿É¼Ç)
+ * @returns {String}    Ã¼Å© °á°ú°ª
  */
 function nvl2(str, defaultVal) {
     var defaultValue = "";
@@ -34,16 +34,16 @@ function nvl2(str, defaultVal) {
 }
 
 /**
- * objì˜ null í™•ì¸
- * @param str       ì…ë ¥ê°’
- * @returns {boolean}    ì²´í¬ ê²°ê³¼ê°’
+ * objÀÇ null È®ÀÎ
+ * @param str       ÀÔ·Â°ª
+ * @returns {boolean}    Ã¼Å© °á°ú°ª
  */
 function isNull(obj) {
     return (typeof obj != "undefined" && obj != null && obj != "") ? false : true;
 }
 
 /**
- * ì²œë‹¨ìœ„ ì½¤ë§ˆ
+ * Ãµ´ÜÀ§ ÄŞ¸¶
  * @param {any} double
  */
 function NumberWithComma(double) {
@@ -52,7 +52,7 @@ function NumberWithComma(double) {
     return parts.join(".");
 }
 /**
- * ì²œë‹¨ìœ„ ì½¤ë§ˆ ë° ì†Œìˆ˜ì  ìë¥´ê¸°
+ * Ãµ´ÜÀ§ ÄŞ¸¶ ¹× ¼Ò¼öÁ¡ ÀÚ¸£±â
  * @param {any} double
  * @param {any} decimalPointCipher
  */
@@ -66,10 +66,10 @@ function NumberWithCommas(double, decimalPointCipher) {
 
 /**
  * leadingZeros
- * 0ìœ¼ë¡œ ìë¦¿ìˆ˜ ì±„ìš°ê¸°
- * @param n       ê°’
- * @param digits  ìë¦¿ìˆ˜
- * @returns zero+n    ê²°ê³¼ê°’
+ * 0À¸·Î ÀÚ¸´¼ö Ã¤¿ì±â
+ * @param n       °ª
+ * @param digits  ÀÚ¸´¼ö
+ * @returns zero+n    °á°ú°ª
  */
 function leadingZeros(n, digits) {
     var zero = '';
@@ -81,10 +81,10 @@ function leadingZeros(n, digits) {
 }
 
 /**
- * ë‘ ë¬¸ìì—´ì„ ë¹„êµí•˜ì—¬ ì¼ì¹˜í•˜ëŠ”ì§€ í™•ì¸
- * @param {any} a   ê°’1
- * @param {any} b   ê°’2
- * @returns ê°’ì´ ì¼ì¹˜í•˜ë©´ 0, ê°’ì´ ì¼ì¹˜í•˜ì§€ ì•Šìœ¼ë©´ -1ì„ return
+ * µÎ ¹®ÀÚ¿­À» ºñ±³ÇÏ¿© ÀÏÄ¡ÇÏ´ÂÁö È®ÀÎ
+ * @param {any} a   °ª1
+ * @param {any} b   °ª2
+ * @returns °ªÀÌ ÀÏÄ¡ÇÏ¸é 0, °ªÀÌ ÀÏÄ¡ÇÏÁö ¾ÊÀ¸¸é -1À» return
  */
 function strcmp(a, b) {
     return (a < b ? -1 : (a > b ? 1 : 0));
@@ -92,10 +92,10 @@ function strcmp(a, b) {
 
 /**
  * getNowDateTime
- * í˜„ì¬ì¼ìì‹œê°
- * @param separator1       êµ¬ë¶„ì(ì¼ì)
- * @param separator2       êµ¬ë¶„ì(ì‹œê°)
- * @returns date(yyyymmdd)    yyyy + êµ¬ë¶„ì(ì¼ì) + mm + êµ¬ë¶„ì(ì¼ì) + dd + " " + hh + êµ¬ë¶„ì(ì‹œê°) + mi + êµ¬ë¶„ì(ì‹œê°) + ss
+ * ÇöÀçÀÏÀÚ½Ã°¢
+ * @param separator1       ±¸ºĞÀÚ(ÀÏÀÚ)
+ * @param separator2       ±¸ºĞÀÚ(½Ã°¢)
+ * @returns date(yyyymmdd)    yyyy + ±¸ºĞÀÚ(ÀÏÀÚ) + mm + ±¸ºĞÀÚ(ÀÏÀÚ) + dd + " " + hh + ±¸ºĞÀÚ(½Ã°¢) + mi + ±¸ºĞÀÚ(½Ã°¢) + ss
  */
 function getNowDateTime(separator1, separator2) {
     var d = new Date();
@@ -108,9 +108,9 @@ function getNowDateTime(separator1, separator2) {
 }
 /**
  * getNowDate
- * í˜„ì¬ì¼ì
- * @param separator       êµ¬ë¶„ì
- * @returns date(yyyymmdd)    yyyy + êµ¬ë¶„ì + mm + êµ¬ë¶„ì + dd
+ * ÇöÀçÀÏÀÚ
+ * @param separator       ±¸ºĞÀÚ
+ * @returns date(yyyymmdd)    yyyy + ±¸ºĞÀÚ + mm + ±¸ºĞÀÚ + dd
  */
 function getNowDate(separator) {
     var d = new Date();
@@ -120,9 +120,9 @@ function getNowDate(separator) {
 }
 /**
  * getNowTime
- * í˜„ì¬ì‹œê°
- * @param separator       êµ¬ë¶„ì
- * @returns time(hhmiss)    hh + êµ¬ë¶„ì + mi + êµ¬ë¶„ì + ss
+ * ÇöÀç½Ã°¢
+ * @param separator       ±¸ºĞÀÚ
+ * @returns time(hhmiss)    hh + ±¸ºĞÀÚ + mi + ±¸ºĞÀÚ + ss
  */
 function getNowTime(separator) {
     var d = new Date();
@@ -133,9 +133,9 @@ function getNowTime(separator) {
 
 /**
  * getAddYear, getAddMonth, getAddDate
- * @param {val} í˜„ì¬ì¼ìì—ì„œ ê³„ì‚°í•  yearVal-ë…„, monthVal-ì›”, dateVal-ì¼
- * @param {separator} êµ¬ë¶„ì
- * @return {date} êµ¬ë¶„ìë¥¼ í¬í•¨í•œ ì¼ì
+ * @param {val} ÇöÀçÀÏÀÚ¿¡¼­ °è»êÇÒ yearVal-³â, monthVal-¿ù, dateVal-ÀÏ
+ * @param {separator} ±¸ºĞÀÚ
+ * @return {date} ±¸ºĞÀÚ¸¦ Æ÷ÇÔÇÑ ÀÏÀÚ
  */
 function getAddYear(yearVal, separator) {
     var date = new Date();
@@ -161,25 +161,25 @@ function getAddDate(dateVal, separator) {
 
 
 /**
- * í˜ì´ì§• ìƒì„±
+ * ÆäÀÌÂ¡ »ı¼º
  * 
- * @param {any} curPage í˜„ì¬ í˜ì´ì§€
- * @param {any} totalCount ì´ ì»¨í…ì¸  ìˆ˜
+ * @param {any} curPage ÇöÀç ÆäÀÌÁö
+ * @param {any} totalCount ÃÑ ÄÁÅÙÃ÷ ¼ö
  */
 function pagination(curPage, totalCount) {
     if (curPage && totalCount) {
         var paging_result = '';
-        var maxPageInSet = MAX_PAGE_IN_SET,                         // í˜ì´ì§€ ì¹´ìš´íŠ¸
-            maxEntityInPage = MAX_ENTITY_IN_PAGE,                   // í•œ í˜ì´ì§€ë‹¹ ì»¨í…ì¸  ìˆ˜
-            totalPage = Math.ceil(totalCount / maxEntityInPage),    // ì „ì²´ í˜ì´ì§€ ìˆ˜
-            totalSet = Math.ceil(totalPage / maxPageInSet),         // ì „ì²´ ì„¸íŠ¸ ìˆ˜
-            curSet = Math.ceil(curPage / maxPageInSet),             // í˜„ì¬ ì„¸íŠ¸ ë²ˆí˜¸
-            startPage = ((curSet - 1) * maxPageInSet) + 1,          // í˜„ì¬ ì„¸íŠ¸ ë‚´ ì¶œë ¥ë  ì‹œì‘ í˜ì´ì§€
-            endPage = (startPage + maxPageInSet) - 1;               // í˜„ì¬ ì„¸íŠ¸ ë‚´ ì¶œë ¥ë  ë§ˆì§€ë§‰ í˜ì´ì§€
+        var maxPageInSet = MAX_PAGE_IN_SET,                         // ÆäÀÌÁö Ä«¿îÆ®
+            maxEntityInPage = MAX_ENTITY_IN_PAGE,                   // ÇÑ ÆäÀÌÁö´ç ÄÁÅÙÃ÷ ¼ö
+            totalPage = Math.ceil(totalCount / maxEntityInPage),    // ÀüÃ¼ ÆäÀÌÁö ¼ö
+            totalSet = Math.ceil(totalPage / maxPageInSet),         // ÀüÃ¼ ¼¼Æ® ¼ö
+            curSet = Math.ceil(curPage / maxPageInSet),             // ÇöÀç ¼¼Æ® ¹øÈ£
+            startPage = ((curSet - 1) * maxPageInSet) + 1,          // ÇöÀç ¼¼Æ® ³» Ãâ·ÂµÉ ½ÃÀÛ ÆäÀÌÁö
+            endPage = (startPage + maxPageInSet) - 1;               // ÇöÀç ¼¼Æ® ³» Ãâ·ÂµÉ ¸¶Áö¸· ÆäÀÌÁö
 
         if (curSet > 1) paging_result += '<li><a href="#;" onclick="javascript:goPage(' + i + ')">' + (startPage - 1) + '</a></li>';
         for (var i = startPage; i <= endPage; i++) {
-            if (i > totalPage) break;   // ì „ì²´í˜ì´ì§€ ë³´ë‹¤ í¬ë©´ ì¢…ë£Œ
+            if (i > totalPage) break;   // ÀüÃ¼ÆäÀÌÁö º¸´Ù Å©¸é Á¾·á
             paging_result += '<li ' + (i == curPage ? 'class="active"' : '') + '><a href="#;" onclick="javascript:goPage(' + i + ')">' + i + '</a></li>';
         }
         if (curSet < totalSet) paging_result += '<li><a href="#;" onclick="javascript:goPage(' + i + ')">' + i + '</a></li>';
@@ -188,14 +188,14 @@ function pagination(curPage, totalCount) {
 }
 
 function wrapWindowByMask() {
-    //í™”ë©´ì˜ ë†’ì´ì™€ ë„ˆë¹„ë¥¼ êµ¬í•œë‹¤.
+    //È­¸éÀÇ ³ôÀÌ¿Í ³Êºñ¸¦ ±¸ÇÑ´Ù.
     var maskHeight = $(document).height();
     var maskWidth = $(window).width();
 
-    //ë§ˆìŠ¤í¬ì˜ ë†’ì´ì™€ ë„ˆë¹„ë¥¼ í™”ë©´ ê²ƒìœ¼ë¡œ ë§Œë“¤ì–´ ì „ì²´ í™”ë©´ì„ ì±„ìš´ë‹¤.
+    //¸¶½ºÅ©ÀÇ ³ôÀÌ¿Í ³Êºñ¸¦ È­¸é °ÍÀ¸·Î ¸¸µé¾î ÀüÃ¼ È­¸éÀ» Ã¤¿î´Ù.
     $('#mask').css({ 'width': maskWidth, 'height': maskHeight });
 
-    //ì• ë‹ˆë©”ì´ì…˜ íš¨ê³¼ - ì¼ë‹¨ 1ì´ˆë™ì•ˆ ê¹Œë§£ê²Œ ëë‹¤ê°€ 80% ë¶ˆíˆ¬ëª…ë„ë¡œ ê°„ë‹¤.
+    //¾Ö´Ï¸ŞÀÌ¼Ç È¿°ú - ÀÏ´Ü 1ÃÊµ¿¾È ±î¸Ä°Ô µÆ´Ù°¡ 80% ºÒÅõ¸íµµ·Î °£´Ù.
     //$('#mask').fadeIn(1000);      
     $('#mask').fadeTo("slow", 0.6);
 }
@@ -271,20 +271,20 @@ function endProgressBar(progressId) {
     if (!isNull(progressId)) clearInterval(progressId);
 }
 
-// li ì„ íƒì‹œ input[type=hidden]ì— ê°’ ë„£ì–´ì£¼ê¸°
+// li ¼±ÅÃ½Ã input[type=hidden]¿¡ °ª ³Ö¾îÁÖ±â
 function liSelect(e, val) {
     $(e).parents('.select_style_K').find('.liSelectValue').val(val);
 }
 
-// ì»¤ìŠ¤í…€ í…Œì´ë¸” ìŠ¤í¬ë¡¤
+// Ä¿½ºÅÒ Å×ÀÌºí ½ºÅ©·Ñ
 $(function () {
-    // divBodyScrollì˜ ìŠ¤í¬ë¡¤ì´ ë™ì‘í• ë•Œì— í•¨ìˆ˜ë¥¼ ë¶ˆëŸ¬ì˜µë‹ˆë‹¤.
+    // divBodyScrollÀÇ ½ºÅ©·ÑÀÌ µ¿ÀÛÇÒ¶§¿¡ ÇÔ¼ö¸¦ ºÒ·¯¿É´Ï´Ù.
     $('.divBodyScroll').scroll(function () {
-        // divBodyScrollì˜ xì¢Œí‘œê°€ ì›€ì§ì¸ ê±°ë¦¬ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+        // divBodyScrollÀÇ xÁÂÇ¥°¡ ¿òÁ÷ÀÎ °Å¸®¸¦ °¡Á®¿É´Ï´Ù.
         var xPoint = $(this).scrollLeft();
         var yPoint = $(this).scrollTop();
 
-        // ê°€ì ¸ì˜¨ x, y ì¢Œí‘œë¥¼ divHeadScrollì— ì ìš©ì‹œì¼œ ê°™ì´ ì›€ì§ì¼ìˆ˜ ìˆë„ë¡ í•©ë‹ˆë‹¤.
+        // °¡Á®¿Â x, y ÁÂÇ¥¸¦ divHeadScroll¿¡ Àû¿ë½ÃÄÑ °°ÀÌ ¿òÁ÷ÀÏ¼ö ÀÖµµ·Ï ÇÕ´Ï´Ù.
         $(this).prev().scrollLeft(xPoint);
         $(this).closest('.mainTable').find('.left_divBodyScroll').scrollTop(yPoint);
     });
