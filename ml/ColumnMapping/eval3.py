@@ -32,7 +32,20 @@ connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
 conn = cx_Oracle.connect(connInfo)
 curs = conn.cursor()
-sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_COLUMN_MAPPING_TRAIN"
+sql = ("SELECT "
+          "SEQNUM, DATA, CLASS "
+        "FROM "
+          "TBL_COLUMN_MAPPING_TRAIN "
+        "WHERE DATA in "
+          "(SELECT T.DATA "
+           "FROM ( "
+            "SELECT "
+              "DATA, COUNT(DATA) AS COUNT "
+            "FROM "
+              "TBL_COLUMN_MAPPING_TRAIN "
+            "GROUP BY DATA) T "
+           "WHERE T.COUNT = 1) ")
+
 curs.execute(sql)
 rows = curs.fetchall()
 
@@ -92,14 +105,14 @@ else:
                     predictData.append(float(sidItem))
 
                 # db에 일치하는 sid가 있는 경우 db의 label값을 가져와서 리턴
-                #for row in rows:
-                #    floatArr = []
-                #    num = str(row[1]).split(",")
-                #    for n in num:
-                #        floatArr.append(float(n))
-                #    if floatArr == predictData:
-                #        inputItem['colLbl'] = int(row[2])
-                #        inputItem['colAccu'] = 0.99
+                for row in rows:
+                    floatArr = []
+                    num = str(row[1]).split(",")
+                    for n in num:
+                        floatArr.append(float(n))
+                    if floatArr == predictData:
+                        inputItem['colLbl'] = int(row[2])
+                        inputItem['colAccu'] = 0.99
                 # db에 일치하는 sid가 없을 경우 ML predict 결과를 리턴
                 if 'colLbl' not in inputItem:
                     predictArr.append(predictData)

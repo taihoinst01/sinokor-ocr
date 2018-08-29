@@ -297,6 +297,7 @@ router.post('/selectTypoData2', function (req, res) {
                         for (var j in ogCompanyName) {
                             if (data[i].location == ogCompanyName[j].location) {
                                 data[i].text = ogCompanyName[j].text;
+								break;
                             }
                         }
                     }
@@ -305,6 +306,7 @@ router.post('/selectTypoData2', function (req, res) {
                         for (var j in curcd) {
                             if (data[i].location == curcd[j].location) {
                                 data[i].text = curcd[j].text;
+								break;
                             }
                         }
                     }

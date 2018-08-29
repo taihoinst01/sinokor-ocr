@@ -2082,7 +2082,7 @@ function batchLearnTraing(filepath, uiCheck, done) {
 
             var resLegacyData = sync.await(oracle.selectLegacyFilepath(filepath, sync.defer()));
 
-            if (resLegacyData[0].rows[0].length < 0) {
+            if (resLegacyData[0].rows.length < 0) {
                 return done(null, "error getLegacy");
             }
 
@@ -2333,7 +2333,7 @@ function batchLearnTraing2(imgId, uiCheck, done) {
 function dataToTypoArgs(data) {
 
     for (var i in data) {
-        data[i].text = data[i].text.toLowerCase().replace("'", "`");
+        data[i].text = data[i].text.toLowerCase().replace(/'/g, '`');
     }
     return data;
 }
