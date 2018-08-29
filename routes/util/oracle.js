@@ -474,7 +474,8 @@ function ocrJson(regions) {
             for (var k = 0; k < regions[i].lines[j].words.length; k++) {
                 item += regions[i].lines[j].words[k].text + ' ';
             }
-            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+            //data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim().replace(/'/g, '`') });
         }
     }
     return data;
