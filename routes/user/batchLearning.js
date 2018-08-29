@@ -2082,7 +2082,7 @@ function batchLearnTraing(filepath, uiCheck, done) {
 
             var resLegacyData = sync.await(oracle.selectLegacyFilepath(filepath, sync.defer()));
 
-            if (resLegacyData[0].rows[0].length < 0) {
+            if (resLegacyData[0].rows.length < 0) {
                 return done(null, "error getLegacy");
             }
 
