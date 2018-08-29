@@ -2386,8 +2386,7 @@ h3.tits span {
 .tep_content {
     position: relative;
     width: 100%;
-    height: 100%;
-    min-height: 775px;
+    height: 775px;
     background-color: #fff;
     border: 1px solid #ccc;
     -webkit-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
@@ -5821,13 +5820,7 @@ input:disabled {
         width: -moz-calc(100% - 15px);
     }
 
-    .table_style03 table > thead > tr > th:first-child {
-        border-radius: 7px 0 0 0;
-    }
 
-    .table_style03 table > thead > tr > th:last-child {
-        border-radius: 0 7px 0 0;
-    }
 
     .table_style03 table > thead > tr > th {
         height: 44px;
@@ -5868,3 +5861,20 @@ input:disabled {
         line-height: 28px;
         font-size: 13px
     }
+
+.batch_tbl_left_headerDiv, .batch_tbl_left_contetnsDiv {
+    width: 250px !important;
+}
+
+.batch_tbl_left_contetnsDiv {
+    height: 630px !important;
+    overflow-y: hidden;
+}
+
+.batch_tb_divBodyScroll {
+    height: 630px !important;
+}
+
+.batch_tbl_right_divBodyScroll {
+    height: 647px;
+}

@@ -224,11 +224,15 @@ var fnSearchBatchLearningDataList = function (req, res) {
             //var reqNum = 12;
             var originImageArr = sync.await(oracle.selectBatchLearnList(req, sync.defer()));
             var filePathList = [];
-            for (var i = 0; i < originImageArr.length; i++) {
-                filePathList.push(originImageArr[i].rows[0].FILEPATH);
+            var mlData = [];
+
+            if (originImageArr.length != 0) {
+                for (var i = 0; i < originImageArr.length; i++) {
+                    filePathList.push(originImageArr[i].rows[0].FILEPATH);
+                }
+                var mlData = sync.await(oracle.selectBatchLearnMlList(filePathList, sync.defer()));
             }
 
-            var mlData = sync.await(oracle.selectBatchLearnMlList(filePathList, sync.defer()));
 
             res.send({ data: originImageArr, mlData: mlData, code: 200 });
         } catch (e) {
@@ -2050,7 +2054,56 @@ function labelMappingTrain(data) {
     });
 }
 
-router.post('/batchLearnTraing', function (req, res) {
+router.post('/addBatchTraining', function (req, res) {
+    req.setTimeout(500000);
+
+    sync.fiber(function () {
+        var filepath = req.body.filePathArray;
+        var retNum = 0;
+        for (var i = 0; i < filepath.length; i++) {
+            var batchData = sync.await(addBatchTraining(filepath[i], sync.defer()));
+            retNum += batchData;
+        }
+
+        //ml training
+        if (retNum > 0) {
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args = ["training"];
+            var resCol = sync.await(PythonShell.run('eval3.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var resPyArr = JSON.parse(resCol[0].replace(/'/g, '"'));
+
+            if (resPyArr["code"] != 200) {
+                res.send({ code: 200, msg: resPyArr["message"] });
+            } else {
+                res.send({ code: 200, msg: 'Success AddTrain' });
+            }
+        } else {
+            if (isNaN(retNum)) {
+                res.send({ code: 200, msg: 'Fail AddTrain' });
+            } else {
+                res.send({ code: 200, msg: 'Success AddTrain' });
+            }
+        }
+        
+    });
+});
+
+function addBatchTraining(filepath, done) {
+    sync.fiber(function () {
+        try {
+
+            //get mlData, insert colData
+            var resMlData = sync.await(oracle.addBatchTraining(filepath, sync.defer()));
+
+            return done(null, resMlData);
+        } catch (e) {
+            console.log(e);
+            return done(null, e);
+        }
+    });
+}
+
+router.post('/batchLearnTraining', function (req, res) {
     req.setTimeout(500000);
 
     sync.fiber(function () {
@@ -2059,7 +2112,7 @@ router.post('/batchLearnTraing', function (req, res) {
         var retData = [];
         var uiTraining = '';
         for (var i = 0; i < filepath.length; i++) {
-            var batchData = sync.await(batchLearnTraing(filepath[i], uiCheck, sync.defer()));
+            var batchData = sync.await(batchLearnTraining(filepath[i], uiCheck, sync.defer()));
 
             if (batchData.uiTraining && batchData.uiTraining == "uiTraining") {
                 retData = [];
@@ -2074,7 +2127,7 @@ router.post('/batchLearnTraing', function (req, res) {
     });
 });
 
-function batchLearnTraing(filepath, uiCheck, done) {
+function batchLearnTraining(filepath, uiCheck, done) {
     sync.fiber(function () {
         try {
 
@@ -2333,7 +2386,7 @@ function batchLearnTraing2(imgId, uiCheck, done) {
 function dataToTypoArgs(data) {
 
     for (var i in data) {
-        data[i].text = data[i].text.toLowerCase().replace("'", "`");
+        data[i].text = data[i].text.toLowerCase().replace(/'/g, '`');
     }
     return data;
 }

@@ -118,6 +118,10 @@ var buttonEvent = function () {
         popupEvent.closePopup();
     });
 
+    // Add Training
+    $("#btn_AddTraining").on("click", function () {
+        fn_addTraining();
+    });
 
     /*$(".poplayer .bg").on("click", function () {
         popupEvent.closePopup();
@@ -637,60 +641,59 @@ function popupLegacy(legacy) {
 
     console.log(legacy);
 
-    var appendHtml = ``;
+    var appendHtml = '';
 
     if (legacy.data.length > 0) {
         for (var i = 0; i < legacy.data.length; i++) {
-            appendHtml += `
-            <tr>
-                <td scope="row">${nvl(legacy.data[i].CONTRACTNUM)}</td>
-                <td scope="row">${nvl(legacy.data[i].CTNM)}</td>
-                <td scope="row">${nvl(legacy.data[i].OGCOMPANYCODE)}</td>
-                <td scope="row">${nvl(legacy.data[i].OGCOMPANYNAME)}</td>
-                <td scope="row">${nvl(legacy.data[i].BROKERCODE)}</td>
-                <td scope="row">${nvl(legacy.data[i].BROKERNAME)}</td>
-                <td scope="row">${nvl(legacy.data[i].INSSTDT)}</td>
-                <td scope="row">${nvl(legacy.data[i].INSENDDT)}</td>
-                <td scope="row">${nvl(legacy.data[i].CURCD)}</td>
-                <td scope="row">${nvl(legacy.data[i].PAIDPERCENT)}</td>
-                <td scope="row">${nvl(legacy.data[i].PAIDSHARE)}</td>
-                <td scope="row">${nvl(legacy.data[i].GROSSPM)}</td>
-                <td scope="row">${nvl(legacy.data[i].PM)}</td>
-                <td scope="row">${nvl(legacy.data[i].PMPFEND)}</td>
-                <td scope="row">${nvl(legacy.data[i].PMPFWOS)}</td>
-                <td scope="row">${nvl(legacy.data[i].XOLPM)}</td>
-                <td scope="row">${nvl(legacy.data[i].RETURNPM)}</td>
-                <td scope="row">${nvl(legacy.data[i].GROSSCN)}</td>
-                <td scope="row">${nvl(legacy.data[i].CN)}</td>
-                <td scope="row">${nvl(legacy.data[i].PROFITCN)}</td>
-                <td scope="row">${nvl(legacy.data[i].BROKERAGE)}</td>
-                <td scope="row">${nvl(legacy.data[i].TAX)}</td>
-                <td scope="row">${nvl(legacy.data[i].OVERRIDINGCOM)}</td>
-                <td scope="row">${nvl(legacy.data[i].CHARGE)}</td>
-                <td scope="row">${nvl(legacy.data[i].PMRESERVERTD1)}</td>
-                <td scope="row">${nvl(legacy.data[i].PFPMRESERVERTD1)}</td>
-                <td scope="row">${nvl(legacy.data[i].PMRESERVERTD2)}</td>
-                <td scope="row">${nvl(legacy.data[i].PFPMRESERVERTD2)}</td>
-                <td scope="row">${nvl(legacy.data[i].CLAIM)}</td>
-                <td scope="row">${nvl(legacy.data[i].LOSSRECOVERY)}</td>
-                <td scope="row">${nvl(legacy.data[i].CASHLOSS)}</td>
-                <td scope="row">${nvl(legacy.data[i].CASHLOSSRD)}</td>
-                <td scope="row">${nvl(legacy.data[i].LOSSRR)}</td>
-                <td scope="row">${nvl(legacy.data[i].LOSSRR2)}</td>
-                <td scope="row">${nvl(legacy.data[i].LOSSPFEND)}</td>
-                <td scope="row">${nvl(legacy.data[i].LOSSPFWOA)}</td>
-                <td scope="row">${nvl(legacy.data[i].INTEREST)}</td>
-                <td scope="row">${nvl(legacy.data[i].TAXON)}</td>
-                <td scope="row">${nvl(legacy.data[i].MISCELLANEOUS)}</td>
-                <td scope="row">${nvl(legacy.data[i].PMBL)}</td>
-                <td scope="row">${nvl(legacy.data[i].CMBL)}</td>
-                <td scope="row">${nvl(legacy.data[i].NTBL)}</td>
-                <td scope="row">${nvl(legacy.data[i].CSCOSARFRNCNNT2)}</td>
-            </tr>
-            `;
+            appendHtml += 
+            '<tr>' +
+                '<td scope="row">' + nvl(legacy.data[i].CONTRACTNUM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CTNM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].OGCOMPANYCODE) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].OGCOMPANYNAME) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].BROKERCODE) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].BROKERNAME) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].INSSTDT) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].INSENDDT) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CURCD) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PAIDPERCENT) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PAIDSHARE) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].GROSSPM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PMPFEND) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PMPFWOS) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].XOLPM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].RETURNPM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].GROSSCN) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CN) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PROFITCN) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].BROKERAGE) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].TAX) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].OVERRIDINGCOM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CHARGE) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PMRESERVERTD1) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PFPMRESERVERTD1) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PMRESERVERTD2) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PFPMRESERVERTD2) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CLAIM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].LOSSRECOVERY) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CASHLOSS) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CASHLOSSRD) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].LOSSRR) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].LOSSRR2) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].LOSSPFEND) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].LOSSPFWOA) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].INTEREST) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].TAXON) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].MISCELLANEOUS) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PMBL) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CMBL) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].NTBL) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CSCOSARFRNCNNT2) + '</td>' +
+            '</tr>';
         }
     } else {
-        appendHtml += `<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>`;
+        appendHtml += '<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>';
     }
 
     $("#tbody_batchList_answer2").empty().append(appendHtml);
@@ -1228,6 +1231,8 @@ var searchBatchLearnDataList = function (addCond) {
     };
     var appendHtml = "";
     var checkboxHtml = "";
+    var appendLeftContentsHtml = '';
+    var appendRightContentsHtml = '';
     $.ajax({
         url: '/batchLearning/searchBatchLearnDataList',
         type: 'post',
@@ -1241,120 +1246,130 @@ var searchBatchLearnDataList = function (addCond) {
             //addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
-            //console.log(data);
+            console.log(data);
             var list = data.data;
             if (addCond == "LEARN_N") $("#total_cnt_before").html(list.length);
             else $("#total_cnt_after").html(list.length);
 
-            if (data != null && data != '') {
+            
+
+            if (list.length != 0) {
 
                 for (var i = 0; i < list.length; i++) {
                     var rows = list[i].rows;
-                    for (var y = 0; y < rows.length; y++) {
-                        appendHtml += "<tr>";
-                        if (y == 0) {
-                            if (addCond == "LEARN_N") checkboxHtml = `<td rowspan="` + (rows.length + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[y].FILEPATH)}" class="sta00" name="listCheck_before" /></td>`;
-                            else checkboxHtml = `<td rowspan="` + (rows.length + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[y].FILEPATH)}" class="stb00" name="listCheck_after" /></div></td>`;
 
-                            appendHtml += checkboxHtml;
-                            appendHtml += `<td rowspan="` + (rows.length + 1) + `">${nvl(rows[y].FILENAME)}</td > < !--이미지ID-->`;
-                        }
-                        appendHtml += `                                    
-                                        <td>${nvl(rows[y].OGCOMPANYNAME)}</td> <!--출재사명-->
-                                        <td>${nvl(rows[y].CTNM)}</td> <!--계약명-->
-                                        <td>${nvl(rows[y].UY)}</td> <!--UY-->
-                                        <td>${nvl(rows[y].CURCD)}</td> <!--화폐코드-->
-                                        <td>${nvl(rows[y].CURUNIT)}</td> <!--화폐단위-->
-                                        <td>${nvl(rows[y].PAIDPERCENT)}</td> <!--Paid(100%)-->
-                                        <td>${nvl(rows[y].PAIDSHARE)}</td> <!--Paid(Our Share)-->
-                                        <td>${nvl(rows[y].OSLPERCENT)}</td> <!--OSL(100%)-->
-                                        <td>${nvl(rows[y].OSLSHARE)}</td> <!--OSL(Our Share)-->
-                                        <td>${nvl(rows[y].PM)}</td> <!--PREMIUM-->
-                                        <td>${nvl(rows[y].PMPFEND)}</td> <!--PREMIUM P/F ENT-->
-                                        <td>${nvl(rows[y].PMPFWOS)}</td> <!--PREMIUM P/F WOS-->
-                                        <td>${nvl(rows[y].XOLPM)}</td> <!--XOL PREMIUM-->
-                                        <td>${nvl(rows[y].RETURNPM)}</td> <!--RETURN PREMIUM-->
-                                        <td>${nvl(rows[y].CN)}</td> <!--COMMISSION-->
-                                        <td>${nvl(rows[y].PROFITCN)}</td> <!--PROFIT COMMISION-->
-                                        <td>${nvl(rows[y].BROKERAGE)}</td> <!--BROKERAGE-->
-                                        <td>${nvl(rows[y].TAX)}</td> <!--TEX-->
-                                        <td>${nvl(rows[y].OVERRIDINGCOM)}</td> <!-- OVERIDING COM-->
-                                        <td>${nvl(rows[y].CHARGE)}</td> <!--CHARGE-->
-                                        <td>${nvl(rows[y].PMRESERVERTD)}</td> <!--PREMIUM RESERVE RTD-->
-                                        <td>${nvl(rows[y].PFPMRESERVERTD)}</td> <!--P/F PREMIUM RESERVE RTD-->
-                                        <td>${nvl(rows[y].PMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
-                                        <td>${nvl(rows[y].PFPMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
-                                        <td>${nvl(rows[y].CLAIM)}</td> <!--CLAIM -->
-                                        <td>${nvl(rows[y].LOSSRECOVERY)}</td> <!--LOSS RECOVERY -->
-                                        <td>${nvl(rows[y].CASHLOSS)}</td> <!--CASH LOSS -->
-                                        <td>${nvl(rows[y].CASHLOSSRD)}</td> <!--CASH LOSS REFUND -->
-                                        <td>${nvl(rows[y].LOSSRR)}</td> <!--LOSS RESERVE RTD -->
-                                        <td>${nvl(rows[y].LOSSRR2)}</td> <!--LOSS RESERVE RLD -->
-                                        <td>${nvl(rows[y].LOSSPFEND)}</td> <!--LOSS P/F ENT -->
-                                        <td>${nvl(rows[y].LOSSPFWOA)}</td> <!--LOSS P/F WOA -->
-                                        <td>${nvl(rows[y].INTEREST)}</td> <!--INTEREST -->
-                                        <td>${nvl(rows[y].TAXON)}</td> <!--TAX ON -->
-                                        <td>${nvl(rows[y].MISCELLANEOUS)}</td> <!--MISCELLANEOUS -->
-                                        <td>${nvl(rows[y].CSCOSARFRNCNNT2)}</td> <!--YOUR REF -->
-                                    </tr>`;
+                    if (addCond == "LEARN_N") checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(rows[0].FILEPATH) + '" class="sta00" name="listCheck_before" /></td>';
+                    else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(rows[0].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
+
+                    var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
+                    appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
+                                                checkboxHtml +
+                                                '<td>' + nvl(rows[0].FILENAME)  + '</td> <!--FILENAME-->' +
+                                              '</tr>';
+
+                    for (var y = 0; y < rows.length; y++) {
+                        appendRightContentsHtml += '<tr>' +
+                                        '<td>' + nvl(rows[y].OGCOMPANYNAME) + '</td> <!--출재사명-->' +
+                                        '<td>' + nvl(rows[y].CTNM) + '</td> <!--계약명-->' +
+                                        '<td>' + nvl(rows[y].UY) + '</td> <!--UY-->' +
+                                        '<td>' + nvl(rows[y].CURCD) + '</td> <!--화폐코드-->' +
+                                        '<td>' + nvl(rows[y].CURUNIT) + '</td> <!--화폐단위-->' +
+                                        '<td>' + nvl(rows[y].PAIDPERCENT) + '</td> <!--Paid(100%)-->' +
+                                        '<td>' + nvl(rows[y].PAIDSHARE) + '</td> <!--Paid(Our Share)-->' +
+                                        '<td>' + nvl(rows[y].OSLPERCENT) + '</td> <!--OSL(100%)-->' +
+                                        '<td>' + nvl(rows[y].OSLSHARE) + '</td> <!--OSL(Our Share)-->' +
+                                        '<td>' + nvl(rows[y].PM) + '</td> <!--PREMIUM-->' +
+                                        '<td>' + nvl(rows[y].PMPFEND) + '</td> <!--PREMIUM P/F ENT-->' +
+                                        '<td>' + nvl(rows[y].PMPFWOS) + '</td> <!--PREMIUM P/F WOS-->' +
+                                        '<td>' + nvl(rows[y].XOLPM) + '</td> <!--XOL PREMIUM-->' +
+                                        '<td>' + nvl(rows[y].RETURNPM) + '</td> <!--RETURN PREMIUM-->' +
+                                        '<td>' + nvl(rows[y].CN) + '</td> <!--COMMISSION-->' +
+                                        '<td>' + nvl(rows[y].PROFITCN) + '</td> <!--PROFIT COMMISION-->' +
+                                        '<td>' + nvl(rows[y].BROKERAGE) + '</td> <!--BROKERAGE-->' +
+                                        '<td>' + nvl(rows[y].TAX) + '</td> <!--TEX-->' +
+                                        '<td>' + nvl(rows[y].OVERRIDINGCOM) + '</td> <!-- OVERIDING COM-->' +
+                                        '<td>' + nvl(rows[y].CHARGE) + '</td> <!--CHARGE-->' +
+                                        '<td>' + nvl(rows[y].PMRESERVERTD) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                                        '<td>' + nvl(rows[y].PFPMRESERVERTD) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                                        '<td>' + nvl(rows[y].PMRESERVERTD2) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td>' + nvl(rows[y].PFPMRESERVERTD2) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td>' + nvl(rows[y].CLAIM) + '</td> <!--CLAIM -->' +
+                                        '<td>' + nvl(rows[y].LOSSRECOVERY) + '</td> <!--LOSS RECOVERY -->' +
+                                        '<td>' + nvl(rows[y].CASHLOSS) + '</td> <!--CASH LOSS -->' +
+                                        '<td>' + nvl(rows[y].CASHLOSSRD) + '</td> <!--CASH LOSS REFUND -->' +
+                                        '<td>' + nvl(rows[y].LOSSRR) + '</td> <!--LOSS RESERVE RTD -->' +
+                                        '<td>' + nvl(rows[y].LOSSRR2) + '</td> <!--LOSS RESERVE RLD -->' +
+                                        '<td>' + nvl(rows[y].LOSSPFEND) + '</td> <!--LOSS P/F ENT -->' +
+                                        '<td>' + nvl(rows[y].LOSSPFWOA) + '</td> <!--LOSS P/F WOA -->' +
+                                        '<td>' + nvl(rows[y].INTEREST) + '</td> <!--INTEREST -->' +
+                                        '<td>' + nvl(rows[y].TAXON) + '</td> <!--TAX ON -->' +
+                                        '<td>' + nvl(rows[y].MISCELLANEOUS) + '</td> <!--MISCELLANEOUS -->' +
+                                        '<td>' + nvl(rows[y].CSCOSARFRNCNNT2) + '</td> <!--YOUR REF -->' +
+                                    '</tr>';
                     }                   
                     var mlData = data.mlData;
                     if (mlData.rows.length != 0) {
-                        appendHtml += `<tr class="mlTr">                                    
-                                        <td>` + makeMLSelect(mlData.rows, 0, rows[0].FILEPATH) + `</td> <!--출재사명-->
-                                        <td>` + makeMLSelect(mlData.rows, 1, rows[0].FILEPATH) + `</td> <!--계약명-->
-                                        <td>` + makeMLSelect(mlData.rows, 2, rows[0].FILEPATH) + `</td> <!--UY-->
-                                        <td>` + makeMLSelect(mlData.rows, 3, rows[0].FILEPATH) + `</td> <!--화폐코드-->
-                                        <td>` + makeMLSelect(mlData.rows, 4, rows[0].FILEPATH) + `</td> <!--화폐단위-->
-                                        <td>` + makeMLSelect(mlData.rows, 5, rows[0].FILEPATH) + `</td> <!--Paid(100%)-->
-                                        <td>` + makeMLSelect(mlData.rows, 6, rows[0].FILEPATH) + `</td> <!--Paid(Our Share)-->
-                                        <td>` + makeMLSelect(mlData.rows, 7, rows[0].FILEPATH) + `</td> <!--OSL(100%)-->
-                                        <td>` + makeMLSelect(mlData.rows, 8, rows[0].FILEPATH) + `</td> <!--OSL(Our Share)-->
-                                        <td>` + makeMLSelect(mlData.rows, 9, rows[0].FILEPATH) + `</td> <!--PREMIUM-->
-                                        <td>` + makeMLSelect(mlData.rows, 10, rows[0].FILEPATH) + `</td> <!--PREMIUM P/F ENT-->
-                                        <td>` + makeMLSelect(mlData.rows, 11, rows[0].FILEPATH) + `</td> <!--PREMIUM P/F WOS-->
-                                        <td>` + makeMLSelect(mlData.rows, 12, rows[0].FILEPATH) + `</td> <!--XOL PREMIUM-->
-                                        <td>` + makeMLSelect(mlData.rows, 13, rows[0].FILEPATH) + `</td> <!--RETURN PREMIUM-->
-                                        <td>` + makeMLSelect(mlData.rows, 14, rows[0].FILEPATH) + `</td> <!--COMMISION -->
-                                        <td>` + makeMLSelect(mlData.rows, 15, rows[0].FILEPATH) + `</td> <!--PROFIT COMMISION-->
-                                        <td>` + makeMLSelect(mlData.rows, 16, rows[0].FILEPATH) + `</td> <!--BROKERAGE-->
-                                        <td>` + makeMLSelect(mlData.rows, 17, rows[0].FILEPATH) + `</td> <!--TEX-->
-                                        <td>` + makeMLSelect(mlData.rows, 18, rows[0].FILEPATH) + `</td> <!-- OVERIDING COM-->
-                                        <td>` + makeMLSelect(mlData.rows, 19, rows[0].FILEPATH) + `</td> <!--CHARGE-->
-                                        <td>` + makeMLSelect(mlData.rows, 20, rows[0].FILEPATH) + `</td> <!--PREMIUM RESERVE RTD-->
-                                        <td>` + makeMLSelect(mlData.rows, 21, rows[0].FILEPATH) + `</td> <!--P/F PREMIUM RESERVE RTD-->
-                                        <td>` + makeMLSelect(mlData.rows, 22, rows[0].FILEPATH) + `</td> <!--P/F PREMIUM RESERVE RLD-->
-                                        <td>` + makeMLSelect(mlData.rows, 23, rows[0].FILEPATH) + `</td> <!--P/F PREMIUM RESERVE RLD-->
-                                        <td>` + makeMLSelect(mlData.rows, 24, rows[0].FILEPATH) + `</td> <!--CLAIM -->
-                                        <td>` + makeMLSelect(mlData.rows, 25, rows[0].FILEPATH) + `</td> <!--LOSS RECOVERY -->
-                                        <td>` + makeMLSelect(mlData.rows, 26, rows[0].FILEPATH) + `</td> <!--CASH LOSS -->
-                                        <td>` + makeMLSelect(mlData.rows, 27, rows[0].FILEPATH) + `</td> <!--CASH LOSS REFUND -->
-                                        <td>` + makeMLSelect(mlData.rows, 28, rows[0].FILEPATH) + `</td> <!--LOSS RESERVE RTD -->
-                                        <td>` + makeMLSelect(mlData.rows, 29, rows[0].FILEPATH) + `</td> <!--LOSS RESERVE RLD -->
-                                        <td>` + makeMLSelect(mlData.rows, 30, rows[0].FILEPATH) + `</td> <!--LOSS P/F ENT -->
-                                        <td>` + makeMLSelect(mlData.rows, 31, rows[0].FILEPATH) + `</td> <!--LOSS P/F WOA -->
-                                        <td>` + makeMLSelect(mlData.rows, 32, rows[0].FILEPATH) + `</td> <!--INTEREST -->
-                                        <td>` + makeMLSelect(mlData.rows, 33, rows[0].FILEPATH) + `</td> <!--TAX ON -->
-                                        <td>` + makeMLSelect(mlData.rows, 34, rows[0].FILEPATH) + `</td> <!--MISCELLANEOUS -->
-                                        <td>` + makeMLSelect(mlData.rows, 35, rows[0].FILEPATH) + `</td> <!--YOUR REF -->
-                                    </tr>`;
+                        appendRightContentsHtml += '<tr class="mlTr">' +                                    
+                                        '<td>' + makeMLSelect(mlData.rows, 0, rows[0].FILEPATH) + '</td> <!--출재사명-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 1, rows[0].FILEPATH) + '</td> <!--계약명-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 2, rows[0].FILEPATH) + '</td> <!--UY-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 3, rows[0].FILEPATH) + '</td> <!--화폐코드-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 4, rows[0].FILEPATH) + '</td> <!--화폐단위-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 5, rows[0].FILEPATH) + '</td> <!--Paid(100%)-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 6, rows[0].FILEPATH) + '</td> <!--Paid(Our Share)-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 7, rows[0].FILEPATH) + '</td> <!--OSL(100%)-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 8, rows[0].FILEPATH) + '</td> <!--OSL(Our Share)-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 9, rows[0].FILEPATH) + '</td> <!--PREMIUM-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 10, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F ENT-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 11, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F WOS-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 12, rows[0].FILEPATH) + '</td> <!--XOL PREMIUM-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 13, rows[0].FILEPATH) + '</td> <!--RETURN PREMIUM-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 14, rows[0].FILEPATH) + '</td> <!--COMMISION -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 15, rows[0].FILEPATH) + '</td> <!--PROFIT COMMISION-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 16, rows[0].FILEPATH) + '</td> <!--BROKERAGE-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 17, rows[0].FILEPATH) + '</td> <!--TEX-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 18, rows[0].FILEPATH) + '</td> <!-- OVERIDING COM-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 19, rows[0].FILEPATH) + '</td> <!--CHARGE-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 20, rows[0].FILEPATH) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 21, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 22, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 23, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 24, rows[0].FILEPATH) + '</td> <!--CLAIM -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 25, rows[0].FILEPATH) + '</td> <!--LOSS RECOVERY -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 26, rows[0].FILEPATH) + '</td> <!--CASH LOSS -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 27, rows[0].FILEPATH) + '</td> <!--CASH LOSS REFUND -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 28, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RTD -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 29, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RLD -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 30, rows[0].FILEPATH) + '</td> <!--LOSS P/F ENT -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 31, rows[0].FILEPATH) + '</td> <!--LOSS P/F WOA -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 32, rows[0].FILEPATH) + '</td> <!--INTEREST -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 33, rows[0].FILEPATH) + '</td> <!--TAX ON -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 34, rows[0].FILEPATH) + '</td> <!--MISCELLANEOUS -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 35, rows[0].FILEPATH) + '</td> <!--YOUR REF -->' +
+                                    '</tr>';
                     } else {                   
-                        appendHtml += `
-                                    <tr class="mlTr">
-                                        <td colspan="36"></td>            
-                                    </tr>`;
+                        appendRightContentsHtml += 
+                                    '<tr class="mlTr">' +
+                                        '<td colspan="36"></td>' +          
+                                    '</tr>';
                     
                     }
                 }
             } else {
-                appendHtml += `<tr><td colspan="39">조회할 데이터가 없습니다.</td></tr>`;
+                appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="2"></td></tr>'
+                appendRightContentsHtml += '<tr><td colspan="36">조회할 데이터가 없습니다.</td></tr>';
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
-                $("#tbody_batchList_before").empty().append(appendHtml);
+                $('#batch_left_contents_before').empty().append(appendLeftContentsHtml);
+                $('#batch_right_contents_before').empty().append(appendRightContentsHtml);
+
+                //$("#tbody_batchList_before").empty().append(appendHtml);
                 //compareMLAndAnswer(data);
             } else {
-                $("#tbody_batchList_after").empty().append(appendHtml);               
+                $('#batch_left_contents_after').empty().append(appendLeftContentsHtml);
+                $('#batch_right_contents_after').empty().append(appendRightContentsHtml);
+                //$("#tbody_batchList_after").empty().append(appendHtml);               
             }
             endProgressBar(progressId); // end progressbar
             checkboxEvent(); // refresh checkbox event
@@ -1503,10 +1518,10 @@ function fn_viewImageData(imgId, obj) {
             console.log("data : " + JSON.stringify(data));
             if (data.code == "201") {
                 $("#span_view_image").remove();
-                $('#viewImage').after(`<span id="span_view_image">이미지를 변환중입니다. 다시 확인해주세요.<span>`);
+                $('#viewImage').after('<span id="span_view_image">이미지를 변환중입니다. 다시 확인해주세요.<span>');
             } else {
                 $("#span_view_image").remove();
-                $('#viewImage').attr('src', `${data.rows[0].CONVERTEDIMGPATH}`);
+                $('#viewImage').attr('src', data.rows[0].CONVERTEDIMGPATH);
             }
             
             innerFn_ViewImageData();
@@ -1521,7 +1536,7 @@ function fn_viewImageData(imgId, obj) {
         var param = {
             imgId: imgId
         };
-        var appendHtml = ``;
+        var appendHtml = '';
 
         $.ajax({
             url: '/batchLearning/viewImageData',
@@ -1532,59 +1547,58 @@ function fn_viewImageData(imgId, obj) {
             success: function (data) {
                 if (data.length > 0) {
                     $.each(data, function (index, entry) {
-                        appendHtml += `
-                            <tr>
-                                <td scope="row">${nvl(entry.FILEPATH)}</td>
-                                <td scope="row">${nvl(entry.IMGID)}</td>
-                                <td scope="row">${nvl(entry.STATEMENTDIV)}</td>
-                                <td scope="row">${nvl(entry.CONTRACTNUM)}</td>
-                                <td scope="row">${nvl(entry.CTNM)}</td>
-                                <td scope="row">${nvl(entry.OGCOMPANYCODE)}</td>
-                                <td scope="row">${nvl(entry.OGCOMPANYNAME)}</td>
-                                <td scope="row">${nvl(entry.BROKERCODE)}</td>
-                                <td scope="row">${nvl(entry.BROKERNAME)}</td>
-                                <td scope="row">${nvl(entry.INSSTDT)}</td>
-                                <td scope="row">${nvl(entry.INSENDDT)}</td>
-                                <td scope="row">${nvl(entry.CURCD)}</td>
-                                <td scope="row">${nvl(entry.PAIDPERCENT)}</td>
-                                <td scope="row">${nvl(entry.PAIDSHARE)}</td>
-                                <td scope="row">${nvl(entry.GROSSPM)}</td>
-                                <td scope="row">${nvl(entry.PM)}</td>
-                                <td scope="row">${nvl(entry.PMPFEND)}</td>
-                                <td scope="row">${nvl(entry.PMPFWOS)}</td>
-                                <td scope="row">${nvl(entry.XOLPM)}</td>
-                                <td scope="row">${nvl(entry.RETURNPM)}</td>
-                                <td scope="row">${nvl(entry.GROSSCN)}</td>
-                                <td scope="row">${nvl(entry.CN)}</td>
-                                <td scope="row">${nvl(entry.PROFITCN)}</td>
-                                <td scope="row">${nvl(entry.BROKERAGE)}</td>
-                                <td scope="row">${nvl(entry.TAX)}</td>
-                                <td scope="row">${nvl(entry.OVERRIDINGCOM)}</td>
-                                <td scope="row">${nvl(entry.CHARGE)}</td>
-                                <td scope="row">${nvl(entry.PMRESERVERTD1)}</td>
-                                <td scope="row">${nvl(entry.PFPMRESERVERTD1)}</td>
-                                <td scope="row">${nvl(entry.PMRESERVERTD2)}</td>
-                                <td scope="row">${nvl(entry.PFPMRESERVERTD2)}</td>
-                                <td scope="row">${nvl(entry.CLAIM)}</td>
-                                <td scope="row">${nvl(entry.LOSSRECOVERY)}</td>
-                                <td scope="row">${nvl(entry.CASHLOSS)}</td>
-                                <td scope="row">${nvl(entry.CASHLOSSRD)}</td>
-                                <td scope="row">${nvl(entry.LOSSRR)}</td>
-                                <td scope="row">${nvl(entry.LOSSRR2)}</td>
-                                <td scope="row">${nvl(entry.LOSSPFEND)}</td>
-                                <td scope="row">${nvl(entry.LOSSPFWOA)}</td>
-                                <td scope="row">${nvl(entry.INTEREST)}</td>
-                                <td scope="row">${nvl(entry.TAXON)}</td>
-                                <td scope="row">${nvl(entry.MISCELLANEOUS)}</td>
-                                <td scope="row">${nvl(entry.PMBL)}</td>
-                                <td scope="row">${nvl(entry.CMBL)}</td>
-                                <td scope="row">${nvl(entry.NTBL)}</td>
-                                <td scope="row">${nvl(entry.CSCOSARFRNCNNT2)}</td>
-                            </tr>
-                            `;
+                        appendHtml += 
+                            '<tr>' +
+                                '<td scope="row">' + nvl(entry.FILEPATH) + '</td>' +
+                                '<td scope="row">' + nvl(entry.IMGID) + '</td>' +
+                                '<td scope="row">' + nvl(entry.STATEMENTDIV) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CONTRACTNUM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CTNM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.OGCOMPANYCODE) + '</td>' +
+                                '<td scope="row">' + nvl(entry.OGCOMPANYNAME) + '</td>' +
+                                '<td scope="row">' + nvl(entry.BROKERCODE) + '</td>' +
+                                '<td scope="row">' + nvl(entry.BROKERNAME) + '</td>' +
+                                '<td scope="row">' + nvl(entry.INSSTDT) + '</td>' +
+                                '<td scope="row">' + nvl(entry.INSENDDT) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CURCD) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PAIDPERCENT) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PAIDSHARE) + '</td>' +
+                                '<td scope="row">' + nvl(entry.GROSSPM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PMPFEND) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PMPFWOS) + '</td>' +
+                                '<td scope="row">' + nvl(entry.XOLPM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.RETURNPM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.GROSSCN) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CN) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PROFITCN) + '</td>' +
+                                '<td scope="row">' + nvl(entry.BROKERAGE) + '</td>' +
+                                '<td scope="row">' + nvl(entry.TAX) + '</td>' +
+                                '<td scope="row">' + nvl(entry.OVERRIDINGCOM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CHARGE) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PMRESERVERTD1) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PFPMRESERVERTD1) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PMRESERVERTD2) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PFPMRESERVERTD2) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CLAIM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.LOSSRECOVERY) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CASHLOSS) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CASHLOSSRD) + '</td>' +
+                                '<td scope="row">' + nvl(entry.LOSSRR) + '</td>' +
+                                '<td scope="row">' + nvl(entry.LOSSRR2) + '</td>' +
+                                '<td scope="row">' + nvl(entry.LOSSPFEND) + '</td>' +
+                                '<td scope="row">' + nvl(entry.LOSSPFWOA) + '</td>' +
+                                '<td scope="row">' + nvl(entry.INTEREST) + '</td>' +
+                                '<td scope="row">' + nvl(entry.TAXON) + '</td>' +
+                                '<td scope="row">' + nvl(entry.MISCELLANEOUS) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PMBL) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CMBL) + '</td>' +
+                                '<td scope="row">' + nvl(entry.NTBL) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CSCOSARFRNCNNT2) + '</td>' +
+                            '</tr>';
                     });
                 } else {
-                    appendHtml += `<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>`;
+                    appendHtml += '<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>';
                 }
                 $("#tbody_batchList_answer").empty().append(appendHtml);
                 layer_open('layer3');
@@ -1869,7 +1883,7 @@ var fn_popBatchRun = function () {
                     return;
                 } else {
                     //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-                    batchLearnTraing(imgIdArray, "PROCESS_IMAGE");
+                    batchLearnTraining(imgIdArray, "PROCESS_IMAGE");
                 }
             } else {
                 alert("Before Training 상태에서만 배치학습이 가능합니다.");
@@ -1883,6 +1897,68 @@ var fn_popBatchRun = function () {
             break;
     }
 };
+
+var fn_addTraining = function () {
+    var filePathArray = [];
+
+    if (addCond == "LEARN_N") {
+        let chkCnt = 0;
+        $("input[name=listCheck_before]").each(function (index, entry) {
+            if ($(this).is(":checked")) {
+                chkCnt++;
+                totCount++;
+                //imgIdArray.push($(this).val());
+                var filepath = $(this).val();
+                filePathArray.push(filepath);
+            }
+        });
+        if (chkCnt == 0) {
+            alert("선택된 학습이 없습니다.");
+            return;
+        } else {
+            //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+            addBatchTraining(filePathArray, "PROCESS_IMAGE");
+        }
+    } else {
+        alert("Before Training 상태에서만 배치학습이 가능합니다.");
+        return;
+    }
+};
+
+var addBatchTraining = function (filePathArray) {
+    var param = {
+        filePathArray: filePathArray,
+    };
+
+    $.ajax({
+        url: '/batchLearning/addBatchTraining',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving learn data...");
+            progressId = showProgressBar();
+        },
+        success: function (data) {
+            $("#progressMsgTitle").html("processing learn data...");
+            console.log(data);
+            if (data.code == 200) {
+                alert(data.msg);
+            }
+            searchBatchLearnDataList(addCond);
+        },
+        error: function (err) {
+            endProgressBar(progressId); // end progressbar
+            console.log(err);
+        },
+        complete: function () {
+            console.log("done");
+            //addProgressBar(41, 100);
+            endProgressBar(progressId);
+        }
+    });
+}
 
 
 
@@ -1931,14 +2007,14 @@ var fn_uiTraining = function () {
 };
 
 // batch learning 2 [Select] 배치학습데이터 조회
-var batchLearnTraing = function (imgIdArray, flag) {
+var batchLearnTraining = function (imgIdArray, flag) {
     var param = {
         imgIdArray: imgIdArray,
         uiCheck: $('#uiTrainingChk').is(':checked')
     };
 
     $.ajax({
-        url: '/batchLearning/batchLearnTraing',
+        url: '/batchLearning/batchLearnTraining',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),

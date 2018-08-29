@@ -44,7 +44,51 @@ exports.select = function (req, done) {
         }
     });
 };
-
+exports.selectLegacyFileData = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+      var res = [];
+      let conn;
+      try {
+        conn = await oracledb.getConnection(dbConfig);
+        let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term`, [req]);
+  
+        
+  
+        for (let row in resAnswerFile.rows) {
+          tempDictFile = {};
+          tempDictFile['IMGID'] = resAnswerFile.rows[row].IMGID;
+          tempDictFile['PAGENUM'] = resAnswerFile.rows[row].PAGENUM;
+          tempDictFile['FILEPATH'] = resAnswerFile.rows[row].FILEPATH;
+          tempDictFile['FILENAME'] = tempDictFile['FILEPATH'].substring(tempDictFile['FILEPATH'].lastIndexOf('/') + 1, tempDictFile['FILEPATH'].length);
+  
+          let answerDataArr = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO)\
+           <= :imgStartNo AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo`, [tempDictFile['IMGID'], tempDictFile['PAGENUM'], tempDictFile['PAGENUM']]);
+          
+          for (let row2 in answerDataArr.rows) {
+            let tempdict = {};
+            for (let i = 0; i < answerDataArr.metaData.length; i++) {
+              tempdict[answerDataArr.metaData[i].name] = answerDataArr.rows[row2][i];
+              console.log(answerDataArr.rows[row2][i]);
+            }
+            tempDictFile['LEGACY'] = tempdict;
+          }
+          res.push(tempDictFile);
+        }
+        return done(null, res);
+      } catch (err) { // catches errors in getConnection and the query
+        console.log(err);
+        return done(null, null);
+      } finally {
+        if (conn) {   // the conn assignment worked, must release
+          try {
+            await conn.release();
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+    });
+  };
 exports.selectDocCategory = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -379,31 +423,33 @@ exports.selectBatchLearnList = function (req, done) {
             idCond.push(req.body.moreNum);
             let resLearnId = await conn.execute(`SELECT FILEPATH, STATUS FROM TBL_BATCH_LEARN_ID WHERE STATUS = :status AND ROWNUM <= :num `, idCond);
 
-            var answerCond = [];
-            var answerFileSql = "(";
-            for (var i = 0; i < resLearnId.rows.length; i++) {
-                answerCond.push(resLearnId.rows[i].FILEPATH);
-                answerFileSql += (i > 0) ? ", :" + i : ":" + i;
-            }
-            answerFileSql += ")";
-
-            let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH IN` + answerFileSql, answerCond);
-
-            for (var i = 0; i < resAnswerFile.rows.length; i++) {
-                var imgId = resAnswerFile.rows[i].IMGID;
-                var imgStartNo = resAnswerFile.rows[i].PAGENUM;
-                var filepath = resAnswerFile.rows[i].FILEPATH;
-                var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
-
-                let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo `, [imgId, imgStartNo, imgStartNo]);
-
-                for (var row = 0; row < resAnswerData.rows.length; row++) {
-                    resAnswerData.rows[row].FILEPATH = filepath;
-                    resAnswerData.rows[row].FILENAME = filename;
+            if (resLearnId.rows.length != 0) {
+                var answerCond = [];
+                var answerFileSql = "(";
+                for (var i = 0; i < resLearnId.rows.length; i++) {
+                    answerCond.push(resLearnId.rows[i].FILEPATH);
+                    answerFileSql += (i > 0) ? ", :" + i : ":" + i;
                 }
+                answerFileSql += ")";
 
-                if (resAnswerData.rows.length > 0) {
-                    res.push(resAnswerData);
+                let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH IN` + answerFileSql, answerCond);
+
+                for (var i = 0; i < resAnswerFile.rows.length; i++) {
+                    var imgId = resAnswerFile.rows[i].IMGID;
+                    var imgStartNo = resAnswerFile.rows[i].PAGENUM;
+                    var filepath = resAnswerFile.rows[i].FILEPATH;
+                    var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
+
+                    let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo `, [imgId, imgStartNo, imgStartNo]);
+
+                    for (var row = 0; row < resAnswerData.rows.length; row++) {
+                        resAnswerData.rows[row].FILEPATH = filepath;
+                        resAnswerData.rows[row].FILENAME = filename;
+                    }
+
+                    if (resAnswerData.rows.length > 0) {
+                        res.push(resAnswerData);
+                    }
                 }
             }
 
@@ -434,6 +480,20 @@ exports.convertTiftoJpg = function (originFilePath, done) {
         return done(null, "error");
     } finally {
 
+    }
+};
+
+exports.convertTiftoJpgCMD = function (originFilePath, done) {
+    try {
+        //출력파일은 서버의 절대 경로 c/ImageTemp/오늘날짜/originFile명 으로 저장
+        convertedFileName = originFilePath.split('.')[0] + '.jpg';
+        execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
+        return done(null, convertedFileName);
+
+    } catch (err) {
+        console.log(err);
+    } finally {
+        //console.log('end');
     }
 };
 
@@ -710,7 +770,56 @@ exports.insertMLData = function (req, done) {
         }
     });
 };
+exports.insertMLDataCMD = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
 
+        try {
+            if (req.length) {
+                conn = await oracledb.getConnection(dbConfig);
+
+                let delSql = queryConfig.batchLearningConfig.deleteMlExport;
+                await conn.execute(delSql, [req[0].filepath]);
+
+                let resCol = await conn.execute("SELECT * FROM TBL_COLUMN_MAPPING_CLS");
+                let insSql = queryConfig.batchLearningConfig.insertMlExport;
+
+                for (let i = 0; i < req.length; i++) {
+                    let cond = [];
+                    cond.push(req[i].imgid);
+                    cond.push(req[i].filepath);
+
+                    for (let row = 0; row < resCol.rows.length; row++) {
+                        if (req.mlData[0][i].label == resCol.rows[row].COLTYPE) {
+                            cond.push(resCol.rows[row].COLNUM);
+                        }
+                    }
+
+                    cond.push(req[i].text);
+                    cond.push(req[i].location);
+                    cond.push(req[i].sid);
+
+                    if (cond.length == 6) {
+                        await conn.execute(insSql, cond);
+                    }
+                }
+            }
+
+            return done(null, "mlExport");
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
 exports.insertOcrSymspell = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -1110,6 +1219,43 @@ exports.selectBatchLearnMlList = function (filePathList, done) {
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.addBatchTraining = function (filepath, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        var retData = 0;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var inQuery = "('" + filepath + "')";
+            let result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnMlList + inQuery);
+
+            for (var row in result.rows) {
+                var sid = result.rows[row].SID;
+                var colLbl = result.rows[row].COLLABEL;
+
+                var resSelColData = await conn.execute(`SELECT * FROM TBL_COLUMN_MAPPING_TRAIN WHERE DATA = :data AND CLASS = :class`, [sid, colLbl]);
+
+                if (resSelColData.rows.length == 0) {
+                    var resInsColData = await conn.execute(queryConfig.mlConfig.insertColMapping, [sid, colLbl]);
+                    retData++;
+                }
+            }
+
+            return done(null, retData);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
         } finally {
             if (conn) {   // the conn assignment worked, must release
                 try {
