@@ -282,9 +282,11 @@ $(function () {
     $('.divBodyScroll').scroll(function () {
         // divBodyScroll의 x좌표가 움직인 거리를 가져옵니다.
         var xPoint = $(this).scrollLeft();
+        var yPoint = $(this).scrollTop();
 
-        // 가져온 x좌표를 divHeadScroll에 적용시켜 같이 움직일수 있도록 합니다.
+        // 가져온 x, y 좌표를 divHeadScroll에 적용시켜 같이 움직일수 있도록 합니다.
         $(this).prev().scrollLeft(xPoint);
+        $(this).closest('.mainTable').find('.left_divBodyScroll').scrollTop(yPoint);
     });
 
 });
