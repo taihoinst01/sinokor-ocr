@@ -1250,7 +1250,7 @@ var searchBatchLearnDataList = function (addCond) {
 
             
 
-            if (data != null && data != '') {
+            if (list.length != 0) {
 
                 for (var i = 0; i < list.length; i++) {
                     var rows = list[i].rows;
@@ -1353,7 +1353,8 @@ var searchBatchLearnDataList = function (addCond) {
                     }
                 }
             } else {
-                appendRightContentsHtml += `<tr><td colspan="39">조회할 데이터가 없습니다.</td></tr>`;
+                appendLeftContentsHtml += `<tr style="height: 30px"><td colspan="2"></td></tr>`
+                appendRightContentsHtml += `<tr><td colspan="36">조회할 데이터가 없습니다.</td></tr>`;
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
