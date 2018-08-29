@@ -44,8 +44,8 @@ function batchLearnTraing(done) {
         
                 //ocr
                 console.time("ocr : " + resLegacyData[tiffile].FILEPATH);
-                let ocrResult = sync.await(oracle.callApiOcr(convertFilpath, sync.defer()));
-                //var ocrResult = sync.await(ocrUtil.proxyOcr(convertFilpath, sync.defer())); -- 운영서버용
+                //let ocrResult = sync.await(oracle.callApiOcr(convertFilpath, sync.defer()));
+                var ocrResult = sync.await(ocrUtil.proxyOcr(convertFilpath, sync.defer()));//-- 운영서버용
         
                 if (ocrResult == "error") {
                     return done(null, "error ocr");
@@ -54,18 +54,18 @@ function batchLearnTraing(done) {
         
                 //typo ML
                 console.time("typo ML : " + resLegacyData[tiffile].FILEPATH);
-                pythonConfig.typoOptions.args = [];
-                pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
-                let resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
+                cmdPythons.args = [];
+                cmdPythons.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
+                let resPyStr = sync.await(PythonShell.run('typo2.py', cmdPythons, sync.defer()));
                 let resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
                 let sidData = sync.await(oracle.select(resPyArr, sync.defer()));
                 console.timeEnd("typo ML : " + resLegacyData[tiffile].FILEPATH);
         
                 console.time("similarity ML : " + resLegacyData[tiffile].FILEPATH);
-                pythonConfig.typoOptions.args = [];
-                pythonConfig.typoOptions.args.push(JSON.stringify(resLegacyData[tiffile]));
-                pythonConfig.typoOptions.args.push(JSON.stringify(sidData));
-                resPyStr = sync.await(PythonShell.run('similarityBatch.py', pythonConfig.typoOptions, sync.defer()));
+                cmdPythons.args = [];
+                cmdPythons.args.push(JSON.stringify(resLegacyData[tiffile]));
+                cmdPythons.args.push(JSON.stringify(sidData));
+                resPyStr = sync.await(PythonShell.run('similarityBatch.py', cmdPythons, sync.defer()));
                 resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
                 console.timeEnd("similarity ML : " + resLegacyData[tiffile].FILEPATH);
                 
@@ -89,3 +89,10 @@ function dataToTypoArgs(data) {
     }
     return data;
 }
+var cmdPythons = {
+    mode: 'text',
+    pythonPath: '',
+    pythonOptions: ['-u'],
+    scriptPath: 'C:/ICR/app/source/ml/typosentence',
+    args: []
+};
