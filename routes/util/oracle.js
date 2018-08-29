@@ -407,7 +407,9 @@ exports.selectBatchLearnList = function (req, done) {
                     resAnswerData.rows[row].FILENAME = filename;
                 }
 
-                res.push(resAnswerData);
+                if (resAnswerData.rows.length > 0) {
+                    res.push(resAnswerData);
+                }
             }
 
             return done(null, res);
