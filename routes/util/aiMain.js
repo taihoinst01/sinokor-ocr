@@ -90,7 +90,7 @@ exports.columnMapping3 = function (data, callback) {
             data = resPyArr;
             callback(data);
         } else {
-            console.log(resPyArr.e);
+            console.log(resPyArr.error);
             callback(null);
         }
     });
@@ -129,12 +129,13 @@ exports.addDocMappingTrain = function (data, callback) {
 
 exports.addColumnMappingTrain = function (data, callback) {
     sync.fiber(function () {
+
         sync.await(oracle.insertColumnMapping(data, sync.defer()));
 
         pythonConfig.columnMappingOptions.args = [];
         pythonConfig.columnMappingOptions.args = ["training"];
 
-        sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
+        sync.await(PythonShell.run('eval3.py', pythonConfig.columnMappingOptions, sync.defer()));
 
         callback(data);
     });

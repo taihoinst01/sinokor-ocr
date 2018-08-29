@@ -275,21 +275,16 @@ exports.insertColumnMapping = function (req, done) {
         let conn;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let selectSqlText = `SELECT SEQNUM FROM TBL_COLUMN_MAPPING_TRAIN WHERE DATA = :DATA`;
+            let selectSqlText = `SELECT SEQNUM FROM TBL_COLUMN_MAPPING_TRAIN WHERE DATA = :DATA AND CLASS = :CLASS`;
             let insertSqlText = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
             let updateSqlText = `UPDATE TBL_COLUMN_MAPPING_TRAIN SET DATA = :DATA, CLASS = :CALSS, REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
-            fullData = '0,'
-            if (req.docCategory[0]) {
-                fullData = req.docCategory[0].DOCTYPE + ',';
-            }
-            for (var i in req.data) {
-                var docTypeAndSid = fullData + req.data[i].sid;
 
-                var result = await conn.execute(selectSqlText, [docTypeAndSid]);
+            for (var i in req.data) {
+                var result = await conn.execute(selectSqlText, [req.data[i].sid, req.data[i].colLbl]);
                 if (result.rows[0]) {
-                    await conn.execute(updateSqlText, [docTypeAndSid, req.data[i].colLbl, result.rows[0].SEQNUM]);
+                    //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
                 } else {
-                    await conn.execute(insertSqlText, [docTypeAndSid, req.data[i].colLbl]);
+                    await conn.execute(insertSqlText, [req.data[i].sid, req.data[i].colLbl]);
                 }
                     
             }

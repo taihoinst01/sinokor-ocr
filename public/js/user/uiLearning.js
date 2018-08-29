@@ -935,6 +935,8 @@ function imageMove(xDistance, yDistance) {
 
 function uiTrainEvent() {
     $("#uiTrainBtn").click(function (e) {
+		modifyTextData();
+        /*
         var docData;
         if ($('#docData').val() != '') {
             docData = JSON.parse($('#docData').val());
@@ -945,6 +947,7 @@ function uiTrainEvent() {
             alert('There is no document form, I do not training.');
             return;
         }
+        */
     });
 }
 
@@ -1022,11 +1025,13 @@ function makeTrainingData() {
 
                 if (dataArray[j].colLbl == 0 || dataArray[j].colLbl == 1 || dataArray[j].colLbl == 3) { // Only ogCompanyName, contractName, curCode
                     if (mlData[i].text != dataArray[j].text || mlData[i].colLbl != dataArray[j].colLbl) {
+						dataArray[j].sid = mlData[i].sid;
                         trainData.data.push(dataArray[j]);
                     }
                 } else { // etc
                     if (mlData[i].colLbl != dataArray[j].colLbl) {
                         dataArray[j].text = mlData[i].text // origin text (Does not reflect changes made by users) 
+						dataArray[j].sid = mlData[i].sid;
                         trainData.data.push(dataArray[j]);
                     }
                 }
@@ -1042,17 +1047,20 @@ function makeTrainingData() {
     var data = {}
     data.data = dataArray;
 
+    /*
     data.docCategory = JSON.parse($('#docData').val());
+    
     trainData.docCategory = [];
     if (lineText[0].docCategory[0].DOCTYPE != data.docCategory.DOCTYPE) {
         trainData.docCategory.push(JSON.parse($('#docData').val()));
     } else {
         trainData.docCategory.push(lineText[0].docCategory[0]);
     }
-
+    */
     startProgressBar();
-    addProgressBar(1, 20);
-    insertTrainingData(trainData);
+    addProgressBar(1, 40);
+
+    callbackAddDocMappingTrain(trainData);
 }
 
 function insertTrainingData(data) {
@@ -1068,8 +1076,8 @@ function callbackAddLabelMapping(data) {
 }
 
 function callbackAddDocMappingTrain(data) {
-    $('#progressMsgTitle').html('컬럼 분류 학습 중..');
-    addProgressBar(61, 80);
+    $('#progressMsgTitle').html('컬럼 맵핑 학습 중..');
+    addProgressBar(41, 80);
     addColumnMappingTrain(data);
 }
 
