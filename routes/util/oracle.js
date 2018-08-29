@@ -1227,3 +1227,40 @@ exports.selectBatchLearnMlList = function (filePathList, done) {
         }
     });
 };
+
+exports.addBatchTraining = function (filepath, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        var retData = 0;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var inQuery = "('" + filepath + "')";
+            let result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnMlList + inQuery);
+
+            for (var row in result.rows) {
+                var sid = result.rows[row].SID;
+                var colLbl = result.rows[row].COLLABEL;
+
+                var resSelColData = await conn.execute(`SELECT * FROM TBL_COLUMN_MAPPING_TRAIN WHERE DATA = :data AND CLASS = :class`, [sid, colLbl]);
+
+                if (resSelColData.rows.length == 0) {
+                    var resInsColData = await conn.execute(queryConfig.mlConfig.insertColMapping, [sid, colLbl]);
+                    retData++;
+                }
+            }
+
+            return done(null, retData);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
