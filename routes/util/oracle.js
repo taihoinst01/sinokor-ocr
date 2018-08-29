@@ -400,7 +400,7 @@ exports.selectBatchLearnList = function (req, done) {
                 var filepath = resAnswerFile.rows[i].FILEPATH;
                 var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
 
-                let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND IMGFILESTARTNO <= :imgStartNo AND IMGFILEENDNO >= :imgStartNo `, [imgId, imgStartNo, imgStartNo]);
+                let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo `, [imgId, imgStartNo, imgStartNo]);
 
                 for (var row = 0; row < resAnswerData.rows.length; row++) {
                     resAnswerData.rows[row].FILEPATH = filepath;
