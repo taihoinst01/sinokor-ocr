@@ -86,6 +86,7 @@ exports.selectLegacyFileData = function (req, done) {
       }
     });
   };
+
 exports.selectDocCategory = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -480,9 +481,26 @@ exports.convertTiftoJpg = function (originFilePath, done) {
     }
 };
 
+exports.convertTiftoJpg2 = function (originFilePath, done) {
+    try {
+        var originFileName = originFilePath.substring(originFilePath.lastIndexOf('/') + 1, originFilePath.length);
+        convertedFileName = originFileName.split('.')[0] + '.jpg';
+        var ofile = './uploads/' + convertedFileName;
+
+        execSync('module\\imageMagick\\convert.exe -density 800x800 ' + propertiesConfig.filepath.answerFileFrontPath + originFilePath + ' ' + ofile);
+        
+        return done(null, convertedFileName);
+    } catch (err) {
+        console.log(err);
+        return done(null, "error");
+    } finally {
+
+    }
+};
+
 exports.convertTiftoJpgCMD = function (originFilePath, done) {
     try {
-        //출력파일은 서버의 절대 경로 c/ImageTemp/오늘날짜/originFile명 으로 저장
+        //출력?�일?� ?�버???��? 경로 c/ImageTemp/?�늘?�짜/originFile�??�로 ?�??
         convertedFileName = originFilePath.split('.')[0] + '.jpg';
         execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
         return done(null, convertedFileName);
@@ -817,6 +835,7 @@ exports.insertMLDataCMD = function (req, done) {
         }
     });
 };
+
 exports.insertOcrSymspell = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -1211,6 +1230,68 @@ exports.selectBatchLearnMlList = function (filePathList, done) {
             inQuery = inQuery.substring(0, inQuery.length - 1);
             inQuery += ")";
             result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnMlList + inQuery);
+
+
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.addBatchTraining = function (filepath, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        var retData = 0;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var inQuery = "('" + filepath + "')";
+            let result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnMlList + inQuery);
+
+            for (var row in result.rows) {
+                var sid = result.rows[row].SID;
+                var colLbl = result.rows[row].COLLABEL;
+
+                var resSelColData = await conn.execute(`SELECT * FROM TBL_COLUMN_MAPPING_TRAIN WHERE DATA = :data AND CLASS = :class`, [sid, colLbl]);
+
+                if (resSelColData.rows.length == 0) {
+                    var resInsColData = await conn.execute(queryConfig.mlConfig.insertColMapping, [sid, colLbl]);
+                    retData++;
+                }
+            }
+
+            return done(null, retData);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectColumnMappingCls = function (filePathList, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(queryConfig.dbcolumnsConfig.selectColMappingCls);
 
 
             return done(null, result);

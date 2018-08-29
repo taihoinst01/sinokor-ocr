@@ -2054,7 +2054,124 @@ function labelMappingTrain(data) {
     });
 }
 
-router.post('/batchLearnTraing', function (req, res) {
+router.post('/uiLearnTraining', function (req, res) {
+    sync.fiber(function () {
+        var filepath = req.body.imgIdArray;
+        var uiData;
+        for (var i = 0; i < filepath.length; i++) {
+            uiData = sync.await(uiLearnTraining(filepath[i], sync.defer()));
+
+            res.send({ data: uiData });
+        }       
+    });
+});
+
+function uiLearnTraining(filepath, done) {
+
+    sync.fiber(function () {
+        try {
+            var convertedFileName;
+            var columnArr;
+
+            // convertTiftoJpg
+            if (filepath.split('.')[1].toLowerCase() === 'tif' || filepath.split('.')[1].toLowerCase() === 'tiff') {
+                let result = sync.await(oracle.convertTiftoJpg2(filepath, sync.defer()));
+
+                if (result == "error") {
+                    return done(null, "error convertTiftoJpg");
+                }
+                if (result) {                    
+                    convertedFileName = result;
+                }
+            }
+            console.log('convertTiftoJpg');
+
+            // ocr
+            var ocrResult = sync.await(oracle.callApiOcr('uploads/' + convertedFileName, sync.defer()));
+
+            if (ocrResult == "error") {
+                return done(null, "error ocr");
+            }
+            console.log('ocr');
+
+            // typo ML
+            pythonConfig.typoOptions.args = [];
+            pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
+            var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
+            var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+            console.log('typo ML');
+            
+            // column mapping DL
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(JSON.stringify(sidData));
+            resPyStr = sync.await(PythonShell.run('eval3.py', pythonConfig.columnMappingOptions, sync.defer()));
+            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            console.log('column mapping DL');
+
+            // select TBL_COLUMN_MAPPING_CLS            
+            var result = sync.await(oracle.selectColumnMappingCls(null, sync.defer()));
+            if (result.rows.length > 0) {
+                columnArr = result.rows;
+            }
+            return done(null, { data: resPyArr, column: columnArr, convertedFileName: convertedFileName });
+        } catch (e) {
+            console.log(e);
+            return done(null, e);
+        }
+    });
+}
+
+router.post('/addBatchTraining', function (req, res) {
+    req.setTimeout(500000);
+
+    sync.fiber(function () {
+        var filepath = req.body.filePathArray;
+        var retNum = 0;
+        for (var i = 0; i < filepath.length; i++) {
+            var batchData = sync.await(addBatchTraining(filepath[i], sync.defer()));
+            retNum += batchData;
+        }
+
+        //ml training
+        if (retNum > 0) {
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args = ["training"];
+            var resCol = sync.await(PythonShell.run('eval3.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var resPyArr = JSON.parse(resCol[0].replace(/'/g, '"'));
+
+            if (resPyArr["code"] != 200) {
+                res.send({ code: 200, msg: resPyArr["message"] });
+            } else {
+                res.send({ code: 200, msg: 'Success AddTrain' });
+            }
+        } else {
+            if (isNaN(retNum)) {
+                res.send({ code: 200, msg: 'Fail AddTrain' });
+            } else {
+                res.send({ code: 200, msg: 'Success AddTrain' });
+            }
+        }
+        
+    });
+});
+
+function addBatchTraining(filepath, done) {
+    sync.fiber(function () {
+        try {
+
+            //get mlData, insert colData
+            var resMlData = sync.await(oracle.addBatchTraining(filepath, sync.defer()));
+
+            return done(null, resMlData);
+        } catch (e) {
+            console.log(e);
+            return done(null, e);
+        }
+    });
+}
+
+router.post('/batchLearnTraining', function (req, res) {
     req.setTimeout(500000);
 
     sync.fiber(function () {
@@ -2063,7 +2180,7 @@ router.post('/batchLearnTraing', function (req, res) {
         var retData = [];
         var uiTraining = '';
         for (var i = 0; i < filepath.length; i++) {
-            var batchData = sync.await(batchLearnTraing(filepath[i], uiCheck, sync.defer()));
+            var batchData = sync.await(batchLearnTraining(filepath[i], uiCheck, sync.defer()));
 
             if (batchData.uiTraining && batchData.uiTraining == "uiTraining") {
                 retData = [];
@@ -2078,7 +2195,7 @@ router.post('/batchLearnTraing', function (req, res) {
     });
 });
 
-function batchLearnTraing(filepath, uiCheck, done) {
+function batchLearnTraining(filepath, uiCheck, done) {
     sync.fiber(function () {
         try {
 

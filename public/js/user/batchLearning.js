@@ -118,6 +118,10 @@ var buttonEvent = function () {
         popupEvent.closePopup();
     });
 
+    // Add Training
+    $("#btn_AddTraining").on("click", function () {
+        fn_addTraining();
+    });
 
     /*$(".poplayer .bg").on("click", function () {
         popupEvent.closePopup();
@@ -134,6 +138,8 @@ var buttonEvent = function () {
 
     // UI train 실행
     $('#uiTrainBtn').on("click", function () {
+        modifyTextData();
+        /*
         var docData = modifyData.docCategory;
         if ($('#docData').val() != '') {
             docData = JSON.parse($('#docData').val());
@@ -144,6 +150,7 @@ var buttonEvent = function () {
             alert('There is no document form, I do not training.');
             return;
         }
+        */
     });
 
 };
@@ -637,60 +644,59 @@ function popupLegacy(legacy) {
 
     console.log(legacy);
 
-    var appendHtml = ``;
+    var appendHtml = '';
 
     if (legacy.data.length > 0) {
         for (var i = 0; i < legacy.data.length; i++) {
-            appendHtml += `
-            <tr>
-                <td scope="row">${nvl(legacy.data[i].CONTRACTNUM)}</td>
-                <td scope="row">${nvl(legacy.data[i].CTNM)}</td>
-                <td scope="row">${nvl(legacy.data[i].OGCOMPANYCODE)}</td>
-                <td scope="row">${nvl(legacy.data[i].OGCOMPANYNAME)}</td>
-                <td scope="row">${nvl(legacy.data[i].BROKERCODE)}</td>
-                <td scope="row">${nvl(legacy.data[i].BROKERNAME)}</td>
-                <td scope="row">${nvl(legacy.data[i].INSSTDT)}</td>
-                <td scope="row">${nvl(legacy.data[i].INSENDDT)}</td>
-                <td scope="row">${nvl(legacy.data[i].CURCD)}</td>
-                <td scope="row">${nvl(legacy.data[i].PAIDPERCENT)}</td>
-                <td scope="row">${nvl(legacy.data[i].PAIDSHARE)}</td>
-                <td scope="row">${nvl(legacy.data[i].GROSSPM)}</td>
-                <td scope="row">${nvl(legacy.data[i].PM)}</td>
-                <td scope="row">${nvl(legacy.data[i].PMPFEND)}</td>
-                <td scope="row">${nvl(legacy.data[i].PMPFWOS)}</td>
-                <td scope="row">${nvl(legacy.data[i].XOLPM)}</td>
-                <td scope="row">${nvl(legacy.data[i].RETURNPM)}</td>
-                <td scope="row">${nvl(legacy.data[i].GROSSCN)}</td>
-                <td scope="row">${nvl(legacy.data[i].CN)}</td>
-                <td scope="row">${nvl(legacy.data[i].PROFITCN)}</td>
-                <td scope="row">${nvl(legacy.data[i].BROKERAGE)}</td>
-                <td scope="row">${nvl(legacy.data[i].TAX)}</td>
-                <td scope="row">${nvl(legacy.data[i].OVERRIDINGCOM)}</td>
-                <td scope="row">${nvl(legacy.data[i].CHARGE)}</td>
-                <td scope="row">${nvl(legacy.data[i].PMRESERVERTD1)}</td>
-                <td scope="row">${nvl(legacy.data[i].PFPMRESERVERTD1)}</td>
-                <td scope="row">${nvl(legacy.data[i].PMRESERVERTD2)}</td>
-                <td scope="row">${nvl(legacy.data[i].PFPMRESERVERTD2)}</td>
-                <td scope="row">${nvl(legacy.data[i].CLAIM)}</td>
-                <td scope="row">${nvl(legacy.data[i].LOSSRECOVERY)}</td>
-                <td scope="row">${nvl(legacy.data[i].CASHLOSS)}</td>
-                <td scope="row">${nvl(legacy.data[i].CASHLOSSRD)}</td>
-                <td scope="row">${nvl(legacy.data[i].LOSSRR)}</td>
-                <td scope="row">${nvl(legacy.data[i].LOSSRR2)}</td>
-                <td scope="row">${nvl(legacy.data[i].LOSSPFEND)}</td>
-                <td scope="row">${nvl(legacy.data[i].LOSSPFWOA)}</td>
-                <td scope="row">${nvl(legacy.data[i].INTEREST)}</td>
-                <td scope="row">${nvl(legacy.data[i].TAXON)}</td>
-                <td scope="row">${nvl(legacy.data[i].MISCELLANEOUS)}</td>
-                <td scope="row">${nvl(legacy.data[i].PMBL)}</td>
-                <td scope="row">${nvl(legacy.data[i].CMBL)}</td>
-                <td scope="row">${nvl(legacy.data[i].NTBL)}</td>
-                <td scope="row">${nvl(legacy.data[i].CSCOSARFRNCNNT2)}</td>
-            </tr>
-            `;
+            appendHtml += 
+            '<tr>' +
+                '<td scope="row">' + nvl(legacy.data[i].CONTRACTNUM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CTNM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].OGCOMPANYCODE) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].OGCOMPANYNAME) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].BROKERCODE) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].BROKERNAME) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].INSSTDT) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].INSENDDT) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CURCD) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PAIDPERCENT) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PAIDSHARE) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].GROSSPM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PMPFEND) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PMPFWOS) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].XOLPM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].RETURNPM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].GROSSCN) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CN) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PROFITCN) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].BROKERAGE) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].TAX) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].OVERRIDINGCOM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CHARGE) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PMRESERVERTD1) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PFPMRESERVERTD1) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PMRESERVERTD2) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PFPMRESERVERTD2) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CLAIM) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].LOSSRECOVERY) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CASHLOSS) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CASHLOSSRD) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].LOSSRR) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].LOSSRR2) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].LOSSPFEND) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].LOSSPFWOA) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].INTEREST) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].TAXON) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].MISCELLANEOUS) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].PMBL) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CMBL) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].NTBL) + '</td>' +
+                '<td scope="row">' + nvl(legacy.data[i].CSCOSARFRNCNNT2) + '</td>' +
+            '</tr>';
         }
     } else {
-        appendHtml += `<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>`;
+        appendHtml += '<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>';
     }
 
     $("#tbody_batchList_answer2").empty().append(appendHtml);
@@ -1255,106 +1261,106 @@ var searchBatchLearnDataList = function (addCond) {
                 for (var i = 0; i < list.length; i++) {
                     var rows = list[i].rows;
 
-                    if (addCond == "LEARN_N") checkboxHtml = `<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[0].FILEPATH)}" class="sta00" name="listCheck_before" /></td>`;
-                    else checkboxHtml = `<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[0].FILEPATH)}" class="stb00" name="listCheck_after" /></div></td>`;
+                    if (addCond == "LEARN_N") checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(rows[0].FILEPATH) + '" class="sta00" name="listCheck_before" /></td>';
+                    else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(rows[0].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
 
                     var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
-                    appendLeftContentsHtml += `<tr style="height:${trHeight}px;">;
-                                                ${checkboxHtml}
-                                                <td>${ nvl(rows[0].FILENAME) }</td> <!--FILENAME-->
-                                               </tr>`;
+                    appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
+                                                checkboxHtml +
+                                                '<td>' + nvl(rows[0].FILENAME)  + '</td> <!--FILENAME-->' +
+                                              '</tr>';
 
                     for (var y = 0; y < rows.length; y++) {
-                        appendRightContentsHtml += `<tr>
-                                        <td>${nvl(rows[y].OGCOMPANYNAME)}</td> <!--출재사명-->
-                                        <td>${nvl(rows[y].CTNM)}</td> <!--계약명-->
-                                        <td>${nvl(rows[y].UY)}</td> <!--UY-->
-                                        <td>${nvl(rows[y].CURCD)}</td> <!--화폐코드-->
-                                        <td>${nvl(rows[y].CURUNIT)}</td> <!--화폐단위-->
-                                        <td>${nvl(rows[y].PAIDPERCENT)}</td> <!--Paid(100%)-->
-                                        <td>${nvl(rows[y].PAIDSHARE)}</td> <!--Paid(Our Share)-->
-                                        <td>${nvl(rows[y].OSLPERCENT)}</td> <!--OSL(100%)-->
-                                        <td>${nvl(rows[y].OSLSHARE)}</td> <!--OSL(Our Share)-->
-                                        <td>${nvl(rows[y].PM)}</td> <!--PREMIUM-->
-                                        <td>${nvl(rows[y].PMPFEND)}</td> <!--PREMIUM P/F ENT-->
-                                        <td>${nvl(rows[y].PMPFWOS)}</td> <!--PREMIUM P/F WOS-->
-                                        <td>${nvl(rows[y].XOLPM)}</td> <!--XOL PREMIUM-->
-                                        <td>${nvl(rows[y].RETURNPM)}</td> <!--RETURN PREMIUM-->
-                                        <td>${nvl(rows[y].CN)}</td> <!--COMMISSION-->
-                                        <td>${nvl(rows[y].PROFITCN)}</td> <!--PROFIT COMMISION-->
-                                        <td>${nvl(rows[y].BROKERAGE)}</td> <!--BROKERAGE-->
-                                        <td>${nvl(rows[y].TAX)}</td> <!--TEX-->
-                                        <td>${nvl(rows[y].OVERRIDINGCOM)}</td> <!-- OVERIDING COM-->
-                                        <td>${nvl(rows[y].CHARGE)}</td> <!--CHARGE-->
-                                        <td>${nvl(rows[y].PMRESERVERTD)}</td> <!--PREMIUM RESERVE RTD-->
-                                        <td>${nvl(rows[y].PFPMRESERVERTD)}</td> <!--P/F PREMIUM RESERVE RTD-->
-                                        <td>${nvl(rows[y].PMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
-                                        <td>${nvl(rows[y].PFPMRESERVERTD2)}</td> <!--P/F PREMIUM RESERVE RLD-->
-                                        <td>${nvl(rows[y].CLAIM)}</td> <!--CLAIM -->
-                                        <td>${nvl(rows[y].LOSSRECOVERY)}</td> <!--LOSS RECOVERY -->
-                                        <td>${nvl(rows[y].CASHLOSS)}</td> <!--CASH LOSS -->
-                                        <td>${nvl(rows[y].CASHLOSSRD)}</td> <!--CASH LOSS REFUND -->
-                                        <td>${nvl(rows[y].LOSSRR)}</td> <!--LOSS RESERVE RTD -->
-                                        <td>${nvl(rows[y].LOSSRR2)}</td> <!--LOSS RESERVE RLD -->
-                                        <td>${nvl(rows[y].LOSSPFEND)}</td> <!--LOSS P/F ENT -->
-                                        <td>${nvl(rows[y].LOSSPFWOA)}</td> <!--LOSS P/F WOA -->
-                                        <td>${nvl(rows[y].INTEREST)}</td> <!--INTEREST -->
-                                        <td>${nvl(rows[y].TAXON)}</td> <!--TAX ON -->
-                                        <td>${nvl(rows[y].MISCELLANEOUS)}</td> <!--MISCELLANEOUS -->
-                                        <td>${nvl(rows[y].CSCOSARFRNCNNT2)}</td> <!--YOUR REF -->
-                                    </tr>`;
+                        appendRightContentsHtml += '<tr>' +
+                                        '<td>' + nvl(rows[y].OGCOMPANYNAME) + '</td> <!--출재사명-->' +
+                                        '<td>' + nvl(rows[y].CTNM) + '</td> <!--계약명-->' +
+                                        '<td>' + nvl(rows[y].UY) + '</td> <!--UY-->' +
+                                        '<td>' + nvl(rows[y].CURCD) + '</td> <!--화폐코드-->' +
+                                        '<td>' + nvl(rows[y].CURUNIT) + '</td> <!--화폐단위-->' +
+                                        '<td>' + nvl(rows[y].PAIDPERCENT) + '</td> <!--Paid(100%)-->' +
+                                        '<td>' + nvl(rows[y].PAIDSHARE) + '</td> <!--Paid(Our Share)-->' +
+                                        '<td>' + nvl(rows[y].OSLPERCENT) + '</td> <!--OSL(100%)-->' +
+                                        '<td>' + nvl(rows[y].OSLSHARE) + '</td> <!--OSL(Our Share)-->' +
+                                        '<td>' + nvl(rows[y].PM) + '</td> <!--PREMIUM-->' +
+                                        '<td>' + nvl(rows[y].PMPFEND) + '</td> <!--PREMIUM P/F ENT-->' +
+                                        '<td>' + nvl(rows[y].PMPFWOS) + '</td> <!--PREMIUM P/F WOS-->' +
+                                        '<td>' + nvl(rows[y].XOLPM) + '</td> <!--XOL PREMIUM-->' +
+                                        '<td>' + nvl(rows[y].RETURNPM) + '</td> <!--RETURN PREMIUM-->' +
+                                        '<td>' + nvl(rows[y].CN) + '</td> <!--COMMISSION-->' +
+                                        '<td>' + nvl(rows[y].PROFITCN) + '</td> <!--PROFIT COMMISION-->' +
+                                        '<td>' + nvl(rows[y].BROKERAGE) + '</td> <!--BROKERAGE-->' +
+                                        '<td>' + nvl(rows[y].TAX) + '</td> <!--TEX-->' +
+                                        '<td>' + nvl(rows[y].OVERRIDINGCOM) + '</td> <!-- OVERIDING COM-->' +
+                                        '<td>' + nvl(rows[y].CHARGE) + '</td> <!--CHARGE-->' +
+                                        '<td>' + nvl(rows[y].PMRESERVERTD) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                                        '<td>' + nvl(rows[y].PFPMRESERVERTD) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                                        '<td>' + nvl(rows[y].PMRESERVERTD2) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td>' + nvl(rows[y].PFPMRESERVERTD2) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td>' + nvl(rows[y].CLAIM) + '</td> <!--CLAIM -->' +
+                                        '<td>' + nvl(rows[y].LOSSRECOVERY) + '</td> <!--LOSS RECOVERY -->' +
+                                        '<td>' + nvl(rows[y].CASHLOSS) + '</td> <!--CASH LOSS -->' +
+                                        '<td>' + nvl(rows[y].CASHLOSSRD) + '</td> <!--CASH LOSS REFUND -->' +
+                                        '<td>' + nvl(rows[y].LOSSRR) + '</td> <!--LOSS RESERVE RTD -->' +
+                                        '<td>' + nvl(rows[y].LOSSRR2) + '</td> <!--LOSS RESERVE RLD -->' +
+                                        '<td>' + nvl(rows[y].LOSSPFEND) + '</td> <!--LOSS P/F ENT -->' +
+                                        '<td>' + nvl(rows[y].LOSSPFWOA) + '</td> <!--LOSS P/F WOA -->' +
+                                        '<td>' + nvl(rows[y].INTEREST) + '</td> <!--INTEREST -->' +
+                                        '<td>' + nvl(rows[y].TAXON) + '</td> <!--TAX ON -->' +
+                                        '<td>' + nvl(rows[y].MISCELLANEOUS) + '</td> <!--MISCELLANEOUS -->' +
+                                        '<td>' + nvl(rows[y].CSCOSARFRNCNNT2) + '</td> <!--YOUR REF -->' +
+                                    '</tr>';
                     }                   
                     var mlData = data.mlData;
                     if (mlData.rows.length != 0) {
-                        appendRightContentsHtml += `<tr class="mlTr">                                    
-                                        <td>` + makeMLSelect(mlData.rows, 0, rows[0].FILEPATH) + `</td> <!--출재사명-->
-                                        <td>` + makeMLSelect(mlData.rows, 1, rows[0].FILEPATH) + `</td> <!--계약명-->
-                                        <td>` + makeMLSelect(mlData.rows, 2, rows[0].FILEPATH) + `</td> <!--UY-->
-                                        <td>` + makeMLSelect(mlData.rows, 3, rows[0].FILEPATH) + `</td> <!--화폐코드-->
-                                        <td>` + makeMLSelect(mlData.rows, 4, rows[0].FILEPATH) + `</td> <!--화폐단위-->
-                                        <td>` + makeMLSelect(mlData.rows, 5, rows[0].FILEPATH) + `</td> <!--Paid(100%)-->
-                                        <td>` + makeMLSelect(mlData.rows, 6, rows[0].FILEPATH) + `</td> <!--Paid(Our Share)-->
-                                        <td>` + makeMLSelect(mlData.rows, 7, rows[0].FILEPATH) + `</td> <!--OSL(100%)-->
-                                        <td>` + makeMLSelect(mlData.rows, 8, rows[0].FILEPATH) + `</td> <!--OSL(Our Share)-->
-                                        <td>` + makeMLSelect(mlData.rows, 9, rows[0].FILEPATH) + `</td> <!--PREMIUM-->
-                                        <td>` + makeMLSelect(mlData.rows, 10, rows[0].FILEPATH) + `</td> <!--PREMIUM P/F ENT-->
-                                        <td>` + makeMLSelect(mlData.rows, 11, rows[0].FILEPATH) + `</td> <!--PREMIUM P/F WOS-->
-                                        <td>` + makeMLSelect(mlData.rows, 12, rows[0].FILEPATH) + `</td> <!--XOL PREMIUM-->
-                                        <td>` + makeMLSelect(mlData.rows, 13, rows[0].FILEPATH) + `</td> <!--RETURN PREMIUM-->
-                                        <td>` + makeMLSelect(mlData.rows, 14, rows[0].FILEPATH) + `</td> <!--COMMISION -->
-                                        <td>` + makeMLSelect(mlData.rows, 15, rows[0].FILEPATH) + `</td> <!--PROFIT COMMISION-->
-                                        <td>` + makeMLSelect(mlData.rows, 16, rows[0].FILEPATH) + `</td> <!--BROKERAGE-->
-                                        <td>` + makeMLSelect(mlData.rows, 17, rows[0].FILEPATH) + `</td> <!--TEX-->
-                                        <td>` + makeMLSelect(mlData.rows, 18, rows[0].FILEPATH) + `</td> <!-- OVERIDING COM-->
-                                        <td>` + makeMLSelect(mlData.rows, 19, rows[0].FILEPATH) + `</td> <!--CHARGE-->
-                                        <td>` + makeMLSelect(mlData.rows, 20, rows[0].FILEPATH) + `</td> <!--PREMIUM RESERVE RTD-->
-                                        <td>` + makeMLSelect(mlData.rows, 21, rows[0].FILEPATH) + `</td> <!--P/F PREMIUM RESERVE RTD-->
-                                        <td>` + makeMLSelect(mlData.rows, 22, rows[0].FILEPATH) + `</td> <!--P/F PREMIUM RESERVE RLD-->
-                                        <td>` + makeMLSelect(mlData.rows, 23, rows[0].FILEPATH) + `</td> <!--P/F PREMIUM RESERVE RLD-->
-                                        <td>` + makeMLSelect(mlData.rows, 24, rows[0].FILEPATH) + `</td> <!--CLAIM -->
-                                        <td>` + makeMLSelect(mlData.rows, 25, rows[0].FILEPATH) + `</td> <!--LOSS RECOVERY -->
-                                        <td>` + makeMLSelect(mlData.rows, 26, rows[0].FILEPATH) + `</td> <!--CASH LOSS -->
-                                        <td>` + makeMLSelect(mlData.rows, 27, rows[0].FILEPATH) + `</td> <!--CASH LOSS REFUND -->
-                                        <td>` + makeMLSelect(mlData.rows, 28, rows[0].FILEPATH) + `</td> <!--LOSS RESERVE RTD -->
-                                        <td>` + makeMLSelect(mlData.rows, 29, rows[0].FILEPATH) + `</td> <!--LOSS RESERVE RLD -->
-                                        <td>` + makeMLSelect(mlData.rows, 30, rows[0].FILEPATH) + `</td> <!--LOSS P/F ENT -->
-                                        <td>` + makeMLSelect(mlData.rows, 31, rows[0].FILEPATH) + `</td> <!--LOSS P/F WOA -->
-                                        <td>` + makeMLSelect(mlData.rows, 32, rows[0].FILEPATH) + `</td> <!--INTEREST -->
-                                        <td>` + makeMLSelect(mlData.rows, 33, rows[0].FILEPATH) + `</td> <!--TAX ON -->
-                                        <td>` + makeMLSelect(mlData.rows, 34, rows[0].FILEPATH) + `</td> <!--MISCELLANEOUS -->
-                                        <td>` + makeMLSelect(mlData.rows, 35, rows[0].FILEPATH) + `</td> <!--YOUR REF -->
-                                    </tr>`;
+                        appendRightContentsHtml += '<tr class="mlTr">' +                                    
+                                        '<td>' + makeMLSelect(mlData.rows, 0, rows[0].FILEPATH) + '</td> <!--출재사명-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 1, rows[0].FILEPATH) + '</td> <!--계약명-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 2, rows[0].FILEPATH) + '</td> <!--UY-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 3, rows[0].FILEPATH) + '</td> <!--화폐코드-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 4, rows[0].FILEPATH) + '</td> <!--화폐단위-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 5, rows[0].FILEPATH) + '</td> <!--Paid(100%)-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 6, rows[0].FILEPATH) + '</td> <!--Paid(Our Share)-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 7, rows[0].FILEPATH) + '</td> <!--OSL(100%)-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 8, rows[0].FILEPATH) + '</td> <!--OSL(Our Share)-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 9, rows[0].FILEPATH) + '</td> <!--PREMIUM-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 10, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F ENT-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 11, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F WOS-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 12, rows[0].FILEPATH) + '</td> <!--XOL PREMIUM-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 13, rows[0].FILEPATH) + '</td> <!--RETURN PREMIUM-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 14, rows[0].FILEPATH) + '</td> <!--COMMISION -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 15, rows[0].FILEPATH) + '</td> <!--PROFIT COMMISION-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 16, rows[0].FILEPATH) + '</td> <!--BROKERAGE-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 17, rows[0].FILEPATH) + '</td> <!--TEX-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 18, rows[0].FILEPATH) + '</td> <!-- OVERIDING COM-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 19, rows[0].FILEPATH) + '</td> <!--CHARGE-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 20, rows[0].FILEPATH) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 21, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 22, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 23, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 24, rows[0].FILEPATH) + '</td> <!--CLAIM -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 25, rows[0].FILEPATH) + '</td> <!--LOSS RECOVERY -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 26, rows[0].FILEPATH) + '</td> <!--CASH LOSS -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 27, rows[0].FILEPATH) + '</td> <!--CASH LOSS REFUND -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 28, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RTD -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 29, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RLD -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 30, rows[0].FILEPATH) + '</td> <!--LOSS P/F ENT -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 31, rows[0].FILEPATH) + '</td> <!--LOSS P/F WOA -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 32, rows[0].FILEPATH) + '</td> <!--INTEREST -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 33, rows[0].FILEPATH) + '</td> <!--TAX ON -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 34, rows[0].FILEPATH) + '</td> <!--MISCELLANEOUS -->' +
+                                        '<td>' + makeMLSelect(mlData.rows, 35, rows[0].FILEPATH) + '</td> <!--YOUR REF -->' +
+                                    '</tr>';
                     } else {                   
-                        appendRightContentsHtml += `
-                                    <tr class="mlTr">
-                                        <td colspan="36"></td>            
-                                    </tr>`;
+                        appendRightContentsHtml += 
+                                    '<tr class="mlTr">' +
+                                        '<td colspan="36"></td>' +          
+                                    '</tr>';
                     
                     }
                 }
             } else {
-                appendLeftContentsHtml += `<tr style="height: 30px"><td colspan="2"></td></tr>`
-                appendRightContentsHtml += `<tr><td colspan="36">조회할 데이터가 없습니다.</td></tr>`;
+                appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="2"></td></tr>'
+                appendRightContentsHtml += '<tr><td colspan="36">조회할 데이터가 없습니다.</td></tr>';
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
@@ -1515,10 +1521,10 @@ function fn_viewImageData(imgId, obj) {
             console.log("data : " + JSON.stringify(data));
             if (data.code == "201") {
                 $("#span_view_image").remove();
-                $('#viewImage').after(`<span id="span_view_image">이미지를 변환중입니다. 다시 확인해주세요.<span>`);
+                $('#viewImage').after('<span id="span_view_image">이미지를 변환중입니다. 다시 확인해주세요.<span>');
             } else {
                 $("#span_view_image").remove();
-                $('#viewImage').attr('src', `${data.rows[0].CONVERTEDIMGPATH}`);
+                $('#viewImage').attr('src', data.rows[0].CONVERTEDIMGPATH);
             }
             
             innerFn_ViewImageData();
@@ -1533,7 +1539,7 @@ function fn_viewImageData(imgId, obj) {
         var param = {
             imgId: imgId
         };
-        var appendHtml = ``;
+        var appendHtml = '';
 
         $.ajax({
             url: '/batchLearning/viewImageData',
@@ -1544,59 +1550,58 @@ function fn_viewImageData(imgId, obj) {
             success: function (data) {
                 if (data.length > 0) {
                     $.each(data, function (index, entry) {
-                        appendHtml += `
-                            <tr>
-                                <td scope="row">${nvl(entry.FILEPATH)}</td>
-                                <td scope="row">${nvl(entry.IMGID)}</td>
-                                <td scope="row">${nvl(entry.STATEMENTDIV)}</td>
-                                <td scope="row">${nvl(entry.CONTRACTNUM)}</td>
-                                <td scope="row">${nvl(entry.CTNM)}</td>
-                                <td scope="row">${nvl(entry.OGCOMPANYCODE)}</td>
-                                <td scope="row">${nvl(entry.OGCOMPANYNAME)}</td>
-                                <td scope="row">${nvl(entry.BROKERCODE)}</td>
-                                <td scope="row">${nvl(entry.BROKERNAME)}</td>
-                                <td scope="row">${nvl(entry.INSSTDT)}</td>
-                                <td scope="row">${nvl(entry.INSENDDT)}</td>
-                                <td scope="row">${nvl(entry.CURCD)}</td>
-                                <td scope="row">${nvl(entry.PAIDPERCENT)}</td>
-                                <td scope="row">${nvl(entry.PAIDSHARE)}</td>
-                                <td scope="row">${nvl(entry.GROSSPM)}</td>
-                                <td scope="row">${nvl(entry.PM)}</td>
-                                <td scope="row">${nvl(entry.PMPFEND)}</td>
-                                <td scope="row">${nvl(entry.PMPFWOS)}</td>
-                                <td scope="row">${nvl(entry.XOLPM)}</td>
-                                <td scope="row">${nvl(entry.RETURNPM)}</td>
-                                <td scope="row">${nvl(entry.GROSSCN)}</td>
-                                <td scope="row">${nvl(entry.CN)}</td>
-                                <td scope="row">${nvl(entry.PROFITCN)}</td>
-                                <td scope="row">${nvl(entry.BROKERAGE)}</td>
-                                <td scope="row">${nvl(entry.TAX)}</td>
-                                <td scope="row">${nvl(entry.OVERRIDINGCOM)}</td>
-                                <td scope="row">${nvl(entry.CHARGE)}</td>
-                                <td scope="row">${nvl(entry.PMRESERVERTD1)}</td>
-                                <td scope="row">${nvl(entry.PFPMRESERVERTD1)}</td>
-                                <td scope="row">${nvl(entry.PMRESERVERTD2)}</td>
-                                <td scope="row">${nvl(entry.PFPMRESERVERTD2)}</td>
-                                <td scope="row">${nvl(entry.CLAIM)}</td>
-                                <td scope="row">${nvl(entry.LOSSRECOVERY)}</td>
-                                <td scope="row">${nvl(entry.CASHLOSS)}</td>
-                                <td scope="row">${nvl(entry.CASHLOSSRD)}</td>
-                                <td scope="row">${nvl(entry.LOSSRR)}</td>
-                                <td scope="row">${nvl(entry.LOSSRR2)}</td>
-                                <td scope="row">${nvl(entry.LOSSPFEND)}</td>
-                                <td scope="row">${nvl(entry.LOSSPFWOA)}</td>
-                                <td scope="row">${nvl(entry.INTEREST)}</td>
-                                <td scope="row">${nvl(entry.TAXON)}</td>
-                                <td scope="row">${nvl(entry.MISCELLANEOUS)}</td>
-                                <td scope="row">${nvl(entry.PMBL)}</td>
-                                <td scope="row">${nvl(entry.CMBL)}</td>
-                                <td scope="row">${nvl(entry.NTBL)}</td>
-                                <td scope="row">${nvl(entry.CSCOSARFRNCNNT2)}</td>
-                            </tr>
-                            `;
+                        appendHtml += 
+                            '<tr>' +
+                                '<td scope="row">' + nvl(entry.FILEPATH) + '</td>' +
+                                '<td scope="row">' + nvl(entry.IMGID) + '</td>' +
+                                '<td scope="row">' + nvl(entry.STATEMENTDIV) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CONTRACTNUM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CTNM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.OGCOMPANYCODE) + '</td>' +
+                                '<td scope="row">' + nvl(entry.OGCOMPANYNAME) + '</td>' +
+                                '<td scope="row">' + nvl(entry.BROKERCODE) + '</td>' +
+                                '<td scope="row">' + nvl(entry.BROKERNAME) + '</td>' +
+                                '<td scope="row">' + nvl(entry.INSSTDT) + '</td>' +
+                                '<td scope="row">' + nvl(entry.INSENDDT) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CURCD) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PAIDPERCENT) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PAIDSHARE) + '</td>' +
+                                '<td scope="row">' + nvl(entry.GROSSPM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PMPFEND) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PMPFWOS) + '</td>' +
+                                '<td scope="row">' + nvl(entry.XOLPM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.RETURNPM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.GROSSCN) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CN) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PROFITCN) + '</td>' +
+                                '<td scope="row">' + nvl(entry.BROKERAGE) + '</td>' +
+                                '<td scope="row">' + nvl(entry.TAX) + '</td>' +
+                                '<td scope="row">' + nvl(entry.OVERRIDINGCOM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CHARGE) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PMRESERVERTD1) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PFPMRESERVERTD1) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PMRESERVERTD2) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PFPMRESERVERTD2) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CLAIM) + '</td>' +
+                                '<td scope="row">' + nvl(entry.LOSSRECOVERY) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CASHLOSS) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CASHLOSSRD) + '</td>' +
+                                '<td scope="row">' + nvl(entry.LOSSRR) + '</td>' +
+                                '<td scope="row">' + nvl(entry.LOSSRR2) + '</td>' +
+                                '<td scope="row">' + nvl(entry.LOSSPFEND) + '</td>' +
+                                '<td scope="row">' + nvl(entry.LOSSPFWOA) + '</td>' +
+                                '<td scope="row">' + nvl(entry.INTEREST) + '</td>' +
+                                '<td scope="row">' + nvl(entry.TAXON) + '</td>' +
+                                '<td scope="row">' + nvl(entry.MISCELLANEOUS) + '</td>' +
+                                '<td scope="row">' + nvl(entry.PMBL) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CMBL) + '</td>' +
+                                '<td scope="row">' + nvl(entry.NTBL) + '</td>' +
+                                '<td scope="row">' + nvl(entry.CSCOSARFRNCNNT2) + '</td>' +
+                            '</tr>';
                     });
                 } else {
-                    appendHtml += `<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>`;
+                    appendHtml += '<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>';
                 }
                 $("#tbody_batchList_answer").empty().append(appendHtml);
                 layer_open('layer3');
@@ -1881,7 +1886,7 @@ var fn_popBatchRun = function () {
                     return;
                 } else {
                     //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-                    batchLearnTraing(imgIdArray, "PROCESS_IMAGE");
+                    batchLearnTraining(imgIdArray, "PROCESS_IMAGE");
                 }
             } else {
                 alert("Before Training 상태에서만 배치학습이 가능합니다.");
@@ -1896,6 +1901,68 @@ var fn_popBatchRun = function () {
     }
 };
 
+var fn_addTraining = function () {
+    var filePathArray = [];
+
+    if (addCond == "LEARN_N") {
+        let chkCnt = 0;
+        $("input[name=listCheck_before]").each(function (index, entry) {
+            if ($(this).is(":checked")) {
+                chkCnt++;
+                totCount++;
+                //imgIdArray.push($(this).val());
+                var filepath = $(this).val();
+                filePathArray.push(filepath);
+            }
+        });
+        if (chkCnt == 0) {
+            alert("선택된 학습이 없습니다.");
+            return;
+        } else {
+            //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+            addBatchTraining(filePathArray, "PROCESS_IMAGE");
+        }
+    } else {
+        alert("Before Training 상태에서만 배치학습이 가능합니다.");
+        return;
+    }
+};
+
+var addBatchTraining = function (filePathArray) {
+    var param = {
+        filePathArray: filePathArray,
+    };
+
+    $.ajax({
+        url: '/batchLearning/addBatchTraining',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving learn data...");
+            progressId = showProgressBar();
+        },
+        success: function (data) {
+            $("#progressMsgTitle").html("processing learn data...");
+            console.log(data);
+            if (data.code == 200) {
+                alert(data.msg);
+            }
+            searchBatchLearnDataList(addCond);
+        },
+        error: function (err) {
+            endProgressBar(progressId); // end progressbar
+            console.log(err);
+        },
+        complete: function () {
+            console.log("done");
+            //addProgressBar(41, 100);
+            endProgressBar(progressId);
+        }
+    });
+}
+
 
 
 // UI 학습 (학습결과 수정)
@@ -1903,54 +1970,110 @@ var fn_uiTraining = function () {
     var imgIdArray = [];
     let imgId = "";
     let chkCnt = 0;
-    //테스트용
-    /*
+
     $("input[name=listCheck_before]").each(function (index, entry) {
         if ($(this).is(":checked")) {
             imgId = $(this).val();
             chkCnt++;
         }
     });
-    imgIdArray.push(imgId);
-    processImage_TEST("26.jpg");
-    */
-    //if (addCond == "LEARN_Y") {
-        //let imgId = "";
-        //let chkCnt = 0;
-        $("input[name=listCheck_before]").each(function (index, entry) {
-            if ($(this).is(":checked")) {
-                imgId = $(this).val();
-                chkCnt++;
-            }
-        });
-        if (chkCnt == 0) {
-            alert("선택된 파일이 없습니다.");
-            return;
-        } else if (chkCnt > 1) {
-            alert("한번에 하나의 파일만 UI학습이 가능합니다.");
-            return;
-        } else {
-            imgIdArray.push(imgId);
-            totCount++;
-            uiFlag = "Y";
-            searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-        }
-    //} else {
-    //    alert("After Training 상태에서만 UI학습이 가능합니다.");
-    //    return;
-    //}
+    if (chkCnt == 0) {
+        alert("선택된 파일이 없습니다.");
+        return;
+    } else if (chkCnt > 1) {
+        alert("한번에 하나의 파일만 UI학습이 가능합니다.");
+        return;
+    } else {
+        imgIdArray.push(imgId);
+        totCount++;
+        uiLearnTraining(imgIdArray);
+        //uiFlag = "Y";
+        //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+    }
 
 };
 
+var uiLearnTraining = function (imgIdArray) {
+    //var data = { "data": { "convertedFileName": "hyj.jpg","data": [{ "sid": "1018,240,25767,0,0,0,0", "text": "apex", "location": "1018,240,411,87", "colLbl": 36, "colAccu": 0.99, "originText": "apex" }, { "sid": "1019,338,15944,14456,15585,0,0", "text": "partner of choice", "location": "1019,338,409,23", "colLbl": 36, "colAccu": 0.99, "originText": "partner of choice" }, { "sid": "1562,509,24349,14502,0,0,0", "text": "voucher no", "location": "1562,509,178,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher no" }, { "sid": "1562,578,24349,14552,0,0,0", "text": "voucher date", "location": "1562,578,206,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher date" }, { "sid": "206,691,97312,18699,14569,0,0", "text": "4153 korean re", "location": "206,691,274,27", "colLbl": 36, "colAccu": 0.99, "originText": "4153 korean re" }, { "sid": "208,756,24968,20629,15214,0,0", "text": "proportional treaty statement", "location": "208,756,525,34", "colLbl": 36, "colAccu": 0.99, "originText": "proportional treaty statement" }, { "sid": "1842,506,97313,0,0,0,0", "text": "bv/heo/2018/05/0626", "location": "1842,506,344,25", "colLbl": 36, "colAccu": 0.99, "originText": "bv/heo/2018/05/0626" }, { "sid": "1840,575,97314,0,0,0,0", "text": "01105/2018", "location": "1840,575,169,25", "colLbl": 36, "colAccu": 0.99, "originText": "01105/2018" }, { "sid": "206,848,64626,0,0,0,0", "text": "pedant", "location": "206,848,111,24", "colLbl": 36, "colAccu": 0.99, "originText": "cedant" }, { "sid": "206,908,14818,14456,14525,0,0", "text": "class of business", "location": "206,908,285,24", "colLbl": 36, "colAccu": 0.99, "originText": "class of business" }, { "sid": "210,963,15186,14456,16570,0,0", "text": "period of quarter", "location": "210,963,272,26", "colLbl": 36, "colAccu": 0.99, "originText": "period of quarter" }, { "sid": "207,1017,15186,14456,20629,0,0", "text": "period of treaty", "location": "207,1017,252,31", "colLbl": 36, "colAccu": 0.99, "originText": "period of treaty" }, { "sid": "206,1066,14498,15089,0,0,0", "text": "our reference", "location": "206,1066,227,24", "colLbl": 36, "colAccu": 0.99, "originText": "our reference" }, { "sid": "226,1174,16280,0,0,0,0", "text": "currency", "location": "226,1174,145,31", "colLbl": 36, "colAccu": 0.99, "originText": "currency" }, { "sid": "227,1243,16438,0,0,0,0", "text": "premium", "location": "227,1243,139,24", "colLbl": 36, "colAccu": 0.99, "originText": "premium" }, { "sid": "226,1303,15444,0,0,0,0", "text": "commission", "location": "226,1303,197,24", "colLbl": 36, "colAccu": 0.99, "originText": "commission" }, { "sid": "226,1366,16527,0,0,0,0", "text": "claims", "location": "226,1366,107,24", "colLbl": 36, "colAccu": 0.99, "originText": "claims" }, { "sid": "227,1426,16608,0,0,0,0", "text": "reserve", "location": "227,1426,126,24", "colLbl": 36, "colAccu": 0.99, "originText": "reserve" }, { "sid": "227,1489,15049,0,0,0,0", "text": "release", "location": "227,1489,123,24", "colLbl": 36, "colAccu": 0.99, "originText": "release" }, { "sid": "227,1549,15076,0,0,0,0", "text": "interest", "location": "227,1549,117,24", "colLbl": 36, "colAccu": 0.99, "originText": "interest" }, { "sid": "227,1609,24808,0,0,0,0", "text": "brokerage", "location": "227,1609,161,31", "colLbl": 36, "colAccu": 0.99, "originText": "brokerage" }, { "sid": "233,1678,17036,0,0,0,0", "text": "portfolio", "location": "233,1678,134,24", "colLbl": 36, "colAccu": 0.99, "originText": "portfolio" }, { "sid": "227,1781,16326,0,0,0,0", "text": "balance", "location": "227,1781,124,24", "colLbl": 36, "colAccu": 0.99, "originText": "balance" }, { "sid": "574,847,14459,97308,14535,14813,97309", "text": "a solidarity- first insurance 2018", "location": "574,847,492,32", "colLbl": 0, "colAccu": 0.99, "originText": ": solidarity- first insurance 2018" }, { "sid": "574,907,14459,16518,20299,21636,97309", "text": "a marine cargo surplus 2018 a inward", "location": "574,907,568,32", "colLbl": 1, "colAccu": 0.99, "originText": ": marine cargo surplus 2018 - inward" }, { "sid": "598,959,97315,14458,97316,0,0", "text": "01-01-2018 to 31-03-2018", "location": "598,959,433,25", "colLbl": 36, "colAccu": 0.99, "originText": "01-01-2018 to 31-03-2018" }, { "sid": "574,1010,14459,97315,14458,97317,0", "text": "a 01-01-2018 to 31-12-2018", "location": "574,1010,454,25", "colLbl": 36, "colAccu": 0.99, "originText": ": 01-01-2018 to 31-12-2018" }, { "sid": "574,1065,14459,97318,0,0,0", "text": "a apex/bord/2727", "location": "574,1065,304,25", "colLbl": 36, "colAccu": 0.99, "originText": ": apex/bord/2727" }, { "sid": "629,1173,97300,97322,0,0,0", "text": "jod 1.00", "location": "629,1173,171,25", "colLbl": 3, "colAccu": 0.99, "originText": "jod 1.00" }, { "sid": "639,1239,1,1,1,1,1", "text": "25.53", "location": "639,1239,83,25", "colLbl": 9, "colAccu": 0.99, "originText": "25.53" }, { "sid": "639,1299,1,1,1,1,1", "text": "5.74", "location": "639,1299,64,25", "colLbl": 14, "colAccu": 0.99, "originText": "5.74" }, { "sid": "639,1362,1,1,1,1,1", "text": "1.00", "location": "639,1362,64,25", "colLbl": 24, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1422,1,1,1,1,1", "text": "7.66", "location": "639,1422,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "7.66" }, { "sid": "639,1485,1,1,1,1,1", "text": "1.00", "location": "639,1485,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1545,1,1,1,1,1", "text": "1.00", "location": "639,1545,64,25", "colLbl": 32, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1605,1,1,1,1,1", "text": "0.64", "location": "639,1605,64,25", "colLbl": 16, "colAccu": 0.99, "originText": "0.64" }, { "sid": "648,1677,1,1,1,1,1", "text": "1.00", "location": "648,1677,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "641,1774,97319,97320,0,0,0", "text": "11 .49", "location": "641,1774,81,25", "colLbl": 36, "colAccu": 0.99, "originText": "11 .49" }, { "sid": "1706,1908,25767,14813,0,0,0", "text": "apex insurance", "location": "1706,1908,356,29", "colLbl": 36, "colAccu": 0.99, "originText": "apex insurance" }], "column": [{ "SEQNUM": "1", "COLNAME": "출재사명", "COLTYPE": "OGCOMPANYNAME", "COLNUM": "0" }, { "SEQNUM": "2", "COLNAME": "계약명", "COLTYPE": "CTNM", "COLNUM": "1" }, { "SEQNUM": "3", "COLNAME": "UY", "COLTYPE": "UY", "COLNUM": "2" }, { "SEQNUM": "4", "COLNAME": "화폐코드", "COLTYPE": "CURCD", "COLNUM": "3" }, { "SEQNUM": "5", "COLNAME": "화폐단위", "COLTYPE": "CURUNIT", "COLNUM": "4" }, { "SEQNUM": "6", "COLNAME": "PAID(100%)", "COLTYPE": "PAIDPERCENT", "COLNUM": "5" }, { "SEQNUM": "7", "COLNAME": "PAID(Our Share)", "COLTYPE": "PAIDSHARE", "COLNUM": "6" }, { "SEQNUM": "8", "COLNAME": "OSL(100%)", "COLTYPE": "OSLPERCENT", "COLNUM": "7" }, { "SEQNUM": "9", "COLNAME": "OSL(Our Share)", "COLTYPE": "OSLSHARE", "COLNUM": "8" }, { "SEQNUM": "10", "COLNAME": "PREMIUM", "COLTYPE": "PM", "COLNUM": "9" }, { "SEQNUM": "11", "COLNAME": "PREMIUM P/F ENT", "COLTYPE": "PMPFEND", "COLNUM": "10" }, { "SEQNUM": "12", "COLNAME": "PREMIUM P/F WOS", "COLTYPE": "PMPFWOS", "COLNUM": "11" }, { "SEQNUM": "13", "COLNAME": "XOL PREMIUM", "COLTYPE": "XOLPM", "COLNUM": "12" }, { "SEQNUM": "14", "COLNAME": "RETURN PREMIUM", "COLTYPE": "RETURNPM", "COLNUM": "13" }, { "SEQNUM": "15", "COLNAME": "COMMISSION", "COLTYPE": "CN", "COLNUM": "14" }, { "SEQNUM": "16", "COLNAME": "PROFIT COMMISSION", "COLTYPE": "PROFITCN", "COLNUM": "15" }, { "SEQNUM": "17", "COLNAME": "BROKERAGE", "COLTYPE": "BROKERAGE", "COLNUM": "16" }, { "SEQNUM": "18", "COLNAME": "TAX", "COLTYPE": "TAX", "COLNUM": "17" }, { "SEQNUM": "19", "COLNAME": "OVERRIDING COM", "COLTYPE": "OVERRIDINGCOM", "COLNUM": "18" }, { "SEQNUM": "20", "COLNAME": "CHARGE", "COLTYPE": "CHARGE", "COLNUM": "19" }, { "SEQNUM": "21", "COLNAME": "PREMUIM RESERVE RTD", "COLTYPE": "PMRESERVERTD1", "COLNUM": "20" }, { "SEQNUM": "22", "COLNAME": "P/F PREMIUM RESERVE RTD", "COLTYPE": "PFPMRESERVERTD1", "COLNUM": "21" }, { "SEQNUM": "23", "COLNAME": "PREMIUM RESERVE RLD", "COLTYPE": "PMRESERVERTD2", "COLNUM": "22" }, { "SEQNUM": "24", "COLNAME": "P/F PREMIUM RESERVE RLD", "COLTYPE": "PFPMRESERVERTD2", "COLNUM": "23" }, { "SEQNUM": "25", "COLNAME": "CLAIM", "COLTYPE": "CLAIM", "COLNUM": "24" }, { "SEQNUM": "26", "COLNAME": "LOSS RECOVERY", "COLTYPE": "LOSSRECOVERY", "COLNUM": "25" }, { "SEQNUM": "27", "COLNAME": "CASH LOSS", "COLTYPE": "CASHLOSS", "COLNUM": "26" }, { "SEQNUM": "28", "COLNAME": "CASH LOSS REFUND", "COLTYPE": "CASHLOSSRD", "COLNUM": "27" }, { "SEQNUM": "29", "COLNAME": "LOSS RESERVE RTD", "COLTYPE": "LOSSRR", "COLNUM": "28" }, { "SEQNUM": "30", "COLNAME": "LOSS RESERVE RLD", "COLTYPE": "LOSSRR2", "COLNUM": "29" }, { "SEQNUM": "31", "COLNAME": "LOSS P/F ENT", "COLTYPE": "LOSSPFENT", "COLNUM": "30" }, { "SEQNUM": "32", "COLNAME": "LOSS P/F WOA", "COLTYPE": "LOSSPFWOA", "COLNUM": "31" }, { "SEQNUM": "33", "COLNAME": "INTEREST", "COLTYPE": "INTEREST", "COLNUM": "32" }, { "SEQNUM": "34", "COLNAME": "TAX ON", "COLTYPE": "TAXON", "COLNUM": "33" }, { "SEQNUM": "35", "COLNAME": "MISCELLANEOUS", "COLTYPE": "MISCELLANEOUS", "COLNUM": "34" }, { "SEQNUM": "36", "COLNAME": "Your Reference", "COLTYPE": "CSCOSARFRNCNNT2", "COLNUM": "35" }, { "SEQNUM": "37", "COLNAME": "UNKNOWN", "COLTYPE": "UNKNOWN", "COLNUM": "36" }] } };
+    //uiLayerHtml(data);
+    //modifyData = { "convertedFileName": "hyj.jpg", "data": [{ "sid": "1018,240,25767,0,0,0,0", "text": "apex", "location": "1018,240,411,87", "colLbl": 36, "colAccu": 0.99, "originText": "apex" }, { "sid": "1019,338,15944,14456,15585,0,0", "text": "partner of choice", "location": "1019,338,409,23", "colLbl": 36, "colAccu": 0.99, "originText": "partner of choice" }, { "sid": "1562,509,24349,14502,0,0,0", "text": "voucher no", "location": "1562,509,178,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher no" }, { "sid": "1562,578,24349,14552,0,0,0", "text": "voucher date", "location": "1562,578,206,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher date" }, { "sid": "206,691,97312,18699,14569,0,0", "text": "4153 korean re", "location": "206,691,274,27", "colLbl": 36, "colAccu": 0.99, "originText": "4153 korean re" }, { "sid": "208,756,24968,20629,15214,0,0", "text": "proportional treaty statement", "location": "208,756,525,34", "colLbl": 36, "colAccu": 0.99, "originText": "proportional treaty statement" }, { "sid": "1842,506,97313,0,0,0,0", "text": "bv/heo/2018/05/0626", "location": "1842,506,344,25", "colLbl": 36, "colAccu": 0.99, "originText": "bv/heo/2018/05/0626" }, { "sid": "1840,575,97314,0,0,0,0", "text": "01105/2018", "location": "1840,575,169,25", "colLbl": 36, "colAccu": 0.99, "originText": "01105/2018" }, { "sid": "206,848,64626,0,0,0,0", "text": "pedant", "location": "206,848,111,24", "colLbl": 36, "colAccu": 0.99, "originText": "cedant" }, { "sid": "206,908,14818,14456,14525,0,0", "text": "class of business", "location": "206,908,285,24", "colLbl": 36, "colAccu": 0.99, "originText": "class of business" }, { "sid": "210,963,15186,14456,16570,0,0", "text": "period of quarter", "location": "210,963,272,26", "colLbl": 36, "colAccu": 0.99, "originText": "period of quarter" }, { "sid": "207,1017,15186,14456,20629,0,0", "text": "period of treaty", "location": "207,1017,252,31", "colLbl": 36, "colAccu": 0.99, "originText": "period of treaty" }, { "sid": "206,1066,14498,15089,0,0,0", "text": "our reference", "location": "206,1066,227,24", "colLbl": 36, "colAccu": 0.99, "originText": "our reference" }, { "sid": "226,1174,16280,0,0,0,0", "text": "currency", "location": "226,1174,145,31", "colLbl": 36, "colAccu": 0.99, "originText": "currency" }, { "sid": "227,1243,16438,0,0,0,0", "text": "premium", "location": "227,1243,139,24", "colLbl": 36, "colAccu": 0.99, "originText": "premium" }, { "sid": "226,1303,15444,0,0,0,0", "text": "commission", "location": "226,1303,197,24", "colLbl": 36, "colAccu": 0.99, "originText": "commission" }, { "sid": "226,1366,16527,0,0,0,0", "text": "claims", "location": "226,1366,107,24", "colLbl": 36, "colAccu": 0.99, "originText": "claims" }, { "sid": "227,1426,16608,0,0,0,0", "text": "reserve", "location": "227,1426,126,24", "colLbl": 36, "colAccu": 0.99, "originText": "reserve" }, { "sid": "227,1489,15049,0,0,0,0", "text": "release", "location": "227,1489,123,24", "colLbl": 36, "colAccu": 0.99, "originText": "release" }, { "sid": "227,1549,15076,0,0,0,0", "text": "interest", "location": "227,1549,117,24", "colLbl": 36, "colAccu": 0.99, "originText": "interest" }, { "sid": "227,1609,24808,0,0,0,0", "text": "brokerage", "location": "227,1609,161,31", "colLbl": 36, "colAccu": 0.99, "originText": "brokerage" }, { "sid": "233,1678,17036,0,0,0,0", "text": "portfolio", "location": "233,1678,134,24", "colLbl": 36, "colAccu": 0.99, "originText": "portfolio" }, { "sid": "227,1781,16326,0,0,0,0", "text": "balance", "location": "227,1781,124,24", "colLbl": 36, "colAccu": 0.99, "originText": "balance" }, { "sid": "574,847,14459,97308,14535,14813,97309", "text": "a solidarity- first insurance 2018", "location": "574,847,492,32", "colLbl": 0, "colAccu": 0.99, "originText": ": solidarity- first insurance 2018" }, { "sid": "574,907,14459,16518,20299,21636,97309", "text": "a marine cargo surplus 2018 a inward", "location": "574,907,568,32", "colLbl": 1, "colAccu": 0.99, "originText": ": marine cargo surplus 2018 - inward" }, { "sid": "598,959,97315,14458,97316,0,0", "text": "01-01-2018 to 31-03-2018", "location": "598,959,433,25", "colLbl": 36, "colAccu": 0.99, "originText": "01-01-2018 to 31-03-2018" }, { "sid": "574,1010,14459,97315,14458,97317,0", "text": "a 01-01-2018 to 31-12-2018", "location": "574,1010,454,25", "colLbl": 36, "colAccu": 0.99, "originText": ": 01-01-2018 to 31-12-2018" }, { "sid": "574,1065,14459,97318,0,0,0", "text": "a apex/bord/2727", "location": "574,1065,304,25", "colLbl": 36, "colAccu": 0.99, "originText": ": apex/bord/2727" }, { "sid": "629,1173,97300,97322,0,0,0", "text": "jod 1.00", "location": "629,1173,171,25", "colLbl": 3, "colAccu": 0.99, "originText": "jod 1.00" }, { "sid": "639,1239,1,1,1,1,1", "text": "25.53", "location": "639,1239,83,25", "colLbl": 9, "colAccu": 0.99, "originText": "25.53" }, { "sid": "639,1299,1,1,1,1,1", "text": "5.74", "location": "639,1299,64,25", "colLbl": 14, "colAccu": 0.99, "originText": "5.74" }, { "sid": "639,1362,1,1,1,1,1", "text": "1.00", "location": "639,1362,64,25", "colLbl": 24, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1422,1,1,1,1,1", "text": "7.66", "location": "639,1422,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "7.66" }, { "sid": "639,1485,1,1,1,1,1", "text": "1.00", "location": "639,1485,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1545,1,1,1,1,1", "text": "1.00", "location": "639,1545,64,25", "colLbl": 32, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1605,1,1,1,1,1", "text": "0.64", "location": "639,1605,64,25", "colLbl": 16, "colAccu": 0.99, "originText": "0.64" }, { "sid": "648,1677,1,1,1,1,1", "text": "1.00", "location": "648,1677,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "641,1774,97319,97320,0,0,0", "text": "11 .49", "location": "641,1774,81,25", "colLbl": 36, "colAccu": 0.99, "originText": "11 .49" }, { "sid": "1706,1908,25767,14813,0,0,0", "text": "apex insurance", "location": "1706,1908,356,29", "colLbl": 36, "colAccu": 0.99, "originText": "apex insurance" }], "column": [{ "SEQNUM": "1", "COLNAME": "출재사명", "COLTYPE": "OGCOMPANYNAME", "COLNUM": "0" }, { "SEQNUM": "2", "COLNAME": "계약명", "COLTYPE": "CTNM", "COLNUM": "1" }, { "SEQNUM": "3", "COLNAME": "UY", "COLTYPE": "UY", "COLNUM": "2" }, { "SEQNUM": "4", "COLNAME": "화폐코드", "COLTYPE": "CURCD", "COLNUM": "3" }, { "SEQNUM": "5", "COLNAME": "화폐단위", "COLTYPE": "CURUNIT", "COLNUM": "4" }, { "SEQNUM": "6", "COLNAME": "PAID(100%)", "COLTYPE": "PAIDPERCENT", "COLNUM": "5" }, { "SEQNUM": "7", "COLNAME": "PAID(Our Share)", "COLTYPE": "PAIDSHARE", "COLNUM": "6" }, { "SEQNUM": "8", "COLNAME": "OSL(100%)", "COLTYPE": "OSLPERCENT", "COLNUM": "7" }, { "SEQNUM": "9", "COLNAME": "OSL(Our Share)", "COLTYPE": "OSLSHARE", "COLNUM": "8" }, { "SEQNUM": "10", "COLNAME": "PREMIUM", "COLTYPE": "PM", "COLNUM": "9" }, { "SEQNUM": "11", "COLNAME": "PREMIUM P/F ENT", "COLTYPE": "PMPFEND", "COLNUM": "10" }, { "SEQNUM": "12", "COLNAME": "PREMIUM P/F WOS", "COLTYPE": "PMPFWOS", "COLNUM": "11" }, { "SEQNUM": "13", "COLNAME": "XOL PREMIUM", "COLTYPE": "XOLPM", "COLNUM": "12" }, { "SEQNUM": "14", "COLNAME": "RETURN PREMIUM", "COLTYPE": "RETURNPM", "COLNUM": "13" }, { "SEQNUM": "15", "COLNAME": "COMMISSION", "COLTYPE": "CN", "COLNUM": "14" }, { "SEQNUM": "16", "COLNAME": "PROFIT COMMISSION", "COLTYPE": "PROFITCN", "COLNUM": "15" }, { "SEQNUM": "17", "COLNAME": "BROKERAGE", "COLTYPE": "BROKERAGE", "COLNUM": "16" }, { "SEQNUM": "18", "COLNAME": "TAX", "COLTYPE": "TAX", "COLNUM": "17" }, { "SEQNUM": "19", "COLNAME": "OVERRIDING COM", "COLTYPE": "OVERRIDINGCOM", "COLNUM": "18" }, { "SEQNUM": "20", "COLNAME": "CHARGE", "COLTYPE": "CHARGE", "COLNUM": "19" }, { "SEQNUM": "21", "COLNAME": "PREMUIM RESERVE RTD", "COLTYPE": "PMRESERVERTD1", "COLNUM": "20" }, { "SEQNUM": "22", "COLNAME": "P/F PREMIUM RESERVE RTD", "COLTYPE": "PFPMRESERVERTD1", "COLNUM": "21" }, { "SEQNUM": "23", "COLNAME": "PREMIUM RESERVE RLD", "COLTYPE": "PMRESERVERTD2", "COLNUM": "22" }, { "SEQNUM": "24", "COLNAME": "P/F PREMIUM RESERVE RLD", "COLTYPE": "PFPMRESERVERTD2", "COLNUM": "23" }, { "SEQNUM": "25", "COLNAME": "CLAIM", "COLTYPE": "CLAIM", "COLNUM": "24" }, { "SEQNUM": "26", "COLNAME": "LOSS RECOVERY", "COLTYPE": "LOSSRECOVERY", "COLNUM": "25" }, { "SEQNUM": "27", "COLNAME": "CASH LOSS", "COLTYPE": "CASHLOSS", "COLNUM": "26" }, { "SEQNUM": "28", "COLNAME": "CASH LOSS REFUND", "COLTYPE": "CASHLOSSRD", "COLNUM": "27" }, { "SEQNUM": "29", "COLNAME": "LOSS RESERVE RTD", "COLTYPE": "LOSSRR", "COLNUM": "28" }, { "SEQNUM": "30", "COLNAME": "LOSS RESERVE RLD", "COLTYPE": "LOSSRR2", "COLNUM": "29" }, { "SEQNUM": "31", "COLNAME": "LOSS P/F ENT", "COLTYPE": "LOSSPFENT", "COLNUM": "30" }, { "SEQNUM": "32", "COLNAME": "LOSS P/F WOA", "COLTYPE": "LOSSPFWOA", "COLNUM": "31" }, { "SEQNUM": "33", "COLNAME": "INTEREST", "COLTYPE": "INTEREST", "COLNUM": "32" }, { "SEQNUM": "34", "COLNAME": "TAX ON", "COLTYPE": "TAXON", "COLNUM": "33" }, { "SEQNUM": "35", "COLNAME": "MISCELLANEOUS", "COLTYPE": "MISCELLANEOUS", "COLNUM": "34" }, { "SEQNUM": "36", "COLNAME": "Your Reference", "COLTYPE": "CSCOSARFRNCNNT2", "COLNUM": "35" }, { "SEQNUM": "37", "COLNAME": "UNKNOWN", "COLTYPE": "UNKNOWN", "COLNUM": "36" }] };
+    
+    $.ajax({
+        url: '/batchLearning/uiLearnTraining',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ imgIdArray: imgIdArray }),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $('#btn_pop_batch_close').click();
+            $("#progressMsgTitle").html("processing UI learn data...");
+            progressId = showProgressBar();
+        },
+        success: function (data) {
+            console.log(data);
+            modifyData = data.data;
+            $("#progressMsgTitle").html("success UI learn data...");
+            uiLayerHtml(data);
+        },
+        error: function (err) {
+            endProgressBar(progressId);
+            console.log(err);
+        },
+        complete: function () {
+            endProgressBar(progressId);
+        }
+    });
+    
+};
+
+function uiLayerHtml(data) {
+    var mlData = data.data.data;
+    var columnArr = data.data.column;
+    //var fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length);
+    fn_initUiTraining();
+    layer_open('layer2');
+
+
+    $('#imgNameTag').text(data.data.convertedFileName);
+
+    var mainImgHtml = '';
+    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
+    mainImgHtml += '<div id="redNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    mainImgHtml += '<div id="imageZoom">';
+    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    $('#img_content').html(mainImgHtml);
+    $('#mainImage').css('background-image', 'url("../../uploads/' + data.data.convertedFileName + '")');
+
+    var tblTag = '';
+    for (var i in mlData) {
+        tblTag += '<dl>';
+        tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+        tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+        tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+        tblTag += '</label>';
+        tblTag += '</dt>';
+        tblTag += '<dd>';
+        tblTag += appendOptionHtml((mlData[i].colLbl != undefined) ? mlData[i].colLbl : 36, columnArr);
+        tblTag += '</dd>';
+        tblTag += '</dl>';
+    }
+    $('#textResultTbl').append(tblTag);
+}
+
 // batch learning 2 [Select] 배치학습데이터 조회
-var batchLearnTraing = function (imgIdArray, flag) {
+var batchLearnTraining = function (imgIdArray, flag) {
     var param = {
         imgIdArray: imgIdArray,
         uiCheck: $('#uiTrainingChk').is(':checked')
     };
 
     $.ajax({
-        url: '/batchLearning/batchLearnTraing',
+        url: '/batchLearning/batchLearnTraining',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
@@ -2091,7 +2214,7 @@ function modifyTextData() {
     var afterData = {};
     afterData.data = [];
     beforeData = beforeData.slice(0);
-    console.log(beforeData);
+    
     // afterData Processing
     $('#textResultTbl > dl').each(function (index, el) {
         var location = $(el).find('label').children().eq(1).val();
@@ -2118,12 +2241,13 @@ function modifyTextData() {
 
 // UI학습 팝업 실행
 var fn_batchUiTraining = function () {
-    console.log(JSON.stringify(modifyData))
+    //console.log(JSON.stringify(modifyData))
     var mldata = modifyData;
     var trainData = {};
     var arr = [];
     var trainData = {};
     trainData.data = [];
+    /*
     if (mldata.docCategory) { // 추출된 문서가 있을 경우
         trainData.docCategory = [mldata.docCategory[0]];
     } else {
@@ -2137,6 +2261,7 @@ var fn_batchUiTraining = function () {
             trainData.docCategory = [JSON.parse($('#docData').val())];
         }
     }
+    */
 
     $('#textResultTbl > dl').each(function (i, el) {
         var location = $(el).find('input')[1].value;
@@ -2161,11 +2286,13 @@ var fn_batchUiTraining = function () {
 
                 if (arr[j].colLbl == 0 || arr[j].colLbl == 1 || arr[j].colLbl == 3) { // Only ogCompanyName, contractName, curCode
                     if (mldata.data[i].text != arr[j].text || mldata.data[i].colLbl != arr[j].colLbl) {
+                        arr[j].sid = mldata.data[i].sid;
                         trainData.data.push(arr[j]);
                     }
                 } else { // etc
                     if (mldata.data[i].colLbl != arr[j].colLbl) {
-                        arr[j].text = mldata.data[i].text // origin text (Does not reflect changes made by users) 
+                        arr[j].text = mldata.data[i].text; // origin text (Does not reflect changes made by users) 
+                        arr[j].sid = mldata.data[i].sid;
                         trainData.data.push(arr[j]);
                     }
                 }
@@ -2174,7 +2301,7 @@ var fn_batchUiTraining = function () {
         }
     }
 
-    docLabelMapping(trainData);
+    callbackInsertDocMapping(trainData);
 	
 	/*
 	$.ajax({
