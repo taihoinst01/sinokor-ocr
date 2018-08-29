@@ -3,13 +3,13 @@
 /******************************************
  * client function js
  * ****************************************/
-var MAX_PAGE_IN_SET = 5;        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½Æ®
-var MAX_ENTITY_IN_PAGE = 10;    // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+var MAX_PAGE_IN_SET = 5;        // ÆäÀÌÁö Ä«¿îÆ®
+var MAX_ENTITY_IN_PAGE = 10;    // ÇÑ ÆäÀÌÁö ´ç ÄÁÅÙÃ÷ ¼ö
 
 /**
- * null ï¿½Ì³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
- * @param str       ï¿½Ô·Â°ï¿½
-  * @returns {String}    Ã¼Å© ï¿½ï¿½ï¿½ï¿½ï¿½
+ * null ÀÌ³ª ºó°ªÀ» ºó°ªÀ¸·Î º¯°æ
+ * @param str       ÀÔ·Â°ª
+  * @returns {String}    Ã¼Å© °á°ú°ª
  */
 function nvl(str) {
     var defaultValue = "";
@@ -19,10 +19,10 @@ function nvl(str) {
 }
 
 /**
- * null ï¿½Ì³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½âº»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
- * @param str       ï¿½Ô·Â°ï¿½
- * @param defaultVal    ï¿½âº»ï¿½ï¿½(ï¿½É¼ï¿½)
- * @returns {String}    Ã¼Å© ï¿½ï¿½ï¿½ï¿½ï¿½
+ * null ÀÌ³ª ºó°ªÀ» ±âº»°ªÀ¸·Î º¯°æ
+ * @param str       ÀÔ·Â°ª
+ * @param defaultVal    ±âº»°ª(¿É¼Ç)
+ * @returns {String}    Ã¼Å© °á°ú°ª
  */
 function nvl2(str, defaultVal) {
     var defaultValue = "";
@@ -34,16 +34,16 @@ function nvl2(str, defaultVal) {
 }
 
 /**
- * objï¿½ï¿½ null È®ï¿½ï¿½
- * @param str       ï¿½Ô·Â°ï¿½
- * @returns {boolean}    Ã¼Å© ï¿½ï¿½ï¿½ï¿½ï¿½
+ * objÀÇ null È®ÀÎ
+ * @param str       ÀÔ·Â°ª
+ * @returns {boolean}    Ã¼Å© °á°ú°ª
  */
 function isNull(obj) {
     return (typeof obj != "undefined" && obj != null && obj != "") ? false : true;
 }
 
 /**
- * Ãµï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½
+ * Ãµ´ÜÀ§ ÄÞ¸¶
  * @param {any} double
  */
 function NumberWithComma(double) {
@@ -52,7 +52,7 @@ function NumberWithComma(double) {
     return parts.join(".");
 }
 /**
- * Ãµï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½ ï¿½ï¿½ ï¿½Ò¼ï¿½ï¿½ï¿½ ï¿½Ú¸ï¿½ï¿½ï¿½
+ * Ãµ´ÜÀ§ ÄÞ¸¶ ¹× ¼Ò¼öÁ¡ ÀÚ¸£±â
  * @param {any} double
  * @param {any} decimalPointCipher
  */
@@ -66,10 +66,10 @@ function NumberWithCommas(double, decimalPointCipher) {
 
 /**
  * leadingZeros
- * 0ï¿½ï¿½ï¿½ï¿½ ï¿½Ú¸ï¿½ï¿½ï¿½ Ã¤ï¿½ï¿½ï¿½
- * @param n       ï¿½ï¿½
- * @param digits  ï¿½Ú¸ï¿½ï¿½ï¿½
- * @returns zero+n    ï¿½ï¿½ï¿½ï¿½ï¿½
+ * 0À¸·Î ÀÚ¸´¼ö Ã¤¿ì±â
+ * @param n       °ª
+ * @param digits  ÀÚ¸´¼ö
+ * @returns zero+n    °á°ú°ª
  */
 function leadingZeros(n, digits) {
     var zero = '';
@@ -81,10 +81,10 @@ function leadingZeros(n, digits) {
 }
 
 /**
- * ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½Ä¡ï¿½Ï´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
- * @param {any} a   ï¿½ï¿½1
- * @param {any} b   ï¿½ï¿½2
- * @returns ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½Ï¸ï¿½ 0, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ -1ï¿½ï¿½ return
+ * µÎ ¹®ÀÚ¿­À» ºñ±³ÇÏ¿© ÀÏÄ¡ÇÏ´ÂÁö È®ÀÎ
+ * @param {any} a   °ª1
+ * @param {any} b   °ª2
+ * @returns °ªÀÌ ÀÏÄ¡ÇÏ¸é 0, °ªÀÌ ÀÏÄ¡ÇÏÁö ¾ÊÀ¸¸é -1À» return
  */
 function strcmp(a, b) {
     return (a < b ? -1 : (a > b ? 1 : 0));
@@ -92,10 +92,10 @@ function strcmp(a, b) {
 
 /**
  * getNowDateTime
- * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú½Ã°ï¿½
- * @param separator1       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½)
- * @param separator2       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Ã°ï¿½)
- * @returns date(yyyymmdd)    yyyy + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½) + mm + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½) + dd + " " + hh + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Ã°ï¿½) + mi + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Ã°ï¿½) + ss
+ * ÇöÀçÀÏÀÚ½Ã°¢
+ * @param separator1       ±¸ºÐÀÚ(ÀÏÀÚ)
+ * @param separator2       ±¸ºÐÀÚ(½Ã°¢)
+ * @returns date(yyyymmdd)    yyyy + ±¸ºÐÀÚ(ÀÏÀÚ) + mm + ±¸ºÐÀÚ(ÀÏÀÚ) + dd + " " + hh + ±¸ºÐÀÚ(½Ã°¢) + mi + ±¸ºÐÀÚ(½Ã°¢) + ss
  */
 function getNowDateTime(separator1, separator2) {
     var d = new Date();
@@ -108,9 +108,9 @@ function getNowDateTime(separator1, separator2) {
 }
 /**
  * getNowDate
- * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
- * @param separator       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
- * @returns date(yyyymmdd)    yyyy + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + mm + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + dd
+ * ÇöÀçÀÏÀÚ
+ * @param separator       ±¸ºÐÀÚ
+ * @returns date(yyyymmdd)    yyyy + ±¸ºÐÀÚ + mm + ±¸ºÐÀÚ + dd
  */
 function getNowDate(separator) {
     var d = new Date();
@@ -120,9 +120,9 @@ function getNowDate(separator) {
 }
 /**
  * getNowTime
- * ï¿½ï¿½ï¿½ï¿½Ã°ï¿½
- * @param separator       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
- * @returns time(hhmiss)    hh + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + mi + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + ss
+ * ÇöÀç½Ã°¢
+ * @param separator       ±¸ºÐÀÚ
+ * @returns time(hhmiss)    hh + ±¸ºÐÀÚ + mi + ±¸ºÐÀÚ + ss
  */
 function getNowTime(separator) {
     var d = new Date();
@@ -133,14 +133,14 @@ function getNowTime(separator) {
 
 /**
  * getAddYear, getAddMonth, getAddDate
- * @param {val} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ yearVal-ï¿½ï¿½, monthVal-ï¿½ï¿½, dateVal-ï¿½ï¿½
- * @param {separator} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
- * @return {date} ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+ * @param {val} ÇöÀçÀÏÀÚ¿¡¼­ °è»êÇÒ yearVal-³â, monthVal-¿ù, dateVal-ÀÏ
+ * @param {separator} ±¸ºÐÀÚ
+ * @return {date} ±¸ºÐÀÚ¸¦ Æ÷ÇÔÇÑ ÀÏÀÚ
  */
 function getAddYear(yearVal, separator) {
     var date = new Date();
     var y = date.getFullYear();
-    var m = date.getMonth() + 1; 
+    var m = date.getMonth() + 1;
     var d = date.getDate();
     return leadingZeros(y + yearVal, 4) + separator + leadingZeros(m, 2) + separator + leadingZeros(d, 2);
 }
@@ -161,25 +161,25 @@ function getAddDate(dateVal, separator) {
 
 
 /**
- * ï¿½ï¿½ï¿½ï¿½Â¡ ï¿½ï¿½ï¿½ï¿½
+ * ÆäÀÌÂ¡ »ý¼º
  * 
- * @param {any} curPage ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
- * @param {any} totalCount ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+ * @param {any} curPage ÇöÀç ÆäÀÌÁö
+ * @param {any} totalCount ÃÑ ÄÁÅÙÃ÷ ¼ö
  */
 function pagination(curPage, totalCount) {
     if (curPage && totalCount) {
         var paging_result = '';
-        var maxPageInSet = MAX_PAGE_IN_SET,                         // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½Æ®
-            maxEntityInPage = MAX_ENTITY_IN_PAGE,                   // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
-            totalPage = Math.ceil(totalCount / maxEntityInPage),    // ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
-            totalSet = Math.ceil(totalPage / maxPageInSet),         // ï¿½ï¿½Ã¼ ï¿½ï¿½Æ® ï¿½ï¿½
-            curSet = Math.ceil(curPage / maxPageInSet),             // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½È£
-            startPage = ((curSet - 1) * maxPageInSet) + 1,          // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½ ï¿½ï¿½Âµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-            endPage = (startPage + maxPageInSet) - 1;               // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½ ï¿½ï¿½Âµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        var maxPageInSet = MAX_PAGE_IN_SET,                         // ÆäÀÌÁö Ä«¿îÆ®
+            maxEntityInPage = MAX_ENTITY_IN_PAGE,                   // ÇÑ ÆäÀÌÁö´ç ÄÁÅÙÃ÷ ¼ö
+            totalPage = Math.ceil(totalCount / maxEntityInPage),    // ÀüÃ¼ ÆäÀÌÁö ¼ö
+            totalSet = Math.ceil(totalPage / maxPageInSet),         // ÀüÃ¼ ¼¼Æ® ¼ö
+            curSet = Math.ceil(curPage / maxPageInSet),             // ÇöÀç ¼¼Æ® ¹øÈ£
+            startPage = ((curSet - 1) * maxPageInSet) + 1,          // ÇöÀç ¼¼Æ® ³» Ãâ·ÂµÉ ½ÃÀÛ ÆäÀÌÁö
+            endPage = (startPage + maxPageInSet) - 1;               // ÇöÀç ¼¼Æ® ³» Ãâ·ÂµÉ ¸¶Áö¸· ÆäÀÌÁö
 
         if (curSet > 1) paging_result += '<li><a href="#;" onclick="javascript:goPage(' + i + ')">' + (startPage - 1) + '</a></li>';
         for (var i = startPage; i <= endPage; i++) {
-            if (i > totalPage) break;   // ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            if (i > totalPage) break;   // ÀüÃ¼ÆäÀÌÁö º¸´Ù Å©¸é Á¾·á
             paging_result += '<li ' + (i == curPage ? 'class="active"' : '') + '><a href="#;" onclick="javascript:goPage(' + i + ')">' + i + '</a></li>';
         }
         if (curSet < totalSet) paging_result += '<li><a href="#;" onclick="javascript:goPage(' + i + ')">' + i + '</a></li>';
@@ -188,14 +188,14 @@ function pagination(curPage, totalCount) {
 }
 
 function wrapWindowByMask() {
-    //È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¿ï¿½ ï¿½Êºï¿½ ï¿½ï¿½ï¿½Ñ´ï¿½.
+    //È­¸éÀÇ ³ôÀÌ¿Í ³Êºñ¸¦ ±¸ÇÑ´Ù.
     var maskHeight = $(document).height();
     var maskWidth = $(window).width();
 
-    //ï¿½ï¿½ï¿½ï¿½Å©ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¿ï¿½ ï¿½Êºï¿½ È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ È­ï¿½ï¿½ï¿½ï¿½ Ã¤ï¿½ï¿½ï¿½.
+    //¸¶½ºÅ©ÀÇ ³ôÀÌ¿Í ³Êºñ¸¦ È­¸é °ÍÀ¸·Î ¸¸µé¾î ÀüÃ¼ È­¸éÀ» Ã¤¿î´Ù.
     $('#mask').css({ 'width': maskWidth, 'height': maskHeight });
 
-    //ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ È¿ï¿½ï¿½ - ï¿½Ï´ï¿½ 1ï¿½Êµï¿½ï¿½ï¿½ ï¿½ï¿½Ä°ï¿½ ï¿½Æ´Ù°ï¿½ 80% ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    //¾Ö´Ï¸ÞÀÌ¼Ç È¿°ú - ÀÏ´Ü 1ÃÊµ¿¾È ±î¸Ä°Ô µÆ´Ù°¡ 80% ºÒÅõ¸íµµ·Î °£´Ù.
     //$('#mask').fadeIn(1000);      
     $('#mask').fadeTo("slow", 0.6);
 }
@@ -216,7 +216,7 @@ function showProgressBar() {
     var percentNum = $('#ocrBar span');
     elem.style.width = fromVal + '%';
     percentNum.html(fromVal + '%');
-    var id = setInterval(frame, 5000);
+    var id = setInterval(frame, 100);
     function frame() {
         if (width >= 100) {
             endProgressBar();
@@ -235,7 +235,7 @@ function showProgressBar() {
 // Progress Bar
 function startProgressBar() {
     $('body').css('overflow', 'hidden');
-    
+
     $('#loadingBackground').css('width', $('body').width());
     $('#loadingBackground').css('height', $('body').height());
     $('#loadingBackground').show();
@@ -271,20 +271,22 @@ function endProgressBar(progressId) {
     if (!isNull(progressId)) clearInterval(progressId);
 }
 
-// li ï¿½ï¿½ï¿½Ã½ï¿½ input[type=hidden]ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½Ö±ï¿½
+// li ¼±ÅÃ½Ã input[type=hidden]¿¡ °ª ³Ö¾îÁÖ±â
 function liSelect(e, val) {
     $(e).parents('.select_style_K').find('.liSelectValue').val(val);
 }
 
-// Ä¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½Å©ï¿½ï¿½
+// Ä¿½ºÅÒ Å×ÀÌºí ½ºÅ©·Ñ
 $(function () {
-    // divBodyScrollï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ò¶ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½É´Ï´ï¿½.
+    // divBodyScrollÀÇ ½ºÅ©·ÑÀÌ µ¿ÀÛÇÒ¶§¿¡ ÇÔ¼ö¸¦ ºÒ·¯¿É´Ï´Ù.
     $('.divBodyScroll').scroll(function () {
-        // divBodyScrollï¿½ï¿½ xï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½É´Ï´ï¿½.
+        // divBodyScrollÀÇ xÁÂÇ¥°¡ ¿òÁ÷ÀÎ °Å¸®¸¦ °¡Á®¿É´Ï´Ù.
         var xPoint = $(this).scrollLeft();
+        var yPoint = $(this).scrollTop();
 
-        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ xï¿½ï¿½Ç¥ï¿½ï¿½ divHeadScrollï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¼ï¿½ ï¿½Öµï¿½ï¿½ï¿½ ï¿½Õ´Ï´ï¿½.
+        // °¡Á®¿Â x, y ÁÂÇ¥¸¦ divHeadScroll¿¡ Àû¿ë½ÃÄÑ °°ÀÌ ¿òÁ÷ÀÏ¼ö ÀÖµµ·Ï ÇÕ´Ï´Ù.
         $(this).prev().scrollLeft(xPoint);
+        $(this).closest('.mainTable').find('.left_divBodyScroll').scrollTop(yPoint);
     });
 
 });

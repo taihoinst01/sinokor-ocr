@@ -1228,6 +1228,8 @@ var searchBatchLearnDataList = function (addCond) {
     };
     var appendHtml = "";
     var checkboxHtml = "";
+    var appendLeftContentsHtml = '';
+    var appendRightContentsHtml = '';
     $.ajax({
         url: '/batchLearning/searchBatchLearnDataList',
         type: 'post',
@@ -1241,25 +1243,29 @@ var searchBatchLearnDataList = function (addCond) {
             //addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
-            //console.log(data);
+            console.log(data);
             var list = data.data;
             if (addCond == "LEARN_N") $("#total_cnt_before").html(list.length);
             else $("#total_cnt_after").html(list.length);
 
-            if (data != null && data != '') {
+            
+
+            if (list.length != 0) {
 
                 for (var i = 0; i < list.length; i++) {
                     var rows = list[i].rows;
-                    for (var y = 0; y < rows.length; y++) {
-                        appendHtml += "<tr>";
-                        if (y == 0) {
-                            if (addCond == "LEARN_N") checkboxHtml = `<td rowspan="` + (rows.length + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[y].FILEPATH)}" class="sta00" name="listCheck_before" /></td>`;
-                            else checkboxHtml = `<td rowspan="` + (rows.length + 1) + `" scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[y].FILEPATH)}" class="stb00" name="listCheck_after" /></div></td>`;
 
-                            appendHtml += checkboxHtml;
-                            appendHtml += `<td rowspan="` + (rows.length + 1) + `">${nvl(rows[y].FILENAME)}</td > < !--이미지ID-->`;
-                        }
-                        appendHtml += `                                    
+                    if (addCond == "LEARN_N") checkboxHtml = `<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[0].FILEPATH)}" class="sta00" name="listCheck_before" /></td>`;
+                    else checkboxHtml = `<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${nvl(rows[0].FILEPATH)}" class="stb00" name="listCheck_after" /></div></td>`;
+
+                    var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
+                    appendLeftContentsHtml += `<tr style="height:${trHeight}px;">;
+                                                ${checkboxHtml}
+                                                <td>${ nvl(rows[0].FILENAME) }</td> <!--FILENAME-->
+                                               </tr>`;
+
+                    for (var y = 0; y < rows.length; y++) {
+                        appendRightContentsHtml += `<tr>
                                         <td>${nvl(rows[y].OGCOMPANYNAME)}</td> <!--출재사명-->
                                         <td>${nvl(rows[y].CTNM)}</td> <!--계약명-->
                                         <td>${nvl(rows[y].UY)}</td> <!--UY-->
@@ -1300,7 +1306,7 @@ var searchBatchLearnDataList = function (addCond) {
                     }                   
                     var mlData = data.mlData;
                     if (mlData.rows.length != 0) {
-                        appendHtml += `<tr class="mlTr">                                    
+                        appendRightContentsHtml += `<tr class="mlTr">                                    
                                         <td>` + makeMLSelect(mlData.rows, 0, rows[0].FILEPATH) + `</td> <!--출재사명-->
                                         <td>` + makeMLSelect(mlData.rows, 1, rows[0].FILEPATH) + `</td> <!--계약명-->
                                         <td>` + makeMLSelect(mlData.rows, 2, rows[0].FILEPATH) + `</td> <!--UY-->
@@ -1339,7 +1345,7 @@ var searchBatchLearnDataList = function (addCond) {
                                         <td>` + makeMLSelect(mlData.rows, 35, rows[0].FILEPATH) + `</td> <!--YOUR REF -->
                                     </tr>`;
                     } else {                   
-                        appendHtml += `
+                        appendRightContentsHtml += `
                                     <tr class="mlTr">
                                         <td colspan="36"></td>            
                                     </tr>`;
@@ -1347,14 +1353,20 @@ var searchBatchLearnDataList = function (addCond) {
                     }
                 }
             } else {
-                appendHtml += `<tr><td colspan="39">조회할 데이터가 없습니다.</td></tr>`;
+                appendLeftContentsHtml += `<tr style="height: 30px"><td colspan="2"></td></tr>`
+                appendRightContentsHtml += `<tr><td colspan="36">조회할 데이터가 없습니다.</td></tr>`;
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
-                $("#tbody_batchList_before").empty().append(appendHtml);
+                $('#batch_left_contents_before').empty().append(appendLeftContentsHtml);
+                $('#batch_right_contents_before').empty().append(appendRightContentsHtml);
+
+                //$("#tbody_batchList_before").empty().append(appendHtml);
                 //compareMLAndAnswer(data);
             } else {
-                $("#tbody_batchList_after").empty().append(appendHtml);               
+                $('#batch_left_contents_after').empty().append(appendLeftContentsHtml);
+                $('#batch_right_contents_after').empty().append(appendRightContentsHtml);
+                //$("#tbody_batchList_after").empty().append(appendHtml);               
             }
             endProgressBar(progressId); // end progressbar
             checkboxEvent(); // refresh checkbox event

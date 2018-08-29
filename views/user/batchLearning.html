@@ -173,16 +173,47 @@
                         <h3 class="blind"><span>Before Training</span></h3>
 
                         <div id="content-6" class="content horizontal-images">
-                            <table class="batch_tblBackground tblBackground" cellspacing="0">
+                            <table class="batch_tblBackground mainTable" cellspacing="0" cellpadding="0">
                                 <tr>
-                                    <td>
+                                    <td valign="top" style="width:250px">
                                         <div class="table_style03">
-                                            <div class="batch_divHeadScroll divHeadScroll">
-                                                <table class="batch_tblHead tblHead" border="0">
-                                                    <caption id="list_caption">Before Training 파일 정보</caption>
+                                            <!-- LEFT HEADER(FIXED) START -->
+                                            <div id="left_header" class="batch_tbl_left_headerDiv">
+                                                <table class="batch_tbl_left_head" cellspacing="0" cellpadding="0">
                                                     <colgroup>
                                                         <col style="width:50px" />
                                                         <col style="width:200px" />
+                                                    </colgroup>
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
+                                                            <th scope="row">파일명</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                            <!-- LEFT HEADER(FIXED) END-->
+                                            <!-- LEFT CONTENTS(FIXED) START-->
+                                            <div id="left_contents" class="batch_tbl_left_contetnsDiv left_divBodyScroll">
+                                                <table class="batch_tbl_left_content" cellspacing="0" cellpadding="0">
+                                                    <colgroup>
+                                                        <col style="width:50px" />
+                                                        <col style="width:200px" />
+                                                    </colgroup>
+                                                    <tbody id="batch_left_contents_before">
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <!-- LEFT CONTENTS(FIXED) END-->
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="table_style03">
+                                            <!-- RIGHT HEADER(CROSSTAB) START -->
+                                            <div id="right_header" class="batch_tbl_right_header" style="overflow-x:hidden; overflow-y:hidden;">
+                                                <table cellspacing="0" cellpadding="0">
+                                                    <colgroup>
                                                         <col style="width:300px" />
                                                         <col style="width:300px" />
                                                         <col style="width:200px" />
@@ -223,8 +254,6 @@
                                                     </colgroup>
                                                     <thead>
                                                         <tr>
-                                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
-                                                            <th scope="row">이미지ID</th>
                                                             <th scope="row">출재사명</th>
                                                             <th scope="row">계약명</th>
                                                             <th scope="row">UY</th>
@@ -266,11 +295,11 @@
                                                     </thead>
                                                 </table>
                                             </div>
-                                            <div class="batch_divBodyScroll divBodyScroll">
-                                                <table class="batch_tblBody tblBody" border="0">
+                                            <!-- RIGHT HEADER(CROSSTAB) END -->
+                                            <!-- RIGHT CONTENTS(CROSSTAB) START -->
+                                            <div id="right_contents" style="overflow-x:scroll; overflow-y:scroll;" class="batch_tbl_right_divBodyScroll divBodyScroll">
+                                                <table cellspacing="0" cellpadding="0" style="table-layout:fixed">
                                                     <colgroup>
-                                                        <col style="width:50px" />
-                                                        <col style="width:200px" />
                                                         <col style="width:300px" />
                                                         <col style="width:300px" />
                                                         <col style="width:200px" />
@@ -308,8 +337,11 @@
                                                         <col style="width:200px" />
                                                         <col style="width:200px" />
                                                     </colgroup>
-                                                    <tbody id="tbody_batchList_before" class="batchListTbody"></tbody>
+                                                    <tbody id="batch_right_contents_before" class="batchListTbody">
+
+                                                    </tbody>
                                                 </table>
+                                                <!-- RIGHT CONTENTS(CROSSTAB) END -->
                                             </div>
                                         </div>
                                     </td>
@@ -332,15 +364,45 @@
                         <h3 class="blind"><span>After Training</span></h3>
 
                         <div id="content-7" class="content horizontal-images">
-                            <table class="batch_tblBackground tblBackground" cellspacing="0">
+                            <table class="batch_tblBackground mainTable" cellspacing="0" cellpadding="0">
                                 <tr>
-                                    <td>
-                                        <div class="table_style02">
-                                            <div class="batch_divHeadScroll divHeadScroll">
-                                                <table class="batch_tblHead tblHead" border="0">
+                                    <td valign="top" style="width:250px">
+                                        <div class="table_style03">
+                                            <!-- LEFT HEADER(FIXED) START -->
+                                            <div id="left_header" class="batch_tbl_left_headerDiv">
+                                                <table class="batch_tbl_left_head" cellspacing="0" cellpadding="0">
                                                     <colgroup>
                                                         <col style="width:50px" />
                                                         <col style="width:200px" />
+                                                    </colgroup>
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="stb00_all" value="" id="listCheckAll_after" name="listCheckAll_after" /></div></th>
+                                                            <th scope="row">파일명</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                            <!-- LEFT HEADER(FIXED) END-->
+                                            <!-- LEFT CONTENTS(FIXED) START-->
+                                            <div id="left_contents" class="batch_tbl_left_contetnsDiv left_divBodyScroll">
+                                                <table class="batch_tbl_left_content" cellspacing="0" cellpadding="0">
+                                                    <colgroup>
+                                                        <col style="width:50px" />
+                                                        <col style="width:200px" />
+                                                    </colgroup>
+                                                    <tbody id="batch_left_contents_after"></tbody>
+                                                </table>
+                                            </div>
+                                            <!-- LEFT CONTENTS(FIXED) END-->
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="table_style03">
+                                            <!-- RIGHT HEADER(CROSSTAB) START -->
+                                            <div id="right_header" class="batch_tbl_right_header" style="overflow-x:hidden; overflow-y:hidden;">
+                                                <table cellspacing="0" cellpadding="0">
+                                                    <colgroup>
                                                         <col style="width:300px" />
                                                         <col style="width:300px" />
                                                         <col style="width:200px" />
@@ -381,8 +443,6 @@
                                                     </colgroup>
                                                     <thead>
                                                         <tr>
-                                                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
-                                                            <th scope="row">이미지ID</th>
                                                             <th scope="row">출재사명</th>
                                                             <th scope="row">계약명</th>
                                                             <th scope="row">UY</th>
@@ -424,11 +484,11 @@
                                                     </thead>
                                                 </table>
                                             </div>
-                                            <div class="batch_divBodyScroll divBodyScroll">
-                                                <table class="batch_tblBody tblBody" border="0">
+                                            <!-- RIGHT HEADER(CROSSTAB) END -->
+                                            <!-- RIGHT CONTENTS(CROSSTAB) START -->
+                                            <div id="right_contents" style="overflow-x:scroll; overflow-y:scroll;" class="batch_tbl_right_divBodyScroll divBodyScroll">
+                                                <table cellspacing="0" cellpadding="0" style="table-layout:fixed">
                                                     <colgroup>
-                                                        <col style="width:50px" />
-                                                        <col style="width:200px" />
                                                         <col style="width:300px" />
                                                         <col style="width:300px" />
                                                         <col style="width:200px" />
@@ -465,18 +525,15 @@
                                                         <col style="width:200px" />
                                                         <col style="width:200px" />
                                                         <col style="width:200px" />
-                                                        <col style="width:17px" />
                                                     </colgroup>
-                                                    <tbody id="tbody_batchList_after" class="batchListTbody"></tbody>
+                                                    <tbody id="batch_right_contents_after" class="batchListTbody"></tbody>
                                                 </table>
+                                                <!-- RIGHT CONTENTS(CROSSTAB) END -->
                                             </div>
                                         </div>
                                     </td>
                                 </tr>
                             </table>
-
-
-
                         </div>
 
                         <!-- 하단 정보 영역 -->
