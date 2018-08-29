@@ -118,6 +118,10 @@ var buttonEvent = function () {
         popupEvent.closePopup();
     });
 
+    // Add Training
+    $("#btn_AddTraining").on("click", function () {
+        fn_addTraining();
+    });
 
     /*$(".poplayer .bg").on("click", function () {
         popupEvent.closePopup();
@@ -1879,7 +1883,7 @@ var fn_popBatchRun = function () {
                     return;
                 } else {
                     //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-                    batchLearnTraing(imgIdArray, "PROCESS_IMAGE");
+                    batchLearnTraining(imgIdArray, "PROCESS_IMAGE");
                 }
             } else {
                 alert("Before Training 상태에서만 배치학습이 가능합니다.");
@@ -1893,6 +1897,68 @@ var fn_popBatchRun = function () {
             break;
     }
 };
+
+var fn_addTraining = function () {
+    var filePathArray = [];
+
+    if (addCond == "LEARN_N") {
+        let chkCnt = 0;
+        $("input[name=listCheck_before]").each(function (index, entry) {
+            if ($(this).is(":checked")) {
+                chkCnt++;
+                totCount++;
+                //imgIdArray.push($(this).val());
+                var filepath = $(this).val();
+                filePathArray.push(filepath);
+            }
+        });
+        if (chkCnt == 0) {
+            alert("선택된 학습이 없습니다.");
+            return;
+        } else {
+            //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+            addBatchTraining(filePathArray, "PROCESS_IMAGE");
+        }
+    } else {
+        alert("Before Training 상태에서만 배치학습이 가능합니다.");
+        return;
+    }
+};
+
+var addBatchTraining = function (filePathArray) {
+    var param = {
+        filePathArray: filePathArray,
+    };
+
+    $.ajax({
+        url: '/batchLearning/addBatchTraining',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving learn data...");
+            progressId = showProgressBar();
+        },
+        success: function (data) {
+            $("#progressMsgTitle").html("processing learn data...");
+            console.log(data);
+            if (data.code == 200) {
+                alert(data.msg);
+            }
+            searchBatchLearnDataList(addCond);
+        },
+        error: function (err) {
+            endProgressBar(progressId); // end progressbar
+            console.log(err);
+        },
+        complete: function () {
+            console.log("done");
+            //addProgressBar(41, 100);
+            endProgressBar(progressId);
+        }
+    });
+}
 
 
 
@@ -1941,14 +2007,14 @@ var fn_uiTraining = function () {
 };
 
 // batch learning 2 [Select] 배치학습데이터 조회
-var batchLearnTraing = function (imgIdArray, flag) {
+var batchLearnTraining = function (imgIdArray, flag) {
     var param = {
         imgIdArray: imgIdArray,
         uiCheck: $('#uiTrainingChk').is(':checked')
     };
 
     $.ajax({
-        url: '/batchLearning/batchLearnTraing',
+        url: '/batchLearning/batchLearnTraining',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
