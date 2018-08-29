@@ -2333,7 +2333,7 @@ function batchLearnTraing2(imgId, uiCheck, done) {
 function dataToTypoArgs(data) {
 
     for (var i in data) {
-        data[i].text = data[i].text.toLowerCase().replace("'", "`");
+        data[i].text = data[i].text.toLowerCase().replace(/'/g, '`');
     }
     return data;
 }
