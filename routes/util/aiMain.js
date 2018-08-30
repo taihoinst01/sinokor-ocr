@@ -146,12 +146,14 @@ exports.runFromMLStudio = function (data, callback) {
     sync.fiber(function () {
 
         try {
+            /*
             // Form Label Mapping
             //data = sync.await(oracle.selectFormLabelMappingFromMLStudio(data, sync.defer()));
             data = sync.await(mlStudio.run(data, 'formLabelMapping', sync.defer()));
             console.log('execute formLabelMapping ML');
             //console.log(data);
-
+            */
+            /*
             // Form Mapping
             //data = sync.await(oracle.selectFormMappingFromMLStudio(data, sync.defer()));
             data = sync.await(mlStudio.run(data, 'formMapping', sync.defer()));
@@ -160,10 +162,13 @@ exports.runFromMLStudio = function (data, callback) {
             }
             console.log('execute formMapping ML');
             //console.log(data);
-
+            */
             // column Mapping
-            //data = sync.await(oracle.selectColumnMappingFromMLStudio(data, sync.defer()));
-            //console.log(data);
+            reObj = {};
+            reObj.data = data;
+            data = reObj;
+            data = sync.await(oracle.selectColumnMappingFromMLStudio(data, sync.defer()));
+
             data = sync.await(mlStudio.run(data, 'columnMapping', sync.defer()));
             console.log('execute columnMapping ML');
             //console.log(data);
@@ -178,10 +183,10 @@ exports.runFromMLStudio = function (data, callback) {
 
 exports.addTrainFromMLStudio = function (data, callback) {
     sync.fiber(function () {
-
+        sync.await(oracle.insertColumnMapping(data, sync.defer()));
         var result = sync.await(mlStudio.train(data, sync.defer()));
-        callback(result);
 
+        callback(result);
     });
 };
 

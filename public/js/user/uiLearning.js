@@ -466,6 +466,7 @@ function executeML(totData) {
                 } else {
                     lineText.push(data);
                     if (searchDBColumnsCount == 1) {
+
                         /*
                         var docName = '';
                         var docScore = '';
@@ -530,6 +531,7 @@ function executeML(totData) {
 function selectTypoText(index, fileName) {
     //var item = lineText[index].data;
     var item = lineText[index];
+
     var param = [];
 
     $.ajax({

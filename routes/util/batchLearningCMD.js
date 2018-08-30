@@ -11,20 +11,25 @@ referenceCMD.selectSid = sync(referenceCMD.selectSid);
 referenceCMD.insertMLDataCMD = sync(referenceCMD.insertMLDataCMD);
 
 sync.fiber(function () {
-    sync.await(batchLearnTraing(sync.defer()));
+    var arg = process.argv.slice(2);
+    var term = arg[0] + '%';
+    //term = '2018%';
+    var resLegacyData = sync.await(referenceCMD.selectLegacyFileData(term, sync.defer()));
+    for (var i in resLegacyData) {
+        sync.await(batchLearnTraing([resLegacyData[i]], sync.defer()));
+    }
 });
 
-function batchLearnTraing(done) {
+function batchLearnTraing(resLegacyData, done) {
     sync.fiber(function () {
         try {
-            var term = '2018%';
-            var resLegacyData = sync.await(referenceCMD.selectLegacyFileData(term, sync.defer()));
     
             for (let tiffile in resLegacyData) {
                 console.time("convertTiftoJpg : " + resLegacyData[tiffile].FILEPATH);
                 let convertFilpath = resLegacyData[tiffile].FILEPATH;
                 if (resLegacyData[tiffile].FILENAME.split('.')[1].toLowerCase() === 'tif' || resLegacyData[tiffile].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
-                    let imageRootDir = 'C:/ICR/image/MIG/MIG';
+                    let imageRootDir = 'C:/ICR/image/MIG/MIG';  //운영
+                    //let imageRootDir = 'C:/ICR/MIG';          //개발
                     let result = sync.await(referenceCMD.convertTiftoJpgCMD(imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
                     if (result == "error") {
                         return done(null, "error convertTiftoJpg");
@@ -63,7 +68,7 @@ function batchLearnTraing(done) {
                 console.timeEnd("similarity ML : " + resLegacyData[tiffile].FILEPATH);
                 
                 console.time("insert MLExport : " + resLegacyData[tiffile].FILEPATH);
-                sync.await(oracle.insertMLDataCMD(resPyArr, sync.defer()));
+                sync.await(referenceCMD.insertMLDataCMD(resPyArr, sync.defer()));
                 console.timeEnd("insert MLExport : " + resLegacyData[tiffile].FILEPATH);
             }
             console.log("done");
@@ -78,7 +83,7 @@ function batchLearnTraing(done) {
 function dataToTypoArgs(data) {
 
     for (var i in data) {
-        data[i].text = data[i].text.toLowerCase().replace("'", "`");
+        data[i].text = data[i].text.toLowerCase().replace(/'/g, '`');
     }
     return data;
 }
@@ -87,6 +92,7 @@ var cmdPythons = {
     pythonPath: '',
     pythonOptions: ['-u'],
     scriptPath: 'C:/ICR/app/source/ml/typosentence',
+    //scriptPath: 'C:/projectWork/koreanre/ml/typosentence',
     args: []
 };
 

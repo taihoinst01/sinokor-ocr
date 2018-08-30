@@ -714,11 +714,21 @@ var mlConfig = {
             TBL_FORM_MAPPING
          WHERE DATA = :DATA `,
     selectColumnMapping:
-        `SELECT
-            DATA, CLASS
-         FROM
-            TBL_COLUMN_MAPPING_TRAIN
-         WHERE DATA IN `
+        `SELECT 
+            SEQNUM, DATA, CLASS 
+         FROM 
+            TBL_COLUMN_MAPPING_TRAIN 
+         WHERE
+            DATA IN (
+                    SELECT T.DATA 
+                    FROM ( 
+                        SELECT 
+                            DATA, COUNT(DATA) AS COUNT 
+                        FROM 
+                            TBL_COLUMN_MAPPING_TRAIN 
+                        GROUP BY DATA) T 
+                    WHERE T.COUNT = 1
+                    ) `
 
 };
 

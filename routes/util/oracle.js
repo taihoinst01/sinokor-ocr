@@ -49,9 +49,8 @@ exports.selectLegacyFileData = function (req, done) {
       var res = [];
       let conn;
       try {
-        conn = await oracledb.getConnection(dbConfig);
-        let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term`, [req]);
-  
+          conn = await oracledb.getConnection(dbConfig);
+          let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term `, [req], { outFormat: oracledb.OBJECT });
         
   
         for (let row in resAnswerFile.rows) {
@@ -68,6 +67,7 @@ exports.selectLegacyFileData = function (req, done) {
             let tempdict = {};
 
             tempDictFile['LEGACY'] = answerDataArr.rows[row2];
+
           }
           res.push(tempDictFile);
         }
@@ -498,20 +498,6 @@ exports.convertTiftoJpg2 = function (originFilePath, done) {
     }
 };
 
-exports.convertTiftoJpgCMD = function (originFilePath, done) {
-    try {
-        //ì¶œë ¥?Œì¼?€ ?œë²„???ˆë? ê²½ë¡œ c/ImageTemp/?¤ëŠ˜? ì§œ/originFileëª??¼ë¡œ ?€??
-        convertedFileName = originFilePath.split('.')[0] + '.jpg';
-        execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
-        return done(null, convertedFileName);
-
-    } catch (err) {
-        console.log(err);
-    } finally {
-        //console.log('end');
-    }
-};
-
 exports.callApiOcr = function (req, done) {
     var pharsedOcrJson = "";
     try {
@@ -539,6 +525,34 @@ exports.callApiOcr = function (req, done) {
     } finally {
 
     }
+};
+
+exports.insertOcrData = function (filepath, ocrData, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            let resfile = await conn.execute(`SELECT * FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath `, [filepath]);
+
+            if (resfile.rows.length == 0) {
+                let resIns = await conn.execute(`INSERT INTO TBL_BATCH_OCR_DATA VALUES(seq_batch_ocr_data.nextval, :filepath, :ocrData) `, [filepath, ocrData], { autoCommit: true });
+            }
+
+            return done(null, result.rowsAffected);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
 };
 
 function ocrJson(regions) {
@@ -1180,22 +1194,30 @@ exports.selectColumnMappingFromMLStudio = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
+            /*
             var inQuery = "(";
             for (var i in req.data) {
                 inQuery += "'" + req.docCategory.DOCTYPE + "," + req.data[i].sid + "',";
             }
             inQuery = inQuery.substring(0, inQuery.length - 1);
             inQuery += ")";
-            result = await conn.execute(queryConfig.mlConfig.selectColumnMapping + inQuery);
+            */
+            result = await conn.execute(queryConfig.mlConfig.selectColumnMapping);
 
             if (result.rows.length > 0) {
                 for (var i in req.data) {
                     for (var j in result.rows) {
                         var row = result.rows[j];
+                        if (req.data[i].sid == row.DATA) {
+                            req.data[i].colLbl = row.CLASS;
+                            break;
+                        }
+                        /*
                         if (req.docCategory.DOCTYPE + "," + req.data[i].sid == row.DATA) {
                             req.data[i].colLbl = row.CLASS;
                             break;
                         }
+                        */
                     }
                 }
             }         

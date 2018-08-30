@@ -67,7 +67,6 @@ router.post('/typoSentence', function (req, res) {
     
     process.on('uncaughtException', function (err) {
         console.log('typo uncaughtException : ' + err);
-        console.log(data);
     });
     
     try {
@@ -166,6 +165,7 @@ router.post('/formMapping', function (req, res) {
 });
 
 router.post('/columnMapping', function (req, res) {
+    req.setTimeout(300000);
     var fileName = req.body.fileName;
     var arg = req.body.data;
 
@@ -174,10 +174,20 @@ router.post('/columnMapping', function (req, res) {
     });
 
     try {
+        /*
+        // ML Studio
+        aimain.runFromMLStudio(arg, function (result) {
+            res.send({ 'fileName': fileName, 'data': result.data, nextType: 'sc' });
+        });
+        */
+        
+        // tensorflow
         aimain.columnMapping3(arg, function (columnResult) {
             console.log('execute columnMapping ML');
             res.send({ 'fileName': fileName, 'data': columnResult, nextType: 'sc' });          
         });
+        
+        
     } catch (exception) {
         console.log(exception);
     }

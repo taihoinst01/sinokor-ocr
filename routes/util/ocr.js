@@ -10,6 +10,7 @@ var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
+var oracle = require('../util/oracle.js');
 
 const defaults = {
     encoding: 'utf8',

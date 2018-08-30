@@ -22,9 +22,8 @@ config.read(mlroot + '\\config.ini')
 id = "koreanre"
 pw = "koreanre01"
 sid = "koreanreocr"
-
-#ip = "10.10.20.205" # 운영 DB
-ip = "172.16.53.142" # 로컬 DB
+# ip = "10.10.20.205"
+ip = "172.16.53.142"
 port = "1521"
 
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
