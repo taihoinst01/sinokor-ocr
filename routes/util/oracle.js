@@ -49,9 +49,8 @@ exports.selectLegacyFileData = function (req, done) {
       var res = [];
       let conn;
       try {
-        conn = await oracledb.getConnection(dbConfig);
-        let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term`, [req]);
-  
+          conn = await oracledb.getConnection(dbConfig);
+          let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term `, [req], { outFormat: oracledb.OBJECT });
         
   
         for (let row in resAnswerFile.rows) {
@@ -68,7 +67,7 @@ exports.selectLegacyFileData = function (req, done) {
             let tempdict = {};
             for (let i = 0; i < answerDataArr.metaData.length; i++) {
               tempdict[answerDataArr.metaData[i].name] = answerDataArr.rows[row2][i];
-              console.log(answerDataArr.rows[row2][i]);
+              //console.log(answerDataArr.rows[row2][i]);
             }
             tempDictFile['LEGACY'] = tempdict;
           }
@@ -487,7 +486,8 @@ exports.convertTiftoJpgCMD = function (originFilePath, done) {
     try {
         //출력파일은 서버의 절대 경로 c/ImageTemp/오늘날짜/originFile명 으로 저장
         convertedFileName = originFilePath.split('.')[0] + '.jpg';
-        execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
+        execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);      //운영
+        //execSync('C:\\projectWork\\koreanre\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);   //개발
         return done(null, convertedFileName);
 
     } catch (err) {
@@ -524,6 +524,65 @@ exports.callApiOcr = function (req, done) {
     } finally {
 
     }
+};
+
+exports.callApiOcrCMD = function (req, done) {
+    var pharsedOcrJson = "";
+    try {
+        var uploadImage = fs.readFileSync(req, 'binary');
+        var base64 = new Buffer(uploadImage, 'binary').toString('base64');
+        var binaryString = new Buffer(base64, 'base64').toString('binary');
+        uploadImage = new Buffer(binaryString, "binary");
+
+        var res = request('POST', propertiesConfig.ocr.uri, {
+            headers: {
+                'Ocp-Apim-Subscription-Key': propertiesConfig.ocr.subscriptionKey,
+                'Content-Type': 'application/octet-stream'
+            },
+            uri: propertiesConfig.ocr.uri + '?' + 'language=unk&detectOrientation=true',
+            body: uploadImage,
+            method: 'POST'
+        });
+        var result = res.getBody('utf8');
+        var ret = sync.await(this.insertOcrData(req, result, sync.defer()));
+        var resJson = JSON.parse(res.getBody('utf8'));
+        pharsedOcrJson = ocrJson(resJson.regions);
+
+        return done(null, pharsedOcrJson);
+    } catch (err) {
+        console.log(err);
+        return done(null, 'error');
+    } finally {
+
+    }
+};
+
+exports.insertOcrData = function (filepath, ocrData, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            let resfile = await conn.execute(`SELECT * FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath `, [filepath]);
+
+            if (resfile.rows.length == 0) {
+                let resIns = await conn.execute(`INSERT INTO TBL_BATCH_OCR_DATA VALUES(seq_batch_ocr_data.nextval, :filepath, :ocrData) `, [filepath, ocrData], { autoCommit: true });
+            }
+
+            return done(null, result.rowsAffected);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
 };
 
 function ocrJson(regions) {

@@ -10,6 +10,7 @@ var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
+var oracle = require('../util/oracle.js');
 
 const defaults = {
     encoding: 'utf8',
@@ -87,6 +88,35 @@ exports.proxyOcr = function (req, done) {
 
             request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
                 var data = JSON.parse(body);
+                //console.log(data);
+                return done(null, ocrJson(data.regions));
+            });
+
+        } catch (err) {
+            reject(err);
+        } finally {
+        }
+    });
+};
+
+exports.proxyOcrCMD = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var fileName = req;
+
+        try {
+            var formData = {
+                file: {
+                    value: fs.createReadStream(fileName),
+                    options: {
+                        filename: fileName,
+                        contentType: 'image/jpeg'
+                    }
+                }
+            };
+
+            request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
+                var data = JSON.parse(body);
+                var resIns = oracle.insertOcrData(filename, body);
                 //console.log(data);
                 return done(null, ocrJson(data.regions));
             });
