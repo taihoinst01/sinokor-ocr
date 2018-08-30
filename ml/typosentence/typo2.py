@@ -17,7 +17,8 @@ textList = []
 #print(textList.__contains__("infinity"))
 
 config = configparser.ConfigParser()
-config.read('./ml/config.ini')
+mlroot = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+config.read(mlroot + '\\config.ini')
 
 id = config['ORACLE']['ID']
 pw = config['ORACLE']['PW']
