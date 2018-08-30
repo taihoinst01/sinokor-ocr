@@ -66,11 +66,8 @@ exports.selectLegacyFileData = function (req, done) {
           
           for (let row2 in answerDataArr.rows) {
             let tempdict = {};
-            for (let i = 0; i < answerDataArr.metaData.length; i++) {
-              tempdict[answerDataArr.metaData[i].name] = answerDataArr.rows[row2][i];
-              console.log(answerDataArr.rows[row2][i]);
-            }
-            tempDictFile['LEGACY'] = tempdict;
+
+            tempDictFile['LEGACY'] = answerDataArr.rows[row2];
           }
           res.push(tempDictFile);
         }

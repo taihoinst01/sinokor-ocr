@@ -1,16 +1,14 @@
 ﻿//npm install python-shell -save
 var PythonShell = require('python-shell')
 var sync = require('./sync.js')
-var appRoot = require('app-root-path').path;
-var oracle = require('./oracle.js');
-var pythonConfig = require(appRoot + '/config/pythonConfig');
+var referenceCMD = require('./referenceCMD.js');
 
 PythonShell.run = sync(PythonShell.run);
-oracle.selectLegacyFileData = sync(oracle.selectLegacyFileData);
-oracle.convertTiftoJpgCMD = sync(oracle.convertTiftoJpgCMD);
-oracle.callApiOcr = sync(oracle.callApiOcr);
-oracle.select = sync(oracle.select);
-oracle.insertMLDataCMD = sync(oracle.insertMLDataCMD);
+referenceCMD.selectLegacyFileData = sync(referenceCMD.selectLegacyFileData);
+referenceCMD.convertTiftoJpgCMD = sync(referenceCMD.convertTiftoJpgCMD);
+referenceCMD.callApiOcr = sync(referenceCMD.callApiOcr);
+referenceCMD.selectSid = sync(referenceCMD.selectSid);
+referenceCMD.insertMLDataCMD = sync(referenceCMD.insertMLDataCMD);
 
 sync.fiber(function () {
     sync.await(batchLearnTraing(sync.defer()));
@@ -19,20 +17,15 @@ sync.fiber(function () {
 function batchLearnTraing(done) {
     sync.fiber(function () {
         try {
-            //makeData2 ();
-            var retData = {};
             var term = '2018%';
-            //var temp = makeData2 ();
-            var resLegacyData = sync.await(oracle.selectLegacyFileData(term, sync.defer()));
+            var resLegacyData = sync.await(referenceCMD.selectLegacyFileData(term, sync.defer()));
     
             for (let tiffile in resLegacyData) {
                 console.time("convertTiftoJpg : " + resLegacyData[tiffile].FILEPATH);
-                //var filename = resLegacyData[tiffile].FILENAME;
-                //var imgId = resLegacyData[tiffile].IMGID;
                 let convertFilpath = resLegacyData[tiffile].FILEPATH;
                 if (resLegacyData[tiffile].FILENAME.split('.')[1].toLowerCase() === 'tif' || resLegacyData[tiffile].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
                     let imageRootDir = 'C:/ICR/image/MIG/MIG';
-                    let result = sync.await(oracle.convertTiftoJpgCMD(imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
+                    let result = sync.await(referenceCMD.convertTiftoJpgCMD(imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
                     if (result == "error") {
                         return done(null, "error convertTiftoJpg");
                     }
@@ -44,8 +37,8 @@ function batchLearnTraing(done) {
         
                 //ocr
                 console.time("ocr : " + resLegacyData[tiffile].FILEPATH);
-                //let ocrResult = sync.await(oracle.callApiOcr(convertFilpath, sync.defer()));
-                var ocrResult = sync.await(ocrUtil.proxyOcr(convertFilpath, sync.defer()));//-- 운영서버용
+                let ocrResult = sync.await(referenceCMD.callApiOcr(convertFilpath, sync.defer()));
+                //var ocrResult = sync.await(referenceCMD.proxyOcr(convertFilpath, sync.defer()));//-- 운영서버용
         
                 if (ocrResult == "error") {
                     return done(null, "error ocr");
@@ -56,9 +49,9 @@ function batchLearnTraing(done) {
                 console.time("typo ML : " + resLegacyData[tiffile].FILEPATH);
                 cmdPythons.args = [];
                 cmdPythons.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
-                let resPyStr = sync.await(PythonShell.run('typo2.py', cmdPythons, sync.defer()));
+                let resPyStr = sync.await(PythonShell.run('typoBatch.py', cmdPythons, sync.defer()));
                 let resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-                let sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+                let sidData = sync.await(referenceCMD.selectSid(resPyArr, sync.defer()));
                 console.timeEnd("typo ML : " + resLegacyData[tiffile].FILEPATH);
         
                 console.time("similarity ML : " + resLegacyData[tiffile].FILEPATH);
@@ -96,3 +89,4 @@ var cmdPythons = {
     scriptPath: 'C:/ICR/app/source/ml/typosentence',
     args: []
 };
+
