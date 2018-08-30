@@ -185,8 +185,8 @@ exports.addTrainFromMLStudio = function (data, callback) {
     sync.fiber(function () {
         sync.await(oracle.insertColumnMapping(data, sync.defer()));
         var result = sync.await(mlStudio.train(data, sync.defer()));
-        callback(data);
 
+        callback(result);
     });
 };
 

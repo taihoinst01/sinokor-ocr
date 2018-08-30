@@ -531,7 +531,7 @@ function executeML(totData) {
 function selectTypoText(index, fileName) {
     //var item = lineText[index].data;
     var item = lineText[index];
-    console.log(lineText[0]);
+
     var param = [];
 
     $.ajax({
