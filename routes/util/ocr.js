@@ -99,35 +99,6 @@ exports.proxyOcr = function (req, done) {
     });
 };
 
-exports.proxyOcrCMD = function (req, done) {
-    return new Promise(async function (resolve, reject) {
-        var fileName = req;
-
-        try {
-            var formData = {
-                file: {
-                    value: fs.createReadStream(fileName),
-                    options: {
-                        filename: fileName,
-                        contentType: 'image/jpeg'
-                    }
-                }
-            };
-
-            request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
-                var data = JSON.parse(body);
-                var resIns = oracle.insertOcrData(filename, body);
-                //console.log(data);
-                return done(null, ocrJson(data.regions));
-            });
-
-        } catch (err) {
-            reject(err);
-        } finally {
-        }
-    });
-};
-
 function ocrJson(regions) {
     var data = [];
     for (var i = 0; i < regions.length; i++) {

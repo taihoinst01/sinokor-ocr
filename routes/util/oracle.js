@@ -498,21 +498,6 @@ exports.convertTiftoJpg2 = function (originFilePath, done) {
     }
 };
 
-exports.convertTiftoJpgCMD = function (originFilePath, done) {
-    try {
-        //Ï∂úÎ†•?åÏùº?Ä ?úÎ≤Ñ???àÎ? Í≤ΩÎ°ú c/ImageTemp/?§Îäò?†Ïßú/originFileÎ™??ºÎ°ú ?Ä??
-        convertedFileName = originFilePath.split('.')[0] + '.jpg';
-        execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);      //?¥ÏòÅ
-        //execSync('C:\\projectWork\\koreanre\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);   //Í∞úÎ∞ú
-        return done(null, convertedFileName);
-
-    } catch (err) {
-        console.log(err);
-    } finally {
-        //console.log('end');
-    }
-};
-
 exports.callApiOcr = function (req, done) {
     var pharsedOcrJson = "";
     try {
@@ -530,37 +515,6 @@ exports.callApiOcr = function (req, done) {
             body: uploadImage,
             method: 'POST'
         });
-        var resJson = JSON.parse(res.getBody('utf8'));
-        pharsedOcrJson = ocrJson(resJson.regions);
-
-        return done(null, pharsedOcrJson);
-    } catch (err) {
-        console.log(err);
-        return done(null, 'error');
-    } finally {
-
-    }
-};
-
-exports.callApiOcrCMD = function (req, done) {
-    var pharsedOcrJson = "";
-    try {
-        var uploadImage = fs.readFileSync(req, 'binary');
-        var base64 = new Buffer(uploadImage, 'binary').toString('base64');
-        var binaryString = new Buffer(base64, 'base64').toString('binary');
-        uploadImage = new Buffer(binaryString, "binary");
-
-        var res = request('POST', propertiesConfig.ocr.uri, {
-            headers: {
-                'Ocp-Apim-Subscription-Key': propertiesConfig.ocr.subscriptionKey,
-                'Content-Type': 'application/octet-stream'
-            },
-            uri: propertiesConfig.ocr.uri + '?' + 'language=unk&detectOrientation=true',
-            body: uploadImage,
-            method: 'POST'
-        });
-        var result = res.getBody('utf8');
-        var ret = sync.await(this.insertOcrData(req, result, sync.defer()));
         var resJson = JSON.parse(res.getBody('utf8'));
         pharsedOcrJson = ocrJson(resJson.regions);
 
