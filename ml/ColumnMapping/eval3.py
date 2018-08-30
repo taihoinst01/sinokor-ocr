@@ -19,11 +19,12 @@ os.path.abspath('./ml')
 mlroot = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 config.read(mlroot + '\\config.ini')
 
-id = config['ORACLE']['ID']
-pw = config['ORACLE']['PW']
-sid = config['ORACLE']['SID']
-ip = config['ORACLE']['IP']
-port = config['ORACLE']['PORT']
+ID = koreanre
+PW = koreanre01
+SID = koreanreocr
+IP = 10.10.20.205
+#IP = 172.16.53.142
+PORT = 1521
 
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
