@@ -3,6 +3,7 @@ import sys
 import cx_Oracle
 import configparser
 import json
+import os
 
 #오타 수정
 ss = SymSpell(max_dictionary_edit_distance=1)
