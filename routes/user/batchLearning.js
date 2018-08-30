@@ -900,10 +900,19 @@ router.post('/insertDocMapping', function (req, res) {
 router.post('/insertColMapping', function (req, res) {
     var data = req.body.data;
 
+    /*
+    // ML Studio
+    aimain.addTrainFromMLStudio(data, function (result) {
+        res.send(result);
+    });
+    */
+    
+    // tensorflow
     aimain.addColumnMappingTrain(data, function (resData) {
         console.log('insertColMapping ML');
         res.send({ code: 200, message: 'insertColMapping ML' });
     });
+    
 
     /*
     var docCategory = req.body.docCategory;
