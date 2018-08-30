@@ -23,14 +23,23 @@ sync.fiber(function () {
 function batchLearnTraing(resLegacyData, done) {
     sync.fiber(function () {
         try {
-    
+
+            /*
+            resLegacyData = [];
+            var obj = {}
+            obj.FILENAME = '209391.tif';
+            obj.FILEPATH = '/MIG/2014/img1/7a/25b7a/209391.tif';
+            resLegacyData.push(obj);
+            */
+
+            let imageRootDir = 'C:/ICR/image/MIG/MIG';  //운영
+            //let imageRootDir = 'C:/ICR/MIG';          //개발
+
             for (let tiffile in resLegacyData) {
                 console.time("convertTiftoJpg : " + resLegacyData[tiffile].FILEPATH);
                 let convertFilpath = resLegacyData[tiffile].FILEPATH;
                 if (resLegacyData[tiffile].FILENAME.split('.')[1].toLowerCase() === 'tif' || resLegacyData[tiffile].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
-                    let imageRootDir = 'C:/ICR/image/MIG/MIG';  //운영
-                    //let imageRootDir = 'C:/ICR/MIG';          //개발
-                    let result = sync.await(referenceCMD.convertTiftoJpgCMD(imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
+                    let result = sync.await(referenceCMD.convertTiftoJpgCMD(resLegacyData[tiffile].FILEPATH, sync.defer()));
                     if (result == "error") {
                         return done(null, "error convertTiftoJpg");
                     }
@@ -42,8 +51,8 @@ function batchLearnTraing(resLegacyData, done) {
         
                 //ocr
                 console.time("ocr : " + resLegacyData[tiffile].FILEPATH);
-                let ocrResult = sync.await(referenceCMD.callApiOcr(convertFilpath, sync.defer()));
-                //var ocrResult = sync.await(referenceCMD.proxyOcr(convertFilpath, sync.defer()));//-- 운영서버용
+                //let ocrResult = sync.await(referenceCMD.callApiOcr(convertFilpath, imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
+                var ocrResult = sync.await(referenceCMD.proxyOcr(convertFilpath, imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));//-- 운영서버용
         
                 if (ocrResult == "error") {
                     return done(null, "error ocr");
@@ -51,6 +60,7 @@ function batchLearnTraing(resLegacyData, done) {
                 console.timeEnd("ocr : " + resLegacyData[tiffile].FILEPATH);
         
                 //typo ML
+                /*
                 console.time("typo ML : " + resLegacyData[tiffile].FILEPATH);
                 cmdPythons.args = [];
                 cmdPythons.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
@@ -70,6 +80,7 @@ function batchLearnTraing(resLegacyData, done) {
                 console.time("insert MLExport : " + resLegacyData[tiffile].FILEPATH);
                 sync.await(referenceCMD.insertMLDataCMD(resPyArr, sync.defer()));
                 console.timeEnd("insert MLExport : " + resLegacyData[tiffile].FILEPATH);
+                */
             }
             console.log("done");
             return done(null, "");

@@ -2010,7 +2010,7 @@ var uiLearnTraining = function (imgIdArray) {
             progressId = showProgressBar();
         },
         success: function (data) {
-            //console.log(data);
+            console.log(data);
             //modifyData = data.data;
             $("#progressMsgTitle").html("success UI learn data...");
             selectTypoData(data);
