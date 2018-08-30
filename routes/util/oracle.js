@@ -1180,22 +1180,30 @@ exports.selectColumnMappingFromMLStudio = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
+            /*
             var inQuery = "(";
             for (var i in req.data) {
                 inQuery += "'" + req.docCategory.DOCTYPE + "," + req.data[i].sid + "',";
             }
             inQuery = inQuery.substring(0, inQuery.length - 1);
             inQuery += ")";
-            result = await conn.execute(queryConfig.mlConfig.selectColumnMapping + inQuery);
+            */
+            result = await conn.execute(queryConfig.mlConfig.selectColumnMapping);
 
             if (result.rows.length > 0) {
                 for (var i in req.data) {
                     for (var j in result.rows) {
                         var row = result.rows[j];
+                        if (req.data[i].sid == row.DATA) {
+                            req.data[i].colLbl = row.CLASS;
+                            break;
+                        }
+                        /*
                         if (req.docCategory.DOCTYPE + "," + req.data[i].sid == row.DATA) {
                             req.data[i].colLbl = row.CLASS;
                             break;
                         }
+                        */
                     }
                 }
             }         

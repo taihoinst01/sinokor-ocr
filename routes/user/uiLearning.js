@@ -174,10 +174,19 @@ router.post('/columnMapping', function (req, res) {
     });
 
     try {
+        /*
+        // ML Studio
+        aimain.runFromMLStudio(arg, function (result) {
+            res.send({ 'fileName': fileName, 'data': result.data, nextType: 'sc' });
+        });
+        */
+        
+        // tensorflow
         aimain.columnMapping3(arg, function (columnResult) {
             console.log('execute columnMapping ML');
             res.send({ 'fileName': fileName, 'data': columnResult, nextType: 'sc' });          
         });
+        
     } catch (exception) {
         console.log(exception);
     }
