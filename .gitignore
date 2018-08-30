@@ -296,3 +296,4 @@ ml/FormMapping/checkpoint/model.ckpt-1.meta
 ml/FormMapping/checkpoint/model.ckpt-2000.data-00000-of-00001
 ml/FormMapping/checkpoint/model.ckpt-2000.index
 ml/FormMapping/checkpoint/model.ckpt-2000.meta
+/ml/typosentence/config.ini
