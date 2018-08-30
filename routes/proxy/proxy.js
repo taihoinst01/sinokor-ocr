@@ -18,7 +18,7 @@ router.post('/ocr', function (req, res) {
 
     var formData = {
         file: {
-            value: fs.createReadStream(propertiesConfig.filepath.convertedImagePath + '\\' + fileName),
+            value: fs.createReadStream('./uploads/' + fileName),
             options: {
                 filename: fileName,
                 contentType: 'image/jpeg'

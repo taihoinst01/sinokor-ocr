@@ -138,6 +138,8 @@ var buttonEvent = function () {
 
     // UI train 실행
     $('#uiTrainBtn').on("click", function () {
+        modifyTextData();
+        /*
         var docData = modifyData.docCategory;
         if ($('#docData').val() != '') {
             docData = JSON.parse($('#docData').val());
@@ -148,6 +150,7 @@ var buttonEvent = function () {
             alert('There is no document form, I do not training.');
             return;
         }
+        */
     });
 
 };
@@ -1967,44 +1970,119 @@ var fn_uiTraining = function () {
     var imgIdArray = [];
     let imgId = "";
     let chkCnt = 0;
-    //테스트용
-    /*
+
     $("input[name=listCheck_before]").each(function (index, entry) {
         if ($(this).is(":checked")) {
             imgId = $(this).val();
             chkCnt++;
         }
     });
-    imgIdArray.push(imgId);
-    processImage_TEST("26.jpg");
-    */
-    //if (addCond == "LEARN_Y") {
-        //let imgId = "";
-        //let chkCnt = 0;
-        $("input[name=listCheck_before]").each(function (index, entry) {
-            if ($(this).is(":checked")) {
-                imgId = $(this).val();
-                chkCnt++;
-            }
-        });
-        if (chkCnt == 0) {
-            alert("선택된 파일이 없습니다.");
-            return;
-        } else if (chkCnt > 1) {
-            alert("한번에 하나의 파일만 UI학습이 가능합니다.");
-            return;
-        } else {
-            imgIdArray.push(imgId);
-            totCount++;
-            uiFlag = "Y";
-            searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-        }
-    //} else {
-    //    alert("After Training 상태에서만 UI학습이 가능합니다.");
-    //    return;
-    //}
+    if (chkCnt == 0) {
+        alert("선택된 파일이 없습니다.");
+        return;
+    } else if (chkCnt > 1) {
+        alert("한번에 하나의 파일만 UI학습이 가능합니다.");
+        return;
+    } else {
+        imgIdArray.push(imgId);
+        totCount++;
+        uiLearnTraining(imgIdArray);
+        //uiFlag = "Y";
+        //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+    }
 
 };
+
+var uiLearnTraining = function (imgIdArray) {
+    //var data = { "data": { "convertedFileName": "hyj.jpg","data": [{ "sid": "1018,240,25767,0,0,0,0", "text": "apex", "location": "1018,240,411,87", "colLbl": 36, "colAccu": 0.99, "originText": "apex" }, { "sid": "1019,338,15944,14456,15585,0,0", "text": "partner of choice", "location": "1019,338,409,23", "colLbl": 36, "colAccu": 0.99, "originText": "partner of choice" }, { "sid": "1562,509,24349,14502,0,0,0", "text": "voucher no", "location": "1562,509,178,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher no" }, { "sid": "1562,578,24349,14552,0,0,0", "text": "voucher date", "location": "1562,578,206,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher date" }, { "sid": "206,691,97312,18699,14569,0,0", "text": "4153 korean re", "location": "206,691,274,27", "colLbl": 36, "colAccu": 0.99, "originText": "4153 korean re" }, { "sid": "208,756,24968,20629,15214,0,0", "text": "proportional treaty statement", "location": "208,756,525,34", "colLbl": 36, "colAccu": 0.99, "originText": "proportional treaty statement" }, { "sid": "1842,506,97313,0,0,0,0", "text": "bv/heo/2018/05/0626", "location": "1842,506,344,25", "colLbl": 36, "colAccu": 0.99, "originText": "bv/heo/2018/05/0626" }, { "sid": "1840,575,97314,0,0,0,0", "text": "01105/2018", "location": "1840,575,169,25", "colLbl": 36, "colAccu": 0.99, "originText": "01105/2018" }, { "sid": "206,848,64626,0,0,0,0", "text": "pedant", "location": "206,848,111,24", "colLbl": 36, "colAccu": 0.99, "originText": "cedant" }, { "sid": "206,908,14818,14456,14525,0,0", "text": "class of business", "location": "206,908,285,24", "colLbl": 36, "colAccu": 0.99, "originText": "class of business" }, { "sid": "210,963,15186,14456,16570,0,0", "text": "period of quarter", "location": "210,963,272,26", "colLbl": 36, "colAccu": 0.99, "originText": "period of quarter" }, { "sid": "207,1017,15186,14456,20629,0,0", "text": "period of treaty", "location": "207,1017,252,31", "colLbl": 36, "colAccu": 0.99, "originText": "period of treaty" }, { "sid": "206,1066,14498,15089,0,0,0", "text": "our reference", "location": "206,1066,227,24", "colLbl": 36, "colAccu": 0.99, "originText": "our reference" }, { "sid": "226,1174,16280,0,0,0,0", "text": "currency", "location": "226,1174,145,31", "colLbl": 36, "colAccu": 0.99, "originText": "currency" }, { "sid": "227,1243,16438,0,0,0,0", "text": "premium", "location": "227,1243,139,24", "colLbl": 36, "colAccu": 0.99, "originText": "premium" }, { "sid": "226,1303,15444,0,0,0,0", "text": "commission", "location": "226,1303,197,24", "colLbl": 36, "colAccu": 0.99, "originText": "commission" }, { "sid": "226,1366,16527,0,0,0,0", "text": "claims", "location": "226,1366,107,24", "colLbl": 36, "colAccu": 0.99, "originText": "claims" }, { "sid": "227,1426,16608,0,0,0,0", "text": "reserve", "location": "227,1426,126,24", "colLbl": 36, "colAccu": 0.99, "originText": "reserve" }, { "sid": "227,1489,15049,0,0,0,0", "text": "release", "location": "227,1489,123,24", "colLbl": 36, "colAccu": 0.99, "originText": "release" }, { "sid": "227,1549,15076,0,0,0,0", "text": "interest", "location": "227,1549,117,24", "colLbl": 36, "colAccu": 0.99, "originText": "interest" }, { "sid": "227,1609,24808,0,0,0,0", "text": "brokerage", "location": "227,1609,161,31", "colLbl": 36, "colAccu": 0.99, "originText": "brokerage" }, { "sid": "233,1678,17036,0,0,0,0", "text": "portfolio", "location": "233,1678,134,24", "colLbl": 36, "colAccu": 0.99, "originText": "portfolio" }, { "sid": "227,1781,16326,0,0,0,0", "text": "balance", "location": "227,1781,124,24", "colLbl": 36, "colAccu": 0.99, "originText": "balance" }, { "sid": "574,847,14459,97308,14535,14813,97309", "text": "a solidarity- first insurance 2018", "location": "574,847,492,32", "colLbl": 0, "colAccu": 0.99, "originText": ": solidarity- first insurance 2018" }, { "sid": "574,907,14459,16518,20299,21636,97309", "text": "a marine cargo surplus 2018 a inward", "location": "574,907,568,32", "colLbl": 1, "colAccu": 0.99, "originText": ": marine cargo surplus 2018 - inward" }, { "sid": "598,959,97315,14458,97316,0,0", "text": "01-01-2018 to 31-03-2018", "location": "598,959,433,25", "colLbl": 36, "colAccu": 0.99, "originText": "01-01-2018 to 31-03-2018" }, { "sid": "574,1010,14459,97315,14458,97317,0", "text": "a 01-01-2018 to 31-12-2018", "location": "574,1010,454,25", "colLbl": 36, "colAccu": 0.99, "originText": ": 01-01-2018 to 31-12-2018" }, { "sid": "574,1065,14459,97318,0,0,0", "text": "a apex/bord/2727", "location": "574,1065,304,25", "colLbl": 36, "colAccu": 0.99, "originText": ": apex/bord/2727" }, { "sid": "629,1173,97300,97322,0,0,0", "text": "jod 1.00", "location": "629,1173,171,25", "colLbl": 3, "colAccu": 0.99, "originText": "jod 1.00" }, { "sid": "639,1239,1,1,1,1,1", "text": "25.53", "location": "639,1239,83,25", "colLbl": 9, "colAccu": 0.99, "originText": "25.53" }, { "sid": "639,1299,1,1,1,1,1", "text": "5.74", "location": "639,1299,64,25", "colLbl": 14, "colAccu": 0.99, "originText": "5.74" }, { "sid": "639,1362,1,1,1,1,1", "text": "1.00", "location": "639,1362,64,25", "colLbl": 24, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1422,1,1,1,1,1", "text": "7.66", "location": "639,1422,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "7.66" }, { "sid": "639,1485,1,1,1,1,1", "text": "1.00", "location": "639,1485,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1545,1,1,1,1,1", "text": "1.00", "location": "639,1545,64,25", "colLbl": 32, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1605,1,1,1,1,1", "text": "0.64", "location": "639,1605,64,25", "colLbl": 16, "colAccu": 0.99, "originText": "0.64" }, { "sid": "648,1677,1,1,1,1,1", "text": "1.00", "location": "648,1677,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "641,1774,97319,97320,0,0,0", "text": "11 .49", "location": "641,1774,81,25", "colLbl": 36, "colAccu": 0.99, "originText": "11 .49" }, { "sid": "1706,1908,25767,14813,0,0,0", "text": "apex insurance", "location": "1706,1908,356,29", "colLbl": 36, "colAccu": 0.99, "originText": "apex insurance" }], "column": [{ "SEQNUM": "1", "COLNAME": "출재사명", "COLTYPE": "OGCOMPANYNAME", "COLNUM": "0" }, { "SEQNUM": "2", "COLNAME": "계약명", "COLTYPE": "CTNM", "COLNUM": "1" }, { "SEQNUM": "3", "COLNAME": "UY", "COLTYPE": "UY", "COLNUM": "2" }, { "SEQNUM": "4", "COLNAME": "화폐코드", "COLTYPE": "CURCD", "COLNUM": "3" }, { "SEQNUM": "5", "COLNAME": "화폐단위", "COLTYPE": "CURUNIT", "COLNUM": "4" }, { "SEQNUM": "6", "COLNAME": "PAID(100%)", "COLTYPE": "PAIDPERCENT", "COLNUM": "5" }, { "SEQNUM": "7", "COLNAME": "PAID(Our Share)", "COLTYPE": "PAIDSHARE", "COLNUM": "6" }, { "SEQNUM": "8", "COLNAME": "OSL(100%)", "COLTYPE": "OSLPERCENT", "COLNUM": "7" }, { "SEQNUM": "9", "COLNAME": "OSL(Our Share)", "COLTYPE": "OSLSHARE", "COLNUM": "8" }, { "SEQNUM": "10", "COLNAME": "PREMIUM", "COLTYPE": "PM", "COLNUM": "9" }, { "SEQNUM": "11", "COLNAME": "PREMIUM P/F ENT", "COLTYPE": "PMPFEND", "COLNUM": "10" }, { "SEQNUM": "12", "COLNAME": "PREMIUM P/F WOS", "COLTYPE": "PMPFWOS", "COLNUM": "11" }, { "SEQNUM": "13", "COLNAME": "XOL PREMIUM", "COLTYPE": "XOLPM", "COLNUM": "12" }, { "SEQNUM": "14", "COLNAME": "RETURN PREMIUM", "COLTYPE": "RETURNPM", "COLNUM": "13" }, { "SEQNUM": "15", "COLNAME": "COMMISSION", "COLTYPE": "CN", "COLNUM": "14" }, { "SEQNUM": "16", "COLNAME": "PROFIT COMMISSION", "COLTYPE": "PROFITCN", "COLNUM": "15" }, { "SEQNUM": "17", "COLNAME": "BROKERAGE", "COLTYPE": "BROKERAGE", "COLNUM": "16" }, { "SEQNUM": "18", "COLNAME": "TAX", "COLTYPE": "TAX", "COLNUM": "17" }, { "SEQNUM": "19", "COLNAME": "OVERRIDING COM", "COLTYPE": "OVERRIDINGCOM", "COLNUM": "18" }, { "SEQNUM": "20", "COLNAME": "CHARGE", "COLTYPE": "CHARGE", "COLNUM": "19" }, { "SEQNUM": "21", "COLNAME": "PREMUIM RESERVE RTD", "COLTYPE": "PMRESERVERTD1", "COLNUM": "20" }, { "SEQNUM": "22", "COLNAME": "P/F PREMIUM RESERVE RTD", "COLTYPE": "PFPMRESERVERTD1", "COLNUM": "21" }, { "SEQNUM": "23", "COLNAME": "PREMIUM RESERVE RLD", "COLTYPE": "PMRESERVERTD2", "COLNUM": "22" }, { "SEQNUM": "24", "COLNAME": "P/F PREMIUM RESERVE RLD", "COLTYPE": "PFPMRESERVERTD2", "COLNUM": "23" }, { "SEQNUM": "25", "COLNAME": "CLAIM", "COLTYPE": "CLAIM", "COLNUM": "24" }, { "SEQNUM": "26", "COLNAME": "LOSS RECOVERY", "COLTYPE": "LOSSRECOVERY", "COLNUM": "25" }, { "SEQNUM": "27", "COLNAME": "CASH LOSS", "COLTYPE": "CASHLOSS", "COLNUM": "26" }, { "SEQNUM": "28", "COLNAME": "CASH LOSS REFUND", "COLTYPE": "CASHLOSSRD", "COLNUM": "27" }, { "SEQNUM": "29", "COLNAME": "LOSS RESERVE RTD", "COLTYPE": "LOSSRR", "COLNUM": "28" }, { "SEQNUM": "30", "COLNAME": "LOSS RESERVE RLD", "COLTYPE": "LOSSRR2", "COLNUM": "29" }, { "SEQNUM": "31", "COLNAME": "LOSS P/F ENT", "COLTYPE": "LOSSPFENT", "COLNUM": "30" }, { "SEQNUM": "32", "COLNAME": "LOSS P/F WOA", "COLTYPE": "LOSSPFWOA", "COLNUM": "31" }, { "SEQNUM": "33", "COLNAME": "INTEREST", "COLTYPE": "INTEREST", "COLNUM": "32" }, { "SEQNUM": "34", "COLNAME": "TAX ON", "COLTYPE": "TAXON", "COLNUM": "33" }, { "SEQNUM": "35", "COLNAME": "MISCELLANEOUS", "COLTYPE": "MISCELLANEOUS", "COLNUM": "34" }, { "SEQNUM": "36", "COLNAME": "Your Reference", "COLTYPE": "CSCOSARFRNCNNT2", "COLNUM": "35" }, { "SEQNUM": "37", "COLNAME": "UNKNOWN", "COLTYPE": "UNKNOWN", "COLNUM": "36" }] } };
+    //modifyData = { "convertedFileName": "hyj.jpg", "data": [{ "sid": "1018,240,25767,0,0,0,0", "text": "apex", "location": "1018,240,411,87", "colLbl": 36, "colAccu": 0.99, "originText": "apex" }, { "sid": "1019,338,15944,14456,15585,0,0", "text": "partner of choice", "location": "1019,338,409,23", "colLbl": 36, "colAccu": 0.99, "originText": "partner of choice" }, { "sid": "1562,509,24349,14502,0,0,0", "text": "voucher no", "location": "1562,509,178,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher no" }, { "sid": "1562,578,24349,14552,0,0,0", "text": "voucher date", "location": "1562,578,206,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher date" }, { "sid": "206,691,97312,18699,14569,0,0", "text": "4153 korean re", "location": "206,691,274,27", "colLbl": 36, "colAccu": 0.99, "originText": "4153 korean re" }, { "sid": "208,756,24968,20629,15214,0,0", "text": "proportional treaty statement", "location": "208,756,525,34", "colLbl": 36, "colAccu": 0.99, "originText": "proportional treaty statement" }, { "sid": "1842,506,97313,0,0,0,0", "text": "bv/heo/2018/05/0626", "location": "1842,506,344,25", "colLbl": 36, "colAccu": 0.99, "originText": "bv/heo/2018/05/0626" }, { "sid": "1840,575,97314,0,0,0,0", "text": "01105/2018", "location": "1840,575,169,25", "colLbl": 36, "colAccu": 0.99, "originText": "01105/2018" }, { "sid": "206,848,64626,0,0,0,0", "text": "pedant", "location": "206,848,111,24", "colLbl": 36, "colAccu": 0.99, "originText": "cedant" }, { "sid": "206,908,14818,14456,14525,0,0", "text": "class of business", "location": "206,908,285,24", "colLbl": 36, "colAccu": 0.99, "originText": "class of business" }, { "sid": "210,963,15186,14456,16570,0,0", "text": "period of quarter", "location": "210,963,272,26", "colLbl": 36, "colAccu": 0.99, "originText": "period of quarter" }, { "sid": "207,1017,15186,14456,20629,0,0", "text": "period of treaty", "location": "207,1017,252,31", "colLbl": 36, "colAccu": 0.99, "originText": "period of treaty" }, { "sid": "206,1066,14498,15089,0,0,0", "text": "our reference", "location": "206,1066,227,24", "colLbl": 36, "colAccu": 0.99, "originText": "our reference" }, { "sid": "226,1174,16280,0,0,0,0", "text": "currency", "location": "226,1174,145,31", "colLbl": 36, "colAccu": 0.99, "originText": "currency" }, { "sid": "227,1243,16438,0,0,0,0", "text": "premium", "location": "227,1243,139,24", "colLbl": 36, "colAccu": 0.99, "originText": "premium" }, { "sid": "226,1303,15444,0,0,0,0", "text": "commission", "location": "226,1303,197,24", "colLbl": 36, "colAccu": 0.99, "originText": "commission" }, { "sid": "226,1366,16527,0,0,0,0", "text": "claims", "location": "226,1366,107,24", "colLbl": 36, "colAccu": 0.99, "originText": "claims" }, { "sid": "227,1426,16608,0,0,0,0", "text": "reserve", "location": "227,1426,126,24", "colLbl": 36, "colAccu": 0.99, "originText": "reserve" }, { "sid": "227,1489,15049,0,0,0,0", "text": "release", "location": "227,1489,123,24", "colLbl": 36, "colAccu": 0.99, "originText": "release" }, { "sid": "227,1549,15076,0,0,0,0", "text": "interest", "location": "227,1549,117,24", "colLbl": 36, "colAccu": 0.99, "originText": "interest" }, { "sid": "227,1609,24808,0,0,0,0", "text": "brokerage", "location": "227,1609,161,31", "colLbl": 36, "colAccu": 0.99, "originText": "brokerage" }, { "sid": "233,1678,17036,0,0,0,0", "text": "portfolio", "location": "233,1678,134,24", "colLbl": 36, "colAccu": 0.99, "originText": "portfolio" }, { "sid": "227,1781,16326,0,0,0,0", "text": "balance", "location": "227,1781,124,24", "colLbl": 36, "colAccu": 0.99, "originText": "balance" }, { "sid": "574,847,14459,97308,14535,14813,97309", "text": "a solidarity- first insurance 2018", "location": "574,847,492,32", "colLbl": 0, "colAccu": 0.99, "originText": ": solidarity- first insurance 2018" }, { "sid": "574,907,14459,16518,20299,21636,97309", "text": "a marine cargo surplus 2018 a inward", "location": "574,907,568,32", "colLbl": 1, "colAccu": 0.99, "originText": ": marine cargo surplus 2018 - inward" }, { "sid": "598,959,97315,14458,97316,0,0", "text": "01-01-2018 to 31-03-2018", "location": "598,959,433,25", "colLbl": 36, "colAccu": 0.99, "originText": "01-01-2018 to 31-03-2018" }, { "sid": "574,1010,14459,97315,14458,97317,0", "text": "a 01-01-2018 to 31-12-2018", "location": "574,1010,454,25", "colLbl": 36, "colAccu": 0.99, "originText": ": 01-01-2018 to 31-12-2018" }, { "sid": "574,1065,14459,97318,0,0,0", "text": "a apex/bord/2727", "location": "574,1065,304,25", "colLbl": 36, "colAccu": 0.99, "originText": ": apex/bord/2727" }, { "sid": "629,1173,97300,97322,0,0,0", "text": "jod 1.00", "location": "629,1173,171,25", "colLbl": 3, "colAccu": 0.99, "originText": "jod 1.00" }, { "sid": "639,1239,1,1,1,1,1", "text": "25.53", "location": "639,1239,83,25", "colLbl": 9, "colAccu": 0.99, "originText": "25.53" }, { "sid": "639,1299,1,1,1,1,1", "text": "5.74", "location": "639,1299,64,25", "colLbl": 14, "colAccu": 0.99, "originText": "5.74" }, { "sid": "639,1362,1,1,1,1,1", "text": "1.00", "location": "639,1362,64,25", "colLbl": 24, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1422,1,1,1,1,1", "text": "7.66", "location": "639,1422,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "7.66" }, { "sid": "639,1485,1,1,1,1,1", "text": "1.00", "location": "639,1485,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1545,1,1,1,1,1", "text": "1.00", "location": "639,1545,64,25", "colLbl": 32, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1605,1,1,1,1,1", "text": "0.64", "location": "639,1605,64,25", "colLbl": 16, "colAccu": 0.99, "originText": "0.64" }, { "sid": "648,1677,1,1,1,1,1", "text": "1.00", "location": "648,1677,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "641,1774,97319,97320,0,0,0", "text": "11 .49", "location": "641,1774,81,25", "colLbl": 36, "colAccu": 0.99, "originText": "11 .49" }, { "sid": "1706,1908,25767,14813,0,0,0", "text": "apex insurance", "location": "1706,1908,356,29", "colLbl": 36, "colAccu": 0.99, "originText": "apex insurance" }], "column": [{ "SEQNUM": "1", "COLNAME": "출재사명", "COLTYPE": "OGCOMPANYNAME", "COLNUM": "0" }, { "SEQNUM": "2", "COLNAME": "계약명", "COLTYPE": "CTNM", "COLNUM": "1" }, { "SEQNUM": "3", "COLNAME": "UY", "COLTYPE": "UY", "COLNUM": "2" }, { "SEQNUM": "4", "COLNAME": "화폐코드", "COLTYPE": "CURCD", "COLNUM": "3" }, { "SEQNUM": "5", "COLNAME": "화폐단위", "COLTYPE": "CURUNIT", "COLNUM": "4" }, { "SEQNUM": "6", "COLNAME": "PAID(100%)", "COLTYPE": "PAIDPERCENT", "COLNUM": "5" }, { "SEQNUM": "7", "COLNAME": "PAID(Our Share)", "COLTYPE": "PAIDSHARE", "COLNUM": "6" }, { "SEQNUM": "8", "COLNAME": "OSL(100%)", "COLTYPE": "OSLPERCENT", "COLNUM": "7" }, { "SEQNUM": "9", "COLNAME": "OSL(Our Share)", "COLTYPE": "OSLSHARE", "COLNUM": "8" }, { "SEQNUM": "10", "COLNAME": "PREMIUM", "COLTYPE": "PM", "COLNUM": "9" }, { "SEQNUM": "11", "COLNAME": "PREMIUM P/F ENT", "COLTYPE": "PMPFEND", "COLNUM": "10" }, { "SEQNUM": "12", "COLNAME": "PREMIUM P/F WOS", "COLTYPE": "PMPFWOS", "COLNUM": "11" }, { "SEQNUM": "13", "COLNAME": "XOL PREMIUM", "COLTYPE": "XOLPM", "COLNUM": "12" }, { "SEQNUM": "14", "COLNAME": "RETURN PREMIUM", "COLTYPE": "RETURNPM", "COLNUM": "13" }, { "SEQNUM": "15", "COLNAME": "COMMISSION", "COLTYPE": "CN", "COLNUM": "14" }, { "SEQNUM": "16", "COLNAME": "PROFIT COMMISSION", "COLTYPE": "PROFITCN", "COLNUM": "15" }, { "SEQNUM": "17", "COLNAME": "BROKERAGE", "COLTYPE": "BROKERAGE", "COLNUM": "16" }, { "SEQNUM": "18", "COLNAME": "TAX", "COLTYPE": "TAX", "COLNUM": "17" }, { "SEQNUM": "19", "COLNAME": "OVERRIDING COM", "COLTYPE": "OVERRIDINGCOM", "COLNUM": "18" }, { "SEQNUM": "20", "COLNAME": "CHARGE", "COLTYPE": "CHARGE", "COLNUM": "19" }, { "SEQNUM": "21", "COLNAME": "PREMUIM RESERVE RTD", "COLTYPE": "PMRESERVERTD1", "COLNUM": "20" }, { "SEQNUM": "22", "COLNAME": "P/F PREMIUM RESERVE RTD", "COLTYPE": "PFPMRESERVERTD1", "COLNUM": "21" }, { "SEQNUM": "23", "COLNAME": "PREMIUM RESERVE RLD", "COLTYPE": "PMRESERVERTD2", "COLNUM": "22" }, { "SEQNUM": "24", "COLNAME": "P/F PREMIUM RESERVE RLD", "COLTYPE": "PFPMRESERVERTD2", "COLNUM": "23" }, { "SEQNUM": "25", "COLNAME": "CLAIM", "COLTYPE": "CLAIM", "COLNUM": "24" }, { "SEQNUM": "26", "COLNAME": "LOSS RECOVERY", "COLTYPE": "LOSSRECOVERY", "COLNUM": "25" }, { "SEQNUM": "27", "COLNAME": "CASH LOSS", "COLTYPE": "CASHLOSS", "COLNUM": "26" }, { "SEQNUM": "28", "COLNAME": "CASH LOSS REFUND", "COLTYPE": "CASHLOSSRD", "COLNUM": "27" }, { "SEQNUM": "29", "COLNAME": "LOSS RESERVE RTD", "COLTYPE": "LOSSRR", "COLNUM": "28" }, { "SEQNUM": "30", "COLNAME": "LOSS RESERVE RLD", "COLTYPE": "LOSSRR2", "COLNUM": "29" }, { "SEQNUM": "31", "COLNAME": "LOSS P/F ENT", "COLTYPE": "LOSSPFENT", "COLNUM": "30" }, { "SEQNUM": "32", "COLNAME": "LOSS P/F WOA", "COLTYPE": "LOSSPFWOA", "COLNUM": "31" }, { "SEQNUM": "33", "COLNAME": "INTEREST", "COLTYPE": "INTEREST", "COLNUM": "32" }, { "SEQNUM": "34", "COLNAME": "TAX ON", "COLTYPE": "TAXON", "COLNUM": "33" }, { "SEQNUM": "35", "COLNAME": "MISCELLANEOUS", "COLTYPE": "MISCELLANEOUS", "COLNUM": "34" }, { "SEQNUM": "36", "COLNAME": "Your Reference", "COLTYPE": "CSCOSARFRNCNNT2", "COLNUM": "35" }, { "SEQNUM": "37", "COLNAME": "UNKNOWN", "COLTYPE": "UNKNOWN", "COLNUM": "36" }] };
+    //selectTypoData(data);
+    
+    $.ajax({
+        url: '/batchLearning/uiLearnTraining',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ imgIdArray: imgIdArray }),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $('#btn_pop_batch_close').click();
+            $("#progressMsgTitle").html("processing UI learn data...");
+            progressId = showProgressBar();
+        },
+        success: function (data) {
+            //console.log(data);
+            //modifyData = data.data;
+            $("#progressMsgTitle").html("success UI learn data...");
+            selectTypoData(data);
+        },
+        error: function (err) {
+            endProgressBar(progressId);
+            console.log(err);
+        },
+        complete: function () {
+            endProgressBar(progressId);
+        }
+    });
+    
+};
+
+function selectTypoData(data) {
+    console.log(data);
+    $.ajax({
+        url: 'common/selectTypoData2',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify({ 'data': data.data }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (result) {
+            data.data.data = result.data;
+            uiLayerHtml(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+    
+}
+
+function uiLayerHtml(data) {
+    var mlData = data.data.data;
+    var columnArr = data.data.column;
+    //var fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length);
+    fn_initUiTraining();
+    layer_open('layer2');
+
+
+    $('#imgNameTag').text(data.data.convertedFileName);
+
+    var mainImgHtml = '';
+    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
+    mainImgHtml += '<div id="redNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    mainImgHtml += '<div id="imageZoom">';
+    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    $('#img_content').html(mainImgHtml);
+    $('#mainImage').css('background-image', 'url("../../uploads/' + data.data.convertedFileName + '")');
+
+    var tblTag = '';
+    for (var i in mlData) {
+        tblTag += '<dl>';
+        tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+        tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+        tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+        tblTag += '</label>';
+        tblTag += '</dt>';
+        tblTag += '<dd>';
+        tblTag += appendOptionHtml((mlData[i].colLbl != undefined) ? mlData[i].colLbl : 36, columnArr);
+        tblTag += '</dd>';
+        tblTag += '</dl>';
+    }
+    $('#textResultTbl').append(tblTag);
+}
 
 // batch learning 2 [Select] 배치학습데이터 조회
 var batchLearnTraining = function (imgIdArray, flag) {
@@ -2028,7 +2106,7 @@ var batchLearnTraining = function (imgIdArray, flag) {
         },
         success: function (data) {
             $("#progressMsgTitle").html("processing learn data...");
-            console.log(data);
+            //console.log(data);
 
             searchBatchLearnDataList(addCond);
 
@@ -2155,7 +2233,7 @@ function modifyTextData() {
     var afterData = {};
     afterData.data = [];
     beforeData = beforeData.slice(0);
-    console.log(beforeData);
+    
     // afterData Processing
     $('#textResultTbl > dl').each(function (index, el) {
         var location = $(el).find('label').children().eq(1).val();
@@ -2182,12 +2260,13 @@ function modifyTextData() {
 
 // UI학습 팝업 실행
 var fn_batchUiTraining = function () {
-    console.log(JSON.stringify(modifyData))
+    //console.log(JSON.stringify(modifyData))
     var mldata = modifyData;
     var trainData = {};
     var arr = [];
     var trainData = {};
     trainData.data = [];
+    /*
     if (mldata.docCategory) { // 추출된 문서가 있을 경우
         trainData.docCategory = [mldata.docCategory[0]];
     } else {
@@ -2201,6 +2280,7 @@ var fn_batchUiTraining = function () {
             trainData.docCategory = [JSON.parse($('#docData').val())];
         }
     }
+    */
 
     $('#textResultTbl > dl').each(function (i, el) {
         var location = $(el).find('input')[1].value;
@@ -2225,11 +2305,13 @@ var fn_batchUiTraining = function () {
 
                 if (arr[j].colLbl == 0 || arr[j].colLbl == 1 || arr[j].colLbl == 3) { // Only ogCompanyName, contractName, curCode
                     if (mldata.data[i].text != arr[j].text || mldata.data[i].colLbl != arr[j].colLbl) {
+                        arr[j].sid = mldata.data[i].sid;
                         trainData.data.push(arr[j]);
                     }
                 } else { // etc
                     if (mldata.data[i].colLbl != arr[j].colLbl) {
-                        arr[j].text = mldata.data[i].text // origin text (Does not reflect changes made by users) 
+                        arr[j].text = mldata.data[i].text; // origin text (Does not reflect changes made by users) 
+                        arr[j].sid = mldata.data[i].sid;
                         trainData.data.push(arr[j]);
                     }
                 }
@@ -2238,7 +2320,7 @@ var fn_batchUiTraining = function () {
         }
     }
 
-    docLabelMapping(trainData);
+    callbackInsertDocMapping(trainData);
 	
 	/*
 	$.ajax({

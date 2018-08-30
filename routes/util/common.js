@@ -64,7 +64,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                 returnObj.push(fileItem.convertFileName);
 
                 var ifile = imagePath + '\\' + fileObj.originalname;
-                var ofile = convertedImagePath + '\\' + fileObj.originalname.split('.')[0] + '.jpg';
+                var ofile = 'uploads\\' + fileObj.originalname.split('.')[0] + '.jpg';
                 var result = execSync('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile);
                 if (result.status != 0) {
                     throw new Error(result.stderr);
@@ -327,7 +327,7 @@ router.post('/selectTypoData2', function (req, res) {
 router.post('/ocr', function (req, res) {
     var fileName = req.body.fileName;
 
-    fs.readFile(propertiesConfig.filepath.convertedImagePath +'\\' + fileName, function (err, data) {
+    fs.readFile('./uploads/' + fileName, function (err, data) {
         if (err) { // fs error
             console.log(err);
             res.send({ code: 404, error: '파일이 없습니다.' });
