@@ -84,7 +84,12 @@ var dbcolumnsConfig = {
         `SELECT
             seqNum, colName, colType, colNum
          FROM
-            tbl_column_mapping_cls `
+            tbl_column_mapping_cls `,
+    selectEntryMappingCls:
+        `SELECT
+            SEQNUM, COLNAME, COLTYPE, COLNUM, OLDCOLTYPE
+         FROM
+            TBL_ENTRY_MAPPING_CLS`
 };
 
 var invoiceRegistrationConfig = {

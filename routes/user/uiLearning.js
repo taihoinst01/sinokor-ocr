@@ -197,12 +197,18 @@ router.post('/columnMapping', function (req, res) {
 router.post('/searchDBColumns', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
-    //var docCategory = (req.body.data.docCategory) ? req.body.data.docCategory : null;
+    //todo
+    sync.fiber(function () {
+        try {
+            var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
+            var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
 
-    commonDB.reqQuery(queryConfig.dbcolumnsConfig.selectColMappingCls, function (rows, req, res) {
-        res.send({ 'fileName': fileName, 'data': data, 'column': rows, });
-        //res.send({ 'fileName': fileName, 'data': data, 'docCategory': docCategory, 'column': rows, 'score': data.score == undefined ? 0 : data.score });
-    }, req, res);
+            res.send({code: 200, 'fileName': fileName, 'data': data, 'column': colMappingList, 'entryMappingList': entryMappingList});
+        } catch (e) {
+            console.log(e);
+            res.send({ code: 400 });
+        }
+    });
 });
 
 /*
