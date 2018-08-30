@@ -137,16 +137,16 @@ var selectUsers = function (flag, id, docId) {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     if (flag == "REPORTER") {
-                        appendHtml += `<li><a class="a_userIdList" href="javascript:fn_selectApprovalReporter('${entry.SEQNUM}', '${entry.USERID}')">${entry.USERID}</a></li>`;
+                        appendHtml += '<li><a class="a_userIdList" href="javascript:fn_selectApprovalReporter("' + entry.SEQNUM + '", "' + entry.USERID + '")">' + entry.USERID + '</a></li>';
                         if (entry.USERID == id) {
-                            $(`#reporter_${docId}`).val(entry.SEQNUM);
-                            $(`.myValueReporter_${docId}`).html(entry.USERID);
+                            $('#reporter_' + docId).val(entry.SEQNUM);
+                            $('.myValueReporter_' + docId).html(entry.USERID);
                         }
                     } else if (flag == "MANAGER") {
-                        appendHtml += `<li><a class="a_userIdList" href="javascript:fn_selectApprovalReporter('${entry.SEQNUM}', '${entry.USERID}')">${entry.USERID}</a></li>`;
+                        appendHtml += '<li><a class="a_userIdList" href="javascript:fn_selectApprovalReporter("' + entry.SEQNUM + '", "' + entry.USERID + '")">' + entry.USERID + '</a></li>';
                         if (entry.USERID == id) {
-                            $(`#manager_${docId}`).val(entry.SEQNUM);
-                            $(`.myValueManager_${docId}`).html(entry.USERID);
+                            $('#manager_' + docId).val(entry.SEQNUM);
+                            $('.myValueManager_' + docId).html(entry.USERID);
                         }
                     }
                 });
@@ -164,26 +164,22 @@ var selectUsers = function (flag, id, docId) {
 // [이벤트] 결재상신자 리스트 생성 
 var makeApprovalReporter = function (docId, reporter) {
     var userList = selectUsers("REPORTER", reporter, docId);
-    return `
-            <div class="select_style select_style_K">
-                <input type="hidden" id="reporter_${docId}" value="" />
-                    <span class="ctrl"><span class="arrow"></span></span>
-                    <button type="button" class="myValueReporter_${docId} btnSelector">선택</button>
-                    <ul id="ul_approvalReporter_${docId}" class="aList">${userList}</ul>
-            </div>
-            `;
+    return '<div class="select_style select_style_K">' +
+            '<input type="hidden" id="reporter_' + docId + '" value="" />' +
+            '<span class="ctrl"><span class="arrow"></span></span>' +
+            '<button type="button" class="myValueReporter_' + docId + ' btnSelector">선택</button>' +
+            '<ul id="ul_approvalReporter_' + docId + '" class="aList">' + userList + '</ul>' +
+            '</div>';
 }
 // [이벤트] 문서담당자 리스트 생성 
 var makeDocumentManager = function (docId, manager) {
     var userList = selectUsers("MANAGER", manager, docId);
-    return `
-            <div class="select_style select_style_K">
-                <input type="hidden" id="documentManager_${docId}" value="" />
-                    <span class="ctrl"><span class="arrow"></span></span>
-                    <button type="button" class="myValueManager_${docId} btnSelector">선택</button>
-                    <ul id="ul_documentManager_${docId}" class="aList">${userList}</ul>
-            </div>
-            `;
+    return '<div class="select_style select_style_K">' +
+            '<input type="hidden" id="documentManager_' + docId + '" value="" />' +
+            '<span class="ctrl"><span class="arrow"></span></span>' +
+            '<button type="button" class="myValueManager_' + docId + ' btnSelector">선택</button>' +
+            '<ul id="ul_documentManager_' + docId + '" class="aList">' + userList + '</ul>' +
+            '</div>';
 }
 
 // document 조회
@@ -210,7 +206,7 @@ var fn_search = function () {
         searchEndDate: nvl($("#searchEndDate").val()),
         approvalState: approvalState
     };
-    console.log("조건 : " + JSON.stringify(param)); 
+    console.log("조건 : " + JSON.stringify(param));
 
     var progressId;
     var appendHtml = "";
@@ -248,25 +244,25 @@ var fn_search = function () {
                         default:
                             break;
                     }
-                    var docId = `${nvl(entry['SEQNUM'])}-${nvl(entry['DOCNUM'])}`;
-                    appendHtml += `
-                        <tr id="tr_base_${entry['SEQNUM']}-${entry['DOCNUM']}-${entry['APPROVALSTATE']}" style="cursor:pointer">
-                            <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="${docId}" class="sta00 stck_tr" name="chk_document" /></div></th>
-                            <td name="td_base">${entry['DOCNUM']}</td>
-                            <td name="td_base">${nvl(entry['PAGECNT'])}</td>
-                            <td name="td_base">${nvl(entry['DEADLINEDT'])}</td>
-                            <td class="selectTd">${makeApprovalReporter(docId, entry['APPROVALREPORTER'])}</td>
-                            <td class="selectTd">${makeDocumentManager(docId, entry['DOCUMENTMANAGER'])}</td>
-                            <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="memo_${docId}" class="inputst_box01" value="${nvl(entry['MEMO'])}" /></td>
-                            <td name="td_base">${state}</td>
-                        </tr>`;
+                    var docId = nvl(entry['SEQNUM']) + '-' + nvl(entry['DOCNUM']);
+                    appendHtml +=
+                        '<tr id="tr_base_' + entry["SEQNUM"] + '-' + entry["DOCNUM"] + '-' + entry["APPROVALSTATE"] + '" style="cursor:pointer">' +
+                        '<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + docId + '" class="sta00 stck_tr" name="chk_document" /></div></th>' +
+                        '<td name="td_base">' + entry["DOCNUM"] + '</td>' +
+                        '<td name="td_base">' + nvl(entry["PAGECNT"]) + '</td>' +
+                        '<td name="td_base">' + nvl(entry["DEADLINEDT"]) + '</td>' +
+                        '<td class="selectTd">' + makeApprovalReporter(docId, entry["APPROVALREPORTER"]) + '</td>' +
+                        '<td class="selectTd">' + makeDocumentManager(docId, entry["DOCUMENTMANAGER"]) + '</td>' +
+                        '<td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="memo_' + docId + '" class="inputst_box01" value="' + nvl(entry["MEMO"]) + '" /></td>' +
+                        '<td name="td_base">' + state + '</td>' +
+                        '</tr>';
                 });
             } else {
-                appendHtml += `<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>`;
+                appendHtml += '<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>';
             }
-            
+
             $("#tbody_baseList").empty().append(appendHtml);
-            $("#span_document").empty().html(`결재리스트(기본) - ${data.length}건`);
+            $("#span_document").empty().html('결재리스트(기본) - ' + data.length + '건');
             $("#div_base").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
             $('input[type=checkbox]').ezMark();
@@ -304,23 +300,22 @@ var fn_search_dtl = function (seqNum, docNum) {
             console.log(data);
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
-                    appendHtml += `
-                        <tr id="tr_dtl_${entry['IMGID']}" name="tr_dtl" style="cursor:pointer">
-                            <th scope="row">${entry["IMGFILESTARTNO"]} ~ ${entry["IMGFILESTARTNO"]} </th>
-                            <td>${nvl(entry["CONTRACTNUM"])}</td>
-                            <td><a href="#none" class="tip" title="${nvl(entry["CTNM"])}">${nvl(entry["CTNM"])} </a></td>
-                            <td>${nvl(entry["UY"])}</td>
-                            <td>${nvl(entry["CURCD"])}</td>
-                            <td>${nvl(entry["NTBL"])}</td>
-                            <td>${nvl(entry["ENTRYNO"])}</td>
-                        </tr>
-                    `;
+                    appendHtml += 
+                        '<tr id="tr_dtl_' + entry["IMGID"] + '" name="tr_dtl" style="cursor:pointer">' +
+                            '<th scope="row">' + entry["IMGFILESTARTNO"] + ' ~ ' + entry["IMGFILESTARTNO"] +'</th>' +
+                            '<td>' + nvl(entry["CONTRACTNUM"]) + '</td>' +
+                            '<td><a href="#none" class="tip" title="' + nvl(entry["CTNM"]) + '">' + nvl(entry["CTNM"]) + '</a></td>' +
+                            '<td>' + nvl(entry["UY"]) + '</td>' +
+                            '<td>' + nvl(entry["CURCD"]) + '</td>' +
+                            '<td>' + nvl(entry["NTBL"]) + '</td>' +
+                            '<td>' + nvl(entry["ENTRYNO"]) + '</td>' +
+                        '</tr>';
                 });
             } else {
-                appendHtml += `<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>`;
+                appendHtml += '<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>';
             }
             $("#tbody_dtlList").empty().html(appendHtml);
-            $("#span_document_dtl").empty().html(`결재리스트(상세) - ${data.length}건`);
+            $("#span_document_dtl").empty().html('결재리스트(상세) -' + data.length + '건');
             $("#div_dtl").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
             endProgressBar(progressId); // end progressbar
@@ -356,23 +351,23 @@ var fn_search_image = function (imgId) {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     if (index == 0) {
-                        $("#main_image").prop("src", `../../${nvl(entry.ORIGINFILENAME)}`);
+                        $("#main_image").prop("src", '../../' + nvl(entry.ORIGINFILENAME));
                         $("#main_image").prop("alt", entry.ORIGINFILENAME);
-                        imageHtml += `<li class="on">
-                                        <div class="box_img"><i><img src="../../${nvl(entry.ORIGINFILENAME)}" title="${nvl(entry.ORIGINFILENAME)}"></i></div>
-                                        <span>${nvl(entry.ORIGINFILENAME)}</span>
-                                    </li> `;
+                        imageHtml += '<li class="on">' +
+                                        '<div class="box_img"><i><img src="../../' + nvl(entry.ORIGINFILENAME) + '" title="' + nvl(entry.ORIGINFILENAME) + '"></i></div>' +
+                                        '<span>' + nvl(entry.ORIGINFILENAME) + '</span>' +
+                                    '</li>';
                     } else {
-                        imageHtml += `
-                                    <li>
-                                        <div class="box_img"><i><img src="../../${nvl(entry.ORIGINFILENAME)}" title="${nvl(entry.ORIGINFILENAME)}"></i></div>
-                                        <span>${nvl(entry.ORIGINFILENAME)}</span>
-                                    </li> `;
+                        imageHtml += 
+                                    '<li>' +
+                                        '<div class="box_img"><i><img src="../../' + nvl(entry.ORIGINFILENAME) + '" title="' + nvl(entry.ORIGINFILENAME) + '"></i></div>' + 
+                                        '<span>' + nvl(entry.ORIGINFILENAME) + '</span>' +
+                                    '</li>';
                     }
                 });
             } else {
-                //appendHtml += `<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>`;
-                imageHtml += `<li>문서 이미지가 존재하지 않습니다.</li>`;
+                //appendHtml += '<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>';
+                imageHtml += '<li>문서 이미지가 존재하지 않습니다.</li>';
             }
             //$("#div_view_image").empty().append(imageHtml);
             $("#ul_image").empty().append(imageHtml);
@@ -408,7 +403,7 @@ var fn_baseList_chk = function (flag) {
             chkCnt++;
         }
     });
-    var progressId; 
+    var progressId;
     if (chkCnt > 0) {
         var param = {
             flag: flag,
