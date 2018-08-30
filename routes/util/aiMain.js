@@ -168,7 +168,7 @@ exports.runFromMLStudio = function (data, callback) {
             reObj.data = data;
             data = reObj;
             data = sync.await(oracle.selectColumnMappingFromMLStudio(data, sync.defer()));
-            //console.log(data);
+
             data = sync.await(mlStudio.run(data, 'columnMapping', sync.defer()));
             console.log('execute columnMapping ML');
             //console.log(data);
@@ -183,10 +183,9 @@ exports.runFromMLStudio = function (data, callback) {
 
 exports.addTrainFromMLStudio = function (data, callback) {
     sync.fiber(function () {
-
         sync.await(oracle.insertColumnMapping(data, sync.defer()));
         var result = sync.await(mlStudio.train(data, sync.defer()));
-        callback(result);
+        callback(data);
 
     });
 };

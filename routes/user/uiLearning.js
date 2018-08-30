@@ -187,6 +187,7 @@ router.post('/columnMapping', function (req, res) {
             res.send({ 'fileName': fileName, 'data': columnResult, nextType: 'sc' });          
         });
         
+        
     } catch (exception) {
         console.log(exception);
     }
