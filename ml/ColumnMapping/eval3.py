@@ -19,12 +19,13 @@ os.path.abspath('./ml')
 mlroot = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 config.read(mlroot + '\\config.ini')
 
-ID = koreanre
-PW = koreanre01
-SID = koreanreocr
-IP = 10.10.20.205
-#IP = 172.16.53.142
-PORT = 1521
+id = "koreanre"
+pw = "koreanre01"
+sid = "koreanreocr"
+
+#ip = "10.10.20.205" # 운영 DB
+ip = "172.16.53.142" # 로컬 DB
+port = "1521"
 
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
