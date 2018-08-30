@@ -67,6 +67,7 @@ exports.selectLegacyFileData = function (req, done) {
             let tempdict = {};
 
             tempDictFile['LEGACY'] = answerDataArr.rows[row2];
+
           }
           res.push(tempDictFile);
         }
@@ -501,8 +502,8 @@ exports.convertTiftoJpgCMD = function (originFilePath, done) {
     try {
         //Ï∂úÎ†•?åÏùº?Ä ?úÎ≤Ñ???àÎ? Í≤ΩÎ°ú c/ImageTemp/?§Îäò?†Ïßú/originFileÎ™??ºÎ°ú ?Ä??
         convertedFileName = originFilePath.split('.')[0] + '.jpg';
-        execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);      //øÓøµ
-        //execSync('C:\\projectWork\\koreanre\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);   //∞≥πﬂ
+        execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);      //?¥ÏòÅ
+        //execSync('C:\\projectWork\\koreanre\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);   //Í∞úÎ∞ú
         return done(null, convertedFileName);
 
     } catch (err) {

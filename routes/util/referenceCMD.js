@@ -17,9 +17,7 @@ exports.selectLegacyFileData = function (req, done) {
       let conn;
       try {
         conn = await oracledb.getConnection(dbConfig);
-        let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term`, [req]);
-  
-        
+          let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term`, [req], { outFormat: oracledb.OBJECT });
   
         for (let row in resAnswerFile.rows) {
           tempDictFile = {};
