@@ -13,7 +13,8 @@ referenceCMD.insertMLDataCMD = sync(referenceCMD.insertMLDataCMD);
 sync.fiber(function () {
     var arg = process.argv.slice(2);
     var term = arg[0] + '%';
-    var resLegacyData = sync.await(oracle.selectLegacyFileData(term, sync.defer()));
+    //term = '2018%';
+    var resLegacyData = sync.await(referenceCMD.selectLegacyFileData(term, sync.defer()));
     for (var i in resLegacyData) {
         sync.await(batchLearnTraing([resLegacyData[i]], sync.defer()));
     }
@@ -22,8 +23,6 @@ sync.fiber(function () {
 function batchLearnTraing(resLegacyData, done) {
     sync.fiber(function () {
         try {
-            var term = '2018%';
-            var resLegacyData = sync.await(referenceCMD.selectLegacyFileData(term, sync.defer()));
     
             for (let tiffile in resLegacyData) {
                 console.time("convertTiftoJpg : " + resLegacyData[tiffile].FILEPATH);
@@ -31,8 +30,6 @@ function batchLearnTraing(resLegacyData, done) {
                 if (resLegacyData[tiffile].FILENAME.split('.')[1].toLowerCase() === 'tif' || resLegacyData[tiffile].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
                     let imageRootDir = 'C:/ICR/image/MIG/MIG';  //운영
                     //let imageRootDir = 'C:/ICR/MIG';          //개발
-                    let result = sync.await(oracle.convertTiftoJpgCMD(imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
-                    let imageRootDir = 'C:/ICR/image/MIG/MIG';
                     let result = sync.await(referenceCMD.convertTiftoJpgCMD(imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
                     if (result == "error") {
                         return done(null, "error convertTiftoJpg");
@@ -47,8 +44,6 @@ function batchLearnTraing(resLegacyData, done) {
                 console.time("ocr : " + resLegacyData[tiffile].FILEPATH);
                 let ocrResult = sync.await(referenceCMD.callApiOcr(convertFilpath, sync.defer()));
                 //var ocrResult = sync.await(referenceCMD.proxyOcr(convertFilpath, sync.defer()));//-- 운영서버용
-                //let ocrResult = sync.await(oracle.callApiOcrCMD(convertFilpath, sync.defer())); //-- 개발
-                var ocrResult = sync.await(ocrUtil.proxyOcrCMD(convertFilpath, sync.defer()));//-- 운영서버용
         
                 if (ocrResult == "error") {
                     return done(null, "error ocr");
@@ -73,7 +68,7 @@ function batchLearnTraing(resLegacyData, done) {
                 console.timeEnd("similarity ML : " + resLegacyData[tiffile].FILEPATH);
                 
                 console.time("insert MLExport : " + resLegacyData[tiffile].FILEPATH);
-                sync.await(oracle.insertMLDataCMD(resPyArr, sync.defer()));
+                sync.await(referenceCMD.insertMLDataCMD(resPyArr, sync.defer()));
                 console.timeEnd("insert MLExport : " + resLegacyData[tiffile].FILEPATH);
             }
             console.log("done");
@@ -96,8 +91,8 @@ var cmdPythons = {
     mode: 'text',
     pythonPath: '',
     pythonOptions: ['-u'],
-    //scriptPath: 'C:/ICR/app/source/ml/typosentence',
-    scriptPath: 'C:/projectWork/koreanre/ml/typosentence',
+    scriptPath: 'C:/ICR/app/source/ml/typosentence',
+    //scriptPath: 'C:/projectWork/koreanre/ml/typosentence',
     args: []
 };
 

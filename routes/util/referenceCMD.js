@@ -8,8 +8,10 @@ var dbConfig = {
   poolMax: 30,
   poolMin: 10
 };
+oracledb.outFormat = oracledb.OBJECT;
 var fs = require('fs');
 var request = require('request');
+var exec = require('child_process').exec;
 
 exports.selectLegacyFileData = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -17,7 +19,7 @@ exports.selectLegacyFileData = function (req, done) {
       let conn;
       try {
         conn = await oracledb.getConnection(dbConfig);
-          let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term`, [req], { outFormat: oracledb.OBJECT });
+          let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term`, [req]);
   
         for (let row in resAnswerFile.rows) {
           tempDictFile = {};
@@ -93,6 +95,7 @@ exports.callApiOcr = function (req, done) {
 
   }
 };
+
 exports.selectSid = function (req, done) {
   return new Promise(async function (resolve, reject) {
       let conn;
@@ -195,6 +198,7 @@ exports.proxyOcr = function (req, done) {
 
           request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
               var data = JSON.parse(body);
+              var resIns = this.insertOcrData(filename, body);
               //console.log(data);
               return done(null, ocrJson(data.regions));
           });
@@ -204,4 +208,32 @@ exports.proxyOcr = function (req, done) {
       } finally {
       }
   });
+};
+
+exports.insertOcrData = function (filepath, ocrData, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            let resfile = await conn.execute(`SELECT * FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath `, [filepath]);
+            let resIns;
+            if (resfile.rows.length == 0) {
+                let resIns = await conn.execute(`INSERT INTO TBL_BATCH_OCR_DATA VALUES(seq_batch_ocr_data.nextval, :filepath, :ocrData) `, [filepath, ocrData], { autoCommit: true });
+            }
+
+            return done(null, resIns);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
 };
