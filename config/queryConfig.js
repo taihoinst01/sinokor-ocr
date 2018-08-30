@@ -728,7 +728,14 @@ var mlConfig = {
                             TBL_COLUMN_MAPPING_TRAIN 
                         GROUP BY DATA) T 
                     WHERE T.COUNT = 1
-                    ) `
+                    ) `,
+    selectTypoMapping:
+        `SELECT
+            ORIGINTEXT, TEXT
+         FROM
+            TBL_TYPO_MAPPING
+         WHERE
+            ORIGINTEXT IN `
 
 };
 

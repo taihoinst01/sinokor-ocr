@@ -70,11 +70,22 @@ router.post('/typoSentence', function (req, res) {
     });
     
     try {
+        
         aimain.typoSentenceEval2(data, function (typoResult) {
             console.log('execute typo ML');
             res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'cm'});
             //res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'fl' });
         });
+        
+
+        /*
+        //08.30
+        aimain.typoSentenceEval3(data, function (typoResult) {
+            console.log('execute typo ML');
+            res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'cm'});
+            //res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'fl' });
+        });
+        */
     }
     catch (exception) {
         console.log(exception);
@@ -180,6 +191,7 @@ router.post('/columnMapping', function (req, res) {
             res.send({ 'fileName': fileName, 'data': result.data, nextType: 'sc' });
         });
         */
+
         
         // tensorflow
         aimain.columnMapping3(arg, function (columnResult) {
@@ -187,6 +199,13 @@ router.post('/columnMapping', function (req, res) {
             res.send({ 'fileName': fileName, 'data': columnResult, nextType: 'sc' });          
         });
         
+        /*
+        //08.30
+        aimain.columnMapping4(arg, function (columnResult) {
+            console.log('execute columnMapping ML');
+            res.send({ 'fileName': fileName, 'data': columnResult, nextType: 'sc' });
+        });
+        */
         
     } catch (exception) {
         console.log(exception);
