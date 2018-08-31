@@ -416,7 +416,7 @@ const WF_AllRegistration = function (req, res, param, pMap, parmArr, rtnArr, rtn
                 //20140924 mack 결제정보 입력 중복체크
                 // TODO : pUdpDModify 클래스에 대한 명세 및 기능 필요
                 //int liDupCnt = pUdpDModify.selectApprovalDupCnt(pMap);
-                int liDupCnt = 0;
+                let liDupCnt = 0;
                 //결제정보가 중복인경우에는 아무것도 리턴하지 않고 넘어간다
                 if (liDupCnt <= 0) {
                     // TODO : pUdpDModify 클래스에 대한 명세 및 기능 필요
