@@ -4,7 +4,7 @@ import cx_Oracle
 import configparser
 import json
 import os
-
+import re
 #오타 수정
 ss = SymSpell(max_dictionary_edit_distance=1)
 ss.load_words_with_freq_from_json_and_build_dictionary()
@@ -16,6 +16,12 @@ textList = []
 #        textList.append(line[0])
 
 #print(textList.__contains__("infinity"))
+def isfloat(value):
+  try:
+    float(value)
+    return True
+  except ValueError:
+    return False
 
 config = configparser.ConfigParser()
 mlroot = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
