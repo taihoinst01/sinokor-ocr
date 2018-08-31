@@ -12,10 +12,13 @@ referenceCMD.insertMLDataCMD = sync(referenceCMD.insertMLDataCMD);
 referenceCMD.proxyOcr = sync(referenceCMD.proxyOcr);
 referenceCMD.insertOcrData = sync(referenceCMD.insertOcrData);
 
+var testEnv = true;  //local
+//var testEnv = False;  //server
+
 sync.fiber(function () {
-    var arg = process.argv.slice(2);
-    var term = arg[0] + '%';
-    //term = '2018%';
+    //var arg = process.argv.slice(2);
+    //var term = arg[0] + '%';
+    var term = '2018%';
     var resLegacyData = sync.await(referenceCMD.selectLegacyFileData(term, sync.defer()));
     for (var i in resLegacyData) {
         sync.await(batchLearnTraing([resLegacyData[i]], sync.defer()));
@@ -33,9 +36,12 @@ function batchLearnTraing(resLegacyData, done) {
             obj.FILEPATH = '/MIG/2014/img1/7a/25b7a/209391.tif';
             resLegacyData.push(obj);
             */
-
-            let imageRootDir = 'C:/ICR/image/MIG/MIG';  //운영
-            //let imageRootDir = 'C:/ICR/MIG';          //개발
+            var imageRootDir;
+            if (testEnv) {
+                imageRootDir = 'C:/ICR/MIG';
+            } else {
+                imageRootDir = 'C:/ICR/image/MIG/MIG';
+            }
 
             for (let tiffile in resLegacyData) {
                 console.time("convertTiftoJpg : " + resLegacyData[tiffile].FILEPATH);
@@ -51,22 +57,25 @@ function batchLearnTraing(resLegacyData, done) {
                 }
                 console.timeEnd("convertTiftoJpg : "+ resLegacyData[tiffile].FILEPATH);
         
-                //ocr
                 console.time("ocr : " + resLegacyData[tiffile].FILEPATH);
-                //let ocrResult = sync.await(referenceCMD.callApiOcr(convertFilpath, imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
-                var ocrResult = sync.await(referenceCMD.proxyOcr(convertFilpath, imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));//-- 운영서버용
-                
-                //console.log(data);
-
+                let ocrResult;
+                if (testEnv) {
+                    ocrResult = sync.await(referenceCMD.callApiOcr(convertFilpath, imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
+                } else {
+                    ocrResult = sync.await(referenceCMD.proxyOcr(convertFilpath, imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
+                }
+                console.log(ocrResult);
                 sync.await(referenceCMD.insertOcrData(resLegacyData[tiffile].FILEPATH, ocrResult, sync.defer()));
+
+                var resJson = JSON.parse(ocrResult);
+                //var pharsedOcrJson = ocrJson(resJson.regions);
+
                 if (ocrResult == "error") {
                     return done(null, "error ocr");
                 }
                 console.timeEnd("ocr : " + resLegacyData[tiffile].FILEPATH);
 
-                var data = JSON.parse(body);
-                var resIns = sync.await(this.insertOcrData(originPath, body, sync.defer()));
-                //typo ML
+               //typo ML
                 /*
                 console.time("typo ML : " + resLegacyData[tiffile].FILEPATH);
                 cmdPythons.args = [];
