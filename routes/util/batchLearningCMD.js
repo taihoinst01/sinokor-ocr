@@ -9,23 +9,45 @@ referenceCMD.convertTiftoJpgCMD = sync(referenceCMD.convertTiftoJpgCMD);
 referenceCMD.callApiOcr = sync(referenceCMD.callApiOcr);
 referenceCMD.selectSid = sync(referenceCMD.selectSid);
 referenceCMD.insertMLDataCMD = sync(referenceCMD.insertMLDataCMD);
+referenceCMD.proxyOcr = sync(referenceCMD.proxyOcr);
+referenceCMD.insertOcrData = sync(referenceCMD.insertOcrData);
+
+var testEnv = true;  //local
+//var testEnv = False;  //server
 
 sync.fiber(function () {
-    sync.await(batchLearnTraing(sync.defer()));
+    //var arg = process.argv.slice(2);
+    //var term = arg[0] + '%';
+    var term = '2018%';
+    var resLegacyData = sync.await(referenceCMD.selectLegacyFileData(term, sync.defer()));
+    for (var i in resLegacyData) {
+        sync.await(batchLearnTraing([resLegacyData[i]], sync.defer()));
+    }
 });
 
-function batchLearnTraing(done) {
+function batchLearnTraing(resLegacyData, done) {
     sync.fiber(function () {
         try {
-            var term = '2018%';
-            var resLegacyData = sync.await(referenceCMD.selectLegacyFileData(term, sync.defer()));
-    
+
+            /*
+            resLegacyData = [];
+            var obj = {}
+            obj.FILENAME = '209391.tif';
+            obj.FILEPATH = '/MIG/2014/img1/7a/25b7a/209391.tif';
+            resLegacyData.push(obj);
+            */
+            var imageRootDir;
+            if (testEnv) {
+                imageRootDir = 'C:/ICR/MIG';
+            } else {
+                imageRootDir = 'C:/ICR/image/MIG/MIG';
+            }
+
             for (let tiffile in resLegacyData) {
                 console.time("convertTiftoJpg : " + resLegacyData[tiffile].FILEPATH);
                 let convertFilpath = resLegacyData[tiffile].FILEPATH;
                 if (resLegacyData[tiffile].FILENAME.split('.')[1].toLowerCase() === 'tif' || resLegacyData[tiffile].FILENAME.split('.')[1].toLowerCase() === 'tiff') {
-                    let imageRootDir = 'C:/ICR/image/MIG/MIG';
-                    let result = sync.await(referenceCMD.convertTiftoJpgCMD(imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
+                    let result = sync.await(referenceCMD.convertTiftoJpgCMD(resLegacyData[tiffile].FILEPATH, sync.defer()));
                     if (result == "error") {
                         return done(null, "error convertTiftoJpg");
                     }
@@ -35,17 +57,26 @@ function batchLearnTraing(done) {
                 }
                 console.timeEnd("convertTiftoJpg : "+ resLegacyData[tiffile].FILEPATH);
         
-                //ocr
                 console.time("ocr : " + resLegacyData[tiffile].FILEPATH);
-                let ocrResult = sync.await(referenceCMD.callApiOcr(convertFilpath, sync.defer()));
-                //var ocrResult = sync.await(referenceCMD.proxyOcr(convertFilpath, sync.defer()));//-- 운영서버용
-        
+                let ocrResult;
+                if (testEnv) {
+                    ocrResult = sync.await(referenceCMD.callApiOcr(convertFilpath, imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
+                } else {
+                    ocrResult = sync.await(referenceCMD.proxyOcr(convertFilpath, imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
+                }
+                console.log(ocrResult);
+                sync.await(referenceCMD.insertOcrData(resLegacyData[tiffile].FILEPATH, ocrResult, sync.defer()));
+
+                var resJson = JSON.parse(ocrResult);
+                //var pharsedOcrJson = ocrJson(resJson.regions);
+
                 if (ocrResult == "error") {
                     return done(null, "error ocr");
                 }
                 console.timeEnd("ocr : " + resLegacyData[tiffile].FILEPATH);
-        
-                //typo ML
+
+               //typo ML
+                /*
                 console.time("typo ML : " + resLegacyData[tiffile].FILEPATH);
                 cmdPythons.args = [];
                 cmdPythons.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
@@ -63,8 +94,9 @@ function batchLearnTraing(done) {
                 console.timeEnd("similarity ML : " + resLegacyData[tiffile].FILEPATH);
                 
                 console.time("insert MLExport : " + resLegacyData[tiffile].FILEPATH);
-                sync.await(oracle.insertMLDataCMD(resPyArr, sync.defer()));
+                sync.await(referenceCMD.insertMLDataCMD(resPyArr, sync.defer()));
                 console.timeEnd("insert MLExport : " + resLegacyData[tiffile].FILEPATH);
+                */
             }
             console.log("done");
             return done(null, "");
@@ -78,7 +110,7 @@ function batchLearnTraing(done) {
 function dataToTypoArgs(data) {
 
     for (var i in data) {
-        data[i].text = data[i].text.toLowerCase().replace("'", "`");
+        data[i].text = data[i].text.toLowerCase().replace(/'/g, '`');
     }
     return data;
 }
@@ -87,6 +119,7 @@ var cmdPythons = {
     pythonPath: '',
     pythonOptions: ['-u'],
     scriptPath: 'C:/ICR/app/source/ml/typosentence',
+    //scriptPath: 'C:/projectWork/koreanre/ml/typosentence',
     args: []
 };
 

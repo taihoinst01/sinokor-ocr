@@ -3,6 +3,7 @@ import sys
 import cx_Oracle
 import configparser
 import json
+import os
 
 #오타 수정
 ss = SymSpell(max_dictionary_edit_distance=1)
@@ -17,7 +18,8 @@ textList = []
 #print(textList.__contains__("infinity"))
 
 config = configparser.ConfigParser()
-config.read('./ml/config.ini')
+mlroot = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+config.read(mlroot + '\\config.ini')
 
 id = config['ORACLE']['ID']
 pw = config['ORACLE']['PW']
@@ -55,6 +57,9 @@ for ocrItem in inputArr:
             else:
                 tempSentence = tempSentence + ' ' + word
     ocrItem['originText'] = ocrItem['text']
-    ocrItem['text'] = tempSentence.strip()
+    if(isfloat(re.sub('\ |\,|\)|\(', '', tempSentence.strip()))):
+        ocrItem['text'] = re.sub('\ |\,|\)|\(', '', tempSentence.strip())
+    else:
+        ocrItem['text'] = tempSentence.strip()
 
 print(str(inputArr))

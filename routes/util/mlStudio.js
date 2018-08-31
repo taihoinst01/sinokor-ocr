@@ -19,6 +19,22 @@ exports.train = function (req, done) {
                 flmdata: [],
                 fmData: [],
                 cmData: []
+            }
+
+            for (var i in req.data) {
+                if (i == 5) {
+                    break;
+                } else {
+                    var item = req.data[i];
+                    formData.fmData.push(item);
+                }
+            }
+
+            /*
+            var formData = {
+                flmdata: [],
+                fmData: [],
+                cmData: []
             };
 
             for (var i in req.data) {
@@ -50,16 +66,17 @@ exports.train = function (req, done) {
             } else {
                 formData.fmData = [];
             }
-
-
+            */
+            /*
             request.post('http://sinokor-rest.azurewebsites.net/ml/train', { json: true, body: formData }, function (err, httpRes, body) {
                 return done(null, body);
             });
-            /*
+            */
+            
             request.post(propertiesConfig.proxy.serverUrl +'/ml/train', { json: true, body: formData }, function (err, httpRes, body) {
                 return done(null, body);
             });
-            */
+            
 
         } catch (err) { 
             reject(err);
@@ -85,10 +102,13 @@ exports.run = function (req, type, done) {
             request.post('http://localhost:3001/ml/api', { json: true, body: formData }, function (err, httpRes, body) {
                 return done(null, body);
             });
-             */
-            request.post('http://sinokor-rest.azurewebsites.net/ml/api', { json: true, body: formData }, function (err, httpRes, body) {
+            */
+
+            
+            request.post(propertiesConfig.proxy.serverUrl + '/ml/api', { json: true, body: formData }, function (err, httpRes, body) {
                 return done(null, body);
             });
+            
         } catch (err) {
             reject(err);
         } finally {

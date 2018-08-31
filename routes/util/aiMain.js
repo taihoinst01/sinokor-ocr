@@ -29,6 +29,15 @@ exports.typoSentenceEval2 = function (data, callback) {
     });
 };
 
+exports.typoSentenceEval3 = function (data, callback) {
+    sync.fiber(function () {
+        data = sync.await(oracle.selectTypoMapping(data, sync.defer()));
+        data = sync.await(oracle.select2(data, sync.defer()));
+
+        callback(data);
+    });
+};
+
 exports.formLabelMapping2 = function (data, callback) {
     sync.fiber(function () {
         pythonConfig.formLabelMappingOptions.args = [];
@@ -84,10 +93,41 @@ exports.columnMapping3 = function (data, callback) {
         pythonConfig.columnMappingOptions.args = [];
         pythonConfig.columnMappingOptions.args.push(JSON.stringify(data));
 
-        var resPyStr = sync.await(PythonShell.run('eval3.py', pythonConfig.columnMappingOptions, sync.defer()));
+        var resPyStr = sync.await(PythonShell.run('columnClassicify.py', pythonConfig.columnMappingOptions, sync.defer()));
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
         if (!resPyArr.code || (resPyArr.code && resPyArr.code == 200)) {
             data = resPyArr;
+            callback(data);
+        } else {
+            console.log(resPyArr.error);
+            callback(null);
+        }
+    });
+};
+
+exports.columnMapping4 = function (data, callback) {
+    sync.fiber(function () {
+        var param = JSON.stringify(data);
+        param = JSON.parse(param);
+        for (var i in param) {
+            var item = param[i].sid.split(',');
+            param[i].sid = item[3] + ',' + item[4] + ',' + item[5] + ',' + item[6] + ',' + item[7];
+        }
+
+        pythonConfig.columnMappingOptions.args = [];
+        pythonConfig.columnMappingOptions.args.push(JSON.stringify(param));
+
+        var resPyStr = sync.await(PythonShell.run('eval4.py', pythonConfig.columnMappingOptions, sync.defer()));
+        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+        if (!resPyArr.code || (resPyArr.code && resPyArr.code == 200)) {
+            for (var i in data) {
+                for (var j in resPyArr) {
+                    if (data[i].location == resPyArr[i].location) {
+                        data[i].colLbl = resPyArr[i].colLbl;
+                        break;
+                    }
+                }
+            }
             callback(data);
         } else {
             console.log(resPyArr.error);
@@ -135,7 +175,29 @@ exports.addColumnMappingTrain = function (data, callback) {
         pythonConfig.columnMappingOptions.args = [];
         pythonConfig.columnMappingOptions.args = ["training"];
 
-        sync.await(PythonShell.run('eval3.py', pythonConfig.columnMappingOptions, sync.defer()));
+        sync.await(PythonShell.run('columnClassicify.py', pythonConfig.columnMappingOptions, sync.defer()));
+
+        callback(data);
+    });
+};
+
+exports.addColumnMappingTrain2 = function (data, callback) {
+    sync.fiber(function () {
+        var param = JSON.stringify({ data: data.data });
+        param = JSON.parse(param);
+
+        for (var i in param.data) {
+            var item = param.data[i].sid.split(',');
+            param.data[i].sid = item[3] + ',' + item[4] + ',' + item[5] + ',' + item[6] + ',' + item[7];
+        }
+
+        sync.await(oracle.insertColumnMapping2(param, sync.defer()));
+
+        pythonConfig.columnMappingOptions.args = [];
+        pythonConfig.columnMappingOptions.args = ["training"];
+
+        sync.await(PythonShell.run('eval4.py', pythonConfig.columnMappingOptions, sync.defer()));
+
 
         callback(data);
     });
@@ -146,28 +208,37 @@ exports.runFromMLStudio = function (data, callback) {
     sync.fiber(function () {
 
         try {
+            /*
             // Form Label Mapping
             //data = sync.await(oracle.selectFormLabelMappingFromMLStudio(data, sync.defer()));
             data = sync.await(mlStudio.run(data, 'formLabelMapping', sync.defer()));
             console.log('execute formLabelMapping ML');
             //console.log(data);
-
+            */
+            
             // Form Mapping
             //data = sync.await(oracle.selectFormMappingFromMLStudio(data, sync.defer()));
+            data = sync.await(mlStudio.run(data, 'formMapping', sync.defer()));
+            /*
             data = sync.await(mlStudio.run(data, 'formMapping', sync.defer()));
             if (!data.docCategory.SEQNUM) {
                 data = sync.await(oracle.selectDocCategoryFromMLStudio(data, sync.defer()));
             }
+            */
             console.log('execute formMapping ML');
             //console.log(data);
-
+            
+            /*
             // column Mapping
-            //data = sync.await(oracle.selectColumnMappingFromMLStudio(data, sync.defer()));
-            //console.log(data);
+            reObj = {};
+            reObj.data = data;
+            data = reObj;
+            data = sync.await(oracle.selectColumnMappingFromMLStudio(data, sync.defer()));
+
             data = sync.await(mlStudio.run(data, 'columnMapping', sync.defer()));
             console.log('execute columnMapping ML');
             //console.log(data);
-
+            */
             callback(data);
         } catch (e) {
             console.log(e);
@@ -178,10 +249,10 @@ exports.runFromMLStudio = function (data, callback) {
 
 exports.addTrainFromMLStudio = function (data, callback) {
     sync.fiber(function () {
-
+        //sync.await(oracle.insertColumnMapping(data, sync.defer()));
         var result = sync.await(mlStudio.train(data, sync.defer()));
-        callback(result);
 
+        callback(result);
     });
 };
 

@@ -2010,7 +2010,7 @@ var uiLearnTraining = function (imgIdArray) {
             progressId = showProgressBar();
         },
         success: function (data) {
-            //console.log(data);
+            console.log(data);
             //modifyData = data.data;
             $("#progressMsgTitle").html("success UI learn data...");
             selectTypoData(data);
@@ -3081,20 +3081,43 @@ function hoverSquare(e) {
     });
     */
 
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
+    //imageZoom 고정크기
+    var fixWidth = 992;
+    var fixHeight = 1402;
+
+    var widthPercent = fixWidth / width;
+    var heightPercent = fixHeight / height;
+
     $('#mainImage').hide();
-    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).show();
+    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
 
     // 사각형 좌표값
-    var location, x, y, textWidth, textHeight;
-    location = $(e).find('input[type=hidden]').val().split(',');
+    var location = $(e).find('input[type=hidden]').val().split(',');
     x = parseInt(location[0]);
     y = parseInt(location[1]);
     textWidth = parseInt(location[2]);
     textHeight = parseInt(location[3]);
     //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
 
+    //console.log("x: " + (x) + 'px y: ' + (y) + 'px');
     // 해당 텍스트 x y좌표 원본 이미지에서 찾기
-    $('#imageZoom').css('background-position', '-' + (x - 5) + 'px -' + (y - 205) + 'px');
+
+    //var xPosition = (x * 0.4) > 0 ? '-' + ((x * 0.4) + 'px ') : (x * 0.4)  + 'px ';
+    //var yPosition = (y * 0.4) > 0 ? '-' + ((y * 0.4) + 'px') : (y * 0.4) + 'px';
+
+    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
+    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
+    //console.log(xPosition + yPosition);
+    $('#imageZoom').css('background-position', xPosition + yPosition);
+
 
     //실제 이미지 사이즈와 메인이미지div 축소율 판단
     //var reImg = new Image();
@@ -3110,8 +3133,8 @@ function hoverSquare(e) {
     //$('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
     //$('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
     //$('#redNemo').show();
-    $('#redZoomNemo').css('width', textWidth + 10);
-    $('#redZoomNemo').css('height', textHeight + 10);
+    $('#redZoomNemo').css('width', '100%');
+    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
     $('#redZoomNemo').show();
 }
 

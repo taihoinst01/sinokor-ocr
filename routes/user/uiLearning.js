@@ -67,15 +67,25 @@ router.post('/typoSentence', function (req, res) {
     
     process.on('uncaughtException', function (err) {
         console.log('typo uncaughtException : ' + err);
-        console.log(data);
     });
     
     try {
+        
         aimain.typoSentenceEval2(data, function (typoResult) {
             console.log('execute typo ML');
             res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'cm'});
             //res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'fl' });
         });
+        
+
+        /*
+        //08.30
+        aimain.typoSentenceEval3(data, function (typoResult) {
+            console.log('execute typo ML');
+            res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'cm'});
+            //res.send({ 'fileName': fileName, 'data': typoResult, nextType: 'fl' });
+        });
+        */
     }
     catch (exception) {
         console.log(exception);
@@ -156,16 +166,19 @@ router.post('/formMapping', function (req, res) {
     });
 
     try {
+
         aimain.formMapping2(data, function (formMappingResult) {
             console.log('execute formMapping ML');
             res.send({ 'fileName': fileName, 'data': formMappingResult, nextType: 'cm' });
         });
+
     } catch (exception) {
         console.log(exception);
     }
 });
 
 router.post('/columnMapping', function (req, res) {
+    req.setTimeout(300000);
     var fileName = req.body.fileName;
     var arg = req.body.data;
 
@@ -174,10 +187,28 @@ router.post('/columnMapping', function (req, res) {
     });
 
     try {
+        /*
+        // ML Studio
+        aimain.runFromMLStudio(arg, function (result) {
+            res.send({ 'fileName': fileName, 'data': result.data, nextType: 'sc' });
+        });
+        */
+
+        
+        // tensorflow
         aimain.columnMapping3(arg, function (columnResult) {
             console.log('execute columnMapping ML');
             res.send({ 'fileName': fileName, 'data': columnResult, nextType: 'sc' });          
         });
+        
+        /*
+        //08.30
+        aimain.columnMapping4(arg, function (columnResult) {
+            console.log('execute columnMapping ML');
+            res.send({ 'fileName': fileName, 'data': columnResult, nextType: 'sc' });
+        });
+        */
+        
     } catch (exception) {
         console.log(exception);
     }
@@ -187,12 +218,18 @@ router.post('/columnMapping', function (req, res) {
 router.post('/searchDBColumns', function (req, res) {
     var fileName = req.body.fileName;
     var data = req.body.data;
-    //var docCategory = (req.body.data.docCategory) ? req.body.data.docCategory : null;
+    //todo
+    sync.fiber(function () {
+        try {
+            var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
+            var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
 
-    commonDB.reqQuery(queryConfig.dbcolumnsConfig.selectColMappingCls, function (rows, req, res) {
-        res.send({ 'fileName': fileName, 'data': data, 'column': rows, });
-        //res.send({ 'fileName': fileName, 'data': data, 'docCategory': docCategory, 'column': rows, 'score': data.score == undefined ? 0 : data.score });
-    }, req, res);
+            res.send({code: 200, 'fileName': fileName, 'data': data, 'column': colMappingList, 'entryMappingList': entryMappingList});
+        } catch (e) {
+            console.log(e);
+            res.send({ code: 400 });
+        }
+    });
 });
 
 /*
@@ -785,5 +822,56 @@ router.post('/labelMapping', function (req, res) {
     }
 });
 
+//08.31
+router.get('/formMapping2', function (req, res) {
+    var data = [{ "location": "1018, 240, 411, 87", "text": "APEX" }, { "location": "1019, 338, 409, 23", "text": "Partner of Choice" }, { "location": "1562, 509, 178, 25", "text": "Voucher No" }, { "location": "1562, 578, 206, 25", "text": "Voucher Date" }, { "location": "206, 691, 274, 27", "text": "4153 Korean Re" }, { "location": "208, 756, 525, 34", "text": "Proportional Treaty Statement" }, { "location": "1842, 506, 344, 25", "text": "BV / HEO / 2018 / 05 / 0626" }, { "location": "1840, 575, 169, 25", "text": "01105 / 2018" }, { "location": "206, 848, 111, 24", "text": "Cedant" }, { "location": "206, 908, 285, 24", "text": "Class of Business" }, { "location": "210, 963, 272, 26", "text": "Period of Quarter" }, { "location": "207, 1017, 252, 31", "text": "Period of Treaty" }, { "location": "206, 1066, 227, 24", "text": "Our Reference" }, { "location": "226, 1174, 145, 31", "text": "Currency" }, { "location": "227, 1243, 139, 24", "text": "Premium" }, { "location": "226, 1303, 197, 24", "text": "Commission" }, { "location": "226, 1366, 107, 24", "text": "Claims" }, { "location": "227, 1426, 126, 24", "text": "Reserve" }, { "location": "227, 1489, 123, 24", "text": "Release" }, { "location": "227, 1549, 117, 24", "text": "Interest" }, { "location": "227, 1609, 161, 31", "text": "Brokerage" }, { "location": "233, 1678, 134, 24", "text": "Portfolio" }, { "location": "227, 1781, 124, 24", "text": "Balance" }, { "location": "574, 847, 492, 32", "text": ": Solidarity - First Insurance 2018" }, { "location": "574, 907, 568, 32", "text": ": Marine Cargo Surplus 2018 - Inward" }, { "location": "598, 959, 433, 25", "text": "01 - 01 - 2018 TO 31 - 03 - 2018" }, { "location": "574, 1010, 454, 25", "text": ": 01 - 01 - 2018 TO 31 - 12 - 2018" }, { "location": "574, 1065, 304, 25", "text": ": APEX / BORD / 2727" }, { "location": "629, 1173, 171, 25", "text": "JOD 1.00" }, { "location": "639, 1239, 83, 25", "text": "25.53" }, { "location": "639, 1299, 64, 25", "text": "5.74" }, { "location": "639, 1362, 64, 25", "text": "0.00" }, { "location": "639, 1422, 64, 25", "text": "7.66" }, { "location": "639, 1485, 64, 25", "text": "0.00" }, { "location": "639, 1545, 64, 25", "text": "0.00" }, { "location": "639, 1605, 64, 25", "text": "0.64" }, { "location": "648, 1677, 64, 25", "text": "0.00" }, { "location": "641, 1774, 81, 25", "text": "11 .49" }, { "location": "1706, 1908, 356, 29", "text": "APEX INSURANCE" }];
+
+    process.on('uncaughtException', function (err) {
+        console.log('formMapping uncaughtException : ' + err);
+    });
+
+    try {
+        var arg = [];
+        for (var i in data) {
+            if (i == 5) {
+                break;
+            } else {
+                arg.push(data[i]);
+            }
+        }
+
+        aimain.runFromMLStudio(arg, function (result) {
+            res.send(arg);
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
+});
+
+//08.31
+router.get('/trainFormMapping', function (req, res) {
+    var data = [{ "location": "1018, 240, 411, 87", "text": "APEX" }, { "location": "1019, 338, 409, 23", "text": "Partner of Choice" }, { "location": "1562, 509, 178, 25", "text": "Voucher No" }, { "location": "1562, 578, 206, 25", "text": "Voucher Date" }, { "location": "206, 691, 274, 27", "text": "4153 Korean Re" }, { "location": "208, 756, 525, 34", "text": "Proportional Treaty Statement" }, { "location": "1842, 506, 344, 25", "text": "BV / HEO / 2018 / 05 / 0626" }, { "location": "1840, 575, 169, 25", "text": "01105 / 2018" }, { "location": "206, 848, 111, 24", "text": "Cedant" }, { "location": "206, 908, 285, 24", "text": "Class of Business" }, { "location": "210, 963, 272, 26", "text": "Period of Quarter" }, { "location": "207, 1017, 252, 31", "text": "Period of Treaty" }, { "location": "206, 1066, 227, 24", "text": "Our Reference" }, { "location": "226, 1174, 145, 31", "text": "Currency" }, { "location": "227, 1243, 139, 24", "text": "Premium" }, { "location": "226, 1303, 197, 24", "text": "Commission" }, { "location": "226, 1366, 107, 24", "text": "Claims" }, { "location": "227, 1426, 126, 24", "text": "Reserve" }, { "location": "227, 1489, 123, 24", "text": "Release" }, { "location": "227, 1549, 117, 24", "text": "Interest" }, { "location": "227, 1609, 161, 31", "text": "Brokerage" }, { "location": "233, 1678, 134, 24", "text": "Portfolio" }, { "location": "227, 1781, 124, 24", "text": "Balance" }, { "location": "574, 847, 492, 32", "text": ": Solidarity - First Insurance 2018" }, { "location": "574, 907, 568, 32", "text": ": Marine Cargo Surplus 2018 - Inward" }, { "location": "598, 959, 433, 25", "text": "01 - 01 - 2018 TO 31 - 03 - 2018" }, { "location": "574, 1010, 454, 25", "text": ": 01 - 01 - 2018 TO 31 - 12 - 2018" }, { "location": "574, 1065, 304, 25", "text": ": APEX / BORD / 2727" }, { "location": "629, 1173, 171, 25", "text": "JOD 1.00" }, { "location": "639, 1239, 83, 25", "text": "25.53" }, { "location": "639, 1299, 64, 25", "text": "5.74" }, { "location": "639, 1362, 64, 25", "text": "0.00" }, { "location": "639, 1422, 64, 25", "text": "7.66" }, { "location": "639, 1485, 64, 25", "text": "0.00" }, { "location": "639, 1545, 64, 25", "text": "0.00" }, { "location": "639, 1605, 64, 25", "text": "0.64" }, { "location": "648, 1677, 64, 25", "text": "0.00" }, { "location": "641, 1774, 81, 25", "text": "11 .49" }, { "location": "1706, 1908, 356, 29", "text": "APEX INSURANCE" }];
+
+    process.on('uncaughtException', function (err) {
+        console.log('formMapping uncaughtException : ' + err);
+    });
+
+    try {
+        var arg = [];
+        for (var i in data) {
+            if (i == 5) {
+                break;
+            } else {
+                arg.push(data[i]);
+            }
+        }
+
+        aimain.addTrainFromMLStudio(arg, function (result) {
+            res.send(arg);
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
+});
 
 module.exports = router;

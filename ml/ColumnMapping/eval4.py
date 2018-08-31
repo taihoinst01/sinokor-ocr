@@ -36,14 +36,14 @@ curs = conn.cursor()
 sql = ("SELECT "
           "SEQNUM, DATA, CLASS "
         "FROM "
-          "TBL_COLUMN_MAPPING_TRAIN "
+          "TBL_COLUMN_MAPPING_TRAIN_1 "
         "WHERE DATA in "
           "(SELECT T.DATA "
            "FROM ( "
             "SELECT "
               "DATA, COUNT(DATA) AS COUNT "
             "FROM "
-              "TBL_COLUMN_MAPPING_TRAIN "
+              "TBL_COLUMN_MAPPING_TRAIN_1 "
             "GROUP BY DATA) T "
            "WHERE T.COUNT = 1) ")
 
@@ -65,7 +65,7 @@ for row in rows:
 testNpData = np.array(dbData)
 testNpTarget = np.array(dbDataLabel)
 
-feature_columns = [tf.contrib.layers.real_valued_column("", dimension=7)]
+feature_columns = [tf.contrib.layers.real_valued_column("", dimension=5)]
 
 checkpointDir = mlroot + '\\ColumnMapping\\checkpoint'
 classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hidden_units=[10, 20, 10],

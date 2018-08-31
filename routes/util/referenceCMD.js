@@ -8,8 +8,16 @@ var dbConfig = {
   poolMax: 30,
   poolMin: 10
 };
+
+testEnv = true;  //local
+//var testEnv = false;  //server
+
+oracledb.outFormat = oracledb.OBJECT;
 var fs = require('fs');
-var request = require('request');
+var request = require('sync-request');
+var execSync = require('child_process').execSync;
+var propertiesConfig = require('../../config/propertiesConfig.js');
+var sync = require('./sync.js');
 
 exports.selectLegacyFileData = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -17,9 +25,7 @@ exports.selectLegacyFileData = function (req, done) {
       let conn;
       try {
         conn = await oracledb.getConnection(dbConfig);
-        let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term`, [req]);
-  
-        
+          let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term`, [req]);
   
         for (let row in resAnswerFile.rows) {
           tempDictFile = {};
@@ -28,8 +34,7 @@ exports.selectLegacyFileData = function (req, done) {
           tempDictFile['FILEPATH'] = resAnswerFile.rows[row].FILEPATH;
           tempDictFile['FILENAME'] = tempDictFile['FILEPATH'].substring(tempDictFile['FILEPATH'].lastIndexOf('/') + 1, tempDictFile['FILEPATH'].length);
   
-          let answerDataArr = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO)\
-           <= :imgStartNo AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo`, [tempDictFile['IMGID'], tempDictFile['PAGENUM'], tempDictFile['PAGENUM']]);
+          let answerDataArr = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo`, [tempDictFile['IMGID'], tempDictFile['PAGENUM'], tempDictFile['PAGENUM']]);
           
           for (let row2 in answerDataArr.rows) {
             let tempdict = {};
@@ -54,12 +59,37 @@ exports.selectLegacyFileData = function (req, done) {
     });
   };
 
-  exports.convertTiftoJpgCMD = function (originFilePath, done) {
+exports.convertTiftoJpgCMD = function (originFilePath, done) {
     try {
-        //출력파일은 서버의 절대 경로 c/ImageTemp/오늘날짜/originFile명 으로 저장
-        convertedFileName = originFilePath.split('.')[0] + '.jpg';
-        execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
-        return done(null, convertedFileName);
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+
+        let imageRootDir;
+        if (testEnv) {
+            imageRootDir = 'C:/ICR/MIG';
+        } else {
+            imageRootDir = 'C:/ICR/image/MIG/MIG';
+        }
+        var convertFilePath = 'C:/ImageTemp/' + yyyy + mm + dd;
+
+        if (!fs.existsSync(convertFilePath)) {
+            fs.mkdirSync(convertFilePath);
+        }
+
+        convertedFileName = originFilePath.substring(originFilePath.lastIndexOf('/') + 1, originFilePath.length);
+        convertedFileName = convertedFileName.split('.')[0] + '.jpg';
+
+        if (testEnv) {
+            //execSync('C:\\projectWork\\koreanre\\module\\imageMagick\\convert.exe -density 800x800 ' + imageRootDir + originFilePath + ' ' + convertFilePath + '/' + convertedFileName);
+            execSync('C:\\Users\\user\\source\\repos\\sinokor-ocr\\module\\imageMagick\\convert.exe -density 800x800 ' + imageRootDir + originFilePath + ' ' + convertFilePath + '/' + convertedFileName);    
+        } else {
+            execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + imageRootDir + originFilePath + ' ' + convertFilePath + '/' + convertedFileName);    let imageRootDir = 'C:/ICR/MIG';
+        }
+
+        return done(null, convertFilePath + '/' + convertedFileName);
 
     } catch (err) {
         console.log(err);
@@ -67,7 +97,7 @@ exports.selectLegacyFileData = function (req, done) {
         //console.log('end');
     }
 };
-exports.callApiOcr = function (req, done) {
+exports.callApiOcr = function (req, originPath, done) {
   var pharsedOcrJson = "";
   try {
       var uploadImage = fs.readFileSync(req, 'binary');
@@ -84,10 +114,7 @@ exports.callApiOcr = function (req, done) {
           body: uploadImage,
           method: 'POST'
       });
-      var resJson = JSON.parse(res.getBody('utf8'));
-      pharsedOcrJson = ocrJson(resJson.regions);
-
-      return done(null, pharsedOcrJson);
+      return done(null, res.getBody('utf8'));
   } catch (err) {
       console.log(err);
       return done(null, 'error');
@@ -95,6 +122,7 @@ exports.callApiOcr = function (req, done) {
 
   }
 };
+
 exports.selectSid = function (req, done) {
   return new Promise(async function (resolve, reject) {
       let conn;
@@ -180,30 +208,71 @@ exports.insertMLDataCMD = function (req, done) {
   });
 };
 
-exports.proxyOcr = function (req, done) {
-  return new Promise(async function (resolve, reject) {
-      var fileName = req;
+exports.proxyOcr = function (req, originPath, done) {
+    return new Promise(async function (resolve, reject) {
+        var fileName = req;
+        try {
+            var formData = {
+                file: {
+                    value: fs.createReadStream(fileName),
+                    options: {
+                        filename: fileName,
+                        contentType: 'image/jpeg'
+                    }
+                }
+            };
 
-      try {
-          var formData = {
-              file: {
-                  value: fs.createReadStream(fileName),
-                  options: {
-                      filename: fileName,
-                      contentType: 'image/jpeg'
-                  }
-              }
-          };
+            request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
+                return done(null, body);
+            });
 
-          request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
-              var data = JSON.parse(body);
-              //console.log(data);
-              return done(null, ocrJson(data.regions));
-          });
-
-      } catch (err) {
-          reject(err);
-      } finally {
-      }
-  });
+        } catch (err) {
+            reject(err);
+        } finally {
+        }
+    });
 };
+
+exports.insertOcrData = function (filepath, ocrData, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            let resfile = await conn.execute(`SELECT * FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath `, [filepath]);
+            let resIns;
+            if (resfile.rows.length == 0) {
+                let resIns = await conn.execute(`INSERT INTO TBL_BATCH_OCR_DATA VALUES(seq_batch_ocr_data.nextval, :filepath, :ocrData) `, [filepath, ocrData], { autoCommit: true });
+            }
+
+            return done(null, "insert ok");
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+function ocrJson(regions) {
+    var data = [];
+    for (var i = 0; i < regions.length; i++) {
+        for (var j = 0; j < regions[i].lines.length; j++) {
+            var item = '';
+            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
+                item += regions[i].lines[j].words[k].text + ' ';
+            }
+            //data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim().replace(/'/g, '`') });
+        }
+    }
+    return data;
+}

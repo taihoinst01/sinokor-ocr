@@ -24,6 +24,7 @@ var oracle = require('../util/oracle.js');
 var sync = require('../util/sync.js');
 var ocrUtil = require('../util/ocr.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
+var mlStudio = require('../util/mlStudio.js');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
 var selectBatchLearningDataQuery = queryConfig.batchLearningConfig.selectBatchLearningData;
@@ -900,11 +901,25 @@ router.post('/insertDocMapping', function (req, res) {
 router.post('/insertColMapping', function (req, res) {
     var data = req.body.data;
 
+    /*
+    // ML Studio
+    aimain.addTrainFromMLStudio(data, function (result) {
+        res.send(result);
+    });
+    */
+    
+    // tensorflow
     aimain.addColumnMappingTrain(data, function (resData) {
         console.log('insertColMapping ML');
         res.send({ code: 200, message: 'insertColMapping ML' });
     });
-
+    /*
+    // 08.30
+    aimain.addColumnMappingTrain2(data, function (resData) {
+        console.log('insertColMapping ML');
+        res.send({ code: 200, message: 'insertColMapping ML' });
+    });
+    */
     /*
     var docCategory = req.body.docCategory;
     var colMappingCount = 0;
@@ -2070,6 +2085,7 @@ function uiLearnTraining(filepath, done) {
 
     sync.fiber(function () {
         try {
+            var data;
             var convertedFileName;
             var columnArr;
 
@@ -2102,19 +2118,32 @@ function uiLearnTraining(filepath, done) {
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
             console.log('typo ML');
             
-            // column mapping DL
+            // column mapping DL           
+            // tensorflow
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(sidData));
             resPyStr = sync.await(PythonShell.run('eval3.py', pythonConfig.columnMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             console.log('column mapping DL');
+            
+
+            /*
+            // ml studio
+            resPyArr = {};
+            resPyArr.data = sidData;
+            resPyArr = sync.await(oracle.selectColumnMappingFromMLStudio(resPyArr, sync.defer()));
+            resPyArr = sync.await(mlStudio.run(resPyArr, 'columnMapping', sync.defer()));
+            console.log('column mapping DL');
+            */
 
             // select TBL_COLUMN_MAPPING_CLS            
             var result = sync.await(oracle.selectColumnMappingCls(null, sync.defer()));
             if (result.rows.length > 0) {
                 columnArr = result.rows;
             }
-            return done(null, { data: resPyArr, column: columnArr, convertedFileName: convertedFileName });
+            console.log('column TBL_COLUMN_MAPPING_CLS');
+
+            return done(null, { data: resPyArr.data, column: columnArr, convertedFileName: convertedFileName });
         } catch (e) {
             console.log(e);
             return done(null, e);
@@ -2242,6 +2271,8 @@ function batchLearnTraining(filepath, uiCheck, done) {
             var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
             console.timeEnd("typo ML");
+
+            console.log(JSON.stringify(sidData));
 
             console.time("similarity ML");
             pythonConfig.typoOptions.args = [];
@@ -2378,6 +2409,7 @@ function batchLearnTraing2(imgId, uiCheck, done) {
             console.time("formLabelMapping ML");
             pythonConfig.formLabelMappingOptions.args = [];
             pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
+            console.log(JSON.stringify(sidData));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             console.timeEnd("formLabelMapping ML");

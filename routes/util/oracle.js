@@ -20,12 +20,14 @@ exports.select = function (req, done) {
             for (var i in req) {
                 var sid = "";
                 locSplit = req[i].location.split(",");
-                sid += locSplit[0] + "," + locSplit[1];
+                //sid += locSplit[0] + "," + locSplit[1];
+
 
                 let result = await conn.execute(sqltext, [req[i].text]);
 
                 if (result.rows[0] != null) {
-                    sid += "," + result.rows[0].SID;
+                    //sid += "," + result.rows[0].SID;
+                    sid += result.rows[0].SID;
                 }
                 req[i].sid = sid;
             }
@@ -44,14 +46,49 @@ exports.select = function (req, done) {
         }
     });
 };
+
+exports.select2 = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
+            for (var i in req) {
+                var sid = "";
+                locSplit = req[i].location.split(",");
+                sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
+
+                let result = await conn.execute(sqltext, [req[i].text]);
+
+                if (result.rows[0] != null) {
+                    sid += "," + result.rows[0].SID;
+                }
+                req[i].sid = sid;
+            }
+
+            return done(null, req);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectLegacyFileData = function (req, done) {
     return new Promise(async function (resolve, reject) {
       var res = [];
       let conn;
       try {
-        conn = await oracledb.getConnection(dbConfig);
-        let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term`, [req]);
-  
+          conn = await oracledb.getConnection(dbConfig);
+          let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE IMGID LIKE :term `, [req], { outFormat: oracledb.OBJECT });
         
   
         for (let row in resAnswerFile.rows) {
@@ -68,6 +105,7 @@ exports.selectLegacyFileData = function (req, done) {
             let tempdict = {};
 
             tempDictFile['LEGACY'] = answerDataArr.rows[row2];
+
           }
           res.push(tempDictFile);
         }
@@ -345,6 +383,39 @@ exports.insertColumnMapping = function (req, done) {
     });
 };
 
+exports.insertColumnMapping2 = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let selectSqlText = `SELECT SEQNUM FROM TBL_COLUMN_MAPPING_TRAIN_1 WHERE DATA = :DATA AND CLASS = :CLASS`;
+            let insertSqlText = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN_1 (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            let updateSqlText = `UPDATE TBL_COLUMN_MAPPING_TRAIN_1 SET DATA = :DATA, CLASS = :CALSS, REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
+
+            for (var i in req.data) {
+                var result = await conn.execute(selectSqlText, [req.data[i].sid, req.data[i].colLbl]);
+                if (result.rows[0]) {
+                    //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
+                } else {
+                    await conn.execute(insertSqlText, [req.data[i].sid, req.data[i].colLbl]);
+                }
+
+            }
+            return done(null, req);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectOcrFilePaths = function (req, done) {
     return new Promise(async function (resolve, reject) {
         var res = [];
@@ -498,20 +569,6 @@ exports.convertTiftoJpg2 = function (originFilePath, done) {
     }
 };
 
-exports.convertTiftoJpgCMD = function (originFilePath, done) {
-    try {
-        //ì¶œë ¥?Œì¼?€ ?œë²„???ˆë? ê²½ë¡œ c/ImageTemp/?¤ëŠ˜? ì§œ/originFileëª??¼ë¡œ ?€??
-        convertedFileName = originFilePath.split('.')[0] + '.jpg';
-        execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + originFilePath + ' ' + convertedFileName);
-        return done(null, convertedFileName);
-
-    } catch (err) {
-        console.log(err);
-    } finally {
-        //console.log('end');
-    }
-};
-
 exports.callApiOcr = function (req, done) {
     var pharsedOcrJson = "";
     try {
@@ -539,6 +596,34 @@ exports.callApiOcr = function (req, done) {
     } finally {
 
     }
+};
+
+exports.insertOcrData = function (filepath, ocrData, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            let resfile = await conn.execute(`SELECT * FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath `, [filepath]);
+
+            if (resfile.rows.length == 0) {
+                let resIns = await conn.execute(`INSERT INTO TBL_BATCH_OCR_DATA VALUES(seq_batch_ocr_data.nextval, :filepath, :ocrData) `, [filepath, ocrData], { autoCommit: true });
+            }
+
+            return done(null, result.rowsAffected);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
 };
 
 function ocrJson(regions) {
@@ -1180,22 +1265,30 @@ exports.selectColumnMappingFromMLStudio = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
+            /*
             var inQuery = "(";
             for (var i in req.data) {
                 inQuery += "'" + req.docCategory.DOCTYPE + "," + req.data[i].sid + "',";
             }
             inQuery = inQuery.substring(0, inQuery.length - 1);
             inQuery += ")";
-            result = await conn.execute(queryConfig.mlConfig.selectColumnMapping + inQuery);
+            */
+            result = await conn.execute(queryConfig.mlConfig.selectColumnMapping);
 
             if (result.rows.length > 0) {
                 for (var i in req.data) {
                     for (var j in result.rows) {
                         var row = result.rows[j];
+                        if (req.data[i].sid == row.DATA) {
+                            req.data[i].colLbl = row.CLASS;
+                            break;
+                        }
+                        /*
                         if (req.docCategory.DOCTYPE + "," + req.data[i].sid == row.DATA) {
                             req.data[i].colLbl = row.CLASS;
                             break;
                         }
+                        */
                     }
                 }
             }         
@@ -1308,3 +1401,72 @@ exports.selectColumnMappingCls = function (filePathList, done) {
         }
     });
 };
+
+exports.selectTypoMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            for (var i in req) {
+                var inQuery = "(";
+                var wordArr = req[i].text.split(' ');
+                for (var j in wordArr) {
+                    inQuery += "'" + wordArr[j] + "',";
+                }
+                inQuery = inQuery.substring(0, inQuery.length - 1);
+                inQuery += ")";
+                result = await conn.execute(queryConfig.mlConfig.selectTypoMapping + inQuery);
+                req[i].originText = req[i].text;
+
+                if (result.rows.length > 0) {
+                    for (var j in result.rows) {
+                        var row = result.rows[j];
+                        req[i].text = req[i].text.split(row.ORIGINTEXT).join(row.TEXT);
+                    }
+                }
+            }
+
+            return done(null, req);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectEntryMappingCls = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(queryConfig.dbcolumnsConfig.selectEntryMappingCls);
+
+
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+

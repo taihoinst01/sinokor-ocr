@@ -54,8 +54,8 @@ class SymSpell():
         self._compact_mask = (0xffffffff >> 8) << 2
 
         config = configparser.ConfigParser()
-        config.read('./ml/config.ini')
-
+        mlroot = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+        config.read(mlroot + '\\config.ini')
         id = config['ORACLE']['ID']
         pw = config['ORACLE']['PW']
         sid = config['ORACLE']['SID']
