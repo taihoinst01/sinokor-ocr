@@ -4,7 +4,7 @@ import cx_Oracle
 import configparser
 import json
 import os
-
+import re
 #오타 수정
 ss = SymSpell(max_dictionary_edit_distance=1)
 ss.load_words_with_freq_from_json_and_build_dictionary()
