@@ -16,6 +16,12 @@ textList = []
 #        textList.append(line[0])
 
 #print(textList.__contains__("infinity"))
+def isfloat(value):
+  try:
+    float(value)
+    return True
+  except ValueError:
+    return False
 
 config = configparser.ConfigParser()
 mlroot = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
