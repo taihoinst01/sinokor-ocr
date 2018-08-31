@@ -44,7 +44,7 @@ var proxy = require('./routes/proxy/proxy');
 var common = require('./routes/util/common');
 // etc
 var xlsx = require('xlsx');
-var listProc = require('./routes/util/listProc'); // legacy interface
+//var listProc = require('./routes/util/listProc'); // legacy interface
 
 // 
 app.use('/uploads', express.static(__dirname + '/uploads'));
@@ -98,7 +98,7 @@ app.use('/proxy', proxy);
 //util
 app.use('/common', common);
 //etc
-app.use('/listProc', listProc);
+//app.use('/listProc', listProc);
 
 // server 
 app.set('port', process.env.PORT || 80);
