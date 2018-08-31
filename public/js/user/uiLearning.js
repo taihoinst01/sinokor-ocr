@@ -584,29 +584,33 @@ function detailTable(fileName) {
                 data = item.data;
             }
 
+            // UNKNOWN selectbox 제일 위로 올리기
             var columnArr = item.column;
+            columnArr.unshift(columnArr.pop());
             var entryColArr = item.entryMappingList;
+            entryColArr.unshift(entryColArr.pop());
+
             for (var i in data) {
                 // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
                 if (data[i].colLbl == 37) {
-                    tblSortTag += '<dl>';
-                    tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
-                    tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-                    tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
-                    tblSortTag += '<input type="hidden" value="' + data[i].location + '" />';
-                    tblSortTag += '</label>';
-                    tblSortTag += '</dt>';
-                    tblSortTag += '<dd>';
-                    tblSortTag += '<input type="checkbox" class="entryChk" checked>';
-                    tblSortTag += '</dd>';
-                    tblSortTag += '<dd class="columnSelect" style="display:none">';
-                    tblSortTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr);
-                    tblSortTag += '</dd>';
-                    tblSortTag += '<dd class="entrySelect">';
-                    tblSortTag += appendEntryOptionHtml((data[i].entryLbl + '') ? data[i].entryLbl : 999, entryColArr);
-                    tblSortTag += '</dd>';
-                    tblSortTag += '</dl>';
-                } else {
+                    tblTag += '<dl>';
+                    tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                    tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
+                    tblTag += '<input type="hidden" value="' + data[i].location + '" />';
+                    tblTag += '</label>';
+                    tblTag += '</dt>';
+                    tblTag += '<dd>';
+                    tblTag += '<input type="checkbox" class="entryChk" checked>';
+                    tblTag += '</dd>';
+                    tblTag += '<dd class="columnSelect" style="display:none">';
+                    tblTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr);
+                    tblTag += '</dd>';
+                    tblTag += '<dd class="entrySelect">';
+                    tblTag += appendEntryOptionHtml((data[i].entryLbl + '') ? data[i].entryLbl : 999, entryColArr);
+                    tblTag += '</dd>';
+                    tblTag += '</dl>';
+                } else if (data[i].colLbl == 38) {
                     tblSortTag += '<dl>';
                     tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
                     tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
@@ -624,6 +628,24 @@ function detailTable(fileName) {
                     tblSortTag += appendEntryOptionHtml((data[i].entryLbl + '') ? data[i].entryLbl : 999, entryColArr);
                     tblSortTag += '</dd>';
                     tblSortTag += '</dl>';
+                } else {
+                    tblTag += '<dl>';
+                    tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                    tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
+                    tblTag += '<input type="hidden" value="' + data[i].location + '" />';
+                    tblTag += '</label>';
+                    tblTag += '</dt>';
+                    tblTag += '<dd>';
+                    tblTag += '<input type="checkbox" class="entryChk" checked>';
+                    tblTag += '</dd>';
+                    tblTag += '<dd class="columnSelect">';
+                    tblTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr);
+                    tblTag += '</dd>';
+                    tblTag += '<dd class="entrySelect" style="display:none">';
+                    tblTag += appendEntryOptionHtml((data[i].entryLbl + '') ? data[i].entryLbl : 999, entryColArr);
+                    tblTag += '</dd>';
+                    tblTag += '</dl>';
                 }
             }
 
@@ -751,9 +773,9 @@ function appendEntryOptionHtml(targetColumn, columns) {
     for (var i in columns) {
         var optionHTML = '';
         if (targetColumn == columns[i].COLNUM) {
-            optionHTML = '<option value="' + targetColumn + '" selected>entry(' + columns[i].COLNAME + ')</option>';
+            optionHTML = '<option value="' + targetColumn + '" selected>' + columns[i].COLNAME + '</option>';
         } else {
-            optionHTML = '<option value="' + targetColumn + '">entry(' + columns[i].COLNAME + ')</option>';
+            optionHTML = '<option value="' + targetColumn + '">' + columns[i].COLNAME + '</option>';
         }
         selectHTML += optionHTML
     }

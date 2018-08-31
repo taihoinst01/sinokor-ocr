@@ -1943,7 +1943,7 @@ h3.tits span {
 
 .box_table_st04 > dl > dt {
     position: relative;
-    width: 52.5%;
+    width: 54.5%;
     height: 40px;
     padding: 5px 0;
     margin: 0;
@@ -1996,7 +1996,7 @@ h3.tits span {
         text-align: right;
     }
 .box_table_st04 > dl > .entrySelect {
-    width: 42.5% !important;
+    width: 39.5% !important;
     height: 40px !important;
     padding: 5px 0 !important;
     margin: 0 !important;
@@ -2006,7 +2006,7 @@ h3.tits span {
 }
 
 .box_table_st04 > dl > .columnSelect {
-    width: 42.5% !important;
+    width: 39.5% !important;
     height: 40px !important;
     padding: 5px 0 !important;
     margin: 0 !important;
@@ -2943,7 +2943,6 @@ h3.tits span {
     /*display: table;*/
     width: 100%;
 }
-
     .table_style02 table {
         clear: both;
         table-layout: fixed;
@@ -3011,6 +3010,77 @@ h3.tits span {
         line-height: 28px;
         font-size: 13px
     }
+
+.table_style100 {
+    padding: 0px 17px;
+}
+.table_style100 table {
+    clear: both;
+    table-layout: fixed;
+    text-align: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.table_style100.thead table {
+    width: 95%;
+    width: calc(100% - 15px);
+    width: -webkit-calc(100% - 15px);
+    width: -moz-calc(100% - 15px);
+}
+
+.table_style100 table > thead > tr > th:first-child {
+    border-radius: 7px 0 0 0;
+}
+
+.table_style100 table > thead > tr > th:last-child {
+    border-radius: 0 7px 0 0;
+}
+
+.table_style100 table > thead > tr > th {
+    height: 44px;
+    font-size: 13px;
+    color: #fff;
+    background: #2f2e2a;
+    font-family: 'notokr-medium', sans-serif;
+}
+
+.table_style100 table > tbody > tr > th {
+    padding: 8px 10px 9px;
+    color: #666;
+    border-bottom: solid 1px #e1e0e0;
+    font-weight: normal;
+    max-width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table_style100 table > tbody > tr > td {
+    padding: 8px 10px 9px;
+    color: #666;
+    border-bottom: solid 1px #e1e0e0;
+    max-width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table_style100 table > tbody > tr.on > td input {
+    background-color: #e5e5e5;
+}
+
+.table_style100 table > tbody > tr.on,
+.table_style100 table > tbody > tr:hover {
+    background-color: #e5e5e5;
+}
+
+.table_style100 table input[type='text'] {
+    height: 30px;
+    line-height: 28px;
+    font-size: 13px
+}
 
 /* Tooltip */
 .Zebra_Tooltip {
@@ -5053,6 +5123,12 @@ button[disabled] {
     height: 771px;
     overflow: auto;
     padding: 0px 17px;
+}
+
+.box_scroll_st100 {
+    display: block;
+    height: 727px;
+    overflow: auto;
 }
 #uploadSucessForm #touchSlider {
     height: 140px !important;
