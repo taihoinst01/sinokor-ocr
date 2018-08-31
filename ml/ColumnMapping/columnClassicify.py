@@ -64,6 +64,31 @@ def training():
 
 def eval(inputJson):
     inputArr = json.loads(inputJson.encode("ascii", "ignore").decode())
+
+    id = "koreanre"
+    pw = "koreanre01"
+    sid = "koreanreocr"
+    # ip = "10.10.20.205"
+    ip = "172.16.53.142"
+    port = "1521"
+    connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
+
+    conn = cx_Oracle.connect(connInfo)
+    curs = conn.cursor()
+
+    sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_COLUMN_MAPPING_TRAIN"
+    curs.execute(sql)
+    rows = curs.fetchall()
+
+    sqlCol = ("SELECT coltype, colnum FROM TBL_COLUMN_MAPPING_CLS ")
+    curs.execute(sqlCol)
+    colCls = curs.fetchall()
+
+    sqlEnt = ("SELECT coltype, colnum FROM TBL_ENTRY_MAPPING_CLS ")
+    curs.execute(sqlEnt)
+    entCls = curs.fetchall()
+
+
     try:
         for inputItem in inputArr:
             predictArr = []
@@ -73,16 +98,27 @@ def eval(inputJson):
                 for sidItem in inputItem['sid'].split(","):
                     predictData.append(float(sidItem))
 
-                predictArr.append(predictData)
-                resultArr = list(classifier.predict(np.array(predictArr, dtype=np.float32), as_iterable=True))
-                inputItem['colLbl'] = resultArr[0]
-                accLabel = []
-                accLabel.append(int(resultArr[0]))
-                accTarget = np.array(accLabel)
-                accuracy_score = classifier.evaluate(x=np.array(predictArr, dtype=float), y=np.array(accTarget, dtype=int))["accuracy"]
-                if accuracy_score > 0.02:
-                    accuracy_score -= 0.01
-                inputItem['colAccu'] = accuracy_score
+                # db에 일치하는 sid가 있는 경우 db의 label값을 가져와서 리턴
+                for row in rows:
+                    floatArr = []
+                    num = str(row[1]).split(",")
+                    for n in num:
+                        floatArr.append(float(n))
+                    if floatArr == predictData:
+                        inputItem['colLbl'] = int(row[2])
+                        inputItem['colAccu'] = 0.99
+                # db에 일치하는 sid가 없을 경우 ML predict 결과를 리턴
+                if 'colLbl' not in inputItem:
+                    predictArr.append(predictData)
+                    resultArr = list(classifier.predict(np.array(predictArr, dtype=np.float32), as_iterable=True))
+                    inputItem['colLbl'] = resultArr[0]
+                    accLabel = []
+                    accLabel.append(int(resultArr[0]))
+                    accTarget = np.array(accLabel)
+                    accuracy_score = classifier.evaluate(x=np.array(predictArr, dtype=float), y=np.array(accTarget, dtype=int))["accuracy"]
+                    if accuracy_score > 0.02:
+                        accuracy_score -= 0.01
+                    inputItem['colAccu'] = accuracy_score
 
         #inputArr에서 colLbl 이 entry인 것과 entry 라벨(colLbl이 6~36)을 추출
         #각entry 왼쪽끝 오른쪽 끝 중심 어느것이든 일치(+-5)하는 라벨이 있으면 선택
@@ -90,23 +126,7 @@ def eval(inputJson):
         #일치가 없으면 가까운 엔트리(not entry제외)를 선택하게 함
         #inputItem['entryLbl'] 값은 TBL_ENTRY_MAPPING_CLS column값
 
-        id = "koreanre"
-        pw = "koreanre01"
-        sid = "koreanreocr"
-        # ip = "10.10.20.205"
-        ip = "172.16.53.142"
-        port = "1521"
-        connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
-        conn = cx_Oracle.connect(connInfo)
-        curs = conn.cursor()
-        sqlCol = ("SELECT coltype, colnum FROM TBL_COLUMN_MAPPING_CLS ")
-        curs.execute(sqlCol)
-        colCls = curs.fetchall()
-
-        sqlEnt = ("SELECT coltype, colnum FROM TBL_ENTRY_MAPPING_CLS ")
-        curs.execute(sqlEnt)
-        entCls = curs.fetchall()
 
         # text = '[{"colAccu": 0.99, "originText": "cedant", "sid": "206,848,64626,0,0,0,0", "location": "206,848,111,24", "colLbl": 36, "text": "pedant"}, {"colAccu": 0.99, "originText": "class of business", "sid": "206,908,14818,14456,14525,0,0", "location": "206,908,285,24", "colLbl": 36, "text": "class of business"}, {"colAccu": 0.99, "originText": "our reference", "sid": "206,1066,14498,15089,0,0,0 ", "location": "206,1066,227,24", "colLbl": 36, "text": "our reference"}, {"colAccu": 0.99, "originText": "currency", "sid": "226,1174,16280,0,0,0,0", "location": "226,1174,145,31", "colLbl": 36, "text": "currency"}, {"colAccu": 0.99, "originText": "premium", "sid": "227,1243,16438,0,0,0,0", "location": " 227,1243,139,24", "colLbl": 20, "text": "premium"}, {"colAccu": 0.99, "originText": "commission", "sid": "226,1303,15444,0,0,0,0", "location": "226,1303,197,24", "colLbl": 22, " text": "commission"}, {"colAccu": 0.99, "originText": "claims", "sid": "226,1366,16527,0,0,0,0", "location": "226,1366,107,24", "colLbl": 23, "text": "claim s"}, {"colAccu": 0.99, "originText": "reserve", "sid": "227,1426,16608,0,0,0,0", "location": "227,1426,126,24", "colLbl": 24, "text": "reserve"}, {"colAccu": 0.99, "originText": "release", "sid": "227, 1489,15049,0,0,0,0", "location": "227,1489,123,24", "colLbl": 25, "text": "release"}, {"colAccu": 0.99, "originText": "interest", "sid": "227,1549,15076,0,0,0 ,0", "location": "227,1549,117,24", "colLbl": 26, "text": "interest"}, {"colAccu": 0.99, "originText": "brokerage", "sid": "227,1609,24808,0,0,0,0", "location": "227,1609,161,31", "colLbl": 7, "text": "brokerage"}, {"colAccu": 0.99, "colLbl": 8, "sid": "233,1678,17036,0,0,0,0", "originText": "portfolio", "text": "portfolio", "location": "233,1678,134,24"}, {"colAccu": 0.99, "originText": "balance", "sid": "227,1781,16326,0,0,0,0", "location": "227,1781,124,24", "colLbl": 9, "text": "balance"}, {"colAccu": 0.99, "originText": ": marine cargo surplus 2018 - inward", "sid": "574,907,14459,16518,20299,21636,97309", "location": "574,907,568,32", "colLbl": 36, "text": "a marine cargo surplus 2018 a inward"}, {"colAccu": 0.99, "colLbl": 36, "sid": "574,1065,14459,97318,0,0,0", "originText": ": apex/bord/2727", "location": "574,1065,304,25", "text": "a apex/bord/2727"}, {"colAccu": 0.99, "originText": "jod 1.00", "sid": "629,1173,97300,97322,0,0,0", "location": "629,1173,171,25", "colLbl": 36, "text": "jod 1.00"}, {"colAccu": 0.99, "originText": "25.53", "sid": "639,1239,1,1,1,1,1", "location": "639,1239,83,25", "colLbl": 37, "text": "25.53"}, {"colAccu": 0.99, "originText": "5.74", "sid": "639,1299,1,1,1,1,1", "location": "639,1299,64,25", "colLbl": 37, "text": "5 .74"}, {"colAccu": 0.99, "originText": "7.66", "sid": "639,1422,1,1,1,1,1", "location": "639,1422,64,25", "colLbl": 37, "text": "7.66"}, {"colAccu": 0.99, "colLbl": 37, "sid": "639,1485,1,1,1,1,1", "originText": "0.00", "text": "0.000", "location": "639,1485,64,25"}, {"colAccu": 0.99, "originText": "0.00", "te xt": "0.000", "sid": "639,1545,1,1,1,1,1", "location": "639,1545,64,25", "colLbl": 37}, {"colAccu": 0.99, "originText": "0.6 4", "sid": "639,1605,1,1,1,1,1", "location": "639,1605,64,25", "colLbl": 37, "text": "0.64"}, {"colAccu": 0.99, "originText": "0.00", "sid": "648,1677,1,1,1,1,1 ", "location": "648,1677,64,25", "colLbl": 37, "text": "0.000"}, {"colAccu": 0.99, "originText": "11 .49", "sid": "641,1774,97319,97320,0,0,0", "location": "641,1774,81,25", "colLbl": 37, "text": "11 .49"}]'
         # inputArr = json.loads(text)
