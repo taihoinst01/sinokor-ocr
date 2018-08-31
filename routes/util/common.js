@@ -158,6 +158,14 @@ router.post('/modifyTextData', function (req, res) {
                             sync.await(oracle.insertOcrSymspellForCurcd([afterData.data[i], beforeData.data[j]], sync.defer()));
                         }
                     }
+                } else if (afterData.data[i].colLbl != 37 && (afterData.data[i].colLbl >= 4 && afterData.data[i].colLbl <= 38)) {
+                    for (var j in beforeData.data) {
+                        if (afterData.data[i].location == beforeData.data[j].location) {
+                            if (afterData.data[i].text.toLowerCase() != beforeData.data[j].text.toLowerCase()) { // text length difference is less than 2
+                                sync.await(oracle.insertOcrSymspell([afterData.data[i]], sync.defer()));
+                            }
+                        }
+                    }
                 }
             }
 

@@ -1943,7 +1943,7 @@ h3.tits span {
 
 .box_table_st04 > dl > dt {
     position: relative;
-    width: 65%;
+    width: 52.5%;
     height: 40px;
     padding: 5px 0;
     margin: 0;
@@ -1995,15 +1995,33 @@ h3.tits span {
         line-height: 40px;
         text-align: right;
     }
-
-.box_table_st04 > dl > dd {
-    width: 35%;
-    height: 40px;
-    padding: 5px 0;
-    margin: 0;
-    border-bottom: 1px solid #e2e7ed;
+.box_table_st04 > dl > .entrySelect {
+    width: 42.5% !important;
+    height: 40px !important;
+    padding: 5px 0 !important;
+    margin: 0 !important;
+    border-bottom: 1px solid #e2e7ed !important;
+    text-align: center;
+    line-height: 3;
 }
 
+.box_table_st04 > dl > .columnSelect {
+    width: 42.5% !important;
+    height: 40px !important;
+    padding: 5px 0 !important;
+    margin: 0 !important;
+    border-bottom: 1px solid #e2e7ed !important;
+    text-align: center;
+    line-height: 3;
+}
+.box_table_st04 > dl > dd {
+    width: 5% !important;
+    height: 35px !important;
+    padding: 15px 0 0 !important;
+    margin: 0 !important;
+    border-bottom: 1px solid #e2e7ed !important;
+    text-align: center;
+}
     .box_table_st04 > dl > dd .select_style {
         width: 95%;
         margin-left: 5%;
