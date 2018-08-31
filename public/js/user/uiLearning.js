@@ -738,9 +738,9 @@ function appendEntryOptionHtml(targetColumn, columns) {
     for (var i in columns) {
         var optionHTML = '';
         if (targetColumn == columns[i].COLNUM) {
-            optionHTML = '<option value="' + columns[i].COLNUM + '" selected>' + columns[i].COLNAME + '</option>';
+            optionHTML = '<option value="' + targetColumn + '" selected>entry(' + columns[i].COLNAME + ')</option>';
         } else {
-            optionHTML = '<option value="' + columns[i].COLNUM + '">' + columns[i].COLNAME + '</option>';
+            optionHTML = '<option value="' + targetColumn + '">entry(' + columns[i].COLNAME + ')</option>';
         }
         selectHTML += optionHTML
     }
@@ -873,7 +873,7 @@ function hoverSquare(e) {
     //$('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
     //$('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
     //$('#redNemo').show();
-    $('#redZoomNemo').css('width', '100%');
+    //$('#redZoomNemo').css('width', '100%');
     $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
     $('#redZoomNemo').show();
 }
