@@ -44,6 +44,42 @@ exports.select = function (req, done) {
         }
     });
 };
+
+exports.select2 = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
+            for (var i in req) {
+                var sid = "";
+                locSplit = req[i].location.split(",");
+                sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
+
+                let result = await conn.execute(sqltext, [req[i].text]);
+
+                if (result.rows[0] != null) {
+                    sid += "," + result.rows[0].SID;
+                }
+                req[i].sid = sid;
+            }
+
+            return done(null, req);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectLegacyFileData = function (req, done) {
     return new Promise(async function (resolve, reject) {
       var res = [];
@@ -329,6 +365,39 @@ exports.insertColumnMapping = function (req, done) {
                     await conn.execute(insertSqlText, [req.data[i].sid, req.data[i].colLbl]);
                 }
                     
+            }
+            return done(null, req);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertColumnMapping2 = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let selectSqlText = `SELECT SEQNUM FROM TBL_COLUMN_MAPPING_TRAIN_1 WHERE DATA = :DATA AND CLASS = :CLASS`;
+            let insertSqlText = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN_1 (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            let updateSqlText = `UPDATE TBL_COLUMN_MAPPING_TRAIN_1 SET DATA = :DATA, CLASS = :CALSS, REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
+
+            for (var i in req.data) {
+                var result = await conn.execute(selectSqlText, [req.data[i].sid, req.data[i].colLbl]);
+                if (result.rows[0]) {
+                    //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
+                } else {
+                    await conn.execute(insertSqlText, [req.data[i].sid, req.data[i].colLbl]);
+                }
+
             }
             return done(null, req);
         } catch (err) {
@@ -1330,3 +1399,72 @@ exports.selectColumnMappingCls = function (filePathList, done) {
         }
     });
 };
+
+exports.selectTypoMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            for (var i in req) {
+                var inQuery = "(";
+                var wordArr = req[i].text.split(' ');
+                for (var j in wordArr) {
+                    inQuery += "'" + wordArr[j] + "',";
+                }
+                inQuery = inQuery.substring(0, inQuery.length - 1);
+                inQuery += ")";
+                result = await conn.execute(queryConfig.mlConfig.selectTypoMapping + inQuery);
+                req[i].originText = req[i].text;
+
+                if (result.rows.length > 0) {
+                    for (var j in result.rows) {
+                        var row = result.rows[j];
+                        req[i].text = req[i].text.split(row.ORIGINTEXT).join(row.TEXT);
+                    }
+                }
+            }
+
+            return done(null, req);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectEntryMappingCls = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(queryConfig.dbcolumnsConfig.selectEntryMappingCls);
+
+
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
