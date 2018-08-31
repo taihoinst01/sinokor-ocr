@@ -151,7 +151,7 @@ const WF_SetTargetInfo = function (req, res, param, pMap, parmArr, rtnArr, rtnMa
 };
 
 const WF_ApprovalCancel = function (req, res, param, pMap, parmArr, rtnArr, rtnMap, rtnMap00, rtnMap01, rtnInt) {
-    let rtnInt;
+    // let rtnInt;
     rtnArr = [];
     pMap = {};
 
@@ -163,7 +163,7 @@ const WF_ApprovalCancel = function (req, res, param, pMap, parmArr, rtnArr, rtnM
     pMap.lginIpAdr = param.lsLocalIp;
     pMap.userId = param.lsAfiUserId;
 
-    if (param.lsPostType === "302000" && param.lsEntryGubun != "") pMap.put("INDEX10", lsEntryGubun);
+    if (param.lsPostType === "302000" && param.lsEntryGubun != "") pMap.INDEX10 = param.lsEntryGubun;
     console.log("[SUMMONLOG] PRO_ID,RECV_ID,SEQNO, C_DEPT : " + param.v_pro_id + "," + param.v_initial_id + "," + param.v_seq_no + "," + param.lsPostType);
     console.log("lsEntryGubun  ==========> " + param.lsEntryGubun);
 
