@@ -76,7 +76,7 @@ def eval(inputJson):
     conn = cx_Oracle.connect(connInfo)
     curs = conn.cursor()
 
-    sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_COLUMN_MAPPING_TRAIN"
+    sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_COLUMN_MAPPING_TRAIN ORDER BY REGDATE"
     curs.execute(sql)
     rows = curs.fetchall()
 
