@@ -214,10 +214,8 @@ exports.proxyOcr = function (req, originPath, done) {
           };
 
           request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
-              var data = JSON.parse(body);
-              var resIns = sync.await(this.insertOcrData(originPath, body, sync.defer()));
-              //console.log(data);
-              return done(null, ocrJson(data.regions));
+
+              return done(null, body);
           });
 
       } catch (err) {

@@ -9,6 +9,8 @@ referenceCMD.convertTiftoJpgCMD = sync(referenceCMD.convertTiftoJpgCMD);
 referenceCMD.callApiOcr = sync(referenceCMD.callApiOcr);
 referenceCMD.selectSid = sync(referenceCMD.selectSid);
 referenceCMD.insertMLDataCMD = sync(referenceCMD.insertMLDataCMD);
+referenceCMD.proxyOcr = sync(referenceCMD.proxyOcr);
+referenceCMD.insertOcrData = sync(referenceCMD.insertOcrData);
 
 sync.fiber(function () {
     var arg = process.argv.slice(2);
@@ -53,12 +55,17 @@ function batchLearnTraing(resLegacyData, done) {
                 console.time("ocr : " + resLegacyData[tiffile].FILEPATH);
                 //let ocrResult = sync.await(referenceCMD.callApiOcr(convertFilpath, imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));
                 var ocrResult = sync.await(referenceCMD.proxyOcr(convertFilpath, imageRootDir + resLegacyData[tiffile].FILEPATH, sync.defer()));//-- 운영서버용
-        
+                
+                //console.log(data);
+
+                sync.await(referenceCMD.insertOcrData(resLegacyData[tiffile].FILEPATH, ocrResult, sync.defer()));
                 if (ocrResult == "error") {
                     return done(null, "error ocr");
                 }
                 console.timeEnd("ocr : " + resLegacyData[tiffile].FILEPATH);
-        
+
+                var data = JSON.parse(body);
+                var resIns = sync.await(this.insertOcrData(originPath, body, sync.defer()));
                 //typo ML
                 /*
                 console.time("typo ML : " + resLegacyData[tiffile].FILEPATH);
