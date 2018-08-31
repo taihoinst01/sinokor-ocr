@@ -20,12 +20,14 @@ exports.select = function (req, done) {
             for (var i in req) {
                 var sid = "";
                 locSplit = req[i].location.split(",");
-                sid += locSplit[0] + "," + locSplit[1];
+                //sid += locSplit[0] + "," + locSplit[1];
+
 
                 let result = await conn.execute(sqltext, [req[i].text]);
 
                 if (result.rows[0] != null) {
-                    sid += "," + result.rows[0].SID;
+                    //sid += "," + result.rows[0].SID;
+                    sid += result.rows[0].SID;
                 }
                 req[i].sid = sid;
             }

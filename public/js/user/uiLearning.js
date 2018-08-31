@@ -539,6 +539,7 @@ function selectTypoText(index, fileName) {
         data: JSON.stringify({ 'data': item }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
+            console.log(data);
             lineText[index].data = data;
             detailTable(fileName);
             docComparePopup(0);

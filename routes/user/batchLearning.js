@@ -2267,6 +2267,8 @@ function batchLearnTraining(filepath, uiCheck, done) {
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
             console.timeEnd("typo ML");
 
+            console.log(JSON.stringify(sidData));
+
             console.time("similarity ML");
             pythonConfig.typoOptions.args = [];
             pythonConfig.typoOptions.args.push(JSON.stringify(resLegacyData));
@@ -2402,6 +2404,7 @@ function batchLearnTraing2(imgId, uiCheck, done) {
             console.time("formLabelMapping ML");
             pythonConfig.formLabelMappingOptions.args = [];
             pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
+            console.log(JSON.stringify(sidData));
             resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             console.timeEnd("formLabelMapping ML");
