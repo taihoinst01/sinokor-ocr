@@ -93,7 +93,7 @@ exports.columnMapping3 = function (data, callback) {
         pythonConfig.columnMappingOptions.args = [];
         pythonConfig.columnMappingOptions.args.push(JSON.stringify(data));
 
-        var resPyStr = sync.await(PythonShell.run('eval3.py', pythonConfig.columnMappingOptions, sync.defer()));
+        var resPyStr = sync.await(PythonShell.run('columnClassicify.py', pythonConfig.columnMappingOptions, sync.defer()));
         var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
         if (!resPyArr.code || (resPyArr.code && resPyArr.code == 200)) {
             data = resPyArr;
@@ -175,7 +175,7 @@ exports.addColumnMappingTrain = function (data, callback) {
         pythonConfig.columnMappingOptions.args = [];
         pythonConfig.columnMappingOptions.args = ["training"];
 
-        sync.await(PythonShell.run('eval3.py', pythonConfig.columnMappingOptions, sync.defer()));
+        sync.await(PythonShell.run('columnClassicify.py', pythonConfig.columnMappingOptions, sync.defer()));
 
         callback(data);
     });
