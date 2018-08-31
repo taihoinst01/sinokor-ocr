@@ -4894,6 +4894,7 @@ thead .ez-checked {
     border: 2px solid red;
     position: absolute;
     top: 185px;
+    width: 100%;
 }
 
 button[disabled] {
