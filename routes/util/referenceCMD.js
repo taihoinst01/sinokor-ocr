@@ -8,6 +8,10 @@ var dbConfig = {
   poolMax: 30,
   poolMin: 10
 };
+
+testEnv = true;  //local
+//var testEnv = false;  //server
+
 oracledb.outFormat = oracledb.OBJECT;
 var fs = require('fs');
 var request = require('sync-request');
@@ -55,28 +59,37 @@ exports.selectLegacyFileData = function (req, done) {
     });
   };
 
-  exports.convertTiftoJpgCMD = function (originFilePath, done) {
-      try {
+exports.convertTiftoJpgCMD = function (originFilePath, done) {
+    try {
 
-          var today = new Date();
-          var dd = today.getDate();
-          var mm = today.getMonth() + 1; //January is 0!
-          var yyyy = today.getFullYear();
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
 
-          let imageRootDir = 'C:/ICR/image/MIG/MIG';  //운영
-          //let imageRootDir = 'C:/ICR/MIG';          //개발
-          var convertFilePath = 'C:/ImageTemp/' + yyyy + mm + dd;
+        let imageRootDir;
+        if (testEnv) {
+            imageRootDir = 'C:/ICR/MIG';
+        } else {
+            imageRootDir = 'C:/ICR/image/MIG/MIG';
+        }
+        var convertFilePath = 'C:/ImageTemp/' + yyyy + mm + dd;
 
-          if (!fs.existsSync(convertFilePath)) {
-              fs.mkdirSync(convertFilePath);
-          }
-          
-          convertedFileName = originFilePath.substring(originFilePath.lastIndexOf('/') + 1, originFilePath.length);
-          convertedFileName = convertedFileName.split('.')[0] + '.jpg';
-          
-          execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + imageRootDir + originFilePath + ' ' + convertFilePath + '/' + convertedFileName);
-          //execSync('C:\\projectWork\\koreanre\\module\\imageMagick\\convert.exe -density 800x800 ' + imageRootDir + originFilePath + ' ' + convertFilePath + '/' + convertedFileName);
-          return done(null, convertFilePath + '/' + convertedFileName);
+        if (!fs.existsSync(convertFilePath)) {
+            fs.mkdirSync(convertFilePath);
+        }
+
+        convertedFileName = originFilePath.substring(originFilePath.lastIndexOf('/') + 1, originFilePath.length);
+        convertedFileName = convertedFileName.split('.')[0] + '.jpg';
+
+        if (testEnv) {
+            //execSync('C:\\projectWork\\koreanre\\module\\imageMagick\\convert.exe -density 800x800 ' + imageRootDir + originFilePath + ' ' + convertFilePath + '/' + convertedFileName);
+            execSync('C:\\Users\\user\\source\\repos\\sinokor-ocr\\module\\imageMagick\\convert.exe -density 800x800 ' + imageRootDir + originFilePath + ' ' + convertFilePath + '/' + convertedFileName);    
+        } else {
+            execSync('C:\\ICR\\app\\source\\module\\imageMagick\\convert.exe -density 800x800 ' + imageRootDir + originFilePath + ' ' + convertFilePath + '/' + convertedFileName);    let imageRootDir = 'C:/ICR/MIG';
+        }
+
+        return done(null, convertFilePath + '/' + convertedFileName);
 
     } catch (err) {
         console.log(err);
@@ -101,10 +114,7 @@ exports.callApiOcr = function (req, originPath, done) {
           body: uploadImage,
           method: 'POST'
       });
-      var resJson = JSON.parse(res.getBody('utf8'));
-      pharsedOcrJson = ocrJson(resJson.regions);
-      var resIns = sync.await(this.insertOcrData(originPath, res.getBody('utf8'), sync.defer()));
-      return done(null, pharsedOcrJson);
+      return done(null, res.getBody('utf8'));
   } catch (err) {
       console.log(err);
       return done(null, 'error');
@@ -199,30 +209,28 @@ exports.insertMLDataCMD = function (req, done) {
 };
 
 exports.proxyOcr = function (req, originPath, done) {
-  return new Promise(async function (resolve, reject) {
-      var fileName = req;
+    return new Promise(async function (resolve, reject) {
+        var fileName = req;
+        try {
+            var formData = {
+                file: {
+                    value: fs.createReadStream(fileName),
+                    options: {
+                        filename: fileName,
+                        contentType: 'image/jpeg'
+                    }
+                }
+            };
 
-      try {
-          var formData = {
-              file: {
-                  value: fs.createReadStream(fileName),
-                  options: {
-                      filename: fileName,
-                      contentType: 'image/jpeg'
-                  }
-              }
-          };
+            request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
+                return done(null, body);
+            });
 
-          request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
-
-              return done(null, body);
-          });
-
-      } catch (err) {
-          reject(err);
-      } finally {
-      }
-  });
+        } catch (err) {
+            reject(err);
+        } finally {
+        }
+    });
 };
 
 exports.insertOcrData = function (filepath, ocrData, done) {

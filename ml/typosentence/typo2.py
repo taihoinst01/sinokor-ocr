@@ -57,6 +57,9 @@ for ocrItem in inputArr:
             else:
                 tempSentence = tempSentence + ' ' + word
     ocrItem['originText'] = ocrItem['text']
-    ocrItem['text'] = tempSentence.strip()
+    if(isfloat(re.sub('\ |\,|\)|\(', '', tempSentence.strip()))):
+        ocrItem['text'] = re.sub('\ |\,|\)|\(', '', tempSentence.strip())
+    else:
+        ocrItem['text'] = tempSentence.strip()
 
 print(str(inputArr))
