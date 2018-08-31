@@ -1106,6 +1106,7 @@
     <Content Include="ml\cnn-text-classification\__pycache__\multi_class_data_loader.cpython-35.pyc" />
     <Content Include="ml\ColumnMapping\columnClassicify.py" />
     <Content Include="ml\ColumnMapping\config.ini" />
+    <Content Include="ml\ColumnMapping\eval4.py" />
     <Content Include="ml\ColumnMapping\eval3.py" />
     <Content Include="ml\ColumnMapping\eval2.py" />
     <Content Include="ml\ColumnMapping\eval.py" />

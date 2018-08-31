@@ -154,10 +154,8 @@ router.post('/modifyTextData', function (req, res) {
                     }
                 } else if (afterData.data[i].colLbl == 3) {// currency code
                     for (var j in beforeData.data) {
-                        if (afterData.data[i].location == beforeData.data[j].location) {
-
+                        if (afterData.data[i].location == beforeData.data[j].location && afterData.data[i].text != beforeData.data[j].text) {
                             sync.await(oracle.insertOcrSymspellForCurcd([afterData.data[i], beforeData.data[j]], sync.defer()));
-
                         }
                     }
                 }

@@ -585,10 +585,10 @@ function detailTable(fileName) {
             }
 
             var columnArr = item.column;
-
+            var entryColArr = item.entryMappingList;
             for (var i in data) {
-
-                if (data[i].colLbl == 36) {
+                // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
+                if (data[i].colLbl == 37) {
                     tblSortTag += '<dl>';
                     tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
                     tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
@@ -597,7 +597,19 @@ function detailTable(fileName) {
                     tblSortTag += '</label>';
                     tblSortTag += '</dt>';
                     tblSortTag += '<dd>';
-                    tblSortTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr)
+                    tblSortTag += appendEntryOptionHtml((data[i].entryLbl + '') ? data[i].entryLbl : 999, entryColArr);
+                    tblSortTag += '</dd>';
+                    tblSortTag += '</dl>';
+                }else if (data[i].colLbl == 36) {
+                    tblSortTag += '<dl>';
+                    tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                    tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
+                    tblSortTag += '<input type="hidden" value="' + data[i].location + '" />';
+                    tblSortTag += '</label>';
+                    tblSortTag += '</dt>';
+                    tblSortTag += '<dd>';
+                    tblSortTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr);
                     tblSortTag += '</dd>';
                     tblSortTag += '</dl>';
                 } else {
@@ -609,7 +621,7 @@ function detailTable(fileName) {
                     tblTag += '</label>';
                     tblTag += '</dt>';
                     tblTag += '<dd>';
-                    tblTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr)
+                    tblTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr);
                     tblTag += '</dd>';
                     tblTag += '</dl>';
                 }
@@ -712,6 +724,24 @@ function appendOptionHtml(targetColumn, columns) {
             optionHTML = '<option value="' + columns[i].COLNUM + '" selected>' + columns[i].COLNAME + '</option>';
         } else {
             optionHTML = '<option value="' + columns[i].COLNUM + '">' + columns[i].COLNAME + '</option>';
+        }
+        selectHTML += optionHTML
+    }
+    selectHTML += '</select>'
+
+    return selectHTML;
+}
+
+// Entry컬럼 select html 가공 함수
+function appendEntryOptionHtml(targetColumn, columns) {
+
+    var selectHTML = '<select>';
+    for (var i in columns) {
+        var optionHTML = '';
+        if (targetColumn == columns[i].COLNUM) {
+            optionHTML = '<option value="' + targetColumn + '" selected>entry(' + columns[i].COLNAME + ')</option>';
+        } else {
+            optionHTML = '<option value="' + targetColumn + '">entry(' + columns[i].COLNAME + ')</option>';
         }
         selectHTML += optionHTML
     }
@@ -844,7 +874,7 @@ function hoverSquare(e) {
     //$('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
     //$('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
     //$('#redNemo').show();
-    $('#redZoomNemo').css('width', '100%');
+    //$('#redZoomNemo').css('width', '100%');
     $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
     $('#redZoomNemo').show();
 }

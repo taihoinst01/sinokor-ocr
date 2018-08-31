@@ -913,8 +913,13 @@ router.post('/insertColMapping', function (req, res) {
         console.log('insertColMapping ML');
         res.send({ code: 200, message: 'insertColMapping ML' });
     });
-    
-
+    /*
+    // 08.30
+    aimain.addColumnMappingTrain2(data, function (resData) {
+        console.log('insertColMapping ML');
+        res.send({ code: 200, message: 'insertColMapping ML' });
+    });
+    */
     /*
     var docCategory = req.body.docCategory;
     var colMappingCount = 0;
