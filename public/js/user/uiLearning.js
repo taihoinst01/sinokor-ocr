@@ -637,7 +637,7 @@ function detailTable(fileName) {
                     tblTag += '</label>';
                     tblTag += '</dt>';
                     tblTag += '<dd>';
-                    tblTag += '<input type="checkbox" class="entryChk" checked>';
+                    tblTag += '<input type="checkbox" class="entryChk">';
                     tblTag += '</dd>';
                     tblTag += '<dd class="columnSelect">';
                     tblTag += appendOptionHtml((data[i].colLbl + '') ? data[i].colLbl : 999, columnArr);
