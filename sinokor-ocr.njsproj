@@ -1033,6 +1033,9 @@
     <Compile Include="routes\util\callPython.js" />
     <Compile Include="routes\util\common.js" />
     <Compile Include="routes\util\largeExcelRead.js" />
+    <Compile Include="routes\util\listProc.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="routes\util\logger.js" />
     <Compile Include="routes\util\ocr.js" />
     <Compile Include="routes\util\mlStudio.js" />
