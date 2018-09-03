@@ -27,6 +27,7 @@ router.post('/ocr', function (req, res) {
     };
 
     request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
+        //if (err) res.send({ 'code': 500, 'error': err });
         var data = JSON.parse(body);
         //console.log(data);
         res.send(data);

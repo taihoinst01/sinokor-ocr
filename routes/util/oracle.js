@@ -1062,7 +1062,7 @@ exports.insertOcrSymsSingle = function (req, done) {
         var result;
         for (var i in reqArr) {
           result = await conn.execute(selectTypo, [reqArr[i]]);
-          if (result.rows.length == 0) {
+          if (result.rows.length == 0 && reqArr[i] != "") {
             result = await conn.execute(insertTypo, [reqArr[i]]);
           } else {
             //result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [reqArr[i]]);
@@ -1091,8 +1091,20 @@ exports.insertContractMapping = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            //201880903 check 조회 후 있을경우 인서트 안함
-            result = await conn.execute(queryConfig.uiLearningConfig.insertContractMapping2, [req[0], req[1], req[2], req[3]]);
+
+            selContract = await conn.execute(`SELECT * FROM TBL_CONTRACT_MAPPING WHERE EXTOGCOMPANYNAME = :extog `, [req[0]]);
+
+            selContractAsog = await conn.execute(`SELECT * FROM TBL_CONTRACT_MAPPING WHERE EXTOGCOMPANYNAME = :extog AND ASOGCOMPANYNAME = :asog `, [req[0], req[2]]);
+
+            if (selContract.rows.length == 0 && selContractAsog.rows.length == 0) {
+                result = await conn.execute(queryConfig.uiLearningConfig.insertContractMapping2, [req[0], req[1], req[2], req[3]]);
+            } else {
+                //201880903 check 조회 후 있을경우 인서트 안함
+
+                if (selContract.rows.length > 0 && selContractAsog.rows.length == 0) {
+                    updContract = await conn.execute(`UPDATE TBL_CONTRACT_MAPPING SET ASOGCOMPANYNAME = :asog WHERE EXTOGCOMPANYNAME = :extog`, [req[2], req[0]]);
+                }
+            }
 
             return done(null, null);
 		} catch (err) { // catches errors in getConnection and the query
@@ -1560,3 +1572,34 @@ exports.selectEntryMappingCls = function (req, done) {
     });
 };
 
+exports.selectOcrData = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(`SELECT * FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath `, [req]);
+            //result = await conn.execute(`SELECT * FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath `, ['C:/ICR/MIG/MIG/2014/img1/7a/25b7a/209391.tif']);
+
+            if (result.rows.length == 0) {
+                return done(null, result.rows);
+            }
+
+            var ocr = JSON.parse(result.rows[0].OCRDATA);
+            var retData = ocrJson(ocr.regions);
+
+            return done(null, retData);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};

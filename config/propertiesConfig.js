@@ -12,8 +12,8 @@ var propertiesConfig = {
 
     },
     ocr: {
-        uri: 'https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr',
-        subscriptionKey: '172cbd45da044432a1c1871d12d71205',
+        uri: 'https://eastasia.api.cognitive.microsoft.com/vision/v1.0/ocr',
+        subscriptionKey: '00ec4f5cd65e4dc0977047b69554235c',
     },
     filepath: {
         //develop
