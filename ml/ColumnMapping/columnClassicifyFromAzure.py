@@ -16,12 +16,11 @@ import requests
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.logging.set_verbosity(tf.logging.ERROR)
-#checkpointDir = 'C:\\Users\\user\\PycharmProjects\\typosentence\\checkpoint'
-#checkpointDir = 'C:\\projectWork\\koreanre2\\ColumnMapping\\checkpoint'
-checkpointDir = 'C:\\ICR\\app\\source\\ml\\ColumnMapping\\checkpoint'
-feature_columns = [tf.contrib.layers.real_valued_column("", dimension=8)]
-classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hidden_units=[10, 20, 10],
-                                            n_classes=40, model_dir=checkpointDir)
+
+# checkpointDir = 'C:\\ICR\\app\\source\\ml\\ColumnMapping\\checkpoint'
+# feature_columns = [tf.contrib.layers.real_valued_column("", dimension=8)]
+# classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hidden_units=[10, 20, 10],
+#                                            n_classes=40, model_dir=checkpointDir)
 
 id = "koreanre"
 pw = "koreanre01"
@@ -93,8 +92,8 @@ def training():
 
     try:
         params = {'cmData': json.dumps(trainData), 'type': 'columnMapping'}
-        r = requests.post(url='http://sinokor-rest.azurewebsites.net/ml/train', data=params) # 로컬
-        # r = requests.post(url='http://210.109.27.111:8888/ml/train', data=params) # 운영
+        r = requests.post(url='http://sinokor-rest.azurewebsites.net/ml/train', data=params) # 로컬 (Azure Web App)
+        # r = requests.post(url='http://210.109.27.111:8888/ml/train', data=params) # 운영 (Proxy)
 
         print(str({'code': 200, 'message': 'column mapping train success'}))
     except Exception as e:
@@ -118,8 +117,8 @@ def eval(inputJson):
             count = count + 1
 
         params = {'data': json.dumps(param), 'type': 'columnMapping'}
-        r = requests.post(url='http://sinokor-rest.azurewebsites.net/ml/api', data=params) # 로컬
-        # r = requests.post(url='http://210.109.27.111:8888/ml/api', data=params) # 운영
+        r = requests.post(url='http://sinokor-rest.azurewebsites.net/ml/api', data=params) # 로컬 (Azure Web App)
+        # r = requests.post(url='http://210.109.27.111:8888/ml/api', data=params) # 운영 (Proxy)
         result = r.json()
         for inputItem in inputArr:
             for resultItem in result:
