@@ -611,10 +611,10 @@ exports.callApiOcr = function (req, done) {
             body: uploadImage,
             method: 'POST'
         });
-        var resJson = JSON.parse(res.getBody('utf8'));
-        pharsedOcrJson = ocrJson(resJson.regions);
+        //var resJson = JSON.parse(res.getBody('utf8'));
+        //pharsedOcrJson = ocrJson(resJson.regions);
 
-        return done(null, pharsedOcrJson);
+        return done(null, res.getBody('utf8'));
     } catch (err) {
         console.log(err);
         return done(null, 'error');

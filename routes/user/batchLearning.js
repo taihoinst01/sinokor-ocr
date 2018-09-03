@@ -2266,6 +2266,13 @@ function batchLearnTraining(filepath, uiCheck, done) {
                 if (ocrResult == "error") {
                     return done(null, "error ocr");
                 }
+
+                if (ocrResult != null) {
+                    var insOcrData = sync.await(oracle.insertOcrData(propertiesConfig.filepath.answerFileFrontPath + filepath, ocrResult, sync.defer()));
+                    ocrResult = JSON.parse(ocrResult);
+                    ocrResult = ocrJson(ocrResult.regions);
+                }
+                
                 console.timeEnd("ocr");
             }
 
@@ -2273,7 +2280,7 @@ function batchLearnTraining(filepath, uiCheck, done) {
             console.time("typo ML");
             pythonConfig.typoOptions.args = [];
             pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
-            var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
+            var resPyStr = sync.await(PythonShell.run('typoBatch.py', pythonConfig.typoOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
             console.timeEnd("typo ML");
@@ -2352,6 +2359,21 @@ function batchLearnTraining(filepath, uiCheck, done) {
             return done(null, e);
         }
     });
+}
+
+function ocrJson(regions) {
+    var data = [];
+    for (var i = 0; i < regions.length; i++) {
+        for (var j = 0; j < regions[i].lines.length; j++) {
+            var item = '';
+            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
+                item += regions[i].lines[j].words[k].text + ' ';
+            }
+            //data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim().replace(/'/g, '`') });
+        }
+    }
+    return data;
 }
 
 
