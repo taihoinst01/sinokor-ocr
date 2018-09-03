@@ -1260,7 +1260,7 @@ select:disabled + ul.idealSelect:before {
 .box_content_bg .btn_rt {
     position: absolute;
     top: 8px;
-    right: 22px
+    right: 18px
 }
 
 .box_content.st_last {
