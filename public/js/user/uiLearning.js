@@ -1057,7 +1057,7 @@ function modifyTextData() {
                 data: JSON.stringify({ 'beforeData': beforeData[i].data, 'afterData': afterData }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
-                    makeTrainingData();
+                    //makeTrainingData();
                     endProgressBar(progressId);
                     alert("success training");
                 },
