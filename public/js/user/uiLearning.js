@@ -482,8 +482,8 @@ function executeML(totData) {
 
                         var mainImgHtml = '';
                         mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
-                        mainImgHtml += '<div id="redNemo">';
-                        mainImgHtml += '</div>';
+                        //mainImgHtml += '<div id="redNemo">';
+                        //mainImgHtml += '</div>';
                         mainImgHtml += '</div>';
                         mainImgHtml += '<div id="imageZoom">';
                         mainImgHtml += '<div id="redZoomNemo">';
@@ -865,8 +865,8 @@ function hoverSquare(e) {
     var height = reImg.height;
 
     //imageZoom 고정크기
-    var fixWidth = 992;
-    var fixHeight = 1402;
+    var fixWidth = 744; 
+    var fixHeight = 1052;
 
     var widthPercent = fixWidth / width;
     var heightPercent = fixHeight / height;
