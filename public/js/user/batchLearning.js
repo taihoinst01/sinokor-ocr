@@ -614,7 +614,7 @@ function popUpLayer2(ocrData, legacy) {
     mainImgHtml += '<div id="redNemo">';
     mainImgHtml += '</div>';
     mainImgHtml += '</div>';
-    mainImgHtml += '<div id="imageZoom">';
+    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
     mainImgHtml += '<div id="redZoomNemo">';
     mainImgHtml += '</div>';
     mainImgHtml += '</div>';
@@ -624,7 +624,7 @@ function popUpLayer2(ocrData, legacy) {
     var tblTag = '';
     for (var i in modifyData.data) {
         tblTag += '<dl>';
-        tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+        tblTag += '<dt onclick="zoomImg(this)">';
         tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
         tblTag += '<input type="text" value="' + modifyData.data[i].text + '" style="width:100%; border:0;" />';
         tblTag += '<input type="hidden" value="' + modifyData.data[i].location + '" />';
@@ -2060,7 +2060,7 @@ function uiLayerHtml(data) {
     mainImgHtml += '<div id="redNemo">';
     mainImgHtml += '</div>';
     mainImgHtml += '</div>';
-    mainImgHtml += '<div id="imageZoom">';
+    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
     mainImgHtml += '<div id="redZoomNemo">';
     mainImgHtml += '</div>';
     mainImgHtml += '</div>';
@@ -2070,7 +2070,7 @@ function uiLayerHtml(data) {
     var tblTag = '';
     for (var i in mlData) {
         tblTag += '<dl>';
-        tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+        tblTag += '<dt onclick="zoomImg(this)">';
         tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
         tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
         tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
@@ -2159,7 +2159,7 @@ function compareLayer(ocrData) {
     mainImgHtml += '<div id="redNemo">';
     mainImgHtml += '</div>';
     mainImgHtml += '</div>';
-    mainImgHtml += '<div id="imageZoom">';
+    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
     mainImgHtml += '<div id="redZoomNemo">';
     mainImgHtml += '</div>';
     mainImgHtml += '</div>';
@@ -2169,7 +2169,7 @@ function compareLayer(ocrData) {
     var tblTag = '';
     for (var i in mlData) {
         tblTag += '<dl>';
-        tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+        tblTag += '<dt onclick="zoomImg(this)">';
         tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
         tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
         tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
@@ -3070,7 +3070,7 @@ function selectLearningMethod() {
 }
 
 // 마우스 오버 이벤트
-function hoverSquare(e) {
+function zoomImg(e) {
     // 해당 페이지로 이동
     /* 몇 페이지 어디인지 표시
     var fileName = $(e).find('input[type=hidden]').attr('alt');
@@ -3146,4 +3146,7 @@ function moutSquare(e) {
     $('#mainImage').show();
 }
 
-
+function viewOriginImg() {
+    $('#imageZoom').hide();
+    $('#mainImage').show();
+}
