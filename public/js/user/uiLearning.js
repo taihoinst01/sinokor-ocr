@@ -201,6 +201,7 @@ function processImage(fileName) {
         } else if (data.error) { //ocr 이외 에러이면
             endProgressBar();
             alert(data.error);
+            location.href = '/uiLearning';
         } else { // ocr 에러 이면
             insertCommError(data.code, 'ocr');
             endProgressBar();
@@ -464,6 +465,7 @@ function executeML(totData) {
                 if (data.message) {
                     console.log(data);
                 } else {
+                    console.log(data);
                     lineText.push(data);
                     if (searchDBColumnsCount == 1) {
                         /*
