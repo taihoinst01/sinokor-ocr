@@ -1028,6 +1028,7 @@ function uiTrainEvent() {
 }
 
 function modifyTextData() {
+    progressId = showProgressBar();
     var beforeData = lineText;
     var afterData = {};
     afterData.data = [];
@@ -1055,11 +1056,12 @@ function modifyTextData() {
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
                     //makeTrainingData();
+                    endProgressBar(progressId);
                     alert("success training");
-                    addProgressBar(81, 100);
                 },
                 error: function (err) {
                     console.log(err);
+                    endProgressBar(progressId);
                 }
             });
             break;
