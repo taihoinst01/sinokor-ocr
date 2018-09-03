@@ -1560,3 +1560,34 @@ exports.selectEntryMappingCls = function (req, done) {
     });
 };
 
+exports.selectOcrData = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(`SELECT * FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath `, [req]);
+            //result = await conn.execute(`SELECT * FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath `, ['C:/ICR/MIG/MIG/2014/img1/7a/25b7a/209391.tif']);
+
+            if (result.rows.length == 0) {
+                return done(null, result.rows);
+            }
+
+            var ocr = JSON.parse(result.rows[0].OCRDATA);
+            var retData = ocrJson(ocr.regions);
+
+            return done(null, retData);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
