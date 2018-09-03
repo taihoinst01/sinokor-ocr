@@ -94,7 +94,7 @@ def training():
     try:
         params = {'cmData': json.dumps(trainData), 'type': 'columnMapping'}
         r = requests.post(url='http://localhost:8888/ml/train', data=params)
-        # r = requests.post(url='http://210.109.27.111:8888/ml/train', params=params)
+        # r = requests.post(url='http://210.109.27.111:8888/ml/train', data=params)
 
         print(str({'code': 200, 'message': 'column mapping train success'}))
     except Exception as e:
@@ -119,7 +119,7 @@ def eval(inputJson):
 
         params = {'data': json.dumps(param), 'type': 'columnMapping'}
         r = requests.post(url='http://localhost:8888/ml/api', data=params)
-        # r = requests.post(url='http://210.109.27.111:8888/ml/api', params=params)
+        # r = requests.post(url='http://210.109.27.111:8888/ml/api', data=params)
         result = r.json()
         for inputItem in inputArr:
             for resultItem in result:
