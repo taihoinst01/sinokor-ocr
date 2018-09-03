@@ -149,7 +149,7 @@ router.post('/modifyTextData', function (req, res) {
                         //사용자가 지정한 컬럼라벨의 텍스트가 유효한 컬럼의 경우 OcrSymspell에 before text(중요!!) insert
                         if (afterData.data[i].colLbl >= 0 && afterData.data[i].colLbl <= 34) {
                             //UY의 경우 텍스트는 무의미 위치 정보로 체크필요
-                            if (afterData.data[i].colLbl != 3) {
+                            if (afterData.data[i].colLbl != 2) {
                                 sync.await(oracle.insertOcrSymsSingle(beforeData.data[j], sync.defer()));
                             }
                         }
