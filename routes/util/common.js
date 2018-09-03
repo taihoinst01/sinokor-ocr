@@ -10,6 +10,8 @@ var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
+var pythonConfig = require(appRoot + '/config/pythonConfig');
+var PythonShell = require('python-shell')
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 var execSync = require('sync-exec');
@@ -135,6 +137,7 @@ router.post('/modifyTextData', function (req, res) {
     var returnObj;
     sync.fiber(function () {
         try {
+            
             for (var i in afterData.data) {
                 for (var j in beforeData.data) {
                     if (afterData.data[i].location == beforeData.data[j].location) {
@@ -158,11 +161,13 @@ router.post('/modifyTextData', function (req, res) {
                     } 
                 }
             }
-
+            
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args = ["training"];
     
             sync.await(PythonShell.run('columnClassicify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            //sync.await(PythonShell.run('columnClassicifyFromAzure.py', pythonConfig.columnMappingOptions, sync.defer())); //azure
+
             // for (var i in afterData.data) {
             //     if (afterData.data[i].colLbl == 0 || afterData.data[i].colLbl == 1) { // ogCompany or contractName 
             //         for (var j in beforeData.data) {
@@ -204,6 +209,7 @@ router.post('/modifyTextData', function (req, res) {
             returnObj = { code: 200, message: 'modify textData success' };
 
         } catch (e) {
+            console.log(e);
             returnObj = { code: 500, error: e };
         } finally {
             res.send(returnObj);
