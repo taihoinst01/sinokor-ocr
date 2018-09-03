@@ -21,13 +21,13 @@ exports.select = function (req, done) {
                 var sid = "";
                 locSplit = req[i].location.split(",");
                 //sid += locSplit[0] + "," + locSplit[1];
-
+                sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
 
                 let result = await conn.execute(sqltext, [req[i].text]);
 
                 if (result.rows[0] != null) {
-                    //sid += "," + result.rows[0].SID;
-                    sid += result.rows[0].SID;
+                    sid += "," + result.rows[0].SID;
+                    //sid += result.rows[0].SID;
                 }
                 req[i].sid = sid;
             }
@@ -125,6 +125,34 @@ exports.selectLegacyFileData = function (req, done) {
     });
   };
 
+  exports.selectDomainDict = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+      var conn;
+      let returnObj = null;
+      let selectContractMapping = `SELECT asOgcompanyName legacy FROM tbl_contract_mapping WHERE extOgcompanyName = :extOgcompanyName`;
+      try {
+        conn = await oracledb.getConnection(dbConfig);
+        let result = await conn.execute(selectContractMapping, req,{outFormat: oracledb.OBJECT},);
+        if (result.rows[0] != null) {
+          returnObj = result.rows[0].LEGACY;
+        } else {
+          returnObj = null;
+        }
+  
+        return done(null, returnObj);
+      } catch (err) {
+        reject(err);
+      } finally {
+        if (conn) {
+          try {
+            await conn.release();
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+    });
+  };
 exports.selectDocCategory = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -359,14 +387,11 @@ exports.insertColumnMapping = function (req, done) {
             let insertSqlText = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
             let updateSqlText = `UPDATE TBL_COLUMN_MAPPING_TRAIN SET DATA = :DATA, CLASS = :CALSS, REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
 
-            for (var i in req.data) {
-                var result = await conn.execute(selectSqlText, [req.data[i].sid, req.data[i].colLbl]);
-                if (result.rows[0]) {
-                    //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
-                } else {
-                    await conn.execute(insertSqlText, [req.data[i].sid, req.data[i].colLbl]);
-                }
-                    
+            var result = await conn.execute(selectSqlText, [req.sid, req.colLbl]);
+            if (result.rows[0]) {
+                //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
+            } else {
+                await conn.execute(insertSqlText, [req.sid, req.colLbl]);
             }
             return done(null, req);
         } catch (err) {
@@ -994,7 +1019,71 @@ exports.insertOcrSymspellForCurcd = function (req, done) {
         }
     });
 };
-
+exports.selectSid = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+      let conn;
+  
+      try {
+        conn = await oracledb.getConnection(dbConfig);
+        let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
+        var sid = "";
+        locSplit = req.location.split(",");
+        //need check
+        sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
+  
+        let result = await conn.execute(sqltext, [req.text]);
+  
+        if (result.rows[0] != null) {
+          sid += "," + result.rows[0].SID;
+        }
+        return done(null, sid);
+      } catch (err) {
+        reject(err);
+      } finally {
+        if (conn) {
+          try {
+            await conn.release();
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+    });
+  };
+  
+exports.insertOcrSymsSingle = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+      let conn;
+      try {
+        let selectTypo = `SELECT seqNum FROM tbl_ocr_symspell WHERE keyword=:keyWord `;
+        let insertTypo = `INSERT INTO tbl_ocr_symspell(seqNum, keyword, frequency) VALUES (seq_ocr_symspell.nextval, :keyWord, 1)`;
+        conn = await oracledb.getConnection(dbConfig);
+        var reqArr = req.text.split(' ');
+        var result;
+        for (var i in reqArr) {
+          result = await conn.execute(selectTypo, [reqArr[i]]);
+          if (result.rows.length == 0) {
+            result = await conn.execute(insertTypo, [reqArr[i]]);
+          } else {
+            //result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [reqArr[i]]);
+          }
+        }
+  
+        return done(null, null);
+      } catch (err) { // catches errors in getConnection and the query
+        console.log(err);
+        reject(err);
+      } finally {
+        if (conn) {   // the conn assignment worked, must release
+          try {
+            await conn.release();
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+    });
+  };
 exports.insertContractMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -1002,6 +1091,7 @@ exports.insertContractMapping = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
+            //201880903 check 조회 후 있을경우 인서트 안함
             result = await conn.execute(queryConfig.uiLearningConfig.insertContractMapping2, [req[0], req[1], req[2], req[3]]);
 
             return done(null, null);

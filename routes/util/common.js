@@ -132,50 +132,75 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 router.post('/modifyTextData', function (req, res) {
     var beforeData = req.body.beforeData;
     var afterData = req.body.afterData;
-    var beforeOgAndCtnm = [];
-    var afterOgAndCtnm = [];
     var returnObj;
-
     sync.fiber(function () {
         try {
             for (var i in afterData.data) {
-                if (afterData.data[i].colLbl == 0 || afterData.data[i].colLbl == 1) { // ogCompany or contractName 
-                    for (var j in beforeData.data) {
-                        if (afterData.data[i].location == beforeData.data[j].location) {
-
-                            if (isWordLengthMatch(afterData.data[i], beforeData.data[j])) { // text length difference is less than 2
-                                sync.await(oracle.insertOcrSymspell([afterData.data[i]], sync.defer()));
-                            } else {
-                                beforeOgAndCtnm.push(beforeData.data[j]);
-                                afterOgAndCtnm.push(afterData.data[i]);
-                            }
-
+                for (var j in beforeData.data) {
+                    if (afterData.data[i].location == beforeData.data[j].location) {
+                        //사용자가 글자를 직접 수정한 경우 TBL_CONTRACT_MAPPING에 insert
+                        if (afterData.data[i].text != beforeData.data[j].text) {
+                            var item = [beforeData.data[j].text, '', afterData.data[i].text, ''];
+                            sync.await(oracle.insertContractMapping(item, sync.defer()));
                         }
-                    }
-                } else if (afterData.data[i].colLbl == 3) {// currency code
-                    for (var j in beforeData.data) {
-                        if (afterData.data[i].location == beforeData.data[j].location && afterData.data[i].text != beforeData.data[j].text) {
-                            sync.await(oracle.insertOcrSymspellForCurcd([afterData.data[i], beforeData.data[j]], sync.defer()));
-                        }
-                    }
-                } else if (afterData.data[i].colLbl != 37 && (afterData.data[i].colLbl >= 4 && afterData.data[i].colLbl <= 38)) {
-                    for (var j in beforeData.data) {
-                        if (afterData.data[i].location == beforeData.data[j].location) {
-                            if (afterData.data[i].text.toLowerCase() != beforeData.data[j].text.toLowerCase()) { // text length difference is less than 2
-                                sync.await(oracle.insertOcrSymspell([afterData.data[i]], sync.defer()));
+                        //사용자가 지정한 컬럼라벨의 텍스트가 유효한 컬럼의 경우 OcrSymspell에 before text(중요!!) insert
+                        if (afterData.data[i].colLbl >= 0 && afterData.data[i].colLbl <= 34) {
+                            //UY의 경우 텍스트는 무의미 위치 정보로 체크필요
+                            if (afterData.data[i].colLbl != 3) {
+                                sync.await(oracle.insertOcrSymsSingle(beforeData.data[j], sync.defer()));
                             }
                         }
-                    }
+                        afterData.data[i].sid = sync.await(oracle.selectSid(beforeData.data[j], sync.defer()));
+                        //라벨이 변경된 경우만 트레이닝 insert
+                        if (afterData.data[i].colLbl != beforeData.data[j].colLbl) {
+                            sync.await(oracle.insertColumnMapping(afterData.data[i], sync.defer()));
+                        }
+                    } 
                 }
             }
 
-            var params = convertContractMappingData(beforeOgAndCtnm, afterOgAndCtnm);
-            if (params) {
-                for (var i in params) {
-                    var item = [params[i][0], params[i][1], params[i][2], params[i][3]];
-                    sync.await(oracle.insertContractMapping(item, sync.defer()));
-                }
-            }
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args = ["training"];
+    
+            sync.await(PythonShell.run('columnClassicify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            // for (var i in afterData.data) {
+            //     if (afterData.data[i].colLbl == 0 || afterData.data[i].colLbl == 1) { // ogCompany or contractName 
+            //         for (var j in beforeData.data) {
+            //             if (afterData.data[i].location == beforeData.data[j].location) {
+
+            //                 if (isWordLengthMatch(afterData.data[i], beforeData.data[j])) { // text length difference is less than 2
+            //                     sync.await(oracle.insertOcrSymspell([afterData.data[i]], sync.defer()));
+            //                 } else {
+            //                     beforeOgAndCtnm.push(beforeData.data[j]);
+            //                     afterOgAndCtnm.push(afterData.data[i]);
+            //                 }
+
+            //             }
+            //         }
+            //     } else if (afterData.data[i].colLbl == 3) {// currency code
+            //         for (var j in beforeData.data) {
+            //             if (afterData.data[i].location == beforeData.data[j].location && afterData.data[i].text != beforeData.data[j].text) {
+            //                 sync.await(oracle.insertOcrSymspellForCurcd([afterData.data[i], beforeData.data[j]], sync.defer()));
+            //             }
+            //         }
+            //     } else if (afterData.data[i].colLbl != 37 && (afterData.data[i].colLbl >= 4 && afterData.data[i].colLbl <= 38)) {
+            //         for (var j in beforeData.data) {
+            //             if (afterData.data[i].location == beforeData.data[j].location) {
+            //                 if (afterData.data[i].text.toLowerCase() != beforeData.data[j].text.toLowerCase()) { // text length difference is less than 2
+            //                     sync.await(oracle.insertOcrSymspell([afterData.data[i]], sync.defer()));
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+
+            // var params = convertContractMappingData(beforeOgAndCtnm, afterOgAndCtnm);
+            // if (params) {
+            //     for (var i in params) {
+            //         var item = [params[i][0], params[i][1], params[i][2], params[i][3]];
+            //         sync.await(oracle.insertContractMapping(item, sync.defer()));
+            //     }
+            // }
             returnObj = { code: 200, message: 'modify textData success' };
 
         } catch (e) {
@@ -264,58 +289,9 @@ router.post('/selectTypoData2', function (req, res) {
     sync.fiber(function () {
         try {
             for (var i in data) {
-                if (data[i].colLbl == 0) {
-                    ogCompanyName.push(data[i]);
-                } else if (data[i].colLbl == 1) {
-                    ctnm.push(data[i]);
-                } else if (data[i].colLbl == 3) {
-                    curcd.push(data[i]);
-                }
-            }
-            if (ogCompanyName.length > 1 && ctnm.length == 1) { // N:1
-                for (var i = 1; i < ogCompanyName.length; i++) ctnm.push(ctnm[0]);
-            } else if (ogCompanyName.length == 1 && ctnm.length > 1) { // 1:N
-                for (var i = 1; i < ctnm.length; i++) ogCompanyName.push(ogCompanyName[0]);
-            }
-            // select tbl_contract_mapping And save modified text data (ogCompanyName, contractName)
-            if (ogCompanyName.length != 0 && ctnm.length != 0) {
-                for (var i in ogCompanyName) {
-                    var result = sync.await(oracle.selectContractMapping2([ogCompanyName[i].text, ctnm[i].text], sync.defer()));
-                    if (result) {
-                        ogCompanyName[i].text = result.ASOGCOMPANYNAME;
-                        ctnm[i].text = result.ASCTNM;
-                    }
-                }
-            }
-
-            // select tbl_curcd_mapping And save modified text data (curcd)
-            for (var i in curcd) {
-                var result = sync.await(oracle.selectCurcdMapping(curcd[i].text, sync.defer()));
-                if (result) {
-                    curcd[i].text = result.AFTERTEXT;
-                }
-            }
-
-            // save modified text data to return data           
-            for (var i in data) {
-                if (data[i].colLbl == 0 || data[i].colLbl == 1) {
-                    if (ogCompanyName.length != 0 && ctnm.length != 0) {
-                        for (var j in ogCompanyName) {
-                            if (data[i].location == ogCompanyName[j].location) {
-                                data[i].text = ogCompanyName[j].text;
-								break;
-                            }
-                        }
-                    }
-                } else if (data[i].colLbl == 3) {
-                    if (curcd.length != 0) {
-                        for (var j in curcd) {
-                            if (data[i].location == curcd[j].location) {
-                                data[i].text = curcd[j].text;
-								break;
-                            }
-                        }
-                    }
+                let result = sync.await(oracle.selectDomainDict([data[i].text], sync.defer()));
+                if(result) {
+                    data[i].text = result;
                 }
             }
 
