@@ -513,7 +513,7 @@ function executeML(totData) {
 
                     if (totCount == searchDBColumnsCount) {
                         thumbImgEvent();
-                        addProgressBar(91, 100);
+                        addProgressBar(91, 99);
                         $('#uploadForm').hide();
                         $('#uploadSucessForm').show();
                     }
@@ -522,6 +522,7 @@ function executeML(totData) {
         },
         error: function (err) {
             console.log(err);
+            endProgressBar();
         }
     });
 }
@@ -543,8 +544,11 @@ function selectTypoText(index, fileName) {
             lineText[index].data = data;
             detailTable(fileName);
             docComparePopup(0);
+
+            endProgressBar();
         },
         error: function (err) {
+            endProgressBar();
             console.log(err);
         }
     });
