@@ -1061,6 +1061,7 @@ exports.insertOcrSymsSingle = function (req, done) {
         var reqArr = req.text.split(' ');
         var result;
         for (var i in reqArr) {
+          //20180903 만약 단어가 기호로만 이루어져 있으면 인서트 안함
           result = await conn.execute(selectTypo, [reqArr[i]]);
           if (result.rows.length == 0 && reqArr[i] != "") {
             result = await conn.execute(insertTypo, [reqArr[i]]);

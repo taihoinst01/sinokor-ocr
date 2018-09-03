@@ -147,11 +147,8 @@ router.post('/modifyTextData', function (req, res) {
                             sync.await(oracle.insertContractMapping(item, sync.defer()));
                         }
                         //사용자가 지정한 컬럼라벨의 텍스트가 유효한 컬럼의 경우 OcrSymspell에 before text(중요!!) insert
-                        if (afterData.data[i].colLbl >= 0 && afterData.data[i].colLbl <= 34) {
-                            //UY의 경우 텍스트는 무의미 위치 정보로 체크필요
-                            if (afterData.data[i].colLbl != 2) {
-                                sync.await(oracle.insertOcrSymsSingle(beforeData.data[j], sync.defer()));
-                            }
+                        if (afterData.data[i].colLbl >= 3 && afterData.data[i].colLbl <= 34) {
+                            sync.await(oracle.insertOcrSymsSingle(beforeData.data[j], sync.defer()));
                         }
                         afterData.data[i].sid = sync.await(oracle.selectSid(beforeData.data[j], sync.defer()));
                         //라벨이 변경된 경우만 트레이닝 insert
