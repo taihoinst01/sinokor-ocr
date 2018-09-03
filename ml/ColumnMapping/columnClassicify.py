@@ -25,8 +25,8 @@ classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hid
 id = "koreanre"
 pw = "koreanre01"
 sid = "koreanreocr"
-# ip = "10.10.20.205"
-ip = "172.16.53.142"
+ip = "10.10.20.205"
+#ip = "172.16.53.142"
 port = "1521"
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
