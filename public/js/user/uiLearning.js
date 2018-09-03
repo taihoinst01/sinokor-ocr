@@ -487,7 +487,7 @@ function executeML(totData) {
                         //mainImgHtml += '<div id="redNemo">';
                         //mainImgHtml += '</div>';
                         mainImgHtml += '</div>';
-                        mainImgHtml += '<div id="imageZoom">';
+                        mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
                         mainImgHtml += '<div id="redZoomNemo">';
                         mainImgHtml += '</div>';
                         mainImgHtml += '</div>';
@@ -600,7 +600,7 @@ function detailTable(fileName) {
                 // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
                 if (data[i].colLbl == 37) {
                     tblTag += '<dl>';
-                    tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblTag += '<dt onclick="zoomImg(this)">';
                     tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
                     tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
@@ -618,7 +618,7 @@ function detailTable(fileName) {
                     tblTag += '</dl>';
                 } else if (data[i].colLbl == 38) {
                     tblSortTag += '<dl>';
-                    tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblSortTag += '<dt onclick="zoomImg(this)">';
                     tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
                     tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
                     tblSortTag += '<input type="hidden" value="' + data[i].location + '" />';
@@ -636,7 +636,7 @@ function detailTable(fileName) {
                     tblSortTag += '</dl>';
                 } else {
                     tblTag += '<dl>';
-                    tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblTag += '<dt onclick="zoomImg(this)">';
                     tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
                     tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
@@ -663,7 +663,7 @@ function detailTable(fileName) {
                 for (var dataN in item.data) {
                     if (sort[sortN].ENKEYWORD == item.data[dataN].column) {
                         tblSortTag += '<dl>';
-                        tblSortTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                        tblSortTag += '<dt onmouseover="zoomImg(this)" onmouseout="moutSquare(this)">';
                         tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
                         if (item.data[dataN].text.length > 34) {
                             tblSortTag += '<label class="iclick">'
@@ -697,7 +697,7 @@ function detailTable(fileName) {
 
                 if (sortBool == true) {
                     tblTag += '<dl>';
-                    tblTag += '<dt onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+                    tblTag += '<dt onmouseover="zoomImg(this)" onmouseout="moutSquare(this)">';
                     tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
                     tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
                     tblTag += '<input type="hidden" value="' + item.data[j].location + '" />';
@@ -720,7 +720,7 @@ function detailTable(fileName) {
         /* 몇 페이지 어디인지 표시
         var item = lineText[i];
         for (var j = 0; j < item.data.length; j++) {
-            tblTag += '<tr onmouseover="hoverSquare(this)" onmouseout="moutSquare(this)">';
+            tblTag += '<tr onmouseover="zoomImg(this)" onmouseout="moutSquare(this)">';
             //tblTag += '<tr>';
             tblTag += '<td>';
             tblTag += '<input type="text" value="' + item.data[j].text + '" style="width:100%; border:0;" />';
@@ -851,7 +851,7 @@ function dbColumnsOption(data, column) {
 }
 
 // 마우스 오버 이벤트
-function hoverSquare(e) {
+function zoomImg(e) {
     // 해당 페이지로 이동
     /* 몇 페이지 어디인지 표시
     var fileName = $(e).find('input[type=hidden]').attr('alt');
@@ -923,6 +923,11 @@ function hoverSquare(e) {
 function moutSquare(e) {
     //$('#redNemo').hide();
     $('#redZoomNemo').hide();
+    $('#imageZoom').hide();
+    $('#mainImage').show();
+}
+
+function viewOriginImg() {
     $('#imageZoom').hide();
     $('#mainImage').show();
 }
