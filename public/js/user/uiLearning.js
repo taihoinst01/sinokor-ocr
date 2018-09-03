@@ -513,7 +513,7 @@ function executeML(totData) {
 
                     if (totCount == searchDBColumnsCount) {
                         thumbImgEvent();
-                        addProgressBar(91, 100);
+                        addProgressBar(91, 99);
                         $('#uploadForm').hide();
                         $('#uploadSucessForm').show();
                     }
@@ -522,6 +522,7 @@ function executeML(totData) {
         },
         error: function (err) {
             console.log(err);
+            endProgressBar();
         }
     });
 }
@@ -543,8 +544,11 @@ function selectTypoText(index, fileName) {
             lineText[index].data = data;
             detailTable(fileName);
             docComparePopup(0);
+
+            endProgressBar();
         },
         error: function (err) {
+            endProgressBar();
             console.log(err);
         }
     });
@@ -1024,6 +1028,7 @@ function uiTrainEvent() {
 }
 
 function modifyTextData() {
+    progressId = showProgressBar();
     var beforeData = lineText;
     var afterData = {};
     afterData.data = [];
@@ -1051,11 +1056,12 @@ function modifyTextData() {
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
                     //makeTrainingData();
+                    endProgressBar(progressId);
                     alert("success training");
-                    addProgressBar(81, 100);
                 },
                 error: function (err) {
                     console.log(err);
+                    endProgressBar(progressId);
                 }
             });
             break;
