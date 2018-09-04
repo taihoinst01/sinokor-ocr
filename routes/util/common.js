@@ -349,7 +349,9 @@ router.post('/ocr', function (req, res) {
                     if ((JSON.parse(body)).code) { // ocr api error
                         res.send({ code: (JSON.parse(body)).code, message: (JSON.parse(body)).message });
                     } else { // 성공
+                        //pass => 한글 English 1234567890 <>,.!@#$%^&*()~`-+_=|;:?/ lid => Iñtërnâtiônàlizætiøn☃
                         res.send(JSON.parse(body));
+                        //send전 parsing 된 array 중 text안에 {}[]'" 있을 경우 삭제
                     }
                 }
             });
