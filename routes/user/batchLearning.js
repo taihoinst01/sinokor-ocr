@@ -2293,9 +2293,6 @@ function batchLearnTraining(filepath, uiCheck, done) {
             //결과 script 에 리턴
 
 
-            //20180904 hskim 개별학습의 column mapping DL 사용할 것 aimain function 호출
-
-
             // //column mapping DL
             // console.time("columnMapping ML");
             // pythonConfig.columnMappingOptions.args = [];
