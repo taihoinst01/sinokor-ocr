@@ -1267,11 +1267,11 @@ var searchBatchLearnDataList = function (addCond) {
                     var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
                                                 checkboxHtml +
-                                                '<td>' + nvl(rows[0].FILENAME)  + '</td> <!--FILENAME-->' +
+                                              '<td><a onclick="javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', this)" href="javascript:void(0);">' + nvl(rows[0].FILENAME)  + '</a></td> <!--FILENAME-->' +
                                               '</tr>';
 
                     for (var y = 0; y < rows.length; y++) {
-                        appendRightContentsHtml += '<tr>' +
+                        appendRightContentsHtml += '<tr class="rowNum' + i + '">' +
                                         '<td>' + nvl(rows[y].OGCOMPANYNAME) + '</td> <!--출재사명-->' +
                                         '<td>' + nvl(rows[y].CTNM) + '</td> <!--계약명-->' +
                                         '<td>' + nvl(rows[y].UY) + '</td> <!--UY-->' +
@@ -1312,7 +1312,7 @@ var searchBatchLearnDataList = function (addCond) {
                     }                   
                     var mlData = data.mlData;
                     if (mlData.rows.length != 0) {
-                        appendRightContentsHtml += '<tr class="mlTr">' +                                    
+                        appendRightContentsHtml += '<tr class="mlTr rowNum' + i + '">' +                                    
                                         '<td>' + makeMLSelect(mlData.rows, 0, rows[0].FILEPATH) + '</td> <!--출재사명-->' +
                                         '<td>' + makeMLSelect(mlData.rows, 1, rows[0].FILEPATH) + '</td> <!--계약명-->' +
                                         '<td>' + makeMLSelect(mlData.rows, 2, rows[0].FILEPATH) + '</td> <!--UY-->' +
@@ -1352,7 +1352,7 @@ var searchBatchLearnDataList = function (addCond) {
                                     '</tr>';
                     } else {                   
                         appendRightContentsHtml += 
-                                    '<tr class="mlTr">' +
+                                    '<tr class="mlTr rowNum' + i + '">' +
                                         '<td colspan="36"></td>' +          
                                     '</tr>';
                     
@@ -1503,114 +1503,49 @@ function compareMLAndAnswer(mlData) {
     }
 }
 
-function fn_viewImageData(imgId, obj) {
+function fn_viewImageData(filepath, rowNum ,obj) {
 
     //$('#viewImage').attr('src', '../../uploads/' + $(obj).text().split('.')[0] + '.jpg');
     //layer_open('layer3');
+    var fileTypes = ['tiff', 'tif'];
+    var appendHtml = '';
+    var data = $('.rowNum' + rowNum);
+    var fr = new FileReader();
 
-    var imgParam = {
-        imgId: imgId
-    };
-    $.ajax({
-        url: '/batchLearning/viewImage',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify(imgParam),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log("data : " + JSON.stringify(data));
-            if (data.code == "201") {
-                $("#span_view_image").remove();
-                $('#viewImage').after('<span id="span_view_image">이미지를 변환중입니다. 다시 확인해주세요.<span>');
-            } else {
-                $("#span_view_image").remove();
-                $('#viewImage').attr('src', data.rows[0].CONVERTEDIMGPATH);
-            }
+   // var file = filepath.substring((filepath.lastIndexOf('/') + 1), filepath.length).split('.').pop().toLowerCase();
+
+    var loadImage = function (filename) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', filename);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function (e) {
+            var buffer = xhr.response;
+            var tiff = new Tiff({ buffer: buffer });
+            var canvas = tiff.toCanvas();
+
+            $(canvas).css({             
+                "width": "100%",
+                "height": "auto",
+                "display": "block",
+                "padding-top": "10px"
+            }).addClass("preview");
+            var width = tiff.width();
+            var height = tiff.height();
+
+            $('#div_view_image').empty().append(canvas);
             
-            innerFn_ViewImageData();
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
-
-    // 2018-08-06
-    function innerFn_ViewImageData() {
-        var param = {
-            imgId: imgId
         };
-        var appendHtml = '';
-
-        $.ajax({
-            url: '/batchLearning/viewImageData',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify(param),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-                if (data.length > 0) {
-                    $.each(data, function (index, entry) {
-                        appendHtml += 
-                            '<tr>' +
-                                '<td scope="row">' + nvl(entry.FILEPATH) + '</td>' +
-                                '<td scope="row">' + nvl(entry.IMGID) + '</td>' +
-                                '<td scope="row">' + nvl(entry.STATEMENTDIV) + '</td>' +
-                                '<td scope="row">' + nvl(entry.CONTRACTNUM) + '</td>' +
-                                '<td scope="row">' + nvl(entry.CTNM) + '</td>' +
-                                '<td scope="row">' + nvl(entry.OGCOMPANYCODE) + '</td>' +
-                                '<td scope="row">' + nvl(entry.OGCOMPANYNAME) + '</td>' +
-                                '<td scope="row">' + nvl(entry.BROKERCODE) + '</td>' +
-                                '<td scope="row">' + nvl(entry.BROKERNAME) + '</td>' +
-                                '<td scope="row">' + nvl(entry.INSSTDT) + '</td>' +
-                                '<td scope="row">' + nvl(entry.INSENDDT) + '</td>' +
-                                '<td scope="row">' + nvl(entry.CURCD) + '</td>' +
-                                '<td scope="row">' + nvl(entry.PAIDPERCENT) + '</td>' +
-                                '<td scope="row">' + nvl(entry.PAIDSHARE) + '</td>' +
-                                '<td scope="row">' + nvl(entry.GROSSPM) + '</td>' +
-                                '<td scope="row">' + nvl(entry.PM) + '</td>' +
-                                '<td scope="row">' + nvl(entry.PMPFEND) + '</td>' +
-                                '<td scope="row">' + nvl(entry.PMPFWOS) + '</td>' +
-                                '<td scope="row">' + nvl(entry.XOLPM) + '</td>' +
-                                '<td scope="row">' + nvl(entry.RETURNPM) + '</td>' +
-                                '<td scope="row">' + nvl(entry.GROSSCN) + '</td>' +
-                                '<td scope="row">' + nvl(entry.CN) + '</td>' +
-                                '<td scope="row">' + nvl(entry.PROFITCN) + '</td>' +
-                                '<td scope="row">' + nvl(entry.BROKERAGE) + '</td>' +
-                                '<td scope="row">' + nvl(entry.TAX) + '</td>' +
-                                '<td scope="row">' + nvl(entry.OVERRIDINGCOM) + '</td>' +
-                                '<td scope="row">' + nvl(entry.CHARGE) + '</td>' +
-                                '<td scope="row">' + nvl(entry.PMRESERVERTD1) + '</td>' +
-                                '<td scope="row">' + nvl(entry.PFPMRESERVERTD1) + '</td>' +
-                                '<td scope="row">' + nvl(entry.PMRESERVERTD2) + '</td>' +
-                                '<td scope="row">' + nvl(entry.PFPMRESERVERTD2) + '</td>' +
-                                '<td scope="row">' + nvl(entry.CLAIM) + '</td>' +
-                                '<td scope="row">' + nvl(entry.LOSSRECOVERY) + '</td>' +
-                                '<td scope="row">' + nvl(entry.CASHLOSS) + '</td>' +
-                                '<td scope="row">' + nvl(entry.CASHLOSSRD) + '</td>' +
-                                '<td scope="row">' + nvl(entry.LOSSRR) + '</td>' +
-                                '<td scope="row">' + nvl(entry.LOSSRR2) + '</td>' +
-                                '<td scope="row">' + nvl(entry.LOSSPFEND) + '</td>' +
-                                '<td scope="row">' + nvl(entry.LOSSPFWOA) + '</td>' +
-                                '<td scope="row">' + nvl(entry.INTEREST) + '</td>' +
-                                '<td scope="row">' + nvl(entry.TAXON) + '</td>' +
-                                '<td scope="row">' + nvl(entry.MISCELLANEOUS) + '</td>' +
-                                '<td scope="row">' + nvl(entry.PMBL) + '</td>' +
-                                '<td scope="row">' + nvl(entry.CMBL) + '</td>' +
-                                '<td scope="row">' + nvl(entry.NTBL) + '</td>' +
-                                '<td scope="row">' + nvl(entry.CSCOSARFRNCNNT2) + '</td>' +
-                            '</tr>';
-                    });
-                } else {
-                    appendHtml += '<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>';
-                }
-                $("#tbody_batchList_answer").empty().append(appendHtml);
-                layer_open('layer3');
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    }
+        xhr.send();
+    };
+    //loadImage('C:/ICR/MIG' + filepath); 운영서버 경로
+    loadImage('uploads/26.tif');
+    
+    $('#tbody_batchList_answer').empty().append(data.clone());
+    layer_open('layer3');
+    $('#div_view_image').scrollTop(0);
+    $('.batch_pop_divHeadScroll').scrollLeft(0);
+    $('.batch_pop_divBodyScroll').scrollLeft(0);
+    $('.batch_pop_divBodyScroll').scrollTop(0);
 }
 function imgPopupEvent() {
     //$('#tbody_batchList_before td > a').click(function () {

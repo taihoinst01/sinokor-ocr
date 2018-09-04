@@ -130,7 +130,7 @@ function popUpInsertDocCategory() {
     });
 }
 
-// 파일 업로드 이벤트
+// 개별 학습 파일 업로드 이벤트
 function uploadFileEvent() {
     $('#uploadFile').change(function () {
         if ($(this).val() !== '') {
@@ -151,8 +151,9 @@ function uploadFileEvent() {
         beforeSubmit: function (data, frm, opt) {
             $('#progressMsgTitle').html('파일 업로드 중..');
             $('#progressMsgDetail').html('');
-            startProgressBar(); // start progressbar
-            addProgressBar(1, 10); // proceed progressbar
+            progressId = showProgressBar();
+            //startProgressBar(); // start progressbar
+            //addProgressBar(1, 10); // proceed progressbar
             return true;
         },
         success: function (responseText, statusText) {
@@ -160,17 +161,18 @@ function uploadFileEvent() {
             $('#progressMsgTitle').html('파일 업로드 완료..');
             $('#progressMsgDetail').html('');
             $('.button_control').attr('disabled', false);
-            addProgressBar(11, 20);
+            //addProgressBar(11, 20);
             if (responseText.message.length > 0) {
                 totCount = responseText.message.length;
                 for (var i = 0; i < responseText.message.length; i++) {
                     processImage(responseText.message[i]);
                 }
             }
+            endProgressBar(progressId);
             //endProgressBar();
         },
         error: function (e) {
-            endProgressBar();
+            endProgressBar(progressId); // 에러 발생 시 프로그레스바 종료
             //console.log(e);
         }
     });
@@ -1036,6 +1038,7 @@ function uiTrainEvent() {
     });
 }
 
+//개별 학습 학습 내용 추가 ui training add
 function modifyTextData() {
     progressId = showProgressBar();
     var beforeData = lineText;
@@ -1146,28 +1149,29 @@ function makeTrainingData() {
         trainData.docCategory.push(lineText[0].docCategory[0]);
     }
     */
-    startProgressBar();
-    addProgressBar(1, 40);
-
-    callbackAddDocMappingTrain(trainData);
+    //startProgressBar();
+    //addProgressBar(1, 40);
+    progressId = showProgressBar();
+    callbackAddDocMappingTrain(trainData, progressId);
 }
 
 function insertTrainingData(data) {
     $('#progressMsgTitle').html('라벨 분류 학습 중..');
-    addProgressBar(21, 40);
+    //addProgressBar(21, 40);
     addLabelMappingTrain(data, callbackAddLabelMapping);
 }
 
 function callbackAddLabelMapping(data) {
     $('#progressMsgTitle').html('양식 분류 학습 중..');
-    addProgressBar(41, 60);
+    //addProgressBar(41, 60);
     addDocMappingTrain(data, callbackAddDocMappingTrain);
 }
 
-function callbackAddDocMappingTrain(data) {
+function callbackAddDocMappingTrain(data, progressId) {
     $('#progressMsgTitle').html('컬럼 맵핑 학습 중..');
-    addProgressBar(41, 80);
-    addColumnMappingTrain(data);
+    //addProgressBar(41, 80);
+    function blackCallback() { }
+    addColumnMappingTrain(data, blackCallback ,progressId);
 }
 
 
@@ -1241,7 +1245,7 @@ function addDocMappingTrain(data, callback) {
     });
 }
 
-function addColumnMappingTrain(data, callback) {
+function addColumnMappingTrain(data, callback, progressId) {
 
     $.ajax({
         url: '/batchLearning/insertColMapping',
@@ -1252,11 +1256,14 @@ function addColumnMappingTrain(data, callback) {
         success: function (res) {
             console.log(res);
             alert("success training");
-            addProgressBar(81, 100);
+            //addProgressBar(81, 100);
             //callback(data);
+            endProgressBar(progressId);
         },
         error: function (err) {
             console.log(err);
+            endProgressBar(progressId);
+
         }
     });
 }

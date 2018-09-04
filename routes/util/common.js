@@ -143,7 +143,7 @@ router.post('/modifyTextData', function (req, res) {
                     if (afterData.data[i].location == beforeData.data[j].location) {
                         //사용자가 글자를 직접 수정한 경우 TBL_CONTRACT_MAPPING에 insert
                         if (afterData.data[i].text != beforeData.data[j].text) {
-                            var item = [beforeData.data[j].text, '', afterData.data[i].text, ''];
+                            var item = [beforeData.data[j].originText, '', afterData.data[i].text, ''];
                             sync.await(oracle.insertContractMapping(item, sync.defer()));
                         }
                         //사용자가 지정한 컬럼라벨의 텍스트가 유효한 컬럼의 경우 OcrSymspell에 before text(중요!!) insert
@@ -349,7 +349,9 @@ router.post('/ocr', function (req, res) {
                     if ((JSON.parse(body)).code) { // ocr api error
                         res.send({ code: (JSON.parse(body)).code, message: (JSON.parse(body)).message });
                     } else { // 성공
+                        //pass => 한글 English 1234567890 <>,.!@#$%^&*()~`-+_=|;:?/ lid => Iñtërnâtiônàlizætiøn☃
                         res.send(JSON.parse(body));
+                        //send전 parsing 된 array 중 text안에 {}[]'" 있을 경우 삭제
                     }
                 }
             });
