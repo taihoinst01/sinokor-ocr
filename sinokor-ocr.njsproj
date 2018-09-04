@@ -1263,7 +1263,6 @@
     <Content Include="ml\fvClassification.py" />
     <Content Include="ml\srClassification.py" />
     <Content Include="ml\template.py" />
-    <Content Include="ml\typosentence\config.ini" />
     <Content Include="ml\typosentence\DBase.py" />
     <Content Include="ml\typosentence\domaindictrans.py" />
     <Content Include="ml\typosentence\frequency_dictionary_en_82_765.txt" />
