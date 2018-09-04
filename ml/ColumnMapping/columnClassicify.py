@@ -52,7 +52,7 @@ def findLabelDB(rows, inputsid):
                 ret.append(row[2])
         # {3~34}위치는 상관없이 text sid가 일치하면 label 매핑
         # text sid에 여러개의 label이 매핑되있을 경우 랜덤 매핑
-        # elif int(row[2]) != 38:
+        elif int(row[2]) != 38:
             dbNum = str(row[1]).split(",")[3:]
             inputNum = str(inputsid).split(",")[3:]
             if dbNum == inputNum:
