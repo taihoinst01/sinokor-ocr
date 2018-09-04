@@ -13,7 +13,6 @@ var sync = require('./sync.js');
 exports.select = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
-
         try {
             conn = await oracledb.getConnection(dbConfig);
             let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
@@ -23,7 +22,8 @@ exports.select = function (req, done) {
                 //sid += locSplit[0] + "," + locSplit[1];
                 sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
 
-                let result = await conn.execute(sqltext, [req[i].text]);
+                var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+                let result = await conn.execute(sqltext, [req[i].text.replace(regExp, "")]);
 
                 if (result.rows[0] != null) {
                     sid += "," + result.rows[0].SID;
@@ -1021,70 +1021,82 @@ exports.insertOcrSymspellForCurcd = function (req, done) {
 };
 exports.selectSid = function (req, done) {
     return new Promise(async function (resolve, reject) {
-      let conn;
-  
-      try {
-        conn = await oracledb.getConnection(dbConfig);
-        let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
-        var sid = "";
-        locSplit = req.location.split(",");
-        //need check
-        sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
-  
-        let result = await conn.execute(sqltext, [req.text]);
-  
-        if (result.rows[0] != null) {
-          sid += "," + result.rows[0].SID;
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
+            var sid = "";
+            locSplit = req.location.split(",");
+            //need check
+            sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
+
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+            let result = await conn.execute(sqltext, [req.text.replace(regExp,"")]);
+
+            if (result.rows[0] != null) {
+                sid += "," + result.rows[0].SID;
+            }
+            return done(null, sid);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
         }
-        return done(null, sid);
-      } catch (err) {
-        reject(err);
-      } finally {
-        if (conn) {
-          try {
-            await conn.release();
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      }
     });
-  };
+};
   
 exports.insertOcrSymsSingle = function (req, done) {
     return new Promise(async function (resolve, reject) {
-      let conn;
-      try {
-        let selectTypo = `SELECT seqNum FROM tbl_ocr_symspell WHERE keyword=:keyWord `;
-        let insertTypo = `INSERT INTO tbl_ocr_symspell(seqNum, keyword, frequency) VALUES (seq_ocr_symspell.nextval, :keyWord, 1)`;
-        conn = await oracledb.getConnection(dbConfig);
-        var reqArr = req.text.split(' ');
-        var result;
-        for (var i in reqArr) {
-          //20180903 만약 단어가 기호로만 이루어져 있으면 인서트 안함
-          result = await conn.execute(selectTypo, [reqArr[i]]);
-          if (result.rows.length == 0 && reqArr[i] != "") {
-            result = await conn.execute(insertTypo, [reqArr[i]]);
-          } else {
-            //result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [reqArr[i]]);
-          }
+        let conn;
+        try {
+            let selectTypo = `SELECT seqNum FROM tbl_ocr_symspell WHERE keyword=:keyWord `;
+            let insertTypo = `INSERT INTO tbl_ocr_symspell(seqNum, keyword, frequency) VALUES (seq_ocr_symspell.nextval, :keyWord, 1)`;
+            conn = await oracledb.getConnection(dbConfig);
+            var reqArr = req.text.split(' ');
+            var result;
+            var numExp = /[0-9]/gi;
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+            for (var i in reqArr) {
+                //20180903 만약 단어가 기호로만 이루어져 있으면 인서트 안함
+                result = await conn.execute(selectTypo, [reqArr[i].replace(regExp, "")]);
+                if (result.rows.length == 0) {
+                    //숫자만 있을때는 insert 안함
+                    var exceptNum = reqArr[i].replace(numExp, "");
+
+                    if (exceptNum != "") {
+                        reqArr[i] = reqArr[i].replace(regExp, "");
+                        exceptNum = reqArr[i].replace(numExp, "");
+                        if (reqArr[i] != "" || exceptNum != "") {
+                            result = await conn.execute(insertTypo, [reqArr[i]]);
+                        }
+                    }
+                } else {
+                    //result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [reqArr[i]]);
+                }
+            }
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
         }
-  
-        return done(null, null);
-      } catch (err) { // catches errors in getConnection and the query
-        console.log(err);
-        reject(err);
-      } finally {
-        if (conn) {   // the conn assignment worked, must release
-          try {
-            await conn.release();
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      }
     });
-  };
+};
 exports.insertContractMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;

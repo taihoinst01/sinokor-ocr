@@ -2272,8 +2272,10 @@ function batchLearnTraining(filepath, uiCheck, done) {
                     ocrResult = JSON.parse(ocrResult);
                     ocrResult = ocrJson(ocrResult.regions);
                 }
-                
+
                 console.timeEnd("ocr");
+            } else {
+                console.log("get DBOcr done")
             }
 
             //typo ML
