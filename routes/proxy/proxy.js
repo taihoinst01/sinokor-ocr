@@ -57,20 +57,26 @@ function ocrParsing(body) {
 
         for (var i = 0; i < data.length; i++) {
             for (var j = 0; j < data.length; j++) {
-                var targetLocArr = data[i].location.split(',');
-                var compareLocArr = data[j].location.split(',');
-                var width = Number(targetLocArr[0]) + Number(targetLocArr[2]); // target text width
-                var textSpacing = Math.abs(Number(compareLocArr[0]) - width) // spacing between target text and compare text
+                if (data[i].location != data[j].location) {
+                    var targetLocArr = data[i].location.split(',');
+                    var compareLocArr = data[j].location.split(',');
+                    var width = Number(targetLocArr[0]) + Number(targetLocArr[2]); // target text width
+                    var textSpacing = Math.abs(Number(compareLocArr[0]) - width) // spacing between target text and compare text
 
-                if (textSpacing <= xInterval && compareLocArr[1] == targetLocArr[1]) {
-                    data[i].location = targetLocArr[0] + ',' + targetLocArr[1] + ',' +
-                        (Number(targetLocArr[2]) + Number(compareLocArr[2]) + textSpacing) + ',' + targetLocArr[3];
-                    data[i].text += ' ' + data[j].text;
-                    data.splice(j, 1);
+                    if (textSpacing <= xInterval && compareLocArr[1] == targetLocArr[1]) {
+                        data[i].location = targetLocArr[0] + ',' + targetLocArr[1] + ',' +
+                            (Number(targetLocArr[2]) + Number(compareLocArr[2]) + textSpacing) + ',' + targetLocArr[3];
+                        data[i].text += ' ' + data[j].text;
+                        data[j].text = '';
+                        data[j].location = '';
+                    }
                 }
             }
         }
 
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].location == '' && data[i].text == '') data.splice(i, 1);
+        }
         // ocr text Unknown character parsing
         var ignoreChar = ['"'.charCodeAt(0), '\''.charCodeAt(0), '['.charCodeAt(0), ']'.charCodeAt(0),
         '{'.charCodeAt(0), '}'.charCodeAt(0)];
