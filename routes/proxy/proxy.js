@@ -28,7 +28,9 @@ router.post('/ocr', function (req, res) {
 
     request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
         //if (err) res.send({ 'code': 500, 'error': err });
+        //pass => 한글 English 1234567890 <>,.!@#$%^&*()~`-+_=|;:?/ lid => Iñtërnâtiônàlizætiøn☃
         var data = JSON.parse(body);
+        //send전 parsing 된 array 중 text안에 {}[]'" 있을 경우 삭제
         //console.log(data);
         res.send(data);
     });

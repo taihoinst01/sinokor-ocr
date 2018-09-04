@@ -130,7 +130,7 @@ function popUpInsertDocCategory() {
     });
 }
 
-// 파일 업로드 이벤트
+// 개별 학습 파일 업로드 이벤트
 function uploadFileEvent() {
     $('#uploadFile').change(function () {
         if ($(this).val() !== '') {
@@ -1038,6 +1038,7 @@ function uiTrainEvent() {
     });
 }
 
+//개별 학습 학습 내용 추가 ui training add
 function modifyTextData() {
     progressId = showProgressBar();
     var beforeData = lineText;

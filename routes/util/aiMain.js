@@ -22,7 +22,7 @@ exports.typoSentenceEval2 = function (data, callback) {
         pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(data)));
 
         var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
-        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+        var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));        
         var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
 
         callback(sidData);
@@ -462,7 +462,8 @@ exports.columnMapping = function (data, callback) {
 function dataToTypoArgs(data) {
 
     for (var i in data) {
-        data[i].text = data[i].text.toLowerCase().replace("'", "`");
+        data[i].text = data[i].text.replace("'", "`");
+        //data[i].text = data[i].text.toLowerCase().replace("'", "`");
     }
     return data;
 }
