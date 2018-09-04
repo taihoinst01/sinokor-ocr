@@ -2258,7 +2258,6 @@ function batchLearnTraining(filepath, uiCheck, done) {
                 console.timeEnd("convertTiftoJpg");
 
                 //ocr
-                //20180904 hskim 개별 학습의 ocr function 사용할 것
                 console.time("ocr");
                 ocrResult = sync.await(oracle.callApiOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));
                 //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
@@ -2288,10 +2287,17 @@ function batchLearnTraining(filepath, uiCheck, done) {
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
             console.timeEnd("typo ML");
 
+
             //TBL_FORM_MAPPING 에 조회
             //조회 결과가 없으면 doctype 0 조회결과가 있으면 doctype 을 TBL_DOCUMENT_CATEGORY 테이블에 매핑 
             //결과 script 에 리턴
 
+            console.time("form mapping");
+            var resForm = sync.await(oracle.selectForm(sidData, sync.defer()));
+            console.timeEnd("form mapping");
+
+            retData.data = sidData;
+            retData.docCategory = resForm;
 
             // //column mapping DL
             // console.time("columnMapping ML");
