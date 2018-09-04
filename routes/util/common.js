@@ -380,7 +380,7 @@ function ocrParsing(body) {
         var xInterval = 3; // x pixel value
 
         for (var i = 0; i < data.length; i++) {
-            for (var j = i + 1; j < data.length; j++) {
+            for (var j = 0; j < data.length; j++) {
                 var targetLocArr = data[i].location.split(',');
                 var compareLocArr = data[j].location.split(',');
                 var width = Number(targetLocArr[0]) + Number(targetLocArr[2]); // target text width
