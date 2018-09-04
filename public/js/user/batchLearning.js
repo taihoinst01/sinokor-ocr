@@ -1268,6 +1268,7 @@ var searchBatchLearnDataList = function (addCond) {
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
                                                 checkboxHtml +
                                               '<td><a onclick="javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', this)" href="javascript:void(0);">' + nvl(rows[0].FILENAME)  + '</a></td> <!--FILENAME-->' +
+                                              '<td><a onclick="javascript:fn_viewDoctypePop();" href="javascript:void(0);">' + /** doctype*/ + '</td> <!--doctype -->'+
                                               '</tr>';
 
                     for (var y = 0; y < rows.length; y++) {
@@ -1359,7 +1360,7 @@ var searchBatchLearnDataList = function (addCond) {
                     }
                 }
             } else {
-                appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="2"></td></tr>'
+                appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="3"></td></tr>'
                 appendRightContentsHtml += '<tr><td colspan="36">조회할 데이터가 없습니다.</td></tr>';
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
@@ -3084,4 +3085,8 @@ function moutSquare(e) {
 function viewOriginImg() {
     $('#imageZoom').hide();
     $('#mainImage').show();
+}
+
+function fn_viewDoctypePop() {
+    layer_open('layer4');
 }
