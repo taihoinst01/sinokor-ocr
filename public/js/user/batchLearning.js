@@ -1268,7 +1268,7 @@ var searchBatchLearnDataList = function (addCond) {
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
                                                 checkboxHtml +
                                               '<td><a onclick="javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', this)" href="javascript:void(0);">' + nvl(rows[0].FILENAME)  + '</a></td> <!--FILENAME-->' +
-                                              '<td><a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a></td> <!--doctype -->'+
+                                              '<td> <!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>--> </td> <!--doctype -->'+
                                               '</tr>';
 
                     for (var y = 0; y < rows.length; y++) {
