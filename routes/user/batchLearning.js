@@ -2236,38 +2236,53 @@ function batchLearnTraining(filepath, uiCheck, done) {
                 return done(null, "error getLegacy");
             }
 
-            console.time("convertTiftoJpg");
+            var ocrResult = sync.await(oracle.selectOcrData(propertiesConfig.filepath.answerFileFrontPath + filepath, sync.defer()));
+
             var filename = resLegacyData[0].rows[0].FILENAME;
             var imgId = resLegacyData[0].rows[0].IMGID;
             var convertFilpath = filepath;
-            if (filename.split('.')[1].toLowerCase() === 'tif' || filename.split('.')[1].toLowerCase() === 'tiff') {
-                let result = sync.await(oracle.convertTiftoJpg(filepath, sync.defer()));
 
-                if (result == "error") {
-                    return done(null, "error convertTiftoJpg");
+            if (ocrResult.length == 0) {
+                console.time("convertTiftoJpg");
+
+                if (filename.split('.')[1].toLowerCase() === 'tif' || filename.split('.')[1].toLowerCase() === 'tiff') {
+                    let result = sync.await(oracle.convertTiftoJpg(filepath, sync.defer()));
+
+                    if (result == "error") {
+                        return done(null, "error convertTiftoJpg");
+                    }
+
+                    if (result) {
+                        convertFilpath = result;
+                    }
+                }
+                console.timeEnd("convertTiftoJpg");
+
+                //ocr
+                console.time("ocr");
+                ocrResult = sync.await(oracle.callApiOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));
+                //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
+
+                if (ocrResult == "error") {
+                    return done(null, "error ocr");
                 }
 
-                if (result) {
-                    convertFilpath = result;
+                if (ocrResult != null) {
+                    var insOcrData = sync.await(oracle.insertOcrData(propertiesConfig.filepath.answerFileFrontPath + filepath, ocrResult, sync.defer()));
+                    ocrResult = JSON.parse(ocrResult);
+                    ocrResult = ocrJson(ocrResult.regions);
                 }
-            }
-            console.timeEnd("convertTiftoJpg");
 
-            //ocr
-            console.time("ocr");
-            var ocrResult = sync.await(oracle.callApiOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));
-            //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
-
-            if (ocrResult == "error") {
-                return done(null, "error ocr");
+                console.timeEnd("ocr");
+            } else {
+                console.log("get DBOcr done")
             }
-            console.timeEnd("ocr");
 
             //typo ML
             console.time("typo ML");
             pythonConfig.typoOptions.args = [];
             pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
-            var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
+            var resPyStr = sync.await(PythonShell.run('typoBatch.py', pythonConfig.typoOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
             console.timeEnd("typo ML");
@@ -2346,6 +2361,21 @@ function batchLearnTraining(filepath, uiCheck, done) {
             return done(null, e);
         }
     });
+}
+
+function ocrJson(regions) {
+    var data = [];
+    for (var i = 0; i < regions.length; i++) {
+        for (var j = 0; j < regions[i].lines.length; j++) {
+            var item = '';
+            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
+                item += regions[i].lines[j].words[k].text + ' ';
+            }
+            //data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
+            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim().replace(/'/g, '`') });
+        }
+    }
+    return data;
 }
 
 

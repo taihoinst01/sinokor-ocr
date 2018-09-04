@@ -10,6 +10,8 @@ var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
+var pythonConfig = require(appRoot + '/config/pythonConfig');
+var PythonShell = require('python-shell')
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 var execSync = require('sync-exec');
@@ -135,6 +137,7 @@ router.post('/modifyTextData', function (req, res) {
     var returnObj;
     sync.fiber(function () {
         try {
+            
             for (var i in afterData.data) {
                 for (var j in beforeData.data) {
                     if (afterData.data[i].location == beforeData.data[j].location) {
@@ -144,11 +147,8 @@ router.post('/modifyTextData', function (req, res) {
                             sync.await(oracle.insertContractMapping(item, sync.defer()));
                         }
                         //사용자가 지정한 컬럼라벨의 텍스트가 유효한 컬럼의 경우 OcrSymspell에 before text(중요!!) insert
-                        if (afterData.data[i].colLbl >= 0 && afterData.data[i].colLbl <= 34) {
-                            //UY의 경우 텍스트는 무의미 위치 정보로 체크필요
-                            if (afterData.data[i].colLbl != 3) {
-                                sync.await(oracle.insertOcrSymsSingle(beforeData.data[j], sync.defer()));
-                            }
+                        if (afterData.data[i].colLbl >= 3 && afterData.data[i].colLbl <= 34) {
+                            sync.await(oracle.insertOcrSymsSingle(beforeData.data[j], sync.defer()));
                         }
                         afterData.data[i].sid = sync.await(oracle.selectSid(beforeData.data[j], sync.defer()));
                         //라벨이 변경된 경우만 트레이닝 insert
@@ -158,11 +158,13 @@ router.post('/modifyTextData', function (req, res) {
                     } 
                 }
             }
-
+            
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args = ["training"];
     
             sync.await(PythonShell.run('columnClassicify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            //sync.await(PythonShell.run('columnClassicifyFromAzure.py', pythonConfig.columnMappingOptions, sync.defer())); //azure
+
             // for (var i in afterData.data) {
             //     if (afterData.data[i].colLbl == 0 || afterData.data[i].colLbl == 1) { // ogCompany or contractName 
             //         for (var j in beforeData.data) {
@@ -204,6 +206,7 @@ router.post('/modifyTextData', function (req, res) {
             returnObj = { code: 200, message: 'modify textData success' };
 
         } catch (e) {
+            console.log(e);
             returnObj = { code: 500, error: e };
         } finally {
             res.send(returnObj);

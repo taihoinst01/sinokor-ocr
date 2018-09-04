@@ -201,9 +201,9 @@ function processImage(fileName) {
             addProgressBar(31, 40);
             appendOcrData(fileName, data.regions);
         } else if (data.error) { //ocr 이외 에러이면
-            endProgressBar();
-            alert(data.error);
-            location.href = '/uiLearning';
+            //endProgressBar();
+            //alert(data.error);
+            //location.href = '/uiLearning';
         } else { // ocr 에러 이면
             insertCommError(data.code, 'ocr');
             endProgressBar();
@@ -346,6 +346,8 @@ function appendOcrData(fileName, regions) {
             data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
         }
     }
+    data = appendXLocation(data); // appendXLocation function is in common.client.js
+
     var param = {
         'fileName': fileName,
         'data': data,

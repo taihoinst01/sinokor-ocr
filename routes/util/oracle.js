@@ -13,7 +13,6 @@ var sync = require('./sync.js');
 exports.select = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
-
         try {
             conn = await oracledb.getConnection(dbConfig);
             let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
@@ -23,7 +22,8 @@ exports.select = function (req, done) {
                 //sid += locSplit[0] + "," + locSplit[1];
                 sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
 
-                let result = await conn.execute(sqltext, [req[i].text]);
+                var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+                let result = await conn.execute(sqltext, [req[i].text.replace(regExp, "")]);
 
                 if (result.rows[0] != null) {
                     sid += "," + result.rows[0].SID;
@@ -385,13 +385,20 @@ exports.insertColumnMapping = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
             let selectSqlText = `SELECT SEQNUM FROM TBL_COLUMN_MAPPING_TRAIN WHERE DATA = :DATA AND CLASS = :CLASS`;
             let insertSqlText = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
-            let updateSqlText = `UPDATE TBL_COLUMN_MAPPING_TRAIN SET DATA = :DATA, CLASS = :CALSS, REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
-
+            //20180903 hskim 만약 colLbl이 3 에서 34사이(텍스트로 구분하는칼럼) 이면서 sid가 0,0,0,0,0 이거나 1,1,1,1,1 이면 인서트 금지
             var result = await conn.execute(selectSqlText, [req.sid, req.colLbl]);
             if (result.rows[0]) {
                 //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
             } else {
-                await conn.execute(insertSqlText, [req.sid, req.colLbl]);
+
+                sidSplit = req.sid.split(",");
+                var len = sidSplit.length;
+                var textSid = sidSplit[len - 5] + "," + sidSplit[len - 4] + "," + sidSplit[len - 3] + "," + sidSplit[len - 2] + "," + sidSplit[len - 1];
+
+                if ( !((req.colLbl >= 3 && req.colLbl <= 34) && (textSid == "0,0,0,0,0" || textSid == "1,1,1,1,1")) ) {
+                    await conn.execute(insertSqlText, [req.sid, req.colLbl]);
+                }
+                
             }
             return done(null, req);
         } catch (err) {
@@ -611,10 +618,10 @@ exports.callApiOcr = function (req, done) {
             body: uploadImage,
             method: 'POST'
         });
-        var resJson = JSON.parse(res.getBody('utf8'));
-        pharsedOcrJson = ocrJson(resJson.regions);
+        //var resJson = JSON.parse(res.getBody('utf8'));
+        //pharsedOcrJson = ocrJson(resJson.regions);
 
-        return done(null, pharsedOcrJson);
+        return done(null, res.getBody('utf8'));
     } catch (err) {
         console.log(err);
         return done(null, 'error');
@@ -1021,69 +1028,82 @@ exports.insertOcrSymspellForCurcd = function (req, done) {
 };
 exports.selectSid = function (req, done) {
     return new Promise(async function (resolve, reject) {
-      let conn;
-  
-      try {
-        conn = await oracledb.getConnection(dbConfig);
-        let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
-        var sid = "";
-        locSplit = req.location.split(",");
-        //need check
-        sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
-  
-        let result = await conn.execute(sqltext, [req.text]);
-  
-        if (result.rows[0] != null) {
-          sid += "," + result.rows[0].SID;
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
+            var sid = "";
+            locSplit = req.location.split(",");
+            //need check
+            sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
+
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+            let result = await conn.execute(sqltext, [req.text.replace(regExp,"")]);
+
+            if (result.rows[0] != null) {
+                sid += "," + result.rows[0].SID;
+            }
+            return done(null, sid);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
         }
-        return done(null, sid);
-      } catch (err) {
-        reject(err);
-      } finally {
-        if (conn) {
-          try {
-            await conn.release();
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      }
     });
-  };
+};
   
 exports.insertOcrSymsSingle = function (req, done) {
     return new Promise(async function (resolve, reject) {
-      let conn;
-      try {
-        let selectTypo = `SELECT seqNum FROM tbl_ocr_symspell WHERE keyword=:keyWord `;
-        let insertTypo = `INSERT INTO tbl_ocr_symspell(seqNum, keyword, frequency) VALUES (seq_ocr_symspell.nextval, :keyWord, 1)`;
-        conn = await oracledb.getConnection(dbConfig);
-        var reqArr = req.text.split(' ');
-        var result;
-        for (var i in reqArr) {
-          result = await conn.execute(selectTypo, [reqArr[i]]);
-          if (result.rows.length == 0) {
-            result = await conn.execute(insertTypo, [reqArr[i]]);
-          } else {
-            //result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [reqArr[i]]);
-          }
+        let conn;
+        try {
+            let selectTypo = `SELECT seqNum FROM tbl_ocr_symspell WHERE keyword=:keyWord `;
+            let insertTypo = `INSERT INTO tbl_ocr_symspell(seqNum, keyword, frequency) VALUES (seq_ocr_symspell.nextval, :keyWord, 1)`;
+            conn = await oracledb.getConnection(dbConfig);
+            var reqArr = req.text.split(' ');
+            var result;
+            var numExp = /[0-9]/gi;
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+            for (var i in reqArr) {
+                //20180903 만약 단어가 기호로만 이루어져 있으면 인서트 안함
+                result = await conn.execute(selectTypo, [reqArr[i].replace(regExp, "")]);
+                if (result.rows.length == 0) {
+                    //숫자만 있을때는 insert 안함
+                    var exceptNum = reqArr[i].replace(numExp, "");
+
+                    if (exceptNum != "") {
+                        reqArr[i] = reqArr[i].replace(regExp, "");
+                        exceptNum = reqArr[i].replace(numExp, "");
+                        if (reqArr[i] != "" || exceptNum != "") {
+                            result = await conn.execute(insertTypo, [reqArr[i]]);
+                        }
+                    }
+                } else {
+                    //result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [reqArr[i]]);
+                }
+            }
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
         }
-  
-        return done(null, null);
-      } catch (err) { // catches errors in getConnection and the query
-        console.log(err);
-        reject(err);
-      } finally {
-        if (conn) {   // the conn assignment worked, must release
-          try {
-            await conn.release();
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      }
     });
-  };
+};
 exports.insertContractMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -1091,8 +1111,20 @@ exports.insertContractMapping = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            //201880903 check 조회 후 있을경우 인서트 안함
-            result = await conn.execute(queryConfig.uiLearningConfig.insertContractMapping2, [req[0], req[1], req[2], req[3]]);
+
+            selContract = await conn.execute(`SELECT * FROM TBL_CONTRACT_MAPPING WHERE EXTOGCOMPANYNAME = :extog `, [req[0]]);
+
+            selContractAsog = await conn.execute(`SELECT * FROM TBL_CONTRACT_MAPPING WHERE EXTOGCOMPANYNAME = :extog AND ASOGCOMPANYNAME = :asog `, [req[0], req[2]]);
+
+            if (selContract.rows.length == 0 && selContractAsog.rows.length == 0) {
+                result = await conn.execute(queryConfig.uiLearningConfig.insertContractMapping2, [req[0], req[1], req[2], req[3]]);
+            } else {
+                //201880903 check 조회 후 있을경우 인서트 안함
+
+                if (selContract.rows.length > 0 && selContractAsog.rows.length == 0) {
+                    updContract = await conn.execute(`UPDATE TBL_CONTRACT_MAPPING SET ASOGCOMPANYNAME = :asog WHERE EXTOGCOMPANYNAME = :extog`, [req[2], req[0]]);
+                }
+            }
 
             return done(null, null);
 		} catch (err) { // catches errors in getConnection and the query
@@ -1560,3 +1592,34 @@ exports.selectEntryMappingCls = function (req, done) {
     });
 };
 
+exports.selectOcrData = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(`SELECT * FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath `, [req]);
+            //result = await conn.execute(`SELECT * FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath `, ['C:/ICR/MIG/MIG/2014/img1/7a/25b7a/209391.tif']);
+
+            if (result.rows.length == 0) {
+                return done(null, result.rows);
+            }
+
+            var ocr = JSON.parse(result.rows[0].OCRDATA);
+            var retData = ocrJson(ocr.regions);
+
+            return done(null, retData);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
