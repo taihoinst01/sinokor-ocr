@@ -11,6 +11,8 @@ var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var router = express.Router();
+var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
+
 // Session
 var session = require('express-session');
 var flash = require('connect-flash');
@@ -47,6 +49,7 @@ var xlsx = require('xlsx');
 //var listProc = require('./routes/util/listProc'); // legacy interface
 
 // 
+app.use('/tif', express.static(path.join(propertiesConfig.filepath.answerFileFrontPath)));
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use('/sample', express.static(__dirname + '/sample'));
 app.use('/excel', express.static(__dirname + '/excel'));

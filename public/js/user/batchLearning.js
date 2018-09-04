@@ -1267,7 +1267,7 @@ var searchBatchLearnDataList = function (addCond) {
                     var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
                                                 checkboxHtml +
-                                              '<td><a onclick="javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', this)" href="javascript:void(0);">' + nvl(rows[0].FILENAME)  + '</a></td> <!--FILENAME-->' +
+                                              '<td><a class="fileNamePath" data-item="' + nvl(rows[0].FILEPATH)  + '" onclick="javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', this)" href="javascript:void(0);">' + nvl(rows[0].FILENAME)  + '</a></td> <!--FILENAME-->' +
                                               '<td> <!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>--> </td> <!--doctype -->'+
                                               '</tr>';
 
@@ -1506,14 +1506,10 @@ function compareMLAndAnswer(mlData) {
 
 function fn_viewImageData(filepath, rowNum ,obj) {
 
-    //$('#viewImage').attr('src', '../../uploads/' + $(obj).text().split('.')[0] + '.jpg');
-    //layer_open('layer3');
     var fileTypes = ['tiff', 'tif'];
     var appendHtml = '';
     var data = $('.rowNum' + rowNum);
     var fr = new FileReader();
-
-   // var file = filepath.substring((filepath.lastIndexOf('/') + 1), filepath.length).split('.').pop().toLowerCase();
 
     var loadImage = function (filename) {
         var xhr = new XMLHttpRequest();
@@ -1538,8 +1534,7 @@ function fn_viewImageData(filepath, rowNum ,obj) {
         };
         xhr.send();
     };
-    //loadImage('C:/ICR/MIG' + filepath); 운영서버 경로
-    loadImage('uploads/26.tif');
+    loadImage('/tif' + filepath);
     
     $('#tbody_batchList_answer').empty().append(data.clone());
     layer_open('layer3');
@@ -2410,6 +2405,8 @@ function insertContractMapping(data,callback) {
 //문서 비교 popup 버튼 클릭 이벤트
 function docComparePopup(imgIndex, obj) {
     var imgId = imgIndex.substring(0, imgIndex.lastIndexOf("."));
+    var appendImg = '<img id="originImg" src="../../ uploads /"' + imgId + '.jpg" style="width: 100%;height: 480px;">';
+    $('#originImgDiv').append(appendImg);
     $('#originImg').attr('src', '../../uploads/' + imgId + ".jpg");
     $('#mlPredictionDocName').val(obj.innerText);
     //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
@@ -3066,10 +3063,37 @@ function viewOriginImg() {
 function fn_viewDoctypePop(obj) {
     initLayer4();
     $('#mlPredictionDocName').val($(obj).html());
+    var filepath = $(obj).closest('tr').find('.fileNamePath').attr('data-item');
+    var loadImage = function (filepath) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', filepath);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function (e) {
+            var buffer = xhr.response;
+            var tiff = new Tiff({ buffer: buffer });
+            var canvas = tiff.toCanvas();
+
+            $(canvas).css({
+                "width": "100%",
+                "height": "100%",
+                "display": "block",
+                "padding-top": "10px"
+            }).addClass("preview");
+            var width = tiff.width();
+            var height = tiff.height();
+
+            $('#originImgDiv').empty().append(canvas);
+
+        };
+        xhr.send();
+    };
+    loadImage('/tif' + filepath);
+    
     layer_open('layer4');
 }
 
 function initLayer4() {
+    $('#originImgDiv').empty;
     $('#mlPredictionDocName').val('');   
     $('#docSearchResultImg_thumbCount').hide();
     $('#docSearchResultMask').hide();
