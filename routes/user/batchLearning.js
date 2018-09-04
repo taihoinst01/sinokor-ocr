@@ -2299,6 +2299,9 @@ function batchLearnTraining(filepath, uiCheck, done) {
             retData.data = sidData;
             retData.docCategory = resForm;
 
+            // 2차 버전
+            // doc type이 2 이상인 경우 개별 학습의 columnMapping 처리 입력데이터중 sid 를 기존 (좌표,sid) 에서 (문서번호,좌표,sid) 로 변경
+
             // //column mapping DL
             // console.time("columnMapping ML");
             // pythonConfig.columnMappingOptions.args = [];
