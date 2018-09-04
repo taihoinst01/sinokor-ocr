@@ -385,8 +385,7 @@ exports.insertColumnMapping = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
             let selectSqlText = `SELECT SEQNUM FROM TBL_COLUMN_MAPPING_TRAIN WHERE DATA = :DATA AND CLASS = :CLASS`;
             let insertSqlText = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
-            let updateSqlText = `UPDATE TBL_COLUMN_MAPPING_TRAIN SET DATA = :DATA, CLASS = :CALSS, REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
-
+            //20180903 hskim 만약 colLbl이 3 에서 34사이(텍스트로 구분하는칼럼) 이면서 sid가 0,0,0,0,0 이거나 1,1,1,1,1 이면 인서트 금지
             var result = await conn.execute(selectSqlText, [req.sid, req.colLbl]);
             if (result.rows[0]) {
                 //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
@@ -1030,7 +1029,7 @@ exports.selectSid = function (req, done) {
         locSplit = req.location.split(",");
         //need check
         sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
-  
+        //20180903 기호 제거하고 조회
         let result = await conn.execute(sqltext, [req.text]);
   
         if (result.rows[0] != null) {
