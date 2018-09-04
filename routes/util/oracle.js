@@ -1623,3 +1623,61 @@ exports.selectOcrData = function (req, done) {
         }
     });
 };
+
+exports.selectForm = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        let unknownRes;
+        let retData;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var formArr = [];
+            var formText = "";
+            for (var i in req) {
+                var sidSplit = req[i].sid.split(",");
+                for (var j = sidSplit.length - 5; j < sidSplit.length; j++) {
+                    formArr.push(sidSplit[j]);
+                }
+                if (formArr.length == 25) {
+                    break;
+                }
+            }
+
+            for (var i in formArr) {
+                formText += formArr[i] + ",";
+            }
+            formText = formText.slice(0, -1);
+
+            result = await conn.execute(`SELECT * FROM TBL_FORM_MAPPING WHERE DATA = :data `, [formText]);
+
+            if (result.rows.length == 0) {
+                unknownRes = await conn.execute(`SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = 0`);
+                retData = unknownRes.rows[0];
+            } else {
+                let resForm = await conn.execute(`SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :doctype `, [result.rows[0].CLASS]);
+
+                if (resForm.rows.length == 0) {
+                    unknownRes = await conn.execute(`SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = 0`);
+                    retData = unknownRes.rows[0];
+                } else {
+                    retData = resForm.rows[0];
+                }
+            }
+
+            return done(null, retData);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};

@@ -168,7 +168,6 @@ function uploadFileEvent() {
                     processImage(responseText.message[i]);
                 }
             }
-            endProgressBar(progressId);
             //endProgressBar();
         },
         error: function (e) {
@@ -198,15 +197,16 @@ function processImage(fileName) {
             thumbImgs.push(fileName);
             $('#progressMsgTitle').html('OCR 처리 완료');
             $('#progressMsgDetail').html(fileName);
-            addProgressBar(31, 40);
-            appendOcrData(fileName, data.regions);
+            //addProgressBar(31, 40);
+            appendOcrData(fileName, data);
         } else if (data.error) { //ocr 이외 에러이면
             //endProgressBar();
             //alert(data.error);
             //location.href = '/uiLearning';
         } else { // ocr 에러 이면
             insertCommError(data.code, 'ocr');
-            endProgressBar();
+            endProgressBar(progressId);
+            //endProgressBar();
             alert(data.message);
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -334,20 +334,8 @@ function thumbImgEvent() {
     });
 }
 
-// OCR 데이터 line별 가공 & 상세 테이블 렌더링 & DB컬럼 조회
-function appendOcrData(fileName, regions) {
-    var data = [];
-    for (var i = 0; i < regions.length; i++) {
-        for (var j = 0; j < regions[i].lines.length; j++) {
-            var item = '';
-            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
-                item += regions[i].lines[j].words[k].text + ' ';
-            }
-            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
-        }
-    }
-    data = appendXLocation(data); // appendXLocation function is in common.client.js
-
+// 상세 테이블 렌더링 & DB컬럼 조회
+function appendOcrData(fileName, data) {   
     var param = {
         'fileName': fileName,
         'data': data,
@@ -432,24 +420,24 @@ function executeML(totData) {
     if (type == 'ts') {
         targetUrl = '/uiLearning/typoSentence';
         $('#progressMsgTitle').html('오타 수정 처리 중..');
-        addProgressBar(41, 50);
+        //addProgressBar(41, 50);
     } else if (type == 'fl') {
         targetUrl = '/uiLearning/formLabelMapping';
         $('#progressMsgTitle').html('양식 라벨 맴핑 처리 중..');
-        addProgressBar(51, 60);
+        //addProgressBar(51, 60);
     } else if (type == 'fm') {
         targetUrl = '/uiLearning/formMapping';
         $('#progressMsgTitle').html('양식 맵핑 처리 중..');
-        addProgressBar(61, 70);
+        //addProgressBar(61, 70);
     } else if (type == 'cm') {
         targetUrl = '/uiLearning/columnMapping';
         $('#progressMsgTitle').html('컬럼 맵핑 처리 중..');
-        addProgressBar(51, 70);
+        //addProgressBar(51, 70);
         //addProgressBar(51, 75);
     } else {
         targetUrl = '/uiLearning/searchDBColumns';
         $('#progressMsgTitle').html('DB 컬럼 조회 중..');
-        addProgressBar(71, 90);
+        //addProgressBar(71, 90);
         //addProgressBar(76, 90);
     }
 
@@ -519,7 +507,7 @@ function executeML(totData) {
 
                     if (totCount == searchDBColumnsCount) {
                         thumbImgEvent();
-                        addProgressBar(91, 99);
+                        //addProgressBar(91, 99);
                         $('#uploadForm').hide();
                         $('#uploadSucessForm').show();
                     }
@@ -528,7 +516,8 @@ function executeML(totData) {
         },
         error: function (err) {
             console.log(err);
-            endProgressBar();
+            endProgressBar(progressId);
+            //endProgressBar();
         }
     });
 }
@@ -551,10 +540,12 @@ function selectTypoText(index, fileName) {
             detailTable(fileName);
             docComparePopup(0);
 
-            endProgressBar();
+            endProgressBar(progressId);
+            //endProgressBar();
         },
         error: function (err) {
-            endProgressBar();
+            endProgressBar(progressId);
+            //endProgressBar();
             console.log(err);
         }
     });
