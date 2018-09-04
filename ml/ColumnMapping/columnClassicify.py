@@ -17,7 +17,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.logging.set_verbosity(tf.logging.ERROR)
 #checkpointDir = 'C:\\Users\\user\\PycharmProjects\\typosentence\\checkpoint'
 #checkpointDir = 'C:\\projectWork\\koreanre2\\ColumnMapping\\checkpoint'
-checkpointDir = 'C:\\ICR\\app\\source\\ml\\ColumnMapping\\checkpoint'
+#checkpointDir = 'C:\\Users\\Taiho\\Source\\Repos\\sinokor-ocr\\ml\\ColumnMapping\\checkpointv1.1'
+checkpointDir = 'C:\\ICR\\app\\source\\ml\\ColumnMapping\\checkpoint' # 운영
 feature_columns = [tf.contrib.layers.real_valued_column("", dimension=8)]
 classifier = tf.contrib.learn.DNNClassifier(feature_columns=feature_columns, hidden_units=[10, 20, 10],
                                             n_classes=40, model_dir=checkpointDir)
@@ -52,7 +53,7 @@ def findLabelDB(rows, inputsid):
                 ret.append(row[2])
         # {3~34}위치는 상관없이 text sid가 일치하면 label 매핑
         # text sid에 여러개의 label이 매핑되있을 경우 랜덤 매핑
-        # elif int(row[2]) != 38:
+        elif int(row[2]) != 38:
             dbNum = str(row[1]).split(",")[3:]
             inputNum = str(inputsid).split(",")[3:]
             if dbNum == inputNum:
