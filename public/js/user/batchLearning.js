@@ -2195,27 +2195,11 @@ function modifyTextData() {
 
 // UI학습 팝업 실행
 var fn_batchUiTraining = function () {
-    //console.log(JSON.stringify(modifyData))
     var mldata = modifyData;
     var trainData = {};
     var arr = [];
     var trainData = {};
     trainData.data = [];
-    /*
-    if (mldata.docCategory) { // 추출된 문서가 있을 경우
-        trainData.docCategory = [mldata.docCategory[0]];
-    } else {
-        trainData.docCategory = null;
-    }
-
-    if ($('#docData').val() != '') { // 문서 종류를 수정했다면
-        if (mldata.docCategory) { // 추출된 문서가 있을 경우
-            trainData.docCategory[0] = JSON.parse($('#docData').val());
-        } else {
-            trainData.docCategory = [JSON.parse($('#docData').val())];
-        }
-    }
-    */
 
     $('#textResultTbl > dl').each(function (i, el) {
         var location = $(el).find('input')[1].value;
@@ -2256,26 +2240,6 @@ var fn_batchUiTraining = function () {
     }
 
     callbackInsertDocMapping(trainData);
-	
-	/*
-	$.ajax({
-        url: '/batchLearning/uiTrainBatchLearningData',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify(param),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
-            alert("UI학습이 완료되었습니다.");
-            execBatchLearning();
-            $("#layer2.poplayer").css("display", "none");
-            //popupEvent.closePopup();
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
-	*/
 };
 
 // 양식레이블 매핑
@@ -2392,17 +2356,6 @@ function insertDocMapping(data, callback) {
 
 // 컬럼 매핑 ml 데이터 insert
 function insertColMapping(data) {
-
-    /*
-    var param = [];
-    for (var i in data.data) {
-        if (data.data[i].column != 999) {
-            param.push(data.data[i]);
-        }
-    }
-    */
-    //var dacCategory = JSON.parse($('#docData').val());
-
     $.ajax({
         url: '/batchLearning/insertColMapping',
         type: 'post',

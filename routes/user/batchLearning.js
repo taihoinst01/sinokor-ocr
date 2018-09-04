@@ -2229,13 +2229,12 @@ function batchLearnTraining(filepath, uiCheck, done) {
         try {
 
             var retData = {};
-
             var resLegacyData = sync.await(oracle.selectLegacyFilepath(filepath, sync.defer()));
 
             if (resLegacyData[0].rows.length < 0) {
                 return done(null, "error getLegacy");
             }
-
+           
             var ocrResult = sync.await(oracle.selectOcrData(propertiesConfig.filepath.answerFileFrontPath + filepath, sync.defer()));
 
             var filename = resLegacyData[0].rows[0].FILENAME;
@@ -2259,6 +2258,7 @@ function batchLearnTraining(filepath, uiCheck, done) {
                 console.timeEnd("convertTiftoJpg");
 
                 //ocr
+                //20180904 hskim 개별 학습의 ocr function 사용할 것
                 console.time("ocr");
                 ocrResult = sync.await(oracle.callApiOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));
                 //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
@@ -2279,6 +2279,7 @@ function batchLearnTraining(filepath, uiCheck, done) {
             }
 
             //typo ML
+            //20180904 hskim 개별학습의 typo ML 사용할 것 aimain function 호출
             console.time("typo ML");
             pythonConfig.typoOptions.args = [];
             pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
@@ -2287,33 +2288,13 @@ function batchLearnTraining(filepath, uiCheck, done) {
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
             console.timeEnd("typo ML");
 
-            console.log(JSON.stringify(sidData));
+            //TBL_FORM_MAPPING 에 조회
+            //조회 결과가 없으면 doctype 0 조회결과가 있으면 doctype 을 TBL_DOCUMENT_CATEGORY 테이블에 매핑 
+            //결과 script 에 리턴
 
-            console.time("similarity ML");
-            pythonConfig.typoOptions.args = [];
-            pythonConfig.typoOptions.args.push(JSON.stringify(resLegacyData));
-            pythonConfig.typoOptions.args.push(JSON.stringify(sidData));
-            var resPyStr = sync.await(PythonShell.run('similarity.py', pythonConfig.typoOptions, sync.defer()));
-            var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            //var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
-            console.timeEnd("similarity ML");
-            
-            // //form label mapping DL
-            // console.time("formLabelMapping ML");
-            // pythonConfig.formLabelMappingOptions.args = [];
-            // pythonConfig.formLabelMappingOptions.args.push(JSON.stringify(sidData));
-            // resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formLabelMappingOptions, sync.defer()));
-            // resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            // console.timeEnd("formLabelMapping ML");
 
-            // //form mapping DL
-            // console.time("formMapping ML");
-            // pythonConfig.formMappingOptions.args = [];
-            // pythonConfig.formMappingOptions.args.push(JSON.stringify(resPyArr));
-            // resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.formMappingOptions, sync.defer()));
-            // resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            // var docData = sync.await(oracle.selectDocCategory(resPyArr, sync.defer()));
-            // console.timeEnd("formMapping ML");
+            //20180904 hskim 개별학습의 column mapping DL 사용할 것 aimain function 호출
+
 
             // //column mapping DL
             // console.time("columnMapping ML");
@@ -2322,38 +2303,6 @@ function batchLearnTraining(filepath, uiCheck, done) {
             // resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
             // resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
 
-            var mlData = {};
-            //mlData["mlData"] = resPyArr;
-            //if (docData.docCategory) {
-            //    mlData["docCategory"] = docData.docCategory[0];
-            //}
-            //mlData["mlData"] = JSON.parse('[{ "label": "CTOGCOMPANYNAMENM", "text": "reinsurers outstanding losses", "location": "1594,201,683,47", "sid": "1594,201,0,17747,18754,0,0" }, { "label": "CTNM", "text": "28/06/2018", "location": "1596,259,174,29", "sid":"1596,259,0,0,0,0,0" }]');
-            mlData["mlData"] = resPyArr;
-            mlData["filepath"] = filepath;
-            mlData["imgId"] = imgId;
-            retData["mlexport"] = mlData;
-
-            //insert MLexport data to batchMlExport
-            console.time("insert MLExport");
-            var resMLData = sync.await(oracle.insertMLData(mlData, sync.defer()));
-            console.timeEnd("insert MLExport");
-
-            if (uiCheck == true) {
-                var compareML = getAnswerCheck(cobineRegacyData, mlData["mlData"]);
-
-                retData["uiTraining"] = "uiTraining";
-
-                if (compareML == false) {
-
-                    var columnArr = sync.await(oracle.selectColumn(null, sync.defer()));
-                    retData["columnArr"] = columnArr;
-                    retData["fileInfo"] = originImageArr;
-
-                    return done(null, retData);
-                }
-            }
-
-            console.log("done");
 
             return done(null, retData);
         } catch (e) {
