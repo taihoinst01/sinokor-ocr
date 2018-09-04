@@ -1268,7 +1268,7 @@ var searchBatchLearnDataList = function (addCond) {
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
                                                 checkboxHtml +
                                               '<td><a onclick="javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', this)" href="javascript:void(0);">' + nvl(rows[0].FILENAME)  + '</a></td> <!--FILENAME-->' +
-                                              '<td><a onclick="javascript:fn_viewDoctypePop();" href="javascript:void(0);">' + /** doctype*/ + '</td> <!--doctype -->'+
+                                              '<td> <!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>--> </td> <!--doctype -->'+
                                               '</tr>';
 
                     for (var y = 0; y < rows.length; y++) {
@@ -2043,8 +2043,20 @@ var batchLearnTraining = function (imgIdArray, flag) {
         success: function (data) {
             $("#progressMsgTitle").html("processing learn data...");
             //console.log(data);
+            //searchBatchLearnDataList(addCond);
 
-            searchBatchLearnDataList(addCond);
+            $("input[name=listCheck_before]").each(function (index, entry) {
+                if ($(this).is(":checked")) {
+
+                    for (var i in data.data) {
+                        if ($(this).val() == data.data[i].filepath) {
+                            console.log(index);
+                            $(this).closest("td").next().next().html('<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>');
+                        }
+                    }
+                }
+            });
+
 
             if ($('#uiTrainingChk').is(':checked') && data.data[0].uiTraining == "uiTraining") {
                 compareLayer(data);
@@ -3051,17 +3063,18 @@ function viewOriginImg() {
     $('#mainImage').show();
 }
 
-function fn_viewDoctypePop() {
+function fn_viewDoctypePop(obj) {
     initLayer4();
+    $('#mlPredictionDocName').val($(obj).html());
     layer_open('layer4');
 }
 
 function initLayer4() {
+    $('#mlPredictionDocName').val('');   
     $('#docSearchResultImg_thumbCount').hide();
     $('#docSearchResultMask').hide();
     $('#countCurrent').empty(); 
     $('#countLast').empty();
-    $('#mlPredictionDocName').val('');
     $('#mlPredictionPercent').val('');
     $('#orgDocSearchRadio').click();
     $('.ui_doc_pop_ipt').val('');
