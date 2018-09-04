@@ -39,7 +39,8 @@ conn = cx_Oracle.connect(connInfo)
 curs = conn.cursor()
 
 sql = "SELECT SEQNUM FROM TBL_OCR_SYMSPELL WHERE KEYWORD = :bind"
-inputArr = json.loads(sys.argv[1].encode("ascii","ignore").decode())
+inputArr = json.loads(sys.argv[1])
+#inputArr = json.loads(sys.argv[1].encode("ascii","ignore").decode())
 #inputArr = json.loads(sys.argv[1].replace(u"\u2022", u""))
 
 for ocrItem in inputArr:

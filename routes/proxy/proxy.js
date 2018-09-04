@@ -80,7 +80,7 @@ function ocrParsing(body) {
             for (var j = 0; j < data[i].text.length; j++) {
                 var ascii = data[i].text.charCodeAt(j);
                 if (ascii > 127 || ignoreChar.indexOf(ascii) != -1) {
-                    rep = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+                    var rep = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
                     if (!rep.test(data[i].text[j])) { // not Korean
                         rep = new RegExp(((ascii < 128) ? '\\' : '') + data[i].text[j], "gi");
                         modifyText = modifyText.replace(rep, '');
