@@ -183,7 +183,7 @@ function processImage(fileName) {
     $('#progressMsgDetail').html(fileName);
     addProgressBar(21, 30);
     $.ajax({
-        url: '/proxy/ocr',
+        url: '/common/ocr',
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader('Content-Type', 'application/json');
         },
@@ -344,6 +344,8 @@ function appendOcrData(fileName, regions) {
             data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
         }
     }
+    data = appendXLocation(data); // appendXLocation function is in common.client.js
+
     var param = {
         'fileName': fileName,
         'data': data,

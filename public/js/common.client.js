@@ -290,3 +290,25 @@ $(function () {
     });
 
 });
+
+// ocr xÁÂÇ¥ ±ÙÃ³ ÅØ½ºÆ® ºÙÀÌ±â
+function appendXLocation(data) {
+    var xInterval = 3; // xÁÂÇ¥ °£°Ý ÇÈ¼¿ °ª
+    var yInterval = 0; // yÁÂÇ¥ °£°Ý ÇÈ¼¿ °ª
+
+    for (var i = 0; i < data.length; i++) {
+        for (var j = i + 1; j < data.length; j++) {
+            var target = data[i].location.split(',');
+            var compare = data[j].location.split(',');
+
+            var width = Number(target[0]) + Number(target[2]);
+            if (Math.abs(Number(compare[0]) - width) <= xInterval && Math.abs(Number(compare[1]) - target[1]) <= yInterval) {
+                data[i].location = target[0] + ',' + target[1] + ',' + (Number(target[2]) + Number(compare[2]) + Math.abs(Number(compare[0]) - width)) + ',' + target[3];
+                data[i].text += data[j].text;
+                data.splice(j, 1);
+            }
+        }
+    }
+
+    return data;
+}
