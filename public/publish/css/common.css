@@ -5064,13 +5064,13 @@ button[disabled] {
     cursor: pointer;
     margin-left: 13px;
 }
-.ui_doc_pop_ipt {
-    width: 670px !important;
+.ui_doc_pop_ipt, .ui_doc_pop_ipt3 {
+    width: 564px !important;
     margin-right: 15px !important;
     display: inline-table;
 }
 .ui_doc_pop_ipt2 {
-    width: 660px !important;
+    width: 554px !important;
     margin-right: 15px !important;
     display: inline-table;
 }
