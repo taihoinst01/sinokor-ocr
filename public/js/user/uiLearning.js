@@ -344,7 +344,6 @@ function appendOcrData(fileName, regions) {
             data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
         }
     }
-    console.log(data);
     data = appendXLocation(data); // appendXLocation function is in common.client.js
 
     var param = {
