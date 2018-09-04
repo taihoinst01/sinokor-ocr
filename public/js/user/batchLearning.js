@@ -2043,8 +2043,20 @@ var batchLearnTraining = function (imgIdArray, flag) {
         success: function (data) {
             $("#progressMsgTitle").html("processing learn data...");
             //console.log(data);
+            //searchBatchLearnDataList(addCond);
 
-            searchBatchLearnDataList(addCond);
+            $("input[name=listCheck_before]").each(function (index, entry) {
+                if ($(this).is(":checked")) {
+
+                    for (var i in data.data) {
+                        if ($(this).val() == data.data[i].filepath) {
+                            console.log(index);
+                            $(this).closest("td").next().next().html('<a onclick="javascript:fn_viewDoctypePop();" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>');
+                        }
+                    }
+                }
+            });
+
 
             if ($('#uiTrainingChk').is(':checked') && data.data[0].uiTraining == "uiTraining") {
                 compareLayer(data);
