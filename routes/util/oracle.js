@@ -390,7 +390,15 @@ exports.insertColumnMapping = function (req, done) {
             if (result.rows[0]) {
                 //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
             } else {
-                await conn.execute(insertSqlText, [req.sid, req.colLbl]);
+
+                sidSplit = req.sid.split(",");
+                var len = sidSplit.length;
+                var textSid = sidSplit[len - 5] + "," + sidSplit[len - 4] + "," + sidSplit[len - 3] + "," + sidSplit[len - 2] + "," + sidSplit[len - 1];
+
+                if ( !((req.colLbl >= 3 && req.colLbl <= 34) && (textSid == "0,0,0,0,0" || textSid == "1,1,1,1,1")) ) {
+                    await conn.execute(insertSqlText, [req.sid, req.colLbl]);
+                }
+                
             }
             return done(null, req);
         } catch (err) {
