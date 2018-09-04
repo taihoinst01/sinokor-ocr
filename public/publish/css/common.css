@@ -5266,6 +5266,12 @@ button[disabled] {
 
 .pop_layer_K01 {
     margin-left: -820px !important;
+    width: 1700px;
+    height: 900px;
+    margin-top: -460px;
+}
+.w1700 {
+    width: 1700px !important;
 }
 
 .popTable_K01 {
@@ -5492,6 +5498,63 @@ button[disabled] {
          * tblBody의 데이터는 필요한 열의 수만큼만 만드시고 헤더와 col의 width는 동일해야 합니다.
          */
     width: 7450px !important;
+    table-layout: fixed;
+    height: 30px;
+    border-collapse: collapse;
+}
+
+
+
+/*
+    batch pop 스크롤
+*/
+.batch_pop_tblBackground {
+    /*
+         *  화면에 보여야 할 Table의 가로크기를 잡아줍니다.
+         */
+    width: 1700px !important;
+    table-layout: fixed;
+}
+
+.batch_pop_divHeadScroll {
+    /*
+         *  안의 내용이 790보다 길게 적용이 되므로 overflow-x, overflow-y를 hidden을 걸어줘서 설정한 가로너비만큼만 화면에 보이도록 잡아줍니다.
+         */
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    display: block !important;
+}
+
+.batch_pop_tblHead {
+    /*
+         *  Table의 필드명의 너비를 여기에서 지정합니다.
+         *  필드명을 보여줄 테이블은 body보다 하나의 td를 더 가지며 마지막 td는 아무것도 입력하지 않고 크기만 잡아줍니다.
+         *  이렇게 하는 이유는 데이터를 보여주는 테이블은 세로 스크롤의 가로두께만큼 더 이동하기 때문입니다.
+         */
+    table-layout: fixed;
+    width: 7417px !important;
+    height: 30px;
+    border-collapse: collapse;
+}
+
+.batch_pop_divBodyScroll {
+    /*
+         *  overflow-x, overflow-y는 scroll로 지정하고,
+         *  height는 테이블의 데이터가 나올 기본 크기를 잡아줍니다.
+         *  세로길이를 잡아주지 않으면 overflow-y가 걸리지 않습니다.
+         */
+    width: 100% !important;
+    height: 270px !important;
+    overflow-x: scroll;
+    overflow-y: scroll;
+}
+
+.batch_pop_tblBody {
+    /*
+         * tblBody의 데이터는 필요한 열의 수만큼만 만드시고 헤더와 col의 width는 동일해야 합니다.
+         */
+    width: 7400px !important;
     table-layout: fixed;
     height: 30px;
     border-collapse: collapse;
@@ -5972,4 +6035,18 @@ input:disabled {
 
 .batch_tbl_right_divBodyScroll {
     height: 647px;
+}
+
+#div_view_image {
+    height: 500px !important;
+    overflow-y: scroll;
+    width: 1600px;
+}
+
+.pop_image_data {
+    height: 300px;
+}
+
+#tbody_batchList_answer tr {
+    height:30px !important;
 }
