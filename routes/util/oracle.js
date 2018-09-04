@@ -15,7 +15,7 @@ exports.select = function (req, done) {
         let conn;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
+            let sqltext = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL`;
             for (var i in req) {
                 var sid = "";
                 locSplit = req[i].location.split(",");
@@ -1055,8 +1055,8 @@ exports.insertOcrSymsSingle = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         try {
-            let selectTypo = `SELECT seqNum FROM tbl_ocr_symspell WHERE keyword=:keyWord `;
-            let insertTypo = `INSERT INTO tbl_ocr_symspell(seqNum, keyword, frequency) VALUES (seq_ocr_symspell.nextval, :keyWord, 1)`;
+            let selectTypo = `SELECT seqNum FROM tbl_ocr_symspell WHERE keyword=LOWER(:keyWord) `;
+            let insertTypo = `INSERT INTO tbl_ocr_symspell(seqNum, keyword, frequency) VALUES (seq_ocr_symspell.nextval, LOWER(:keyWord), 1)`;
             conn = await oracledb.getConnection(dbConfig);
             var reqArr = req.text.split(' ');
             var result;
