@@ -2406,7 +2406,7 @@ function insertContractMapping(data,callback) {
 function docComparePopup(imgIndex, obj) {
     var imgId = imgIndex.substring(0, imgIndex.lastIndexOf("."));
     var appendImg = '<img id="originImg" src="../../ uploads /"' + imgId + '.jpg" style="width: 100%;height: 480px;">';
-    $('#originImgDiv').append(appendImg);
+    $('#originImgDiv').empty().append(appendImg);
     $('#originImg').attr('src', '../../uploads/' + imgId + ".jpg");
     $('#mlPredictionDocName').val(obj.innerText);
     //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
@@ -3093,7 +3093,7 @@ function fn_viewDoctypePop(obj) {
 }
 
 function initLayer4() {
-    $('#originImgDiv').empty;
+    $('#originImgDiv').empty();
     $('#mlPredictionDocName').val('');   
     $('#docSearchResultImg_thumbCount').hide();
     $('#docSearchResultMask').hide();
