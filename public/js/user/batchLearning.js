@@ -2401,6 +2401,7 @@ function docComparePopup(imgIndex, obj) {
     $('#originImg').attr('src', '../../uploads/' + imgId + ".jpg");
     $('#mlPredictionDocName').val(obj.innerText);
     //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+    initLayer4();
     layer_open('layer4');
 }
 
@@ -2415,6 +2416,7 @@ function docComparePopup2() {
     $('#mlPredictionPercent').val($('#docPredictionScore').html());
     $('#mlPredictionDocName').val($('#docName').html());
     //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
+    initLayer4();
     layer_open('layer4');
 }
 
@@ -2571,11 +2573,20 @@ function changeDocPopRadio() {
     $('#orgDocSearchRadio').click(function () {
         $('#orgDocSearch').show();
         $('#newDocRegistration').hide();
+        $('#notInvoice').hide();
     });
 
     $('#newDocRegistrationRadio').click(function () {
         $('#newDocRegistration').show();
         $('#orgDocSearch').hide();
+        $('#notInvoice').hide();
+    });
+
+    $('#notInvoiceRadio').click(function () {
+        $('#notInvoice').show();
+        $('#orgDocSearch').hide();
+        $('#newDocRegistration').hide();
+
     });
 }
 
@@ -3041,5 +3052,20 @@ function viewOriginImg() {
 }
 
 function fn_viewDoctypePop() {
+    initLayer4();
     layer_open('layer4');
+}
+
+function initLayer4() {
+    $('#docSearchResultImg_thumbCount').hide();
+    $('#docSearchResultMask').hide();
+    $('#countCurrent').empty(); 
+    $('#countLast').empty();
+    $('#mlPredictionDocName').val('');
+    $('#mlPredictionPercent').val('');
+    $('#orgDocSearchRadio').click();
+    $('.ui_doc_pop_ipt').val('');
+    $('#docSearchResult').empty();
+    $('#searchResultDocName').val('');
+    $('#searchDocCategoryKeyword').val('');
 }
