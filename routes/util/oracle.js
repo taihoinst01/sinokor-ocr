@@ -1032,7 +1032,7 @@ exports.selectSid = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sqltext = `SELECT EXPORT_SENTENCE_SID(:COND) SID FROM DUAL`;
+            let sqltext = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL`;
             var sid = "";
             locSplit = req.location.split(",");
             //need check
