@@ -216,7 +216,7 @@ function showProgressBar() {
     var percentNum = $('#ocrBar span');
     elem.style.width = fromVal + '%';
     percentNum.html(fromVal + '%');
-    var id = setInterval(frame, 100);
+    var id = setInterval(frame, 1000);
     function frame() {
         if (width >= 100) {
             endProgressBar();

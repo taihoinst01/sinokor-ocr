@@ -150,7 +150,6 @@ function uploadFileEvent() {
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
             $('#progressMsgTitle').html('파일 업로드 중..');
-            $('#progressMsgDetail').html('');
             progressId = showProgressBar();
             //startProgressBar(); // start progressbar
             //addProgressBar(1, 10); // proceed progressbar
@@ -159,7 +158,6 @@ function uploadFileEvent() {
         success: function (responseText, statusText) {
             //console.log(responseText);
             $('#progressMsgTitle').html('파일 업로드 완료..');
-            $('#progressMsgDetail').html('');
             $('.button_control').attr('disabled', false);
             //addProgressBar(11, 20);
             if (responseText.message.length > 0) {
@@ -181,7 +179,6 @@ function uploadFileEvent() {
 function processImage(fileName) {
 
     $('#progressMsgTitle').html('OCR 처리 중..');
-    $('#progressMsgDetail').html(fileName);
     addProgressBar(21, 30);
     $.ajax({
         url: '/common/ocr',
@@ -196,7 +193,6 @@ function processImage(fileName) {
             //console.log(data);
             thumbImgs.push(fileName);
             $('#progressMsgTitle').html('OCR 처리 완료');
-            $('#progressMsgDetail').html(fileName);
             //addProgressBar(31, 40);
             appendOcrData(fileName, data);
         } else if (data.error) { //ocr 이외 에러이면
@@ -400,7 +396,6 @@ function appendOcrData(fileName, data) {
  * ts : typoSentence , dd : domainDictionary , tc : textClassification , lm : labelMapping , st : statementClassification , sc : searchDBColumns
  */
 function executeML(totData) {
-    $('#progressMsgDetail').html(JSON.stringify(totData).substring(0, 200) + '...');
     var fileName = totData.fileName;
     var data = totData.data;
     var type = totData.nextType;

@@ -6050,3 +6050,8 @@ input:disabled {
 #tbody_batchList_answer tr {
     height:30px !important;
 }
+
+#originImgDiv {
+    height:480px;
+    width: 100%;
+}

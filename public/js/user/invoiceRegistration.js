@@ -106,14 +106,12 @@ var fn_uploadFileEvent = function () {
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
             $("#progressMsgTitle").html('파일 업로드 중..');
-            $("#progressMsgDetail").html('');
             startProgressBar(); // start progressbar
             addProgressBar(1, 10); // proceed progressbar
             return true;
         },
         success: function (responseText, statusText) {
             $("#progressMsgTitle").html('파일 업로드 완료..');
-            $("#progressMsgDetail").html('');
             addProgressBar(11, 20);
 
             console.log(`base 사이즈 : ${responseText.fileInfo.length}`);
@@ -371,7 +369,6 @@ var fn_processBaseImage = function (fileInfo) {
 var fn_processDtlImage = function (fileDtlInfo) {
     var fileName = fileDtlInfo.oriFileName;
     $('#progressMsgTitle').html('OCR 처리 중..');
-    $('#progressMsgDetail').html(fileName);
     addProgressBar(21, 30);
     $.ajax({
         url: '/common/ocr',
@@ -386,7 +383,6 @@ var fn_processDtlImage = function (fileDtlInfo) {
         if (!data.code) { // 에러가 아니면
             //thumbImgs.push(fileName);
             $('#progressMsgTitle').html('OCR 처리 완료');
-            $('#progressMsgDetail').html(fileName);
             addProgressBar(31, 40);
             appendOcrData(fileDtlInfo, fileName, data.regions);
         } else if (data.error) { //ocr 이외 에러이면
@@ -422,7 +418,6 @@ var appendOcrData = function (fileDtlInfo, fileName, regions) {
  * ts : typoSentence , dd : domainDictionary , tc : textClassification , lm : labelMapping , sc : searchDBColumns
  */
 var executeML = function (fileDtlInfo, fileName, data, type) {
-    $('#progressMsgDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0, 200) + '...');
     var targetUrl;
 
     console.log(`다음 순서 type = ${type}`);

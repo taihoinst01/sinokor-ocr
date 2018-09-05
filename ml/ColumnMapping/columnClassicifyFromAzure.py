@@ -25,8 +25,8 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 id = "koreanre"
 pw = "koreanre01"
 sid = "koreanreocr"
-# ip = "10.10.20.205"
-ip = "172.16.53.142"
+ip = "10.10.20.205"
+#ip = "172.16.53.142"
 port = "1521"
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
@@ -92,8 +92,8 @@ def training():
 
     try:
         params = {'cmData': json.dumps(trainData), 'type': 'columnMapping'}
-        r = requests.post(url='http://sinokor-rest.azurewebsites.net/ml/train', data=params) # 로컬 (Azure Web App)
-        # r = requests.post(url='http://210.109.27.111:8888/ml/train', data=params) # 운영 (Proxy)
+        # r = requests.post(url='http://sinokor-rest.azurewebsites.net/ml/train', data=params) # 로컬 (Azure Web App)
+        r = requests.post(url='http://210.109.27.111:8888/ml/train', data=params) # 운영 (Proxy)
 
         print(str({'code': 200, 'message': 'column mapping train success'}))
     except Exception as e:
@@ -117,8 +117,8 @@ def eval(inputJson):
             count = count + 1
 
         params = {'data': json.dumps(param), 'type': 'columnMapping'}
-        r = requests.post(url='http://sinokor-rest.azurewebsites.net/ml/api', data=params) # 로컬 (Azure Web App)
-        # r = requests.post(url='http://210.109.27.111:8888/ml/api', data=params) # 운영 (Proxy)
+        # r = requests.post(url='http://sinokor-rest.azurewebsites.net/ml/api', data=params) # 로컬 (Azure Web App)
+        r = requests.post(url='http://210.109.27.111:8888/ml/api', data=params) # 운영 (Proxy)
         result = r.json()
         for inputItem in inputArr:
             for resultItem in result:
