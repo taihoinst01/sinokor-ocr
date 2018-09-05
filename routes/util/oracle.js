@@ -511,6 +511,39 @@ exports.selectBatchLearnList = function (req, done) {
         let conn;
         let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
         try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var rowNum = req.body.moreNum;
+            let resAnswerFile = await conn.execute(`SELECT F.IMGID, F.PAGENUM, F.FILEPATH 
+                                                    FROM 
+                                                      TBL_BATCH_ANSWER_FILE F 
+                                                      LEFT OUTER JOIN TBL_BATCH_LEARN_LIST L 
+                                                      ON F.FILEPATH = L.FILEPATH 
+                                                    WHERE (L.STATUS != 'D' OR L.STATUS IS NULL) 
+                                                    AND F.FILEPATH LIKE '/2018/%' 
+                                                    AND ROWNUM <= :num
+                                                    ORDER BY F.IMGID ASC `, [req.body.moreNum]);
+            
+            for (var i = 0; i < resAnswerFile.rows.length; i++) {
+                var imgId = resAnswerFile.rows[i].IMGID;
+                var imgStartNo = resAnswerFile.rows[i].PAGENUM;
+                var filepath = resAnswerFile.rows[i].FILEPATH;
+                var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
+
+                let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo `, [imgId, imgStartNo, imgStartNo]);
+
+                for (var row = 0; row < resAnswerData.rows.length; row++) {
+                    resAnswerData.rows[row].FILEPATH = filepath;
+                    resAnswerData.rows[row].FILENAME = filename;
+                }
+
+                if (resAnswerData.rows.length > 0) {
+                    res.push(resAnswerData);
+                }
+            }
+
+            return done(null, res);
+
+            /*
             conn = await oracledb.getConnection(dbConfig);
 
             var idCond = [];
@@ -522,6 +555,7 @@ exports.selectBatchLearnList = function (req, done) {
 
             idCond.push(status);
             idCond.push(req.body.moreNum);
+
             let resLearnId = await conn.execute(`SELECT FILEPATH, STATUS FROM TBL_BATCH_LEARN_ID WHERE STATUS = :status AND ROWNUM <= :num `, idCond);
 
             if (resLearnId.rows.length != 0) {
@@ -553,8 +587,9 @@ exports.selectBatchLearnList = function (req, done) {
                     }
                 }
             }
-
+            
             return done(null, res);
+            */
         } catch (err) { // catches errors in getConnection and the query
             console.log(err);
             return done(null, "error");
@@ -1690,8 +1725,8 @@ exports.insertNewDocument = function (req, done) {
 
             result = await conn.execute(queryConfig.batchLearningConfig.selectMaxDocType);
             await conn.execute(queryConfig.batchLearningConfig.insertDocCategory, [req[0], result.rows[0].MAXDOCTYPE, req[1]]);
-            var imgId = getConvertDate();
-            await conn.execute(queryConfig.batchLearningConfig.insertBatchLearnList, [imgId, req[1], result.rows[0].MAXDOCTYPE]);
+            //var imgId = getConvertDate();
+            //await conn.execute(queryConfig.batchLearningConfig.insertBatchLearnList, [imgId, req[1], result.rows[0].MAXDOCTYPE]);
 
             return done(null, {code: '200'});
         } catch (err) { // catches errors in getConnection and the query
@@ -1723,6 +1758,34 @@ exports.selectDocumentCategory = function (req, done) {
             return done(null, { code: '500', error: err });
         } finally {
             if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertBatchLearnList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            for (var i in req.filePathArray) {
+                var imgId = getConvertDate();
+                result = await conn.execute(queryConfig.batchLearningConfig.selectDocType, [req.docNameArr[i]]);
+                await conn.execute(queryConfig.batchLearningConfig.insertBatchLearnList, [imgId, req.filePathArray[i], result.rows[0].DOCTYPE]);
+            }
+
+            return done(null, { code: '200' });
+        } catch (err) {
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {
                 try {
                     await conn.release();
                 } catch (e) {

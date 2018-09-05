@@ -2155,6 +2155,11 @@ router.post('/addBatchTraining', function (req, res) {
     req.setTimeout(500000);
 
     sync.fiber(function () {
+        sync.await(oracle.insertBatchLearnList(req.body, sync.defer()));
+        res.send({ code: 200, msg: 'Success AddTrain' });
+    });
+    /*
+    sync.fiber(function () {
         var filepath = req.body.filePathArray;
         var retNum = 0;
         for (var i = 0; i < filepath.length; i++) {
@@ -2183,6 +2188,7 @@ router.post('/addBatchTraining', function (req, res) {
         }
         
     });
+    */
 });
 
 function addBatchTraining(filepath, done) {

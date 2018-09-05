@@ -1834,6 +1834,7 @@ var fn_popBatchRun = function () {
 
 var fn_addTraining = function () {
     var filePathArray = [];
+    var docNameArr = [];
 
     if (addCond == "LEARN_N") {
         let chkCnt = 0;
@@ -1844,6 +1845,7 @@ var fn_addTraining = function () {
                 //imgIdArray.push($(this).val());
                 var filepath = $(this).val();
                 filePathArray.push(filepath);
+                docNameArr.push($(this).closest('tr').find('a').eq(1).text());
             }
         });
         if (chkCnt == 0) {
@@ -1851,7 +1853,7 @@ var fn_addTraining = function () {
             return;
         } else {
             //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-            addBatchTraining(filePathArray, "PROCESS_IMAGE");
+            addBatchTraining(filePathArray, docNameArr, "PROCESS_IMAGE");
         }
     } else {
         alert("Before Training 상태에서만 배치학습이 가능합니다.");
@@ -1859,11 +1861,13 @@ var fn_addTraining = function () {
     }
 };
 
-var addBatchTraining = function (filePathArray) {
+var addBatchTraining = function (filePathArray, docNameArr) {
     var param = {
         filePathArray: filePathArray,
+        docNameArr: docNameArr,
     };
 
+    
     $.ajax({
         url: '/batchLearning/addBatchTraining',
         type: 'post',
@@ -1892,6 +1896,7 @@ var addBatchTraining = function (filePathArray) {
             endProgressBar(progressId);
         }
     });
+    
 }
 
 
@@ -2531,12 +2536,16 @@ function popUpSearchDocCategory() {
 // 팝업 확인 및 취소 이벤트
 function popUpRunEvent() {
     $('#btn_pop_doc_run').click(function (e) {
-        $('.fileNamePath').each(function (index, el) {
-            if ($(el).attr('data-item') == $('#docPopImgPath').val()) {
-                $(el).parent().next().children(0).text($('#orgDocName').val());
-                $('#btn_pop_doc_cancel').click();
-            }
-        });
+        if ($('#orgDocName').val() != '') {
+            $('.fileNamePath').each(function (index, el) {
+                if ($(el).attr('data-item') == $('#docPopImgPath').val()) {
+                    $(el).parent().next().children(0).text($('#orgDocName').val());
+                    $('#btn_pop_doc_cancel').click();
+                }
+            });
+        } else {
+            alert('The document name is missing');
+        }
 
         e.stopPropagation();
         e.preventDefault();

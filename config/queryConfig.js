@@ -547,7 +547,14 @@ var batchLearningConfig = {
          FROM
             TBL_DOCUMENT_CATEGORY
          WHERE
-            DOCNAME LIKE :docName`
+            DOCNAME LIKE :docName`,
+    selectDocType:
+        `SELECT
+            SEQNUM, DOCNAME, DOCTYPE, SAMPLEIMAGEPATH
+         FROM
+            TBL_DOCUMENT_CATEGORY
+         WHERE
+            DOCNAME = :docName `
 };
 
 var uiLearningConfig = {
