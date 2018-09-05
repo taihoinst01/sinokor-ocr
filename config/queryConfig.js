@@ -410,11 +410,9 @@ var batchLearningConfig = {
             (seq_document_category.nextval, :docName, :docType, :sampleImagePath) `,
     selectMaxDocType:
         `SELECT
-            MAX(docType) AS docType
+            NVL(MAX(DOCTYPE),0) + 1 AS MAXDOCTYPE
          FROM
-            tbl_document_category
-         WHERE
-            docType != 999 `,
+            TBL_DOCUMENT_CATEGORY `,
     selectBatchAnswerDataToFilePath:
         `SELECT
             D.*
@@ -537,7 +535,19 @@ var batchLearningConfig = {
         `,
     selectBatchLearnMlList:
         `SELECT IMGID, COLLABEL, COLVALUE, LOCATION, SID, FILEPATH 
-         FROM TBL_BATCH_ML_EXPORT WHERE FILEPATH IN `
+         FROM TBL_BATCH_ML_EXPORT WHERE FILEPATH IN `,
+    insertBatchLearnList:
+        `INSERT INTO
+            TBL_BATCH_LEARN_LIST
+         VALUES
+            (:imgId, 'D', :filePath, :docType, sysdate) `,
+    selectDocumentCategory:
+        `SELECT
+            SEQNUM, DOCNAME, DOCTYPE, SAMPLEIMAGEPATH
+         FROM
+            TBL_DOCUMENT_CATEGORY
+         WHERE
+            DOCNAME LIKE :docName`
 };
 
 var uiLearningConfig = {
@@ -647,7 +657,7 @@ var uiLearningConfig = {
         `INSERT INTO
             tbl_contract_mapping(extOgcompanyName, extCtnm, asOgcompanyName, asCtnm)
          VALUES
-            (: extOgcompanyName, : extCtnm, : asOgcompanyName, : asCtnm) `
+            (: extOgcompanyName, : extCtnm, : asOgcompanyName, : asCtnm) `   
 };
 
 var commonConfig = {

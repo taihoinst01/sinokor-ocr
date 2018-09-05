@@ -1535,7 +1535,7 @@ function fn_viewImageData(filepath, rowNum ,obj) {
         xhr.send();
     };
     loadImage('/tif' + filepath);
-    
+
     $('#tbody_batchList_answer').empty().append(data.clone());
     layer_open('layer3');
     $('#div_view_image').scrollTop(0);
@@ -2479,53 +2479,64 @@ function popUpEvent() {
 //팝업 문서 양식 LIKE 조회
 function popUpSearchDocCategory() {
     $('#searchDocCategoryBtn').click(function () {
-        if ($('.ez-selected').children('input').val() == 'choice-1') {
-            var keyword = $('#searchDocCategoryKeyword').val();
-            $.ajax({
-                url: '/uiLearning/selectLikeDocCategory',
-                type: 'post',
-                datatype: 'json',
-                data: JSON.stringify({ 'keyword': keyword }),
-                contentType: 'application/json; charset=UTF-8',
-                success: function (data) {
-                    $('#docData').val(JSON.stringify(data));
-                    $('#docSearchResult').html('');
-                    $('#countCurrent').html('1');
-                    $('.button_control10').attr('disabled', true);
-                    if (data.length == 0) {
-                        $('#docSearchResultImg_thumbCount').hide();
-                        $('#docSearchResultMask').hide();
-                        $('#searchResultDocName').html('');
-                        $('#orgDocName').val('');
-                        $('#searchResultDocName').val('');
-                        return false;
-                    } else {
-                        /**
-                         결과에 따른 이미지폼 만들기
-                         */
-                        docPopImages = data;
-                        var resultImg = '<img src="' + data[0].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
-                        $('#searchResultDocName').val(data[0].DOCNAME);
-                        if (data.length != 1) {
-                            $('.button_control12').attr('disabled', false);
-                        }
-                        $('#orgDocName').val(data[0].DOCNAME);
-                        $('#docSearchResult').html(resultImg);
-                        $('#docSearchResultMask').show();
-                        $('#countLast').html(data.length);
-                        $('#docSearchResultImg_thumbCount').show();
+        var keyword = $('#searchDocCategoryKeyword').val().replace(/ /gi, '');
+        $.ajax({
+            url: '/batchLearning/selectLikeDocCategory',
+            type: 'post',
+            datatype: 'json',
+            data: JSON.stringify({ 'keyword': keyword }),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                data = data.data;
+                //$('#docData').val(JSON.stringify(data));
+                $('#docSearchResult').html('');
+                $('#countCurrent').html('1');
+                $('.button_control10').attr('disabled', true);
+                if (data.length == 0) {
+                    $('#docSearchResultImg_thumbCount').hide();
+                    $('#docSearchResultMask').hide();
+                    $('#searchResultDocName').html('');
+                    $('#orgDocName').val('');
+                    $('#searchResultDocName').val('');
+                    return false;
+                } else {
+                    /**
+                     결과에 따른 이미지폼 만들기
+                     */
+                    docPopImages = data;
+                    var resultImg = '<img src="' + data[0].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+                    $('#searchResultDocName').val(data[0].DOCNAME);
+                    if (data.length != 1) {
+                        $('.button_control12').attr('disabled', false);
                     }
-                },
-                error: function (err) {
-                    console.log(err);
+                    $('#orgDocName').val(data[0].DOCNAME);
+                    $('#docSearchResult').html(resultImg);
+                    $('#docSearchResultMask').show();
+                    $('#countLast').html(data.length);
+                    $('#docSearchResultImg_thumbCount').show();
                 }
-            });
-        } 
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
     });
 }
 
 // 팝업 확인 및 취소 이벤트
 function popUpRunEvent() {
+    $('#btn_pop_doc_run').click(function (e) {
+        $('.fileNamePath').each(function (index, el) {
+            if ($(el).attr('data-item') == $('#docPopImgPath').val()) {
+                $(el).parent().next().children(0).text($('#orgDocName').val());
+                $('#btn_pop_doc_cancel').click();
+            }
+        });
+
+        e.stopPropagation();
+        e.preventDefault();
+    });
+    /*
     $('#btn_pop_doc_run').click(function (e) {
         var docData = JSON.parse($('#docData').val());
         for (var i in docData) {
@@ -2545,14 +2556,16 @@ function popUpRunEvent() {
         e.stopPropagation();
         e.preventDefault();
     });
+    */
 }
 
 //팝업 문서 양식 등록
 function popUpInsertDocCategory() {
     $('#insertDocCategoryBtn').click(function () {
-        if ($('.ez-selected').children('input').val() == 'choice-2') {
-            var docName = $('#newDocName').val();
-            var sampleImagePath = $('#originImg').attr('src').split('/')[2] + '/' + $('#originImg').attr('src').split('/')[3];
+        var docName = $('#newDocName').val().replace(/ /gi, "");       
+        var sampleImagePath = $('#docPopImgPath').val();
+
+        if (docName) {
             $.ajax({
                 url: '/batchLearning/insertDocCategory',
                 type: 'post',
@@ -2560,20 +2573,20 @@ function popUpInsertDocCategory() {
                 data: JSON.stringify({ 'docName': docName, 'sampleImagePath': sampleImagePath }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
-                    if (data.code == 200) {
-                        //console.log(data);
-                        $('#docData').val(JSON.stringify(data.docCategory[0]));
-                        $('#docName').text(data.docCategory[0].DOCNAME);
-                        $('#layer4').fadeOut();
-                    } else {
-                        alert(data.message);
-                    }
+                    $('.fileNamePath').each(function (index, el) {
+                        if ($(el).attr('data-item') == sampleImagePath) {
+                            $(el).parent().next().children(0).text(docName);
+                            $('#btn_pop_doc_cancel').click();
+                        }
+                    });
                 },
                 error: function (err) {
                     console.log(err);
                 }
             });
-        } 
+        } else {
+            alert('Please enter a new document name');
+        }
     });
 }
 
@@ -3088,6 +3101,7 @@ function fn_viewDoctypePop(obj) {
         xhr.send();
     };
     loadImage('/tif' + filepath);
+    $('#docPopImgPath').val(filepath);
     
     layer_open('layer4');
 }
