@@ -2299,17 +2299,17 @@ function batchLearnTraining(filepath, uiCheck, done) {
             retData.data = sidData;
             retData.docCategory = resForm;
             retData.filepath = filepath;
-
+            
             // 2차 버전
             // doc type이 2 이상인 경우 개별 학습의 columnMapping 처리 입력데이터중 sid 를 기존 (좌표,sid) 에서 (문서번호,좌표,sid) 로 변경
+            var sidDocData = convertSidWithDoc(sidData, resForm);
 
-            // //column mapping DL
-            // console.time("columnMapping ML");
-            // pythonConfig.columnMappingOptions.args = [];
-            // pythonConfig.columnMappingOptions.args.push(JSON.stringify(docData.data));
-            // resPyStr = sync.await(PythonShell.run('eval2.py', pythonConfig.columnMappingOptions, sync.defer()));
-            // resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-
+            console.time("columnMapping ML");
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(JSON.stringify(sidDocData));
+            resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            console.timeEnd("columnMapping ML");
 
             return done(null, retData);
         } catch (e) {
@@ -2334,7 +2334,13 @@ function ocrJson(regions) {
     return data;
 }
 
-
+function convertSidWithDoc(sidData, doc) {
+    var doctype = doc.DOCTYPE;
+    for (var i in sidData) {
+        sidData[i].sid = doctype + "," + sidData[i].sid;
+    }
+    return sidData;
+}
 
 function batchLearnTraing2(imgId, uiCheck, done) {
     sync.fiber(function () {

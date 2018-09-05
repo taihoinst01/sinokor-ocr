@@ -13,15 +13,15 @@ import random
 id = "koreanre"
 pw = "koreanre01"
 sid = "koreanreocr"
-ip = "10.10.20.205"
-#ip = "172.16.53.142"
+#ip = "10.10.20.205"
+ip = "172.16.53.142"
 port = "1521"
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
 conn = cx_Oracle.connect(connInfo)
 curs = conn.cursor()
 
-sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_COLUMN_MAPPING_TRAIN "
+sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_BATCH_COLUMN_MAPPING_TRAIN "
 curs.execute(sql)
 rows = curs.fetchall()
 
@@ -36,13 +36,14 @@ def findLabelDB(rows, inputsid):
         if int(row[2]) != 38 and (int(row[2]) < 3 or int(row[2]) > 34):
             dbNum = str(row[1]).split(",")
             inputNum = str(inputsid).split(",")
-            if (boundaryCheck(dbNum[1], inputNum[1]) and (boundaryCheck(dbNum[0], inputNum[0]) or boundaryCheck(dbNum[2], inputNum[2]))):
+            # 문서종류 and (Y좌표 and (X좌표 or 넓이))
+            if dbNum[0] and inputNum[0] and (boundaryCheck(dbNum[2], inputNum[2]) and (boundaryCheck(dbNum[1], inputNum[1]) or boundaryCheck(dbNum[3], inputNum[3]))):
                 ret.append(row[2])
         # {3~34}위치는 상관없이 text sid가 일치하면 label 매핑
         # text sid에 여러개의 label이 매핑되있을 경우 랜덤 매핑
         elif int(row[2]) != 38:
-            dbNum = str(row[1]).split(",")[3:]
-            inputNum = str(inputsid).split(",")[3:]
+            dbNum = str(row[1]).split(",")[4:]
+            inputNum = str(inputsid).split(",")[4:]
             if dbNum == inputNum:
                 ret.append(row[2])
 
@@ -91,17 +92,20 @@ def eval(inputJson):
         #전 아이템 중 엔트리 추출 후 같은 열이나 같은 행에 엔트리 라벨 검색
         for inputItem in inputArr:
             if inputItem['colLbl'] == 37:
-                entLoc = inputItem['sid'].split(",")[0:3]
+                entLoc = inputItem['sid'].split(",")[0:4]
 
                 for lblItem in entryLabel:
-                    lblLoc = lblItem['sid'].split(",")[0:3]
-                    # 같은 라인 검사
-                    if boundaryCheck(entLoc[1], lblLoc[1]):
-                        inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
+                    lblLoc = lblItem['sid'].split(",")[0:4]
 
-                    #상위 해더 왼쪽 오른쪽 정렬 검사
-                    if boundaryCheck(entLoc[0], lblLoc[0]) or boundaryCheck(entLoc[2], lblLoc[2]):
-                        inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
+                    # 같은 문서 검사
+                    if entLoc[0] == lblLoc[0]:
+                        # 같은 라인 검사
+                        if boundaryCheck(entLoc[2], lblLoc[2]):
+                            inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
+
+                        #상위 해더 왼쪽 오른쪽 정렬 검사
+                        if boundaryCheck(entLoc[1], lblLoc[1]) or boundaryCheck(entLoc[3], lblLoc[3]):
+                            inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
 
                 if 'entryLbl' not in inputItem:
                         inputItem['entryLbl'] = 30

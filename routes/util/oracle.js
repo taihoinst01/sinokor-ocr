@@ -1654,6 +1654,10 @@ exports.selectForm = function (req, done) {
             result = await conn.execute(`SELECT * FROM TBL_FORM_MAPPING WHERE DATA = :data `, [formText]);
 
             if (result.rows.length == 0) {
+                result = await conn.execute(`SELECT * FROM TBL_FORM_MAPPING WHERE DATA like :data` + `'%' `, [formText.slice(0, -10)]);
+            }
+
+            if (result.rows.length == 0) {
                 unknownRes = await conn.execute(`SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = 0`);
                 retData = unknownRes.rows[0];
             } else {
