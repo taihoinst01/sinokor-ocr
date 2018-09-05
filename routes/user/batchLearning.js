@@ -2155,6 +2155,11 @@ router.post('/addBatchTraining', function (req, res) {
     req.setTimeout(500000);
 
     sync.fiber(function () {
+        sync.await(oracle.insertBatchLearnList(req.body, sync.defer()));
+        res.send({ code: 200, msg: 'Success AddTrain' });
+    });
+    /*
+    sync.fiber(function () {
         var filepath = req.body.filePathArray;
         var retNum = 0;
         for (var i = 0; i < filepath.length; i++) {
@@ -2183,6 +2188,7 @@ router.post('/addBatchTraining', function (req, res) {
         }
         
     });
+    */
 });
 
 function addBatchTraining(filepath, done) {
@@ -3090,7 +3096,7 @@ function callbackInsLabelMap(rows, data) {
 
 //---------------------------- // train test 영역 --------------------------------------------//
 
-
+/*
 // 신규문서 양식 등록
 var callbackSelectDocCategory = function (rows, req, res) {
     if (rows.length > 0) {
@@ -3101,23 +3107,62 @@ var callbackSelectDocCategory = function (rows, req, res) {
 };
 var callbackInsertDocCategory = function (rows, docType, req, res) {
 
-    commonDB.reqQueryParam(queryConfig.mlConfig.selectDocCategory, [docType], callbackSelectDocCategory, req, res);
-    //res.send({ code: 200, message: 'document Category insert success' });
+    //commonDB.reqQueryParam(queryConfig.mlConfig.selectDocCategory, [docType], callbackSelectDocCategory, req, res);
+    res.send({ code: 200, message: 'new document insert success' });
 };
 var callbackSelectMaxDocType = function (rows, req, res) {
     var docName = req.body.docName;
     var sampleImagePath = req.body.sampleImagePath;
     var docType = parseInt(rows[0].DOCTYPE);
-    if (docType == 998) { // unk 가 999이므로 피하기 위함
-        docType++;
-    }
+
     commonDB.reqQueryParam2(queryConfig.batchLearningConfig.insertDocCategory, [docName, (docType + 1), sampleImagePath], callbackInsertDocCategory, (docType + 1), req, res);
 };
+*/
 router.post('/insertDocCategory', function (req, res) {
+    //commonDB.reqQuery(queryConfig.batchLearningConfig.selectMaxDocType, callbackSelectMaxDocType, req, res);
+    var docName = req.body.docName;
+    var sampleImagePath = req.body.sampleImagePath;
+    var returnObj;
 
-    commonDB.reqQuery(queryConfig.batchLearningConfig.selectMaxDocType, callbackSelectMaxDocType, req, res);
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.insertNewDocument([docName, sampleImagePath],sync.defer()));
+            
+            if (result.code == 200) {
+                returnObj = { code: 200, message: 'new document insert success' };
+            } else {
+                returnObj = { code: 500, message: result.error };
+            }
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
 });
 // end 신규문서 양식 등록 
+
+router.post('/selectLikeDocCategory', function (req, res) {
+    var keyword = '%' + req.body.keyword + '%';
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.selectDocumentCategory(keyword, sync.defer()));
+            if (result.rows) {
+                returnObj = { data : result.rows };
+            } else {
+                returnObj = { data: null };
+            }
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
 
 Date.prototype.isoNum = function (n) {
     var tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds

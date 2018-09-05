@@ -385,7 +385,7 @@ exports.insertColumnMapping = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
             let selectSqlText = `SELECT SEQNUM FROM TBL_COLUMN_MAPPING_TRAIN WHERE DATA = :DATA AND CLASS = :CLASS`;
             let insertSqlText = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
-            //20180903 hskim 만약 colLbl이 3 에서 34사이(텍스트로 구분하는칼럼) 이면서 sid가 0,0,0,0,0 이거나 1,1,1,1,1 이면 인서트 금지
+
             var result = await conn.execute(selectSqlText, [req.sid, req.colLbl]);
             if (result.rows[0]) {
                 //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
@@ -511,6 +511,39 @@ exports.selectBatchLearnList = function (req, done) {
         let conn;
         let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
         try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var rowNum = req.body.moreNum;
+            let resAnswerFile = await conn.execute(`SELECT F.IMGID, F.PAGENUM, F.FILEPATH 
+                                                    FROM 
+                                                      TBL_BATCH_ANSWER_FILE F 
+                                                      LEFT OUTER JOIN TBL_BATCH_LEARN_LIST L 
+                                                      ON F.FILEPATH = L.FILEPATH 
+                                                    WHERE (L.STATUS != 'D' OR L.STATUS IS NULL) 
+                                                    AND F.FILEPATH LIKE '/2018/%' 
+                                                    AND ROWNUM <= :num
+                                                    ORDER BY F.IMGID ASC `, [req.body.moreNum]);
+            
+            for (var i = 0; i < resAnswerFile.rows.length; i++) {
+                var imgId = resAnswerFile.rows[i].IMGID;
+                var imgStartNo = resAnswerFile.rows[i].PAGENUM;
+                var filepath = resAnswerFile.rows[i].FILEPATH;
+                var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
+
+                let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo `, [imgId, imgStartNo, imgStartNo]);
+
+                for (var row = 0; row < resAnswerData.rows.length; row++) {
+                    resAnswerData.rows[row].FILEPATH = filepath;
+                    resAnswerData.rows[row].FILENAME = filename;
+                }
+
+                if (resAnswerData.rows.length > 0) {
+                    res.push(resAnswerData);
+                }
+            }
+
+            return done(null, res);
+
+            /*
             conn = await oracledb.getConnection(dbConfig);
 
             var idCond = [];
@@ -522,6 +555,7 @@ exports.selectBatchLearnList = function (req, done) {
 
             idCond.push(status);
             idCond.push(req.body.moreNum);
+
             let resLearnId = await conn.execute(`SELECT FILEPATH, STATUS FROM TBL_BATCH_LEARN_ID WHERE STATUS = :status AND ROWNUM <= :num `, idCond);
 
             if (resLearnId.rows.length != 0) {
@@ -553,8 +587,9 @@ exports.selectBatchLearnList = function (req, done) {
                     }
                 }
             }
-
+            
             return done(null, res);
+            */
         } catch (err) { // catches errors in getConnection and the query
             console.log(err);
             return done(null, "error");
@@ -1071,10 +1106,9 @@ exports.insertOcrSymsSingle = function (req, done) {
             var numExp = /[0-9]/gi;
             var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
             for (var i in reqArr) {
-                //20180903 만약 단어가 기호로만 이루어져 있으면 인서트 안함
+
                 result = await conn.execute(selectTypo, [reqArr[i].replace(regExp, "")]);
                 if (result.rows.length == 0) {
-                    //숫자만 있을때는 insert 안함
                     var exceptNum = reqArr[i].replace(numExp, "");
 
                     if (exceptNum != "") {
@@ -1119,7 +1153,6 @@ exports.insertContractMapping = function (req, done) {
             if (selContract.rows.length == 0 && selContractAsog.rows.length == 0) {
                 result = await conn.execute(queryConfig.uiLearningConfig.insertContractMapping2, [req[0], req[1], req[2], req[3]]);
             } else {
-                //201880903 check 조회 후 있을경우 인서트 안함
 
                 if (selContract.rows.length > 0 && selContractAsog.rows.length == 0) {
                     updContract = await conn.execute(`UPDATE TBL_CONTRACT_MAPPING SET ASOGCOMPANYNAME = :asog WHERE EXTOGCOMPANYNAME = :extog`, [req[2], req[0]]);
@@ -1685,3 +1718,97 @@ exports.selectForm = function (req, done) {
         }
     });
 };
+
+exports.insertNewDocument = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+
+            result = await conn.execute(queryConfig.batchLearningConfig.selectMaxDocType);
+            await conn.execute(queryConfig.batchLearningConfig.insertDocCategory, [req[0], result.rows[0].MAXDOCTYPE, req[1]]);
+            //var imgId = getConvertDate();
+            //await conn.execute(queryConfig.batchLearningConfig.insertBatchLearnList, [imgId, req[1], result.rows[0].MAXDOCTYPE]);
+
+            return done(null, {code: '200'});
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectDocumentCategory = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(queryConfig.batchLearningConfig.selectDocumentCategory, [req]);          
+
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertBatchLearnList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            for (var i in req.filePathArray) {
+                var imgId = getConvertDate();
+                result = await conn.execute(queryConfig.batchLearningConfig.selectDocType, [req.docNameArr[i]]);
+                await conn.execute(queryConfig.batchLearningConfig.insertBatchLearnList, [imgId, req.filePathArray[i], result.rows[0].DOCTYPE]);
+            }
+
+            return done(null, { code: '200' });
+        } catch (err) {
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+function getConvertDate() {
+    var today = new Date();
+    var yyyy = today.getFullYear();
+    var mm = (today.getMonth() + 1 < 10) ? '0' + (today.getMonth() + 1) : today.getMonth() + 1;
+    var dd = today.getDate();
+    var hh = (today.getHours() < 10) ? '0' + today.getHours() : today.getHours();
+    var minute = (today.getMinutes() < 10) ? '0' + today.getMinutes() : today.getMinutes();
+    var ss = (today.getSeconds() < 10) ? '0' + today.getSeconds() : today.getSeconds();
+    var mss = (today.getMilliseconds() < 100) ? ((today.getMilliseconds() < 10) ? '00' + today.getMilliseconds() : '0' + today.getMilliseconds()) : today.getMilliseconds();
+
+    return '' + yyyy + mm + dd + hh + minute + ss + mss;
+}

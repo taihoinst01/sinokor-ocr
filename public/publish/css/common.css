@@ -6051,7 +6051,7 @@ input:disabled {
     height:30px !important;
 }
 
-#originImgDiv {
+.imgbox {
     height:480px;
     width: 100%;
 }
