@@ -385,7 +385,7 @@ exports.insertColumnMapping = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
             let selectSqlText = `SELECT SEQNUM FROM TBL_COLUMN_MAPPING_TRAIN WHERE DATA = :DATA AND CLASS = :CLASS`;
             let insertSqlText = `INSERT INTO TBL_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
-            //20180903 hskim ÎßåÏïΩ colLbl??3 ?êÏÑú 34?¨Ïù¥(?çÏä§?∏Î°ú Íµ¨Î∂Ñ?òÎäîÏπºÎüº) ?¥Î©¥??sidÍ∞Ä 0,0,0,0,0 ?¥Í±∞??1,1,1,1,1 ?¥Î©¥ ?∏ÏÑú??Í∏àÏ?
+
             var result = await conn.execute(selectSqlText, [req.sid, req.colLbl]);
             if (result.rows[0]) {
                 //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
@@ -1071,10 +1071,9 @@ exports.insertOcrSymsSingle = function (req, done) {
             var numExp = /[0-9]/gi;
             var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
             for (var i in reqArr) {
-                //20180903 ÎßåÏïΩ ?®Ïñ¥Í∞Ä Í∏∞Ìò∏Î°úÎßå ?¥Î£®?¥Ï†∏ ?àÏúºÎ©??∏ÏÑú???àÌï®
+
                 result = await conn.execute(selectTypo, [reqArr[i].replace(regExp, "")]);
                 if (result.rows.length == 0) {
-                    //?´ÏûêÎß??àÏùÑ?åÎäî insert ?àÌï®
                     var exceptNum = reqArr[i].replace(numExp, "");
 
                     if (exceptNum != "") {
@@ -1119,7 +1118,6 @@ exports.insertContractMapping = function (req, done) {
             if (selContract.rows.length == 0 && selContractAsog.rows.length == 0) {
                 result = await conn.execute(queryConfig.uiLearningConfig.insertContractMapping2, [req[0], req[1], req[2], req[3]]);
             } else {
-                //201880903 check Ï°∞Ìöå ???àÏùÑÍ≤ΩÏö∞ ?∏ÏÑú???àÌï®
 
                 if (selContract.rows.length > 0 && selContractAsog.rows.length == 0) {
                     updContract = await conn.execute(`UPDATE TBL_CONTRACT_MAPPING SET ASOGCOMPANYNAME = :asog WHERE EXTOGCOMPANYNAME = :extog`, [req[2], req[0]]);
