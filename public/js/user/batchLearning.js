@@ -2480,46 +2480,51 @@ function popUpEvent() {
 function popUpSearchDocCategory() {
     $('#searchDocCategoryBtn').click(function () {
         var keyword = $('#searchDocCategoryKeyword').val().replace(/ /gi, '');
-        $.ajax({
-            url: '/batchLearning/selectLikeDocCategory',
-            type: 'post',
-            datatype: 'json',
-            data: JSON.stringify({ 'keyword': keyword }),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-                data = data.data;
-                //$('#docData').val(JSON.stringify(data));
-                $('#docSearchResult').html('');
-                $('#countCurrent').html('1');
-                $('.button_control10').attr('disabled', true);
-                if (data.length == 0) {
-                    $('#docSearchResultImg_thumbCount').hide();
-                    $('#docSearchResultMask').hide();
-                    $('#searchResultDocName').html('');
-                    $('#orgDocName').val('');
-                    $('#searchResultDocName').val('');
-                    return false;
-                } else {
-                    /**
-                     결과에 따른 이미지폼 만들기
-                     */
-                    docPopImages = data;
-                    var resultImg = '<img src="' + data[0].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
-                    $('#searchResultDocName').val(data[0].DOCNAME);
-                    if (data.length != 1) {
-                        $('.button_control12').attr('disabled', false);
+
+        if (keyword) {
+            $.ajax({
+                url: '/batchLearning/selectLikeDocCategory',
+                type: 'post',
+                datatype: 'json',
+                data: JSON.stringify({ 'keyword': keyword }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    data = data.data;
+                    //$('#docData').val(JSON.stringify(data));
+                    $('#docSearchResult').html('');
+                    $('#countCurrent').html('1');
+                    $('.button_control10').attr('disabled', true);
+                    if (data.length == 0) {
+                        $('#docSearchResultImg_thumbCount').hide();
+                        $('#docSearchResultMask').hide();
+                        $('#searchResultDocName').html('');
+                        $('#orgDocName').val('');
+                        $('#searchResultDocName').val('');
+                        return false;
+                    } else {
+                        /**
+                         결과에 따른 이미지폼 만들기
+                         */
+                        docPopImages = data;
+                        var resultImg = '<img src="' + data[0].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+                        $('#searchResultDocName').val(data[0].DOCNAME);
+                        if (data.length != 1) {
+                            $('.button_control12').attr('disabled', false);
+                        }
+                        $('#orgDocName').val(data[0].DOCNAME);
+                        $('#docSearchResult').html(resultImg);
+                        $('#docSearchResultMask').show();
+                        $('#countLast').html(data.length);
+                        $('#docSearchResultImg_thumbCount').show();
                     }
-                    $('#orgDocName').val(data[0].DOCNAME);
-                    $('#docSearchResult').html(resultImg);
-                    $('#docSearchResultMask').show();
-                    $('#countLast').html(data.length);
-                    $('#docSearchResultImg_thumbCount').show();
+                },
+                error: function (err) {
+                    console.log(err);
                 }
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
+            });
+        } else {
+            alert('Please enter your search keyword');
+        }
     });
 }
 
