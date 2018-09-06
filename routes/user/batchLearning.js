@@ -3191,7 +3191,7 @@ router.post('/selectLikeDocCategory', function (req, res) {
     });
 });
 
-// tif 파일 없는거 tbl_batch_answer_file 테이블에서 삭제
+// tif 파일 없는거 tbl_batch_learn_list 테이블에 status = 'R' insert
 router.post('/deleteAnswerFile', function (req, res) {
     var filepath = req.body.filepath;
     var data = [];
