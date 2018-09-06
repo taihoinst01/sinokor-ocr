@@ -2489,7 +2489,16 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH, function (tifResult) {
+                if (tifResult) {
+                    $(tifResult).css({
+                        "width": "100%",
+                        "height": "100%",
+                        "display": "block"
+                    }).addClass("preview");
+                    $('#docSearchResult').empty().append(tifResult);
+                }
+            });
 
             if (docPopImagesCurrentCount == 1) {
                 $('#docSearchResultImg_thumbPrev').attr('disabled', true);
@@ -2509,7 +2518,16 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH, function (tifResult) {
+                if (tifResult) {
+                    $(tifResult).css({
+                        "width": "100%",
+                        "height": "100%",
+                        "display": "block"
+                    }).addClass("preview");
+                    $('#docSearchResult').empty().append(tifResult);
+                }
+            });
 
             if (docPopImagesCurrentCount == totalCount) {
                 $('#docSearchResultImg_thumbNext').attr('disabled', true);
@@ -2518,30 +2536,6 @@ function changeDocPopupImage() {
             }
         }
     });
-
-    var loadImage = function (filepath) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', filepath);
-        xhr.responseType = 'arraybuffer';
-        xhr.onload = function (e) {
-            var buffer = xhr.response;
-            var tiff = new Tiff({ buffer: buffer });
-            var canvas = tiff.toCanvas();
-
-            $(canvas).css({
-                "width": "100%",
-                "height": "100%",
-                "display": "block"
-                //"padding-top": "10px"
-            }).addClass("preview");
-            var width = tiff.width();
-            var height = tiff.height();
-
-            $('#docSearchResult').empty().append(canvas);
-
-        };
-        xhr.send();
-    };
 }
 
 
@@ -2583,44 +2577,23 @@ function popUpSearchDocCategory() {
                          */
                         docPopImages = data;
 
-                        var loadImage = function (filepath) {
-                            var xhr = new XMLHttpRequest();
-                            xhr.open('GET', filepath);
-                            xhr.responseType = 'arraybuffer';
-                            xhr.onload = function (e) {
-                                if (xhr.status == 404) {
-                                    //todo 
+                        loadImage('/tif' + data[0].SAMPLEIMAGEPATH, function (tifResult) {
+                            if (tifResult) {
+                                $(tifResult).css({
+                                    "width": "100%",
+                                    "height": "100%",
+                                    "display": "block"
+                                    //"padding-top": "10px"
+                                }).addClass("preview");
+                                $('#docSearchResult').empty().append(tifResult);
+                            }
+                        });
 
-                                } else {
-
-                                    var buffer = xhr.response;
-                                    var tiff = new Tiff({ buffer: buffer });
-                                    var canvas = tiff.toCanvas();
-
-                                    $(canvas).css({
-                                        "width": "100%",
-                                        "height": "100%",
-                                        "display": "block"
-                                        //"padding-top": "10px"
-                                    }).addClass("preview");
-                                    var width = tiff.width();
-                                    var height = tiff.height();
-
-                                    $('#originImgDiv').empty().append(canvas);
-                                }
-
-                            };
-                            xhr.send();
-                        };
-                        loadImage('/tif' + data[0].SAMPLEIMAGEPATH);
-
-                        var resultImg = '<img src="' + data[0].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
                         $('#searchResultDocName').val(data[0].DOCNAME);
                         if (data.length != 1) {
                             $('.button_control12').attr('disabled', false);
                         }
                         $('#orgDocName').val(data[0].DOCNAME);
-                        $('#docSearchResult').empty().html(resultImg);
                         $('#docSearchResultMask').show();
                         $('#countLast').html(data.length);
                         $('#docSearchResultImg_thumbCount').show();
@@ -3237,30 +3210,18 @@ function fn_viewDoctypePop(obj) {
     initLayer4();
     $('#mlPredictionDocName').val($(obj).html());
     var filepath = $(obj).closest('tr').find('.fileNamePath').attr('data-filepath');
-    var loadImage = function (filepath) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', filepath);
-        xhr.responseType = 'arraybuffer';
-        xhr.onload = function (e) {
-            var buffer = xhr.response;
-            var tiff = new Tiff({ buffer: buffer });
-            var canvas = tiff.toCanvas();
 
-            $(canvas).css({
+    loadImage('/tif' + filepath, function (tifResult) {
+        if (tifResult) {
+            $(tifResult).css({
                 "width": "100%",
                 "height": "100%",
-                "display": "block",
-                //"padding-top": "10px"
+                "display": "block"
             }).addClass("preview");
-            var width = tiff.width();
-            var height = tiff.height();
+            $('#originImgDiv').empty().append(tifResult);
+        }
+    });
 
-            $('#originImgDiv').empty().append(canvas);
-
-        };
-        xhr.send();
-    };
-    loadImage('/tif' + filepath);
     $('#docPopImgPath').val(filepath);
 
     layer_open('layer4');
