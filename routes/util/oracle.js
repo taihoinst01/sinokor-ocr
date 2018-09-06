@@ -1804,10 +1804,17 @@ exports.insertBatchLearnList = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            for (var i in req.filePathArray) {
-                var imgId = getConvertDate();
-                result = await conn.execute(queryConfig.batchLearningConfig.selectDocType, [req.docNameArr[i]]);
-                await conn.execute(queryConfig.batchLearningConfig.insertBatchLearnList, [imgId, req.filePathArray[i], result.rows[0].DOCTYPE]);
+            for (var i in req.filePathArray) {                
+                result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnListFromFilePath, [req.filePathArray[i]]);
+
+                if (result.rows.length == 0) {
+                    result = await conn.execute(queryConfig.batchLearningConfig.selectDocType, [req.docNameArr[i]]);
+                    var imgId = getConvertDate();
+                    await conn.execute(queryConfig.batchLearningConfig.insertBatchLearnList, [imgId, req.filePathArray[i], result.rows[0].DOCTYPE]);
+                } else {
+                    result = await conn.execute(queryConfig.batchLearningConfig.selectDocType, [req.docNameArr[i]]);
+                    await conn.execute(queryConfig.batchLearningConfig.updateBatchLearnList, [result.rows[0].DOCTYPE, req.filePathArray[i]]);
+                }
             }
 
             return done(null, { code: '200' });
@@ -1824,7 +1831,6 @@ exports.insertBatchLearnList = function (req, done) {
         }
     });
 };
-
 
 exports.deleteAnswerFile = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -1849,7 +1855,6 @@ exports.deleteAnswerFile = function (req, done) {
         }
     });
 };
-
 
 function getConvertDate() {
     var today = new Date();

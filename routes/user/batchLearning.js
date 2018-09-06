@@ -2151,6 +2151,14 @@ function uiLearnTraining(filepath, done) {
     });
 }
 
+router.post('/insertBatchLearnList', function (req, res) {
+
+    sync.fiber(function () {
+        sync.await(oracle.insertBatchLearnList(req.body, sync.defer()));
+        res.send({ code: 200, msg: 'Success insert BatchLearnList' });
+    });
+});
+
 router.post('/addBatchTraining', function (req, res) {
     req.setTimeout(500000);
 
@@ -3131,6 +3139,11 @@ router.post('/insertDocCategory', function (req, res) {
     sync.fiber(function () {
         try {
             var result = sync.await(oracle.insertNewDocument([docName, sampleImagePath],sync.defer()));
+			var params = {
+                filePathArray: [sampleImagePath],
+                docNameArr: [docName]
+            };
+            sync.await(oracle.insertBatchLearnList(params, sync.defer()));
             
             if (result.code == 200) {
                 returnObj = { code: 200, message: 'new document insert success' };
