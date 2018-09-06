@@ -636,6 +636,7 @@ exports.convertTiftoJpg2 = function (originFilePath, done) {
     }
 };
 
+/*
 exports.callApiOcr = function (req, done) {
     var pharsedOcrJson = "";
     try {
@@ -664,6 +665,7 @@ exports.callApiOcr = function (req, done) {
 
     }
 };
+*/
 
 exports.insertOcrData = function (filepath, ocrData, done) {
     return new Promise(async function (resolve, reject) {
@@ -894,33 +896,53 @@ exports.insertMLData = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
+            var insSql = queryConfig.batchLearningConfig.insertMlExport;
+            var delSql = queryConfig.batchLearningConfig.deleteMlExport;
 
-            let resCol = await conn.execute("SELECT * FROM TBL_COLUMN_MAPPING_CLS");
+            let delRes = await conn.execute(delSql, [req.fileinfo.filepath]);
 
-            insSql = queryConfig.batchLearningConfig.insertMlExport;
-            delSql = queryConfig.batchLearningConfig.deleteMlExport;
-
-            let delRes = await conn.execute(delSql, [req.filepath]);
-
-            for (var i = 0; i < req.mlData[0].length; i++) {
+            for (var i in req.data) {
                 var cond = [];
-                cond.push(req.imgId);
-                cond.push(req.filepath);
+                cond.push(req.fileinfo.imgId);
+                cond.push(req.fileinfo.filepath);
+                cond.push(req.data[i].colLbl);
+                cond.push(req.data[i].text);
+                cond.push(req.data[i].location);
+                cond.push(req.data[i].sid);
+                cond.push(req.data[i].entryLbl);
 
-                for (var row = 0; row < resCol.rows.length; row++) {
-                    if (req.mlData[0][i].label == resCol.rows[row].COLTYPE) {
-                        cond.push(resCol.rows[row].COLNUM);
-                    }
-                }
-
-                cond.push(req.mlData[0][i].text);
-                cond.push(req.mlData[0][i].location);
-                cond.push(req.mlData[0][i].sid);
-
-                if (cond.length == 6) {
+                if (cond.length == 7) {
                     let colData = await conn.execute(insSql, cond);
                 }
             }
+
+            //let rescol = await conn.execute("select * from tbl_column_mapping_cls");
+
+            //inssql = queryconfig.batchlearningconfig.insertmlexport;
+            //delsql = queryconfig.batchlearningconfig.deletemlexport;
+
+            //let delres = await conn.execute(delsql, [req.filepath]);
+
+            //for (var i = 0; i < req.mldata[0].length; i++) {
+            //    var cond = [];
+            //    cond.push(req.imgid);
+            //    cond.push(req.filepath);
+
+            //    for (var row = 0; row < rescol.rows.length; row++) {
+            //        if (req.mldata[0][i].label == rescol.rows[row].coltype) {
+            //            cond.push(rescol.rows[row].colnum);
+            //        }
+            //    }
+
+            //    cond.push(req.mldata[0][i].text);
+            //    cond.push(req.mldata[0][i].location);
+            //    cond.push(req.mldata[0][i].sid);
+
+            //    if (cond.length == 6) {
+            //        let coldata = await conn.execute(inssql, cond);
+            //    }
+            //}
+            
 
             return done(null, "mlExport");
         } catch (err) { // catches errors in getConnection and the query
@@ -1232,7 +1254,6 @@ exports.selectLegacyFilepath = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
             console.log(req);
             let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH = :filepath`, [req]);
-
             for (var i = 0; i < resAnswerFile.rows.length; i++) {
                 var imgId = resAnswerFile.rows[i].IMGID;
                 var imgStartNo = resAnswerFile.rows[i].PAGENUM;
@@ -1240,7 +1261,6 @@ exports.selectLegacyFilepath = function (req, done) {
                 var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
 
                 let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo`, [imgId, imgStartNo, imgStartNo]);
-
                 for (var row = 0; row < resAnswerData.rows.length; row++) {
                     resAnswerData.rows[row].FILEPATH = filepath;
                     resAnswerData.rows[row].FILENAME = filename;
@@ -1640,9 +1660,9 @@ exports.selectOcrData = function (req, done) {
             }
 
             var ocr = JSON.parse(result.rows[0].OCRDATA);
-            var retData = ocrJson(ocr.regions);
+            //var retData = ocrJson(ocr.regions);
 
-            return done(null, retData);
+            return done(null, ocr);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {

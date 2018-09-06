@@ -2265,17 +2265,17 @@ function batchLearnTraining(filepath, uiCheck, done) {
 
                 //ocr
                 console.time("ocr");
-                ocrResult = sync.await(oracle.callApiOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));
-                //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
+                ocrResult = sync.await(ocrUtil.localOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));
+                //ocrResult = sync.await(ocrUtil.proxyOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));// 운영서버용
 
                 if (ocrResult == "error") {
                     return done(null, "error ocr");
                 }
 
                 if (ocrResult != null) {
-                    var insOcrData = sync.await(oracle.insertOcrData(propertiesConfig.filepath.answerFileFrontPath + filepath, ocrResult, sync.defer()));
-                    ocrResult = JSON.parse(ocrResult);
-                    ocrResult = ocrJson(ocrResult.regions);
+                    var insOcrData = sync.await(oracle.insertOcrData(propertiesConfig.filepath.answerFileFrontPath + filepath, JSON.stringify(ocrResult), sync.defer()));
+                    //ocrResult = JSON.parse(ocrResult);
+                    //ocrResult = ocrJson(ocrResult.regions);
                 }
 
                 console.timeEnd("ocr");
@@ -2301,10 +2301,6 @@ function batchLearnTraining(filepath, uiCheck, done) {
             console.time("form mapping");
             var resForm = sync.await(oracle.selectForm(sidData, sync.defer()));
             console.timeEnd("form mapping");
-
-            retData.data = sidData;
-            retData.docCategory = resForm;
-            retData.filepath = filepath;
             
             // 2차 버전
             // doc type이 2 이상인 경우 개별 학습의 columnMapping 처리 입력데이터중 sid 를 기존 (좌표,sid) 에서 (문서번호,좌표,sid) 로 변경
@@ -2316,6 +2312,14 @@ function batchLearnTraining(filepath, uiCheck, done) {
             resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             console.timeEnd("columnMapping ML");
+
+            retData.data = resPyArr;
+            retData.docCategory = resForm;
+            retData.fileinfo = { filepath: filepath, imgId: imgId };
+
+            console.time("insert MlExport");
+            sync.await(oracle.insertMLData(retData, sync.defer()));
+            console.timeEnd("insert MlExport");
 
             return done(null, retData);
         } catch (e) {
