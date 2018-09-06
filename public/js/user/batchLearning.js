@@ -1249,7 +1249,7 @@ var searchBatchLearnDataList = function (addCond) {
             //addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
-            console.log(data);
+            //console.log(data);
             var list = data.data;
             if (addCond == "LEARN_N") $("#total_cnt_before").html(list.length);
             else $("#total_cnt_after").html(list.length);
