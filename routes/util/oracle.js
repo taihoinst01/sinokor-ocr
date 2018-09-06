@@ -512,7 +512,7 @@ exports.selectBatchLearnList = function (req, done) {
         let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
         var condQuery
         if (!commonUtil.isNull(req.body.addCond)) {
-            if (req.body.addCond == "LEARN_N") condQuery = "(L.STATUS != 'D' OR L.STATUS != 'R' OR L.STATUS IS NULL)";
+            if (req.body.addCond == "LEARN_N") condQuery = "(L.STATUS != 'D' AND L.STATUS != 'R' OR L.STATUS IS NULL)";
             else if (req.body.addCond == "LEARN_Y") condQuery = "(L.STATUS = 'D')";
         }
 
@@ -1848,7 +1848,7 @@ exports.deleteAnswerFile = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);;
-            result = await conn.execute(queryConfig.batchLearningConfig.deleteAnswerFile, [req]);
+            result = await conn.execute(queryConfig.batchLearningConfig.deleteAnswerFile, [req[1], req[0]]);
 
             return done(null, { code: '200' });
         } catch (err) {

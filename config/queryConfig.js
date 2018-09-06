@@ -571,7 +571,7 @@ var batchLearningConfig = {
          WHERE
             FILEPATH = :filePath `,
     deleteAnswerFile: 
-        `DELETE FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH = :filepath`,
+        `INSERT INTO TBL_BATCH_LEARN_LIST(IMGID, STATUS, FILEPATH, REGDATE) VALUES(:imgid, 'R', :filepath, sysdate)`,
     selectDocCategoryFilePath:
         `SELECT
             C.DOCNAME

@@ -3191,14 +3191,17 @@ router.post('/selectLikeDocCategory', function (req, res) {
     });
 });
 
-// tif 파일 없는거 tbl_batch_answer_file 테이블에서 삭제
+// tif 파일 없는거 tbl_batch_learn_list 테이블에 status = 'R' insert
 router.post('/deleteAnswerFile', function (req, res) {
     var filepath = req.body.filepath;
+    var data = [];
+    data.push(req.body.filepath);
+    data.push(req.body.imgId);
     var returnObj;
 
     sync.fiber(function () {
         try {
-            var result = sync.await(oracle.deleteAnswerFile(filepath, sync.defer()));
+            var result = sync.await(oracle.deleteAnswerFile(data, sync.defer()));
         } catch (e) {
             console.log(e);
             returnObj = { code: 500, message: e };

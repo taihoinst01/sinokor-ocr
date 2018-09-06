@@ -50,6 +50,7 @@ var checkboxEvent = function () {
     });
 
     // checkbox change
+    /*
     $("input[name=listCheck_before], #listCheckAll_before").on("change", function () {
         let chkCnt = 0;
         $("input[name=listCheck_before]").each(function (index, entry) {
@@ -64,6 +65,7 @@ var checkboxEvent = function () {
         });
         $("#choose_cnt_after").html(chkCnt);
     });
+    */
 };
 
 // [Button Event]
@@ -176,7 +178,16 @@ var popupEvent = (function () {
 
     // open popup
     var openPopup = function () {
-        if ($('#choose_cnt_before').html() > 0) {
+
+        var hasCheck = false;
+        $('input[name="listCheck_before"]').each(function (index, element) {
+            if ($(this).is(":checked")) {
+                hasCheck = true;
+                return false;
+            }
+        });
+
+        if (hasCheck) {
             $('#selectFileLearning').click();
         } else {
             $('#allLaerning').click();
@@ -1249,13 +1260,9 @@ var searchBatchLearnDataList = function (addCond) {
             //addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
-            //console.log(data);
+            console.log(data);
             var list = data.data;
-            if (addCond == "LEARN_N") $("#total_cnt_before").html(list.length);
-            else $("#total_cnt_after").html(list.length);
-
-
-
+            
             if (list.length != 0) {
 
                 for (var i = 0; i < list.length; i++) {
@@ -1267,7 +1274,8 @@ var searchBatchLearnDataList = function (addCond) {
                     var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
                         checkboxHtml +
-                        '<td><a class="fileNamePath" data-item="' + nvl(rows[0].FILEPATH) + '" onclick="javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', this)" href="javascript:void(0);">' + nvl(rows[0].FILENAME) + '</a></td> <!--FILENAME-->' +
+                        '<td><a class="fileNamePath" data-filepath="' + nvl(rows[0].FILEPATH) + '"' + 
+                        'onclick = "javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', \'' + nvl(rows[0].IMGID) + '\', this)" href = "javascript:void(0);" > ' + nvl(rows[0].FILENAME) + '</a ></td > < !--FILENAME--> ' +
                         '<td> ' + appendPredDoc(data.predDoc, i) + ' </td> <!--doctype -->' +
                         '</tr>';
 
@@ -1313,7 +1321,7 @@ var searchBatchLearnDataList = function (addCond) {
                     }
                     var mlData = data.mlData;
                     if (mlData.rows.length != 0) {
-                        appendRightContentsHtml += '<tr class="mlTr">' +                                    
+                        appendRightContentsHtml += '<tr class="mlTr mlRowNum' + i + '">' +                                    
                                         '<td>' + makeMLSelect(mlData.rows, 0, null, rows[0].FILEPATH) + '</td> <!--출재사명-->' +
                                         '<td>' + makeMLSelect(mlData.rows, 1, null, rows[0].FILEPATH) + '</td> <!--계약명-->' +
                                         '<td>' + makeMLSelect(mlData.rows, 2, null, rows[0].FILEPATH) + '</td> <!--UY-->' +
@@ -1353,7 +1361,7 @@ var searchBatchLearnDataList = function (addCond) {
                                     '</tr>';
                     } else {                   
                         appendRightContentsHtml += 
-                                    '<tr class="mlTr">' +
+                                    '<tr class="mlTr mlRowNum' + i + '">' +
                                         '<td colspan="36"></td>' +          
                                     '</tr>';
                     
@@ -1517,7 +1525,7 @@ function compareMLAndAnswer(mlData) {
     }
 }
 
-function fn_viewImageData(filepath, rowNum, obj) {
+function fn_viewImageData(filepath, rowNum, imgId, obj) {
 
     var appendHtml = '';
     $('#tbody_batchList_answer').empty();
@@ -1543,7 +1551,8 @@ function fn_viewImageData(filepath, rowNum, obj) {
             var deleteFlag = confirm("없는 파일입니다 삭제하시겠습니까?");
             if (deleteFlag == true) {
                 var param = {
-                    filepath: filepath
+                    filepath: filepath,
+                    imgId: imgId
                 };
                 $.ajax({
                     url: '/batchLearning/deleteAnswerFile',
@@ -1557,7 +1566,10 @@ function fn_viewImageData(filepath, rowNum, obj) {
                     success: function (data) {
                         alert("삭제되었습니다.");
                         endProgressBar(progressId);
-                        searchBatchLearnDataList(addCond);
+                        $(obj).closest('tr').remove();
+                        $('.rowNum' + rowNum).remove();
+                        $('.mlRowNum' + rowNum).remove();
+                        //searchBatchLearnDataList(addCond);
                     },
                     error: function (err) {
                         endProgressBar(progressId); // end progressbar
@@ -2478,7 +2490,16 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH, function (tifResult) {
+                if (tifResult) {
+                    $(tifResult).css({
+                        "width": "100%",
+                        "height": "100%",
+                        "display": "block"
+                    }).addClass("preview");
+                    $('#docSearchResult').empty().append(tifResult);
+                }
+            });
 
             if (docPopImagesCurrentCount == 1) {
                 $('#docSearchResultImg_thumbPrev').attr('disabled', true);
@@ -2498,7 +2519,16 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH, function (tifResult) {
+                if (tifResult) {
+                    $(tifResult).css({
+                        "width": "100%",
+                        "height": "100%",
+                        "display": "block"
+                    }).addClass("preview");
+                    $('#docSearchResult').empty().append(tifResult);
+                }
+            });
 
             if (docPopImagesCurrentCount == totalCount) {
                 $('#docSearchResultImg_thumbNext').attr('disabled', true);
@@ -2507,30 +2537,6 @@ function changeDocPopupImage() {
             }
         }
     });
-
-    var loadImage = function (filepath) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', filepath);
-        xhr.responseType = 'arraybuffer';
-        xhr.onload = function (e) {
-            var buffer = xhr.response;
-            var tiff = new Tiff({ buffer: buffer });
-            var canvas = tiff.toCanvas();
-
-            $(canvas).css({
-                "width": "100%",
-                "height": "100%",
-                "display": "block"
-                //"padding-top": "10px"
-            }).addClass("preview");
-            var width = tiff.width();
-            var height = tiff.height();
-
-            $('#docSearchResult').empty().append(canvas);
-
-        };
-        xhr.send();
-    };
 }
 
 
@@ -2572,44 +2578,23 @@ function popUpSearchDocCategory() {
                          */
                         docPopImages = data;
 
-                        var loadImage = function (filepath) {
-                            var xhr = new XMLHttpRequest();
-                            xhr.open('GET', filepath);
-                            xhr.responseType = 'arraybuffer';
-                            xhr.onload = function (e) {
-                                if (xhr.status == 404) {
-                                    //todo 
+                        loadImage('/tif' + data[0].SAMPLEIMAGEPATH, function (tifResult) {
+                            if (tifResult) {
+                                $(tifResult).css({
+                                    "width": "100%",
+                                    "height": "100%",
+                                    "display": "block"
+                                    //"padding-top": "10px"
+                                }).addClass("preview");
+                                $('#docSearchResult').empty().append(tifResult);
+                            }
+                        });
 
-                                } else {
-
-                                    var buffer = xhr.response;
-                                    var tiff = new Tiff({ buffer: buffer });
-                                    var canvas = tiff.toCanvas();
-
-                                    $(canvas).css({
-                                        "width": "100%",
-                                        "height": "100%",
-                                        "display": "block"
-                                        //"padding-top": "10px"
-                                    }).addClass("preview");
-                                    var width = tiff.width();
-                                    var height = tiff.height();
-
-                                    $('#originImgDiv').empty().append(canvas);
-                                }
-
-                            };
-                            xhr.send();
-                        };
-                        loadImage('/tif' + data[0].SAMPLEIMAGEPATH);
-
-                        var resultImg = '<img src="' + data[0].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
                         $('#searchResultDocName').val(data[0].DOCNAME);
                         if (data.length != 1) {
                             $('.button_control12').attr('disabled', false);
                         }
                         $('#orgDocName').val(data[0].DOCNAME);
-                        $('#docSearchResult').empty().html(resultImg);
                         $('#docSearchResultMask').show();
                         $('#countLast').html(data.length);
                         $('#docSearchResultImg_thumbCount').show();
@@ -2630,7 +2615,7 @@ function popUpRunEvent() {
     $('#btn_pop_doc_run').click(function (e) {
         if ($('#orgDocName').val() != '') {
             $('.fileNamePath').each(function (index, el) {
-                if ($(el).attr('data-item') == $('#docPopImgPath').val()) {
+                if ($(el).attr('data-filepath') == $('#docPopImgPath').val()) {
                     $.ajax({
                         url: '/batchLearning/insertBatchLearnList',
                         type: 'post',
@@ -2695,7 +2680,7 @@ function popUpInsertDocCategory() {
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
                     $('.fileNamePath').each(function (index, el) {
-                        if ($(el).attr('data-item') == sampleImagePath) {
+                        if ($(el).attr('data-filepath') == sampleImagePath) {
                             $(el).parent().next().children(0).text(docName);
                             $('#btn_pop_doc_cancel').click();
                         }
@@ -2714,7 +2699,7 @@ function popUpInsertDocCategory() {
 function popUpNotInvoice() {
     $('#notInvoiceBtn').click(function () {
         $('.fileNamePath').each(function (index, el) {
-            if ($(el).attr('data-item') == $('#docPopImgPath').val()) {
+            if ($(el).attr('data-filepath') == $('#docPopImgPath').val()) {
                 $.ajax({
                     url: '/batchLearning/insertBatchLearnList',
                     type: 'post',
@@ -3225,31 +3210,19 @@ function viewOriginImg() {
 function fn_viewDoctypePop(obj) {
     initLayer4();
     $('#mlPredictionDocName').val($(obj).html());
-    var filepath = $(obj).closest('tr').find('.fileNamePath').attr('data-item');
-    var loadImage = function (filepath) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', filepath);
-        xhr.responseType = 'arraybuffer';
-        xhr.onload = function (e) {
-            var buffer = xhr.response;
-            var tiff = new Tiff({ buffer: buffer });
-            var canvas = tiff.toCanvas();
+    var filepath = $(obj).closest('tr').find('.fileNamePath').attr('data-filepath');
 
-            $(canvas).css({
+    loadImage('/tif' + filepath, function (tifResult) {
+        if (tifResult) {
+            $(tifResult).css({
                 "width": "100%",
                 "height": "100%",
-                "display": "block",
-                //"padding-top": "10px"
+                "display": "block"
             }).addClass("preview");
-            var width = tiff.width();
-            var height = tiff.height();
+            $('#originImgDiv').empty().append(tifResult);
+        }
+    });
 
-            $('#originImgDiv').empty().append(canvas);
-
-        };
-        xhr.send();
-    };
-    loadImage('/tif' + filepath);
     $('#docPopImgPath').val(filepath);
 
     layer_open('layer4');
