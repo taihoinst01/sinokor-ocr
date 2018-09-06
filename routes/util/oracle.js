@@ -894,10 +894,10 @@ exports.insertMLData = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            insSql = queryConfig.batchLearningConfig.insertMlExport;
-            delSql = queryConfig.batchLearningConfig.deleteMlExport;
+            var insSql = queryConfig.batchLearningConfig.insertMlExport;
+            var delSql = queryConfig.batchLearningConfig.deleteMlExport;
 
-            let delRes = await conn.execute(delSql, [req.filepath]);
+            let delRes = await conn.execute(delSql, [req.fileinfo.filepath]);
 
             for (var i in req.data) {
                 var cond = [];

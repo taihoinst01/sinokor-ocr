@@ -534,7 +534,7 @@ var batchLearningConfig = {
          WHERE ROWNUM >= :startNum and ROWNUM <= :endNum 
         `,
     selectBatchLearnMlList:
-        `SELECT IMGID, COLLABEL, COLVALUE, LOCATION, SID, FILEPATH 
+        `SELECT IMGID, COLLABEL, COLVALUE, LOCATION, SID, FILEPATH, ENTRYLABEL
          FROM TBL_BATCH_ML_EXPORT WHERE FILEPATH IN `,
     insertBatchLearnList:
         `INSERT INTO
