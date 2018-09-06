@@ -5,6 +5,7 @@ var fs = require('fs');
 var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
+var localRequest = require('sync-request');
 var request = require('request');
 var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
@@ -24,6 +25,33 @@ const defaults = {
 // [POST] LOCAL OCR API (request binary data)
 exports.localOcr = function (req, done) {
     return new Promise(async function (resolve, reject) {
+        var pharsedOcrJson = "";
+        try {
+            var uploadImage = fs.readFileSync(req, 'binary');
+            var base64 = new Buffer(uploadImage, 'binary').toString('base64');
+            var binaryString = new Buffer(base64, 'base64').toString('binary');
+            uploadImage = new Buffer(binaryString, "binary");
+
+            var res = localRequest('POST', propertiesConfig.ocr.uri, {
+                headers: {
+                    'Ocp-Apim-Subscription-Key': propertiesConfig.ocr.subscriptionKey,
+                    'Content-Type': 'application/octet-stream'
+                },
+                uri: propertiesConfig.ocr.uri + '?' + 'language=unk&detectOrientation=true',
+                body: uploadImage,
+                method: 'POST'
+            });
+            var resJson = JSON.parse(res.getBody('utf8'));
+            pharsedOcrJson = ocrJson(resJson.regions);
+
+            return done(null, pharsedOcrJson);
+        } catch (err) {
+            console.log(err);
+            return done(null, 'error');
+        } finally {
+
+        }
+        /*
         var returnObj;
         var fileName = req;
 
@@ -67,7 +95,8 @@ exports.localOcr = function (req, done) {
             return done(null, { code: 500, message: err });
         } finally {           
         }
-    });
+        */
+    });   
 };
 
 // [POST] PROXY OCR API (request binary data)
@@ -87,10 +116,9 @@ exports.proxyOcr = function (req, done) {
             };
 
             request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
-                return done(null, body);
-                //var data = JSON.parse(body);
-                //console.log(data);
-                //return done(null, ocrJson(data.regions));
+                var data = JSON.parse(body);
+                console.log(data);
+                return done(null, ocrJson(data.regions));
             });
 
         } catch (err) {

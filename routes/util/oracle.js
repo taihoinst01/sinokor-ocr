@@ -636,6 +636,7 @@ exports.convertTiftoJpg2 = function (originFilePath, done) {
     }
 };
 
+/*
 exports.callApiOcr = function (req, done) {
     var pharsedOcrJson = "";
     try {
@@ -664,6 +665,7 @@ exports.callApiOcr = function (req, done) {
 
     }
 };
+*/
 
 exports.insertOcrData = function (filepath, ocrData, done) {
     return new Promise(async function (resolve, reject) {

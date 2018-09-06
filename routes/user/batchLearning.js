@@ -2265,7 +2265,7 @@ function batchLearnTraining(filepath, uiCheck, done) {
 
                 //ocr
                 console.time("ocr");
-                ocrResult = sync.await(oracle.callApiOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));
+                ocrResult = sync.await(ocrUtil.localOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));
                 //ocrResult = sync.await(ocrUtil.proxyOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));// 운영서버용
 
                 if (ocrResult == "error") {
@@ -2273,9 +2273,9 @@ function batchLearnTraining(filepath, uiCheck, done) {
                 }
 
                 if (ocrResult != null) {
-                    var insOcrData = sync.await(oracle.insertOcrData(propertiesConfig.filepath.answerFileFrontPath + filepath, ocrResult, sync.defer()));
-                    ocrResult = JSON.parse(ocrResult);
-                    ocrResult = ocrJson(ocrResult.regions);
+                    var insOcrData = sync.await(oracle.insertOcrData(propertiesConfig.filepath.answerFileFrontPath + filepath, JSON.stringify(ocrResult), sync.defer()));
+                    //ocrResult = JSON.parse(ocrResult);
+                    //ocrResult = ocrJson(ocrResult.regions);
                 }
 
                 console.timeEnd("ocr");
