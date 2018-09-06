@@ -41,10 +41,11 @@ exports.localOcr = function (req, done) {
                 body: uploadImage,
                 method: 'POST'
             });
-            var resJson = JSON.parse(res.getBody('utf8'));
-            pharsedOcrJson = ocrJson(resJson.regions);
+            //var resJson = JSON.parse(res.getBody('utf8'));
+            //pharsedOcrJson = ocrJson(resJson.regions);
+            var resJson = ocrParsing(res.getBody('utf8'));
 
-            return done(null, pharsedOcrJson);
+            return done(null, resJson);
         } catch (err) {
             console.log(err);
             return done(null, 'error');
@@ -116,9 +117,8 @@ exports.proxyOcr = function (req, done) {
             };
 
             request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
-                var data = JSON.parse(body);
-                console.log(data);
-                return done(null, ocrJson(data.regions));
+                var resJson = ocrParsing(body);
+                return done(null, resJson);
             });
 
         } catch (err) {
@@ -128,16 +128,73 @@ exports.proxyOcr = function (req, done) {
     });
 };
 
-function ocrJson(regions) {
+//pass => 한글 English 1234567890 <>,.!@#$%^&*()~`-+_=|;:?/ lid => Iñtërnâtiônàlizætiøn☃
+//send전 parsing 된 array 중 text안에 {}[]'" 있을 경우 삭제
+function ocrParsing(body) {
     var data = [];
-    for (var i = 0; i < regions.length; i++) {
-        for (var j = 0; j < regions[i].lines.length; j++) {
-            var item = '';
-            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
-                item += regions[i].lines[j].words[k].text + ' ';
+
+    try {
+        var body = JSON.parse(body);
+
+        // ocr line parsing
+        for (var i = 0; i < body.regions.length; i++) {
+            for (var j = 0; j < body.regions[i].lines.length; j++) {
+                var item = '';
+                for (var k = 0; k < body.regions[i].lines[j].words.length; k++) {
+                    item += body.regions[i].lines[j].words[k].text + ' ';
+                }
+                data.push({ 'location': body.regions[i].lines[j].boundingBox, 'text': item.trim() });
             }
-            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
         }
+
+        // ocr x location parsing
+        var xInterval = 3; // x pixel value
+
+        for (var i = 0; i < data.length; i++) {
+            for (var j = 0; j < data.length; j++) {
+                if (data[i].location != data[j].location) {
+                    var targetLocArr = data[i].location.split(',');
+                    var compareLocArr = data[j].location.split(',');
+                    var width = Number(targetLocArr[0]) + Number(targetLocArr[2]); // target text width
+                    var textSpacing = Math.abs(Number(compareLocArr[0]) - width) // spacing between target text and compare text
+
+                    if (textSpacing <= xInterval && compareLocArr[1] == targetLocArr[1]) {
+                        data[i].location = targetLocArr[0] + ',' + targetLocArr[1] + ',' +
+                            (Number(targetLocArr[2]) + Number(compareLocArr[2]) + textSpacing) + ',' + targetLocArr[3];
+                        data[i].text += ' ' + data[j].text;
+                        data[j].text = '';
+                        data[j].location = '';
+                    }
+                }
+            }
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].location == '' && data[i].text == '') data.splice(i, 1);
+        }
+        // ocr text Unknown character parsing
+        var ignoreChar = ['"'.charCodeAt(0), '\''.charCodeAt(0), '['.charCodeAt(0), ']'.charCodeAt(0),
+        '{'.charCodeAt(0), '}'.charCodeAt(0)];
+
+        for (var i = 0; i < data.length; i++) {
+            var modifyText = data[i].text;
+            for (var j = 0; j < data[i].text.length; j++) {
+                var ascii = data[i].text.charCodeAt(j);
+                if (ascii > 127 || ignoreChar.indexOf(ascii) != -1) {
+                    var rep = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+                    if (!rep.test(data[i].text[j])) { // not Korean
+                        rep = new RegExp(((ascii < 128) ? '\\' : '') + data[i].text[j], "gi");
+                        modifyText = modifyText.replace(rep, '');
+                    }
+                }
+            }
+            data[i].text = modifyText;
+        }
+
+    } catch (e) {
+        console.log(e);
+        data = { 'error': e };
+    } finally {
+        return data;
     }
-    return data;
 }
