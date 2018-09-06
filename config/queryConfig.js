@@ -556,6 +556,20 @@ var batchLearningConfig = {
             TBL_DOCUMENT_CATEGORY
          WHERE
             DOCNAME = :docName `,
+	selectBatchLearnListFromFilePath:
+        `SELECT
+            IMGID, STATUS, FILEPATH, DOCTYPE
+         FROM
+            TBL_BATCH_LEARN_LIST
+         WHERE
+            FILEPATH = :filePath `,
+    updateBatchLearnList:
+        `UPDATE
+            TBL_BATCH_LEARN_LIST
+         SET
+            DOCTYPE = :docType
+         WHERE
+            FILEPATH = :filePath `,
     deleteAnswerFile: 
         `DELETE FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH = :filepath`
 };

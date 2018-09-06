@@ -2617,8 +2617,23 @@ function popUpRunEvent() {
         if ($('#orgDocName').val() != '') {
             $('.fileNamePath').each(function (index, el) {
                 if ($(el).attr('data-item') == $('#docPopImgPath').val()) {
-                    $(el).parent().next().children(0).text($('#orgDocName').val());
-                    $('#btn_pop_doc_cancel').click();
+                    $.ajax({
+                        url: '/batchLearning/insertBatchLearnList',
+                        type: 'post',
+                        datatype: 'json',
+                        data: JSON.stringify({
+                            filePathArray: [$('#docPopImgPath').val()],
+                            docNameArr: [$('#orgDocName').val()]
+                        }),
+                        contentType: 'application/json; charset=UTF-8',
+                        success: function (data) {
+                            $(el).parent().next().children(0).text($('#orgDocName').val());
+                            $('#btn_pop_doc_cancel').click();
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
                 }
             });
         } else {
@@ -3212,7 +3227,6 @@ function initLayer4() {
     $('#searchResultDocName').val('');
     $('#searchDocCategoryKeyword').val('');
 }
-
 
 var loadImage = function (filepath, callBack) {
     var result;
