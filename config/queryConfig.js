@@ -444,8 +444,8 @@ var batchLearningConfig = {
             AND
             F.filePath IN `,
     insertMlExport:
-        `INSERT INTO TBL_BATCH_ML_EXPORT(IMGID, FILEPATH, COLLABEL, COLVALUE, LOCATION, SID)
-         VALUES(:imgId, :filepath, :colLabel, :colValue, :location, :sid)`,
+        `INSERT INTO TBL_BATCH_ML_EXPORT(IMGID, FILEPATH, COLLABEL, COLVALUE, LOCATION, SID, ENTRYLABEL)
+         VALUES(:imgId, :filepath, :colLabel, :colValue, :location, :sid, :entryLabel)`,
     deleteMlExport:
         `DELETE FROM TBL_BATCH_ML_EXPORT
          WHERE FILEPATH = :filepath `,

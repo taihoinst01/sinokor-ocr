@@ -894,33 +894,53 @@ exports.insertMLData = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-
-            let resCol = await conn.execute("SELECT * FROM TBL_COLUMN_MAPPING_CLS");
-
             insSql = queryConfig.batchLearningConfig.insertMlExport;
             delSql = queryConfig.batchLearningConfig.deleteMlExport;
 
             let delRes = await conn.execute(delSql, [req.filepath]);
 
-            for (var i = 0; i < req.mlData[0].length; i++) {
+            for (var i in req.data) {
                 var cond = [];
-                cond.push(req.imgId);
-                cond.push(req.filepath);
+                cond.push(req.fileinfo.imgId);
+                cond.push(req.fileinfo.filepath);
+                cond.push(req.data[i].colLbl);
+                cond.push(req.data[i].text);
+                cond.push(req.data[i].location);
+                cond.push(req.data[i].sid);
+                cond.push(req.data[i].entryLbl);
 
-                for (var row = 0; row < resCol.rows.length; row++) {
-                    if (req.mlData[0][i].label == resCol.rows[row].COLTYPE) {
-                        cond.push(resCol.rows[row].COLNUM);
-                    }
-                }
-
-                cond.push(req.mlData[0][i].text);
-                cond.push(req.mlData[0][i].location);
-                cond.push(req.mlData[0][i].sid);
-
-                if (cond.length == 6) {
+                if (cond.length == 7) {
                     let colData = await conn.execute(insSql, cond);
                 }
             }
+
+            //let rescol = await conn.execute("select * from tbl_column_mapping_cls");
+
+            //inssql = queryconfig.batchlearningconfig.insertmlexport;
+            //delsql = queryconfig.batchlearningconfig.deletemlexport;
+
+            //let delres = await conn.execute(delsql, [req.filepath]);
+
+            //for (var i = 0; i < req.mldata[0].length; i++) {
+            //    var cond = [];
+            //    cond.push(req.imgid);
+            //    cond.push(req.filepath);
+
+            //    for (var row = 0; row < rescol.rows.length; row++) {
+            //        if (req.mldata[0][i].label == rescol.rows[row].coltype) {
+            //            cond.push(rescol.rows[row].colnum);
+            //        }
+            //    }
+
+            //    cond.push(req.mldata[0][i].text);
+            //    cond.push(req.mldata[0][i].location);
+            //    cond.push(req.mldata[0][i].sid);
+
+            //    if (cond.length == 6) {
+            //        let coldata = await conn.execute(inssql, cond);
+            //    }
+            //}
+            
 
             return done(null, "mlExport");
         } catch (err) { // catches errors in getConnection and the query
