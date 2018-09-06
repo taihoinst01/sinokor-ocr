@@ -2048,8 +2048,8 @@ var batchLearnTraining = function (imgIdArray, flag) {
                 if ($(this).is(":checked")) {
 
                     for (var i in data.data) {
-                        if ($(this).val() == data.data[i].filepath) {
-                            console.log(index);
+                        if ($(this).val() == data.data[i].fileinfo.filepath) {
+                            //console.log(index);
                             $(this).closest("td").next().next().html('<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>');
                         }
                     }
