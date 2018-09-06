@@ -1321,7 +1321,7 @@ var searchBatchLearnDataList = function (addCond) {
                     }
                     var mlData = data.mlData;
                     if (mlData.rows.length != 0) {
-                        appendRightContentsHtml += '<tr class="mlTr rowNum' + i + '">' +                                    
+                        appendRightContentsHtml += '<tr class="mlTr mlRowNum' + i + '">' +                                    
                                         '<td>' + makeMLSelect(mlData.rows, 0, null, rows[0].FILEPATH) + '</td> <!--출재사명-->' +
                                         '<td>' + makeMLSelect(mlData.rows, 1, null, rows[0].FILEPATH) + '</td> <!--계약명-->' +
                                         '<td>' + makeMLSelect(mlData.rows, 2, null, rows[0].FILEPATH) + '</td> <!--UY-->' +
@@ -1361,7 +1361,7 @@ var searchBatchLearnDataList = function (addCond) {
                                     '</tr>';
                     } else {                   
                         appendRightContentsHtml += 
-                                    '<tr class="mlTr rowNum' + i + '">' +
+                                    '<tr class="mlTr mlRowNum' + i + '">' +
                                         '<td colspan="36"></td>' +          
                                     '</tr>';
                     
@@ -1568,6 +1568,7 @@ function fn_viewImageData(filepath, rowNum, imgId, obj) {
                         endProgressBar(progressId);
                         $(obj).closest('tr').remove();
                         $('.rowNum' + rowNum).remove();
+                        $('.mlRowNum' + rowNum).remove();
                         //searchBatchLearnDataList(addCond);
                     },
                     error: function (err) {
