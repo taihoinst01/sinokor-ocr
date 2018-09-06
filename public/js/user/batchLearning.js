@@ -2705,21 +2705,21 @@ function popUpInsertDocCategory() {
 // 문서 양식 조회 팝업 라디오 이벤트
 function changeDocPopRadio() {
     $('#orgDocSearchRadio').click(function () {
-        $('#orgDocSearch').show();
-        $('#newDocRegistration').hide();
-        $('#notInvoice').hide();
+        $('#orgDocSearchDiv').show();
+        $('#newDocRegistrationDiv').hide();
+        $('#notInvoiceDiv').hide();
     });
 
     $('#newDocRegistrationRadio').click(function () {
-        $('#newDocRegistration').show();
-        $('#orgDocSearch').hide();
-        $('#notInvoice').hide();
+        $('#newDocRegistrationDiv').show();
+        $('#orgDocSearchDiv').hide();
+        $('#notInvoiceDiv').hide();
     });
 
     $('#notInvoiceRadio').click(function () {
-        $('#notInvoice').show();
-        $('#orgDocSearch').hide();
-        $('#newDocRegistration').hide();
+        $('#notInvoiceDiv').show();
+        $('#orgDocSearchDiv').hide();
+        $('#newDocRegistrationDiv').hide();
 
     });
 }
