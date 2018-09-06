@@ -1707,7 +1707,12 @@ exports.selectForm = function (req, done) {
             result = await conn.execute(`SELECT * FROM TBL_FORM_MAPPING WHERE DATA = :data `, [formText]);
 
             if (result.rows.length == 0) {
-                result = await conn.execute(`SELECT * FROM TBL_FORM_MAPPING WHERE DATA like :data` + `'%' `, [formText.slice(0, -10)]);
+                formText = "";
+                for (var i = 0; i < 15; i++) {
+                    formText += formArr[i] + ",";
+                }
+                formText = formText.slice(0, -1);
+                result = await conn.execute(`SELECT * FROM TBL_FORM_MAPPING WHERE DATA like :data` + ` || '%' `, [formText]);
             }
 
             if (result.rows.length == 0) {
