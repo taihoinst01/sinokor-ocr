@@ -1698,7 +1698,9 @@ exports.selectForm = function (req, done) {
 
             var formArr = [];
             var formText = "";
+            console.log("==== classify form ====");
             for (var i in req) {
+                console.log(req[i].text);
                 var sidSplit = req[i].sid.split(",");
                 for (var j = sidSplit.length - 5; j < sidSplit.length; j++) {
                     formArr.push(sidSplit[j]);
@@ -1711,8 +1713,9 @@ exports.selectForm = function (req, done) {
             for (var i in formArr) {
                 formText += formArr[i] + ",";
             }
+            
             formText = formText.slice(0, -1);
-
+            console.log(formText);
             result = await conn.execute(`SELECT * FROM TBL_FORM_MAPPING WHERE DATA = :data `, [formText]);
 
             if (result.rows.length == 0) {
