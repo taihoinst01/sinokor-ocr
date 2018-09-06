@@ -571,7 +571,17 @@ var batchLearningConfig = {
          WHERE
             FILEPATH = :filePath `,
     deleteAnswerFile: 
-        `DELETE FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH = :filepath`
+        `DELETE FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH = :filepath`,
+    selectDocCategoryFilePath:
+        `SELECT
+            C.DOCNAME
+         FROM
+            TBL_BATCH_LEARN_LIST L
+            LEFT JOIN TBL_DOCUMENT_CATEGORY C
+            ON L.DOCTYPE = C.DOCTYPE
+         WHERE
+            L.STATUS = 'D'
+            AND L.FILEPATH = :filePath `,
 };
 
 var uiLearningConfig = {

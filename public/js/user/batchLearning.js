@@ -1268,7 +1268,7 @@ var searchBatchLearnDataList = function (addCond) {
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
                         checkboxHtml +
                         '<td><a class="fileNamePath" data-item="' + nvl(rows[0].FILEPATH) + '" onclick="javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', this)" href="javascript:void(0);">' + nvl(rows[0].FILENAME) + '</a></td> <!--FILENAME-->' +
-                        '<td> <!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>--> </td> <!--doctype -->' +
+                        '<td> ' + appendPredDoc(data.predDoc, i) + ' </td> <!--doctype -->' +
                         '</tr>';
 
                     for (var y = 0; y < rows.length; y++) {
@@ -1414,6 +1414,15 @@ var searchBatchLearnDataList = function (addCond) {
         return hasColvalue ? appendMLSelect : '';
     }
 };
+
+function appendPredDoc(predDoc, index) {
+    var returnString = '<!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>-->';
+    if (predDoc) {
+        returnString = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + predDoc[index].DOCNAME +'</a>';
+    }
+
+    return returnString;
+}
 
 function compareMLAndAnswer(mlData) {
     if (mlData.length != 0) {

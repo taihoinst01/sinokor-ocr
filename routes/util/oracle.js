@@ -1862,6 +1862,30 @@ exports.deleteAnswerFile = function (req, done) {
     });
 };
 
+exports.selectDocCategoryFilePath = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(queryConfig.batchLearningConfig.selectDocCategoryFilePath, [req]);
+
+            return done(null, result);
+        } catch (err) {
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();

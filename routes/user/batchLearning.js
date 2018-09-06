@@ -234,8 +234,18 @@ var fnSearchBatchLearningDataList = function (req, res) {
                 var mlData = sync.await(oracle.selectBatchLearnMlList(filePathList, sync.defer()));
             }
 
-
-            res.send({ data: originImageArr, mlData: mlData, code: 200 });
+            if (req.body.addCond == "LEARN_Y") {
+                var predDoc = [];
+                for (var i in filePathList) {
+                    var result = sync.await(oracle.selectDocCategoryFilePath(filePathList[i], sync.defer()));
+                    if (result.rows.length != 0) {
+                        predDoc.push(result.rows[0]);  
+                    }
+                }
+                res.send({ data: originImageArr, mlData: mlData, predDoc: predDoc, code: 200 });
+            } else {
+                res.send({ data: originImageArr, mlData: mlData, code: 200 });
+            }
         } catch (e) {
             console.log(e);
             res.send({ code: 400 });
