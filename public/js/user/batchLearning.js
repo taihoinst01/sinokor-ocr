@@ -2702,6 +2702,33 @@ function popUpInsertDocCategory() {
     });
 }
 
+function popUpNotInvoice() {
+    $('#notInvoiceBtn').click(function () {
+        $('.fileNamePath').each(function (index, el) {
+            if ($(el).attr('data-item') == $('#docPopImgPath').val()) {
+                $.ajax({
+                    url: '/batchLearning/insertBatchLearnList',
+                    type: 'post',
+                    datatype: 'json',
+                    data: JSON.stringify({
+                        filePathArray: [$('#docPopImgPath').val()],
+                        docNameArr: [$('input[name="notInvoice"]').attr('placeholder')]
+                    }),
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function (data) {
+                        console.log(data);
+                        $(el).parent().next().children(0).text($('input[name="notInvoice"]').attr('placeholder'));
+                        $('#btn_pop_doc_cancel').click();
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    });
+}
+
 // 문서 양식 조회 팝업 라디오 이벤트
 function changeDocPopRadio() {
     $('#orgDocSearchRadio').click(function () {
@@ -2744,6 +2771,7 @@ function _init() {
     changeDocPopRadio();        // 문서 양식 조회 팝업 라디오 이벤트
     popUpRunEvent();            // 문서 양식 조회 기존 양식 확인
     popUpInsertDocCategory();   // 문서 양식 조회 신규 등록 확인
+	popUpNotInvoice();          // 문서 양식 계산서 아님 저장
     selectLearningMethod();     //학습실행팝업
 
 }
