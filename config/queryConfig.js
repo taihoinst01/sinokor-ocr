@@ -535,7 +535,7 @@ var batchLearningConfig = {
         `,
     selectBatchLearnMlList:
         `SELECT IMGID, COLLABEL, COLVALUE, LOCATION, SID, FILEPATH, ENTRYLABEL
-         FROM TBL_BATCH_ML_EXPORT WHERE FILEPATH IN `,
+         FROM TBL_BATCH_ML_EXPORT WHERE COLLABEL != 36 AND COLLABEL !=38 AND FILEPATH IN `,
     insertBatchLearnList:
         `INSERT INTO
             TBL_BATCH_LEARN_LIST
