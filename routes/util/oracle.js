@@ -636,6 +636,7 @@ exports.convertTiftoJpg2 = function (originFilePath, done) {
     }
 };
 
+/*
 exports.callApiOcr = function (req, done) {
     var pharsedOcrJson = "";
     try {
@@ -664,6 +665,7 @@ exports.callApiOcr = function (req, done) {
 
     }
 };
+*/
 
 exports.insertOcrData = function (filepath, ocrData, done) {
     return new Promise(async function (resolve, reject) {
@@ -1252,7 +1254,6 @@ exports.selectLegacyFilepath = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
             console.log(req);
             let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH = :filepath`, [req]);
-
             for (var i = 0; i < resAnswerFile.rows.length; i++) {
                 var imgId = resAnswerFile.rows[i].IMGID;
                 var imgStartNo = resAnswerFile.rows[i].PAGENUM;
@@ -1260,7 +1261,6 @@ exports.selectLegacyFilepath = function (req, done) {
                 var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
 
                 let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo`, [imgId, imgStartNo, imgStartNo]);
-
                 for (var row = 0; row < resAnswerData.rows.length; row++) {
                     resAnswerData.rows[row].FILEPATH = filepath;
                     resAnswerData.rows[row].FILENAME = filename;
@@ -1660,9 +1660,9 @@ exports.selectOcrData = function (req, done) {
             }
 
             var ocr = JSON.parse(result.rows[0].OCRDATA);
-            var retData = ocrJson(ocr.regions);
+            //var retData = ocrJson(ocr.regions);
 
-            return done(null, retData);
+            return done(null, ocr);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
