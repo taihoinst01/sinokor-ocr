@@ -2068,10 +2068,13 @@ var batchLearnTraining = function (imgIdArray, flag) {
                 if ($(this).is(":checked")) {
 
                     for (var i in data.data) {
-                        if ($(this).val() == data.data[i].fileinfo.filepath) {
-                            //console.log(index);
-                            $(this).closest("td").next().next().html('<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>');
-                        }
+                        if (data.data[i].fileinfo) {
+
+                            if ($(this).val() == data.data[i].fileinfo.filepath) {
+                                //console.log(index);
+                                $(this).closest("td").next().next().html('<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>');
+                            }
+                        } 
                     }
                 }
             });
@@ -2080,6 +2083,7 @@ var batchLearnTraining = function (imgIdArray, flag) {
             if ($('#uiTrainingChk').is(':checked') && data.data[0].uiTraining == "uiTraining") {
                 compareLayer(data);
             }
+            endProgressBar(progressId);
         },
         error: function (err) {
             endProgressBar(progressId); // end progressbar
