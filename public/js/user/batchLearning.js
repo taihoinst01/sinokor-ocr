@@ -1313,7 +1313,7 @@ var searchBatchLearnDataList = function (addCond) {
                     }
                     var mlData = data.mlData;
                     if (mlData.rows.length != 0) {
-                        appendRightContentsHtml += '<tr class="mlTr rowNum' + i + '">' +                                    
+                        appendRightContentsHtml += '<tr class="mlTr">' +                                    
                                         '<td>' + makeMLSelect(mlData.rows, 0, null, rows[0].FILEPATH) + '</td> <!--출재사명-->' +
                                         '<td>' + makeMLSelect(mlData.rows, 1, null, rows[0].FILEPATH) + '</td> <!--계약명-->' +
                                         '<td>' + makeMLSelect(mlData.rows, 2, null, rows[0].FILEPATH) + '</td> <!--UY-->' +
@@ -1353,7 +1353,7 @@ var searchBatchLearnDataList = function (addCond) {
                                     '</tr>';
                     } else {                   
                         appendRightContentsHtml += 
-                                    '<tr class="mlTr rowNum' + i + '">' +
+                                    '<tr class="mlTr">' +
                                         '<td colspan="36"></td>' +          
                                     '</tr>';
                     
@@ -1511,6 +1511,7 @@ function compareMLAndAnswer(mlData) {
 function fn_viewImageData(filepath, rowNum, obj) {
 
     var appendHtml = '';
+    $('#tbody_batchList_answer').empty();
     var data = $('.rowNum' + rowNum);
     loadImage('/tif' + filepath, function (tifResult) {
 
@@ -1522,7 +1523,7 @@ function fn_viewImageData(filepath, rowNum, obj) {
             }).addClass("preview");
 
             $('#div_view_image').empty().append(tifResult);
-            $('#tbody_batchList_answer').empty().append(data.clone());
+            $('#tbody_batchList_answer').append(data.clone());
             layer_open('layer3');
             $('#div_view_image').scrollTop(0);
             $('.batch_pop_divHeadScroll').scrollLeft(0);
