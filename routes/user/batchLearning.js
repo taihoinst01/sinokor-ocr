@@ -3164,6 +3164,23 @@ router.post('/selectLikeDocCategory', function (req, res) {
     });
 });
 
+router.post('/deleteAnswerFile', function (req, res) {
+    var filepath = req.body.filepath;
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.deleteAnswerFile(filepath, sync.defer()));
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+
 Date.prototype.isoNum = function (n) {
     var tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds
     var localISOTime = (new Date(this - tzoffset)).toISOString().slice(0, -1);

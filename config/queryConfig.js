@@ -555,7 +555,9 @@ var batchLearningConfig = {
          FROM
             TBL_DOCUMENT_CATEGORY
          WHERE
-            DOCNAME = :docName `
+            DOCNAME = :docName `,
+    deleteAnswerFile: 
+        `DELETE FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH = :filepath`
 };
 
 var uiLearningConfig = {
