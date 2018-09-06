@@ -512,22 +512,25 @@ exports.selectBatchLearnList = function (req, done) {
         let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
         var condQuery
         if (!commonUtil.isNull(req.body.addCond)) {
-            if (req.body.addCond == "LEARN_N") condQuery = "(L.STATUS != 'D' OR L.STATUS IS NULL)";
+            if (req.body.addCond == "LEARN_N") condQuery = "(L.STATUS != 'D' OR L.STATUS != 'R' OR L.STATUS IS NULL)";
             else if (req.body.addCond == "LEARN_Y") condQuery = "(L.STATUS = 'D')";
         }
 
         try {
             conn = await oracledb.getConnection(dbConfig);          
             var rowNum = req.body.moreNum;
-            let resAnswerFile = await conn.execute(`SELECT F.IMGID, F.PAGENUM, F.FILEPATH 
-                                                    FROM 
-                                                      TBL_BATCH_ANSWER_FILE F 
-                                                      LEFT OUTER JOIN TBL_BATCH_LEARN_LIST L 
-                                                      ON F.FILEPATH = L.FILEPATH 
-                                                    WHERE ` + condQuery + `
-                                                    AND F.FILEPATH LIKE '/2018/%' 
-                                                    AND ROWNUM <= :num
-                                                    ORDER BY F.IMGID ASC `, [req.body.moreNum]);
+            let resAnswerFile = await conn.execute(`SELECT T.IMGID, T.PAGENUM, T.FILEPATH 
+                                                    FROM (
+                                                      SELECT F.IMGID, F.PAGENUM, F.FILEPATH 
+                                                      FROM 
+                                                        TBL_BATCH_ANSWER_FILE F 
+                                                        LEFT OUTER JOIN TBL_BATCH_LEARN_LIST L 
+                                                        ON F.FILEPATH = L.FILEPATH 
+                                                      WHERE ` + condQuery + `
+                                                      AND F.FILEPATH LIKE '/2018/%' 
+                                                      ORDER BY F.FILEPATH ASC
+                                                    ) T
+                                                    WHERE ROWNUM <= :num `, [req.body.moreNum]);
             
             for (var i = 0; i < resAnswerFile.rows.length; i++) {
                 var imgId = resAnswerFile.rows[i].IMGID;
