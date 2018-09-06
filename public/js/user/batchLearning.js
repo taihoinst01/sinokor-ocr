@@ -370,7 +370,7 @@ var imageUploadEvent = function () {
     // FILE UPLOAD
     fileUpload();
 };
-               
+
 // batch learning 4 [파일정보 -> OCR API]
 function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
     //console.log("processImage fileInfo : " + JSON.stringify(fileInfo));
@@ -387,7 +387,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
         },
         type: "POST",
         data: JSON.stringify({ 'fileName': fileName }),
-    }).done(function (data) {          
+    }).done(function (data) {
         ocrCount++;
         //console.log(data);
         if (!data.code) { // 에러가 아니면
@@ -399,7 +399,7 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
                 lastYn: lastYn
             });
             */
-            if (ocrCount == 1) {   
+            if (ocrCount == 1) {
                 if (fileToPage.length > 0) {
                     for (var i in fileToPage) {
                         if (fileToPage[i].IMGID == answerRows.IMGID &&
@@ -556,10 +556,10 @@ function convertLineOcrData(ocrData) {
             var item = '';
             for (var m in linesItem.words) {
                 item += linesItem.words[m].text + ' ';
-            }            
+            }
             convertArr.push({ 'location': linesItem.boundingBox, 'text': item.trim() });
         }
-    }    
+    }
 
     return convertArr;
 }
@@ -594,7 +594,7 @@ function popUpLayer2(ocrData, legacy) {
     fn_initUiTraining(); // 팝업 초기화
     layer_open('layer2'); // ui 학습레이어 띄우기
     //$("#layer2.poplayer").css("display", "block");
-    
+
     if (modifyData.docCategory != undefined) {
         $('#docName').text(modifyData.docCategory[0].DOCNAME);
         $('#docPredictionScore').text(modifyData.score + '%');
@@ -606,7 +606,7 @@ function popUpLayer2(ocrData, legacy) {
             $('#docPredictionScore').css('color', 'darkred');
         }
     }
-    
+
     $('#imgNameTag').text(ocrData.fileInfo[0].convertFileName);
 
     var mainImgHtml = '';
@@ -620,7 +620,7 @@ function popUpLayer2(ocrData, legacy) {
     mainImgHtml += '</div>';
     $('#img_content').html(mainImgHtml);
     $('#mainImage').css('background-image', 'url("../../uploads/' + ocrData.fileInfo[0].convertFileName + '")');
- 
+
     var tblTag = '';
     for (var i in modifyData.data) {
         tblTag += '<dl>';
@@ -648,8 +648,8 @@ function popupLegacy(legacy) {
 
     if (legacy.data.length > 0) {
         for (var i = 0; i < legacy.data.length; i++) {
-            appendHtml += 
-            '<tr>' +
+            appendHtml +=
+                '<tr>' +
                 '<td scope="row">' + nvl(legacy.data[i].CONTRACTNUM) + '</td>' +
                 '<td scope="row">' + nvl(legacy.data[i].CTNM) + '</td>' +
                 '<td scope="row">' + nvl(legacy.data[i].OGCOMPANYCODE) + '</td>' +
@@ -693,7 +693,7 @@ function popupLegacy(legacy) {
                 '<td scope="row">' + nvl(legacy.data[i].CMBL) + '</td>' +
                 '<td scope="row">' + nvl(legacy.data[i].NTBL) + '</td>' +
                 '<td scope="row">' + nvl(legacy.data[i].CSCOSARFRNCNNT2) + '</td>' +
-            '</tr>';
+                '</tr>';
         }
     } else {
         appendHtml += '<tr><td colspan="46">정답 데이터가 없습니다.</td></tr>';
@@ -701,26 +701,26 @@ function popupLegacy(legacy) {
 
     $("#tbody_batchList_answer2").empty().append(appendHtml);
 
-/*
-    var settings = 'toolbar=0,directories=0,status=no,menubar=0,scrollbars=auto,resizable=no,height=400,width=600,left=0,top=0';
-    var title = "test";
-    var windowObj;
-    var windowObj = window.open("batchLearning/popUpLegacy", title, settings);
-    var form = document.createElement("form");
-    form.target = title;
-    form.method = "POST";
-    form.action = "batchLearning/popUpLegacy"; 
-
-    var element1 = document.createElement("input");
-
-    element1.value = "un";
-    element1.name = "un";
-    form.appendChild(element1);
-
-    document.body.appendChild(form);
-
-    form.submit();
-*/
+    /*
+        var settings = 'toolbar=0,directories=0,status=no,menubar=0,scrollbars=auto,resizable=no,height=400,width=600,left=0,top=0';
+        var title = "test";
+        var windowObj;
+        var windowObj = window.open("batchLearning/popUpLegacy", title, settings);
+        var form = document.createElement("form");
+        form.target = title;
+        form.method = "POST";
+        form.action = "batchLearning/popUpLegacy"; 
+    
+        var element1 = document.createElement("input");
+    
+        element1.value = "un";
+        element1.name = "un";
+        form.appendChild(element1);
+    
+        document.body.appendChild(form);
+    
+        form.submit();
+    */
 }
 
 // 컬럼 select html 가공 함수
@@ -754,9 +754,9 @@ function execBatchLearningData(ocrData, data) {
         async: false,
         beforeSend: function () {
         },
-        success: function (data) {       
+        success: function (data) {
             //console.log(data);
-            
+
             modifyData = $.extend({}, data);
             batchCount++;
 
@@ -775,14 +775,14 @@ function execBatchLearningData(ocrData, data) {
             } else {
                 compareBatchLearningData(ocrData, data);
             }
-            */  
+            */
         },
         error: function (err) {
             console.log(err);
-            popUpLayer2(ocrData);            
+            popUpLayer2(ocrData);
         }
     });
-    
+
 }
 
 // html 렌더링 전처리 (출재사명, 계약명, 화폐코드 처리)
@@ -796,7 +796,7 @@ function selectTypoText(ocrData, data) {
         contentType: 'application/json; charset=UTF-8',
         success: function (result) {
             data.data = result.data;
-            
+
             if (data.docCategory && data.docCategory.DOCTYPE == 2) {
                 var docData = data.data;
                 for (var i in docData) {
@@ -810,7 +810,7 @@ function selectTypoText(ocrData, data) {
             } else {
                 compareBatchLearningData(ocrData, data);
             }
-            
+
         },
         error: function (err) {
             console.log(err);
@@ -918,7 +918,7 @@ function compareBatchLearningData(ocrData, data) {
 
         }
     });
-    
+
 }
 
 /*
@@ -1143,16 +1143,16 @@ function updateBatchLearningData(retData, ocrData, mlData) {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log("SUCCESS updateBatchLearningData : " + JSON.stringify(data));
-			updateBatchLearningDataCount++;
+            updateBatchLearningDataCount++;
             if (totCount == updateBatchLearningDataCount) {
                 $("#progressMsgTitle").html("update learn data...");
                 //addProgressBar(81, 100);
-				updateBatchLearningDataCount = 0;
+                updateBatchLearningDataCount = 0;
             }
             //comparedMLAndAnswer(retData, mlData, ocrData.fileInfo);
         },
         error: function (err) {
-			endProgressBar(progressId);
+            endProgressBar(progressId);
             console.log(err);
         }
     });
@@ -1228,9 +1228,9 @@ function updateBatchLearningData(fileNames, data) {
 // main menu batch learning 1 [List] 배치학습데이터 조회
 var searchBatchLearnDataList = function (addCond) {
     var param = {
-        'startNum' : startNum,
+        'startNum': startNum,
         'moreNum': nvl2($("#select_view_count").val(), 20),
-        'addCond' : nvl(addCond)
+        'addCond': nvl(addCond)
     };
     var appendHtml = "";
     var checkboxHtml = "";
@@ -1243,7 +1243,7 @@ var searchBatchLearnDataList = function (addCond) {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
-            $("#progressMsgTitle").html("retrieving learn data...");            
+            $("#progressMsgTitle").html("retrieving learn data...");
             progressId = showProgressBar();
             //startProgressBar(); // start progressbar
             //addProgressBar(1, 1); // proceed progressbar
@@ -1254,7 +1254,7 @@ var searchBatchLearnDataList = function (addCond) {
             if (addCond == "LEARN_N") $("#total_cnt_before").html(list.length);
             else $("#total_cnt_after").html(list.length);
 
-            
+
 
             if (list.length != 0) {
 
@@ -1266,51 +1266,51 @@ var searchBatchLearnDataList = function (addCond) {
 
                     var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
-                                                checkboxHtml +
-                                              '<td><a class="fileNamePath" data-item="' + nvl(rows[0].FILEPATH)  + '" onclick="javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', this)" href="javascript:void(0);">' + nvl(rows[0].FILENAME)  + '</a></td> <!--FILENAME-->' +
-                                              '<td> <!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>--> </td> <!--doctype -->'+
-                                              '</tr>';
+                        checkboxHtml +
+                        '<td><a class="fileNamePath" data-item="' + nvl(rows[0].FILEPATH) + '" onclick="javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', this)" href="javascript:void(0);">' + nvl(rows[0].FILENAME) + '</a></td> <!--FILENAME-->' +
+                        '<td> <!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>--> </td> <!--doctype -->' +
+                        '</tr>';
 
                     for (var y = 0; y < rows.length; y++) {
                         appendRightContentsHtml += '<tr class="rowNum' + i + '">' +
-                                        '<td>' + nvl(rows[y].OGCOMPANYNAME) + '</td> <!--출재사명-->' +
-                                        '<td>' + nvl(rows[y].CTNM) + '</td> <!--계약명-->' +
-                                        '<td>' + nvl(rows[y].UY) + '</td> <!--UY-->' +
-                                        '<td>' + nvl(rows[y].CURCD) + '</td> <!--화폐코드-->' +
-                                        '<td>' + nvl(rows[y].CURUNIT) + '</td> <!--화폐단위-->' +
-                                        '<td>' + nvl(rows[y].PAIDPERCENT) + '</td> <!--Paid(100%)-->' +
-                                        '<td>' + nvl(rows[y].PAIDSHARE) + '</td> <!--Paid(Our Share)-->' +
-                                        '<td>' + nvl(rows[y].OSLPERCENT) + '</td> <!--OSL(100%)-->' +
-                                        '<td>' + nvl(rows[y].OSLSHARE) + '</td> <!--OSL(Our Share)-->' +
-                                        '<td>' + nvl(rows[y].PM) + '</td> <!--PREMIUM-->' +
-                                        '<td>' + nvl(rows[y].PMPFEND) + '</td> <!--PREMIUM P/F ENT-->' +
-                                        '<td>' + nvl(rows[y].PMPFWOS) + '</td> <!--PREMIUM P/F WOS-->' +
-                                        '<td>' + nvl(rows[y].XOLPM) + '</td> <!--XOL PREMIUM-->' +
-                                        '<td>' + nvl(rows[y].RETURNPM) + '</td> <!--RETURN PREMIUM-->' +
-                                        '<td>' + nvl(rows[y].CN) + '</td> <!--COMMISSION-->' +
-                                        '<td>' + nvl(rows[y].PROFITCN) + '</td> <!--PROFIT COMMISION-->' +
-                                        '<td>' + nvl(rows[y].BROKERAGE) + '</td> <!--BROKERAGE-->' +
-                                        '<td>' + nvl(rows[y].TAX) + '</td> <!--TEX-->' +
-                                        '<td>' + nvl(rows[y].OVERRIDINGCOM) + '</td> <!-- OVERIDING COM-->' +
-                                        '<td>' + nvl(rows[y].CHARGE) + '</td> <!--CHARGE-->' +
-                                        '<td>' + nvl(rows[y].PMRESERVERTD) + '</td> <!--PREMIUM RESERVE RTD-->' +
-                                        '<td>' + nvl(rows[y].PFPMRESERVERTD) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-                                        '<td>' + nvl(rows[y].PMRESERVERTD2) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                        '<td>' + nvl(rows[y].PFPMRESERVERTD2) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                        '<td>' + nvl(rows[y].CLAIM) + '</td> <!--CLAIM -->' +
-                                        '<td>' + nvl(rows[y].LOSSRECOVERY) + '</td> <!--LOSS RECOVERY -->' +
-                                        '<td>' + nvl(rows[y].CASHLOSS) + '</td> <!--CASH LOSS -->' +
-                                        '<td>' + nvl(rows[y].CASHLOSSRD) + '</td> <!--CASH LOSS REFUND -->' +
-                                        '<td>' + nvl(rows[y].LOSSRR) + '</td> <!--LOSS RESERVE RTD -->' +
-                                        '<td>' + nvl(rows[y].LOSSRR2) + '</td> <!--LOSS RESERVE RLD -->' +
-                                        '<td>' + nvl(rows[y].LOSSPFEND) + '</td> <!--LOSS P/F ENT -->' +
-                                        '<td>' + nvl(rows[y].LOSSPFWOA) + '</td> <!--LOSS P/F WOA -->' +
-                                        '<td>' + nvl(rows[y].INTEREST) + '</td> <!--INTEREST -->' +
-                                        '<td>' + nvl(rows[y].TAXON) + '</td> <!--TAX ON -->' +
-                                        '<td>' + nvl(rows[y].MISCELLANEOUS) + '</td> <!--MISCELLANEOUS -->' +
-                                        '<td>' + nvl(rows[y].CSCOSARFRNCNNT2) + '</td> <!--YOUR REF -->' +
-                                    '</tr>';
-                    }                   
+                            '<td>' + nvl(rows[y].OGCOMPANYNAME) + '</td> <!--출재사명-->' +
+                            '<td>' + nvl(rows[y].CTNM) + '</td> <!--계약명-->' +
+                            '<td>' + nvl(rows[y].UY) + '</td> <!--UY-->' +
+                            '<td>' + nvl(rows[y].CURCD) + '</td> <!--화폐코드-->' +
+                            '<td>' + nvl(rows[y].CURUNIT) + '</td> <!--화폐단위-->' +
+                            '<td>' + nvl(rows[y].PAIDPERCENT) + '</td> <!--Paid(100%)-->' +
+                            '<td>' + nvl(rows[y].PAIDSHARE) + '</td> <!--Paid(Our Share)-->' +
+                            '<td>' + nvl(rows[y].OSLPERCENT) + '</td> <!--OSL(100%)-->' +
+                            '<td>' + nvl(rows[y].OSLSHARE) + '</td> <!--OSL(Our Share)-->' +
+                            '<td>' + nvl(rows[y].PM) + '</td> <!--PREMIUM-->' +
+                            '<td>' + nvl(rows[y].PMPFEND) + '</td> <!--PREMIUM P/F ENT-->' +
+                            '<td>' + nvl(rows[y].PMPFWOS) + '</td> <!--PREMIUM P/F WOS-->' +
+                            '<td>' + nvl(rows[y].XOLPM) + '</td> <!--XOL PREMIUM-->' +
+                            '<td>' + nvl(rows[y].RETURNPM) + '</td> <!--RETURN PREMIUM-->' +
+                            '<td>' + nvl(rows[y].CN) + '</td> <!--COMMISSION-->' +
+                            '<td>' + nvl(rows[y].PROFITCN) + '</td> <!--PROFIT COMMISION-->' +
+                            '<td>' + nvl(rows[y].BROKERAGE) + '</td> <!--BROKERAGE-->' +
+                            '<td>' + nvl(rows[y].TAX) + '</td> <!--TEX-->' +
+                            '<td>' + nvl(rows[y].OVERRIDINGCOM) + '</td> <!-- OVERIDING COM-->' +
+                            '<td>' + nvl(rows[y].CHARGE) + '</td> <!--CHARGE-->' +
+                            '<td>' + nvl(rows[y].PMRESERVERTD) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                            '<td>' + nvl(rows[y].PFPMRESERVERTD) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                            '<td>' + nvl(rows[y].PMRESERVERTD2) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                            '<td>' + nvl(rows[y].PFPMRESERVERTD2) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                            '<td>' + nvl(rows[y].CLAIM) + '</td> <!--CLAIM -->' +
+                            '<td>' + nvl(rows[y].LOSSRECOVERY) + '</td> <!--LOSS RECOVERY -->' +
+                            '<td>' + nvl(rows[y].CASHLOSS) + '</td> <!--CASH LOSS -->' +
+                            '<td>' + nvl(rows[y].CASHLOSSRD) + '</td> <!--CASH LOSS REFUND -->' +
+                            '<td>' + nvl(rows[y].LOSSRR) + '</td> <!--LOSS RESERVE RTD -->' +
+                            '<td>' + nvl(rows[y].LOSSRR2) + '</td> <!--LOSS RESERVE RLD -->' +
+                            '<td>' + nvl(rows[y].LOSSPFEND) + '</td> <!--LOSS P/F ENT -->' +
+                            '<td>' + nvl(rows[y].LOSSPFWOA) + '</td> <!--LOSS P/F WOA -->' +
+                            '<td>' + nvl(rows[y].INTEREST) + '</td> <!--INTEREST -->' +
+                            '<td>' + nvl(rows[y].TAXON) + '</td> <!--TAX ON -->' +
+                            '<td>' + nvl(rows[y].MISCELLANEOUS) + '</td> <!--MISCELLANEOUS -->' +
+                            '<td>' + nvl(rows[y].CSCOSARFRNCNNT2) + '</td> <!--YOUR REF -->' +
+                            '</tr>';
+                    }
                     var mlData = data.mlData;
                     if (mlData.rows.length != 0) {
                         appendRightContentsHtml += '<tr class="mlTr rowNum' + i + '">' +                                    
@@ -1434,17 +1434,17 @@ function compareMLAndAnswer(mlData) {
             success: function (data) {
                 var tempArr = [];
                 $('#tbody_batchList_before tr').each(function (i, el) {
-                    for (var i in data) {    
+                    for (var i in data) {
                         var isTraining = false;
                         if ($(el).children('td').eq(0).text().trim() == data[i].FILENAME) {
-                            
+
                             for (var j = 2; j < $(el).children('td').length; j++) {
                                 if (j != 9 && $(el).children('td').eq(j).text() != '') {
                                     isTraining = true;
                                     break;
                                 }
                             }
-                            if (isTraining) {                               
+                            if (isTraining) {
                                 var misMatch = [];
                                 for (var j in mlData) {
                                     if (mlData[j].ORIGINFILENAME == data[i].FILENAME) {
@@ -1471,7 +1471,7 @@ function compareMLAndAnswer(mlData) {
                                         $(el).children('td').eq(j).css('background-color', 'red');
                                     }*/
                                 }
-                            }                                  
+                            }
                             /*
                             mlData = tempArr;
                             // ML과 정답 데이터 값이 다른 것 표시                       
@@ -1497,8 +1497,8 @@ function compareMLAndAnswer(mlData) {
                             break;
                         }
                     }
-                    
-                    
+
+
                 });
             },
             error: function (err) {
@@ -1508,44 +1508,60 @@ function compareMLAndAnswer(mlData) {
     }
 }
 
-function fn_viewImageData(filepath, rowNum ,obj) {
+function fn_viewImageData(filepath, rowNum, obj) {
 
     var appendHtml = '';
     var data = $('.rowNum' + rowNum);
+    loadImage('/tif' + filepath, function (tifResult) {
 
-
-    var loadImage = function (filename) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', filename);
-        xhr.responseType = 'arraybuffer';
-        xhr.onload = function (e) {
-            var buffer = xhr.response;
-            var tiff = new Tiff({ buffer: buffer });
-            var canvas = tiff.toCanvas();
-
-            $(canvas).css({             
+        if (tifResult) {
+            $(tifResult).css({
                 "width": "100%",
                 "height": "auto",
-                "display": "block",
-                //"padding-top": "10px"
+                "display": "block"
             }).addClass("preview");
-            var width = tiff.width();
-            var height = tiff.height();
 
-            $('#div_view_image').empty().append(canvas);
-            
-        };
-        xhr.send();
-    };
-    loadImage('/tif' + filepath);
+            $('#div_view_image').empty().append(tifResult);
+            $('#tbody_batchList_answer').empty().append(data.clone());
+            layer_open('layer3');
+            $('#div_view_image').scrollTop(0);
+            $('.batch_pop_divHeadScroll').scrollLeft(0);
+            $('.batch_pop_divBodyScroll').scrollLeft(0);
+            $('.batch_pop_divBodyScroll').scrollTop(0);
 
-    $('#tbody_batchList_answer').empty().append(data.clone());
-    layer_open('layer3');
-    $('#div_view_image').scrollTop(0);
-    $('.batch_pop_divHeadScroll').scrollLeft(0);
-    $('.batch_pop_divBodyScroll').scrollLeft(0);
-    $('.batch_pop_divBodyScroll').scrollTop(0);
+        } else {
+            var deleteFlag = confirm("없는 파일입니다 삭제하시겠습니까?");
+            if (deleteFlag == true) {
+                var param = {
+                    filepath: filepath
+                };
+                $.ajax({
+                    url: '/batchLearning/deleteAnswerFile',
+                    type: 'post',
+                    datatype: "json",
+                    data: JSON.stringify(param),
+                    contentType: 'application/json; charset=UTF-8',
+                    beforeSend: function () {
+                        progressId = showProgressBar();
+                    },
+                    success: function (data) {
+                        alert("삭제되었습니다.");
+                        endProgressBar(progressId);
+                        searchBatchLearnDataList(addCond);
+                    },
+                    error: function (err) {
+                        endProgressBar(progressId); // end progressbar
+                        console.log(err);
+                    }
+                });
+            } else {
+
+            }
+        }
+    });
+  
 }
+
 function imgPopupEvent() {
     //$('#tbody_batchList_before td > a').click(function () {
     //    $('#viewImage').attr('src', '../../uploads/' + $(this).text().split('.')[0] + '.jpg');
@@ -1583,7 +1599,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
             }
 
             if (flag == "PROCESS_IMAGE") {  // 배치학습 실행             
-				$("#progressMsgTitle").html("processing OCR ...");
+                $("#progressMsgTitle").html("processing OCR ...");
                 //addProgressBar(41, 50);
                 for (var i = 0, x = data.fileInfoList.length; i < x; i++) {
                     var lastYn = "N";
@@ -1718,13 +1734,13 @@ var insertSyncBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
 };
 
 // 정답엑셀 업로드
-var fn_rightExcelUpload = function() {
+var fn_rightExcelUpload = function () {
 
 };
 
 // 이미지 업로드
 var fn_imageUpload = function () {
-    
+
 };
 
 // 이미지 삭제
@@ -1870,7 +1886,7 @@ var addBatchTraining = function (filePathArray, docNameArr) {
         docNameArr: docNameArr,
     };
 
-    
+
     $.ajax({
         url: '/batchLearning/addBatchTraining',
         type: 'post',
@@ -1899,7 +1915,7 @@ var addBatchTraining = function (filePathArray, docNameArr) {
             endProgressBar(progressId);
         }
     });
-    
+
 }
 
 
@@ -1936,7 +1952,7 @@ var uiLearnTraining = function (imgIdArray) {
     //var data = { "data": { "convertedFileName": "hyj.jpg","data": [{ "sid": "1018,240,25767,0,0,0,0", "text": "apex", "location": "1018,240,411,87", "colLbl": 36, "colAccu": 0.99, "originText": "apex" }, { "sid": "1019,338,15944,14456,15585,0,0", "text": "partner of choice", "location": "1019,338,409,23", "colLbl": 36, "colAccu": 0.99, "originText": "partner of choice" }, { "sid": "1562,509,24349,14502,0,0,0", "text": "voucher no", "location": "1562,509,178,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher no" }, { "sid": "1562,578,24349,14552,0,0,0", "text": "voucher date", "location": "1562,578,206,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher date" }, { "sid": "206,691,97312,18699,14569,0,0", "text": "4153 korean re", "location": "206,691,274,27", "colLbl": 36, "colAccu": 0.99, "originText": "4153 korean re" }, { "sid": "208,756,24968,20629,15214,0,0", "text": "proportional treaty statement", "location": "208,756,525,34", "colLbl": 36, "colAccu": 0.99, "originText": "proportional treaty statement" }, { "sid": "1842,506,97313,0,0,0,0", "text": "bv/heo/2018/05/0626", "location": "1842,506,344,25", "colLbl": 36, "colAccu": 0.99, "originText": "bv/heo/2018/05/0626" }, { "sid": "1840,575,97314,0,0,0,0", "text": "01105/2018", "location": "1840,575,169,25", "colLbl": 36, "colAccu": 0.99, "originText": "01105/2018" }, { "sid": "206,848,64626,0,0,0,0", "text": "pedant", "location": "206,848,111,24", "colLbl": 36, "colAccu": 0.99, "originText": "cedant" }, { "sid": "206,908,14818,14456,14525,0,0", "text": "class of business", "location": "206,908,285,24", "colLbl": 36, "colAccu": 0.99, "originText": "class of business" }, { "sid": "210,963,15186,14456,16570,0,0", "text": "period of quarter", "location": "210,963,272,26", "colLbl": 36, "colAccu": 0.99, "originText": "period of quarter" }, { "sid": "207,1017,15186,14456,20629,0,0", "text": "period of treaty", "location": "207,1017,252,31", "colLbl": 36, "colAccu": 0.99, "originText": "period of treaty" }, { "sid": "206,1066,14498,15089,0,0,0", "text": "our reference", "location": "206,1066,227,24", "colLbl": 36, "colAccu": 0.99, "originText": "our reference" }, { "sid": "226,1174,16280,0,0,0,0", "text": "currency", "location": "226,1174,145,31", "colLbl": 36, "colAccu": 0.99, "originText": "currency" }, { "sid": "227,1243,16438,0,0,0,0", "text": "premium", "location": "227,1243,139,24", "colLbl": 36, "colAccu": 0.99, "originText": "premium" }, { "sid": "226,1303,15444,0,0,0,0", "text": "commission", "location": "226,1303,197,24", "colLbl": 36, "colAccu": 0.99, "originText": "commission" }, { "sid": "226,1366,16527,0,0,0,0", "text": "claims", "location": "226,1366,107,24", "colLbl": 36, "colAccu": 0.99, "originText": "claims" }, { "sid": "227,1426,16608,0,0,0,0", "text": "reserve", "location": "227,1426,126,24", "colLbl": 36, "colAccu": 0.99, "originText": "reserve" }, { "sid": "227,1489,15049,0,0,0,0", "text": "release", "location": "227,1489,123,24", "colLbl": 36, "colAccu": 0.99, "originText": "release" }, { "sid": "227,1549,15076,0,0,0,0", "text": "interest", "location": "227,1549,117,24", "colLbl": 36, "colAccu": 0.99, "originText": "interest" }, { "sid": "227,1609,24808,0,0,0,0", "text": "brokerage", "location": "227,1609,161,31", "colLbl": 36, "colAccu": 0.99, "originText": "brokerage" }, { "sid": "233,1678,17036,0,0,0,0", "text": "portfolio", "location": "233,1678,134,24", "colLbl": 36, "colAccu": 0.99, "originText": "portfolio" }, { "sid": "227,1781,16326,0,0,0,0", "text": "balance", "location": "227,1781,124,24", "colLbl": 36, "colAccu": 0.99, "originText": "balance" }, { "sid": "574,847,14459,97308,14535,14813,97309", "text": "a solidarity- first insurance 2018", "location": "574,847,492,32", "colLbl": 0, "colAccu": 0.99, "originText": ": solidarity- first insurance 2018" }, { "sid": "574,907,14459,16518,20299,21636,97309", "text": "a marine cargo surplus 2018 a inward", "location": "574,907,568,32", "colLbl": 1, "colAccu": 0.99, "originText": ": marine cargo surplus 2018 - inward" }, { "sid": "598,959,97315,14458,97316,0,0", "text": "01-01-2018 to 31-03-2018", "location": "598,959,433,25", "colLbl": 36, "colAccu": 0.99, "originText": "01-01-2018 to 31-03-2018" }, { "sid": "574,1010,14459,97315,14458,97317,0", "text": "a 01-01-2018 to 31-12-2018", "location": "574,1010,454,25", "colLbl": 36, "colAccu": 0.99, "originText": ": 01-01-2018 to 31-12-2018" }, { "sid": "574,1065,14459,97318,0,0,0", "text": "a apex/bord/2727", "location": "574,1065,304,25", "colLbl": 36, "colAccu": 0.99, "originText": ": apex/bord/2727" }, { "sid": "629,1173,97300,97322,0,0,0", "text": "jod 1.00", "location": "629,1173,171,25", "colLbl": 3, "colAccu": 0.99, "originText": "jod 1.00" }, { "sid": "639,1239,1,1,1,1,1", "text": "25.53", "location": "639,1239,83,25", "colLbl": 9, "colAccu": 0.99, "originText": "25.53" }, { "sid": "639,1299,1,1,1,1,1", "text": "5.74", "location": "639,1299,64,25", "colLbl": 14, "colAccu": 0.99, "originText": "5.74" }, { "sid": "639,1362,1,1,1,1,1", "text": "1.00", "location": "639,1362,64,25", "colLbl": 24, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1422,1,1,1,1,1", "text": "7.66", "location": "639,1422,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "7.66" }, { "sid": "639,1485,1,1,1,1,1", "text": "1.00", "location": "639,1485,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1545,1,1,1,1,1", "text": "1.00", "location": "639,1545,64,25", "colLbl": 32, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1605,1,1,1,1,1", "text": "0.64", "location": "639,1605,64,25", "colLbl": 16, "colAccu": 0.99, "originText": "0.64" }, { "sid": "648,1677,1,1,1,1,1", "text": "1.00", "location": "648,1677,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "641,1774,97319,97320,0,0,0", "text": "11 .49", "location": "641,1774,81,25", "colLbl": 36, "colAccu": 0.99, "originText": "11 .49" }, { "sid": "1706,1908,25767,14813,0,0,0", "text": "apex insurance", "location": "1706,1908,356,29", "colLbl": 36, "colAccu": 0.99, "originText": "apex insurance" }], "column": [{ "SEQNUM": "1", "COLNAME": "출재사명", "COLTYPE": "OGCOMPANYNAME", "COLNUM": "0" }, { "SEQNUM": "2", "COLNAME": "계약명", "COLTYPE": "CTNM", "COLNUM": "1" }, { "SEQNUM": "3", "COLNAME": "UY", "COLTYPE": "UY", "COLNUM": "2" }, { "SEQNUM": "4", "COLNAME": "화폐코드", "COLTYPE": "CURCD", "COLNUM": "3" }, { "SEQNUM": "5", "COLNAME": "화폐단위", "COLTYPE": "CURUNIT", "COLNUM": "4" }, { "SEQNUM": "6", "COLNAME": "PAID(100%)", "COLTYPE": "PAIDPERCENT", "COLNUM": "5" }, { "SEQNUM": "7", "COLNAME": "PAID(Our Share)", "COLTYPE": "PAIDSHARE", "COLNUM": "6" }, { "SEQNUM": "8", "COLNAME": "OSL(100%)", "COLTYPE": "OSLPERCENT", "COLNUM": "7" }, { "SEQNUM": "9", "COLNAME": "OSL(Our Share)", "COLTYPE": "OSLSHARE", "COLNUM": "8" }, { "SEQNUM": "10", "COLNAME": "PREMIUM", "COLTYPE": "PM", "COLNUM": "9" }, { "SEQNUM": "11", "COLNAME": "PREMIUM P/F ENT", "COLTYPE": "PMPFEND", "COLNUM": "10" }, { "SEQNUM": "12", "COLNAME": "PREMIUM P/F WOS", "COLTYPE": "PMPFWOS", "COLNUM": "11" }, { "SEQNUM": "13", "COLNAME": "XOL PREMIUM", "COLTYPE": "XOLPM", "COLNUM": "12" }, { "SEQNUM": "14", "COLNAME": "RETURN PREMIUM", "COLTYPE": "RETURNPM", "COLNUM": "13" }, { "SEQNUM": "15", "COLNAME": "COMMISSION", "COLTYPE": "CN", "COLNUM": "14" }, { "SEQNUM": "16", "COLNAME": "PROFIT COMMISSION", "COLTYPE": "PROFITCN", "COLNUM": "15" }, { "SEQNUM": "17", "COLNAME": "BROKERAGE", "COLTYPE": "BROKERAGE", "COLNUM": "16" }, { "SEQNUM": "18", "COLNAME": "TAX", "COLTYPE": "TAX", "COLNUM": "17" }, { "SEQNUM": "19", "COLNAME": "OVERRIDING COM", "COLTYPE": "OVERRIDINGCOM", "COLNUM": "18" }, { "SEQNUM": "20", "COLNAME": "CHARGE", "COLTYPE": "CHARGE", "COLNUM": "19" }, { "SEQNUM": "21", "COLNAME": "PREMUIM RESERVE RTD", "COLTYPE": "PMRESERVERTD1", "COLNUM": "20" }, { "SEQNUM": "22", "COLNAME": "P/F PREMIUM RESERVE RTD", "COLTYPE": "PFPMRESERVERTD1", "COLNUM": "21" }, { "SEQNUM": "23", "COLNAME": "PREMIUM RESERVE RLD", "COLTYPE": "PMRESERVERTD2", "COLNUM": "22" }, { "SEQNUM": "24", "COLNAME": "P/F PREMIUM RESERVE RLD", "COLTYPE": "PFPMRESERVERTD2", "COLNUM": "23" }, { "SEQNUM": "25", "COLNAME": "CLAIM", "COLTYPE": "CLAIM", "COLNUM": "24" }, { "SEQNUM": "26", "COLNAME": "LOSS RECOVERY", "COLTYPE": "LOSSRECOVERY", "COLNUM": "25" }, { "SEQNUM": "27", "COLNAME": "CASH LOSS", "COLTYPE": "CASHLOSS", "COLNUM": "26" }, { "SEQNUM": "28", "COLNAME": "CASH LOSS REFUND", "COLTYPE": "CASHLOSSRD", "COLNUM": "27" }, { "SEQNUM": "29", "COLNAME": "LOSS RESERVE RTD", "COLTYPE": "LOSSRR", "COLNUM": "28" }, { "SEQNUM": "30", "COLNAME": "LOSS RESERVE RLD", "COLTYPE": "LOSSRR2", "COLNUM": "29" }, { "SEQNUM": "31", "COLNAME": "LOSS P/F ENT", "COLTYPE": "LOSSPFENT", "COLNUM": "30" }, { "SEQNUM": "32", "COLNAME": "LOSS P/F WOA", "COLTYPE": "LOSSPFWOA", "COLNUM": "31" }, { "SEQNUM": "33", "COLNAME": "INTEREST", "COLTYPE": "INTEREST", "COLNUM": "32" }, { "SEQNUM": "34", "COLNAME": "TAX ON", "COLTYPE": "TAXON", "COLNUM": "33" }, { "SEQNUM": "35", "COLNAME": "MISCELLANEOUS", "COLTYPE": "MISCELLANEOUS", "COLNUM": "34" }, { "SEQNUM": "36", "COLNAME": "Your Reference", "COLTYPE": "CSCOSARFRNCNNT2", "COLNUM": "35" }, { "SEQNUM": "37", "COLNAME": "UNKNOWN", "COLTYPE": "UNKNOWN", "COLNUM": "36" }] } };
     //modifyData = { "convertedFileName": "hyj.jpg", "data": [{ "sid": "1018,240,25767,0,0,0,0", "text": "apex", "location": "1018,240,411,87", "colLbl": 36, "colAccu": 0.99, "originText": "apex" }, { "sid": "1019,338,15944,14456,15585,0,0", "text": "partner of choice", "location": "1019,338,409,23", "colLbl": 36, "colAccu": 0.99, "originText": "partner of choice" }, { "sid": "1562,509,24349,14502,0,0,0", "text": "voucher no", "location": "1562,509,178,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher no" }, { "sid": "1562,578,24349,14552,0,0,0", "text": "voucher date", "location": "1562,578,206,25", "colLbl": 36, "colAccu": 0.99, "originText": "voucher date" }, { "sid": "206,691,97312,18699,14569,0,0", "text": "4153 korean re", "location": "206,691,274,27", "colLbl": 36, "colAccu": 0.99, "originText": "4153 korean re" }, { "sid": "208,756,24968,20629,15214,0,0", "text": "proportional treaty statement", "location": "208,756,525,34", "colLbl": 36, "colAccu": 0.99, "originText": "proportional treaty statement" }, { "sid": "1842,506,97313,0,0,0,0", "text": "bv/heo/2018/05/0626", "location": "1842,506,344,25", "colLbl": 36, "colAccu": 0.99, "originText": "bv/heo/2018/05/0626" }, { "sid": "1840,575,97314,0,0,0,0", "text": "01105/2018", "location": "1840,575,169,25", "colLbl": 36, "colAccu": 0.99, "originText": "01105/2018" }, { "sid": "206,848,64626,0,0,0,0", "text": "pedant", "location": "206,848,111,24", "colLbl": 36, "colAccu": 0.99, "originText": "cedant" }, { "sid": "206,908,14818,14456,14525,0,0", "text": "class of business", "location": "206,908,285,24", "colLbl": 36, "colAccu": 0.99, "originText": "class of business" }, { "sid": "210,963,15186,14456,16570,0,0", "text": "period of quarter", "location": "210,963,272,26", "colLbl": 36, "colAccu": 0.99, "originText": "period of quarter" }, { "sid": "207,1017,15186,14456,20629,0,0", "text": "period of treaty", "location": "207,1017,252,31", "colLbl": 36, "colAccu": 0.99, "originText": "period of treaty" }, { "sid": "206,1066,14498,15089,0,0,0", "text": "our reference", "location": "206,1066,227,24", "colLbl": 36, "colAccu": 0.99, "originText": "our reference" }, { "sid": "226,1174,16280,0,0,0,0", "text": "currency", "location": "226,1174,145,31", "colLbl": 36, "colAccu": 0.99, "originText": "currency" }, { "sid": "227,1243,16438,0,0,0,0", "text": "premium", "location": "227,1243,139,24", "colLbl": 36, "colAccu": 0.99, "originText": "premium" }, { "sid": "226,1303,15444,0,0,0,0", "text": "commission", "location": "226,1303,197,24", "colLbl": 36, "colAccu": 0.99, "originText": "commission" }, { "sid": "226,1366,16527,0,0,0,0", "text": "claims", "location": "226,1366,107,24", "colLbl": 36, "colAccu": 0.99, "originText": "claims" }, { "sid": "227,1426,16608,0,0,0,0", "text": "reserve", "location": "227,1426,126,24", "colLbl": 36, "colAccu": 0.99, "originText": "reserve" }, { "sid": "227,1489,15049,0,0,0,0", "text": "release", "location": "227,1489,123,24", "colLbl": 36, "colAccu": 0.99, "originText": "release" }, { "sid": "227,1549,15076,0,0,0,0", "text": "interest", "location": "227,1549,117,24", "colLbl": 36, "colAccu": 0.99, "originText": "interest" }, { "sid": "227,1609,24808,0,0,0,0", "text": "brokerage", "location": "227,1609,161,31", "colLbl": 36, "colAccu": 0.99, "originText": "brokerage" }, { "sid": "233,1678,17036,0,0,0,0", "text": "portfolio", "location": "233,1678,134,24", "colLbl": 36, "colAccu": 0.99, "originText": "portfolio" }, { "sid": "227,1781,16326,0,0,0,0", "text": "balance", "location": "227,1781,124,24", "colLbl": 36, "colAccu": 0.99, "originText": "balance" }, { "sid": "574,847,14459,97308,14535,14813,97309", "text": "a solidarity- first insurance 2018", "location": "574,847,492,32", "colLbl": 0, "colAccu": 0.99, "originText": ": solidarity- first insurance 2018" }, { "sid": "574,907,14459,16518,20299,21636,97309", "text": "a marine cargo surplus 2018 a inward", "location": "574,907,568,32", "colLbl": 1, "colAccu": 0.99, "originText": ": marine cargo surplus 2018 - inward" }, { "sid": "598,959,97315,14458,97316,0,0", "text": "01-01-2018 to 31-03-2018", "location": "598,959,433,25", "colLbl": 36, "colAccu": 0.99, "originText": "01-01-2018 to 31-03-2018" }, { "sid": "574,1010,14459,97315,14458,97317,0", "text": "a 01-01-2018 to 31-12-2018", "location": "574,1010,454,25", "colLbl": 36, "colAccu": 0.99, "originText": ": 01-01-2018 to 31-12-2018" }, { "sid": "574,1065,14459,97318,0,0,0", "text": "a apex/bord/2727", "location": "574,1065,304,25", "colLbl": 36, "colAccu": 0.99, "originText": ": apex/bord/2727" }, { "sid": "629,1173,97300,97322,0,0,0", "text": "jod 1.00", "location": "629,1173,171,25", "colLbl": 3, "colAccu": 0.99, "originText": "jod 1.00" }, { "sid": "639,1239,1,1,1,1,1", "text": "25.53", "location": "639,1239,83,25", "colLbl": 9, "colAccu": 0.99, "originText": "25.53" }, { "sid": "639,1299,1,1,1,1,1", "text": "5.74", "location": "639,1299,64,25", "colLbl": 14, "colAccu": 0.99, "originText": "5.74" }, { "sid": "639,1362,1,1,1,1,1", "text": "1.00", "location": "639,1362,64,25", "colLbl": 24, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1422,1,1,1,1,1", "text": "7.66", "location": "639,1422,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "7.66" }, { "sid": "639,1485,1,1,1,1,1", "text": "1.00", "location": "639,1485,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1545,1,1,1,1,1", "text": "1.00", "location": "639,1545,64,25", "colLbl": 32, "colAccu": 0.99, "originText": "0.00" }, { "sid": "639,1605,1,1,1,1,1", "text": "0.64", "location": "639,1605,64,25", "colLbl": 16, "colAccu": 0.99, "originText": "0.64" }, { "sid": "648,1677,1,1,1,1,1", "text": "1.00", "location": "648,1677,64,25", "colLbl": 36, "colAccu": 0.99, "originText": "0.00" }, { "sid": "641,1774,97319,97320,0,0,0", "text": "11 .49", "location": "641,1774,81,25", "colLbl": 36, "colAccu": 0.99, "originText": "11 .49" }, { "sid": "1706,1908,25767,14813,0,0,0", "text": "apex insurance", "location": "1706,1908,356,29", "colLbl": 36, "colAccu": 0.99, "originText": "apex insurance" }], "column": [{ "SEQNUM": "1", "COLNAME": "출재사명", "COLTYPE": "OGCOMPANYNAME", "COLNUM": "0" }, { "SEQNUM": "2", "COLNAME": "계약명", "COLTYPE": "CTNM", "COLNUM": "1" }, { "SEQNUM": "3", "COLNAME": "UY", "COLTYPE": "UY", "COLNUM": "2" }, { "SEQNUM": "4", "COLNAME": "화폐코드", "COLTYPE": "CURCD", "COLNUM": "3" }, { "SEQNUM": "5", "COLNAME": "화폐단위", "COLTYPE": "CURUNIT", "COLNUM": "4" }, { "SEQNUM": "6", "COLNAME": "PAID(100%)", "COLTYPE": "PAIDPERCENT", "COLNUM": "5" }, { "SEQNUM": "7", "COLNAME": "PAID(Our Share)", "COLTYPE": "PAIDSHARE", "COLNUM": "6" }, { "SEQNUM": "8", "COLNAME": "OSL(100%)", "COLTYPE": "OSLPERCENT", "COLNUM": "7" }, { "SEQNUM": "9", "COLNAME": "OSL(Our Share)", "COLTYPE": "OSLSHARE", "COLNUM": "8" }, { "SEQNUM": "10", "COLNAME": "PREMIUM", "COLTYPE": "PM", "COLNUM": "9" }, { "SEQNUM": "11", "COLNAME": "PREMIUM P/F ENT", "COLTYPE": "PMPFEND", "COLNUM": "10" }, { "SEQNUM": "12", "COLNAME": "PREMIUM P/F WOS", "COLTYPE": "PMPFWOS", "COLNUM": "11" }, { "SEQNUM": "13", "COLNAME": "XOL PREMIUM", "COLTYPE": "XOLPM", "COLNUM": "12" }, { "SEQNUM": "14", "COLNAME": "RETURN PREMIUM", "COLTYPE": "RETURNPM", "COLNUM": "13" }, { "SEQNUM": "15", "COLNAME": "COMMISSION", "COLTYPE": "CN", "COLNUM": "14" }, { "SEQNUM": "16", "COLNAME": "PROFIT COMMISSION", "COLTYPE": "PROFITCN", "COLNUM": "15" }, { "SEQNUM": "17", "COLNAME": "BROKERAGE", "COLTYPE": "BROKERAGE", "COLNUM": "16" }, { "SEQNUM": "18", "COLNAME": "TAX", "COLTYPE": "TAX", "COLNUM": "17" }, { "SEQNUM": "19", "COLNAME": "OVERRIDING COM", "COLTYPE": "OVERRIDINGCOM", "COLNUM": "18" }, { "SEQNUM": "20", "COLNAME": "CHARGE", "COLTYPE": "CHARGE", "COLNUM": "19" }, { "SEQNUM": "21", "COLNAME": "PREMUIM RESERVE RTD", "COLTYPE": "PMRESERVERTD1", "COLNUM": "20" }, { "SEQNUM": "22", "COLNAME": "P/F PREMIUM RESERVE RTD", "COLTYPE": "PFPMRESERVERTD1", "COLNUM": "21" }, { "SEQNUM": "23", "COLNAME": "PREMIUM RESERVE RLD", "COLTYPE": "PMRESERVERTD2", "COLNUM": "22" }, { "SEQNUM": "24", "COLNAME": "P/F PREMIUM RESERVE RLD", "COLTYPE": "PFPMRESERVERTD2", "COLNUM": "23" }, { "SEQNUM": "25", "COLNAME": "CLAIM", "COLTYPE": "CLAIM", "COLNUM": "24" }, { "SEQNUM": "26", "COLNAME": "LOSS RECOVERY", "COLTYPE": "LOSSRECOVERY", "COLNUM": "25" }, { "SEQNUM": "27", "COLNAME": "CASH LOSS", "COLTYPE": "CASHLOSS", "COLNUM": "26" }, { "SEQNUM": "28", "COLNAME": "CASH LOSS REFUND", "COLTYPE": "CASHLOSSRD", "COLNUM": "27" }, { "SEQNUM": "29", "COLNAME": "LOSS RESERVE RTD", "COLTYPE": "LOSSRR", "COLNUM": "28" }, { "SEQNUM": "30", "COLNAME": "LOSS RESERVE RLD", "COLTYPE": "LOSSRR2", "COLNUM": "29" }, { "SEQNUM": "31", "COLNAME": "LOSS P/F ENT", "COLTYPE": "LOSSPFENT", "COLNUM": "30" }, { "SEQNUM": "32", "COLNAME": "LOSS P/F WOA", "COLTYPE": "LOSSPFWOA", "COLNUM": "31" }, { "SEQNUM": "33", "COLNAME": "INTEREST", "COLTYPE": "INTEREST", "COLNUM": "32" }, { "SEQNUM": "34", "COLNAME": "TAX ON", "COLTYPE": "TAXON", "COLNUM": "33" }, { "SEQNUM": "35", "COLNAME": "MISCELLANEOUS", "COLTYPE": "MISCELLANEOUS", "COLNUM": "34" }, { "SEQNUM": "36", "COLNAME": "Your Reference", "COLTYPE": "CSCOSARFRNCNNT2", "COLNUM": "35" }, { "SEQNUM": "37", "COLNAME": "UNKNOWN", "COLTYPE": "UNKNOWN", "COLNUM": "36" }] };
     //selectTypoData(data);
-    
+
     $.ajax({
         url: '/batchLearning/uiLearnTraining',
         type: 'post',
@@ -1962,7 +1978,7 @@ var uiLearnTraining = function (imgIdArray) {
             endProgressBar(progressId);
         }
     });
-    
+
 };
 
 function selectTypoData(data) {
@@ -1981,7 +1997,7 @@ function selectTypoData(data) {
             console.log(err);
         }
     });
-    
+
 }
 
 function uiLayerHtml(data) {
@@ -2184,7 +2200,7 @@ function modifyTextData() {
     var afterData = {};
     afterData.data = [];
     beforeData = beforeData.slice(0);
-    
+
     // afterData Processing
     $('#textResultTbl > dl').each(function (index, el) {
         var location = $(el).find('label').children().eq(1).val();
@@ -2323,7 +2339,7 @@ function insertDocLabelMapping(data, callback) {
         url: '/batchLearning/insertDocLabelMapping',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'data': data  }),
+        data: JSON.stringify({ 'data': data }),
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
@@ -2392,7 +2408,7 @@ function insertColMapping(data) {
 }
 
 // 계약명 매핑 insert
-function insertContractMapping(data,callback) {
+function insertContractMapping(data, callback) {
     $.ajax({
         url: '/batchLearning/insertContractMapping',
         type: 'post',
@@ -2549,7 +2565,7 @@ function popUpSearchDocCategory() {
                             xhr.onload = function (e) {
                                 if (xhr.status == 404) {
                                     //todo 
-                                    
+
                                 } else {
 
                                     var buffer = xhr.response;
@@ -2638,7 +2654,7 @@ function popUpRunEvent() {
 //팝업 문서 양식 등록
 function popUpInsertDocCategory() {
     $('#insertDocCategoryBtn').click(function () {
-        var docName = $('#newDocName').val().replace(/ /gi, "");       
+        var docName = $('#newDocName').val().replace(/ /gi, "");
         var sampleImagePath = $('#docPopImgPath').val();
 
         if (docName) {
@@ -2701,7 +2717,7 @@ function _init() {
     buttonEvent();              // button event
     popupEvent.scrollPopup();   // popup event - scroll
     imageUploadEvent();         // image upload event
-	//excelUploadEvent();         // excel upload event
+    //excelUploadEvent();         // excel upload event
     popUpEvent();
     searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
     changeDocPopupImage();      // 문서 양식 조회 이미지 좌우 버튼 이벤트
@@ -3178,16 +3194,16 @@ function fn_viewDoctypePop(obj) {
     };
     loadImage('/tif' + filepath);
     $('#docPopImgPath').val(filepath);
-    
+
     layer_open('layer4');
 }
 
 function initLayer4() {
     $('#originImgDiv').empty();
-    $('#mlPredictionDocName').val('');   
+    $('#mlPredictionDocName').val('');
     $('#docSearchResultImg_thumbCount').hide();
     $('#docSearchResultMask').hide();
-    $('#countCurrent').empty(); 
+    $('#countCurrent').empty();
     $('#countLast').empty();
     $('#mlPredictionPercent').val('');
     $('#orgDocSearchRadio').click();
@@ -3196,3 +3212,24 @@ function initLayer4() {
     $('#searchResultDocName').val('');
     $('#searchDocCategoryKeyword').val('');
 }
+
+
+var loadImage = function (filepath, callBack) {
+    var result;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', filepath);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function (e) {
+        if (xhr.status == 404) {
+          
+        } else {
+
+            var buffer = xhr.response;
+            var tiff = new Tiff({ buffer: buffer });
+            var canvas = tiff.toCanvas();
+            result = canvas;          
+        }
+        callBack(result);
+    };
+    xhr.send();
+};
