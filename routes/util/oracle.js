@@ -1845,7 +1845,7 @@ exports.deleteAnswerFile = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);;
-            result = await conn.execute(queryConfig.batchLearningConfig.deleteAnswerFile, [req]);
+            result = await conn.execute(queryConfig.batchLearningConfig.deleteAnswerFile, [req[1], req[0]]);
 
             return done(null, { code: '200' });
         } catch (err) {
