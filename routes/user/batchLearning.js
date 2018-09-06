@@ -2266,7 +2266,7 @@ function batchLearnTraining(filepath, uiCheck, done) {
                 //ocr
                 console.time("ocr");
                 ocrResult = sync.await(oracle.callApiOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));
-                //var ocrResult = sync.await(ocrUtil.proxyOcr(originImageArr.CONVERTEDIMGPATH, sync.defer())); -- 운영서버용
+                //ocrResult = sync.await(ocrUtil.proxyOcr(propertiesConfig.filepath.answerFileFrontPath + convertFilpath, sync.defer()));// 운영서버용
 
                 if (ocrResult == "error") {
                     return done(null, "error ocr");

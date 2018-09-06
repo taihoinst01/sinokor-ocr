@@ -87,9 +87,10 @@ exports.proxyOcr = function (req, done) {
             };
 
             request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
-                var data = JSON.parse(body);
+                return done(null, body);
+                //var data = JSON.parse(body);
                 //console.log(data);
-                return done(null, ocrJson(data.regions));
+                //return done(null, ocrJson(data.regions));
             });
 
         } catch (err) {
