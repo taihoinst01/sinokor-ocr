@@ -1249,7 +1249,7 @@ var searchBatchLearnDataList = function (addCond) {
             //addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
-            console.log(data);
+            //console.log(data);
             var list = data.data;
             if (addCond == "LEARN_N") $("#total_cnt_before").html(list.length);
             else $("#total_cnt_after").html(list.length);
@@ -1268,7 +1268,7 @@ var searchBatchLearnDataList = function (addCond) {
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
                         checkboxHtml +
                         '<td><a class="fileNamePath" data-item="' + nvl(rows[0].FILEPATH) + '" onclick="javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', this)" href="javascript:void(0);">' + nvl(rows[0].FILENAME) + '</a></td> <!--FILENAME-->' +
-                        '<td> <!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>--> </td> <!--doctype -->' +
+                        '<td> ' + appendPredDoc(data.predDoc, i) + ' </td> <!--doctype -->' +
                         '</tr>';
 
                     for (var y = 0; y < rows.length; y++) {
@@ -1414,6 +1414,15 @@ var searchBatchLearnDataList = function (addCond) {
         return hasColvalue ? appendMLSelect : '';
     }
 };
+
+function appendPredDoc(predDoc, index) {
+    var returnString = '<!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>-->';
+    if (predDoc) {
+        returnString = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + predDoc[index].DOCNAME +'</a>';
+    }
+
+    return returnString;
+}
 
 function compareMLAndAnswer(mlData) {
     if (mlData.length != 0) {
@@ -2702,6 +2711,33 @@ function popUpInsertDocCategory() {
     });
 }
 
+function popUpNotInvoice() {
+    $('#notInvoiceBtn').click(function () {
+        $('.fileNamePath').each(function (index, el) {
+            if ($(el).attr('data-item') == $('#docPopImgPath').val()) {
+                $.ajax({
+                    url: '/batchLearning/insertBatchLearnList',
+                    type: 'post',
+                    datatype: 'json',
+                    data: JSON.stringify({
+                        filePathArray: [$('#docPopImgPath').val()],
+                        docNameArr: [$('input[name="notInvoice"]').attr('placeholder')]
+                    }),
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function (data) {
+                        console.log(data);
+                        $(el).parent().next().children(0).text($('input[name="notInvoice"]').attr('placeholder'));
+                        $('#btn_pop_doc_cancel').click();
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    });
+}
+
 // 문서 양식 조회 팝업 라디오 이벤트
 function changeDocPopRadio() {
     $('#orgDocSearchRadio').click(function () {
@@ -2744,6 +2780,7 @@ function _init() {
     changeDocPopRadio();        // 문서 양식 조회 팝업 라디오 이벤트
     popUpRunEvent();            // 문서 양식 조회 기존 양식 확인
     popUpInsertDocCategory();   // 문서 양식 조회 신규 등록 확인
+	popUpNotInvoice();          // 문서 양식 계산서 아님 저장
     selectLearningMethod();     //학습실행팝업
 
 }

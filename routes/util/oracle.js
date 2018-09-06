@@ -510,6 +510,12 @@ exports.selectBatchLearnList = function (req, done) {
         var res = [];
         let conn;
         let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
+        var condQuery
+        if (!commonUtil.isNull(req.body.addCond)) {
+            if (req.body.addCond == "LEARN_N") condQuery = "(L.STATUS != 'D' OR L.STATUS IS NULL)";
+            else if (req.body.addCond == "LEARN_Y") condQuery = "(L.STATUS = 'D')";
+        }
+
         try {
             conn = await oracledb.getConnection(dbConfig);          
             var rowNum = req.body.moreNum;
@@ -518,7 +524,7 @@ exports.selectBatchLearnList = function (req, done) {
                                                       TBL_BATCH_ANSWER_FILE F 
                                                       LEFT OUTER JOIN TBL_BATCH_LEARN_LIST L 
                                                       ON F.FILEPATH = L.FILEPATH 
-                                                    WHERE (L.STATUS != 'D' OR L.STATUS IS NULL) 
+                                                    WHERE ` + condQuery + `
                                                     AND F.FILEPATH LIKE '/2018/%' 
                                                     AND ROWNUM <= :num
                                                     ORDER BY F.IMGID ASC `, [req.body.moreNum]);
@@ -1842,6 +1848,30 @@ exports.deleteAnswerFile = function (req, done) {
             result = await conn.execute(queryConfig.batchLearningConfig.deleteAnswerFile, [req]);
 
             return done(null, { code: '200' });
+        } catch (err) {
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectDocCategoryFilePath = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(queryConfig.batchLearningConfig.selectDocCategoryFilePath, [req]);
+
+            return done(null, result);
         } catch (err) {
             return done(null, { code: '500', error: err });
         } finally {
