@@ -462,7 +462,7 @@ exports.columnMapping = function (data, callback) {
 function dataToTypoArgs(data) {
 
     for (var i in data) {
-        data[i].text = data[i].text.replace("'", "`");
+        data[i].text = data[i].text.replace(/'/gi, "`");
         //data[i].text = data[i].text.toLowerCase().replace("'", "`");
     }
     return data;
@@ -593,6 +593,27 @@ exports.domainDictionaryEval = function (data, callback) {
 
         callback(data);
     });
+};
+
+exports.typoBatch = function (ocrResult, done) {
+    return new Promise(async function (resolve, reject) {
+        const spawn = require('child_process').spawn;
+        const scriptExecution = spawn("python", [appRoot + "/ml/typosentence/typoBatch.py"]);
+
+        scriptExecution.stdout.on('data', (data) => {
+            var retData = String.fromCharCode.apply(null, data);
+            return done(null, retData);
+        });
+
+        scriptExecution.stderr.on('data', function (data) {
+            console.log('stderr: ' + data);
+        });
+
+        scriptExecution.stdin.write(JSON.stringify(dataToTypoArgs(ocrResult)));
+        scriptExecution.stdin.end();
+
+    });
+
 };
 
 /*

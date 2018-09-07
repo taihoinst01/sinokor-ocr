@@ -2300,7 +2300,6 @@ function batchLearnTraining(filepath, uiCheck, done) {
             } else {
                 console.log("get DBOcr done")
             }
-
             //typo ML
             //20180904 hskim 개별학습의 typo ML 사용할 것 aimain function 호출
             console.time("typo ML");
@@ -2309,6 +2308,15 @@ function batchLearnTraining(filepath, uiCheck, done) {
             var resPyStr = sync.await(PythonShell.run('typoBatch.py', pythonConfig.typoOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+
+            //spawn test 주석 처리
+            /*
+            var resPyStr = sync.await(aimain.typoBatch(dataToTypoArgs(ocrResult), sync.defer()));
+            console.log(resPyStr);
+            var resPyArr = JSON.parse(resPyStr.replace(/'/g, '"'));
+            var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
+            */
+            
             console.timeEnd("typo ML");
 
 
