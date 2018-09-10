@@ -219,7 +219,7 @@ def getSidParsing(data, docType):
     try:
         for item in data:
             loc = item["location"].split(',')
-            item["mappingSid"] = docType + "," + loc[0] + "," + loc[1] + "," + str(int(loc[0]) + int(loc[2])) + "," + item["sid"]
+            item["mappingSid"] = str(docType) + "," + str(loc[0]) + "," + str(loc[1]) + "," + str(int(loc[0]) + int(loc[2])) + "," + str(item["sid"])
         
         return data
 
@@ -243,6 +243,19 @@ def selectFormMapping(sentences):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID function execute fail', 'error': str(e).replace("'","").replace('"','')}))   
 
+def selectDocCategory(docType):
+    try:
+        selectDocCategorySql = "SELECT SEQNUM, DOCNAME, DOCTYPE, SAMPLEIMAGEPATH FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType"
+        curs.execute(selectDocCategorySql, { "docType": int(docType) })
+        rows = curs.fetchall()
+
+        if rows:
+            return {"SEQNUM" : rows[0][0], "DOCNAME" : rows[0][1], "DOCTYPE" : rows[0][2], "SAMPLEIMAGEPATH": rows[0][3]}
+        else:
+            return {}
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_DOCUMENT_CATEGORY table select', 'error': str(e).replace("'","").replace('"','')})) 
 if __name__ == '__main__':
     try:
         # 입력받은 파일 패스로 ocr 데이터 조회
@@ -278,6 +291,18 @@ if __name__ == '__main__':
         formMappingRows = selectFormMapping(sentences)
     
         # doc type 이 1인 경우는 바로 리턴 1이외의 경우는 레이블 정보 추출
+        # TBL_DOCUMENT_CATEGORY 테이블 SELECT
+        obj = {}
+        if formMappingRows:
+            obj["data"] = eval(ocrData, formMappingRows[0][0])
+            obj["docCategory"] = selectDocCategory(formMappingRows[0][0]);
+        else:
+            obj["data"] = eval(ocrData, 1)
+            obj["docCategory"] = selectDocCategory(1);
+
+        print(re.sub('None', "null", json.dumps(obj)))
+
+        '''
         if formMappingRows:
             if formMappingRows[0] != 1:
                 print(eval(ocrData, formMappingRows[0][0]))
@@ -285,6 +310,7 @@ if __name__ == '__main__':
                 print(ocrData)
         else:
             print(ocrData)
+        '''
 
     except Exception as e:
         print(e)
