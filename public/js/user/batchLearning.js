@@ -2713,6 +2713,8 @@ function _init() {
     changeDocPopupImage();      // 문서 양식 조회 이미지 좌우 버튼 이벤트
     popUpRunEvent();            // 문서 양식 조회 및 저장 
     selectLearningMethod();     //학습실행팝업
+	//F5keyEvent();
+
 }
 
 
