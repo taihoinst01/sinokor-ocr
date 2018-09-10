@@ -2132,21 +2132,6 @@ var batchLearnTraining = function (imgIdArray, flag) {
     });
 };
 
-function F5keyEvent() {
-    window.onkeydown = function () {
-        var kcode = event.keyCode;
-        if (kcode == 116) {
-            $('.docType').each(function (index, el) {
-                if ($(el).val != '') {
-                    
-                }
-            });
-            location.href = location.href + "?";
-            event.returnValue = false;
-        }
-    }
-}
-
 function compareLayer(ocrData) {
 
     var mlData = ocrData.data[0].mlexport.mlData;
@@ -2808,7 +2793,6 @@ function _init() {
     popUpInsertDocCategory();   // 문서 양식 조회 신규 등록 확인
 	popUpNotInvoice();          // 문서 양식 계산서 아님 저장
     selectLearningMethod();     //학습실행팝업
-	//F5keyEvent();
 
 }
 
