@@ -3217,6 +3217,7 @@ function viewOriginImg() {
 }
 
 function fn_viewDoctypePop(obj) {
+    //20180910 filepath로 ocr 데이터 조회 후 text값만 가져올 것
     initLayer4();
     $('#mlPredictionDocName').val($(obj).html());
     var filepath = $(obj).closest('tr').find('.fileNamePath').attr('data-filepath');
