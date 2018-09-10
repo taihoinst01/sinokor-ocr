@@ -1820,6 +1820,8 @@ exports.insertBatchLearnList = function (req, done) {
             for (var i in req.filePathArray) {
                 var docType = '';
                 //20180910 hskim 문서양식 매핑
+                //일괄학습 리스트에서 Add training과 문서양식 팝업에서 저장 버튼 동일한 function 사용 function 분리 필요
+                
                 //체크된 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
 
                 //체크 안된 문장중 5개의 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
@@ -1830,8 +1832,8 @@ exports.insertBatchLearnList = function (req, done) {
                 //TBL_DOCUMENT_CATEGORY테이블에 가져온 신규문서 양식명을 insert
 
                 //TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
+                //TBL_BATCH_LEARN_LIST 에 insert
 
-                
                 result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnListFromFilePath, [req.filePathArray[i]]);
 
                 if (result.rows.length == 0) {
