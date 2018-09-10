@@ -155,6 +155,24 @@ var buttonEvent = function () {
         */
     });
 
+    //layer4 라디오버튼
+    $('input:radio[name=radio_batch]').on('click', function () {
+        var chkValue = $(this).val();
+
+        if (chkValue == 'choice-1') {
+            $('#orgDocName').show();
+            $('#newDocName').hide();
+            $('#notInvoice').hide();
+        } else if (chkValue == 'choice-2') {
+            $('#newDocName').show();
+            $('#orgDocName').hide();
+            $('#notInvoice').hide();
+        } else if (chkValue == 'choice-3') {
+            $('#notInvoice').show();
+            $('#orgDocName').hide();
+            $('#newDocName').hide();
+        }
+    })
 };
 
 // [popup event]
@@ -1262,7 +1280,7 @@ var searchBatchLearnDataList = function (addCond) {
         success: function (data) {
             console.log(data);
             var list = data.data;
-            
+
             if (list.length != 0) {
 
                 for (var i = 0; i < list.length; i++) {
@@ -1274,7 +1292,7 @@ var searchBatchLearnDataList = function (addCond) {
                     var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
                         checkboxHtml +
-                        '<td><a class="fileNamePath" data-filepath="' + nvl(rows[0].FILEPATH) + '" data-imgId="' + nvl(rows[0].IMGID) +'"' + 
+                        '<td><a class="fileNamePath" data-filepath="' + nvl(rows[0].FILEPATH) + '"' +
                         'onclick = "javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', \'' + nvl(rows[0].IMGID) + '\', this)" href = "javascript:void(0);" > ' + nvl(rows[0].FILENAME) + '</a ></td > < !--FILENAME--> ' +
                         '<td> ' + appendPredDoc(data.predDoc, i) + ' </td> <!--doctype -->' +
                         '</tr>';
@@ -1321,50 +1339,50 @@ var searchBatchLearnDataList = function (addCond) {
                     }
                     var mlData = data.mlData;
                     if (mlData.rows.length != 0) {
-                        appendRightContentsHtml += '<tr class="mlTr mlRowNum' + i + '">' +                                    
-                                        '<td>' + makeMLSelect(mlData.rows, 0, null, rows[0].FILEPATH) + '</td> <!--출재사명-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 1, null, rows[0].FILEPATH) + '</td> <!--계약명-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 2, null, rows[0].FILEPATH) + '</td> <!--UY-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 3, null, rows[0].FILEPATH) + '</td> <!--화폐코드-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 4, null, rows[0].FILEPATH) + '</td> <!--화폐단위-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 5, 0, rows[0].FILEPATH) + '</td> <!--Paid(100%)-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 6, 1, rows[0].FILEPATH) + '</td> <!--Paid(Our Share)-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 7, 2, rows[0].FILEPATH) + '</td> <!--OSL(100%)-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 8, 3, rows[0].FILEPATH) + '</td> <!--OSL(Our Share)-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 9, 4, rows[0].FILEPATH) + '</td> <!--PREMIUM-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 10, 5, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F ENT-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 11, 6, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F WOS-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 12, 7, rows[0].FILEPATH) + '</td> <!--XOL PREMIUM-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 13, 8, rows[0].FILEPATH) + '</td> <!--RETURN PREMIUM-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 14, 9, rows[0].FILEPATH) + '</td> <!--COMMISION -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 15, 10, rows[0].FILEPATH) + '</td> <!--PROFIT COMMISION-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 16, 11, rows[0].FILEPATH) + '</td> <!--BROKERAGE-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 17, 12, rows[0].FILEPATH) + '</td> <!--TEX-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 18, 13, rows[0].FILEPATH) + '</td> <!-- OVERIDING COM-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 19, 14, rows[0].FILEPATH) + '</td> <!--CHARGE-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 20, 15, rows[0].FILEPATH) + '</td> <!--PREMIUM RESERVE RTD-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 21, 16, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 22, 17, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 23, 18, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 24, 19, rows[0].FILEPATH) + '</td> <!--CLAIM -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 25, 20, rows[0].FILEPATH) + '</td> <!--LOSS RECOVERY -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 26, 21, rows[0].FILEPATH) + '</td> <!--CASH LOSS -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 27, 22, rows[0].FILEPATH) + '</td> <!--CASH LOSS REFUND -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 28, 23, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RTD -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 29, 24, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RLD -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 30, 25, rows[0].FILEPATH) + '</td> <!--LOSS P/F ENT -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 31, 26, rows[0].FILEPATH) + '</td> <!--LOSS P/F WOA -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 32, 27, rows[0].FILEPATH) + '</td> <!--INTEREST -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 33, 28, rows[0].FILEPATH) + '</td> <!--TAX ON -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 34, 29, rows[0].FILEPATH) + '</td> <!--MISCELLANEOUS -->' +
-                                        '<td>' + makeMLSelect(mlData.rows, 35, null, rows[0].FILEPATH) + '</td> <!--YOUR REF -->' +
-                                    '</tr>';
-                    } else {                   
-                        appendRightContentsHtml += 
-                                    '<tr class="mlTr mlRowNum' + i + '">' +
-                                        '<td colspan="36"></td>' +          
-                                    '</tr>';
-                    
+                        appendRightContentsHtml += '<tr class="mlTr mlRowNum' + i + '">' +
+                            '<td>' + makeMLSelect(mlData.rows, 0, null, rows[0].FILEPATH) + '</td> <!--출재사명-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 1, null, rows[0].FILEPATH) + '</td> <!--계약명-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 2, null, rows[0].FILEPATH) + '</td> <!--UY-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 3, null, rows[0].FILEPATH) + '</td> <!--화폐코드-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 4, null, rows[0].FILEPATH) + '</td> <!--화폐단위-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 5, 0, rows[0].FILEPATH) + '</td> <!--Paid(100%)-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 6, 1, rows[0].FILEPATH) + '</td> <!--Paid(Our Share)-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 7, 2, rows[0].FILEPATH) + '</td> <!--OSL(100%)-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 8, 3, rows[0].FILEPATH) + '</td> <!--OSL(Our Share)-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 9, 4, rows[0].FILEPATH) + '</td> <!--PREMIUM-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 10, 5, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F ENT-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 11, 6, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F WOS-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 12, 7, rows[0].FILEPATH) + '</td> <!--XOL PREMIUM-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 13, 8, rows[0].FILEPATH) + '</td> <!--RETURN PREMIUM-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 14, 9, rows[0].FILEPATH) + '</td> <!--COMMISION -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 15, 10, rows[0].FILEPATH) + '</td> <!--PROFIT COMMISION-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 16, 11, rows[0].FILEPATH) + '</td> <!--BROKERAGE-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 17, 12, rows[0].FILEPATH) + '</td> <!--TEX-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 18, 13, rows[0].FILEPATH) + '</td> <!-- OVERIDING COM-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 19, 14, rows[0].FILEPATH) + '</td> <!--CHARGE-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 20, 15, rows[0].FILEPATH) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 21, 16, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 22, 17, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 23, 18, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                            '<td>' + makeMLSelect(mlData.rows, 24, 19, rows[0].FILEPATH) + '</td> <!--CLAIM -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 25, 20, rows[0].FILEPATH) + '</td> <!--LOSS RECOVERY -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 26, 21, rows[0].FILEPATH) + '</td> <!--CASH LOSS -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 27, 22, rows[0].FILEPATH) + '</td> <!--CASH LOSS REFUND -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 28, 23, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RTD -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 29, 24, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RLD -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 30, 25, rows[0].FILEPATH) + '</td> <!--LOSS P/F ENT -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 31, 26, rows[0].FILEPATH) + '</td> <!--LOSS P/F WOA -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 32, 27, rows[0].FILEPATH) + '</td> <!--INTEREST -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 33, 28, rows[0].FILEPATH) + '</td> <!--TAX ON -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 34, 29, rows[0].FILEPATH) + '</td> <!--MISCELLANEOUS -->' +
+                            '<td>' + makeMLSelect(mlData.rows, 35, null, rows[0].FILEPATH) + '</td> <!--YOUR REF -->' +
+                            '</tr>';
+                    } else {
+                        appendRightContentsHtml +=
+                            '<tr class="mlTr mlRowNum' + i + '">' +
+                            '<td colspan="36"></td>' +
+                            '</tr>';
+
                     }
                 }
             } else {
@@ -1426,7 +1444,7 @@ var searchBatchLearnDataList = function (addCond) {
 function appendPredDoc(predDoc, index) {
     var returnString = '<!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>-->';
     if (predDoc) {
-        returnString = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + predDoc[index].DOCNAME +'</a>';
+        returnString = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + predDoc[index].DOCNAME + '</a>';
     }
 
     return returnString;
@@ -1581,7 +1599,7 @@ function fn_viewImageData(filepath, rowNum, imgId, obj) {
             }
         }
     });
-  
+
 }
 
 function imgPopupEvent() {
@@ -1875,13 +1893,12 @@ var fn_popBatchRun = function () {
 
 var fn_addTraining = function () {
     var filePathArray = [];
-    var docTypeArray = [];
-    var imgIdArray = [];
-    
+    var docNameArr = [];
+
     let chkCnt = 0;
     $("input[name=listCheck_before]").each(function (index, entry) {
-    //$("input[name=listCheck_after]").each(function (index, entry) {
-        
+        //$("input[name=listCheck_after]").each(function (index, entry) {
+
         if ($(this).is(":checked")) {
             chkCnt++;
             totCount++;
@@ -1891,15 +1908,7 @@ var fn_addTraining = function () {
             //20180910 일괄학습에서 Add Training 실행 전 validate check
             //docNameArr에 hidden 값 매핑 TBL_DOCUMENT_CATEGORY 의 doctype
             //check된 이미지에 예측문서(docNameArr)중에 공란이거나 doctype = 0 이 있을 경우 alert
-            var docType = $(this).closest('tr').find('.docType').eq(0).val();
-            var imgId = $(this).closest('tr').find('.fileNamePath').eq(0).attr('data-imgId');
-            if (docType != 0 || docType != '') {
-                docTypeArray.push(docType);
-                imgIdArray.push(imgId);
-            } else {
-                alert('document type is empty : ' + $(this).closest('tr').find('a').eq(1).text());
-                return;
-            }
+            docNameArr.push($(this).closest('tr').find('a').eq(1).text());
         }
     });
     if (chkCnt == 0) {
@@ -1907,15 +1916,14 @@ var fn_addTraining = function () {
         return;
     } else {
         //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-        addBatchTraining(filePathArray, docTypeArray, imgIdArray, "PROCESS_IMAGE");
+        addBatchTraining(filePathArray, docNameArr, "PROCESS_IMAGE");
     }
 };
 
-var addBatchTraining = function (filePathArray, docTypeArray, imgIdArray) {
+var addBatchTraining = function (filePathArray, docNameArr) {
     var param = {
         filePathArray: filePathArray,
-        docTypeArray: docTypeArray,
-        imgIdArray, imgIdArray
+        docNameArr: docNameArr,
     };
 
 
@@ -2105,11 +2113,9 @@ var batchLearnTraining = function (imgIdArray, flag) {
                             if ($(this).val() == data.data[i].fileinfo.filepath) {
                                 //console.log(index);
                                 $(this).parent().data('ocr_data', data.data[i].data);
-                                var docHtml = '<input type="hidden" name="docType" class="docType" value="' + data.data[i].docCategory.DOCTYPE +'" />';
-                                docHtml += '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>';
-                                $(this).closest("td").next().next().html(docHtml);
+                                $(this).closest("td").next().next().html('<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>');
                             }
-                        } 
+                        }
                     }
                 }
             });
@@ -2131,21 +2137,6 @@ var batchLearnTraining = function (imgIdArray, flag) {
         }
     });
 };
-
-function F5keyEvent() {
-    window.onkeydown = function () {
-        var kcode = event.keyCode;
-        if (kcode == 116) {
-            $('.docType').each(function (index, el) {
-                if ($(el).val != '') {
-                    
-                }
-            });
-            location.href = location.href + "?";
-            event.returnValue = false;
-        }
-    }
-}
 
 function compareLayer(ocrData) {
 
@@ -2640,38 +2631,45 @@ function popUpSearchDocCategory() {
 
 // 팝업 확인 및 취소 이벤트
 function popUpRunEvent() {
+
+
+    $('#btn_pop_doc_run').click(function (e) {
+        var chkValue = $('input:radio[name=radio_batch]:checked').val();
+
+        // choice-1: 기존문서 양식조회, choice-2: 신규문서 양식등록, choice-3: 계산서 아님
+
+        if ((chkValue == 'choice-1' && $('#orgDocName').val() == '') || (chkValue == 'choice-2' && $('#newDocName').val() == '')) {
+            alert('The document name is missing');
+            return false;
+        }
+        //req.imgid req.filepath req.docname req.radiotype
+        //req.words
+        //{"Empower Results@" : 0}
+        //{"To:" : 1}
+        //{"To:" : 1}
+
+        $.ajax({
+            url: '/batchLearning/insertDoctypeMapping',
+            type: 'post',
+            datatype: 'json',
+            data: JSON.stringify({
+                data: ocrData,
+                filePathArray: [$('#docPopImgPath').val()],
+                docNameArr: [$('#orgDocName').val()]
+            }),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                $(el).parent().next().children(0).text($('#orgDocName').val());
+                $('#btn_pop_doc_cancel').click();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });           
+    })
+
     // 20180910 hskim 문장 선택 결과 같이 전송
     $('#btn_pop_doc_run').click(function (e) {
-        if ($('#orgDocName').val() != '') {
-            $('.fileNamePath').each(function (index, el) {
-                if ($(el).attr('data-filepath') == $('#docPopImgPath').val()) {
-                    var ocrData = $(el).parent().parent().find('input[type="checkbox"]').parent().data('ocr_data');
-                    $.ajax({
-                        url: '/batchLearning/insertDoctypeMapping',
-                        type: 'post',
-                        datatype: 'json',
-                        data: JSON.stringify({
-                            data: ocrData,
-                            filePathArray: [$('#docPopImgPath').val()],
-                            docNameArr: [$('#orgDocName').val()]
-                        }),
-                        contentType: 'application/json; charset=UTF-8',
-                        success: function (data) {
-                            $(el).parent().next().children(0).text($('#orgDocName').val());
-                            $('#btn_pop_doc_cancel').click();
-                        },
-                        error: function (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-            });
-        } else {
-            alert('The document name is missing');
-        }
-
-        e.stopPropagation();
-        e.preventDefault();
     });
     /*
     $('#btn_pop_doc_run').click(function (e) {
@@ -2696,96 +2694,6 @@ function popUpRunEvent() {
     */
 }
 
-//팝업 문서 양식 등록
-function popUpInsertDocCategory() {
-    $('#insertDocCategoryBtn').click(function () {
-        var docName = $('#newDocName').val().replace(/ /gi, "");
-        var sampleImagePath = $('#docPopImgPath').val();
-
-        if (docName) {
-
-            $('.fileNamePath').each(function (index, el) {
-                if ($(el).attr('data-filepath') == $('#docPopImgPath').val()) {
-                    var ocrData = $(el).parent().parent().find('input[type="checkbox"]').parent().data('ocr_data');
-                    $.ajax({
-                        url: '/batchLearning/insertDocCategory',
-                        type: 'post',
-                        datatype: 'json',
-                        data: JSON.stringify({'data':ocrData, 'docName': docName, 'sampleImagePath': sampleImagePath }),
-                        contentType: 'application/json; charset=UTF-8',
-                        success: function (data) {
-                            $('.fileNamePath').each(function (index, el) {
-                                if ($(el).attr('data-filepath') == sampleImagePath) {
-                                    $(el).parent().next().children(0).text(docName);
-                                    $('#btn_pop_doc_cancel').click();
-                                }
-                            });
-                        },
-                        error: function (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-            });       
-        } else {
-            alert('Please enter a new document name');
-        }
-    });
-}
-
-function popUpNotInvoice() {
-    $('#notInvoiceBtn').click(function () {
-        $('.fileNamePath').each(function (index, el) {
-            if ($(el).attr('data-filepath') == $('#docPopImgPath').val()) {
-                $(el).parent().next().children(0).text($('input[name="notInvoice"]').attr('placeholder'));
-                $('#btn_pop_doc_cancel').click();
-                /*
-                $.ajax({
-                    url: '/batchLearning/insertBatchLearnList',
-                    type: 'post',
-                    datatype: 'json',
-                    data: JSON.stringify({
-                        filePathArray: [$('#docPopImgPath').val()],
-                        docNameArr: [$('input[name="notInvoice"]').attr('placeholder')]
-                    }),
-                    contentType: 'application/json; charset=UTF-8',
-                    success: function (data) {
-                        console.log(data);
-                        $(el).parent().next().children(0).text($('input[name="notInvoice"]').attr('placeholder'));
-                        $('#btn_pop_doc_cancel').click();
-                    },
-                    error: function (err) {
-                        console.log(err);
-                    }
-                });
-                */
-            }
-        });
-    });
-}
-
-// 문서 양식 조회 팝업 라디오 이벤트
-function changeDocPopRadio() {
-    $('#orgDocSearchRadio').click(function () {
-        $('#orgDocSearchDiv').show();
-        $('#newDocRegistrationDiv').hide();
-        $('#notInvoiceDiv').hide();
-    });
-
-    $('#newDocRegistrationRadio').click(function () {
-        $('#newDocRegistrationDiv').show();
-        $('#orgDocSearchDiv').hide();
-        $('#notInvoiceDiv').hide();
-    });
-
-    $('#notInvoiceRadio').click(function () {
-        $('#notInvoiceDiv').show();
-        $('#orgDocSearchDiv').hide();
-        $('#newDocRegistrationDiv').hide();
-
-    });
-}
-
 // init
 function _init() {
     $('#uploadFile').css('display', 'none');
@@ -2803,13 +2711,8 @@ function _init() {
     popUpEvent();
     searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
     changeDocPopupImage();      // 문서 양식 조회 이미지 좌우 버튼 이벤트
-    changeDocPopRadio();        // 문서 양식 조회 팝업 라디오 이벤트
-    popUpRunEvent();            // 문서 양식 조회 기존 양식 확인
-    popUpInsertDocCategory();   // 문서 양식 조회 신규 등록 확인
-	popUpNotInvoice();          // 문서 양식 계산서 아님 저장
+    popUpRunEvent();            // 문서 양식 조회 및 저장 
     selectLearningMethod();     //학습실행팝업
-	//F5keyEvent();
-
 }
 
 
@@ -3252,10 +3155,9 @@ function viewOriginImg() {
 function fn_viewDoctypePop(obj) {
     //20180910 filepath로 ocr 데이터 조회 후 text값만 가져올 것
     var filepath = $(obj).closest('tr').find('.fileNamePath').attr('data-filepath');
-    initLayer4();   
+    initLayer4();
     selectClassificationSt(filepath); // 분류제외문장 렌더링
     $('#mlPredictionDocName').val($(obj).html());
-    var filepath = $(obj).closest('tr').find('.fileNamePath').attr('data-filepath');
 
     loadImage('/tif' + filepath, function (tifResult) {
         if (tifResult) {
@@ -3312,7 +3214,7 @@ function selectClassificationSt(filepath) {
                 $('input[type=checkbox]').ezMark();
                 */
             }
-            
+
         },
         error: function (err) {
             console.log(err);
@@ -3343,13 +3245,13 @@ var loadImage = function (filepath, callBack) {
     xhr.responseType = 'arraybuffer';
     xhr.onload = function (e) {
         if (xhr.status == 404) {
-          
+
         } else {
 
             var buffer = xhr.response;
             var tiff = new Tiff({ buffer: buffer });
             var canvas = tiff.toCanvas();
-            result = canvas;          
+            result = canvas;
         }
         callBack(result);
     };
