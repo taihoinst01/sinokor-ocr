@@ -5234,7 +5234,7 @@ button[disabled] {
     position: absolute;
     display: inline-block;
     top: 670px !important;
-    right: 275px !important;
+    right: 235px !important;
     z-index: 500;
     display: none;
 }
