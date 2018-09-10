@@ -1858,7 +1858,7 @@ exports.insertDoctypeMapping = function (req, done) {
             //20180910 hskim 문서양식 매핑
             //문장을 순서대로 for문
 
-            //문장 index가 1인 경우 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
+            //문장 index가 1인 경우 문장(소문자로 치환)의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
             //문장 index가 0인 경우 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
             //문장 index가 0인 경우가 5개가 되면 for문 종료
 
