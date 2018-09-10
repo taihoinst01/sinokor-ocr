@@ -10,9 +10,9 @@ def isfloat(value):
   except ValueError:
     return False
 
-lines = sys.stdin.readlines()
-inputArr = json.loads(lines[0])
-#inputArr = json.loads(sys.argv[1])
+#lines = sys.stdin.readlines()
+#inputArr = json.loads(lines[0])
+inputArr = json.loads(sys.argv[1])
 
 for ocrItem in inputArr:
 

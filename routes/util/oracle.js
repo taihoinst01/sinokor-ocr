@@ -512,7 +512,7 @@ exports.selectBatchLearnList = function (req, done) {
         let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
         var condQuery
         if (!commonUtil.isNull(req.body.addCond)) {
-            if (req.body.addCond == "LEARN_N") condQuery = "(L.STATUS != 'D' AND L.STATUS != 'R' OR L.STATUS IS NULL)";
+            if (req.body.addCond == "LEARN_N") condQuery = "((L.STATUS != 'D' AND L.STATUS != 'R') OR L.STATUS IS NULL)";
             else if (req.body.addCond == "LEARN_Y") condQuery = "(L.STATUS = 'D')";
         }
 
@@ -1816,21 +1816,78 @@ exports.insertBatchLearnList = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            for (var i in req.filePathArray) {                
+
+            for (var i in req.filePathArray) {
+                var docType = '';
                 result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnListFromFilePath, [req.filePathArray[i]]);
 
                 if (result.rows.length == 0) {
                     result = await conn.execute(queryConfig.batchLearningConfig.selectDocType, [req.docNameArr[i]]);
                     var imgId = getConvertDate();
+                    docType = result.rows[0].DOCTYPE;
                     await conn.execute(queryConfig.batchLearningConfig.insertBatchLearnList, [imgId, req.filePathArray[i], result.rows[0].DOCTYPE]);
                 } else {
                     result = await conn.execute(queryConfig.batchLearningConfig.selectDocType, [req.docNameArr[i]]);
+                    docType = result.rows[0].DOCTYPE;
                     await conn.execute(queryConfig.batchLearningConfig.updateBatchLearnList, [result.rows[0].DOCTYPE, req.filePathArray[i]]);
+                }
+
+                if (req.data) {
+
+                    let resBanned = await conn.execute(`SELECT * FROM TBL_OCR_BANNED_WORD`,[],{ outFormat: oracledb.OBJECT });
+
+                    var formArr = [];
+                    var formText = "";
+                    // insert tbl_form_mapping
+                    for (var i in req.data) {
+                        var bool = true;
+
+                        for (var j in resBanned.rows) {
+                            if (req.data[i].text.indexOf(resBanned[j].WORD) > 0) {
+                                bool = false;
+                                break;
+                            }
+                        }
+
+                        if (bool) {
+                            //insert symspell ±¸Çö
+
+                            let sqltext = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL`;
+                            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+                            let resSid = await conn.execute(sqltext, [req.data[i].text.replace(regExp, "")]);
+
+                            if (resSid.rows) {
+                                var sid = resSid.rows[0].SID.split(",");
+                                for (var k in sid) {
+                                    formArr.push(sid[k]);
+                                }
+                            }
+                        }
+
+                        if (formArr.length == 25) {
+                            break;
+                        }
+
+                    }
+
+                    for (var i in formArr) {
+                        formText += formArr[i] + ",";
+                    }
+                    formText = formText.slice(0, -1);
+
+                    let resForm = await conn.execute(`SELECT * FROM TBL_FORM_MAPPING WHERE DATA = :data `, [formText]);
+
+                    if (resForm.rows.length == 0) {
+                        resInsForm = await conn.execute(`INSERT INTO TBL_FORM_MAPPING VALUES(SEQ_FORM_MAPPING.NEXTVAL, :data, :class, SYSDATE)`, [formText, docType]);
+                    } else {
+                        resUpdForm = await conn.execute(`UPDATE TBL_FORM_MAPPING SET DATA = :data, REGDATE = SYSDATE WHERE DATA = :data`, [formText]);
+                    }
                 }
             }
 
             return done(null, { code: '200' });
         } catch (err) {
+            console.log(err);
             return done(null, { code: '500', error: err });
         } finally {
             if (conn) {

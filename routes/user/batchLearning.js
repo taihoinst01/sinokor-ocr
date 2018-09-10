@@ -2309,6 +2309,7 @@ function batchLearnTraining(filepath, uiCheck, done) {
             var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
 
+            //spawn test 주석 처리
             /*
             var resPyStr = sync.await(aimain.typoBatch(dataToTypoArgs(ocrResult), sync.defer()));
             console.log(resPyStr);

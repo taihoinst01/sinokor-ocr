@@ -2094,6 +2094,7 @@ var batchLearnTraining = function (imgIdArray, flag) {
 
                             if ($(this).val() == data.data[i].fileinfo.filepath) {
                                 //console.log(index);
+                                $(this).parent().data('ocr_data', data.data[i].data);
                                 $(this).closest("td").next().next().html('<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>');
                             }
                         } 
@@ -2616,11 +2617,13 @@ function popUpRunEvent() {
         if ($('#orgDocName').val() != '') {
             $('.fileNamePath').each(function (index, el) {
                 if ($(el).attr('data-filepath') == $('#docPopImgPath').val()) {
+                    var ocrData = $(el).parent().parent().find('input[type="checkbox"]').parent().data('ocr_data');
                     $.ajax({
                         url: '/batchLearning/insertBatchLearnList',
                         type: 'post',
                         datatype: 'json',
                         data: JSON.stringify({
+                            data: ocrData,
                             filePathArray: [$('#docPopImgPath').val()],
                             docNameArr: [$('#orgDocName').val()]
                         }),
@@ -2672,22 +2675,28 @@ function popUpInsertDocCategory() {
         var sampleImagePath = $('#docPopImgPath').val();
 
         if (docName) {
-            $.ajax({
-                url: '/batchLearning/insertDocCategory',
-                type: 'post',
-                datatype: 'json',
-                data: JSON.stringify({ 'docName': docName, 'sampleImagePath': sampleImagePath }),
-                contentType: 'application/json; charset=UTF-8',
-                success: function (data) {
-                    $('.fileNamePath').each(function (index, el) {
-                        if ($(el).attr('data-filepath') == sampleImagePath) {
-                            $(el).parent().next().children(0).text(docName);
-                            $('#btn_pop_doc_cancel').click();
+
+            $('.fileNamePath').each(function (index, el) {
+                if ($(el).attr('data-filepath') == $('#docPopImgPath').val()) {
+                    var ocrData = $(el).parent().parent().find('input[type="checkbox"]').parent().data('ocr_data');
+                    $.ajax({
+                        url: '/batchLearning/insertDocCategory',
+                        type: 'post',
+                        datatype: 'json',
+                        data: JSON.stringify({'data':ocrData, 'docName': docName, 'sampleImagePath': sampleImagePath }),
+                        contentType: 'application/json; charset=UTF-8',
+                        success: function (data) {
+                            $('.fileNamePath').each(function (index, el) {
+                                if ($(el).attr('data-filepath') == sampleImagePath) {
+                                    $(el).parent().next().children(0).text(docName);
+                                    $('#btn_pop_doc_cancel').click();
+                                }
+                            });
+                        },
+                        error: function (err) {
+                            console.log(err);
                         }
                     });
-                },
-                error: function (err) {
-                    console.log(err);
                 }
             });
         } else {
