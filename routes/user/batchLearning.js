@@ -2304,8 +2304,8 @@ function batchLearnTraining(filepath, uiCheck, done) {
             //20180904 hskim 개별학습의 typo ML 사용할 것 aimain function 호출
             console.time("typo ML");
             pythonConfig.typoOptions.args = [];
-            pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
-            var resPyStr = sync.await(PythonShell.run('typoBatch.py', pythonConfig.typoOptions, sync.defer()));
+            pythonConfig.typoOptions.args.push(filepath);
+            var resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.typoOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
 
