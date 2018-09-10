@@ -166,11 +166,18 @@ if __name__ == '__main__':
         ocrData = json.loads(ocrRows[0][0])
 
     # ocr데이터 오타수정
-    #ocrData = typo(ocrData)
+    ocrData = typo(ocrData)
 
     # 문서 분류를 위해 ocr데이터 중 상위 5개 문장 sid로 전환 후 조회
-    # var resForm = sync.await(oracle.selectForm(sidData, sync.defer()));
 
-    # doc type 이 1인 경우는 바로 리턴 1이외의 경우는 위치 정보 추출
+    # 문장단위로 for문
+    # TBL_OCR_BANNED_WORD 에 WORD칼럼 배열로 전부 가져오기
+    # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
+    # 최종 5개 문장이 추출되면 각문장의 단어를 TBL_OCR_SYMSPELL 에 조회후 없으면 INSERT
+    # 5개문장의 SID를 EXPORT_SENTENCE_SID 함수를 통해 SID 추출
+
+    #TBL_FORM_MAPPING에 5개문장의 SID를 조회
+
+    # doc type 이 1인 경우는 바로 리턴 1이외의 경우는 레이블 정보 추출
     #eval(ocrData)
 
