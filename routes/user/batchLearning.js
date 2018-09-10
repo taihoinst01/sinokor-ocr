@@ -3260,7 +3260,9 @@ router.post('/insertDoctypeMapping', function (req, res) {
     sync.fiber(function () {
         try {
 
-            let sentenses;
+            let data = req.body;
+            console.log(JSON.stringify(sentenses));
+            console.log(sentenses);
             //req.imgid req.filepath req.docname req.radiotype
             //req.words
             //{"Empower Results@" : 0}
@@ -3282,55 +3284,71 @@ router.post('/insertDoctypeMapping', function (req, res) {
 
             //문장 index가 1인 경우 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
 
-
+            //var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
 
 
 
 
 
             //가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
+            // selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
+            // retDocSid = ''
+            // # data length 에 상관없이 5회 반복 만약 data의 length가 5보다 적으면 적은 갯수만큼 ,0,0,0,0,0 입력
+            // for num in range(0,5):
+            //     if len(data) < 5:
+            //         data.append(' ')            
+    
+            // for sentence in data:
+            //     tempstr = re.sub("[~|!|@|#|$|%|^|&|*|(|)|_|-|+|=|[|]|;|:|'|,|<|.|>|?|/]", "", sentence)
+            //     if not tempstr:
+            //         tempstr = ' '
+    
+            //     curs.execute(selectExportSidSql, {"sentence": tempstr})
+            //     exportSidRows = curs.fetchall()
+            //     retDocSid += exportSidRows[0][0]
+
 
             //신규문서일 경우
             //기존 문서양식중 max doctype값 가져오기
             //TBL_DOCUMENT_CATEGORY테이블에 가져온 신규문서 양식명을 insert
             //기존 이미지 파일을 c://sampleDocImage 폴더에 DocType(숫자).jpg로 저장
-            result = await conn.execute(queryConfig.batchLearningConfig.selectMaxDocType);
-            await conn.execute(queryConfig.batchLearningConfig.insertDocCategory, ['sample doc', result.rows[0].MAXDOCTYPE, 'sample image path']);
+            //result = await conn.execute(queryConfig.batchLearningConfig.selectMaxDocType);
+            //await conn.execute(queryConfig.batchLearningConfig.insertDocCategory, ['sample doc', result.rows[0].MAXDOCTYPE, 'sample image path']);
 
             //TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
             //TBL_BATCH_LEARN_LIST 에 insert
 
-            let selectSqlText = `SELECT SEQNUM FROM TBL_FORM_MAPPING WHERE DATA = :DATA`;
-            let insertSqlText = `INSERT INTO TBL_FORM_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
-            let updateSqlText = `UPDATE TBL_FORM_MAPPING SET DATA = :DATA , CLASS = :CLASS , REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
+            // let selectSqlText = `SELECT SEQNUM FROM TBL_FORM_MAPPING WHERE DATA = :DATA`;
+            // let insertSqlText = `INSERT INTO TBL_FORM_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            // let updateSqlText = `UPDATE TBL_FORM_MAPPING SET DATA = :DATA , CLASS = :CLASS , REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
 
-            insClass = 0;
-            insCompanyData = '0,0,0,0,0,0,0';
-            insContractData = '0,0,0,0,0,0,0';
+            // insClass = 0;
+            // insCompanyData = '0,0,0,0,0,0,0';
+            // insContractData = '0,0,0,0,0,0,0';
 
-            if (req.docCategory[0]) {
-                insClass = req.docCategory[0].DOCTYPE;
-            }
+            // if (req.docCategory[0]) {
+            //     insClass = req.docCategory[0].DOCTYPE;
+            // }
 
-            for (var i in req.data) {
-                if (req.data[i].colLbl && req.data[i].colLbl == 0) {
-                    insCompanyData = req.data[i].sid;
-                }
-                if (req.data[i].colLbl && req.data[i].colLbl == 1) {
-                    insContractData = req.data[i].sid;
-                }
-            }
+            // for (var i in req.data) {
+            //     if (req.data[i].colLbl && req.data[i].colLbl == 0) {
+            //         insCompanyData = req.data[i].sid;
+            //     }
+            //     if (req.data[i].colLbl && req.data[i].colLbl == 1) {
+            //         insContractData = req.data[i].sid;
+            //     }
+            // }
 
-            if (insCompanyData && insContractData) {
-                var sid = insCompanyData + "," + insContractData;
-                var result = await conn.execute(selectSqlText, [sid]);
-                if (result.rows[0]) {
-                    await conn.execute(updateSqlText, [sid, insClass, result.rows[0].SEQNUM]);
-                } else {
-                    await conn.execute(insertSqlText, [sid, insClass]);
-                }
-            }
-            var result = sync.await(oracle.insertDoctypeMapping(data, sync.defer()));
+            // if (insCompanyData && insContractData) {
+            //     var sid = insCompanyData + "," + insContractData;
+            //     var result = await conn.execute(selectSqlText, [sid]);
+            //     if (result.rows[0]) {
+            //         await conn.execute(updateSqlText, [sid, insClass, result.rows[0].SEQNUM]);
+            //     } else {
+            //         await conn.execute(insertSqlText, [sid, insClass]);
+            //     }
+            // }
+            // var result = sync.await(oracle.insertDoctypeMapping(data, sync.defer()));
 
             //todo
             if (result.rows) {

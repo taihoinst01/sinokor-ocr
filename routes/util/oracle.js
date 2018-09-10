@@ -1169,6 +1169,52 @@ exports.insertOcrSymsSingle = function (req, done) {
         }
     });
 };
+
+exports.insertOcrSymsDoc = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        try {
+            let selectTypo = `SELECT seqNum FROM tbl_ocr_symspell WHERE keyword=LOWER(:keyWord) `;
+            let insertTypo = `INSERT INTO tbl_ocr_symspell(seqNum, keyword, frequency) VALUES (seq_ocr_symspell.nextval, LOWER(:keyWord), 1)`;
+            conn = await oracledb.getConnection(dbConfig);
+            var reqArr = req.text.split(' ');
+            var result;
+            var numExp = /[0-9]/gi;
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+            for (var i in reqArr) {
+
+                result = await conn.execute(selectTypo, [reqArr[i].replace(regExp, "")]);
+                if (result.rows.length == 0) {
+                    var exceptNum = reqArr[i].replace(numExp, "");
+
+                    if (exceptNum != "") {
+                        reqArr[i] = reqArr[i].replace(regExp, "");
+                        exceptNum = reqArr[i].replace(numExp, "");
+                        if (reqArr[i] != "" || exceptNum != "") {
+                            result = await conn.execute(insertTypo, [reqArr[i]]);
+                        }
+                    }
+                } else {
+                    //result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [reqArr[i]]);
+                }
+            }
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.insertContractMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
