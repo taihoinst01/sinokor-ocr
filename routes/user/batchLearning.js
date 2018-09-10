@@ -3218,6 +3218,31 @@ router.post('/deleteAnswerFile', function (req, res) {
     });
 });
 
+// 분류제외문장조회
+router.post('/selectClassificationSt', function (req, res) {
+    var returnObj;
+    var filepath = req.body.filepath;
+    var data = [];
+    data.push(req.body.filepath);
+
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.selectClassificationSt(data, sync.defer()));
+
+            if (result.rows) {
+                returnObj = { data: result.rows };
+            } else {
+                returnObj = { data: null };
+            }
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
 
 Date.prototype.isoNum = function (n) {
     var tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds

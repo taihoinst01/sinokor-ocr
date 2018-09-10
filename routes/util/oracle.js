@@ -2001,6 +2001,30 @@ exports.selectDocCategoryFilePath = function (req, done) {
     });
 };
 
+exports.selectClassificationSt = function (data, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(`SELECT OCRDATA FROM TBL_BATCH_OCR_DATA WHERE FILEPATH LIKE '%` + data[0] + `'`);
+
+            return done(null, result);
+        } catch (err) {
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();
