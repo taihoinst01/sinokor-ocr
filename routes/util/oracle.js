@@ -1849,6 +1849,11 @@ exports.insertDoctypeMapping = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
+            //req.imgid req.filepath req.docname req.radiotype
+            //req.words
+            //{"Empower Results@" : 0}
+            //{"To:" : 1}
+            //{"To:" : 1}
             for (var i in req.filePathArray) {
                 var docType = '';
                 //20180910 hskim 문서양식 매핑
@@ -1980,6 +1985,30 @@ exports.selectDocCategoryFilePath = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             result = await conn.execute(queryConfig.batchLearningConfig.selectDocCategoryFilePath, [req]);
+
+            return done(null, result);
+        } catch (err) {
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectClassificationSt = function (data, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(`SELECT OCRDATA FROM TBL_BATCH_OCR_DATA WHERE FILEPATH LIKE '%` + data[0] + `'`);
 
             return done(null, result);
         } catch (err) {
