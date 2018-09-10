@@ -1856,11 +1856,12 @@ exports.insertDoctypeMapping = function (req, done) {
             //{"To:" : 1}
             
             //20180910 hskim 문서양식 매핑
-            //일괄학습 리스트에서 Add training과 문서양식 팝업에서 저장 버튼 동일한 function 사용 function 분리 필요
-            
-            //체크된 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
+            //문장을 순서대로 for문
 
-            //체크 안된 문장중 5개의 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
+            //문장 index가 1인 경우 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
+            //문장 index가 0인 경우 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
+            //문장 index가 0인 경우가 5개가 되면 for문 종료
+
             //가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
 
             //신규문서일 경우
