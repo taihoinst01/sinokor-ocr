@@ -2699,7 +2699,7 @@ function popUpInsertDocCategory() {
                         }
                     });
                 }
-            });
+            });       
         } else {
             alert('Please enter a new document name');
         }
@@ -3219,7 +3219,9 @@ function viewOriginImg() {
 
 function fn_viewDoctypePop(obj) {
     //20180910 filepath로 ocr 데이터 조회 후 text값만 가져올 것
-    initLayer4();
+    var filepath = $(obj).closest('tr').find('.fileNamePath').attr('data-filepath');
+    initLayer4();   
+    selectClassificationSt(filepath); // 분류제외문장 렌더링
     $('#mlPredictionDocName').val($(obj).html());
     var filepath = $(obj).closest('tr').find('.fileNamePath').attr('data-filepath');
 
@@ -3239,6 +3241,51 @@ function fn_viewDoctypePop(obj) {
     layer_open('layer4');
 }
 
+// 분류제외문장 조회
+function selectClassificationSt(filepath) {
+
+    var param = {
+        filepath: filepath
+    };
+    var resultOcrData = '';
+    $.ajax({
+        //todo
+        url: '/batchLearning/selectClassificationSt',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            //addProgressBar(1, 99);
+        },
+        success: function (data) {
+            //console.log("SUCCESS selectClassificationSt : " + JSON.stringify(data));
+            if (data.code != 500 || data.data != null) {
+
+                var ocrdata = JSON.parse(data.data[0].OCRDATA);
+                console.log(ocrdata);
+                /*
+                for (var i = 0; i < sortOcrdataList.length; i++) {
+                    resultOcrData += '<tr>';
+                    if (i < 5) {
+                        resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk" checked></td>';
+                    } else {
+                        resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk"></td>';
+                    }
+                    resultOcrData += '<td>' + sortOcrdataList[i].text + '</td></tr>';
+                }
+                $('#batch_layer4_result').empty().append(resultOcrData);
+                $('input[type=checkbox]').ezMark();
+                */
+            }
+            
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    })
+}
+
 function initLayer4() {
     $('#originImgDiv').empty();
     $('#mlPredictionDocName').val('');
@@ -3252,6 +3299,7 @@ function initLayer4() {
     $('#docSearchResult').empty();
     $('#searchResultDocName').val('');
     $('#searchDocCategoryKeyword').val('');
+    $('#batch_layer4_result').empty();
 }
 
 var loadImage = function (filepath, callBack) {
