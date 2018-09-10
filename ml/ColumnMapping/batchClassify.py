@@ -262,6 +262,20 @@ def selectFormMapping(sentencesSid):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID function execute fail', 'error': str(e).replace("'","").replace('"','')}))   
 
+def selectDocCategory(docType):
+    try:
+        selectDocCategorySql = "SELECT SEQNUM, DOCNAME, DOCTYPE, SAMPLEIMAGEPATH FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType"
+        curs.execute(selectDocCategorySql, { "docType": int(docType) })
+        rows = curs.fetchall()
+
+        if rows:
+            return {"SEQNUM" : rows[0][0], "DOCNAME" : rows[0][1], "DOCTYPE" : rows[0][2], "SAMPLEIMAGEPATH": rows[0][3]}
+        else:
+            return {}
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_DOCUMENT_CATEGORY table select', 'error': str(e).replace("'","").replace('"','')})) 
+
 if __name__ == '__main__':
     try:
         # 입력받은 파일 패스로 ocr 데이터 조회
