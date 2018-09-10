@@ -562,7 +562,7 @@ var batchLearningConfig = {
         `UPDATE
             TBL_BATCH_LEARN_LIST
          SET
-            DOCTYPE = :docType
+            STATUS = 'D', DOCTYPE = :docType
          WHERE
             FILEPATH = :filePath `,
     deleteAnswerFile: 

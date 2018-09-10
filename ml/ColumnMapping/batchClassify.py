@@ -21,6 +21,7 @@ connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
 conn = cx_Oracle.connect(connInfo)
 curs = conn.cursor()
+rootFilePath = 'C:/ICR/image/MIG/MIG'
 
 def isfloat(value):
   try:
@@ -189,23 +190,22 @@ def selectBannedWord():
 def insertOcrSymspell(sentences):
     try:
         for sentence in sentences:
-            words = sentence.split(' ')
+            words = sentence["text"].split(' ')
             for word in words:
-                #특수문자 제외하고 조회
-                tempstr = re.sub("[~|!|@|#|$|%|^|&|*|(|)|_|-|+|=|[|]|;|:|'|,|<|.|>|?|/]", "", word)
-                if (tempstr) {
+                tempstr = word;
+                if tempstr:
                     selectSymspellSql = "SELECT COUNT(SEQNUM) FROM TBL_OCR_SYMSPELL WHERE KEYWORD = LOWER(:keyword)"
                     curs.execute(selectSymspellSql, {"keyword": tempstr})
                     symspellRows = curs.fetchall()
                     if symspellRows[0] == 0:
                         insertSymspellSql = "INSERT INTO TBL_OCR_SYMSPELL VALUES (SEQ_OCR_SYMSPELL.nextval, LOWER(:keyword), 1)"
                         curs.execute(insertSymspellSql, {"keyword": tempstr})
-                }
+        conn.commit()
                 
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_OCR_SYMSPELL table insert fail', 'error': str(e).replace("'","").replace('"','')}))
 
-def sidItemInsert(data):
+def getSid(data):
     try:
         selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
         for item in data:        
@@ -216,26 +216,29 @@ def sidItemInsert(data):
         return data
 
     except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID function execute fail', 'error': str(e).replace("'","").replace('"','')}))
+        raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID2 function execute fail', 'error': str(e).replace("'","").replace('"','')}))
 
 def getDocSid(data):
+
     try:
         selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
         retDocSid = ''
-        # data length 에 상관없이 5회 반복 만약 data의 length가 5보다 적으면 적은 갯수만큼 ,0,0,0,0,0 입력
-        for num in range(0,5):
-            if len(data) < 5:
-                data.append(' ')            
+         
 
         for sentence in data:
-            tempstr = re.sub("[~|!|@|#|$|%|^|&|*|(|)|_|-|+|=|[|]|;|:|'|,|<|.|>|?|/]", "", sentence)
+            tempstr = sentence["text"]
+            
             if not tempstr:
                 tempstr = ' '
 
             curs.execute(selectExportSidSql, {"sentence": tempstr})
             exportSidRows = curs.fetchall()
             retDocSid += exportSidRows[0][0]
-            
+
+         # data length 에 상관없이 5회 반복 만약 data의 length가 5보다 적으면 적은 갯수만큼 ,0,0,0,0,0 입력
+        if len(data) < 5:
+            for i in range(len(data)+1, 5):
+                retDocSid += ',0,0,0,0,0'
         return retDocSid
 
     except Exception as e:
@@ -245,7 +248,7 @@ def getSidParsing(data, docType):
     try:
         for item in data:
             loc = item["location"].split(',')
-            item["mappingSid"] = docType + "," + loc[0] + "," + loc[1] + "," + str(int(loc[0]) + int(loc[2])) + "," + item["sid"]
+            item["mappingSid"] = str(docType) + "," + str(loc[0]) + "," + str(loc[1]) + "," + str(int(loc[0]) + int(loc[2])) + "," + str(item["sid"])
         
         return data
 
@@ -253,6 +256,7 @@ def getSidParsing(data, docType):
         raise Exception(str({'code': 500, 'message': 'sid parsing fail', 'error': str(e).replace("'","").replace('"','')}))
 
 def selectFormMapping(sentencesSid):
+
     try:
         selectFormMappingSql = "SELECT CLASS FROM TBL_FORM_MAPPING WHERE DATA = :data"
         curs.execute(selectFormMappingSql, {"data": sentencesSid})
@@ -260,7 +264,7 @@ def selectFormMapping(sentencesSid):
         return rows;
     
     except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID function execute fail', 'error': str(e).replace("'","").replace('"','')}))   
+        raise Exception(str({'code': 500, 'message': 'TBL_FORM_MAPPING table select fail', 'error': str(e).replace("'","").replace('"','')}))   
 
 def selectDocCategory(docType):
     try:
@@ -275,6 +279,20 @@ def selectDocCategory(docType):
 
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_DOCUMENT_CATEGORY table select', 'error': str(e).replace("'","").replace('"','')})) 
+
+def insertBatchLearnList(docType):
+    try:
+        selectBatchAnswerFileSql = "SELECT IMGID FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH = :filePath"
+        curs.execute(selectBatchAnswerFileSql, { "filePath": re.sub(rootFilePath, "", str(sys.argv[1])) })
+        rows = curs.fetchall()
+
+        if rows:
+            insertBatchLearnListSql = "INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, :docType, sysdate)"
+            curs.execute(insertBatchLearnListSql, { "imgId": rows[0][0], "filePath": re.sub(rootFilePath, "", str(sys.argv[1])), "docType": docType})
+            conn.commit()
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_BATCH_LEARN_LIST table insert', 'error': str(e).replace("'","").replace('"','')})) 
 
 if __name__ == '__main__':
     try:
@@ -297,7 +315,7 @@ if __name__ == '__main__':
                     isBanned = True
                     break
             if not isBanned :            
-                sentences.append(item["text"])
+                sentences.append(item)
                 if len(sentences) == 5:
                     break;
 
@@ -319,6 +337,9 @@ if __name__ == '__main__':
         else:
             obj["data"] = eval(ocrData, 1)
             obj["docCategory"] = selectDocCategory(1);
+
+		# TBL_BATCH_LEARN_LIST statue = "T" insert
+        insertBatchLearnList(obj["docCategory"]["DOCTYPE"])
 
         print(re.sub('None', "null", json.dumps(obj)))
 

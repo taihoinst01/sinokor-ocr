@@ -512,16 +512,16 @@ exports.selectBatchLearnList = function (req, done) {
         let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
         var condQuery
         if (!commonUtil.isNull(req.body.addCond)) {
-            if (req.body.addCond == "LEARN_N") condQuery = "((L.STATUS != 'D' AND L.STATUS != 'R') OR L.STATUS IS NULL)";
+            if (req.body.addCond == "LEARN_N") condQuery = "((L.STATUS != 'D' AND L.STATUS != 'R') OR L.STATUS IS NULL OR L.STATUS = 'T')";
             else if (req.body.addCond == "LEARN_Y") condQuery = "(L.STATUS = 'D')";
         }
 
         try {
             conn = await oracledb.getConnection(dbConfig);          
             var rowNum = req.body.moreNum;
-            let resAnswerFile = await conn.execute(`SELECT T.IMGID, T.PAGENUM, T.FILEPATH 
+            let resAnswerFile = await conn.execute(`SELECT T.IMGID, T.PAGENUM, T.FILEPATH, T.DOCTYPE 
                                                     FROM (
-                                                      SELECT F.IMGID, F.PAGENUM, F.FILEPATH 
+                                                      SELECT F.IMGID, F.PAGENUM, F.FILEPATH, L.DOCTYPE
                                                       FROM 
                                                         TBL_BATCH_ANSWER_FILE F 
                                                         LEFT OUTER JOIN TBL_BATCH_LEARN_LIST L 
@@ -539,10 +539,16 @@ exports.selectBatchLearnList = function (req, done) {
                 var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
 
                 let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo `, [imgId, imgStartNo, imgStartNo]);
-
                 for (var row = 0; row < resAnswerData.rows.length; row++) {
-                    resAnswerData.rows[row].FILEPATH = filepath;
+					resAnswerData.rows[row].FILEPATH = filepath;
                     resAnswerData.rows[row].FILENAME = filename;
+					if(resAnswerFile.rows[i].DOCTYPE){
+						let resBatchLearnList = await conn.execute(`SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType `, [resAnswerFile.rows[i].DOCTYPE]);
+						if(resBatchLearnList.rows.length > 0){
+							resAnswerData.rows[row].DOCTYPE = resAnswerFile.rows[i].DOCTYPE;
+							resAnswerData.rows[row].DOCNAME = resBatchLearnList.rows[0].DOCNAME;
+						}
+					}
                 }
 
                 if (resAnswerData.rows.length > 0) {
@@ -1865,10 +1871,10 @@ exports.insertBatchLearnList = function (req, done) {
 
             for (var i in req.filePathArray) {
                 var docType = '';
-                //20180910 hskim ÏùºÍ¥ÑÌïôÏäµ Î¶¨Ïä§Ìä∏ÏóêÏÑú add training Ï≤òÎ¶¨
-                //ÏùºÍ¥ÑÌïôÏäµ Î¶¨Ïä§Ìä∏ÏóêÏÑú Add trainingÍ≥º Î¨∏ÏÑúÏñëÏãù ÌåùÏóÖÏóêÏÑú Ï†ÄÏû• Î≤ÑÌäº ÎèôÏùºÌïú function ÏÇ¨Ïö© function Î∂ÑÎ¶¨ ÌïÑÏöî
-                //TBL_BATCH_LEARN_LIST Ïóê status 'D'Î°ú Ïù∏ÏÑúÌä∏
-                
+                //20180910 hskim ¿œ∞˝«–Ω¿ ∏ÆΩ∫∆Æø°º≠ add training √≥∏Æ
+                //¿œ∞˝«–Ω¿ ∏ÆΩ∫∆Æø°º≠ Add training∞˙ πÆº≠æÁΩƒ ∆Àæ˜ø°º≠ ¿˙¿Â πˆ∆∞ µø¿œ«— function ªÁøÎ function ∫–∏Æ « ø‰
+                //TBL_BATCH_LEARN_LIST ø° status 'D'∑Œ ¿Œº≠∆Æ
+                await conn.execute(queryConfig.batchLearningConfig.updateBatchLearnList, [req.docTypeArray[i], req.filePathArray[i]]);
             }
 
             return done(null, { code: '200' });
@@ -1895,7 +1901,65 @@ exports.insertDoctypeMapping = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
+<<<<<<< HEAD
 
+=======
+            //req.imgid req.filepath req.docname req.radiotype
+            //req.words
+            //{"Empower Results@" : 0}
+            //{"To:" : 1}
+            //{"To:" : 1}
+            //todo
+            //20180910 hskim πÆº≠æÁΩƒ ∏≈«Œ
+            //πÆ¿Â¿ª º¯º≠¥Î∑Œ forπÆ
+
+            //πÆ¿Â index∞° 1¿Œ ∞ÊøÏ πÆ¿Â¿« √π∫Œ∫–¿ª TBL_OCR_BANNED_WORD ø° insert
+            //πÆ¿Â index∞° 0¿Œ ∞ÊøÏ πÆ¿Â¿ª symspellø° µÓ∑œ æ»µ» ¥‹æÓ ¿÷¥¬¡ˆ »Æ¿Œ »ƒ æ¯¿ª ∞ÊøÏ insert
+            //πÆ¿Â index∞° 0¿Œ ∞ÊøÏ∞° 5∞≥∞° µ«∏È forπÆ ¡æ∑·
+
+            //∞°¡Æø¬ πÆ¿Â¿« sid EXPORT_SENTENCE_SID«‘ºˆ∏¶ ≈Î«ÿ √ﬂ√‚
+
+            //Ω≈±‘πÆº≠¿œ ∞ÊøÏ
+            //±‚¡∏ πÆº≠æÁΩƒ¡ﬂ max doctype∞™ ∞°¡Æø¿±‚
+            //TBL_DOCUMENT_CATEGORY≈◊¿Ã∫Ìø° ∞°¡Æø¬ Ω≈±‘πÆº≠ æÁΩƒ∏Ì¿ª insert
+            //±‚¡∏ ¿ÃπÃ¡ˆ ∆ƒ¿œ¿ª c://sampleDocImage ∆˙¥ıø° DocType(º˝¿⁄).jpg∑Œ ¿˙¿Â
+            result = await conn.execute(queryConfig.batchLearningConfig.selectMaxDocType);
+            await conn.execute(queryConfig.batchLearningConfig.insertDocCategory, ['sample doc', result.rows[0].MAXDOCTYPE, 'sample image path']);
+
+            //TBL_FORM_MAPPING ø° 5∞≥πÆ¿Â¿« sid øÕ doctype∞™ insert
+            //TBL_BATCH_LEARN_LIST ø° insert
+
+            let selectSqlText = `SELECT SEQNUM FROM TBL_FORM_MAPPING WHERE DATA = :DATA`;
+            let insertSqlText = `INSERT INTO TBL_FORM_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            let updateSqlText = `UPDATE TBL_FORM_MAPPING SET DATA = :DATA , CLASS = :CLASS , REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
+
+            insClass = 0;
+            insCompanyData = '0,0,0,0,0,0,0';
+            insContractData = '0,0,0,0,0,0,0';
+
+            if (req.docCategory[0]) {
+                insClass = req.docCategory[0].DOCTYPE;
+            }
+
+            for (var i in req.data) {
+                if (req.data[i].colLbl && req.data[i].colLbl == 0) {
+                    insCompanyData = req.data[i].sid;
+                }
+                if (req.data[i].colLbl && req.data[i].colLbl == 1) {
+                    insContractData = req.data[i].sid;
+                }
+            }
+
+            if (insCompanyData && insContractData) {
+                var sid = insCompanyData + "," + insContractData;
+                result = await conn.execute(selectSqlText, [sid]);
+                if (result.rows[0]) {
+                    await conn.execute(updateSqlText, [sid, insClass, result.rows[0].SEQNUM]);
+                } else {
+                    await conn.execute(insertSqlText, [sid, insClass]);
+                }
+            }
+>>>>>>> 614e2fa3a9b3b1fa1fc822871951255b2e25c0cd
 
             return done(null, { code: '200' });
         } catch (err) {
