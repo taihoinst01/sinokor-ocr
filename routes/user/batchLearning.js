@@ -3261,6 +3261,7 @@ router.post('/insertDoctypeMapping', function (req, res) {
         try {
             var result = sync.await(oracle.insertDoctypeMapping(data, sync.defer()));
 
+            //todo
             if (result.rows) {
                 returnObj = { data: result.rows };
             } else {
