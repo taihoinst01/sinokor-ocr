@@ -22,10 +22,6 @@ connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 conn = cx_Oracle.connect(connInfo)
 curs = conn.cursor()
 
-sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_BATCH_COLUMN_MAPPING_TRAIN "
-curs.execute(sql)
-rows = curs.fetchall()
-
 def isfloat(value):
   try:
     float(value)
@@ -36,7 +32,10 @@ def isfloat(value):
 def boundaryCheck(str1, str2):
     return abs(int(str1) - int(str2)) < 5
 
-def findLabelDB(rows, inputsid):
+def findLabelDB(inputsid):
+    sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_BATCH_COLUMN_MAPPING_TRAIN "
+    curs.execute(sql)
+    rows = curs.fetchall()
     # {0,1,2,35,36,37} db에 위치가 일치하면 text sid와 상관없이 label 매핑
     # 위치가 일치하고 label이 여러개일 경우 랜덤 매핑
     ret = []
@@ -92,14 +91,16 @@ def typo(ocrData):
             ocrItem['text'] = ocrItem['text']
         return ocrData
 
-def eval(inputJson):
-    inputArr = json.loads(inputJson.encode("ascii", "ignore").decode())
-
+def eval(inputJson, docType):
+    # inputArr = json.loads(inputJson.encode("ascii", "ignore").decode())
+    inputArr = getSidParsing(getSid(inputJson), docType)
+    
     try:
         for inputItem in inputArr:
             if 'sid' in inputItem:
-                inputItem['colLbl'] = findLabelDB(rows, inputItem['sid'])
+                inputItem['colLbl'] = findLabelDB(inputItem['mappingSid'])
                 inputItem['colAccu'] = 0.99
+                del inputItem['mappingSid'] # column mapping에만 사용되는 가공 sid 제거
 
         #전 아이템 중 엔트리 라벨 추출
         entryLabel = []
@@ -151,33 +152,140 @@ def eval(inputJson):
 
         # for item in inputArr:
         #     print(item)
-        print(str(inputArr))
+        return str(inputArr)
 
     except Exception as e:
-        print(str({'code': 500, 'message': 'column mapping predict fail', 'error': str(e).replace("'","").replace('"','')}))
+        raise Exception(str({'code': 500, 'message': 'column mapping predict fail', 'error': str(e).replace("'","").replace('"','')}))
+
+def selectOcrDataFromFilePath(filepath):
+    try:
+        selectocrDataSql = "SELECT OCRDATA FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath"
+        curs.execute(selectocrDataSql, { "filepath": filepath })
+        rows = curs.fetchall()
+
+        if rows:
+            return json.loads(rows[0][0])
+        else:
+            raise Exception('row for file path does not exist')
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_BATCH_OCR_DATA table select fail', 'error': str(e).replace("'","").replace('"','')}))
+
+def selectBannedWord():
+    returnData = []
+    try:
+        selectBannedWordSql = "SELECT WORD FROM TBL_BANNED_WORD"
+        curs.execute(selectBannedWordSql)
+        rows = curs.fetchall()
+        if rows:
+            for row in rows:
+                returnData.append(row[0])
+
+        return returnData
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_BANNED_WORD table select fail', 'error': str(e).replace("'","").replace('"','')}))
+
+def insertOcrSymspell(sentences):
+    try:
+        for sentence in sentences:
+            words = sentence["text"].split(' ')
+            for word in words:
+                selectSymspellSql = "SELECT COUNT(SEQNUM) FROM TBL_OCR_SYMSPELL WHERE KEYWORD = LOWER(:keyword)"
+                curs.execute(selectSymspellSql, {"keyword": word})
+                symspellRows = curs.fetchall()
+                if symspellRows[0] == 0:
+                    insertSymspellSql = "INSERT INTO TBL_OCR_SYMSPELL VALUES (SEQ_OCR_SYMSPELL.nextval, LOWER(:keyword), 1)"
+                    curs.execute(insertSymspellSql, {"keyword": word})
+                    symspellRows = curs.fetchall()
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_OCR_SYMSPELL table insert fail', 'error': str(e).replace("'","").replace('"','')}))
+
+def getSid(data):
+    try:
+        selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
+        for item in data:        
+            curs.execute(selectExportSidSql, {"sentence": item["text"]})
+            exportSidRows = curs.fetchall()
+            item["sid"] = exportSidRows[0][0]
+        
+        return data
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID function execute fail', 'error': str(e).replace("'","").replace('"','')}))
+
+def getSidParsing(data, docType):
+    try:
+        for item in data:
+            loc = item["location"].split(',')
+            item["mappingSid"] = docType + "," + loc[0] + "," + loc[1] + "," + str(int(loc[0]) + int(loc[2])) + "," + item["sid"]
+        
+        return data
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'sid parsing fail', 'error': str(e).replace("'","").replace('"','')}))
+
+def selectFormMapping(sentences):
+    try:
+        if len(sentences) == 5:
+            data = ''
+            for sentence in sentences:
+                data = data + sentence["sid"] + ','
+            selectFormMappingSql = "SELECT CLASS FROM TBL_FORM_MAPPING WHERE DATA = :data"
+            curs.execute(selectFormMappingSql, {"data": data[:-1]})
+            rows = curs.fetchall()
+
+            return rows;
+        else:
+            raise Exception('TBL_FORM_MAPPING parameter is not five sentences')
+    
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID function execute fail', 'error': str(e).replace("'","").replace('"','')}))   
 
 if __name__ == '__main__':
-    # 입력받은 파일 패스로 ocr 데이터 조회
-    ocrSql = "SELECT OCRDATA FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath"
-    curs.execute(ocrSql, {"filepath": sys.argv[1]})
-    ocrRows = curs.fetchall()
+    try:
+        # 입력받은 파일 패스로 ocr 데이터 조회
+        ocrData = selectOcrDataFromFilePath(sys.argv[1])
 
-    if ocrRows:
-        ocrData = json.loads(ocrRows[0][0])
+        # ocr데이터 오타수정
+        ocrData = typo(ocrData)
 
-    # ocr데이터 오타수정
-    ocrData = typo(ocrData)
+        # TBL_OCR_BANNED_WORD 에 WORD칼럼 배열로 전부 가져오기
+        bannedWords = selectBannedWord()
 
-    # 문서 분류를 위해 ocr데이터 중 상위 5개 문장 sid로 전환 후 조회
+        # 문장단위로 for문
+        sentences = []
+        for item in ocrData:
+            # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
+            isBanned = False;
+            for i in bannedWords:
+                if item["text"] == bannedWords[i]:
+                    isBanned = True
+                    break
+            if not isBanned :            
+                sentences.append(item)
+                if len(sentences) == 5:
+                    break;
 
-    # 문장단위로 for문
-    # TBL_OCR_BANNED_WORD 에 WORD칼럼 배열로 전부 가져오기
-    # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
-    # 최종 5개 문장이 추출되면 각문장의 단어를 TBL_OCR_SYMSPELL 에 조회후 없으면 INSERT
-    # 5개문장의 SID를 EXPORT_SENTENCE_SID 함수를 통해 SID 추출
+        # 최종 5개 문장이 추출되면 각문장의 단어를 TBL_OCR_SYMSPELL 에 조회후 없으면 INSERT
+        insertOcrSymspell(sentences)
 
-    #TBL_FORM_MAPPING에 5개문장의 SID를 조회
+        # 5개문장의 SID를 EXPORT_SENTENCE_SID 함수를 통해 SID 추출
+        sentences = getSid(sentences)
 
-    # doc type 이 1인 경우는 바로 리턴 1이외의 경우는 레이블 정보 추출
-    #eval(ocrData)
+        #TBL_FORM_MAPPING에 5개문장의 SID를 조회
+        formMappingRows = selectFormMapping(sentences)
+    
+        # doc type 이 1인 경우는 바로 리턴 1이외의 경우는 레이블 정보 추출
+        if formMappingRows:
+            if formMappingRows[0] != 1:
+                print(eval(ocrData, formMappingRows[0][0]))
+            else:
+                print(ocrData)
+        else:
+            print(ocrData)
+
+    except Exception as e:
+        print(e)
 

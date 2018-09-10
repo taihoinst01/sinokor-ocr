@@ -1876,29 +1876,29 @@ var fn_popBatchRun = function () {
 var fn_addTraining = function () {
     var filePathArray = [];
     var docNameArr = [];
-
-    if (addCond == "LEARN_N") {
-        let chkCnt = 0;
-        $("input[name=listCheck_before]").each(function (index, entry) {
-            if ($(this).is(":checked")) {
-                chkCnt++;
-                totCount++;
-                //imgIdArray.push($(this).val());
-                var filepath = $(this).val();
-                filePathArray.push(filepath);
-                docNameArr.push($(this).closest('tr').find('a').eq(1).text());
-            }
-        });
-        if (chkCnt == 0) {
-            alert("선택된 학습이 없습니다.");
-            return;
-        } else {
-            //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-            addBatchTraining(filePathArray, docNameArr, "PROCESS_IMAGE");
+    
+    let chkCnt = 0;
+    $("input[name=listCheck_before]").each(function (index, entry) {
+    //$("input[name=listCheck_after]").each(function (index, entry) {
+        
+        if ($(this).is(":checked")) {
+            chkCnt++;
+            totCount++;
+            //imgIdArray.push($(this).val());
+            var filepath = $(this).val();
+            filePathArray.push(filepath);
+            //20180910 일괄학습에서 Add Training 실행 전 validate check
+            //docNameArr에 hidden 값 매핑 TBL_DOCUMENT_CATEGORY 의 doctype
+            //check된 이미지에 예측문서(docNameArr)중에 공란이거나 doctype = 0 이 있을 경우 alert
+            docNameArr.push($(this).closest('tr').find('a').eq(1).text());
         }
-    } else {
-        alert("Before Training 상태에서만 배치학습이 가능합니다.");
+    });
+    if (chkCnt == 0) {
+        alert("선택된 학습이 없습니다.");
         return;
+    } else {
+        //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+        addBatchTraining(filePathArray, docNameArr, "PROCESS_IMAGE");
     }
 };
 
@@ -2613,14 +2613,14 @@ function popUpSearchDocCategory() {
 
 // 팝업 확인 및 취소 이벤트
 function popUpRunEvent() {
-    // 20180910 hskim 선택된 5개 문장 같이 전송
+    // 20180910 hskim 문장 선택 결과 같이 전송
     $('#btn_pop_doc_run').click(function (e) {
         if ($('#orgDocName').val() != '') {
             $('.fileNamePath').each(function (index, el) {
                 if ($(el).attr('data-filepath') == $('#docPopImgPath').val()) {
                     var ocrData = $(el).parent().parent().find('input[type="checkbox"]').parent().data('ocr_data');
                     $.ajax({
-                        url: '/batchLearning/insertBatchLearnList',
+                        url: '/batchLearning/insertDoctypeMapping',
                         type: 'post',
                         datatype: 'json',
                         data: JSON.stringify({
