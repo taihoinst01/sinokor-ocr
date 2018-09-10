@@ -237,7 +237,7 @@ def getDocSid(data):
 
          # data length 에 상관없이 5회 반복 만약 data의 length가 5보다 적으면 적은 갯수만큼 ,0,0,0,0,0 입력
         if len(data) < 5:
-            for i in range(len(data), 5):
+            for i in range(len(data)+1, 5):
                 retDocSid += ',0,0,0,0,0'
         return retDocSid
 
