@@ -158,13 +158,19 @@ def eval(inputJson):
 
 if __name__ == '__main__':
     # 입력받은 파일 패스로 ocr 데이터 조회
+    ocrSql = "SELECT OCRDATA FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath"
+    curs.execute(ocrSql, {"filepath": sys.argv[1]})
+    ocrRows = curs.fetchall()
+
+    if ocrRows:
+        ocrData = json.loads(ocrRows[0][0])
 
     # ocr데이터 오타수정
-    typo(ocrData)
+    #ocrData = typo(ocrData)
 
     # 문서 분류를 위해 ocr데이터 중 상위 5개 문장 sid로 전환 후 조회
-    #var resForm = sync.await(oracle.selectForm(sidData, sync.defer()));
+    # var resForm = sync.await(oracle.selectForm(sidData, sync.defer()));
 
     # doc type 이 1인 경우는 바로 리턴 1이외의 경우는 위치 정보 추출
-    eval(sys.argv[1])
+    #eval(ocrData)
 
