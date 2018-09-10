@@ -1849,61 +1849,7 @@ exports.insertDoctypeMapping = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            //req.imgid req.filepath req.docname req.radiotype
-            //req.words
-            //{"Empower Results@" : 0}
-            //{"To:" : 1}
-            //{"To:" : 1}
-            //todo
-            //20180910 hskim 문서양식 매핑
-            //문장을 순서대로 for문
 
-            //문장 index가 1인 경우 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
-            //문장 index가 0인 경우 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
-            //문장 index가 0인 경우가 5개가 되면 for문 종료
-
-            //가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
-
-            //신규문서일 경우
-            //기존 문서양식중 max doctype값 가져오기
-            //TBL_DOCUMENT_CATEGORY테이블에 가져온 신규문서 양식명을 insert
-            //기존 이미지 파일을 c://sampleDocImage 폴더에 DocType(숫자).jpg로 저장
-            result = await conn.execute(queryConfig.batchLearningConfig.selectMaxDocType);
-            await conn.execute(queryConfig.batchLearningConfig.insertDocCategory, ['sample doc', result.rows[0].MAXDOCTYPE, 'sample image path']);
-
-            //TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
-            //TBL_BATCH_LEARN_LIST 에 insert
-
-            let selectSqlText = `SELECT SEQNUM FROM TBL_FORM_MAPPING WHERE DATA = :DATA`;
-            let insertSqlText = `INSERT INTO TBL_FORM_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
-            let updateSqlText = `UPDATE TBL_FORM_MAPPING SET DATA = :DATA , CLASS = :CLASS , REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
-
-            insClass = 0;
-            insCompanyData = '0,0,0,0,0,0,0';
-            insContractData = '0,0,0,0,0,0,0';
-
-            if (req.docCategory[0]) {
-                insClass = req.docCategory[0].DOCTYPE;
-            }
-
-            for (var i in req.data) {
-                if (req.data[i].colLbl && req.data[i].colLbl == 0) {
-                    insCompanyData = req.data[i].sid;
-                }
-                if (req.data[i].colLbl && req.data[i].colLbl == 1) {
-                    insContractData = req.data[i].sid;
-                }
-            }
-
-            if (insCompanyData && insContractData) {
-                var sid = insCompanyData + "," + insContractData;
-                var result = await conn.execute(selectSqlText, [sid]);
-                if (result.rows[0]) {
-                    await conn.execute(updateSqlText, [sid, insClass, result.rows[0].SEQNUM]);
-                } else {
-                    await conn.execute(insertSqlText, [sid, insClass]);
-                }
-            }
 
             return done(null, { code: '200' });
         } catch (err) {
