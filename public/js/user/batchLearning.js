@@ -3264,6 +3264,8 @@ function selectClassificationSt(filepath) {
 
                 var ocrdata = JSON.parse(data.data[0].OCRDATA);
                 console.log(ocrdata);
+                //todo location 정렬 후 렌더링
+
                 /*
                 for (var i = 0; i < sortOcrdataList.length; i++) {
                     resultOcrData += '<tr>';
