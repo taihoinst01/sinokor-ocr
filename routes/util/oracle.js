@@ -1873,7 +1873,7 @@ exports.insertBatchLearnList = function (req, done) {
                 var docType = '';
                 //20180910 hskim 일괄학습 리스트에서 add training 처리
                 //일괄학습 리스트에서 Add training과 문서양식 팝업에서 저장 버튼 동일한 function 사용 function 분리 필요
-                //TBL_BATCH_LEARN_LIST 에 status 'D'로 인서트
+                //TBL_BATCH_LEARN_LIST 에 status 'D'로 인서트 
                 await conn.execute(queryConfig.batchLearningConfig.updateBatchLearnList, [req.docTypeArray[i], req.filePathArray[i]]);
             }
 
