@@ -174,7 +174,9 @@ input.noline{border:none !important;}*/
 .fl {
     float: left;
 }
-
+.fl.center {
+    margin: 0 30px;
+}
 .fr {
     float: right;
 }
@@ -5065,12 +5067,12 @@ button[disabled] {
     margin-left: 13px;
 }
 .ui_doc_pop_ipt, .ui_doc_pop_ipt3 {
-    width: 564px !important;
+    width: 964px !important;
     margin-right: 15px !important;
     display: inline-table;
 }
 .ui_doc_pop_ipt2 {
-    width: 554px !important;
+    width: 954px !important;
     margin-right: 15px !important;
     display: inline-table;
 }
@@ -5079,7 +5081,7 @@ button[disabled] {
 }
 
 .ui_doc_pop_div {
-    width: 48%;
+    width: 32%;
 }
 .ui_doc_pop_div00 {
     width: 100%;
@@ -5115,9 +5117,7 @@ button[disabled] {
 .doc_popup .pop_content {
     padding: 0px 26px 26px 26px !important;
 }
-.doc_popup {
-    height: 720px !important;
-}
+
 .box_scroll_st99 {
     display: block;
     height: 771px;
@@ -5128,6 +5128,12 @@ button[disabled] {
 .box_scroll_st100 {
     display: block;
     height: 727px;
+    overflow: auto;
+}
+
+.box_scroll_st101 {
+    display: block;
+    height: 537px;
     overflow: auto;
 }
 #uploadSucessForm #touchSlider {
@@ -5146,7 +5152,7 @@ button[disabled] {
 }
 .button_control11 {
     top: 410px !important;
-    left: 624px !important;
+    left: 1080px !important;
     z-index: 500;
     opacity: 0.8 !important;
     position: absolute;
@@ -5207,7 +5213,7 @@ button[disabled] {
     display: block;
     position: absolute;
     top: 123px;
-    left: 625px;
+    left: 1083px;
     cursor: text;
     width: 22px;
     height: 22px;
@@ -5923,7 +5929,7 @@ input:disabled {
 }
 
 .doc_popup {
-    width: 1200px !important;
+    width: 1600px !important;
     height: 720px !important;
 }
 
