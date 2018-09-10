@@ -2303,10 +2303,10 @@ function batchLearnTraining(filepath, uiCheck, done) {
             //typo ML
             //20180904 hskim 개별학습의 typo ML 사용할 것 aimain function 호출
             console.time("columnMapping ML");
-            pythonConfig.typoOptions.args = [];
-            pythonConfig.typoOptions.args.push(filepath);
-            var resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.typoOptions, sync.defer()));
-            var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(propertiesConfig.filepath.answerFileFrontPath + filepath);
+            var resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var resPyArr = JSON.parse(resPyStr[0]);
             
             console.timeEnd("columnMapping ML");
             //20180910 ML 결과중 doctype을 화면에 표시
@@ -2338,8 +2338,9 @@ function batchLearnTraining(filepath, uiCheck, done) {
             // resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
             // console.timeEnd("columnMapping ML");
 
-            retData.data = resPyArr;
-            retData.docCategory = resForm;
+            //retData.data = resPyArr;
+            //retData.docCategory = resForm;
+            retData = resPyArr;
             retData.fileinfo = { filepath: filepath, imgId: imgId };
 
             // console.time("insert MlExport");

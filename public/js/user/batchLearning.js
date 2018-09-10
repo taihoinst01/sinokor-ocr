@@ -1274,7 +1274,7 @@ var searchBatchLearnDataList = function (addCond) {
                     var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
                         checkboxHtml +
-                        '<td><a class="fileNamePath" data-filepath="' + nvl(rows[0].FILEPATH) + '"' + 
+                        '<td><a class="fileNamePath" data-filepath="' + nvl(rows[0].FILEPATH) + '" data-imgId="' + nvl(rows[0].IMGID) +'"' + 
                         'onclick = "javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', \'' + nvl(rows[0].IMGID) + '\', this)" href = "javascript:void(0);" > ' + nvl(rows[0].FILENAME) + '</a ></td > < !--FILENAME--> ' +
                         '<td> ' + appendPredDoc(data.predDoc, i) + ' </td> <!--doctype -->' +
                         '</tr>';
@@ -1875,7 +1875,8 @@ var fn_popBatchRun = function () {
 
 var fn_addTraining = function () {
     var filePathArray = [];
-    var docNameArr = [];
+    var docTypeArray = [];
+    var imgIdArray = [];
     
     let chkCnt = 0;
     $("input[name=listCheck_before]").each(function (index, entry) {
@@ -1890,7 +1891,15 @@ var fn_addTraining = function () {
             //20180910 일괄학습에서 Add Training 실행 전 validate check
             //docNameArr에 hidden 값 매핑 TBL_DOCUMENT_CATEGORY 의 doctype
             //check된 이미지에 예측문서(docNameArr)중에 공란이거나 doctype = 0 이 있을 경우 alert
-            docNameArr.push($(this).closest('tr').find('a').eq(1).text());
+            var docType = $(this).closest('tr').find('.docType').eq(0).val();
+            var imgId = $(this).closest('tr').find('.fileNamePath').eq(0).attr('data-imgId');
+            if (docType != 0 || docType != '') {
+                docTypeArray.push(docType);
+                imgIdArray.push(imgId);
+            } else {
+                alert('document type is empty : ' + $(this).closest('tr').find('a').eq(1).text());
+                return;
+            }
         }
     });
     if (chkCnt == 0) {
@@ -1898,14 +1907,15 @@ var fn_addTraining = function () {
         return;
     } else {
         //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-        addBatchTraining(filePathArray, docNameArr, "PROCESS_IMAGE");
+        addBatchTraining(filePathArray, docTypeArray, imgIdArray, "PROCESS_IMAGE");
     }
 };
 
-var addBatchTraining = function (filePathArray, docNameArr) {
+var addBatchTraining = function (filePathArray, docTypeArray, imgIdArray) {
     var param = {
         filePathArray: filePathArray,
-        docNameArr: docNameArr,
+        docTypeArray: docTypeArray,
+        imgIdArray, imgIdArray
     };
 
 
@@ -2095,7 +2105,9 @@ var batchLearnTraining = function (imgIdArray, flag) {
                             if ($(this).val() == data.data[i].fileinfo.filepath) {
                                 //console.log(index);
                                 $(this).parent().data('ocr_data', data.data[i].data);
-                                $(this).closest("td").next().next().html('<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>');
+                                var docHtml = '<input type="hidden" name="docType" class="docType" value="' + data.data[i].docCategory.DOCTYPE +'" />';
+                                docHtml += '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>';
+                                $(this).closest("td").next().next().html(docHtml);
                             }
                         } 
                     }
@@ -2119,6 +2131,21 @@ var batchLearnTraining = function (imgIdArray, flag) {
         }
     });
 };
+
+function F5keyEvent() {
+    window.onkeydown = function () {
+        var kcode = event.keyCode;
+        if (kcode == 116) {
+            $('.docType').each(function (index, el) {
+                if ($(el).val != '') {
+                    
+                }
+            });
+            location.href = location.href + "?";
+            event.returnValue = false;
+        }
+    }
+}
 
 function compareLayer(ocrData) {
 
@@ -2710,6 +2737,9 @@ function popUpNotInvoice() {
     $('#notInvoiceBtn').click(function () {
         $('.fileNamePath').each(function (index, el) {
             if ($(el).attr('data-filepath') == $('#docPopImgPath').val()) {
+                $(el).parent().next().children(0).text($('input[name="notInvoice"]').attr('placeholder'));
+                $('#btn_pop_doc_cancel').click();
+                /*
                 $.ajax({
                     url: '/batchLearning/insertBatchLearnList',
                     type: 'post',
@@ -2728,6 +2758,7 @@ function popUpNotInvoice() {
                         console.log(err);
                     }
                 });
+                */
             }
         });
     });
@@ -2777,6 +2808,7 @@ function _init() {
     popUpInsertDocCategory();   // 문서 양식 조회 신규 등록 확인
 	popUpNotInvoice();          // 문서 양식 계산서 아님 저장
     selectLearningMethod();     //학습실행팝업
+	//F5keyEvent();
 
 }
 
