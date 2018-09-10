@@ -239,10 +239,11 @@ var fnSearchBatchLearningDataList = function (req, res) {
                 for (var i in filePathList) {
                     var result = sync.await(oracle.selectDocCategoryFilePath(filePathList[i], sync.defer()));
                     if (result.rows.length != 0) {
-                        predDoc.push(result.rows[0]);  
+                        originImageArr[i].rows[0].DOCTYPE = result.rows[0].DOCTYPE;
+                        originImageArr[i].rows[0].DOCNAME = result.rows[0].DOCNAME;
                     }
                 }
-                res.send({ data: originImageArr, mlData: mlData, predDoc: predDoc, code: 200 });
+                res.send({ data: originImageArr, mlData: mlData, code: 200 });
             } else {
                 res.send({ data: originImageArr, mlData: mlData, code: 200 });
             }
