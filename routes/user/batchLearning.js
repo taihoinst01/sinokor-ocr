@@ -2302,50 +2302,49 @@ function batchLearnTraining(filepath, uiCheck, done) {
             }
             //typo ML
             //20180904 hskim 개별학습의 typo ML 사용할 것 aimain function 호출
-            console.time("typo ML");
+            console.time("columnMapping ML");
             pythonConfig.typoOptions.args = [];
             pythonConfig.typoOptions.args.push(filepath);
             var resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.typoOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
-
-            //spawn test 주석 처리
-            /*
-            var resPyStr = sync.await(aimain.typoBatch(dataToTypoArgs(ocrResult), sync.defer()));
-            console.log(resPyStr);
-            var resPyArr = JSON.parse(resPyStr.replace(/'/g, '"'));
-            var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
-            */
             
-            console.timeEnd("typo ML");
+            console.timeEnd("columnMapping ML");
+            //20180910 ML 결과중 doctype을 화면에 표시
 
 
+
+
+
+
+
+
+            
             //TBL_FORM_MAPPING 에 조회
             //조회 결과가 없으면 doctype 0 조회결과가 있으면 doctype 을 TBL_DOCUMENT_CATEGORY 테이블에 매핑 
             //결과 script 에 리턴
 
-            console.time("form mapping");
-            var resForm = sync.await(oracle.selectForm(sidData, sync.defer()));
-            console.timeEnd("form mapping");
+            // console.time("form mapping");
+            // var resForm = sync.await(oracle.selectForm(sidData, sync.defer()));
+            // console.timeEnd("form mapping");
             
-            // 2차 버전
-            // doc type이 2 이상인 경우 개별 학습의 columnMapping 처리 입력데이터중 sid 를 기존 (좌표,sid) 에서 (문서번호,좌표,sid) 로 변경
-            var sidDocData = convertSidWithDoc(sidData, resForm);
+            // // 2차 버전
+            // // doc type이 2 이상인 경우 개별 학습의 columnMapping 처리 입력데이터중 sid 를 기존 (좌표,sid) 에서 (문서번호,좌표,sid) 로 변경
+            // var sidDocData = convertSidWithDoc(sidData, resForm);
 
-            console.time("columnMapping ML");
-            pythonConfig.columnMappingOptions.args = [];
-            pythonConfig.columnMappingOptions.args.push(JSON.stringify(sidDocData));
-            resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
-            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            console.timeEnd("columnMapping ML");
+            // console.time("columnMapping ML");
+            // pythonConfig.columnMappingOptions.args = [];
+            // pythonConfig.columnMappingOptions.args.push(JSON.stringify(sidDocData));
+            // resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            // resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            // console.timeEnd("columnMapping ML");
 
             retData.data = resPyArr;
             retData.docCategory = resForm;
             retData.fileinfo = { filepath: filepath, imgId: imgId };
 
-            console.time("insert MlExport");
-            sync.await(oracle.insertMLData(retData, sync.defer()));
-            console.timeEnd("insert MlExport");
+            // console.time("insert MlExport");
+            // sync.await(oracle.insertMLData(retData, sync.defer()));
+            // console.timeEnd("insert MlExport");
 
             return done(null, retData);
         } catch (e) {
