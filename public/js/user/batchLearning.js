@@ -159,15 +159,15 @@ var buttonEvent = function () {
     $('input:radio[name=radio_batch]').on('click', function () {
         var chkValue = $(this).val();
 
-        if (chkValue == 'choice-1') {
+        if (chkValue == '1') {
             $('#orgDocName').show();
             $('#newDocName').hide();
             $('#notInvoice').hide();
-        } else if (chkValue == 'choice-2') {
+        } else if (chkValue == '2') {
             $('#newDocName').show();
             $('#orgDocName').hide();
             $('#notInvoice').hide();
-        } else if (chkValue == 'choice-3') {
+        } else if (chkValue == '3') {
             $('#notInvoice').show();
             $('#orgDocName').hide();
             $('#newDocName').hide();
@@ -2645,11 +2645,10 @@ function popUpSearchDocCategory() {
 function popUpRunEvent() {
 
     $('#btn_pop_doc_run').click(function (e) {
+        // chkValue 1: 기존문서 양식조회, 2: 신규문서 양식등록, 3: 계산서 아님
         var chkValue = $('input:radio[name=radio_batch]:checked').val();
 
-        // choice-1: 기존문서 양식조회, choice-2: 신규문서 양식등록, choice-3: 계산서 아님
-
-        if ((chkValue == 'choice-1' && $('#orgDocName').val() == '') || (chkValue == 'choice-2' && $('#newDocName').val() == '')) {
+        if ((chkValue == '1' && $('#orgDocName').val() == '') || (chkValue == '2' && $('#newDocName').val() == '')) {
             alert('The document name is missing');
             return false;
         }
@@ -2665,11 +2664,11 @@ function popUpRunEvent() {
 
         // docName
         var docName = '';
-        if (chkValue == 'choice-1') {
+        if (chkValue == '1') {
             docName = $('#orgDocName').val();
-        } else if (chkValue == 'choice-2') {
+        } else if (chkValue == '2') {
             docName = $('#newDocName').val();
-        } else if(chkValue == 'choice-3') {
+        } else if(chkValue == '3') {
             docName = 'notInvoice';
         }
 
