@@ -192,9 +192,7 @@ def insertOcrSymspell(sentences):
         for sentence in sentences:
             words = sentence["text"].split(' ')
             for word in words:
-                #특수문자 제외하고 조회
                 tempstr = word;
-                # tempstr = re.sub("[~|!|@|#|$|%|^|&|*|(|)|_|-|+|=|[|]|;|:|'|,|<|.|>|?|/]", "", word)
                 if tempstr:
                     selectSymspellSql = "SELECT COUNT(SEQNUM) FROM TBL_OCR_SYMSPELL WHERE KEYWORD = LOWER(:keyword)"
                     curs.execute(selectSymspellSql, {"keyword": tempstr})
@@ -233,7 +231,6 @@ def getDocSid(data):
         for sentence in data:
             tempstr = sentence["text"]
             
-            #tempstr = re.sub("[~|!|@|#|$|%|^|&|*|(|)|_|-|+|=|[|]|;|:|'|,|<|.|>|?|/]", "", sentence)
             if not tempstr:
                 tempstr = ' '
 
