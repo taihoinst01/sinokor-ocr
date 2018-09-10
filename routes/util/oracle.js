@@ -1,4 +1,4 @@
-var oracledb = require('oracledb');
+﻿var oracledb = require('oracledb');
 var appRoot = require('app-root-path').path;
 var dbConfig = require(appRoot + '/config/dbConfig');
 var queryConfig = require(appRoot + '/config/queryConfig');
