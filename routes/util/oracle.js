@@ -1901,9 +1901,6 @@ exports.insertDoctypeMapping = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-<<<<<<< HEAD
-
-=======
             //req.imgid req.filepath req.docname req.radiotype
             //req.words
             //{"Empower Results@" : 0}
@@ -1959,7 +1956,6 @@ exports.insertDoctypeMapping = function (req, done) {
                     await conn.execute(insertSqlText, [sid, insClass]);
                 }
             }
->>>>>>> 614e2fa3a9b3b1fa1fc822871951255b2e25c0cd
 
             return done(null, { code: '200' });
         } catch (err) {
