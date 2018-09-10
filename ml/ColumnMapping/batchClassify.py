@@ -189,20 +189,23 @@ def selectBannedWord():
 def insertOcrSymspell(sentences):
     try:
         for sentence in sentences:
-            words = sentence["text"].split(' ')
+            words = sentence.split(' ')
             for word in words:
-                selectSymspellSql = "SELECT COUNT(SEQNUM) FROM TBL_OCR_SYMSPELL WHERE KEYWORD = LOWER(:keyword)"
-                curs.execute(selectSymspellSql, {"keyword": word})
-                symspellRows = curs.fetchall()
-                if symspellRows[0] == 0:
-                    insertSymspellSql = "INSERT INTO TBL_OCR_SYMSPELL VALUES (SEQ_OCR_SYMSPELL.nextval, LOWER(:keyword), 1)"
-                    curs.execute(insertSymspellSql, {"keyword": word})
+                #특수문자 제외하고 조회
+                tempstr = re.sub("[~|!|@|#|$|%|^|&|*|(|)|_|-|+|=|[|]|;|:|'|,|<|.|>|?|/]", "", word)
+                if (tempstr) {
+                    selectSymspellSql = "SELECT COUNT(SEQNUM) FROM TBL_OCR_SYMSPELL WHERE KEYWORD = LOWER(:keyword)"
+                    curs.execute(selectSymspellSql, {"keyword": tempstr})
                     symspellRows = curs.fetchall()
-
+                    if symspellRows[0] == 0:
+                        insertSymspellSql = "INSERT INTO TBL_OCR_SYMSPELL VALUES (SEQ_OCR_SYMSPELL.nextval, LOWER(:keyword), 1)"
+                        curs.execute(insertSymspellSql, {"keyword": tempstr})
+                }
+                
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_OCR_SYMSPELL table insert fail', 'error': str(e).replace("'","").replace('"','')}))
 
-def getSid(data):
+def sidItemInsert(data):
     try:
         selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
         for item in data:        
@@ -215,47 +218,50 @@ def getSid(data):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID function execute fail', 'error': str(e).replace("'","").replace('"','')}))
 
+def getDocSid(data):
+    try:
+        selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
+        retDocSid = ''
+        # data length 에 상관없이 5회 반복 만약 data의 length가 5보다 적으면 적은 갯수만큼 ,0,0,0,0,0 입력
+        for num in range(0,5):
+            if len(data) < 5:
+                data.append(' ')            
+
+        for sentence in data:
+            tempstr = re.sub("[~|!|@|#|$|%|^|&|*|(|)|_|-|+|=|[|]|;|:|'|,|<|.|>|?|/]", "", sentence)
+            if not tempstr:
+                tempstr = ' '
+
+            curs.execute(selectExportSidSql, {"sentence": tempstr})
+            exportSidRows = curs.fetchall()
+            retDocSid += exportSidRows[0][0]
+            
+        return retDocSid
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID function execute fail', 'error': str(e).replace("'","").replace('"','')}))
+
 def getSidParsing(data, docType):
     try:
         for item in data:
             loc = item["location"].split(',')
-            item["mappingSid"] = str(docType) + "," + str(loc[0]) + "," + str(loc[1]) + "," + str(int(loc[0]) + int(loc[2])) + "," + str(item["sid"])
+            item["mappingSid"] = docType + "," + loc[0] + "," + loc[1] + "," + str(int(loc[0]) + int(loc[2])) + "," + item["sid"]
         
         return data
 
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'sid parsing fail', 'error': str(e).replace("'","").replace('"','')}))
 
-def selectFormMapping(sentences):
+def selectFormMapping(sentencesSid):
     try:
-        if len(sentences) == 5:
-            data = ''
-            for sentence in sentences:
-                data = data + sentence["sid"] + ','
-            selectFormMappingSql = "SELECT CLASS FROM TBL_FORM_MAPPING WHERE DATA = :data"
-            curs.execute(selectFormMappingSql, {"data": data[:-1]})
-            rows = curs.fetchall()
-
-            return rows;
-        else:
-            raise Exception('TBL_FORM_MAPPING parameter is not five sentences')
+        selectFormMappingSql = "SELECT CLASS FROM TBL_FORM_MAPPING WHERE DATA = :data"
+        curs.execute(selectFormMappingSql, {"data": sentencesSid})
+        rows = curs.fetchall()
+        return rows;
     
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID function execute fail', 'error': str(e).replace("'","").replace('"','')}))   
 
-def selectDocCategory(docType):
-    try:
-        selectDocCategorySql = "SELECT SEQNUM, DOCNAME, DOCTYPE, SAMPLEIMAGEPATH FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType"
-        curs.execute(selectDocCategorySql, { "docType": int(docType) })
-        rows = curs.fetchall()
-
-        if rows:
-            return {"SEQNUM" : rows[0][0], "DOCNAME" : rows[0][1], "DOCTYPE" : rows[0][2], "SAMPLEIMAGEPATH": rows[0][3]}
-        else:
-            return {}
-
-    except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'TBL_DOCUMENT_CATEGORY table select', 'error': str(e).replace("'","").replace('"','')})) 
 if __name__ == '__main__':
     try:
         # 입력받은 파일 패스로 ocr 데이터 조회
@@ -273,11 +279,11 @@ if __name__ == '__main__':
             # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
             isBanned = False;
             for i in bannedWords:
-                if item["text"] == bannedWords[i]:
+                if item["text"].find(bannedWords[i]) == 0:
                     isBanned = True
                     break
             if not isBanned :            
-                sentences.append(item)
+                sentences.append(item["text"])
                 if len(sentences) == 5:
                     break;
 
@@ -285,10 +291,10 @@ if __name__ == '__main__':
         insertOcrSymspell(sentences)
 
         # 5개문장의 SID를 EXPORT_SENTENCE_SID 함수를 통해 SID 추출
-        sentences = getSid(sentences)
+        sentencesSid = getDocSid(sentences)
 
         #TBL_FORM_MAPPING에 5개문장의 SID를 조회
-        formMappingRows = selectFormMapping(sentences)
+        formMappingRows = selectFormMapping(sentencesSid)
     
         # doc type 이 1인 경우는 바로 리턴 1이외의 경우는 레이블 정보 추출
         # TBL_DOCUMENT_CATEGORY 테이블 SELECT

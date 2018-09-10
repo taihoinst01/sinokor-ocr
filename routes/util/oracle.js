@@ -1854,88 +1854,21 @@ exports.insertDoctypeMapping = function (req, done) {
             //{"Empower Results@" : 0}
             //{"To:" : 1}
             //{"To:" : 1}
-            for (var i in req.filePathArray) {
-                var docType = '';
-                //20180910 hskim 문서양식 매핑
-                //일괄학습 리스트에서 Add training과 문서양식 팝업에서 저장 버튼 동일한 function 사용 function 분리 필요 ?테스트 *한영
-                
-                //체크된 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
+            
+            //20180910 hskim 문서양식 매핑
+            //일괄학습 리스트에서 Add training과 문서양식 팝업에서 저장 버튼 동일한 function 사용 function 분리 필요
+            
+            //체크된 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
 
-                //체크 안된 문장중 5개의 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
-                //가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
+            //체크 안된 문장중 5개의 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
+            //가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
 
-                //신규문서일 경우
-                //기존 문서양식중 max doctype값 가져오기
-                //TBL_DOCUMENT_CATEGORY테이블에 가져온 신규문서 양식명을 insert
+            //신규문서일 경우
+            //기존 문서양식중 max doctype값 가져오기
+            //TBL_DOCUMENT_CATEGORY테이블에 가져온 신규문서 양식명을 insert
 
-                //TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
-                //TBL_BATCH_LEARN_LIST 에 insert
-
-            //     result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnListFromFilePath, [req.filePathArray[i]]);
-
-            //     if (result.rows.length == 0) {
-            //         result = await conn.execute(queryConfig.batchLearningConfig.selectDocType, [req.docNameArr[i]]);
-            //         var imgId = getConvertDate();
-            //         docType = result.rows[0].DOCTYPE;
-            //         await conn.execute(queryConfig.batchLearningConfig.insertBatchLearnList, [imgId, req.filePathArray[i], result.rows[0].DOCTYPE]);
-            //     } else {
-            //         result = await conn.execute(queryConfig.batchLearningConfig.selectDocType, [req.docNameArr[i]]);
-            //         docType = result.rows[0].DOCTYPE;
-            //         await conn.execute(queryConfig.batchLearningConfig.updateBatchLearnList, [result.rows[0].DOCTYPE, req.filePathArray[i]]);
-            //     }
-
-            //     if (req.data) {
-
-            //         let resBanned = await conn.execute(`SELECT * FROM TBL_OCR_BANNED_WORD`,[],{ outFormat: oracledb.OBJECT });
-
-            //         var formArr = [];
-            //         var formText = "";
-            //         // insert tbl_form_mapping
-            //         for (var i in req.data) {
-            //             var bool = true;
-
-            //             for (var j in resBanned.rows) {
-            //                 if (req.data[i].text.indexOf(resBanned[j].WORD) > 0) {
-            //                     bool = false;
-            //                     break;
-            //                 }
-            //             }
-
-            //             if (bool) {
-            //                 //insert symspell ����
-
-            //                 let sqltext = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL`;
-            //                 var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
-            //                 let resSid = await conn.execute(sqltext, [req.data[i].text.replace(regExp, "")]);
-
-            //                 if (resSid.rows) {
-            //                     var sid = resSid.rows[0].SID.split(",");
-            //                     for (var k in sid) {
-            //                         formArr.push(sid[k]);
-            //                     }
-            //                 }
-            //             }
-
-            //             if (formArr.length == 25) {
-            //                 break;
-            //             }
-
-            //         }
-
-            //         for (var i in formArr) {
-            //             formText += formArr[i] + ",";
-            //         }
-            //         formText = formText.slice(0, -1);
-
-            //         let resForm = await conn.execute(`SELECT * FROM TBL_FORM_MAPPING WHERE DATA = :data `, [formText]);
-
-            //         if (resForm.rows.length == 0) {
-            //             resInsForm = await conn.execute(`INSERT INTO TBL_FORM_MAPPING VALUES(SEQ_FORM_MAPPING.NEXTVAL, :data, :class, SYSDATE)`, [formText, docType]);
-            //         } else {
-            //             resUpdForm = await conn.execute(`UPDATE TBL_FORM_MAPPING SET DATA = :data, REGDATE = SYSDATE WHERE DATA = :data`, [formText]);
-            //         }
-            //     }
-            }
+            //TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
+            //TBL_BATCH_LEARN_LIST 에 insert
 
             return done(null, { code: '200' });
         } catch (err) {

@@ -3255,7 +3255,6 @@ function fn_viewDoctypePop(obj) {
     initLayer4();   
     selectClassificationSt(filepath); // 분류제외문장 렌더링
     $('#mlPredictionDocName').val($(obj).html());
-    var filepath = $(obj).closest('tr').find('.fileNamePath').attr('data-filepath');
 
     loadImage('/tif' + filepath, function (tifResult) {
         if (tifResult) {
@@ -3273,6 +3272,16 @@ function fn_viewDoctypePop(obj) {
     layer_open('layer4');
 }
 
+function makeindex(location) {
+    let temparr = location.split(",");
+    for (let i = 0 ; i < 5 ; i ++) {
+        if (temparr[0].length < 5) {
+            temparr[0] = '0' + temparr[0];
+        }
+    }
+    return Number(temparr[1] + temparr[0]);
+}
+
 // 분류제외문장 조회
 function selectClassificationSt(filepath) {
 
@@ -3281,7 +3290,6 @@ function selectClassificationSt(filepath) {
     };
     var resultOcrData = '';
     $.ajax({
-        //todo
         url: '/batchLearning/selectClassificationSt',
         type: 'post',
         datatype: "json",
@@ -3295,22 +3303,31 @@ function selectClassificationSt(filepath) {
             if (data.code != 500 || data.data != null) {
 
                 var ocrdata = JSON.parse(data.data[0].OCRDATA);
-                console.log(ocrdata);
-                //todo location 정렬 후 렌더링
 
-                /*
-                for (var i = 0; i < sortOcrdataList.length; i++) {
+                //순서 정렬 로직
+                let tempArr = new Array();
+                for (let item in ocrdata) {
+                    tempArr[item] = new Array(makeindex(ocrdata[item].location),   ocrdata[item]);
+                }
+
+                tempArr.sort(function (a1, a2) {
+                    a1[0] = parseInt(a1[0]);
+                    a2[0] = parseInt(a2[0]);
+                    return (a1[0]<a2[0]) ? -1 : ((a1[0]>a2[0]) ? 1 : 0);
+                });
+
+                for (let i = 0; i < tempArr.length; i++) {
                     resultOcrData += '<tr>';
                     if (i < 5) {
                         resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk" checked></td>';
                     } else {
                         resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk"></td>';
                     }
-                    resultOcrData += '<td>' + sortOcrdataList[i].text + '</td></tr>';
+                    resultOcrData += '<td>' + tempArr[i][1].text + '</td></tr>';
                 }
                 $('#batch_layer4_result').empty().append(resultOcrData);
                 $('input[type=checkbox]').ezMark();
-                */
+                
             }
             
         },
