@@ -1876,6 +1876,9 @@ var fn_popBatchRun = function () {
 var fn_addTraining = function () {
     var filePathArray = [];
     var docNameArr = [];
+    //20180910 일괄학습에서 Add Training 실행 전 validate check
+    //check된 이미지가 없을경우 alert
+    //check된 이미지에 예측문서가 공란이거나 unknown 일 경우 alert
 
     if (addCond == "LEARN_N") {
         let chkCnt = 0;
@@ -2620,7 +2623,7 @@ function popUpRunEvent() {
                 if ($(el).attr('data-filepath') == $('#docPopImgPath').val()) {
                     var ocrData = $(el).parent().parent().find('input[type="checkbox"]').parent().data('ocr_data');
                     $.ajax({
-                        url: '/batchLearning/insertBatchLearnList',
+                        url: '/batchLearning/insertDoctypeMapping',
                         type: 'post',
                         datatype: 'json',
                         data: JSON.stringify({
