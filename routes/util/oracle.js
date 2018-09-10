@@ -1849,6 +1849,11 @@ exports.insertDoctypeMapping = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
+            //req.imgid req.filepath req.docname req.radiotype
+            //req.words
+            //{"Empower Results@" : 0}
+            //{"To:" : 1}
+            //{"To:" : 1}
             for (var i in req.filePathArray) {
                 var docType = '';
                 //20180910 hskim 문서양식 매핑
