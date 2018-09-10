@@ -1292,7 +1292,7 @@ var searchBatchLearnDataList = function (addCond) {
                     var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
                     appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
                         checkboxHtml +
-                        '<td><a class="fileNamePath" data-filepath="' + nvl(rows[0].FILEPATH) + '"' +
+                        '<td><a class="fileNamePath" data-filepath="' + nvl(rows[0].FILEPATH) + '" data-imgId="' + + nvl(rows[0].IMGID) + '" ' +
                         'onclick = "javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', \'' + nvl(rows[0].IMGID) + '\', this)" href = "javascript:void(0);" > ' + nvl(rows[0].FILENAME) + '</a ></td > < !--FILENAME--> ' +
                         '<td> ' + appendPredDoc(data.predDoc, i) + ' </td> <!--doctype -->' +
                         '</tr>';
@@ -2632,7 +2632,6 @@ function popUpSearchDocCategory() {
 // 팝업 확인 및 취소 이벤트
 function popUpRunEvent() {
 
-
     $('#btn_pop_doc_run').click(function (e) {
         var chkValue = $('input:radio[name=radio_batch]:checked').val();
 
@@ -2642,25 +2641,42 @@ function popUpRunEvent() {
             alert('The document name is missing');
             return false;
         }
-        //req.imgid req.filepath req.docname req.radiotype
-        //req.words
-        //{"Empower Results@" : 0}
-        //{"To:" : 1}
-        //{"To:" : 1}
+
+        // text & check
+        var textList = [];
+        $('.batch_layer4_result_tr').each(function () {
+            var chk = $(this).children().find('input[type="checkbox"]').is(':checked') == true ? 1 : 0;
+            var text = $(this).children()[1].innerHTML;
+
+            textList.push({"text": text, "check": chk})
+        })
+
+        // docName
+        var docName = '';
+        if (chkValue == 'choice-1') {
+            docName = $('#orgDocName').val();
+        } else if (chkValue == 'choice-2') {
+            docName = $('#newDocName').val();
+        } else if(chkValue == 'choice-3') {
+            docName = 'notInvoice';
+        }
+
+        var param = {
+            imgId: $('#docPopImgId').val(),
+            filepath: $('#docPopImgPath').val(),
+            docName: docName,
+            radioType: chkValue,
+            textList: textList,
+        }
 
         $.ajax({
             url: '/batchLearning/insertDoctypeMapping',
             type: 'post',
             datatype: 'json',
-            data: JSON.stringify({
-                data: ocrData,
-                filePathArray: [$('#docPopImgPath').val()],
-                docNameArr: [$('#orgDocName').val()]
-            }),
+            data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
-                $(el).parent().next().children(0).text($('#orgDocName').val());
-                $('#btn_pop_doc_cancel').click();
+                //todo
             },
             error: function (err) {
                 console.log(err);
@@ -3156,7 +3172,11 @@ function viewOriginImg() {
 
 function fn_viewDoctypePop(obj) {
     //20180910 filepath로 ocr 데이터 조회 후 text값만 가져올 것
-    var filepath = $(obj).closest('tr').find('.fileNamePath').attr('data-filepath');
+    var data = $(obj).closest('tr').find('.fileNamePath');
+    var filepath = data.attr('data-filepath');
+    var imgId = data.attr('data-imgId');
+    $('#docPopImgId').val(imgId);
+    $('#docPopImgPath').val(filepath);
     initLayer4();
     selectClassificationSt(filepath); // 분류제외문장 렌더링
     $('#mlPredictionDocName').val($(obj).html());
@@ -3222,12 +3242,8 @@ function selectClassificationSt(filepath) {
                 });
 
                 for (let i = 0; i < tempArr.length; i++) {
-                    resultOcrData += '<tr>';
-                    if (i < 5) {
-                        resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk" checked></td>';
-                    } else {
-                        resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk"></td>';
-                    }
+                    resultOcrData += '<tr class="batch_layer4_result_tr">';
+                    resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk"></td>';               
                     resultOcrData += '<td>' + tempArr[i][1].text + '</td></tr>';
                 }
                 $('#batch_layer4_result').empty().append(resultOcrData);

@@ -3245,6 +3245,36 @@ router.post('/selectClassificationSt', function (req, res) {
 });
 
 
+// 문서양식매핑
+router.post('/insertDoctypeMapping', function (req, res) {
+    var returnObj;
+
+    var data = {
+        imgId: req.body.imgId,
+        filepath: req.body.filepath,
+        docName: req.body.docName,
+        radioType: req.body.radioType,
+        textList: req.body.textList
+    }
+    
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.insertDoctypeMapping(data, sync.defer()));
+
+            if (result.rows) {
+                returnObj = { data: result.rows };
+            } else {
+                returnObj = { data: null };
+            }
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
 Date.prototype.isoNum = function (n) {
     var tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds
     var localISOTime = (new Date(this - tzoffset)).toISOString().slice(0, -1);
