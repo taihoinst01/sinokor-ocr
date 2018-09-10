@@ -2613,6 +2613,7 @@ function popUpSearchDocCategory() {
 
 // 팝업 확인 및 취소 이벤트
 function popUpRunEvent() {
+    // 20180910 hskim 선택된 5개 문장 같이 전송
     $('#btn_pop_doc_run').click(function (e) {
         if ($('#orgDocName').val() != '') {
             $('.fileNamePath').each(function (index, el) {
