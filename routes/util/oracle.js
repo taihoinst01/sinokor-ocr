@@ -1867,6 +1867,8 @@ exports.insertDoctypeMapping = function (req, done) {
             //신규문서일 경우
             //기존 문서양식중 max doctype값 가져오기
             //TBL_DOCUMENT_CATEGORY테이블에 가져온 신규문서 양식명을 insert
+            result = await conn.execute(queryConfig.batchLearningConfig.selectMaxDocType);
+            await conn.execute(queryConfig.batchLearningConfig.insertDocCategory, [req[0], result.rows[0].MAXDOCTYPE, req[1]]);
 
             //TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
             //TBL_BATCH_LEARN_LIST 에 insert
