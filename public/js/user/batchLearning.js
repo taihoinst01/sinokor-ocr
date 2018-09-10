@@ -1876,32 +1876,29 @@ var fn_popBatchRun = function () {
 var fn_addTraining = function () {
     var filePathArray = [];
     var docNameArr = [];
-    //20180910 일괄학습에서 Add Training 실행 전 validate check
-    //check된 이미지가 없을경우 alert
-    //check된 이미지에 예측문서가 공란이거나 unknown 일 경우 alert
-
-    if (addCond == "LEARN_N") {
-        let chkCnt = 0;
-        $("input[name=listCheck_before]").each(function (index, entry) {
-            if ($(this).is(":checked")) {
-                chkCnt++;
-                totCount++;
-                //imgIdArray.push($(this).val());
-                var filepath = $(this).val();
-                filePathArray.push(filepath);
-                docNameArr.push($(this).closest('tr').find('a').eq(1).text());
-            }
-        });
-        if (chkCnt == 0) {
-            alert("선택된 학습이 없습니다.");
-            return;
-        } else {
-            //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-            addBatchTraining(filePathArray, docNameArr, "PROCESS_IMAGE");
+    
+    let chkCnt = 0;
+    $("input[name=listCheck_before]").each(function (index, entry) {
+    //$("input[name=listCheck_after]").each(function (index, entry) {
+        
+        if ($(this).is(":checked")) {
+            chkCnt++;
+            totCount++;
+            //imgIdArray.push($(this).val());
+            var filepath = $(this).val();
+            filePathArray.push(filepath);
+            //20180910 일괄학습에서 Add Training 실행 전 validate check
+            //docNameArr에 hidden 값 매핑 TBL_DOCUMENT_CATEGORY 의 doctype
+            //check된 이미지에 예측문서(docNameArr)중에 공란이거나 doctype = 0 이 있을 경우 alert
+            docNameArr.push($(this).closest('tr').find('a').eq(1).text());
         }
-    } else {
-        alert("Before Training 상태에서만 배치학습이 가능합니다.");
+    });
+    if (chkCnt == 0) {
+        alert("선택된 학습이 없습니다.");
         return;
+    } else {
+        //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+        addBatchTraining(filePathArray, docNameArr, "PROCESS_IMAGE");
     }
 };
 
