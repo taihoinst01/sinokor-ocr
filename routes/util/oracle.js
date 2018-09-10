@@ -1820,7 +1820,9 @@ exports.insertBatchLearnList = function (req, done) {
             for (var i in req.filePathArray) {
                 var docType = '';
                 //20180910 hskim 문서양식 매핑
-                //가져온 문장중 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
+                //체크된 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
+
+                //체크 안된 문장중 5개의 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
                 //가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
 
                 //신규문서일 경우
@@ -1829,13 +1831,7 @@ exports.insertBatchLearnList = function (req, done) {
 
                 //TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
 
-
-
                 
-
-
-
-
                 result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnListFromFilePath, [req.filePathArray[i]]);
 
                 if (result.rows.length == 0) {
