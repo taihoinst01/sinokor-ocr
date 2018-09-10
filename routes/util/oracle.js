@@ -1857,7 +1857,7 @@ exports.insertDoctypeMapping = function (req, done) {
             for (var i in req.filePathArray) {
                 var docType = '';
                 //20180910 hskim 문서양식 매핑
-                //일괄학습 리스트에서 Add training과 문서양식 팝업에서 저장 버튼 동일한 function 사용 function 분리 필요 ?테스트
+                //일괄학습 리스트에서 Add training과 문서양식 팝업에서 저장 버튼 동일한 function 사용 function 분리 필요 ?테스트 *한영
                 
                 //체크된 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
 
