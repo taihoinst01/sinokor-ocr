@@ -3765,6 +3765,7 @@
     <Folder Include="routes\proxy\" />
     <Folder Include="routes\user\" />
     <Folder Include="routes\util\" />
+    <Folder Include="sql\" />
     <Folder Include="uploads\" />
     <Folder Include="views\" />
     <Folder Include="views\admin\" />
@@ -3773,6 +3774,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="sample\apex.jpg" />
+    <Content Include="sql\insert.sql" />
+    <Content Include="sql\insertSymspell.sql" />
+    <Content Include="sql\procedure.sql" />
+    <Content Include="sql\table.sql" />
+    <Content Include="sql\tbl_batch_answer_fileAlter.sql" />
+    <Content Include="sql\updateTblBatchLearnData.sql" />
+    <Content Include="sql\XLSTblAlterColumn.sql" />
     <Content Include="uploads\noImage.jpg" />
     <Content Include="uploads\SHIPPING_REQUEST.pdf" />
     <Content Include="views\admin\adminDashboard.html" />
