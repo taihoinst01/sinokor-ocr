@@ -169,7 +169,7 @@ function insertFormMapping(topSentenses, docType) {
     try {
         var formsid = '';
         for (var i = 0; i < 5; i++) {
-            if (i <= topSentenses.length) {
+            if (i < topSentenses.length) {
                 formsid += topSentenses[i].sid + ',';
             } else {
                 formsid +=  '0,0,0,0,0,';
