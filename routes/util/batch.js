@@ -146,14 +146,14 @@ function selectDocCategoryFromDocName(data) {
 }
 
 function copyFile(src, docType) {
-    var convertedFilepath = 'C:/ICR/sampleDocImage';
+    var convertedFilepath = propertiesConfig.filepath.docFilePath;
     try {
         if (!fs.existsSync(src)) {
             throw new Error('file not exist');
         }
         var data = fs.readFileSync(src, 'utf-8');
         try {
-            fs.mkdirSync('convertedFilepath');
+            fs.mkdirSync(convertedFilepath);
         } catch (e) {
             if (e.code != 'EEXIST') throw e;
         }
