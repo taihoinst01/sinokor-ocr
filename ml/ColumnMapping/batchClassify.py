@@ -13,6 +13,7 @@ import re
 import operator
 import batchUtil as bUtil
 
+
 id = "koreanre"
 pw = "koreanre01"
 sid = "koreanreocr"
@@ -144,7 +145,15 @@ def eval(inputJson, docType):
                             horizColLbl = lblItem['colLbl']
 
                         # 상위 해더 왼쪽 오른쪽 정렬 검사
-                        if boundaryCheck(entLoc[1], lblLoc[1]) or boundaryCheck(entLoc[3], lblLoc[3]):
+                        # if boundaryCheck(entLoc[1], lblLoc[1]) or boundaryCheck(entLoc[3], lblLoc[3]):
+                        #     inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
+                        #     vertItem = entryLabelDB(lblItem['colLbl'])
+                        #     vertColLbl = lblItem['colLbl']
+
+                        # 20180911 수직기준으로 가까운 엔트리라벨을 체크하는데 만약 거리가 80이 넘는것만 있을경우 unknown
+                        lblwidthLoc = int(lblLoc[3]) / 2 + int(lblLoc[1])
+                        entwidthLoc = int(entLoc[3]) / 2 + int(entLoc[1])
+                        if abs(lblwidthLoc - entwidthLoc) < 80:
                             inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
                             vertItem = entryLabelDB(lblItem['colLbl'])
                             vertColLbl = lblItem['colLbl']
@@ -152,18 +161,20 @@ def eval(inputJson, docType):
                         # PAID : 100% 와 Our Share 같이 있을경우 PAID(Our Share)
                         if (horizItem == 0 and vertItem == 30) or (horizItem == 30 and vertItem == 0):
                             inputItem['entryLbl'] = 1
+
                         # OSL : 100% 와 Our Share 같이 있을경우 OSL(Our Share)
                         if (horizItem == 2 and vertItem == 30) or (horizItem == 30 and vertItem == 2):
                             inputItem['entryLbl'] = 3
 
-                        # if inputItem['entryLbl'] == 0:
-                        # 
-                        #     if(entLoc[2] - lblLoc[2]) < -200 and (entLoc[1] - lblLoc[1]):
-                        #         inputItem['entryLbl'] == 1
-                        # 
-                        # if inputItem['entryLbl'] == 0 and (entLoc[2] - lblLoc[2]) < -200 and (entLoc[1] - lblLoc[1]):
-                        #     inputItem['entryLbl'] == 1
-
+                        # 엔트리라벨이 하나만 잡혔는데 PAID(100%), OSL(100%)일경우 y축 기준 200까지 위 x축기준 200까지를 조회 our share 가 있으면 Our share 로 변경
+                        if inputItem['entryLbl'] == 0 or inputItem['entryLbl'] == 2:
+                            for shareItem in entryLabel:
+                                shareLoc = shareItem['sid'].split(",")[0:4]
+                                if shareItem['colLbl'] == 36 and (abs(int(lblLoc[1]) - int(shareLoc[1])) < 200 and  -200 < int(lblLoc[2]) - int(shareLoc[2]) < 0):
+                                    if inputItem['entryLbl'] == 0:
+                                        inputItem['entryLbl'] = 1
+                                    elif inputItem['entryLbl'] == 2:
+                                        inputItem['entryLbl'] = 3
 
                         # NOT ENTRY Check
                         if horizColLbl == 36 or vertColLbl == 36:
@@ -333,6 +344,7 @@ def insertBatchLearnList(docType):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_BATCH_LEARN_LIST table insert',
                              'error': str(e).replace("'", "").replace('"', '')}))
+
 def makeindex(location):
     temparr = location.split(",")
     for i in range(0, 5):
@@ -400,7 +412,6 @@ if __name__ == '__main__':
 
         # 20180911 TBL_FORM_MAPPING에 조회 결과가 없는경우는 insert 시 unknown으로 되는지 확인
         insertBatchLearnList(obj["docCategory"]["DOCTYPE"])
-
 
         print(re.sub('None', "null", json.dumps(obj)))
 
