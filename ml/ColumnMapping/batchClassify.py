@@ -297,6 +297,23 @@ def insertBatchLearnList(docType):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_BATCH_LEARN_LIST table insert', 'error': str(e).replace("'","").replace('"','')})) 
 
+def makeindex(location):
+    temparr = location.split(",")
+    for i in range(0, 5):
+        if (len(temparr[0]) < 5):
+            temparr[0] = '0' + temparr[0]
+    return int(temparr[1] + temparr[0])
+
+def sortArrLocation(inputArr):
+    tempArr = []
+    retArr = []
+    for item in inputArr:
+        tempArr.append((makeindex(item['location']), item))
+    tempArr.sort(key=operator.itemgetter(0))
+    for tempItem in tempArr:
+        retArr.append(tempItem[1])
+    return retArr
+    
 if __name__ == '__main__':
     try:
         # 입력받은 파일 패스로 ocr 데이터 조회
@@ -309,7 +326,7 @@ if __name__ == '__main__':
         bannedWords = selectBannedWord()
 
         # 20180911 ocr데이터 정렬 y축 기준
-
+        ocrData = sortArrLocation(ocrData)
         # 문장단위로 for문
         sentences = []
         for item in ocrData:
