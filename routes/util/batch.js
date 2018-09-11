@@ -13,7 +13,7 @@ var propertiesConfig = require(appRoot + '/config/propertiesConfig');
 exports.insertDoctypeMapping = function (req, done) {
     try {
         sync.fiber(function () {
-            var data = sync.await(batchLearnTraing(req, sync.defer()));
+            var data = sync.await(insertDoctypeMapping(req, sync.defer()));
             return done(null, data);
         });
     } catch (e) {
@@ -22,7 +22,7 @@ exports.insertDoctypeMapping = function (req, done) {
     }
 };
 
-function batchLearnTraing(req, done) {
+function insertDoctypeMapping(req, done) {
     sync.fiber(function () {
         try {
             var retData = {};
@@ -56,17 +56,24 @@ function batchLearnTraing(req, done) {
             data = getSentenceSid(data)
 
             //20180911 신규문서일 경우
-            if (data.radioType == 'choice-2') {
+            if (data.radioType == '2') {
                 //20180911 기존 문서양식중 max doctype값 가져오기
                 //20180911 TBL_DOCUMENT_CATEGORY테이블에 가져온 신규문서 양식명을 insert
                 docType = insertDocCategory(data);
 
                 //20180911 기존 이미지 파일을 C://ICR/sampleDocImage 폴더에 DocType(숫자).jpg로 저장
                 convertedFilepath = copyFile(propertiesConfig.filepath.answerFileFrontPath + data.filepath, docType);
+
+                //20180911 TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
+                insertFormMapping(topSentenses, docType);
+            } else if (data.radioType == '1') {
+                docType = selectDocCategoryFromDocName(data);
+
+                insertFormMapping(topSentenses, docType);
+            } else {
+                docType = selectDocCategoryFromDocName(data);
             }
 
-            //20180911 TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
-            insertFormMapping(topSentenses, docType);
             //20180911 TBL_BATCH_LEARN_LIST 에 update (statue = 'D')
             updateBatchLearnList(data, docType);
 
@@ -128,6 +135,16 @@ function insertDocCategory(data) {
     }
 }
 
+function selectDocCategoryFromDocName(data) {
+    try {
+        var docType = sync.await(oracle.selectDocCategoryFromDocName([data.docName], sync.defer()));
+
+        return docType;
+    } catch (e) {
+        throw e;
+    }
+}
+
 function copyFile(src, docType) {
     var convertedFilepath = 'C:/ICR/sampleDocImage';
     try {
@@ -168,9 +185,10 @@ function insertFormMapping(topSentenses, docType) {
 
 function updateBatchLearnList(data, docType) {
     try {
-        sync.await(oracle.updateBatchLearnList([data.imgId, data.filepath], sync.defer()));
+        sync.await(oracle.updateBatchLearnList([docType, data.imgId, data.filepath], sync.defer()));
 
     } catch (e) {
         throw e;
     }
 }
+
