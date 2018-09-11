@@ -10,9 +10,8 @@ import json
 import shutil
 import random
 import re
-import operator
 import batchUtil as bUtil
-
+import operator
 
 id = "koreanre"
 pw = "koreanre01"
@@ -142,7 +141,6 @@ def eval(inputJson, docType):
                         if boundaryCheck(entLoc[2], lblLoc[2]):
                             inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
                             horizItem = entryLabelDB(lblItem['colLbl'])
-                            horizColLbl = lblItem['colLbl']
 
                         # 상위 해더 왼쪽 오른쪽 정렬 검사
                         # if boundaryCheck(entLoc[1], lblLoc[1]) or boundaryCheck(entLoc[3], lblLoc[3]):
@@ -151,34 +149,31 @@ def eval(inputJson, docType):
                         #     vertColLbl = lblItem['colLbl']
 
                         # 20180911 수직기준으로 가까운 엔트리라벨을 체크하는데 만약 거리가 80이 넘는것만 있을경우 unknown
-                        lblwidthLoc = int(lblLoc[3]) / 2 + int(lblLoc[1])
-                        entwidthLoc = int(entLoc[3]) / 2 + int(entLoc[1])
-                        if abs(lblwidthLoc - entwidthLoc) < 80:
+                        if bUtil.checkVerticalEntry(entLoc, lblLoc):
                             inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
                             vertItem = entryLabelDB(lblItem['colLbl'])
-                            vertColLbl = lblItem['colLbl']
 
                         # PAID : 100% 와 Our Share 같이 있을경우 PAID(Our Share)
-                        if (horizItem == 0 and vertItem == 30) or (horizItem == 30 and vertItem == 0):
-                            inputItem['entryLbl'] = 1
+                        if bUtil.chekOurShareEntry(horizItem, vertItem):
+                            inputItem['entryLbl'] = entryLabelDB(6)
 
                         # OSL : 100% 와 Our Share 같이 있을경우 OSL(Our Share)
-                        if (horizItem == 2 and vertItem == 30) or (horizItem == 30 and vertItem == 2):
-                            inputItem['entryLbl'] = 3
+                        if bUtil.chekOurShareEntry(horizItem, vertItem):
+                            inputItem['entryLbl'] = entryLabelDB(8)
 
                         # 엔트리라벨이 하나만 잡혔는데 PAID(100%), OSL(100%)일경우 y축 기준 200까지 위 x축기준 200까지를 조회 our share 가 있으면 Our share 로 변경
                         if inputItem['entryLbl'] == 0 or inputItem['entryLbl'] == 2:
                             for shareItem in entryLabel:
                                 shareLoc = shareItem['sid'].split(",")[0:4]
-                                if shareItem['colLbl'] == 36 and (abs(int(lblLoc[1]) - int(shareLoc[1])) < 200 and  -200 < int(lblLoc[2]) - int(shareLoc[2]) < 0):
+                                if shareItem['colLbl'] == 36 and (abs(int(lblLoc[1]) - int(shareLoc[1])) < 200 and -200 < int(lblLoc[2]) - int(shareLoc[2]) < 0):
                                     if inputItem['entryLbl'] == 0:
                                         inputItem['entryLbl'] = 1
                                     elif inputItem['entryLbl'] == 2:
                                         inputItem['entryLbl'] = 3
 
                         # NOT ENTRY Check
-                        if horizColLbl == 36 or vertColLbl == 36:
-                            inputItem['entryLbl'] = 31
+                        # if horizColLbl == 36 or vertColLbl == 36:
+                        #     inputItem['entryLbl'] = 31
 
                 if 'entryLbl' not in inputItem:
                     inputItem['entryLbl'] = 31

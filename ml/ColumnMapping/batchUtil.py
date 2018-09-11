@@ -35,3 +35,30 @@ def getEntryLabelYN(colNum):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'getEntryLabelYN table select fail',
                              'error': str(e).replace("'", "").replace('"', '')}))
+
+def checkVerticalEntry(entLoc, lblLoc):
+    try:
+        lblwidthLoc = int(lblLoc[3]) / 2 + int(lblLoc[1])
+        entwidthLoc = int(entLoc[3]) / 2 + int(entLoc[1])
+        if abs(lblwidthLoc - entwidthLoc) < 120:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
+
+def chekOurShareEntry(horizItem, vertItem):
+    try:
+
+        if (horizItem == 0 and vertItem == 30) or (horizItem == 30 and vertItem == 0):
+            return True
+        elif (horizItem == 2 and vertItem == 30) or (horizItem == 30 and vertItem == 2):
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'chekOurShareEntry fail',
+                             'error': str(e).replace("'", "").replace('"', '')}))
