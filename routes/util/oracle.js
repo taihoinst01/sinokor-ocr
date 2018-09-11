@@ -1,4 +1,6 @@
 ﻿var oracledb = require('oracledb');
+oracledb.outFormat = oracledb.OBJECT;
+
 var appRoot = require('app-root-path').path;
 var dbConfig = require(appRoot + '/config/dbConfig');
 var queryConfig = require(appRoot + '/config/queryConfig');
@@ -8,6 +10,7 @@ var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 var request = require('sync-request');
 var sync = require('./sync.js');
+var oracle = require('./oracle.js');
 
 
 exports.select = function (req, done) {
@@ -332,14 +335,6 @@ exports.insertDocMapping = function (req, done) {
             insClass = 0;
             insCompanyData = '0,0,0,0,0,0,0';
             insContractData = '0,0,0,0,0,0,0';
-
-            /*
-            var userModifyData = [];
-
-            if (req.mlDocCategory != null && req.mlDocCategory[0].DOCTYPE != req.docCategory[0].DOCTYPE) {
-                userModifyData.push(req.docCategory);
-            }
-            */
 
             if (req.docCategory[0]) {
                 insClass = req.docCategory[0].DOCTYPE;
@@ -1181,25 +1176,30 @@ exports.insertOcrSymsDoc = function (req, done) {
         let conn;
         try {
             let selectTypo = `SELECT seqNum FROM tbl_ocr_symspell WHERE keyword=LOWER(:keyWord) `;
-            let insertTypo = `INSERT INTO tbl_ocr_symspell(seqNum, keyword, frequency) VALUES (seq_ocr_symspell.nextval, LOWER(:keyWord), 1)`;
+            let insertTypo = `INSERT INTO tbl_ocr_symspell(seqNum, keyword, frequency) VALUES (seq_ocr_symspell.nextval, LOWER(:keyWord), 1) `;
             conn = await oracledb.getConnection(dbConfig);
             var reqArr = req.text.split(' ');
             var result;
-            var numExp = /[0-9]/gi;
+            //var numExp = /[0-9]/gi;
             var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
             for (var i in reqArr) {
 
                 result = await conn.execute(selectTypo, [reqArr[i].replace(regExp, "")]);
                 if (result.rows.length == 0) {
+                    await conn.execute(insertTypo, [reqArr[i].replace(regExp, "")]);
+                    conn.commit();
+                    /*
                     var exceptNum = reqArr[i].replace(numExp, "");
-
+  
                     if (exceptNum != "") {
                         reqArr[i] = reqArr[i].replace(regExp, "");
                         exceptNum = reqArr[i].replace(numExp, "");
                         if (reqArr[i] != "" || exceptNum != "") {
                             result = await conn.execute(insertTypo, [reqArr[i]]);
+                            conn.commit();
                         }
                     }
+                    */
                 } else {
                     //result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [reqArr[i]]);
                 }
@@ -1899,6 +1899,8 @@ exports.insertDoctypeMapping = function (req, done) {
         let result;
 
         try {
+            
+            /*
             conn = await oracledb.getConnection(dbConfig);
 
             //req.imgid req.filepath req.docname req.radiotype
@@ -1958,6 +1960,7 @@ exports.insertDoctypeMapping = function (req, done) {
             }
 
             return done(null, { code: '200' });
+            */
         } catch (err) {
             console.log(err);
             return done(null, { code: '500', error: err });
@@ -2035,6 +2038,154 @@ exports.selectClassificationSt = function (data, done) {
             return done(null, { code: '500', error: err });
         } finally {
             if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertBannedWord = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        try {
+            let selectTypo = `SELECT SEQNUM FROM TBL_OCR_BANNED_WORD WHERE WORD = LOWER(:word) `;
+            let insertTypo = `INSERT INTO TBL_OCR_BANNED_WORD(SEQNUM, WORD) VALUES (seq_ocr_symspell.nextval, LOWER(:word)) `;
+            conn = await oracledb.getConnection(dbConfig);
+            var reqArr = req.text.split(' ');
+            var result;
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+
+            result = await conn.execute(selectTypo, [reqArr[0].replace(regExp, "")]);
+            if (result.rows.length == 0) {
+                await conn.execute(insertTypo, [reqArr[0].replace(regExp, "")]);
+                conn.commit();
+            }
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectOriginSid = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sqltext = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL`;
+            //let sqltext = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL`;
+            var sid = "";
+
+            let result = await conn.execute(sqltext, [req.text]);
+            if (result.rows[0] != null) {
+                return done(null, result.rows[0].SID);
+            } else {
+                return done(null, null);
+            }
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertDocCategory = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            result = await conn.execute('SELECT DOCTYPE FROM tbl_document_category WHERE DOCNAME = :docName AND SAMPLEIMAGEPATH = :sampleImagePath', [req[0], req[1]]);
+            if (result.rows.length == 0) {
+                result = await conn.execute('SELECT MAX(docType) + 1 AS docType FROM tbl_document_category');
+                await conn.execute(`INSERT INTO
+                                    tbl_document_category
+                                 VALUES
+                                    (seq_document_category.nextval, :docName, :docType, :sampleImagePath) `,
+                    [req[0], result.rows[0].DOCTYPE, req[1]]);
+                conn.commit();
+            }
+
+            return done(null, result.rows[0].DOCTYPE);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertFormMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            await conn.execute(`INSERT INTO
+                                    TBL_FORM_MAPPING
+                                 VALUES
+                                    (seq_form_mapping.nextval, :data, :class, sysdate) `, req);
+            conn.commit();
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.updateBatchLearnList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            await conn.execute(`UPDATE TBL_BATCH_LEARN_LIST SET STATUS = 'D' WHERE IMGID = :imgId AND FILEPATH = :filepath `, req);
+            conn.commit();
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
                 try {
                     await conn.release();
                 } catch (e) {
