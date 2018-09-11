@@ -408,11 +408,6 @@ var batchLearningConfig = {
             tbl_document_category
          VALUES
             (seq_document_category.nextval, :docName, :docType, :sampleImagePath) `,
-    selectMaxDocType:
-        `SELECT
-            NVL(MAX(DOCTYPE),0) + 1 AS MAXDOCTYPE
-         FROM
-            TBL_DOCUMENT_CATEGORY `,
     selectBatchAnswerDataToFilePath:
         `SELECT
             D.*
@@ -567,7 +562,7 @@ var batchLearningConfig = {
         `UPDATE
             TBL_BATCH_LEARN_LIST
          SET
-            DOCTYPE = :docType
+            STATUS = 'D', DOCTYPE = :docType
          WHERE
             FILEPATH = :filePath `,
     deleteAnswerFile: 
@@ -652,11 +647,6 @@ var uiLearningConfig = {
             tbl_document_category
          WHERE
             docType != 999 `,
-    insertDocCategory:
-        `INSERT INTO
-            tbl_document_category
-         VALUES
-            (seq_document_category.nextval, :docName, :docType, :sampleImagePath) `,
     selectTypoCorrect:
         `SELECT SEQNUM, USERID, ORIGINWORD, CORRECTEDWORD, REGDATE, CONVERTEDIMAGEFILENAME, CORRECTORTYPE
          FROM TBL_OCR_TYPO_CORRECT

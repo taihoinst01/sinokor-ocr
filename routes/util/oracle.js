@@ -1,4 +1,4 @@
-var oracledb = require('oracledb');
+﻿var oracledb = require('oracledb');
 var appRoot = require('app-root-path').path;
 var dbConfig = require(appRoot + '/config/dbConfig');
 var queryConfig = require(appRoot + '/config/queryConfig');
@@ -512,16 +512,16 @@ exports.selectBatchLearnList = function (req, done) {
         let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
         var condQuery
         if (!commonUtil.isNull(req.body.addCond)) {
-            if (req.body.addCond == "LEARN_N") condQuery = "((L.STATUS != 'D' AND L.STATUS != 'R') OR L.STATUS IS NULL)";
+            if (req.body.addCond == "LEARN_N") condQuery = "((L.STATUS != 'D' AND L.STATUS != 'R') OR L.STATUS IS NULL OR L.STATUS = 'T')";
             else if (req.body.addCond == "LEARN_Y") condQuery = "(L.STATUS = 'D')";
         }
 
         try {
             conn = await oracledb.getConnection(dbConfig);          
             var rowNum = req.body.moreNum;
-            let resAnswerFile = await conn.execute(`SELECT T.IMGID, T.PAGENUM, T.FILEPATH 
+            let resAnswerFile = await conn.execute(`SELECT T.IMGID, T.PAGENUM, T.FILEPATH, T.DOCTYPE 
                                                     FROM (
-                                                      SELECT F.IMGID, F.PAGENUM, F.FILEPATH 
+                                                      SELECT F.IMGID, F.PAGENUM, F.FILEPATH, L.DOCTYPE
                                                       FROM 
                                                         TBL_BATCH_ANSWER_FILE F 
                                                         LEFT OUTER JOIN TBL_BATCH_LEARN_LIST L 
@@ -539,10 +539,16 @@ exports.selectBatchLearnList = function (req, done) {
                 var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
 
                 let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo `, [imgId, imgStartNo, imgStartNo]);
-
                 for (var row = 0; row < resAnswerData.rows.length; row++) {
-                    resAnswerData.rows[row].FILEPATH = filepath;
+					resAnswerData.rows[row].FILEPATH = filepath;
                     resAnswerData.rows[row].FILENAME = filename;
+					if(resAnswerFile.rows[i].DOCTYPE){
+						let resBatchLearnList = await conn.execute(`SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType `, [resAnswerFile.rows[i].DOCTYPE]);
+						if(resBatchLearnList.rows.length > 0){
+							resAnswerData.rows[row].DOCTYPE = resAnswerFile.rows[i].DOCTYPE;
+							resAnswerData.rows[row].DOCNAME = resBatchLearnList.rows[0].DOCNAME;
+						}
+					}
                 }
 
                 if (resAnswerData.rows.length > 0) {
@@ -1169,6 +1175,52 @@ exports.insertOcrSymsSingle = function (req, done) {
         }
     });
 };
+
+exports.insertOcrSymsDoc = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        try {
+            let selectTypo = `SELECT seqNum FROM tbl_ocr_symspell WHERE keyword=LOWER(:keyWord) `;
+            let insertTypo = `INSERT INTO tbl_ocr_symspell(seqNum, keyword, frequency) VALUES (seq_ocr_symspell.nextval, LOWER(:keyWord), 1)`;
+            conn = await oracledb.getConnection(dbConfig);
+            var reqArr = req.text.split(' ');
+            var result;
+            var numExp = /[0-9]/gi;
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+            for (var i in reqArr) {
+
+                result = await conn.execute(selectTypo, [reqArr[i].replace(regExp, "")]);
+                if (result.rows.length == 0) {
+                    var exceptNum = reqArr[i].replace(numExp, "");
+
+                    if (exceptNum != "") {
+                        reqArr[i] = reqArr[i].replace(regExp, "");
+                        exceptNum = reqArr[i].replace(numExp, "");
+                        if (reqArr[i] != "" || exceptNum != "") {
+                            result = await conn.execute(insertTypo, [reqArr[i]]);
+                        }
+                    }
+                } else {
+                    //result = await conn.execute(queryConfig.uiLearningConfig.updateTypo, [reqArr[i]]);
+                }
+            }
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.insertContractMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -1819,69 +1871,89 @@ exports.insertBatchLearnList = function (req, done) {
 
             for (var i in req.filePathArray) {
                 var docType = '';
-                result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnListFromFilePath, [req.filePathArray[i]]);
+                //20180910 hskim 일괄학습 리스트에서 add training 처리
+                //일괄학습 리스트에서 Add training과 문서양식 팝업에서 저장 버튼 동일한 function 사용 function 분리 필요
+                //TBL_BATCH_LEARN_LIST 에 status 'D'로 인서트 
+                await conn.execute(queryConfig.batchLearningConfig.updateBatchLearnList, [req.docTypeArray[i], req.filePathArray[i]]);
+            }
 
-                if (result.rows.length == 0) {
-                    result = await conn.execute(queryConfig.batchLearningConfig.selectDocType, [req.docNameArr[i]]);
-                    var imgId = getConvertDate();
-                    docType = result.rows[0].DOCTYPE;
-                    await conn.execute(queryConfig.batchLearningConfig.insertBatchLearnList, [imgId, req.filePathArray[i], result.rows[0].DOCTYPE]);
-                } else {
-                    result = await conn.execute(queryConfig.batchLearningConfig.selectDocType, [req.docNameArr[i]]);
-                    docType = result.rows[0].DOCTYPE;
-                    await conn.execute(queryConfig.batchLearningConfig.updateBatchLearnList, [result.rows[0].DOCTYPE, req.filePathArray[i]]);
+            return done(null, { code: '200' });
+        } catch (err) {
+            console.log(err);
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
                 }
+            }
+        }
+    });
+};
 
-                if (req.data) {
+exports.insertDoctypeMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
 
-                    let resBanned = await conn.execute(`SELECT * FROM TBL_OCR_BANNED_WORD`,[],{ outFormat: oracledb.OBJECT });
+        try {
+            conn = await oracledb.getConnection(dbConfig);
 
-                    var formArr = [];
-                    var formText = "";
-                    // insert tbl_form_mapping
-                    for (var i in req.data) {
-                        var bool = true;
+            //req.imgid req.filepath req.docname req.radiotype
+            //req.words
+            //{"Empower Results@" : 0}
+            //{"To:" : 1}
+            //{"To:" : 1}
+            //todo
+            //20180910 hskim 문서양식 매핑
+            //문장을 순서대로 for문
 
-                        for (var j in resBanned.rows) {
-                            if (req.data[i].text.indexOf(resBanned[j].WORD) > 0) {
-                                bool = false;
-                                break;
-                            }
-                        }
+            //문장 index가 1인 경우 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
+            //문장 index가 0인 경우 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
+            //문장 index가 0인 경우가 5개가 되면 for문 종료
 
-                        if (bool) {
-                            //insert symspell ����
+            //가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
 
-                            let sqltext = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL`;
-                            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
-                            let resSid = await conn.execute(sqltext, [req.data[i].text.replace(regExp, "")]);
+            //신규문서일 경우
+            //기존 문서양식중 max doctype값 가져오기
+            //TBL_DOCUMENT_CATEGORY테이블에 가져온 신규문서 양식명을 insert
+            //기존 이미지 파일을 c://sampleDocImage 폴더에 DocType(숫자).jpg로 저장
+            result = await conn.execute(queryConfig.batchLearningConfig.selectMaxDocType);
+            await conn.execute(queryConfig.batchLearningConfig.insertDocCategory, ['sample doc', result.rows[0].MAXDOCTYPE, 'sample image path']);
 
-                            if (resSid.rows) {
-                                var sid = resSid.rows[0].SID.split(",");
-                                for (var k in sid) {
-                                    formArr.push(sid[k]);
-                                }
-                            }
-                        }
+            //TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
+            //TBL_BATCH_LEARN_LIST 에 insert
 
-                        if (formArr.length == 25) {
-                            break;
-                        }
+            let selectSqlText = `SELECT SEQNUM FROM TBL_FORM_MAPPING WHERE DATA = :DATA`;
+            let insertSqlText = `INSERT INTO TBL_FORM_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            let updateSqlText = `UPDATE TBL_FORM_MAPPING SET DATA = :DATA , CLASS = :CLASS , REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
 
-                    }
+            insClass = 0;
+            insCompanyData = '0,0,0,0,0,0,0';
+            insContractData = '0,0,0,0,0,0,0';
 
-                    for (var i in formArr) {
-                        formText += formArr[i] + ",";
-                    }
-                    formText = formText.slice(0, -1);
+            if (req.docCategory[0]) {
+                insClass = req.docCategory[0].DOCTYPE;
+            }
 
-                    let resForm = await conn.execute(`SELECT * FROM TBL_FORM_MAPPING WHERE DATA = :data `, [formText]);
+            for (var i in req.data) {
+                if (req.data[i].colLbl && req.data[i].colLbl == 0) {
+                    insCompanyData = req.data[i].sid;
+                }
+                if (req.data[i].colLbl && req.data[i].colLbl == 1) {
+                    insContractData = req.data[i].sid;
+                }
+            }
 
-                    if (resForm.rows.length == 0) {
-                        resInsForm = await conn.execute(`INSERT INTO TBL_FORM_MAPPING VALUES(SEQ_FORM_MAPPING.NEXTVAL, :data, :class, SYSDATE)`, [formText, docType]);
-                    } else {
-                        resUpdForm = await conn.execute(`UPDATE TBL_FORM_MAPPING SET DATA = :data, REGDATE = SYSDATE WHERE DATA = :data`, [formText]);
-                    }
+            if (insCompanyData && insContractData) {
+                var sid = insCompanyData + "," + insContractData;
+                result = await conn.execute(selectSqlText, [sid]);
+                if (result.rows[0]) {
+                    await conn.execute(updateSqlText, [sid, insClass, result.rows[0].SEQNUM]);
+                } else {
+                    await conn.execute(insertSqlText, [sid, insClass]);
                 }
             }
 
@@ -1933,6 +2005,30 @@ exports.selectDocCategoryFilePath = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             result = await conn.execute(queryConfig.batchLearningConfig.selectDocCategoryFilePath, [req]);
+
+            return done(null, result);
+        } catch (err) {
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectClassificationSt = function (data, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(`SELECT OCRDATA FROM TBL_BATCH_OCR_DATA WHERE FILEPATH LIKE '%` + data[0] + `'`);
 
             return done(null, result);
         } catch (err) {

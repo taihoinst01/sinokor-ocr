@@ -239,10 +239,11 @@ var fnSearchBatchLearningDataList = function (req, res) {
                 for (var i in filePathList) {
                     var result = sync.await(oracle.selectDocCategoryFilePath(filePathList[i], sync.defer()));
                     if (result.rows.length != 0) {
-                        predDoc.push(result.rows[0]);  
+                        originImageArr[i].rows[0].DOCTYPE = result.rows[0].DOCTYPE;
+                        originImageArr[i].rows[0].DOCNAME = result.rows[0].DOCNAME;
                     }
                 }
-                res.send({ data: originImageArr, mlData: mlData, predDoc: predDoc, code: 200 });
+                res.send({ data: originImageArr, mlData: mlData, code: 200 });
             } else {
                 res.send({ data: originImageArr, mlData: mlData, code: 200 });
             }
@@ -2302,50 +2303,50 @@ function batchLearnTraining(filepath, uiCheck, done) {
             }
             //typo ML
             //20180904 hskim 개별학습의 typo ML 사용할 것 aimain function 호출
-            console.time("typo ML");
-            pythonConfig.typoOptions.args = [];
-            pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
-            var resPyStr = sync.await(PythonShell.run('typoBatch.py', pythonConfig.typoOptions, sync.defer()));
-            var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
-
-            //spawn test 주석 처리
-            /*
-            var resPyStr = sync.await(aimain.typoBatch(dataToTypoArgs(ocrResult), sync.defer()));
-            console.log(resPyStr);
-            var resPyArr = JSON.parse(resPyStr.replace(/'/g, '"'));
-            var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
-            */
+            console.time("columnMapping ML");
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(propertiesConfig.filepath.answerFileFrontPath + filepath);
+            var resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var resPyArr = JSON.parse(resPyStr[0]);
             
-            console.timeEnd("typo ML");
+            console.timeEnd("columnMapping ML");
+            //20180910 ML 결과중 doctype을 화면에 표시
 
 
+
+
+
+
+
+
+            
             //TBL_FORM_MAPPING 에 조회
             //조회 결과가 없으면 doctype 0 조회결과가 있으면 doctype 을 TBL_DOCUMENT_CATEGORY 테이블에 매핑 
             //결과 script 에 리턴
 
-            console.time("form mapping");
-            var resForm = sync.await(oracle.selectForm(sidData, sync.defer()));
-            console.timeEnd("form mapping");
+            // console.time("form mapping");
+            // var resForm = sync.await(oracle.selectForm(sidData, sync.defer()));
+            // console.timeEnd("form mapping");
             
-            // 2차 버전
-            // doc type이 2 이상인 경우 개별 학습의 columnMapping 처리 입력데이터중 sid 를 기존 (좌표,sid) 에서 (문서번호,좌표,sid) 로 변경
-            var sidDocData = convertSidWithDoc(sidData, resForm);
+            // // 2차 버전
+            // // doc type이 2 이상인 경우 개별 학습의 columnMapping 처리 입력데이터중 sid 를 기존 (좌표,sid) 에서 (문서번호,좌표,sid) 로 변경
+            // var sidDocData = convertSidWithDoc(sidData, resForm);
 
-            console.time("columnMapping ML");
-            pythonConfig.columnMappingOptions.args = [];
-            pythonConfig.columnMappingOptions.args.push(JSON.stringify(sidDocData));
-            resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
-            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            console.timeEnd("columnMapping ML");
+            // console.time("columnMapping ML");
+            // pythonConfig.columnMappingOptions.args = [];
+            // pythonConfig.columnMappingOptions.args.push(JSON.stringify(sidDocData));
+            // resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            // resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
+            // console.timeEnd("columnMapping ML");
 
-            retData.data = resPyArr;
-            retData.docCategory = resForm;
+            //retData.data = resPyArr;
+            //retData.docCategory = resForm;
+            retData = resPyArr;
             retData.fileinfo = { filepath: filepath, imgId: imgId };
 
-            console.time("insert MlExport");
-            sync.await(oracle.insertMLData(retData, sync.defer()));
-            console.timeEnd("insert MlExport");
+            // console.time("insert MlExport");
+            // sync.await(oracle.insertMLData(retData, sync.defer()));
+            // console.timeEnd("insert MlExport");
 
             return done(null, retData);
         } catch (e) {
@@ -3219,6 +3220,151 @@ router.post('/deleteAnswerFile', function (req, res) {
     });
 });
 
+// 분류제외문장조회
+router.post('/selectClassificationSt', function (req, res) {
+    var returnObj;
+    var filepath = req.body.filepath;
+    var data = [];
+    data.push(req.body.filepath);
+
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.selectClassificationSt(data, sync.defer()));
+
+            if (result.rows) {
+                returnObj = { data: result.rows };
+            } else {
+                returnObj = { data: null };
+            }
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+
+// 문서양식매핑
+router.post('/insertDoctypeMapping', function (req, res) {
+    var returnObj;
+
+    var data = {
+        imgId: req.body.imgId,
+        filepath: req.body.filepath,
+        docName: req.body.docName,
+        radioType: req.body.radioType,
+        textList: req.body.textList
+    }
+    
+    sync.fiber(function () {
+        try {
+
+            let data = req.body;
+            console.log(JSON.stringify(sentenses));
+            console.log(sentenses);
+            //req.imgid req.filepath req.docname req.radiotype
+            //req.words
+            //{"Empower Results@" : 0}
+            //{"2018 11 12" : 1}
+            //{"To:" : 0}
+            //{"To2:" : 0}
+            //{"To3:" : 0}
+            //{"To4:" : 0}
+            //{"To5:" : 0}
+            //todo
+            //20180910 hskim 문서양식 매핑
+            //문장을 순서대로 for문
+
+            //for req.body.textList
+                       
+            //문장 index가 0인 경우 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
+            
+            //문장 index가 0인 경우 sentenses.append, sentenses length가 5가 되면 for문 종료
+
+            //문장 index가 1인 경우 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
+
+            //var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+
+
+
+
+
+            //가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
+            // selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
+            // retDocSid = ''
+            // # data length 에 상관없이 5회 반복 만약 data의 length가 5보다 적으면 적은 갯수만큼 ,0,0,0,0,0 입력
+            // for num in range(0,5):
+            //     if len(data) < 5:
+            //         data.append(' ')            
+    
+            // for sentence in data:
+            //     tempstr = re.sub("[~|!|@|#|$|%|^|&|*|(|)|_|-|+|=|[|]|;|:|'|,|<|.|>|?|/]", "", sentence)
+            //     if not tempstr:
+            //         tempstr = ' '
+    
+            //     curs.execute(selectExportSidSql, {"sentence": tempstr})
+            //     exportSidRows = curs.fetchall()
+            //     retDocSid += exportSidRows[0][0]
+
+
+            //신규문서일 경우
+            //기존 문서양식중 max doctype값 가져오기
+            //TBL_DOCUMENT_CATEGORY테이블에 가져온 신규문서 양식명을 insert
+            //기존 이미지 파일을 c://sampleDocImage 폴더에 DocType(숫자).jpg로 저장
+            //result = await conn.execute(queryConfig.batchLearningConfig.selectMaxDocType);
+            //await conn.execute(queryConfig.batchLearningConfig.insertDocCategory, ['sample doc', result.rows[0].MAXDOCTYPE, 'sample image path']);
+
+            //TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
+            //TBL_BATCH_LEARN_LIST 에 insert
+
+            // let selectSqlText = `SELECT SEQNUM FROM TBL_FORM_MAPPING WHERE DATA = :DATA`;
+            // let insertSqlText = `INSERT INTO TBL_FORM_MAPPING (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_FORM_MAPPING.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            // let updateSqlText = `UPDATE TBL_FORM_MAPPING SET DATA = :DATA , CLASS = :CLASS , REGDATE = SYSDATE WHERE SEQNUM = :SEQNUM`;
+
+            // insClass = 0;
+            // insCompanyData = '0,0,0,0,0,0,0';
+            // insContractData = '0,0,0,0,0,0,0';
+
+            // if (req.docCategory[0]) {
+            //     insClass = req.docCategory[0].DOCTYPE;
+            // }
+
+            // for (var i in req.data) {
+            //     if (req.data[i].colLbl && req.data[i].colLbl == 0) {
+            //         insCompanyData = req.data[i].sid;
+            //     }
+            //     if (req.data[i].colLbl && req.data[i].colLbl == 1) {
+            //         insContractData = req.data[i].sid;
+            //     }
+            // }
+
+            // if (insCompanyData && insContractData) {
+            //     var sid = insCompanyData + "," + insContractData;
+            //     var result = await conn.execute(selectSqlText, [sid]);
+            //     if (result.rows[0]) {
+            //         await conn.execute(updateSqlText, [sid, insClass, result.rows[0].SEQNUM]);
+            //     } else {
+            //         await conn.execute(insertSqlText, [sid, insClass]);
+            //     }
+            // }
+            // var result = sync.await(oracle.insertDoctypeMapping(data, sync.defer()));
+
+            //todo
+            if (result.rows) {
+                returnObj = { data: result.rows };
+            } else {
+                returnObj = { data: null };
+            }
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
 
 Date.prototype.isoNum = function (n) {
     var tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds
