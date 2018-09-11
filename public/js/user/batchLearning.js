@@ -1899,32 +1899,30 @@ var fn_addTraining = function () {
     var docTypeArray = [];
 
     let chkCnt = 0;
-    $("input[name=listCheck_before]").each(function (index, entry) {
-        //$("input[name=listCheck_after]").each(function (index, entry) {
+    let hasNoCheck = false;
+    $("input[name=listCheck_before]:checked").each(function (index, entry) {
+        chkCnt++;
+        totCount++;
+        //imgIdArray.push($(this).val());
+        var filepath = $(this).val();
+        filePathArray.push(filepath);
+        //20180910 일괄학습에서 Add Training 실행 전 validate check
+        //docNameArr에 hidden 값 매핑 TBL_DOCUMENT_CATEGORY 의 doctype
+        //check된 이미지에 예측문서(docNameArr)중에 공란이거나 doctype = 0 이 있을 경우 alert
+        var docType = $(this).closest('tr').find('.docType').eq(0).val();
 
-        if ($(this).is(":checked")) {
-            chkCnt++;
-            totCount++;
-            //imgIdArray.push($(this).val());
-            var filepath = $(this).val();
-            filePathArray.push(filepath);
-            //20180910 일괄학습에서 Add Training 실행 전 validate check
-            //docNameArr에 hidden 값 매핑 TBL_DOCUMENT_CATEGORY 의 doctype
-            //check된 이미지에 예측문서(docNameArr)중에 공란이거나 doctype = 0 이 있을 경우 alert
-            var docType = $(this).closest('tr').find('.docType').eq(0).val();
-
-            if (docType && (docType != 0 || docType != '')) {
-                docTypeArray.push(docType);
-            } else {
-                alert('document type is empty : ' + $(this).closest('tr').find('.fileNamePath').eq(0).text());
-                return;
-            }
-        }
+        if (docType && (docType != 0 || docType != '')) {
+            docTypeArray.push(docType);
+        } else {
+            alert('document type is empty : ' + $(this).closest('tr').find('.fileNamePath').eq(0).text());
+            hasNoCheck = true;
+            return false;
+        }      
     });
     if (chkCnt == 0) {
         alert("선택된 학습이 없습니다.");
-        return;
-    } else {
+        return false;
+    } else if (hasNoCheck == false) {
         //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
         addBatchTraining(filePathArray, docTypeArray, "PROCESS_IMAGE");
     }
@@ -2696,8 +2694,6 @@ function popUpRunEvent() {
     })
 
     // 20180910 hskim 문장 선택 결과 같이 전송
-    $('#btn_pop_doc_run').click(function (e) {
-    });
     /*
     $('#btn_pop_doc_run').click(function (e) {
         var docData = JSON.parse($('#docData').val());
