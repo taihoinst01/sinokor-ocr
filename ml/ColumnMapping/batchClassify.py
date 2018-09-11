@@ -94,6 +94,9 @@ def typo(ocrData):
 
 def eval(inputJson, docType):
     # inputArr = json.loads(inputJson.encode("ascii", "ignore").decode())
+    # 20180911 수직기준으로 가까운 엔트리라벨을 체크하는데 만약 거리가 80이 넘는것만 있을경우 unknown
+    # 수직 수평 조회중 our share와 PAID(100%), OSL(100%) 잡히면 PAID(Our Share), OSL(Our Share)로 변경
+    # 엔트리라벨이 하나만 잡혔는데 PAID(100%), OSL(100%)일경우 y축 기준 200까지 위 x축기준 200까지를 조회 our share 가 있으면 Our share 로 변경
     inputArr = getSidParsing(getSid(inputJson), docType)
     
     try:
@@ -305,6 +308,8 @@ if __name__ == '__main__':
         # TBL_OCR_BANNED_WORD 에 WORD칼럼 배열로 전부 가져오기
         bannedWords = selectBannedWord()
 
+        # 20180911 ocr데이터 정렬 y축 기준
+
         # 문장단위로 for문
         sentences = []
         for item in ocrData:
@@ -328,8 +333,7 @@ if __name__ == '__main__':
         #TBL_FORM_MAPPING에 5개문장의 SID를 조회
         formMappingRows = selectFormMapping(sentencesSid)
     
-        # doc type 이 1인 경우는 바로 리턴 1이외의 경우는 레이블 정보 추출
-        # TBL_DOCUMENT_CATEGORY 테이블 SELECT
+        # 20180911 doc type 이 1인 경우(NOT INVOICE)는 바로 리턴 EVAL 안함 1이외의 경우는 레이블 정보 추출
         obj = {}
         if formMappingRows:
             obj["data"] = eval(ocrData, formMappingRows[0][0])
@@ -338,7 +342,7 @@ if __name__ == '__main__':
             obj["data"] = eval(ocrData, 1)
             obj["docCategory"] = selectDocCategory(1);
 
-		# TBL_BATCH_LEARN_LIST statue = "T" insert
+        # 20180911 TBL_FORM_MAPPING에 조회 결과가 없는경우는 insert 시 unknown으로 되는지 확인
         insertBatchLearnList(obj["docCategory"]["DOCTYPE"])
 
         print(re.sub('None', "null", json.dumps(obj)))

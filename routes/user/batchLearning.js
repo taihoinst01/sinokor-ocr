@@ -3274,7 +3274,7 @@ router.post('/insertDoctypeMapping', function (req, res) {
             //{"To4:" : 0}
             //{"To5:" : 0}
             //todo
-            //20180910 hskim 문서양식 매핑
+            //20180911 hskim 문서양식 매핑
             //문장을 순서대로 for문
 
             //for req.body.textList
