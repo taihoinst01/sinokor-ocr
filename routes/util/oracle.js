@@ -2171,6 +2171,35 @@ exports.insertFormMapping = function (req, done) {
     });
 };
 
+exports.selectDocCategoryFromDocName = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            result = await conn.execute(`SELECT DOCTYPE FROM TBL_DOCUMENT_CATEGORY WHERE DOCNAME = :docName `, req);
+            if (result.rows.length > 0) {
+                return done(null, result.rows[0].DOCTYPE);
+            } else {
+                return done(null, 0);
+            }
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.updateBatchLearnList = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -2178,7 +2207,7 @@ exports.updateBatchLearnList = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            await conn.execute(`UPDATE TBL_BATCH_LEARN_LIST SET STATUS = 'D' WHERE IMGID = :imgId AND FILEPATH = :filepath `, req);
+            await conn.execute(`UPDATE TBL_BATCH_LEARN_LIST SET STATUS = 'D', DOCTYPE = :docType WHERE IMGID = :imgId AND FILEPATH = :filepath `, req);
             conn.commit();
 
             return done(null, null);

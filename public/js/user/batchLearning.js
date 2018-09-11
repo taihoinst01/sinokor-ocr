@@ -2669,7 +2669,7 @@ function popUpRunEvent() {
         } else if (chkValue == '2') {
             docName = $('#newDocName').val();
         } else if(chkValue == '3') {
-            docName = 'notInvoice';
+            docName = 'NotInvoice';
         }
 
         var param = {
@@ -2679,7 +2679,7 @@ function popUpRunEvent() {
             radioType: chkValue,
             textList: textList,
         }
-
+        console.log(param);
         $.ajax({
             url: '/batchLearning/insertDoctypeMapping',
             type: 'post',
@@ -2687,7 +2687,7 @@ function popUpRunEvent() {
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
-                //todo
+                alert('success');
             },
             error: function (err) {
                 console.log(err);
