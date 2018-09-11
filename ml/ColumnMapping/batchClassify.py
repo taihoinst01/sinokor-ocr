@@ -356,10 +356,10 @@ if __name__ == '__main__':
         if formMappingRows and formMappingRows == 1:
             obj["docCategory"] = selectDocCategory(1)
         elif formMappingRows:
-            obj["data"] = eval(ocrData, formMappingRows[0][0])
+            #obj["data"] = eval(ocrData, formMappingRows[0][0])
             obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
         else:
-            obj["data"] = eval(ocrData, 0)
+            #obj["data"] = eval(ocrData, 0)
             obj["docCategory"] = selectDocCategory(0)
 
         # 20180911 TBL_FORM_MAPPING에 조회 결과가 없는경우는 insert 시 unknown으로 되는지 확인
