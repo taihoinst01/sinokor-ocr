@@ -158,6 +158,7 @@ function copyFile(src, docType) {
             if (e.code != 'EEXIST') throw e;
         }
         execSync('module\\imageMagick\\convert.exe -density 800x800 ' + src + ' ' + (convertedFilepath + '/' + docType + '.jpg'));
+        sync.await(oracle.updateDocCategoryToFilePath(['/' + (convertedFilepath.split('/')[2] + '/' + docType + '.jpg'), docType], sync.defer()));
 
         return (convertedFilepath + '/' + docType + '.jpg');
     } catch (e) {
