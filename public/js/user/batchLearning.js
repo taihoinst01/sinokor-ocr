@@ -2679,15 +2679,16 @@ function popUpRunEvent() {
             radioType: chkValue,
             textList: textList,
         }
-        console.log(param);
+
         $.ajax({
             url: '/batchLearning/insertDoctypeMapping',
             type: 'post',
             datatype: 'json',
+            async: false,
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
-                alert('success');
+                location.href = location.href;
             },
             error: function (err) {
                 console.log(err);
