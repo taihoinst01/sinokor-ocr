@@ -13,7 +13,7 @@ var propertiesConfig = require(appRoot + '/config/propertiesConfig');
 exports.insertDoctypeMapping = function (req, done) {
     try {
         sync.fiber(function () {
-            var data = sync.await(batchLearnTraing(req, sync.defer()));
+            var data = sync.await(insertDoctypeMapping(req, sync.defer()));
             return done(null, data);
         });
     } catch (e) {
@@ -22,7 +22,7 @@ exports.insertDoctypeMapping = function (req, done) {
     }
 };
 
-function batchLearnTraing(req, done) {
+function insertDoctypeMapping(req, done) {
     sync.fiber(function () {
         try {
             var retData = {};
