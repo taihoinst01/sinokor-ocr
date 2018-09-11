@@ -2052,8 +2052,8 @@ exports.insertBannedWord = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         try {
-            let selectTypo = `SELECT SEQNUM FROM TBL_OCR_BANNED_WORD WHERE WORD = LOWER(:word) `;
-            let insertTypo = `INSERT INTO TBL_OCR_BANNED_WORD(SEQNUM, WORD) VALUES (seq_ocr_symspell.nextval, LOWER(:word)) `;
+            let selectTypo = `SELECT SEQNUM FROM TBL_BANNED_WORD WHERE WORD = LOWER(:word) `;
+            let insertTypo = `INSERT INTO TBL_BANNED_WORD(SEQNUM, WORD, REGDATE) VALUES (seq_banned_word.nextval, LOWER(:word), SYSDATE) `;
             conn = await oracledb.getConnection(dbConfig);
             var reqArr = req.text.split(' ');
             var result;
