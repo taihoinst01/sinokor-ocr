@@ -10,6 +10,7 @@ import json
 import shutil
 import random
 import re
+import batchUtil as bUtil
 
 id = "koreanre"
 pw = "koreanre01"
@@ -110,7 +111,7 @@ def eval(inputJson, docType):
         entryLabel = []
         for inputItem in inputArr:
             if 'colLbl' in inputItem:
-                if inputItem['colLbl'] >= 5 and inputItem['colLbl'] <= 34:
+                if bUtil.getEntryLabelYN(inputItem['colLbl']) == 'Y':
                     entryLabel.append(inputItem)
 
         #전 아이템 중 엔트리 추출 후 같은 열이나 같은 행에 엔트리 라벨 검색
@@ -352,12 +353,14 @@ if __name__ == '__main__':
     
         # 20180911 doc type 이 1인 경우(NOT INVOICE)는 바로 리턴 EVAL 안함 1이외의 경우는 레이블 정보 추출
         obj = {}
-        if formMappingRows:
-            obj["data"] = eval(ocrData, formMappingRows[0][0])
-            obj["docCategory"] = selectDocCategory(formMappingRows[0][0]);
+        if formMappingRows and formMappingRows == 1:
+            obj["docCategory"] = selectDocCategory(1)
+        elif formMappingRows:
+            #obj["data"] = eval(ocrData, formMappingRows[0][0])
+            obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
         else:
-            obj["data"] = eval(ocrData, 1)
-            obj["docCategory"] = selectDocCategory(1);
+            #obj["data"] = eval(ocrData, 0)
+            obj["docCategory"] = selectDocCategory(0)
 
         # 20180911 TBL_FORM_MAPPING에 조회 결과가 없는경우는 insert 시 unknown으로 되는지 확인
         insertBatchLearnList(obj["docCategory"]["DOCTYPE"])
