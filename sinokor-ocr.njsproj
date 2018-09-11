@@ -1110,6 +1110,7 @@
     <Content Include="ml\cnn-text-classification\__pycache__\multi_class_data_loader.cpython-35.pyc" />
     <Content Include="ml\ColumnMapping\batchClassicify.py" />
     <Content Include="ml\ColumnMapping\batchClassify.py" />
+    <Content Include="ml\ColumnMapping\batchUtil.py" />
     <Content Include="ml\ColumnMapping\columnClassicifyFromAzure.py" />
     <Content Include="ml\ColumnMapping\columnClassicify.py" />
     <Content Include="ml\ColumnMapping\config.ini" />
