@@ -2231,11 +2231,11 @@ router.post('/batchLearnTraining', function (req, res) {
 
     sync.fiber(function () {
         var filepath = req.body.imgIdArray;
-        var uiCheck = req.body.uiCheck;
+        var flag = req.body.flag;
         var retData = [];
         var uiTraining = '';
         for (var i = 0; i < filepath.length; i++) {
-            var batchData = sync.await(batchLearnTraining(filepath[i], uiCheck, sync.defer()));
+            var batchData = sync.await(batchLearnTraining(filepath[i], flag, sync.defer()));
 
             if (batchData.uiTraining && batchData.uiTraining == "uiTraining") {
                 retData = [];
@@ -2250,7 +2250,7 @@ router.post('/batchLearnTraining', function (req, res) {
     });
 });
 
-function batchLearnTraining(filepath, uiCheck, done) {
+function batchLearnTraining(filepath, flag, done) {
     sync.fiber(function () {
         try {
 
@@ -2307,20 +2307,23 @@ function batchLearnTraining(filepath, uiCheck, done) {
             console.time("columnMapping ML");
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(propertiesConfig.filepath.answerFileFrontPath + filepath);
+            pythonConfig.columnMappingOptions.args.push(flag);
             var resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0]);
-            
+
             console.timeEnd("columnMapping ML");
+            retData = resPyArr;
+            retData.fileinfo = { filepath: filepath, imgId: imgId };
+
+            if (flag == "LEARN_Y") {
+                console.time("ML Export");
+                var resData = JSON.parse(resPyArr.data.replace(/'/g, '"'));
+                retData.data = resData;
+                sync.await(oracle.insertMLData(retData, sync.defer()));
+                console.timeEnd("ML Export");
+            }
             //20180910 ML 결과중 doctype을 화면에 표시
 
-
-
-
-
-
-
-
-            
             //TBL_FORM_MAPPING 에 조회
             //조회 결과가 없으면 doctype 0 조회결과가 있으면 doctype 을 TBL_DOCUMENT_CATEGORY 테이블에 매핑 
             //결과 script 에 리턴
@@ -2342,8 +2345,7 @@ function batchLearnTraining(filepath, uiCheck, done) {
 
             //retData.data = resPyArr;
             //retData.docCategory = resForm;
-            retData = resPyArr;
-            retData.fileinfo = { filepath: filepath, imgId: imgId };
+
 
             // console.time("insert MlExport");
             // sync.await(oracle.insertMLData(retData, sync.defer()));

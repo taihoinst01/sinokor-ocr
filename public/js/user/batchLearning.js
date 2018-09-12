@@ -1879,11 +1879,24 @@ var fn_popBatchRun = function () {
                     return;
                 } else {
                     //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-                    batchLearnTraining(imgIdArray, "PROCESS_IMAGE");
+                    batchLearnTraining(imgIdArray, "LEARN_N");
                 }
-            } else {
-                alert("Before Training 상태에서만 배치학습이 가능합니다.");
-                return;
+            } else  if(addCond == "LEARN_Y"){
+                let chkCnt = 0;
+                $("input[name=listCheck_after]").each(function (index, entry) {
+                    if ($(this).is(":checked")) {
+                        chkCnt++;
+                        totCount++;
+                        var filepath = $(this).val();
+                        imgIdArray.push(filepath);
+                    }
+                });
+                if (chkCnt == 0) {
+                    alert("선택된 학습이 없습니다.");
+                    return;
+                } else {
+                    batchLearnTraining(imgIdArray, "LEARN_Y");
+                }
             }
             break;
         case "2":        // 학습 범위 지정
@@ -2091,7 +2104,8 @@ function uiLayerHtml(data) {
 var batchLearnTraining = function (imgIdArray, flag) {
     var param = {
         imgIdArray: imgIdArray,
-        uiCheck: $('#uiTrainingChk').is(':checked')
+        uiCheck: $('#uiTrainingChk').is(':checked'),
+        flag: flag
     };
 
     $.ajax({
@@ -2111,30 +2125,34 @@ var batchLearnTraining = function (imgIdArray, flag) {
             $("#progressMsgTitle").html("processing learn data...");
             //console.log(data);
             //searchBatchLearnDataList(addCond);
+            if (flag == "LEARN_N") {
+                $("input[name=listCheck_before]").each(function (index, entry) {
+                    if ($(this).is(":checked")) {
 
-            $("input[name=listCheck_before]").each(function (index, entry) {
-                if ($(this).is(":checked")) {
+                        for (var i in data.data) {
+                            if (data.data[i].fileinfo) {
 
-                    for (var i in data.data) {
-                        if (data.data[i].fileinfo) {
-
-                            if ($(this).val() == data.data[i].fileinfo.filepath) {
-                                //console.log(index);
-                                $(this).parent().data('ocr_data', data.data[i].data);
-                                var docHtml = '<input type="hidden" name="docType" class="docType" value="' + data.data[i].docCategory.DOCTYPE +'" />';
-                                docHtml += '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>';
-                                $(this).closest("td").next().next().html(docHtml);
+                                if ($(this).val() == data.data[i].fileinfo.filepath) {
+                                    //console.log(index);
+                                    $(this).parent().data('ocr_data', data.data[i].data);
+                                    var docHtml = '<input type="hidden" name="docType" class="docType" value="' + data.data[i].docCategory.DOCTYPE + '" />';
+                                    docHtml += '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.data[i].docCategory.DOCNAME + '</a>';
+                                    $(this).closest("td").next().next().html(docHtml);
+                                }
                             }
                         }
                     }
-                }
-            });
-
-
-            if ($('#uiTrainingChk').is(':checked') && data.data[0].uiTraining == "uiTraining") {
-                compareLayer(data);
+                });
+                endProgressBar(progressId);
+            } else if (flag == "LEARN_Y") {
+                endProgressBar(progressId);
+                searchBatchLearnDataList(addCond);
             }
-            endProgressBar(progressId);
+
+            //if ($('#uiTrainingChk').is(':checked') && data.data[0].uiTraining == "uiTraining") {
+            //    compareLayer(data);
+            //}
+            //endProgressBar(progressId);
         },
         error: function (err) {
             endProgressBar(progressId); // end progressbar

@@ -329,7 +329,7 @@ def insertBatchLearnList(docType):
         curs.execute(selectBatchAnswerFileSql, {"filePath": re.sub(rootFilePath, "", str(sys.argv[1]))})
         rows = curs.fetchall()
 
-        if rows:
+        if len(rows) == 0:
             insertBatchLearnListSql = "INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, :docType, sysdate)"
             curs.execute(insertBatchLearnListSql,
                          {"imgId": rows[0][0], "filePath": re.sub(rootFilePath, "", str(sys.argv[1])),
@@ -361,6 +361,9 @@ if __name__ == '__main__':
     try:
         # 입력받은 파일 패스로 ocr 데이터 조회
         ocrData = selectOcrDataFromFilePath(sys.argv[1])
+
+        # form mapping : LEARN_N, column mapping : LEARN_Y, flag 입력 파라미터
+        flag = sys.argv[2]
 
         # ocr데이터 오타수정
         ocrData = typo(ocrData)
@@ -394,16 +397,23 @@ if __name__ == '__main__':
         # TBL_FORM_MAPPING에 5개문장의 SID를 조회
         formMappingRows = selectFormMapping(sentencesSid)
 
-        # 20180911 doc type 이 1인 경우(NOT INVOICE)는 바로 리턴 EVAL 안함 1이외의 경우는 레이블 정보 추출
+        #
         obj = {}
-        if formMappingRows and formMappingRows == 1:
-            obj["docCategory"] = selectDocCategory(1)
-        elif formMappingRows:
-            #obj["data"] = eval(ocrData, formMappingRows[0][0])
-            obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
-        else:
-            #obj["data"] = eval(ocrData, 0)
-            obj["docCategory"] = selectDocCategory(0)
+        if flag == "LEARN_N":
+            if formMappingRows:
+                obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
+            else:
+                obj["docCategory"] = selectDocCategory(0)
+        elif flag == "LEARN_Y":
+            # 20180911 doc type 이 1인 경우(NOT INVOICE)는 바로 리턴 EVAL 안함 1이외의 경우는 레이블 정보 추출
+            if formMappingRows and formMappingRows == 1:
+                obj["docCategory"] = selectDocCategory(1)
+            elif formMappingRows:
+                obj["data"] = eval(ocrData, formMappingRows[0][0])
+                obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
+            else:
+                obj["data"] = eval(ocrData, 0)
+                obj["docCategory"] = selectDocCategory(0)
 
         # 20180911 TBL_FORM_MAPPING에 조회 결과가 없는경우는 insert 시 unknown으로 되는지 확인
         insertBatchLearnList(obj["docCategory"]["DOCTYPE"])

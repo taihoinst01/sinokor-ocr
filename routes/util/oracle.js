@@ -926,34 +926,6 @@ exports.insertMLData = function (req, done) {
                 }
             }
 
-            //let rescol = await conn.execute("select * from tbl_column_mapping_cls");
-
-            //inssql = queryconfig.batchlearningconfig.insertmlexport;
-            //delsql = queryconfig.batchlearningconfig.deletemlexport;
-
-            //let delres = await conn.execute(delsql, [req.filepath]);
-
-            //for (var i = 0; i < req.mldata[0].length; i++) {
-            //    var cond = [];
-            //    cond.push(req.imgid);
-            //    cond.push(req.filepath);
-
-            //    for (var row = 0; row < rescol.rows.length; row++) {
-            //        if (req.mldata[0][i].label == rescol.rows[row].coltype) {
-            //            cond.push(rescol.rows[row].colnum);
-            //        }
-            //    }
-
-            //    cond.push(req.mldata[0][i].text);
-            //    cond.push(req.mldata[0][i].location);
-            //    cond.push(req.mldata[0][i].sid);
-
-            //    if (cond.length == 6) {
-            //        let coldata = await conn.execute(inssql, cond);
-            //    }
-            //}
-            
-
             return done(null, "mlExport");
         } catch (err) { // catches errors in getConnection and the query
             console.log(err);
