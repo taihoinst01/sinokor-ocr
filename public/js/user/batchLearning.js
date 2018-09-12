@@ -2519,9 +2519,7 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            var searchResultImg = '<img id="searchResultImg" src="/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
-            $('#docSearchResult').empty().append(searchResultImg);
-
+            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
             if (docPopImagesCurrentCount == 1) {
                 $('#docSearchResultImg_thumbPrev').attr('disabled', true);
             } else {
@@ -2540,9 +2538,7 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            var searchResultImg = '<img id="searchResultImg" src="/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
-            $('#docSearchResult').empty().append(searchResultImg);
-
+            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
             if (docPopImagesCurrentCount == totalCount) {
                 $('#docSearchResultImg_thumbNext').attr('disabled', true);
             } else {
