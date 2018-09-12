@@ -3173,11 +3173,11 @@ function fn_viewDoctypePop(obj) {
             }).addClass("preview");
             $('#originImgDiv').empty().append(tifResult);
         }
+        $('#docPopImgPath').val(filepath);
+
+        layer_open('layer4');
     });
 
-    $('#docPopImgPath').val(filepath);
-
-    layer_open('layer4');
 }
 
 function makeindex(location) {
