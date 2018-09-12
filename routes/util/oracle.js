@@ -2225,6 +2225,31 @@ exports.updateBatchLearnList = function (req, done) {
     });
 };
 
+exports.updateDocCategoryToFilePath = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            await conn.execute(`UPDATE TBL_DOCUMENT_CATEGORY SET SAMPLEIMAGEPATH = :filepath WHERE DOCTYPE = :docType `, req);
+            conn.commit();
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();
