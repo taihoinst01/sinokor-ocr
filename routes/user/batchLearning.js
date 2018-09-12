@@ -2310,15 +2310,15 @@ function batchLearnTraining(filepath, flag, done) {
             pythonConfig.columnMappingOptions.args.push(flag);
             var resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0]);
-            var resData = JSON.parse(resPyArr.data.replace(/'/g, '"'));
 
             console.timeEnd("columnMapping ML");
-
-            retData.data = resData;
+            retData = resPyArr;
             retData.fileinfo = { filepath: filepath, imgId: imgId };
 
             if (flag == "LEARN_Y") {
                 console.time("ML Export");
+                var resData = JSON.parse(resPyArr.data.replace(/'/g, '"'));
+                retData.data = resData;
                 sync.await(oracle.insertMLData(retData, sync.defer()));
                 console.timeEnd("ML Export");
             }
