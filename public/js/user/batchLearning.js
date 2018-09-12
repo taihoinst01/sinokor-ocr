@@ -1290,7 +1290,7 @@ var searchBatchLearnDataList = function (addCond) {
                     else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(rows[0].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
 
                     var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
-                    appendLeftContentsHtml += '<tr style="height:' + trHeight + 'px;">' +
+                    appendLeftContentsHtml += '<tr id="leftRowNum_' + i + '" style="height:' + trHeight + 'px;">' +
                         checkboxHtml +
                         '<td><a class="fileNamePath" data-filepath="' + nvl(rows[0].FILEPATH) + '" data-imgId="' + nvl(rows[0].IMGID) + '" ' +
                         'onclick = "javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', \'' + nvl(rows[0].IMGID) + '\', this)" href = "javascript:void(0);" > ' + nvl(rows[0].FILENAME) + '</a ></td > < !--FILENAME--> ' +
@@ -2654,14 +2654,25 @@ function popUpRunEvent() {
             url: '/batchLearning/insertDoctypeMapping',
             type: 'post',
             datatype: 'json',
-            async: false,
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                $('#progressMsgTitle').html('문서양식 저장중...');
+                progressId = showProgressBar();
+            },
             success: function (data) {
-                location.href = location.href;
+                //location.href = location.href;
+                // 해당 로우 화면상 테이블에서 삭제
+                endProgressBar(progressId);
+                $('#btn_pop_doc_cancel').click();
+                var rowNum = $('#batchListRowNum').val();
+                $('#leftRowNum_' + rowNum).remove();
+                $('.rowNum' + rowNum).remove();
+                $('.mlRowNum' + rowNum).remove();
             },
             error: function (err) {
                 console.log(err);
+                endProgressBar(progressId);
             }
         });           
     })
@@ -3154,6 +3165,8 @@ function fn_viewDoctypePop(obj) {
     var data = $(obj).closest('tr').find('.fileNamePath');
     var filepath = data.attr('data-filepath');
     var imgId = data.attr('data-imgId');
+    var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
+    $('#batchListRowNum').val(rowIdx);
     $('#docPopImgId').val(imgId);
     $('#docPopImgPath').val(filepath);
     initLayer4();
