@@ -35,7 +35,8 @@ var propertiesConfig = {
         createImgDirPath: '/ICR/image',
         createImgconvertedDirPath: '/ICR/convertedImage',
         answerFileFrontPath: 'C:/ICR/image/MIG/MIG',
-        docFilePath: 'C:/ICR/sampleDocImage'
+        docFilePath: 'C:/ICR/sampleDocImage',
+        doc_sampleImagePath: 'C:/ICR'
     }
 };
 

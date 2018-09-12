@@ -2519,16 +2519,8 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH, function (tifResult) {
-                if (tifResult) {
-                    $(tifResult).css({
-                        "width": "100%",
-                        "height": "100%",
-                        "display": "block"
-                    }).addClass("preview");
-                    $('#docSearchResult').empty().append(tifResult);
-                }
-            });
+            var searchResultImg = '<img id="searchResultImg" src="/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+            $('#docSearchResult').empty().append(searchResultImg);
 
             if (docPopImagesCurrentCount == 1) {
                 $('#docSearchResultImg_thumbPrev').attr('disabled', true);
@@ -2548,16 +2540,8 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH, function (tifResult) {
-                if (tifResult) {
-                    $(tifResult).css({
-                        "width": "100%",
-                        "height": "100%",
-                        "display": "block"
-                    }).addClass("preview");
-                    $('#docSearchResult').empty().append(tifResult);
-                }
-            });
+            var searchResultImg = '<img id="searchResultImg" src="/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+            $('#docSearchResult').empty().append(searchResultImg);
 
             if (docPopImagesCurrentCount == totalCount) {
                 $('#docSearchResultImg_thumbNext').attr('disabled', true);
@@ -2607,17 +2591,9 @@ function popUpSearchDocCategory() {
                          */
                         docPopImages = data;
 
-                        loadImage('/tif' + data[0].SAMPLEIMAGEPATH, function (tifResult) {
-                            if (tifResult) {
-                                $(tifResult).css({
-                                    "width": "100%",
-                                    "height": "100%",
-                                    "display": "block"
-                                    //"padding-top": "10px"
-                                }).addClass("preview");
-                                $('#docSearchResult').empty().append(tifResult);
-                            }
-                        });
+                        var searchResultImg = '<img id="searchResultImg" src="/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+
+                        $('#docSearchResult').empty().append(searchResultImg);
 
                         $('#searchResultDocName').val(data[0].DOCNAME);
                         if (data.length != 1) {

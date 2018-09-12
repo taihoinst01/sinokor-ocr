@@ -5175,11 +5175,11 @@ button[disabled] {
 }
 
 #docSearchResultMask {
-    width: 494px;
+    width: 496px;
     height: 481px;
     opacity: 0.3;
     position: absolute;
-    left: 1080px;
+    left: 1079px;
     top: 216px;
     z-index: 260;
     background-color: #000;
@@ -5188,7 +5188,7 @@ button[disabled] {
 
 .button_control11 {
     top: 410px !important;
-    left: 1080px !important;
+    left: 1079px !important;
     z-index: 500;
     opacity: 0.8 !important;
     position: absolute;
@@ -5210,7 +5210,7 @@ button[disabled] {
 
 .button_control12 {
     top: 410px !important;
-    right: 26px !important;
+    right: 25px !important;
     z-index: 500;
     opacity: 0.8 !important;
     position: absolute;

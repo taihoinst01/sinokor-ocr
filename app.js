@@ -50,6 +50,7 @@ var xlsx = require('xlsx');
 
 // 
 app.use('/tif', express.static(path.join(propertiesConfig.filepath.answerFileFrontPath)));
+app.use('/jpg', express.static(path.join(propertiesConfig.filepath.doc_sampleImagePath)));
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use('/sample', express.static(__dirname + '/sample'));
 app.use('/excel', express.static(__dirname + '/excel'));
