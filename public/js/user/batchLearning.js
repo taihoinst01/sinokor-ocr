@@ -2537,17 +2537,7 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH, function (tifResult) {
-                if (tifResult) {
-                    $(tifResult).css({
-                        "width": "100%",
-                        "height": "100%",
-                        "display": "block"
-                    }).addClass("preview");
-                    $('#docSearchResult').empty().append(tifResult);
-                }
-            });
-
+            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
             if (docPopImagesCurrentCount == 1) {
                 $('#docSearchResultImg_thumbPrev').attr('disabled', true);
             } else {
@@ -2566,17 +2556,7 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            loadImage('/tif' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH, function (tifResult) {
-                if (tifResult) {
-                    $(tifResult).css({
-                        "width": "100%",
-                        "height": "100%",
-                        "display": "block"
-                    }).addClass("preview");
-                    $('#docSearchResult').empty().append(tifResult);
-                }
-            });
-
+            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
             if (docPopImagesCurrentCount == totalCount) {
                 $('#docSearchResultImg_thumbNext').attr('disabled', true);
             } else {
@@ -2625,17 +2605,9 @@ function popUpSearchDocCategory() {
                          */
                         docPopImages = data;
 
-                        loadImage('/tif' + data[0].SAMPLEIMAGEPATH, function (tifResult) {
-                            if (tifResult) {
-                                $(tifResult).css({
-                                    "width": "100%",
-                                    "height": "100%",
-                                    "display": "block"
-                                    //"padding-top": "10px"
-                                }).addClass("preview");
-                                $('#docSearchResult').empty().append(tifResult);
-                            }
-                        });
+                        var searchResultImg = '<img id="searchResultImg" src="/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+
+                        $('#docSearchResult').empty().append(searchResultImg);
 
                         $('#searchResultDocName').val(data[0].DOCNAME);
                         if (data.length != 1) {
@@ -3215,11 +3187,11 @@ function fn_viewDoctypePop(obj) {
             }).addClass("preview");
             $('#originImgDiv').empty().append(tifResult);
         }
+        $('#docPopImgPath').val(filepath);
+
+        layer_open('layer4');
     });
 
-    $('#docPopImgPath').val(filepath);
-
-    layer_open('layer4');
 }
 
 function makeindex(location) {

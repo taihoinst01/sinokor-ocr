@@ -146,18 +146,19 @@ function selectDocCategoryFromDocName(data) {
 }
 
 function copyFile(src, docType) {
-    var convertedFilepath = 'C:/ICR/sampleDocImage';
+    var convertedFilepath = propertiesConfig.filepath.docFilePath;
     try {
         if (!fs.existsSync(src)) {
             throw new Error('file not exist');
         }
         var data = fs.readFileSync(src, 'utf-8');
         try {
-            fs.mkdirSync('convertedFilepath');
+            fs.mkdirSync(convertedFilepath);
         } catch (e) {
             if (e.code != 'EEXIST') throw e;
         }
         execSync('module\\imageMagick\\convert.exe -density 800x800 ' + src + ' ' + (convertedFilepath + '/' + docType + '.jpg'));
+        sync.await(oracle.updateDocCategoryToFilePath(['/' + (convertedFilepath.split('/')[2] + '/' + docType + '.jpg'), docType], sync.defer()));
 
         return (convertedFilepath + '/' + docType + '.jpg');
     } catch (e) {
