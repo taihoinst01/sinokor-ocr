@@ -225,7 +225,7 @@ def insertOcrSymspell(sentences):
         for sentence in sentences:
             words = sentence["text"].split(' ')
             for word in words:
-                tempstr = word;
+                tempstr = word
                 if tempstr:
                     selectSymspellSql = "SELECT COUNT(SEQNUM) FROM TBL_OCR_SYMSPELL WHERE KEYWORD = LOWER(:keyword)"
                     curs.execute(selectSymspellSql, {"keyword": tempstr})
@@ -300,7 +300,7 @@ def selectFormMapping(sentencesSid):
         selectFormMappingSql = "SELECT CLASS FROM TBL_FORM_MAPPING WHERE DATA = :data"
         curs.execute(selectFormMappingSql, {"data": sentencesSid})
         rows = curs.fetchall()
-        return rows;
+        return rows
 
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_FORM_MAPPING table select fail',
@@ -329,12 +329,17 @@ def insertBatchLearnList(docType):
         curs.execute(selectBatchAnswerFileSql, {"filePath": re.sub(rootFilePath, "", str(sys.argv[1]))})
         rows = curs.fetchall()
 
-        if len(rows) == 0:
-            insertBatchLearnListSql = "INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, :docType, sysdate)"
-            curs.execute(insertBatchLearnListSql,
-                         {"imgId": rows[0][0], "filePath": re.sub(rootFilePath, "", str(sys.argv[1])),
-                          "docType": docType})
-            conn.commit()
+        if rows:
+            selectBatchLearnListSql = "SELECT * FROM TBL_BATCH_LEARN_LIST WHERE IMGID = :imgId"
+            curs.execute(selectBatchLearnListSql, {"imgId":rows[0][0]})
+            resList = curs.fetchall()
+
+            if len(resList) == 0:
+                insertBatchLearnListSql = "INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, :docType, sysdate)"
+                curs.execute(insertBatchLearnListSql,
+                             {"imgId": rows[0][0], "filePath": re.sub(rootFilePath, "", str(sys.argv[1])),
+                              "docType": docType})
+                conn.commit()
 
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_BATCH_LEARN_LIST table insert',
@@ -378,15 +383,15 @@ if __name__ == '__main__':
         sentences = []
         for item in ocrData:
             # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
-            isBanned = False;
+            isBanned = False
             for i in bannedWords:
-                if item["text"].find(bannedWords[i]) == 0:
+                if item["text"].find(i) == 0:
                     isBanned = True
                     break
             if not isBanned:
                 sentences.append(item)
                 if len(sentences) == 5:
-                    break;
+                    break
 
         # 최종 5개 문장이 추출되면 각문장의 단어를 TBL_OCR_SYMSPELL 에 조회후 없으면 INSERT
         insertOcrSymspell(sentences)
