@@ -333,8 +333,8 @@ def insertBatchLearnList(docType):
         rows = curs.fetchall()
 
         if rows:
-            selectBatchLearnListSql = "SELECT * FROM TBL_BATCH_LEARN_LIST WHERE IMGID = :imgId"
-            curs.execute(selectBatchLearnListSql, {"imgId":rows[0][0]})
+            selectBatchLearnListSql = "SELECT * FROM TBL_BATCH_LEARN_LIST WHERE FILEPATH = :filePath"
+            curs.execute(selectBatchLearnListSql, {"filePath": re.sub(rootFilePath, "", str(sys.argv[1]))})
             resList = curs.fetchall()
 
             if len(resList) == 0:
@@ -376,6 +376,14 @@ if __name__ == '__main__':
         # form mapping : LEARN_N, column mapping : LEARN_Y, flag 입력 파라미터
         flag = sys.argv[2]
 
+        # ocr데이터 없을 경우 unKnown으로 처리
+        obj = {}
+        if len(ocrData) == 0 or 'error' in ocrData:
+            obj["docCategory"] = selectDocCategory(0)
+            insertBatchLearnList(obj["docCategory"]["DOCTYPE"])
+            print(re.sub('None', "null", json.dumps(obj)))
+            sys.exit(1)
+
         # ocr데이터 오타수정
         ocrData = typo(ocrData)
 
@@ -405,12 +413,11 @@ if __name__ == '__main__':
 
         # 5개문장의 SID를 EXPORT_SENTENCE_SID 함수를 통해 SID 추출
         sentencesSid = getDocSid(sentences)
-        print(sentencesSid)
+
         # TBL_FORM_MAPPING에 5개문장의 SID를 조회
         formMappingRows = selectFormMapping(sentencesSid)
 
         #
-        obj = {}
         if flag == "LEARN_N":
             if formMappingRows:
                 obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
