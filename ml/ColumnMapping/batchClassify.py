@@ -326,7 +326,7 @@ def selectDocCategory(docType):
                              'error': str(e).replace("'", "").replace('"', '')}))
 
 
-def insertBatchLearnList(docType):
+def insertBatchLearnList(docType, flag):
     try:
         selectBatchAnswerFileSql = "SELECT IMGID FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH = :filePath"
         curs.execute(selectBatchAnswerFileSql, {"filePath": re.sub(rootFilePath, "", str(sys.argv[1]))})
@@ -340,6 +340,12 @@ def insertBatchLearnList(docType):
             if len(resList) == 0:
                 insertBatchLearnListSql = "INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, :docType, sysdate)"
                 curs.execute(insertBatchLearnListSql,
+                             {"imgId": rows[0][0], "filePath": re.sub(rootFilePath, "", str(sys.argv[1])),
+                              "docType": docType})
+                conn.commit()
+            elif flag == "LEARN_N" and len(resList) > 0:
+                updateBatchLearnListSql = "UPDATE TBL_BATCH_LEARN_LIST SET DOCTYPE = :docType , REGDATE = SYSDATE WHERE IMGID = :imgId AND FILEPATH = :filepath"
+                curs.execute(updateBatchLearnListSql,
                              {"imgId": rows[0][0], "filePath": re.sub(rootFilePath, "", str(sys.argv[1])),
                               "docType": docType})
                 conn.commit()
@@ -435,7 +441,7 @@ if __name__ == '__main__':
                 obj["docCategory"] = selectDocCategory(0)
 
         # 20180911 TBL_FORM_MAPPING에 조회 결과가 없는경우는 insert 시 unknown으로 되는지 확인
-        insertBatchLearnList(obj["docCategory"]["DOCTYPE"])
+        insertBatchLearnList(obj["docCategory"]["DOCTYPE"], flag)
 
         print(re.sub('None', "null", json.dumps(obj)))
 
