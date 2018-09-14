@@ -410,6 +410,50 @@ exports.insertColumnMapping = function (req, done) {
     });
 };
 
+exports.insertBatchColumnMapping = function (req, filepath, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let selectSqlText = `SELECT SEQNUM FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = :DATA AND CLASS = :CLASS`;
+            let insertSqlText = `INSERT INTO TBL_BATCH_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            let selectLearnListSqlText = `SELECT DOCTYPE FROM TBL_BATCH_LEARN_LIST WHERE FILEPATH = :filepath`
+
+            var result = await conn.execute(selectSqlText, [req.sid, req.colLbl]);
+            if (result.rows[0]) {
+                //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
+            } else {
+
+                var resLearnList = await conn.execute(selectLearnListSqlText, [filepath]);
+                if (resLearnList.rows[0]) {
+                    var sidSplit = req.sid.split(",");
+                    var len = sidSplit.length;
+                    var textSid = sidSplit[len - 5] + "," + sidSplit[len - 4] + "," + sidSplit[len - 3] + "," + sidSplit[len - 2] + "," + sidSplit[len - 1];
+
+                    var locSplit = req.location.split(",");
+
+                    var sid = resLearnList.rows[0].DOCTYPE + "," + req.sid;
+
+                    if (!(((req.colLbl >= 5 && req.colLbl <= 34) || req.colLbl == 36) && (textSid == "0,0,0,0,0" || textSid == "1,1,1,1,1"))) {
+                        await conn.execute(insertSqlText, [sid, req.colLbl]);
+                    }
+                }
+            }
+            return done(null, req);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.insertColumnMapping2 = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -909,7 +953,7 @@ exports.insertMLData = function (req, done) {
             var insSql = queryConfig.batchLearningConfig.insertMlExport;
             var delSql = queryConfig.batchLearningConfig.deleteMlExport;
 
-            let delRes = await conn.execute(delSql, [req.fileinfo.filepath]);
+            let delRes = await conn.execute(delSql, [req.fileinfo.filepath], { autoCommit: true });
 
             for (var i in req.data) {
                 var cond = [];

@@ -113,6 +113,7 @@ def eval(inputJson, docType):
             if 'sid' in inputItem:
                 inputItem['colLbl'] = findLabelDB(inputItem['mappingSid'])
                 inputItem['colAccu'] = 0.99
+                inputItem['sid'] = inputItem['mappingSid']
                 del inputItem['mappingSid']  # column mapping에만 사용되는 가공 sid 제거
 
         # 전 아이템 중 엔트리 라벨 추출
@@ -162,7 +163,7 @@ def eval(inputJson, docType):
                             inputItem['entryLbl'] = entryLabelDB(8)
 
                         # 엔트리라벨이 하나만 잡혔는데 PAID(100%), OSL(100%)일경우 y축 기준 200까지 위 x축기준 200까지를 조회 our share 가 있으면 Our share 로 변경
-                        if inputItem['entryLbl'] == 0 or inputItem['entryLbl'] == 2:
+                        if 'entryLbl' in inputItem and (inputItem['entryLbl'] == 0 or inputItem['entryLbl'] == 2):
                             for shareItem in entryLabel:
                                 shareLoc = shareItem['sid'].split(",")[0:4]
                                 if shareItem['colLbl'] == 36 and (abs(int(lblLoc[1]) - int(shareLoc[1])) < 200 and -200 < int(lblLoc[2]) - int(shareLoc[2]) < 0):
@@ -243,8 +244,10 @@ def insertOcrSymspell(sentences):
 def getSid(data):
     try:
         selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
+        regExp = "[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]"
         for item in data:
-            curs.execute(selectExportSidSql, {"sentence": item["text"]})
+            text = re.sub(regExp, '', item["text"])
+            curs.execute(selectExportSidSql, {"sentence": text})
             exportSidRows = curs.fetchall()
             item["sid"] = exportSidRows[0][0]
 
@@ -346,11 +349,14 @@ def insertBatchLearnList(docType):
                              'error': str(e).replace("'", "").replace('"', '')}))
 
 def makeindex(location):
-    temparr = location.split(",")
-    for i in range(0, 5):
-        if (len(temparr[0]) < 5):
-            temparr[0] = '0' + temparr[0]
-    return int(temparr[1] + temparr[0])
+    if len(location) > 0:
+        temparr = location.split(",")
+        for i in range(0, 5):
+            if (len(temparr[0]) < 5):
+                temparr[0] = '0' + temparr[0]
+        return int(temparr[1] + temparr[0])
+    else:
+        return 999999999999
 
 def sortArrLocation(inputArr):
     tempArr = []

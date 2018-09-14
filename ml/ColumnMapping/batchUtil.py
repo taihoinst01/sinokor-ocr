@@ -30,7 +30,7 @@ def getEntryLabelYN(colNum):
         curs.execute(sql, {"colNum":colNum})
         entryLabelYN = curs.fetchall()
 
-        return entryLabelYN
+        return entryLabelYN[0][4]
 
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'getEntryLabelYN table select fail',

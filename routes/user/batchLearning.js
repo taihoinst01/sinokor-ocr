@@ -2086,7 +2086,7 @@ router.post('/uiLearnTraining', function (req, res) {
         var filepath = req.body.imgIdArray;
         var uiData;
         for (var i = 0; i < filepath.length; i++) {
-            uiData = sync.await(uiLearnTraining(filepath[i], sync.defer()));
+            uiData = sync.await(batchLearnTraining(filepath[i], "LEARN_Y", sync.defer()));
 
             res.send({ data: uiData });
         }       
@@ -2321,6 +2321,12 @@ function batchLearnTraining(filepath, flag, done) {
                 retData.data = resData;
                 sync.await(oracle.insertMLData(retData, sync.defer()));
                 console.timeEnd("ML Export");
+
+                var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
+                var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));
+
+                retData.column = colMappingList;
+                retData.entryMappingList = entryMappingList;
             }
             //20180910 ML 결과중 doctype을 화면에 표시
 

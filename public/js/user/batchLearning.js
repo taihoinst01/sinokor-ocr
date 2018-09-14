@@ -770,6 +770,24 @@ function appendOptionHtml(targetColumn, columns) {
     return selectHTML;
 }
 
+// Entry컬럼 select html 가공 함수
+function appendEntryOptionHtml(targetColumn, columns) {
+
+    var selectHTML = '<select>';
+    for (var i in columns) {
+        var optionHTML = '';
+        if (targetColumn == columns[i].COLNUM) {
+            optionHTML = '<option value="' + targetColumn + '" selected>' + columns[i].COLNAME + '</option>';
+        } else {
+            optionHTML = '<option value="' + targetColumn + '">' + columns[i].COLNAME + '</option>';
+        }
+        selectHTML += optionHTML
+    }
+    selectHTML += '</select>'
+
+    return selectHTML;
+}
+
 function execBatchLearningData(ocrData, data) {
     var learningUrl = (uiFlag == 'Y') ? '/batchLearning/execBatchLearningData2' : '/batchLearning/execBatchLearningData';
 
@@ -1987,7 +2005,7 @@ var fn_uiTraining = function () {
     let imgId = "";
     let chkCnt = 0;
 
-    $("input[name=listCheck_before]").each(function (index, entry) {
+    $("input[name=listCheck_after]").each(function (index, entry) {
         if ($(this).is(":checked")) {
             imgId = $(this).val();
             chkCnt++;
@@ -2029,14 +2047,13 @@ var uiLearnTraining = function (imgIdArray) {
             console.log(data);
             //modifyData = data.data;
             $("#progressMsgTitle").html("success UI learn data...");
-            selectTypoData(data);
+            //selectTypoData(data);
+            modifyData = $.extend({}, data.data);
+            uiLayerHtml(data);
+            endProgressBar(progressId);
         },
         error: function (err) {
-            endProgressBar(progressId);
             console.log(err);
-        },
-        complete: function () {
-            endProgressBar(progressId);
         }
     });
 
@@ -2064,12 +2081,13 @@ function selectTypoData(data) {
 function uiLayerHtml(data) {
     var mlData = data.data.data;
     var columnArr = data.data.column;
+    var entryColArr = data.data.entryMappingList;
     //var fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length);
     fn_initUiTraining();
     layer_open('layer2');
 
 
-    $('#imgNameTag').text(data.data.convertedFileName);
+    $('#imgNameTag').text(data.data.fileinfo.filepath);
 
     var mainImgHtml = '';
     mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
@@ -2081,9 +2099,17 @@ function uiLayerHtml(data) {
     mainImgHtml += '</div>';
     mainImgHtml += '</div>';
     $('#img_content').html(mainImgHtml);
-    $('#mainImage').css('background-image', 'url("../../uploads/' + data.data.convertedFileName + '")');
+    //data.data.fileinfo.filepath.substring(0, lastIndexOf("."))
+    var convertImg = data.data.fileinfo.filepath.substring(0, data.data.fileinfo.filepath.lastIndexOf(".")) + ".jpg";
+    $('#mainImage').css('background-image', 'url("/tif' + convertImg + '")');
 
     var tblTag = '';
+    var tblSortTag = '';
+
+    columnArr.unshift(columnArr.pop());
+    entryColArr.unshift(entryColArr.pop());
+
+    /*
     for (var i in mlData) {
         tblTag += '<dl>';
         tblTag += '<dt onclick="zoomImg(this)">';
@@ -2097,7 +2123,128 @@ function uiLayerHtml(data) {
         tblTag += '</dd>';
         tblTag += '</dl>';
     }
-    $('#textResultTbl').append(tblTag);
+    */
+    for (var i in mlData) {
+        // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
+        if (mlData[i].colLbl == 37) {
+            tblTag += '<dl>';
+            tblTag += '<dt onclick="zoomImg(this)">';
+            tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+            tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+            tblTag += '</label>';
+            tblTag += '</dt>';
+            tblTag += '<dd>';
+            tblTag += '<input type="checkbox" class="entryChk" checked>';
+            tblTag += '</dd>';
+            tblTag += '<dd class="columnSelect" style="display:none">';
+            tblTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblTag += '</dd>';
+            tblTag += '<dd class="entrySelect">';
+            tblTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblTag += '</dd>';
+            tblTag += '</dl>';
+        } else if (mlData[i].colLbl == 38) {
+            tblSortTag += '<dl>';
+            tblSortTag += '<dt onclick="zoomImg(this)">';
+            tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblSortTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+            tblSortTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+            tblSortTag += '</label>';
+            tblSortTag += '</dt>';
+            tblSortTag += '<dd>';
+            tblSortTag += '<input type="checkbox" class="entryChk">';
+            tblSortTag += '</dd>';
+            tblSortTag += '<dd class="columnSelect">';
+            tblSortTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblSortTag += '</dd>';
+            tblSortTag += '<dd class="entrySelect" style="display:none">';
+            tblSortTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblSortTag += '</dd>';
+            tblSortTag += '</dl>';
+        } else {
+            tblTag += '<dl>';
+            tblTag += '<dt onclick="zoomImg(this)">';
+            tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+            tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+            tblTag += '</label>';
+            tblTag += '</dt>';
+            tblTag += '<dd>';
+            tblTag += '<input type="checkbox" class="entryChk">';
+            tblTag += '</dd>';
+            tblTag += '<dd class="columnSelect">';
+            tblTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblTag += '</dd>';
+            tblTag += '<dd class="entrySelect" style="display:none">';
+            tblTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblTag += '</dd>';
+            tblTag += '</dl>';
+        }
+    }
+
+    $('#textResultTbl').append(tblTag).append(tblSortTag);
+    // input 태그 마우스오버 말풍선 Tooltip 적용
+    $('input[type=checkbox]').ezMark();
+    new $.Zebra_Tooltips($('.tip'));
+    dbSelectClickEvent();
+
+    $(".entryChk").change(function () {
+
+        if ($(this).is(":checked")) {
+            $(this).closest('dl').find('.columnSelect').hide();
+            $(this).closest('dl').find('.entrySelect').show();
+        } else {
+            $(this).closest('dl').find('.columnSelect').show();
+            $(this).closest('dl').find('.entrySelect').hide();
+        }
+
+    })
+}
+
+function dbSelectClickEvent() {
+    $('.selectBox > li').click(function (e) {
+        if ($(this).children('ul').css('display') == 'none') {
+            $('.selectBox > li').removeClass('on');
+            $('.selectBox > li > ul').hide();
+            $('.selectBox > li > ul').css('visibility', 'hidden').css('z-index', '0');
+            $(this).addClass('on');
+            $(this).children('ul').show();
+            $(this).children('ul').css('visibility', 'visible').css('z-index', '1');
+            $('.box_table_st').css('height', Number($('.box_table_st').height() + $(this).children('ul').height()) + 'px');
+        } else {
+            $(this).children('ul').hide();
+            $(this).children('ul').css('visibility', 'hidden').css('z-index', '0');
+            $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).children('ul').height()) + 'px');
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    $('.selectBox > li > ul > li').click(function (e) {
+        if ($(this).children('ul').css('display') == 'none') {
+            $('.selectBox > li > ul > li > ul').hide();
+            $('.selectBox > li > ul > li > ul').css('visibility', 'hidden');
+            $(this).children('ul').show();
+            $(this).children('ul').css('visibility', 'visible').css('z-index', '2');
+        } else {
+            $(this).children('ul').hide();
+            $(this).children('ul').css('visibility', 'hidden');
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    $('.selectBox > li > ul > li > ul > li').click(function (e) {
+        var firstCategory = $(this).parent().prev().children('span').text();
+        var lastCategory = ($(this).children('a').text() == '키워드') ? '' : ' 값';
+        $(this).parent().parent().parent().prev().text(firstCategory);
+        $(this).parent().parent().children('ul').hide();
+        $(this).parent().parent().children('ul').css('visibility', 'hidden');
+        $(this).parent().parent().parent().parent().children('ul').hide();
+        $(this).parent().parent().parent().parent().children('ul').css('visibility', 'hidden').css('z-index', '0');
+        $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).parent().parent().parent().parent().children('ul').height()) + 'px')
+        e.preventDefault();
+        e.stopPropagation();
+    });
 }
 
 // batch learning 2 [Select] 배치학습데이터 조회
@@ -2284,13 +2431,14 @@ function modifyTextData() {
 
     // find an array of data with the same filename
     $.ajax({
-        url: '/common/modifyTextData',
+        url: '/common/modifyBatchUiTextData',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'beforeData': beforeData[0], 'afterData': afterData }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            fn_batchUiTraining();
+            alert("success training");    
+            //fn_batchUiTraining();
         },
         error: function (err) {
             console.log(err);
