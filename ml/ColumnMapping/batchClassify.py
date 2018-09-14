@@ -24,7 +24,7 @@ connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 conn = cx_Oracle.connect(connInfo)
 curs = conn.cursor()
 rootFilePath = 'C:/ICR/image/MIG/MIG'
-
+regExp = "[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]"
 
 def isfloat(value):
     try:
@@ -179,8 +179,8 @@ def eval(inputJson, docType):
                 if 'entryLbl' not in inputItem:
                     inputItem['entryLbl'] = 31
 
-        # for item in inputArr:
-        #     print(item)
+        for item in inputArr:
+            print(item)
         return str(inputArr)
 
     except Exception as e:
@@ -244,7 +244,6 @@ def insertOcrSymspell(sentences):
 def getSid(data):
     try:
         selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
-        regExp = "[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]"
         for item in data:
             text = re.sub(regExp, '', item["text"])
             curs.execute(selectExportSidSql, {"sentence": text})
@@ -264,15 +263,16 @@ def getDocSid(data):
         retDocSid = ''
 
         for sentence in data:
-            tempstr = sentence["text"]
+            tempstr = re.sub(regExp, '', sentence["text"])
 
             if not tempstr:
                 tempstr = ' '
 
             curs.execute(selectExportSidSql, {"sentence": tempstr})
             exportSidRows = curs.fetchall()
-            retDocSid += exportSidRows[0][0]
+            retDocSid += exportSidRows[0][0] + ","
 
+        retDocSid = retDocSid[:-1]
         # data length 에 상관없이 5회 반복 만약 data의 length가 5보다 적으면 적은 갯수만큼 ,0,0,0,0,0 입력
         if len(data) < 5:
             for i in range(len(data) + 1, 5):
@@ -391,7 +391,8 @@ if __name__ == '__main__':
             # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
             isBanned = False
             for i in bannedWords:
-                if item["text"].find(i) == 0:
+                text = re.sub(regExp, '', item["text"])
+                if text.lower().find(str(i)) != -1:
                     isBanned = True
                     break
             if not isBanned:
@@ -404,7 +405,7 @@ if __name__ == '__main__':
 
         # 5개문장의 SID를 EXPORT_SENTENCE_SID 함수를 통해 SID 추출
         sentencesSid = getDocSid(sentences)
-
+        print(sentencesSid)
         # TBL_FORM_MAPPING에 5개문장의 SID를 조회
         formMappingRows = selectFormMapping(sentencesSid)
 
