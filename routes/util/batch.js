@@ -37,18 +37,23 @@ function insertDoctypeMapping(req, done) {
             for (var i in data.textList) {
                 //console.log(data.textList[i]);
                 if (data.textList[i].check == 0) {
-                    //문장 index가 0인 경우 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
-                    data.textList[i] = insertSymspell(data.textList[i]);
-
-                    //문장 index가 0인 경우 sentenses.append, sentenses length가 5가 되면 for문 종료
+                    //맨 앞 단어가 bannedWord에 포함하지 않을 경우만 topSentenses에 push
+                    var textSplit = data.textList[i].text.split(" ");
+                    var firstText = textSplit[0];
                     var bannedCheck = true;
                     for (var j in bannedWord) {
-                        if (data.textList[i].text.toLowerCase().indexOf(bannedWord[j].WORD) != -1) {
+                        if (firstText.toLowerCase().indexOf(bannedWord[j].WORD) != -1) {
                             bannedCheck = false;
                             break;
                         }
                     }
-                    if (bannedCheck) topSentenses.push(data.textList[i]);
+                    //문장 index가 0인 경우 sentenses.append, sentenses length가 5가 되면 for문 종료
+                    if (bannedCheck) {
+                        topSentenses.push(data.textList[i]);
+
+                        //문장 index가 0인 경우 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
+                        data.textList[i] = insertSymspell(data.textList[i]);
+                    }
                     if (topSentenses.length >= 5) break;
 
                 } else if (data.textList[i].check == 1) {
@@ -92,16 +97,6 @@ function insertDoctypeMapping(req, done) {
     });
 }
 
-function selectBannedWord() {
-    try {
-        let item = sync.await(oracle.selectBannedWord(sync.defer()));
-
-        return item
-    } catch (e) {
-        throw e;
-    }
-}
-
 function insertSymspell(item) {    
     var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
     item.text = item.text.replace(regExp, '');
@@ -113,6 +108,16 @@ function insertSymspell(item) {
     } catch(e){
         throw e;
     }   
+}
+
+function selectBannedWord() {
+    try {
+        let item = sync.await(oracle.selectBannedWord(sync.defer()));
+
+        return item
+    } catch (e) {
+        throw e;
+    }
 }
 
 function insertBannedWord(item) {

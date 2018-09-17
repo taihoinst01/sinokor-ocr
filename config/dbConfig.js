@@ -3,7 +3,7 @@
 var dbConfig = {
     user: process.env.NODE_ORACLEDB_USER || "koreanre",
     password: process.env.NODE_ORACLEDB_PASSWORD || "koreanre01",
-    connectString: process.env.NODE_ORACLEDB_CONNECTIONSTRING || "172.16.53.142/koreanreocr",
+    connectString: process.env.NODE_ORACLEDB_CONNECTIONSTRING || "172.16.53.145/koreanreocr",
     externalAuth: process.env.NODE_ORACLEDB_EXTERNALAUTH ? true : false,
     poolMax: 30,
     poolMin: 10
