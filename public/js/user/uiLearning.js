@@ -19,6 +19,7 @@ $(function () {
     popUpEvent();
     docPopRadioEvent();
     allCheckClassifySentenses();
+    editBannedword();
 });
 
 // 초기 작업
@@ -30,6 +31,7 @@ function init() {
 function allCheckClassifySentenses() {
     $('#allCheckClassifySentenses').click(function () {
         var isCheck = $(this).is(':checked');
+
         $('#ui_layer1_result .ez-checkbox').each(function (i, el) {
             var isBoxCheck = $(this).find('input[type="checkbox"]').is(':checked');
 
@@ -37,6 +39,7 @@ function allCheckClassifySentenses() {
                 $(el).find('input[type="checkbox"]').click();
             }
         });
+
     });
 }
 
@@ -261,7 +264,7 @@ function uploadFileEvent() {
 
 // OCR API
 function processImage(fileInfo) {
-    
+
     $('#progressMsgTitle').html('OCR 처리 중..');
     //addProgressBar(21, 30);
     $.ajax({
@@ -292,7 +295,7 @@ function processImage(fileInfo) {
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
     });
-    
+
 };
 
 function insertCommError(eCode, type) {
@@ -386,7 +389,7 @@ function thumbImgEvent() {
 }
 
 // 상세 테이블 렌더링 & DB컬럼 조회
-function appendOcrData(filePath, data) { 
+function appendOcrData(filePath, data) {
     $('#docPopImgPath').val(filePath);
     var param = {
         'ocrData': data,
@@ -564,7 +567,7 @@ function executeML(totData) {
 function selectTypoText(index, fileName) {
     //var item = lineText[index].data;
     var item = lineText[index];
-    
+
     var param = [];
 
     $.ajax({
@@ -662,7 +665,7 @@ function selectClassificationSt(filepath) {
                 for (let i = 0; i < tempArr.length; i++) {
                     resultOcrData += '<tr class="ui_layer1_result_tr">';
                     resultOcrData += '<td><input type="checkbox" class="ui_layer1_result_chk"></td>';
-                    resultOcrData += '<td>' + tempArr[i][1].text + '</td></tr>';
+                    resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
                 }
                 $('#ui_layer1_result').empty().append(resultOcrData);
                 $('input[type=checkbox]').ezMark();
@@ -714,7 +717,7 @@ function detailTable(fileName) {
 
             $('#docName').text(item.data.docCategory.DOCNAME);
             $('#docPredictionScore').text((item.data.docCategory.DOCSCORE * 100) + ' %');
-                       
+
             for (var i in data) {
                 // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
                 if (data[i].colLbl == 37) {
@@ -990,7 +993,7 @@ function zoomImg(e) {
     var height = reImg.height;
 
     //imageZoom 고정크기
-    var fixWidth = 744; 
+    var fixWidth = 744;
     var fixHeight = 1052;
 
     var widthPercent = fixWidth / width;
@@ -1174,7 +1177,7 @@ function modifyTextData() {
     // find an array of data with the same filename
     for (var i in beforeData) {
         if (beforeData[i].fileName == afterData.fileName) {
-            
+
             $.ajax({
                 url: '/uiLearning/uiTraining',
                 type: 'post',
@@ -1196,7 +1199,7 @@ function modifyTextData() {
                     endProgressBar(progressId);
                 }
             });
-            
+
             break;
         }
     }
@@ -1292,7 +1295,7 @@ function callbackAddDocMappingTrain(data, progressId) {
     $('#progressMsgTitle').html('컬럼 맵핑 학습 중..');
     //addProgressBar(41, 80);
     function blackCallback() { }
-    addColumnMappingTrain(data, blackCallback ,progressId);
+    addColumnMappingTrain(data, blackCallback, progressId);
 }
 
 
@@ -1384,6 +1387,35 @@ function addColumnMappingTrain(data, callback, progressId) {
         error: function (err) {
             console.log(err);
             endProgressBar(progressId);
+
+        }
+    });
+}
+
+// layer1(문서양식조회 및 등록) 분류제외문장 선택시 수정
+function editBannedword() {
+
+    $(document).on('focusout', '.editForm_bannedword', function () {
+        var editVal = $(this).val();
+        $(this).closest('td').html(editVal);
+    });
+
+    $(document).on('click', '.td_bannedword', function () {
+        var bannedCheck = $(this).prev().find('.ui_layer1_result_chk').is(':checked');
+        var isInputFocus = $(this).children('input').is(":focus");
+        if (bannedCheck && isInputFocus == false) {
+            var originVal = $(this).html();
+            var editInputHtml = '<input type="text" class="editForm_bannedword" value="' + originVal + '">';
+            $(this).empty().append(editInputHtml).children('input').focus();
+        }
+    })
+
+    $(document).on('click', '.ui_layer1_result_chk', function () {
+        if ($(this).is(':checked')) {
+            var $editTd = $(this).closest('td').next();
+            var originVal = $editTd.html();
+            var editInputHtml = '<input type="text" class="editForm_bannedword" value="' + originVal + '">';
+            $editTd.empty().append(editInputHtml).children('input').focus();
 
         }
     });

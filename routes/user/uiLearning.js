@@ -79,7 +79,7 @@ router.post('/uiLearnTraining', function (req, res) {
 
             returnObj = { code: 200, 'fileName': filePath.split('/')[filePath.split('/').length-1].replace('.tif','.jpg'), 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
         } catch (e) {
-            console.log(resPyStr[0]);
+            console.log(resPyStr);
             returnObj = { 'code':500, 'message': e };
 
         } finally {
