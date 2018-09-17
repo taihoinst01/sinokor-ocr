@@ -3404,7 +3404,7 @@ function selectClassificationSt(filepath) {
                 for (let i = 0; i < tempArr.length; i++) {
                     resultOcrData += '<tr class="batch_layer4_result_tr">';
                     resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk"></td>';               
-                    resultOcrData += '<td>' + tempArr[i][1].text + '</td></tr>';
+                    resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
                 }
                 $('#batch_layer4_result').empty().append(resultOcrData);
                 $('input[type=checkbox]').ezMark();
@@ -3420,11 +3420,20 @@ function selectClassificationSt(filepath) {
 
 // layer4(문서양식조회 및 등록) 분류제외문장 선택시 수정
 function editBannedword() {
-
     $(document).on('focusout', '.editForm_bannedword', function () {
         var editVal = $(this).val();
         $(this).closest('td').html(editVal);
     });
+
+    $(document).on('click', '.td_bannedword', function () {
+        var bannedCheck = $(this).prev().find('.batch_layer4_result_chk').is(':checked');
+        var isInputFocus = $(this).children('input').is(":focus");
+        if (bannedCheck && isInputFocus == false) {
+            var originVal = $(this).html();
+            var editInputHtml = '<input type="text" class="editForm_bannedword" value="' + originVal + '">';
+            $(this).empty().append(editInputHtml).children('input').focus();
+        }
+    })
 
     $(document).on('click', '.batch_layer4_result_chk', function () {
         if ($(this).is(':checked')) {
