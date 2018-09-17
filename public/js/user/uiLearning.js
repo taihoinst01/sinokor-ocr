@@ -9,6 +9,7 @@ var x, y, textWidth, textHeight; // 문서 글씨 좌표
 var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, 마우스 이동 좌표
 var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
+
 $(function () {
 
     init();
@@ -16,14 +17,47 @@ $(function () {
     thumbImgPagingEvent();
     uiTrainEvent();
     popUpEvent();
-    changeDocPopRadio();
-    changeDocPopupImage();
+    docPopRadioEvent();
+    allCheckClassifySentenses();
 });
 
 // 초기 작업
 function init() {
     $('.button_control').attr('disabled', true);
     //layer_open('layer1');
+}
+
+function allCheckClassifySentenses() {
+    $('#allCheckClassifySentenses').click(function () {
+        var isCheck = $(this).is(':checked');
+        $('#ui_layer1_result .ez-checkbox').each(function (i, el) {
+            var isBoxCheck = $(this).find('input[type="checkbox"]').is(':checked');
+
+            if ((isCheck && !isBoxCheck) || (!isCheck && isBoxCheck)) {
+                $(el).find('input[type="checkbox"]').click();
+            }
+        });
+    });
+}
+
+function docPopRadioEvent() {
+    $('input:radio[name=radio_batch]').on('click', function () {
+        var chkValue = $(this).val();
+
+        if (chkValue == '1') {
+            $('#orgDocName').show();
+            $('#newDocName').hide();
+            $('#notInvoice').hide();
+        } else if (chkValue == '2') {
+            $('#newDocName').show();
+            $('#orgDocName').hide();
+            $('#notInvoice').hide();
+        } else if (chkValue == '3') {
+            $('#notInvoice').show();
+            $('#orgDocName').hide();
+            $('#newDocName').hide();
+        }
+    })
 }
 
 // 팝업 이벤트 모음
@@ -36,55 +70,97 @@ function popUpEvent() {
 // 팝업 확인 이벤트
 function popUpRunEvent() {
     $('#btn_pop_doc_run').click(function (e) {
-        var docData = JSON.parse($('#docData').val());
-        for (var i in docData) {
-            if ($('#searchResultDocName').val() == docData[i].DOCNAME) {
-                $('#docName').text(docData[i].DOCNAME);
-                $('#docData').val(JSON.stringify(docData[i]));
-                break;
-            }
+        // chkValue 1: 기존문서 양식조회, 2: 신규문서 양식등록, 3: 계산서 아님
+        var chkValue = $('input:radio[name=radio_batch]:checked').val();
+
+        if ((chkValue == '1' && $('#orgDocName').val() == '') || (chkValue == '2' && $('#newDocName').val() == '')) {
+            alert('The document name is missing');
+            return false;
         }
-        $(this).parents('.poplayer').fadeOut();
-        e.stopPropagation();
-        e.preventDefault();
-    });
+
+        // text & check
+        var textList = [];
+        $('.ui_layer1_result_tr').each(function () {
+            var chk = $(this).children().find('input[type="checkbox"]').is(':checked') == true ? 1 : 0;
+            var text = $(this).children()[1].innerHTML;
+
+            textList.push({ "text": text, "check": chk })
+        })
+
+        // docName
+        var docName = '';
+        if (chkValue == '1') {
+            docName = $('#orgDocName').val();
+        } else if (chkValue == '2') {
+            docName = $('#newDocName').val();
+        } else if (chkValue == '3') {
+            docName = 'NotInvoice';
+        }
+
+        var param = {
+            filepath: $('#docPopImgPath').val(),
+            docName: docName,
+            radioType: chkValue,
+            textList: textList,
+        }
+
+        $.ajax({
+            url: '/uiLearning/insertDoctypeMapping',
+            type: 'post',
+            datatype: 'json',
+            async: false,
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                $('#docName').text(docName);
+                $('#docType').val(data.docType);
+                $('#docSid').val(data.docSid);
+                $('#docPredictionScore').text('');
+                $('#btn_pop_doc_cancel').click();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    })
 }
 
 //팝업 문서 양식 LIKE 조회
 function popUpSearchDocCategory() {
     $('#searchDocCategoryBtn').click(function () {
-        if ($('.ez-selected').children('input').val() == 'choice-1') {
-            var keyword = $('#searchDocCategoryKeyword').val();
+        var keyword = $('#searchDocCategoryKeyword').val().replace(/ /gi, '');
+
+        if (keyword) {
+            $('#docSearchResultImg_thumbCount').hide();
+            $('#docSearchResultMask').hide();
+            $('#searchResultDocName').html('');
+            $('#orgDocName').val('');
+            $('#searchResultDocName').val('');
+            $('#countCurrent').html('1');
             $.ajax({
-                url: '/uiLearning/selectLikeDocCategory',
+                url: '/batchLearning/selectLikeDocCategory',
                 type: 'post',
                 datatype: 'json',
                 data: JSON.stringify({ 'keyword': keyword }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
-                    $('#docData').val(JSON.stringify(data));
+                    data = data.data;
                     $('#docSearchResult').html('');
-                    $('#countCurrent').html('1');
                     $('.button_control10').attr('disabled', true);
+                    docPopImagesCurrentCount = 1;
                     if (data.length == 0) {
-                        $('#docSearchResultImg_thumbCount').hide();
-                        $('#docSearchResultMask').hide();
-                        $('#searchResultDocName').html('');
-                        $('#orgDocName').val('');
-                        $('#searchResultDocName').val('');
                         return false;
                     } else {
-                        /**
-                         결과에 따른 이미지폼 만들기
-                         */
                         docPopImages = data;
-                        var resultImg = '<img src="' + data[0].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+
+                        var searchResultImg = '<img id="searchResultImg" src="/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+                        $('#docSearchResult').empty().append(searchResultImg);
+
                         $('#searchResultDocName').val(data[0].DOCNAME);
                         if (data.length != 1) {
                             $('.button_control12').attr('disabled', false);
                         }
                         $('#orgDocName').val(data[0].DOCNAME);
-                        $('#docSearchResult').html(resultImg);
                         $('#docSearchResultMask').show();
                         $('#countLast').html(data.length);
                         $('#docSearchResultImg_thumbCount').show();
@@ -95,6 +171,7 @@ function popUpSearchDocCategory() {
                 }
             });
         } else {
+            alert('Please enter your search keyword');
         }
     });
 }
@@ -139,6 +216,7 @@ function uploadFileEvent() {
             totCount = 0;
             ocrCount = 0;
             searchDBColumnsCount = 0;
+            $("#uploadFileForm").attr("action", "/common/imageUpload");
             $('#uploadFileForm').submit();
         }
     });
@@ -161,10 +239,16 @@ function uploadFileEvent() {
             $('.button_control').attr('disabled', false);
             //addProgressBar(11, 20);
             if (responseText.message.length > 0) {
+                //console.log(responseText);
                 totCount = responseText.message.length;
+                for (var i = 0; i < responseText.fileInfo.length; i++) {
+                    processImage(responseText.fileInfo[i]);
+                }
+                /*
                 for (var i = 0; i < responseText.message.length; i++) {
                     processImage(responseText.message[i]);
                 }
+                */
             }
             //endProgressBar();
         },
@@ -176,25 +260,26 @@ function uploadFileEvent() {
 }
 
 // OCR API
-function processImage(fileName) {
-
+function processImage(fileInfo) {
+    
     $('#progressMsgTitle').html('OCR 처리 중..');
-    addProgressBar(21, 30);
+    //addProgressBar(21, 30);
     $.ajax({
         url: '/common/ocr',
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader('Content-Type', 'application/json');
         },
         type: 'POST',
-        data: JSON.stringify({ 'fileName': fileName })
+        data: JSON.stringify({ 'fileInfo': fileInfo })
     }).done(function (data) {
         ocrCount++;
         if (!data.code) { // 에러가 아니면
             //console.log(data);
-            thumbImgs.push(fileName);
+            thumbImgs.push(fileInfo.convertFileName);
             $('#progressMsgTitle').html('OCR 처리 완료');
             //addProgressBar(31, 40);
-            appendOcrData(fileName, data);
+            $('#ocrData').val(JSON.stringify(data));
+            appendOcrData(fileInfo.filePath, data);
         } else if (data.error) { //ocr 이외 에러이면
             //endProgressBar();
             //alert(data.error);
@@ -207,37 +292,7 @@ function processImage(fileName) {
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
     });
-    /*
-    // proxy call
-    $.ajax({
-        url: '/proxy/ocr',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify({ "fileName": fileName }),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            ocrCount++;
-            if (!data.code) { // 에러가 아니면
-                //console.log(data);
-                thumbImgs.push(fileName);
-                $('#progressMsgTitle').html('OCR 처리 완료');
-                $('#loadingDetail').html(fileName);
-                addProgressBar(31, 40);
-                appendOcrData(fileName, data.regions);
-            } else if (data.error) { //ocr 이외 에러이면
-                endProgressBar();
-                alert(data.error);
-            } else { // ocr 에러 이면
-                insertCommError(data.code, 'ocr');
-                endProgressBar();
-                alert(data.message);
-            }
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
-    */
+    
 };
 
 function insertCommError(eCode, type) {
@@ -331,12 +386,17 @@ function thumbImgEvent() {
 }
 
 // 상세 테이블 렌더링 & DB컬럼 조회
-function appendOcrData(fileName, data) {   
+function appendOcrData(filePath, data) { 
+    $('#docPopImgPath').val(filePath);
     var param = {
-        'fileName': fileName,
-        'data': data,
-        'nextType': 'ts'
+        'ocrData': data,
+        'filePath': filePath
     };
+    /*
+    var param = {
+        'filePath': filePath
+    };
+    */
     executeML(param);
     /*
     $('#progressMsgTitle').html('머신러닝 작동 중..');
@@ -391,27 +451,12 @@ function appendOcrData(fileName, data) {
     */
 }
 
-/**
- * @param {any} type
- * ts : typoSentence , dd : domainDictionary , tc : textClassification , lm : labelMapping , st : statementClassification , sc : searchDBColumns
- */
 function executeML(totData) {
-    var fileName = totData.fileName;
-    var data = totData.data;
-    var type = totData.nextType;
-    //var docCategory = (totData.docCategory) ? totData.docCategory : null
-
-
+    /*
     var targetUrl;
     var param;
     param = { 'fileName': fileName, 'data': data };
-    /*
-    if (!docCategory) {
-        param = { 'fileName': fileName, 'data': data };
-    } else {
-        param = { 'fileName': fileName, 'data': data, 'docCategory': docCategory };
-    }
-    */
+
     if (type == 'ts') {
         targetUrl = '/uiLearning/typoSentence';
         $('#progressMsgTitle').html('오타 수정 처리 중..');
@@ -435,77 +480,75 @@ function executeML(totData) {
         //addProgressBar(71, 90);
         //addProgressBar(76, 90);
     }
-
+    */
+    $('#progressMsgTitle').html('머신러닝 처리 중..');
     $.ajax({
-        url: targetUrl,
+        url: '/uiLearning/uiLearnTraining',
         type: 'post',
         datatype: 'json',
-        data: JSON.stringify(param),
+        data: JSON.stringify(totData),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            //console.log(data);
+            console.log(data);
             if (data.column) searchDBColumnsCount++;
-            if (data.nextType) {
-                executeML(data);
+            if (data.message) {
+                alert(message);
             } else {
-                //console.log(data)
-                if (data.message) {
-                    console.log(data);
-                } else {
-                    console.log(data);
-                    lineText.push(data);
-                    if (searchDBColumnsCount == 1) {
-                        /*
-                        var docName = '';
-                        var docScore = '';
-                       
-                        if (data.docCategory != null) {
-                            docName = data.docCategory[0].DOCNAME;
-                            $('#docData').val(JSON.stringify(data.docCategory[0]));
-                        }
-
-                        if (data.score) {
-                            docScore = data.score;
-                        }
-                        */
-
-                        var mainImgHtml = '';
-                        mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
-                        //mainImgHtml += '<div id="redNemo">';
-                        //mainImgHtml += '</div>';
-                        mainImgHtml += '</div>';
-                        mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
-                        mainImgHtml += '<div id="redZoomNemo">';
-                        mainImgHtml += '</div>';
-                        mainImgHtml += '</div>';
-                        $('#img_content').html(mainImgHtml);
-                        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
-                        thumnImg();
-                        $('#imageBox > li').eq(0).addClass('on');
-                        /*
-                        $('#mlPredictionDocName').val(docName);
-                        $('#mlPredictionPercent').val(docScore + '%');
-                        $('#docName').html(docName);
-                        $('#docPredictionScore').html(docScore + '%');
-                        if (docScore >= 90) {
-                            $('#docName').css('color', 'dodgerblue');
-                            $('#docPredictionScore').css('color', 'dodgerblue');
-                        } else {
-                            $('#docName').css('color', 'darkred');
-                            $('#docPredictionScore').css('color', 'darkred');
-                        }
-                        */
-                        selectTypoText(0, fileName);
-                        //detailTable(fileName);
-                        //docComparePopup(0);
+                //console.log(data);
+                lineText.push(data);
+                $('#docSid').val(data.data.docSid);
+                $('#docType').val(data.data.docCategory.DOCTYPE);
+                if (searchDBColumnsCount == 1) {
+                    /*
+                    var docName = '';
+                    var docScore = '';
+                   
+                    if (data.docCategory != null) {
+                        docName = data.docCategory[0].DOCNAME;
+                        $('#docData').val(JSON.stringify(data.docCategory[0]));
                     }
 
-                    if (totCount == searchDBColumnsCount) {
-                        thumbImgEvent();
-                        //addProgressBar(91, 99);
-                        $('#uploadForm').hide();
-                        $('#uploadSucessForm').show();
+                    if (data.score) {
+                        docScore = data.score;
                     }
+                    */
+
+                    var mainImgHtml = '';
+                    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
+                    //mainImgHtml += '<div id="redNemo">';
+                    //mainImgHtml += '</div>';
+                    mainImgHtml += '</div>';
+                    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
+                    mainImgHtml += '<div id="redZoomNemo">';
+                    mainImgHtml += '</div>';
+                    mainImgHtml += '</div>';
+                    $('#img_content').html(mainImgHtml);
+                    $('#mainImage').css('background-image', 'url("../../uploads/' + data.fileName + '")');
+                    thumnImg();
+                    $('#imageBox > li').eq(0).addClass('on');
+                    /*
+                    $('#mlPredictionDocName').val(docName);
+                    $('#mlPredictionPercent').val(docScore + '%');
+                    $('#docName').html(docName);
+                    $('#docPredictionScore').html(docScore + '%');
+                    if (docScore >= 90) {
+                        $('#docName').css('color', 'dodgerblue');
+                        $('#docPredictionScore').css('color', 'dodgerblue');
+                    } else {
+                        $('#docName').css('color', 'darkred');
+                        $('#docPredictionScore').css('color', 'darkred');
+                    }
+                    */
+                    selectTypoText(0, data.fileName);
+                    //detailTable(fileName);
+                    //docComparePopup(0);
+                }
+
+                if (totCount == searchDBColumnsCount) {
+                    thumbImgEvent();
+                    //addProgressBar(91, 99);
+                    $('#uploadForm').hide();
+                    $('#uploadSucessForm').show();
                 }
             }
         },
@@ -521,6 +564,7 @@ function executeML(totData) {
 function selectTypoText(index, fileName) {
     //var item = lineText[index].data;
     var item = lineText[index];
+    
     var param = [];
 
     $.ajax({
@@ -530,8 +574,7 @@ function selectTypoText(index, fileName) {
         data: JSON.stringify({ 'data': item }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
-            lineText[index].data = data;
+            lineText[index].data = data.data;
             detailTable(fileName);
             docComparePopup(0);
 
@@ -546,12 +589,33 @@ function selectTypoText(index, fileName) {
     });
 }
 
+function docPopInit() {
+    $('#originImgDiv').empty();
+    $('#mlPredictionDocName').val('');
+    $('#mlPredictionPercent').val('');
+    $('#docSearchResultImg_thumbCount').hide();
+    $('#docSearchResultMask').hide();
+    $('#countCurrent').empty();
+    $('#countLast').empty();
+    $('#mlPredictionPercent').val('');
+    $('#orgDocSearchRadio').click();
+    $('.ui_doc_pop_ipt').val('');
+    $('#docSearchResult').empty();
+    $('#searchResultDocName').val('');
+    $('#searchDocCategoryKeyword').val('');
+    $('#ui_layer1_result').empty();
+}
+
 //문서 비교 popup 버튼 클릭 이벤트
 function docComparePopup(imgIndex) {
     $('#docCompareBtn').unbind('click');
     $('#docCompareBtn').click(function (e) {
+        docPopInit();
+        selectClassificationSt($('#docPopImgPath').val());
+        $('#mlPredictionDocName').val($('#docName').text());
+        $('#mlPredictionPercent').val($('#docPredictionScore').text());
         var appendImg = '<img id="originImg" src="../../uploads/' + lineText[imgIndex].fileName + '" style="width: 100%;height: 480px;">'
-        $('#ui_pop_MlImg').html(appendImg);
+        $('#originImgDiv').html(appendImg);
         //$('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
         //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
         layer_open('layer1');
@@ -560,18 +624,80 @@ function docComparePopup(imgIndex) {
     });
 }
 
+// 분류제외문장 조회
+function selectClassificationSt(filepath) {
+
+    var param = {
+        filepath: filepath
+    };
+    var resultOcrData = '';
+    $.ajax({
+        //todo
+        url: '/batchLearning/selectClassificationSt',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            //addProgressBar(1, 99);
+        },
+        success: function (data) {
+            //console.log("SUCCESS selectClassificationSt : " + JSON.stringify(data));
+            if (data.code != 500 || data.data != null) {
+
+                var ocrdata = JSON.parse($('#ocrData').val());
+
+                //순서 정렬 로직
+                let tempArr = new Array();
+                for (let item in ocrdata) {
+                    tempArr[item] = new Array(makeindex(ocrdata[item].location), ocrdata[item]);
+                }
+
+                tempArr.sort(function (a1, a2) {
+                    a1[0] = parseInt(a1[0]);
+                    a2[0] = parseInt(a2[0]);
+                    return (a1[0] < a2[0]) ? -1 : ((a1[0] > a2[0]) ? 1 : 0);
+                });
+
+                for (let i = 0; i < tempArr.length; i++) {
+                    resultOcrData += '<tr class="ui_layer1_result_tr">';
+                    resultOcrData += '<td><input type="checkbox" class="ui_layer1_result_chk"></td>';
+                    resultOcrData += '<td>' + tempArr[i][1].text + '</td></tr>';
+                }
+                $('#ui_layer1_result').empty().append(resultOcrData);
+                $('input[type=checkbox]').ezMark();
+
+            }
+
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    })
+}
+
+function makeindex(location) {
+    let temparr = location.split(",");
+    for (let i = 0; i < 5; i++) {
+        if (temparr[0].length < 5) {
+            temparr[0] = '0' + temparr[0];
+        }
+    }
+    return Number(temparr[1] + temparr[0]);
+}
+
 // 상세 테이블 렌더링
 function detailTable(fileName) {
 
     $('#textResultTbl').html('');
     var tblSortTag = '';
     var tblTag = '';
+    //console.log(lineText);
     for (var i = 0; i < lineText.length; i++) {
 
         if (lineText[i].fileName == fileName) {
 
             var item = lineText[i];
-
             var data;
 
             if (item.data.data) {
@@ -586,6 +712,9 @@ function detailTable(fileName) {
             var entryColArr = item.entryMappingList;
             entryColArr.unshift(entryColArr.pop());
 
+            $('#docName').text(item.data.docCategory.DOCNAME);
+            $('#docPredictionScore').text((item.data.docCategory.DOCSCORE * 100) + ' %');
+                       
             for (var i in data) {
                 // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
                 if (data[i].colLbl == 37) {
@@ -1037,7 +1166,7 @@ function modifyTextData() {
         var location = $(el).find('label').children().eq(1).val();
         var text = $(el).find('label').children().eq(0).val();
         var colLbl = $(el).find('select').find('option:selected').val();
-        afterData.data.push({ 'location': location, 'text': text, 'colLbl': colLbl });
+        afterData.data.push({ 'location': location, 'text': text, 'colLbl': Number(colLbl ? colLbl : 38) });
     });
 
     afterData.fileName = $('#imageBox > .on span').text();
@@ -1045,12 +1174,17 @@ function modifyTextData() {
     // find an array of data with the same filename
     for (var i in beforeData) {
         if (beforeData[i].fileName == afterData.fileName) {
-
+            
             $.ajax({
-                url: '/common/modifyTextData',
+                url: '/uiLearning/uiTraining',
                 type: 'post',
                 datatype: "json",
-                data: JSON.stringify({ 'beforeData': beforeData[i].data, 'afterData': afterData }),
+                data: JSON.stringify({
+                    'beforeData': beforeData[i].data,
+                    'afterData': afterData,
+                    'docType': $('#docType').val(),
+                    'docSid': $('#docSid').val()
+                }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
                     //makeTrainingData();
@@ -1062,6 +1196,7 @@ function modifyTextData() {
                     endProgressBar(progressId);
                 }
             });
+            
             break;
         }
     }
@@ -1252,58 +1387,4 @@ function addColumnMappingTrain(data, callback, progressId) {
 
         }
     });
-}
-
-// 문서 양식 조회 팝업 라디오 이벤트
-function changeDocPopRadio() {
-    $('#orgDocSearchRadio').click(function () {
-        $('#orgDocSearch').show();
-        $('#newDocRegistration').hide();
-    })
-
-    $('#newDocRegistrationRadio').click(function () {
-        $('#newDocRegistration').show();
-        $('#orgDocSearch').hide();
-    })
-}
-
-// 문서 양식 조회 이미지 좌우 버튼 이벤트
-function changeDocPopupImage() {
-    $('#docSearchResultImg_thumbPrev').click(function () {
-        $('#docSearchResultImg_thumbNext').attr('disabled', false);
-        if (docPopImagesCurrentCount == 1) {
-            return false;
-        } else {
-            docPopImagesCurrentCount--;
-            $('#countCurrent').html(docPopImagesCurrentCount);
-            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
-            if (docPopImagesCurrentCount == 1) {
-                $('#docSearchResultImg_thumbPrev').attr('disabled', true);
-            } else {
-                $('#docSearchResultImg_thumbPrev').attr('disabled', false);
-            }
-        }
-    })
-
-    $('#docSearchResultImg_thumbNext').click(function () {
-        var totalCount = $('#countLast').html();
-        $('#docSearchResultImg_thumbPrev').attr('disabled', false);
-        if (docPopImagesCurrentCount == totalCount) {
-            return false;
-        } else {
-            docPopImagesCurrentCount++;
-            $('#countCurrent').html(docPopImagesCurrentCount);
-            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#docSearchResult img').attr('src', docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
-
-            if (docPopImagesCurrentCount == totalCount) {
-                $('#docSearchResultImg_thumbNext').attr('disabled', true);
-            } else {
-                $('#docSearchResultImg_thumbNext').attr('disabled', false);
-            }
-        }
-    })
 }

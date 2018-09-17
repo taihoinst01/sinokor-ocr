@@ -454,6 +454,48 @@ exports.insertBatchColumnMapping = function (req, filepath, done) {
     });
 };
 
+exports.insertBatchColumnMappingFromUi = function (req, docType, done) {
+    return new Promise(async function (resolve, reject) {
+        var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+        let conn;
+        let result;
+        let selectSid = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL `;
+        let selectBatchColumnMapping = `SELECT SEQNUM FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = :data AND CLASS = :class `;
+        let insertBatchColumnMapping = `INSERT INTO TBL_BATCH_COLUMN_MAPPING_TRAIN VALUES 
+                                        (SEQ_BATCH_COLUMN_MAPPING_TRAIN.nextval, :data, :class, sysdate) `;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            
+            result = await conn.execute(selectSid, [req.text.replace(regExp, "")]);
+            if (result.rows[0].SID) {              
+                var locArr = req.location.split(',');
+                var colSid = docType + ',' + locArr[0] + ',' + locArr[1] + ',' + (Number(locArr[0]) + Number(locArr[2])) + ',' + result.rows[0].SID;
+                req.colSid = colSid;
+                result = await conn.execute(selectBatchColumnMapping, [colSid, req.colLbl]);
+                if (result.rows.length == 0) {
+                    await conn.execute(insertBatchColumnMapping, [colSid, req.colLbl]);
+                    return done(null, req);
+                } else {
+                    return done(null, null);
+                }
+            }          
+
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+
+};
+
 exports.insertColumnMapping2 = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -2076,7 +2118,7 @@ exports.insertBannedWord = function (req, done) {
             var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
 
             result = await conn.execute(selectTypo, [reqArr[0].replace(regExp, "")]);
-            if (result.rows.length == 0) {
+            if (result.rows.length == 0 && reqArr[0].replace(regExp, "")) {
                 await conn.execute(insertTypo, [reqArr[0].replace(regExp, "")]);
                 conn.commit();
             }
@@ -2165,16 +2207,17 @@ exports.insertFormMapping = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-
-            await conn.execute(`INSERT INTO
+            result = await conn.execute(`SELECT SEQNUM FROM TBL_FORM_MAPPING WHERE DATA = :data AND CLASS = :class `, req);
+            if (result.rows.length == 0) {
+                await conn.execute(`INSERT INTO
                                     TBL_FORM_MAPPING
                                  VALUES
                                     (seq_form_mapping.nextval, :data, :class, sysdate) `, req);
-            conn.commit();
+            }
 
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
-            return done(null, err);
+            reject(err);
         } finally {
             if (conn) {   // the conn assignment worked, must release
                 try {

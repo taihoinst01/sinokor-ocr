@@ -15,11 +15,12 @@ var PythonShell = require('python-shell')
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 var execSync = require('sync-exec');
+var ocrUtil = require('../util/ocr.js');
 
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, propertiesConfig.filepath.imagePath);
+            cb(null, 'uploads/');
         },
         filename: function (req, file, cb) {
             cb(null, file.originalname);
@@ -39,7 +40,7 @@ var router = express.Router();
 router.post('/imageUpload', upload.any(), function (req, res) {
     var files = req.files;
     var imagePath = propertiesConfig.filepath.imagePath;
-    var convertedImagePath = propertiesConfig.filepath.convertedImagePath;
+    var convertedImagePath = appRoot + '\\uploads\\';
     var fileInfo = [];
     var returnObj = [];
 
@@ -51,22 +52,21 @@ router.post('/imageUpload', upload.any(), function (req, res) {
             if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
                 var fileItem = {
                     imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                    filePath: fileObj.path,
+                    filePath: (appRoot + '/' + fileObj.path).replace(/\\/gi, '/'),
                     oriFileName: fileObj.originalname,
-                    convertedFilePath: convertedImagePath,
+                    convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
                     convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
                     fileExt: fileExt,
                     fileSize: fileObj.size,
-                    contentType: fileObj.mimetype,
-                    svrFileName: imagePath + '\\' + fileObj.originalname
+                    contentType: fileObj.mimetype
                 };
                 fileInfo.push(fileItem);
 
                 var fileNames = [];
                 returnObj.push(fileItem.convertFileName);
 
-                var ifile = imagePath + '\\' + fileObj.originalname;
-                var ofile = 'uploads\\' + fileObj.originalname.split('.')[0] + '.jpg';
+                var ifile = convertedImagePath + fileObj.originalname;
+                var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
                 var result = execSync('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile);
                 if (result.status != 0) {
                     throw new Error(result.stderr);
@@ -135,6 +135,7 @@ router.post('/modifyTextData', function (req, res) {
     var beforeData = req.body.beforeData;
     var afterData = req.body.afterData;
     var returnObj;
+
     sync.fiber(function () {
         try {
             
@@ -350,9 +351,9 @@ router.post('/selectTypoData2', function (req, res) {
 
 // [POST] OCR API (request binary data)
 router.post('/ocr', function (req, res) {
-    var fileName = req.body.fileName;
+    var fileInfo = req.body.fileInfo;
 
-    fs.readFile('./uploads/' + fileName, function (err, data) {
+    fs.readFile(fileInfo.convertedFilePath + fileInfo.convertFileName , function (err, data) {
         if (err) { // fs error
             console.log(err);
             res.send({ code: 404, error: '파일이 없습니다.' });

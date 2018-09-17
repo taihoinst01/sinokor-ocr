@@ -6,12 +6,15 @@ var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var execSync = require('child_process').execSync;
 var exec = require('child_process').exec;
-var request = require('request');
+var request = require('sync-request');
 var oracledb = require('oracledb');
 var dbConfig = require('../../config/dbConfig.js');
 var logger = require('../util/logger');
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
+var pythonConfig = require(appRoot + '/config/pythonConfig');
+var PythonShell = require('python-shell');
+var ui = require('../util/ui.js');
 
 const upload = multer({
     storage: multer.diskStorage({
@@ -57,6 +60,114 @@ router.get('/', function (req, res) {
 router.post('/', function (req, res) {
     if (req.isAuthenticated()) res.render('user/uiLearning', { currentUser: req.user });
     else res.redirect("/logout");
+});
+
+router.post('/uiLearnTraining', function (req, res) {
+    var ocrData = req.body.ocrData;
+    var filePath = req.body.filePath;
+
+    var returnObj;
+    sync.fiber(function () {
+        try {
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
+            var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var resPyArr = JSON.parse(resPyStr[0]);
+
+            var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
+            var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
+
+            returnObj = { code: 200, 'fileName': filePath.split('/')[filePath.split('/').length-1].replace('.tif','.jpg'), 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
+        } catch (e) {
+            console.log(resPyStr[0]);
+            returnObj = { 'code':500, 'message': e };
+
+        } finally {
+            res.send(returnObj);
+        }
+
+    });
+});
+
+// 문서양식매핑
+router.post('/insertDoctypeMapping', function (req, res) {
+    var returnObj;
+
+    var data = {
+        filepath: req.body.filepath,
+        docName: req.body.docName,
+        radioType: req.body.radioType,
+        textList: req.body.textList
+    }
+
+    sync.fiber(function () {
+        try {
+            let data = req.body;
+            var result = sync.await(ui.insertDoctypeMapping(data, sync.defer()));
+            returnObj = { code: 200, docType: result[0], docSid: result[1] };
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+// ui training
+router.post('/uiTraining', function (req, res) {
+    var beforeData = req.body.beforeData;
+    var afterData = req.body.afterData;
+    var docType = req.body.docType;
+    var docSid = req.body.docSid;
+    var fmData = [];
+    var cmData = [];
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            if (beforeData.docCategory.DOCTYPE != docType) {
+                sync.await(oracle.insertFormMapping([docSid, docType], sync.defer()));
+                fmData.push({ 'data': docSid, 'class': docType });
+            }
+
+            for (var i in afterData.data) {
+                for (var j in beforeData.data) {
+                    if (afterData.data[i].location == beforeData.data[j].location) {
+                        //사용자가 글자를 직접 수정한 경우 TBL_CONTRACT_MAPPING에 insert
+                        if (afterData.data[i].text != beforeData.data[j].text) {
+                            //var item = [beforeData.data[j].originText, '', afterData.data[i].text, ''];
+                            //sync.await(oracle.insertContractMapping(item, sync.defer()));
+                        }
+                        //사용자가 지정한 컬럼라벨의 텍스트가 유효한 컬럼의 경우 OcrSymspell에 before text(중요!!) insert
+                        if (afterData.data[i].colLbl >= 3 && afterData.data[i].colLbl <= 34) {
+                            sync.await(oracle.insertOcrSymsSingle(beforeData.data[j], sync.defer()));
+                        }
+                        afterData.data[i].sid = sync.await(oracle.selectSid(beforeData.data[j], sync.defer()));
+                        //라벨이 변경된 경우만 트레이닝 insert
+                        if ((docType != 0 && docType != 1) && (afterData.data[i].colLbl == 0 || afterData.data[i].colLbl)) {
+                            var item = sync.await(oracle.insertBatchColumnMappingFromUi(afterData.data[i], docType, sync.defer()));
+                            if (item) {
+                                cmData.push({ 'data': item.colSid, 'class': item.colLbl });
+                            }
+                        }
+                        break;
+                    }
+                }
+            }            
+
+            // Azure ml train 프록시 호출
+            var azureRes = request('POST', 'http://localhost:8888/ml/train', { json: { 'fmData': fmData, 'cmData': cmData } });
+
+            returnObj = { code: 200, message: 'ui training success' };
+
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
 });
 
 // typoSentence ML
