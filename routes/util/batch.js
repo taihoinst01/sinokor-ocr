@@ -30,9 +30,9 @@ function insertDoctypeMapping(req, done) {
             let topSentenses = []; // 문서판별을 위한 문장
             var docType;
             var convertedFilepath;
-
+            var bannedWord;
             //20180910 hskim 문서양식 매핑
-
+            bannedWord = selectBannedWord();
             //문장을 순서대로 for문
             for (var i in data.textList) {
                 //console.log(data.textList[i]);
@@ -41,7 +41,14 @@ function insertDoctypeMapping(req, done) {
                     data.textList[i] = insertSymspell(data.textList[i]);
 
                     //문장 index가 0인 경우 sentenses.append, sentenses length가 5가 되면 for문 종료
-                    topSentenses.push(data.textList[i])
+                    var bannedCheck = true;
+                    for (var j in bannedWord) {
+                        if (data.textList[i].text.toLowerCase().indexOf(bannedWord[j].WORD) != -1) {
+                            bannedCheck = false;
+                            break;
+                        }
+                    }
+                    if (bannedCheck) topSentenses.push(data.textList[i]);
                     if (topSentenses.length >= 5) break;
 
                 } else if (data.textList[i].check == 1) {
@@ -83,6 +90,16 @@ function insertDoctypeMapping(req, done) {
             return done(null, e);
         }
     });
+}
+
+function selectBannedWord() {
+    try {
+        let item = sync.await(oracle.selectBannedWord(sync.defer()));
+
+        return item
+    } catch (e) {
+        throw e;
+    }
 }
 
 function insertSymspell(item) {    

@@ -2266,6 +2266,31 @@ exports.updateDocCategoryToFilePath = function (req, done) {
     });
 };
 
+exports.selectBannedWord = function (done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            result = await conn.execute(`SELECT WORD FROM TBL_BANNED_WORD`);
+            conn.commit();
+
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();
