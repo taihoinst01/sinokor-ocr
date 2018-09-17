@@ -126,7 +126,7 @@ def eval(inputJson, docType):
 
         # Azure ml 컬럼 매핑 추출
         params = {"data": json.dumps(inputArr), "type": "columnMapping"}
-        response = requests.post(url='http://localhost:8888/ml/api', data=params)
+        response = requests.post(url='http://172.16.53.143:8888/ml/api', data=params)
         inputArr = response.json()       
 
         # 전 아이템 중 엔트리 라벨 추출
@@ -323,7 +323,7 @@ def selectFormMapping(sentencesSid):
 def azureFormMapping(sentencesSid):
     try:
         params = {"data": "'" + sentencesSid + "'", "type": "formMapping"}
-        response = requests.post(url='http://localhost:8888/ml/api', data=params)
+        response = requests.post(url='http://172.16.53.143:8888/ml/api', data=params)
         r = response.json()
 
         selectDocCategorySql = "SELECT SEQNUM, DOCNAME, DOCTYPE, SAMPLEIMAGEPATH FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType"
