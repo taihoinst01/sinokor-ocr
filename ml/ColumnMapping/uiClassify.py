@@ -322,7 +322,7 @@ def selectFormMapping(sentencesSid):
 
 def azureFormMapping(sentencesSid):
     try:
-        params = {"data": "'" + sentencesSid + "'", "type": "formMapping"}
+        params = {"data": sentencesSid, "type": "formMapping"}
         response = requests.post(url='http://172.16.53.143:8888/ml/api', data=params)
         r = response.json()
 
