@@ -18,7 +18,6 @@ $(function () {
     uiTrainEvent();
     popUpEvent();
     docPopRadioEvent();
-    allCheckClassifySentenses();
     editBannedword();
 });
 
@@ -26,21 +25,6 @@ $(function () {
 function init() {
     $('.button_control').attr('disabled', true);
     //layer_open('layer1');
-}
-
-function allCheckClassifySentenses() {
-    $('#allCheckClassifySentenses').click(function () {
-        var isCheck = $(this).is(':checked');
-
-        $('#ui_layer1_result .ez-checkbox').each(function (i, el) {
-            var isBoxCheck = $(this).find('input[type="checkbox"]').is(':checked');
-
-            if ((isCheck && !isBoxCheck) || (!isCheck && isBoxCheck)) {
-                $(el).find('input[type="checkbox"]').click();
-            }
-        });
-
-    });
 }
 
 function docPopRadioEvent() {
@@ -1395,11 +1379,13 @@ function addColumnMappingTrain(data, callback, progressId) {
 // layer1(문서양식조회 및 등록) 분류제외문장 선택시 수정
 function editBannedword() {
 
+    // 수정 중 포커스 잃었을 때
     $(document).on('focusout', '.editForm_bannedword', function () {
         var editVal = $(this).val();
         $(this).closest('td').html(editVal);
     });
 
+    // td영역 클릭시 edit
     $(document).on('click', '.td_bannedword', function () {
         var bannedCheck = $(this).prev().find('.ui_layer1_result_chk').is(':checked');
         var isInputFocus = $(this).children('input').is(":focus");
@@ -1410,6 +1396,7 @@ function editBannedword() {
         }
     })
 
+    // 개별체크
     $(document).on('click', '.ui_layer1_result_chk', function () {
         if ($(this).is(':checked')) {
             var $editTd = $(this).closest('td').next();
@@ -1418,5 +1405,20 @@ function editBannedword() {
             $editTd.empty().append(editInputHtml).children('input').focus();
 
         }
+    });
+
+    // 모두체크
+    $('#allCheckClassifySentenses').click(function () {
+        var isCheck = $(this).is(':checked');
+
+        if (isCheck) {
+            $('.ui_layer1_result_chk').prop('checked', true);
+            $('.ez-checkbox').addClass('ez-checked');
+
+        } else {
+            $('.ui_layer1_result_chk').prop('checked', false);
+            $('.ez-checkbox').removeClass('ez-checked');
+        }
+
     });
 }

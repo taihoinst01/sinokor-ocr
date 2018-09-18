@@ -3420,11 +3420,14 @@ function selectClassificationSt(filepath) {
 
 // layer4(문서양식조회 및 등록) 분류제외문장 선택시 수정
 function editBannedword() {
+
+    // 수정 중 포커스 잃었을 때
     $(document).on('focusout', '.editForm_bannedword', function () {
         var editVal = $(this).val();
         $(this).closest('td').html(editVal);
     });
 
+    // td영역 클릭시 edit
     $(document).on('click', '.td_bannedword', function () {
         var bannedCheck = $(this).prev().find('.batch_layer4_result_chk').is(':checked');
         var isInputFocus = $(this).children('input').is(":focus");
@@ -3435,6 +3438,7 @@ function editBannedword() {
         }
     })
 
+    // 개별체크
     $(document).on('click', '.batch_layer4_result_chk', function () {
         if ($(this).is(':checked')) {
             var $editTd = $(this).closest('td').next();
@@ -3442,6 +3446,20 @@ function editBannedword() {
             var editInputHtml = '<input type="text" class="editForm_bannedword" value="' + originVal + '">';
             $editTd.empty().append(editInputHtml).children('input').focus();
 
+        }
+    });
+
+    // 모두체크
+    $('#allCheckClassifySentenses').click(function () {
+        var isCheck = $(this).is(':checked');
+
+        if (isCheck) { 
+            $('.batch_layer4_result_chk').prop('checked', true);
+            $('.ez-checkbox').addClass('ez-checked');
+            
+        } else {
+            $('.batch_layer4_result_chk').prop('checked', false);
+            $('.ez-checkbox').removeClass('ez-checked');
         }
     });
 }
