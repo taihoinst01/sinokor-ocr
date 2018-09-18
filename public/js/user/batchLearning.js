@@ -3434,7 +3434,8 @@ function editBannedword() {
         if (bannedCheck && isInputFocus == false) {
             var originVal = $(this).html();
             var editInputHtml = '<input type="text" class="editForm_bannedword" value="' + originVal + '">';
-            $(this).empty().append(editInputHtml).children('input').focus();
+            $(this).empty().append(editInputHtml).children('input');
+            $('.editForm_bannedword').focus;
         }
     })
 
@@ -3455,11 +3456,11 @@ function editBannedword() {
 
         if (isCheck) { 
             $('.batch_layer4_result_chk').prop('checked', true);
-            $('.ez-checkbox').addClass('ez-checked');
+            $('.batch_layer4_result_chk').closest('.ez-checkbox').addClass('ez-checked');
             
         } else {
             $('.batch_layer4_result_chk').prop('checked', false);
-            $('.ez-checkbox').removeClass('ez-checked');
+            $('.batch_layer4_result_chk').closest('.ez-checkbox').removeClass('ez-checked');
         }
     });
 }

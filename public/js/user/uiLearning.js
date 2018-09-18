@@ -1413,11 +1413,11 @@ function editBannedword() {
 
         if (isCheck) {
             $('.ui_layer1_result_chk').prop('checked', true);
-            $('.ez-checkbox').addClass('ez-checked');
+            $('.ui_layer1_result_chk').closest('.ez-checkbox').addClass('ez-checked');
 
         } else {
             $('.ui_layer1_result_chk').prop('checked', false);
-            $('.ez-checkbox').removeClass('ez-checked');
+            $('.ui_layer1_result_chk').closest('.ez-checkbox').removeClass('ez-checked');
         }
 
     });
