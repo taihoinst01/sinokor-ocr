@@ -18,7 +18,7 @@ id = "koreanre"
 pw = "koreanre01"
 sid = "koreanreocr"
 # ip = "10.10.20.205"
-ip = "172.16.53.142"
+ip = "172.16.53.145"
 port = "1521"
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
@@ -322,7 +322,7 @@ def selectFormMapping(sentencesSid):
 
 def azureFormMapping(sentencesSid):
     try:
-        params = {"data": "'" + sentencesSid + "'", "type": "formMapping"}
+        params = {"data": sentencesSid, "type": "formMapping"}
         response = requests.post(url='http://172.16.53.143:8888/ml/api', data=params)
         r = response.json()
 

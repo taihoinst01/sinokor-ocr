@@ -4,7 +4,7 @@ id = "koreanre"
 pw = "koreanre01"
 sid = "koreanreocr"
 # ip = "10.10.20.205"
-ip = "172.16.53.142"
+ip = "172.16.53.145"
 port = "1521"
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 

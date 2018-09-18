@@ -17,7 +17,7 @@ id = "koreanre"
 pw = "koreanre01"
 sid = "koreanreocr"
 # ip = "10.10.20.205"
-ip = "172.16.53.142"
+ip = "172.16.53.145"
 port = "1521"
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
@@ -179,8 +179,8 @@ def eval(inputJson, docType):
                 if 'entryLbl' not in inputItem:
                     inputItem['entryLbl'] = 31
 
-        for item in inputArr:
-            print(item)
+        #for item in inputArr:
+        #    print(item)
         return str(inputArr)
 
     except Exception as e:
