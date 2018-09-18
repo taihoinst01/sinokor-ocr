@@ -379,12 +379,9 @@ def appendSentences(ocrData, bannedWords):
     for item in ocrData:
         # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
         isBanned = False
-        # text = re.sub(regExp, '', item["text"])
         text = item["text"]
-        textSplit = text.split(" ")
-        firstText = textSplit[0]
         for i in bannedWords:
-            if firstText.lower().find(str(i)) != -1:
+            if text.lower().find(str(i)) == 0:
                 isBanned = True
                 break
         if not isBanned:

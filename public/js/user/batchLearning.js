@@ -2436,9 +2436,13 @@ function modifyTextData() {
         datatype: "json",
         data: JSON.stringify({ 'beforeData': beforeData[0], 'afterData': afterData }),
         contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving learn data...");
+            progressId = showProgressBar();
+        },
         success: function (data) {
-            alert("success training");    
-            //fn_batchUiTraining();
+            alert("success training");
+            endProgressBar(progressId);
         },
         error: function (err) {
             console.log(err);
@@ -3403,10 +3407,9 @@ function selectClassificationSt(filepath) {
 
                 for (let i = 0; i < tempArr.length; i++) {
 
-                    var textSplit = tempArr[i][1].text.split(" ");
                     var bannedCheck = true;
                     for (let j = 0; j < data.bannedData.length; j++) {
-                        if (textSplit[0].toLowerCase().indexOf(data.bannedData[j].WORD) >= 0) {
+                        if (tempArr[i][1].text.toLowerCase().indexOf(data.bannedData[j].WORD) == 0) {
                             bannedCheck = false;
                             break;
                         }

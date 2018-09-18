@@ -2113,13 +2113,13 @@ exports.insertBannedWord = function (req, done) {
             let selectTypo = `SELECT SEQNUM FROM TBL_BANNED_WORD WHERE WORD = LOWER(:word) `;
             let insertTypo = `INSERT INTO TBL_BANNED_WORD(SEQNUM, WORD, REGDATE) VALUES (seq_banned_word.nextval, LOWER(:word), SYSDATE) `;
             conn = await oracledb.getConnection(dbConfig);
-            var reqArr = req.text.split(' ');
+            var reqArr = req.text;
             var result;
             //var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
 
-            result = await conn.execute(selectTypo, [reqArr[0]]);
-            if (result.rows.length == 0 && reqArr[0]) {
-                await conn.execute(insertTypo, [reqArr[0]]);
+            result = await conn.execute(selectTypo, [reqArr]);
+            if (result.rows.length == 0 && reqArr) {
+                await conn.execute(insertTypo, [reqArr]);
                 conn.commit();
             }
 
