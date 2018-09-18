@@ -1568,7 +1568,13 @@ function fn_viewImageData(filepath, rowNum, imgId, obj) {
 
     var appendHtml = '';
     $('#tbody_batchList_answer').empty();
-    var data = $('.rowNum' + rowNum);
+    var data;
+    if (addCond == "LEARN_N") {
+        data = $("#batch_right_contents_before .rowNum" + rowNum);
+    } else if (addCond == "LEARN_Y") {
+        data = $("#batch_right_contents_after .rowNum" + rowNum);
+    }
+
     loadImage('/tif' + filepath, function (tifResult) {
 
         if (tifResult) {
