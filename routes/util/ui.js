@@ -44,7 +44,7 @@ function insertDoctypeMapping(req, done) {
                     var firstText = textSplit[0];
                     var bannedCheck = true;
                     for (var j in bannedWord) {
-                        if (firstText.toLowerCase().indexOf(bannedWord[j].WORD) != -1) {
+                        if (firstText.toLowerCase().indexOf(bannedWord[j].WORD) >= 0) {
                             bannedCheck = false;
                             break;
                         }
@@ -121,9 +121,9 @@ function selectBannedWord() {
 }
 
 function insertBannedWord(item) {
-    var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+    //var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
     try {
-        item.text = item.text.replace(regExp, '');
+        //item.text = item.text.replace(regExp, '');
 
         if (item.text.split(' ').length > 0) {
             sync.await(oracle.insertBannedWord(item, sync.defer()));

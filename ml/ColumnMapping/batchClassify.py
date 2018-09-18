@@ -374,6 +374,27 @@ def sortArrLocation(inputArr):
         retArr.append(tempItem[1])
     return retArr
 
+def appendSentences(ocrData, bannedWords):
+    sentences = []
+    for item in ocrData:
+        # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
+        isBanned = False
+        # text = re.sub(regExp, '', item["text"])
+        text = item["text"]
+        textSplit = text.split(" ")
+        firstText = textSplit[0]
+        for i in bannedWords:
+            if firstText.lower().find(str(i)) != -1:
+                isBanned = True
+                break
+        if not isBanned:
+            sentences.append(item)
+            if len(sentences) == 5:
+                break
+
+    return sentences
+
+
 if __name__ == '__main__':
     try:
         # 입력받은 파일 패스로 ocr 데이터 조회
@@ -400,19 +421,7 @@ if __name__ == '__main__':
         ocrData = sortArrLocation(ocrData)
 
         # 문장단위로 for문
-        sentences = []
-        for item in ocrData:
-            # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
-            isBanned = False
-            for i in bannedWords:
-                text = re.sub(regExp, '', item["text"])
-                if text.lower().find(str(i)) != -1:
-                    isBanned = True
-                    break
-            if not isBanned:
-                sentences.append(item)
-                if len(sentences) == 5:
-                    break
+        sentences = appendSentences(ocrData, bannedWords)
 
         # 최종 5개 문장이 추출되면 각문장의 단어를 TBL_OCR_SYMSPELL 에 조회후 없으면 INSERT
         insertOcrSymspell(sentences)

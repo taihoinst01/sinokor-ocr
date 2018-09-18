@@ -2115,11 +2115,11 @@ exports.insertBannedWord = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
             var reqArr = req.text.split(' ');
             var result;
-            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+            //var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
 
-            result = await conn.execute(selectTypo, [reqArr[0].replace(regExp, "")]);
-            if (result.rows.length == 0 && reqArr[0].replace(regExp, "")) {
-                await conn.execute(insertTypo, [reqArr[0].replace(regExp, "")]);
+            result = await conn.execute(selectTypo, [reqArr[0]]);
+            if (result.rows.length == 0 && reqArr[0]) {
+                await conn.execute(insertTypo, [reqArr[0]]);
                 conn.commit();
             }
 
