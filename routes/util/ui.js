@@ -40,11 +40,9 @@ function insertDoctypeMapping(req, done) {
                 //console.log(data.textList[i]);
                 if (data.textList[i].check == 0) {
                     //맨 앞 단어가 bannedWord에 포함하지 않을 경우만 topSentenses에 push
-                    var textSplit = data.textList[i].text.split(" ");
-                    var firstText = textSplit[0];
                     var bannedCheck = true;
                     for (var j in bannedWord) {
-                        if (firstText.toLowerCase().indexOf(bannedWord[j].WORD) >= 0) {
+                        if (data.textList[i].text.toLowerCase().indexOf(bannedWord[j].WORD) == 0) {
                             bannedCheck = false;
                             break;
                         }
