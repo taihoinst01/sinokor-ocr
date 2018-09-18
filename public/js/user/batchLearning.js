@@ -3402,9 +3402,25 @@ function selectClassificationSt(filepath) {
                 });
 
                 for (let i = 0; i < tempArr.length; i++) {
-                    resultOcrData += '<tr class="batch_layer4_result_tr">';
-                    resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk"></td>';               
-                    resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
+
+                    var textSplit = tempArr[i][1].text.split(" ");
+                    var bannedCheck = true;
+                    for (let j = 0; j < data.bannedData.length; j++) {
+                        if (textSplit[0].toLowerCase().indexOf(data.bannedData[j].WORD) >= 0) {
+                            bannedCheck = false;
+                            break;
+                        }
+                    }
+                    if (bannedCheck) {
+                        resultOcrData += '<tr class="batch_layer4_result_tr">';
+                        resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk"></td>';
+                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
+                    } else {
+                        resultOcrData += '<tr class="batch_layer4_result_tr">';
+                        resultOcrData += '<td><input type="checkbox" checked="checked" class="batch_layer4_result_chk"></td>';
+                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
+                    }
+                    
                 }
                 $('#batch_layer4_result').empty().append(resultOcrData);
                 $('input[type=checkbox]').ezMark();
