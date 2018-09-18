@@ -179,8 +179,8 @@ def eval(inputJson, docType):
                 if 'entryLbl' not in inputItem:
                     inputItem['entryLbl'] = 31
 
-        for item in inputArr:
-            print(item)
+        #for item in inputArr:
+        #    print(item)
         return str(inputArr)
 
     except Exception as e:
