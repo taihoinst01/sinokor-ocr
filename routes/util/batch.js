@@ -36,15 +36,17 @@ function insertDoctypeMapping(req, done) {
             //문장을 순서대로 for문
             for (var i in data.textList) {
                 //console.log(data.textList[i]);
-                if (data.textList[i].check == 0) {
-                    //맨 앞 단어가 bannedWord에 포함하지 않을 경우만 topSentenses에 push
-                    var bannedCheck = true;
-                    for (var j in bannedWord) {
-                        if (data.textList[i].text.toLowerCase().indexOf(bannedWord[j].WORD) == 0) {
-                            bannedCheck = false;
-                            break;
-                        }
+
+                //앞 문장이 bannedword에 포함 되어 있는지 여부 확인
+                var bannedCheck = true;
+                for (var j in bannedWord) {
+                    if (data.textList[i].text.toLowerCase().indexOf(bannedWord[j].WORD) == 0) {
+                        bannedCheck = false;
+                        break;
                     }
+                }
+
+                if (data.textList[i].check == 0) {
                     //문장 index가 0인 경우 sentenses.append, sentenses length가 5가 되면 for문 종료
                     if (bannedCheck) {
                         topSentenses.push(data.textList[i]);
@@ -58,7 +60,9 @@ function insertDoctypeMapping(req, done) {
                     //문장 index가 1인 경우 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
                     //var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
                     //특수문자를 공백으로 치환하고 공백으로 슬라이스 후 배열의 첫번째 값을 banned_word에 insert
-                    data.textList[i] = insertBannedWord(data.textList[i]);
+                    if (bannedCheck) {
+                        data.textList[i] = insertBannedWord(data.textList[i]);
+                    }
                 }
             }
 
