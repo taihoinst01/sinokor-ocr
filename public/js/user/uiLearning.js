@@ -647,9 +647,25 @@ function selectClassificationSt(filepath) {
                 });
 
                 for (let i = 0; i < tempArr.length; i++) {
-                    resultOcrData += '<tr class="ui_layer1_result_tr">';
-                    resultOcrData += '<td><input type="checkbox" class="ui_layer1_result_chk"></td>';
-                    resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
+
+                    var bannedCheck = true;
+                    for (let j = 0; j < data.bannedData.length; j++) {
+                        if (tempArr[i][1].text.toLowerCase().indexOf(data.bannedData[j].WORD) == 0) {
+                            bannedCheck = false;
+                            break;
+                        }
+                    }
+
+                    if (bannedCheck) {
+                        resultOcrData += '<tr class="ui_layer1_result_tr">';
+                        resultOcrData += '<td><input type="checkbox" class="ui_layer1_result_chk"></td>';
+                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
+                    } else {
+                        resultOcrData += '<tr class="ui_layer1_result_tr">';
+                        resultOcrData += '<td><input type="checkbox" checked="checked" class="ui_layer1_result_chk"></td>';
+                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
+                    }
+
                 }
                 $('#ui_layer1_result').empty().append(resultOcrData);
                 $('input[type=checkbox]').ezMark();
