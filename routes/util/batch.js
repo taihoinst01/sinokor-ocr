@@ -80,12 +80,9 @@ function insertDoctypeMapping(req, done) {
 
                 //20180911 TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
                 insertFormMapping(topSentenses, docType);
-            } else if (data.radioType == '1') {
-                docType = selectDocCategoryFromDocName(data);
-
-                insertFormMapping(topSentenses, docType);
             } else {
                 docType = selectDocCategoryFromDocName(data);
+                insertFormMapping(topSentenses, docType);
             }
 
             //20180911 TBL_BATCH_LEARN_LIST 에 update (statue = 'D')
