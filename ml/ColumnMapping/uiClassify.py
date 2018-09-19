@@ -399,13 +399,11 @@ if __name__ == '__main__':
             # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
             isBanned = False
             for i in bannedWords:
-                text = re.sub(regExp, '', item["text"])
-                text = text.lower().split(' ')
-                if text[0] == str(i):
+                text = item["text"]
+                if text.lower().find(str(i)) == 0:
                     isBanned = True
                     break
-            if not isBanned:
-                
+            if not isBanned:               
                 sentences.append(item)
                 if len(sentences) == 5:
                     break 
