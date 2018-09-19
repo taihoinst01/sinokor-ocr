@@ -38,8 +38,8 @@ def getEntryLabelYN(colNum):
 
 def checkVerticalEntry(entLoc, lblLoc):
     try:
-        lblwidthLoc = int(lblLoc[3]) / 2 + int(lblLoc[1])
-        entwidthLoc = int(entLoc[3]) / 2 + int(entLoc[1])
+        lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
+        entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
         if abs(lblwidthLoc - entwidthLoc) < 120:
             return True
         else:
