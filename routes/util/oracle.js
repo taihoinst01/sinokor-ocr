@@ -135,7 +135,7 @@ exports.selectLegacyFileData = function (req, done) {
       let selectContractMapping = `SELECT asOgcompanyName legacy FROM tbl_contract_mapping WHERE extOgcompanyName = :extOgcompanyName`;
       try {
         conn = await oracledb.getConnection(dbConfig);
-        let result = await conn.execute(selectContractMapping, req,{outFormat: oracledb.OBJECT},);
+        let result = await conn.execute(selectContractMapping, req, {outFormat: oracledb.OBJECT});
         if (result.rows[0] != null) {
           returnObj = result.rows[0].LEGACY;
         } else {

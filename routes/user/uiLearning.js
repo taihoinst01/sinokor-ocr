@@ -136,8 +136,8 @@ router.post('/uiTraining', function (req, res) {
                     if (afterData.data[i].location == beforeData.data[j].location) {
                         //사용자가 글자를 직접 수정한 경우 TBL_CONTRACT_MAPPING에 insert
                         if (afterData.data[i].text != beforeData.data[j].text) {
-                            //var item = [beforeData.data[j].originText, '', afterData.data[i].text, ''];
-                            //sync.await(oracle.insertContractMapping(item, sync.defer()));
+                            var item = [beforeData.data[j].text, '', afterData.data[i].text, ''];
+                            sync.await(oracle.insertContractMapping(item, sync.defer()));
                         }
                         //사용자가 지정한 컬럼라벨의 텍스트가 유효한 컬럼의 경우 OcrSymspell에 before text(중요!!) insert
                         if (afterData.data[i].colLbl >= 3 && afterData.data[i].colLbl <= 34) {

@@ -324,7 +324,7 @@ router.post('/selectTypoData', function (req, res) {
 });
 
 router.post('/selectTypoData2', function (req, res) {
-    var data = req.body.data.data;
+    var data = req.body.data.data.data;
     var ogCompanyName = [];
     var ctnm = [];
     var curcd = [];
@@ -418,7 +418,7 @@ function ocrParsing(body) {
         }
 
         // ocr x location parsing
-        var xInterval = 3; // x pixel value
+        var xInterval = 6; // x pixel value
 
         for (var i = 0; i < data.length; i++) {
             for (var j = 0; j < data.length; j++) {
