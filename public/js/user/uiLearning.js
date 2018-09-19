@@ -115,7 +115,8 @@ function popUpRunEvent() {
 //팝업 문서 양식 LIKE 조회
 function popUpSearchDocCategory() {
     $('#searchDocCategoryBtn').click(function () {
-        var keyword = $('#searchDocCategoryKeyword').val().replace(/ /gi, '');
+        var keyword = $('#searchDocCategoryKeyword').val();
+        //var keyword = $('#searchDocCategoryKeyword').val().replace(/ /gi, '');
 
         if (keyword) {
             $('#docSearchResultImg_thumbCount').hide();

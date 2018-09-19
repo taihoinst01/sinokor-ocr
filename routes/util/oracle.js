@@ -2148,7 +2148,8 @@ exports.selectOriginSid = function (req, done) {
             //let sqltext = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL`;
             var sid = "";
 
-            let result = await conn.execute(sqltext, [req.text]);
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+            let result = await conn.execute(sqltext, [req.text.replace(regExp, '')]);
             if (result.rows[0] != null) {
                 return done(null, result.rows[0].SID);
             } else {
