@@ -107,7 +107,7 @@ def eval(inputJson, docType):
     # 20180911 수직기준으로 가까운 엔트리라벨을 체크하는데 만약 거리가 80이 넘는것만 있을경우 unknown
     # 수직 수평 조회중 our share와 PAID(100%), OSL(100%) 잡히면 PAID(Our Share), OSL(Our Share)로 변경
     # 엔트리라벨이 하나만 잡혔는데 PAID(100%), OSL(100%)일경우 y축 기준 200까지 위 x축기준 200까지를 조회 our share 가 있으면 Our share 로 변경
-    inputArr = getSidParsing(getSid(inputJson), docType)
+    inputArr = bUtil.getSidParsing(bUtil.getSid(inputJson), docType)
 
     try:
         for inputItem in inputArr:
@@ -129,13 +129,13 @@ def eval(inputJson, docType):
             if inputItem['colLbl'] == 37:
                 entLoc = inputItem['sid'].split(",")[0:4]
 
+                vertMin = 999999
+
                 for lblItem in entryLabel:
                     lblLoc = lblItem['sid'].split(",")[0:4]
 
                     horizItem = 9999
-                    horizColLbl = 9999
                     vertItem = 9999
-                    vertColLbl = 9999
 
                     # 같은 문서 검사
                     if entLoc[0] == lblLoc[0]:
@@ -152,8 +152,11 @@ def eval(inputJson, docType):
 
                         # 20180911 수직기준으로 가까운 엔트리라벨을 체크하는데 만약 거리가 80이 넘는것만 있을경우 unknown
                         if bUtil.checkVerticalEntry(entLoc, lblLoc):
-                            inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
-                            vertItem = entryLabelDB(lblItem['colLbl'])
+                            # 수직 기준으로 가장 가까운 entryLabel 검색
+                            if vertMin > abs(int(entLoc[2]) - int(lblLoc[2])):
+                                vertMin = abs(int(entLoc[2]) - int(lblLoc[2]))
+                                inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
+                                vertItem = entryLabelDB(lblItem['colLbl'])
 
                         # PAID : 100% 와 Our Share 같이 있을경우 PAID(Our Share)
                         if bUtil.chekOurShareEntry(horizItem, vertItem):
@@ -167,7 +170,7 @@ def eval(inputJson, docType):
                         if 'entryLbl' in inputItem and (int(inputItem['entryLbl']) == 0 or int(inputItem['entryLbl']) == 2):
                             for shareItem in entryLabel:
                                 shareLoc = shareItem['sid'].split(",")[0:4]
-                                if int(shareItem['colLbl']) == 36 and (abs(int(lblLoc[1]) - int(shareLoc[1])) < 200 and -200 < int(shareLoc[2]) - int(lblLoc[2]) and int(shareLoc[2]) - int(lblLoc[2]) < 0 and boundaryCheck(entLoc[2], lblLoc[2])):
+                                if int(shareItem['colLbl']) == 36 and (abs(int(lblLoc[1]) - int(shareLoc[1])) < 200 and -200 < int(shareLoc[2]) - int(lblLoc[2]) < 0 and boundaryCheck(entLoc[2], lblLoc[2])):
                                     if int(inputItem['entryLbl']) == 0:
                                         inputItem['entryLbl'] = 1
                                     elif int(inputItem['entryLbl']) == 2:
@@ -187,145 +190,6 @@ def eval(inputJson, docType):
     except Exception as e:
         raise Exception(str(
             {'code': 500, 'message': 'column mapping predict fail', 'error': str(e).replace("'", "").replace('"', '')}))
-
-
-def selectOcrDataFromFilePath(filepath):
-    try:
-        selectocrDataSql = "SELECT OCRDATA FROM TBL_BATCH_OCR_DATA WHERE FILEPATH = :filepath"
-        curs.execute(selectocrDataSql, {"filepath": filepath})
-        rows = curs.fetchall()
-
-        if rows:
-            return json.loads(rows[0][0])
-        else:
-            raise Exception('row for file path does not exist')
-
-    except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'TBL_BATCH_OCR_DATA table select fail',
-                             'error': str(e).replace("'", "").replace('"', '')}))
-
-
-def selectBannedWord():
-    returnData = []
-    try:
-        selectBannedWordSql = "SELECT WORD FROM TBL_BANNED_WORD"
-        curs.execute(selectBannedWordSql)
-        rows = curs.fetchall()
-        if rows:
-            for row in rows:
-                returnData.append(row[0])
-
-        return returnData
-
-    except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'TBL_BANNED_WORD table select fail',
-                             'error': str(e).replace("'", "").replace('"', '')}))
-
-
-def insertOcrSymspell(sentences):
-    try:
-        for sentence in sentences:
-            words = sentence["text"].split(' ')
-            for word in words:
-                tempstr = word
-                if tempstr:
-                    selectSymspellSql = "SELECT COUNT(SEQNUM) FROM TBL_OCR_SYMSPELL WHERE KEYWORD = LOWER(:keyword)"
-                    curs.execute(selectSymspellSql, {"keyword": tempstr})
-                    symspellRows = curs.fetchall()
-                    if symspellRows[0] == 0:
-                        insertSymspellSql = "INSERT INTO TBL_OCR_SYMSPELL VALUES (SEQ_OCR_SYMSPELL.nextval, LOWER(:keyword), 1)"
-                        curs.execute(insertSymspellSql, {"keyword": tempstr})
-        conn.commit()
-
-    except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'TBL_OCR_SYMSPELL table insert fail',
-                             'error': str(e).replace("'", "").replace('"', '')}))
-
-
-def getSid(data):
-    try:
-        selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
-        for item in data:
-            text = re.sub(regExp, '', item["text"])
-            curs.execute(selectExportSidSql, {"sentence": text})
-            exportSidRows = curs.fetchall()
-            item["sid"] = exportSidRows[0][0]
-
-        return data
-
-    except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID2 function execute fail',
-                             'error': str(e).replace("'", "").replace('"', '')}))
-
-
-def getDocSid(data):
-    try:
-        selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
-        retDocSid = ''
-
-        for sentence in data:
-            tempstr = re.sub(regExp, '', sentence["text"])
-
-            if not tempstr:
-                tempstr = ' '
-
-            curs.execute(selectExportSidSql, {"sentence": tempstr})
-            exportSidRows = curs.fetchall()
-            retDocSid += exportSidRows[0][0] + ","
-
-        retDocSid = retDocSid[:-1]
-        # data length 에 상관없이 5회 반복 만약 data의 length가 5보다 적으면 적은 갯수만큼 ,0,0,0,0,0 입력
-        if len(data) < 5:
-            for i in range(len(data) + 1, 5):
-                retDocSid += ',0,0,0,0,0'
-        return retDocSid
-
-    except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'EXPORT_SENTENCE_SID function execute fail',
-                             'error': str(e).replace("'", "").replace('"', '')}))
-
-
-def getSidParsing(data, docType):
-    try:
-        for item in data:
-            loc = item["location"].split(',')
-            item["mappingSid"] = str(docType) + "," + str(loc[0]) + "," + str(loc[1]) + "," + str(
-                int(loc[0]) + int(loc[2])) + "," + str(item["sid"])
-
-        return data
-
-    except Exception as e:
-        raise Exception(
-            str({'code': 500, 'message': 'sid parsing fail', 'error': str(e).replace("'", "").replace('"', '')}))
-
-
-def selectFormMapping(sentencesSid):
-    try:
-        selectFormMappingSql = "SELECT CLASS FROM TBL_FORM_MAPPING WHERE DATA = :data"
-        curs.execute(selectFormMappingSql, {"data": sentencesSid})
-        rows = curs.fetchall()
-        return rows
-
-    except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'TBL_FORM_MAPPING table select fail',
-                             'error': str(e).replace("'", "").replace('"', '')}))
-
-
-def selectDocCategory(docType):
-    try:
-        selectDocCategorySql = "SELECT SEQNUM, DOCNAME, DOCTYPE, SAMPLEIMAGEPATH FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType"
-        curs.execute(selectDocCategorySql, {"docType": int(docType)})
-        rows = curs.fetchall()
-
-        if rows:
-            return {"SEQNUM": rows[0][0], "DOCNAME": rows[0][1], "DOCTYPE": rows[0][2], "SAMPLEIMAGEPATH": rows[0][3]}
-        else:
-            return {}
-
-    except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'TBL_DOCUMENT_CATEGORY table select',
-                             'error': str(e).replace("'", "").replace('"', '')}))
-
 
 def insertBatchLearnList(docType, flag):
     try:
@@ -355,61 +219,10 @@ def insertBatchLearnList(docType, flag):
         raise Exception(str({'code': 500, 'message': 'TBL_BATCH_LEARN_LIST table insert',
                              'error': str(e).replace("'", "").replace('"', '')}))
 
-def makeindex(location):
-    if len(location) > 0:
-        temparr = location.split(",")
-        for i in range(0, 5):
-            if (len(temparr[0]) < 5):
-                temparr[0] = '0' + temparr[0]
-        return int(temparr[1] + temparr[0])
-    else:
-        return 999999999999
-
-def sortArrLocation(inputArr):
-    tempArr = []
-    retArr = []
-    for item in inputArr:
-        tempArr.append((makeindex(item['location']), item))
-    tempArr.sort(key=operator.itemgetter(0))
-    for tempItem in tempArr:
-        retArr.append(tempItem[1])
-    return retArr
-
-def appendSentences(ocrData, bannedWords):
-    sentences = []
-    for item in ocrData:
-        # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
-        isBanned = False
-        text = item["text"]
-        for i in bannedWords:
-            if text.lower().find(str(i)) == 0:
-                isBanned = True
-                break
-        if not isBanned:
-            sentences.append(item)
-            if len(sentences) == 5:
-                break
-
-    return sentences
-
-def selectContractMapping(ocrData):
-    try:
-        selectContractMappingSql = "SELECT asOgcompanyName legacy FROM tbl_contract_mapping WHERE extOgcompanyName = :extOgcompanyName"
-        for idx, item in enumerate(ocrData):
-            curs.execute(selectContractMappingSql, {"extOgcompanyName": item["text"]})
-            rows = curs.fetchall()
-            if rows:
-                ocrData[idx]["text"] = rows[0][0]
-
-        return ocrData
-    except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'TBL_CONTRACT_MAPPING table select',
-                             'error': str(e).replace("'", "").replace('"', '')}))
-
 if __name__ == '__main__':
     try:
         # 입력받은 파일 패스로 ocr 데이터 조회
-        ocrData = selectOcrDataFromFilePath(sys.argv[1])
+        ocrData = bUtil.selectOcrDataFromFilePath(sys.argv[1])
 
         # form mapping : LEARN_N, column mapping : LEARN_Y, flag 입력 파라미터
         flag = sys.argv[2]
@@ -417,7 +230,7 @@ if __name__ == '__main__':
         # ocr데이터 없을 경우 unKnown으로 처리
         obj = {}
         if len(ocrData) == 0 or 'error' in ocrData:
-            obj["docCategory"] = selectDocCategory(0)
+            obj["docCategory"] = bUtil.selectDocCategory(0)
             insertBatchLearnList(obj["docCategory"]["DOCTYPE"])
             print(re.sub('None', "null", json.dumps(obj)))
             sys.exit(1)
@@ -426,42 +239,42 @@ if __name__ == '__main__':
         ocrData = typo(ocrData)
 
         # TBL_OCR_BANNED_WORD 에 WORD칼럼 배열로 전부 가져오기
-        bannedWords = selectBannedWord()
+        bannedWords = bUtil.selectBannedWord()
 
         # 20180911 ocr데이터 정렬 y축 기준
-        ocrData = sortArrLocation(ocrData)
+        ocrData = bUtil.sortArrLocation(ocrData)
 
         # 문장단위로 for문
-        sentences = appendSentences(ocrData, bannedWords)
+        sentences = bUtil.appendSentences(ocrData, bannedWords)
 
         # 최종 5개 문장이 추출되면 각문장의 단어를 TBL_OCR_SYMSPELL 에 조회후 없으면 INSERT
-        insertOcrSymspell(sentences)
+        bUtil.insertOcrSymspell(sentences)
 
         # 5개문장의 SID를 EXPORT_SENTENCE_SID 함수를 통해 SID 추출
-        sentencesSid = getDocSid(sentences)
+        sentencesSid = bUtil.getDocSid(sentences)
 
         # TBL_FORM_MAPPING에 5개문장의 SID를 조회
-        formMappingRows = selectFormMapping(sentencesSid)
+        formMappingRows = bUtil.selectFormMapping(sentencesSid)
 
         # ocr Contract mapping
-        ocrData = selectContractMapping(ocrData)
+        ocrData = bUtil.selectContractMapping(ocrData)
 
         #
         if flag == "LEARN_N":
             if formMappingRows:
-                obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
+                obj["docCategory"] = bUtil.selectDocCategory(formMappingRows[0][0])
             else:
-                obj["docCategory"] = selectDocCategory(0)
+                obj["docCategory"] = bUtil.selectDocCategory(0)
         elif flag == "LEARN_Y":
             # 20180911 doc type 이 1인 경우(NOT INVOICE)는 바로 리턴 EVAL 안함 1이외의 경우는 레이블 정보 추출
             if formMappingRows and formMappingRows == 1:
-                obj["docCategory"] = selectDocCategory(1)
+                obj["docCategory"] = bUtil.selectDocCategory(1)
             elif formMappingRows:
                 obj["data"] = eval(ocrData, formMappingRows[0][0])
-                obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
+                obj["docCategory"] = bUtil.selectDocCategory(formMappingRows[0][0])
             else:
                 obj["data"] = eval(ocrData, 0)
-                obj["docCategory"] = selectDocCategory(0)
+                obj["docCategory"] = bUtil.selectDocCategory(0)
 
         # 20180911 TBL_FORM_MAPPING에 조회 결과가 없는경우는 insert 시 unknown으로 되는지 확인
         insertBatchLearnList(obj["docCategory"]["DOCTYPE"], flag)
