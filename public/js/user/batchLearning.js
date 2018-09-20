@@ -3287,10 +3287,10 @@ function zoomImg(e) {
 
     // 사각형 좌표값
     var location = $(e).find('input[type=hidden]').val().split(',');
-    x = parseInt(location[0]);
-    y = parseInt(location[1]);
-    textWidth = parseInt(location[2]);
-    textHeight = parseInt(location[3]);
+    var x = parseInt(location[0]);
+    var y = parseInt(location[1]);
+    var textWidth = parseInt(location[2]);
+    var textHeight = parseInt(location[3]);
     //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
 
     //console.log("x: " + (x) + 'px y: ' + (y) + 'px');
