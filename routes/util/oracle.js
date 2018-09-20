@@ -135,7 +135,7 @@ exports.selectLegacyFileData = function (req, done) {
       let selectContractMapping = `SELECT asOgcompanyName legacy FROM tbl_contract_mapping WHERE extOgcompanyName = :extOgcompanyName`;
       try {
         conn = await oracledb.getConnection(dbConfig);
-        let result = await conn.execute(selectContractMapping, req,{outFormat: oracledb.OBJECT},);
+        let result = await conn.execute(selectContractMapping, req, {outFormat: oracledb.OBJECT});
         if (result.rows[0] != null) {
           returnObj = result.rows[0].LEGACY;
         } else {
@@ -2148,7 +2148,8 @@ exports.selectOriginSid = function (req, done) {
             //let sqltext = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL`;
             var sid = "";
 
-            let result = await conn.execute(sqltext, [req.text]);
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+            let result = await conn.execute(sqltext, [req.text.replace(regExp, '')]);
             if (result.rows[0] != null) {
                 return done(null, result.rows[0].SID);
             } else {

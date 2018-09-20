@@ -98,7 +98,8 @@ def typo(ocrData):
             ocrItem['text'] = re.sub('\ |\,|\)|\(', '', ocrItem['text'])
         else:
             ocrItem['text'] = ocrItem['text']
-        return ocrData
+
+    return ocrData
 
 
 def eval(inputJson, docType):
@@ -131,10 +132,10 @@ def eval(inputJson, docType):
                 for lblItem in entryLabel:
                     lblLoc = lblItem['sid'].split(",")[0:4]
 
-                    horizItem = 0
-                    horizColLbl = 0
-                    vertItem = 0
-                    vertColLbl = 0
+                    horizItem = 9999
+                    horizColLbl = 9999
+                    vertItem = 9999
+                    vertColLbl = 9999
 
                     # 같은 문서 검사
                     if entLoc[0] == lblLoc[0]:
@@ -163,13 +164,13 @@ def eval(inputJson, docType):
                             inputItem['entryLbl'] = entryLabelDB(8)
 
                         # 엔트리라벨이 하나만 잡혔는데 PAID(100%), OSL(100%)일경우 y축 기준 200까지 위 x축기준 200까지를 조회 our share 가 있으면 Our share 로 변경
-                        if 'entryLbl' in inputItem and (inputItem['entryLbl'] == 0 or inputItem['entryLbl'] == 2):
+                        if 'entryLbl' in inputItem and (int(inputItem['entryLbl']) == 0 or int(inputItem['entryLbl']) == 2):
                             for shareItem in entryLabel:
                                 shareLoc = shareItem['sid'].split(",")[0:4]
-                                if shareItem['colLbl'] == 36 and (abs(int(lblLoc[1]) - int(shareLoc[1])) < 200 and -200 < int(lblLoc[2]) - int(shareLoc[2]) < 0):
-                                    if inputItem['entryLbl'] == 0:
+                                if int(shareItem['colLbl']) == 36 and (abs(int(lblLoc[1]) - int(shareLoc[1])) < 200 and -200 < int(shareLoc[2]) - int(lblLoc[2]) and int(shareLoc[2]) - int(lblLoc[2]) < 0 and boundaryCheck(entLoc[2], lblLoc[2])):
+                                    if int(inputItem['entryLbl']) == 0:
                                         inputItem['entryLbl'] = 1
-                                    elif inputItem['entryLbl'] == 2:
+                                    elif int(inputItem['entryLbl']) == 2:
                                         inputItem['entryLbl'] = 3
 
                         # NOT ENTRY Check
@@ -179,8 +180,8 @@ def eval(inputJson, docType):
                 if 'entryLbl' not in inputItem:
                     inputItem['entryLbl'] = 31
 
-        #for item in inputArr:
-        #    print(item)
+        # for item in inputArr:
+        #     print(item)
         return str(inputArr)
 
     except Exception as e:
@@ -391,6 +392,19 @@ def appendSentences(ocrData, bannedWords):
 
     return sentences
 
+def selectContractMapping(ocrData):
+    try:
+        selectContractMappingSql = "SELECT asOgcompanyName legacy FROM tbl_contract_mapping WHERE extOgcompanyName = :extOgcompanyName"
+        for idx, item in enumerate(ocrData):
+            curs.execute(selectContractMappingSql, {"extOgcompanyName": item["text"]})
+            rows = curs.fetchall()
+            if rows:
+                ocrData[idx]["text"] = rows[0][0]
+
+        return ocrData
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_CONTRACT_MAPPING table select',
+                             'error': str(e).replace("'", "").replace('"', '')}))
 
 if __name__ == '__main__':
     try:
@@ -428,6 +442,9 @@ if __name__ == '__main__':
 
         # TBL_FORM_MAPPING에 5개문장의 SID를 조회
         formMappingRows = selectFormMapping(sentencesSid)
+
+        # ocr Contract mapping
+        ocrData = selectContractMapping(ocrData)
 
         #
         if flag == "LEARN_N":

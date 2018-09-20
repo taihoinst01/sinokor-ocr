@@ -639,7 +639,7 @@ var uiLearningConfig = {
          FROM
             tbl_document_category
          WHERE
-            lower(docName) LIKE lower(:docName) AND docType != 999 `,
+            lower(docName) LIKE lower(:docName) `,
     selectMaxDocType:
         `SELECT
             MAX(docType) AS docType
