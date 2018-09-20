@@ -425,9 +425,6 @@ if __name__ == '__main__':
         # ocr데이터 오타수정
         ocrData = typo(ocrData)
 
-        # ocr Contract mapping
-        ocrData = selectContractMapping(ocrData)
-
         # TBL_OCR_BANNED_WORD 에 WORD칼럼 배열로 전부 가져오기
         bannedWords = selectBannedWord()
 
@@ -445,6 +442,9 @@ if __name__ == '__main__':
 
         # TBL_FORM_MAPPING에 5개문장의 SID를 조회
         formMappingRows = selectFormMapping(sentencesSid)
+
+        # ocr Contract mapping
+        ocrData = selectContractMapping(ocrData)
 
         #
         if flag == "LEARN_N":
