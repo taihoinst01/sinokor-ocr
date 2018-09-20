@@ -234,20 +234,22 @@ var fnSearchBatchLearningDataList = function (req, res) {
                 }
                 var mlData = sync.await(oracle.selectBatchLearnMlList(filePathList, sync.defer()));
             }
+            res.send({ data: originImageArr, mlData: mlData, code: 200 });
 
-            if (req.body.addCond == "LEARN_Y") {
+            // 9월11일 전 버전
+            /*if (req.body.addCond == "LEARN_Y") {
                 var predDoc = [];
                 for (var i in filePathList) {
                     var result = sync.await(oracle.selectDocCategoryFilePath(filePathList[i], sync.defer()));
                     if (result.rows.length != 0) {
-                        originImageArr[i].rows[0].DOCTYPE = result.rows[0].DOCTYPE;
+                         originImageArr[i].rows[0].DOCTYPE = result.rows[0].DOCTYPE;
                         originImageArr[i].rows[0].DOCNAME = result.rows[0].DOCNAME;
                     }
                 }
                 res.send({ data: originImageArr, mlData: mlData, code: 200 });
             } else {
                 res.send({ data: originImageArr, mlData: mlData, code: 200 });
-            }
+            }*/
         } catch (e) {
             console.log(e);
             res.send({ code: 400 });

@@ -569,7 +569,7 @@ var batchLearningConfig = {
         `INSERT INTO TBL_BATCH_LEARN_LIST(IMGID, STATUS, FILEPATH, REGDATE) VALUES(:imgid, 'R', :filepath, sysdate)`,
     selectDocCategoryFilePath:
         `SELECT
-            C.DOCNAME
+            C.DOCNAME, C.DOCTYPE
          FROM
             TBL_BATCH_LEARN_LIST L
             LEFT JOIN TBL_DOCUMENT_CATEGORY C
