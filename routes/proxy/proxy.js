@@ -14,13 +14,14 @@ router.get('/favicon.ico', function (req, res) {
 
 // web server to rest server file upload test router
 router.post('/ocr', function (req, res) {
-    var fileName = req.body.fileName;
+    var fileInfo = req.body.fileInfo;
+    //var fileName = req.body.fileName;
 
     var formData = {
         file: {
-            value: fs.createReadStream('./uploads/' + fileName),
+            value: fs.createReadStream('./uploads/' + fileInfo.convertFileName),
             options: {
-                filename: fileName,
+                filename: fileInfo.convertFileName,
                 contentType: 'image/jpeg'
             }
         }

@@ -128,7 +128,6 @@ def eval(inputJson, docType):
         for inputItem in inputArr:
             if inputItem['colLbl'] == 37:
                 entLoc = inputItem['sid'].split(",")[0:4]
-
                 vertMin = 999999
 
                 for lblItem in entryLabel:
@@ -152,9 +151,9 @@ def eval(inputJson, docType):
 
                         # 20180911 수직기준으로 가까운 엔트리라벨을 체크하는데 만약 거리가 80이 넘는것만 있을경우 unknown
                         if bUtil.checkVerticalEntry(entLoc, lblLoc):
-                            # 수직 기준으로 가장 가까운 entryLabel 검색
-                            if vertMin > abs(int(entLoc[2]) - int(lblLoc[2])):
-                                vertMin = abs(int(entLoc[2]) - int(lblLoc[2]))
+                            # 수직으로 같은 라인에 entryLabel이 여러개 일경우 가장 가까운 entryLabel 검색
+                            if int(entLoc[2]) - int(lblLoc[2]) > 0 and vertMin > int(entLoc[2]) - int(lblLoc[2]) :
+                                vertMin = int(entLoc[2]) - int(lblLoc[2])
                                 inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
                                 vertItem = entryLabelDB(lblItem['colLbl'])
 
