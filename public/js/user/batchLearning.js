@@ -2010,25 +2010,33 @@ var fn_uiTraining = function () {
     var imgIdArray = [];
     let imgId = "";
     let chkCnt = 0;
+    let chkBefore = $("#tab_before").closest("li").hasClass("on");
 
-    $("input[name=listCheck_after]").each(function (index, entry) {
-        if ($(this).is(":checked")) {
-            imgId = $(this).val();
-            chkCnt++;
-        }
-    });
-    if (chkCnt == 0) {
-        alert("선택된 파일이 없습니다.");
-        return;
-    } else if (chkCnt > 1) {
-        alert("한번에 하나의 파일만 UI학습이 가능합니다.");
+    if (chkBefore) {
+        alert("UI학습은 학습이 완료된 파일만 가능합니다.");
         return;
     } else {
-        imgIdArray.push(imgId);
-        totCount++;
-        uiLearnTraining(imgIdArray);
-        //uiFlag = "Y";
-        //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+        $("input[name=listCheck_after]").each(function (index, entry) {
+            if ($(this).is(":checked")) {
+                imgId = $(this).val();
+                chkCnt++;
+            }
+        });
+
+        if (chkCnt == 0) {
+            alert("선택된 파일이 없습니다.");
+            return;
+        } else if (chkCnt > 1) {
+            alert("한번에 하나의 파일만 UI학습이 가능합니다.");
+            return;
+        } else {
+            imgIdArray.push(imgId);
+            totCount++;
+            uiLearnTraining(imgIdArray);
+            //uiFlag = "Y";
+            //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
+        }
+
     }
 
 };
@@ -3287,10 +3295,10 @@ function zoomImg(e) {
 
     // 사각형 좌표값
     var location = $(e).find('input[type=hidden]').val().split(',');
-    x = parseInt(location[0]);
-    y = parseInt(location[1]);
-    textWidth = parseInt(location[2]);
-    textHeight = parseInt(location[3]);
+    var x = parseInt(location[0]);
+    var y = parseInt(location[1]);
+    var textWidth = parseInt(location[2]);
+    var textHeight = parseInt(location[3]);
     //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
 
     //console.log("x: " + (x) + 'px y: ' + (y) + 'px');
