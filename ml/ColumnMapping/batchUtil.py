@@ -248,3 +248,14 @@ def sortArrLocation(inputArr):
     for tempItem in tempArr:
         retArr.append(tempItem[1])
     return retArr
+
+def selectBatchLearnList(filepath):
+    try:
+        selectFormMappingSql = "SELECT DOCTYPE FROM TBL_BATCH_LEARN_LIST WHERE FILEPATH = :filepath"
+        curs.execute(selectFormMappingSql, {"filepath": filepath})
+        rows = curs.fetchall()
+        return rows
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_BATCH_LEARN_LIST table select fail',
+                             'error': str(e).replace("'", "").replace('"', '')}))
