@@ -3390,7 +3390,7 @@ function selectClassificationSt(filepath) {
     var param = {
         filepath: filepath
     };
-    var resultOcrData = '';
+
     $.ajax({
 		//todo
         url: '/batchLearning/selectClassificationSt',
@@ -3428,18 +3428,16 @@ function selectClassificationSt(filepath) {
                             break;
                         }
                     }
+                    var resultOcrData = '<tr class="batch_layer4_result_tr">';
                     if (bannedCheck) {
-                        resultOcrData += '<tr class="batch_layer4_result_tr">';
                         resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk"></td>';
-                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
                     } else {
-                        resultOcrData += '<tr class="batch_layer4_result_tr">';
                         resultOcrData += '<td><input type="checkbox" checked="checked" class="batch_layer4_result_chk"></td>';
-                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
                     }
-                    
+                    resultOcrData += '<td class="td_bannedword"></td></tr>';
+                    $('#batch_layer4_result').append(resultOcrData);
+                    $('.td_bannedword:eq('+ i +')').text(tempArr[i][1].text);
                 }
-                $('#batch_layer4_result').empty().append(resultOcrData);
                 $('input[type=checkbox]').ezMark();
                 
             }
