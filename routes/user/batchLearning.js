@@ -226,13 +226,13 @@ var fnSearchBatchLearningDataList = function (req, res) {
             //var reqNum = 12;
             var originImageArr = sync.await(oracle.selectBatchLearnList(req, sync.defer()));
             var filePathList = [];
-            var mlData = [];
+            var mlData;
 
             if (originImageArr.length != 0) {
                 for (var i = 0; i < originImageArr.length; i++) {
                     filePathList.push(originImageArr[i].rows[0].FILEPATH);
                 }
-                var mlData = sync.await(oracle.selectBatchLearnMlList(filePathList, sync.defer()));
+                mlData = sync.await(oracle.selectBatchLearnMlList(filePathList, sync.defer()));
             }
             res.send({ data: originImageArr, mlData: mlData, code: 200 });
 
