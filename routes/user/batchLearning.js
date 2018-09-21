@@ -226,7 +226,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
             //var reqNum = 12;
             var originImageArr = sync.await(oracle.selectBatchLearnList(req, sync.defer()));
             var filePathList = [];
-            var mlData = [];
+            var mlData;
 
             if (originImageArr.length != 0) {
                 for (var i = 0; i < originImageArr.length; i++) {
