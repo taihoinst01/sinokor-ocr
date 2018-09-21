@@ -360,9 +360,12 @@ var fn_processBaseImage = function (fileInfo) {
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>`;
     }
-    $("#tbody_baseInfo").empty().append(html);
+    $("#tbody_baseList").empty().append(html);
+    $("#div_base").css("display", "block");
 };
 
 // ML 및 인식결과 append
@@ -376,7 +379,7 @@ var fn_processDtlImage = function (fileDtlInfo) {
             jqXHR.setRequestHeader("Content-Type", "application/json");
         },
         type: "POST",
-        data: JSON.stringify({ 'fileName': fileName }),
+        data: JSON.stringify({ 'fileInfo': fileDtlInfo }),
     }).done(function (data) {
         ocrCount++;
         thumbImgs.push(fileName);
@@ -384,7 +387,7 @@ var fn_processDtlImage = function (fileDtlInfo) {
             //thumbImgs.push(fileName);
             $('#progressMsgTitle').html('OCR 처리 완료');
             addProgressBar(31, 40);
-            appendOcrData(fileDtlInfo, fileName, data.regions);
+            appendOcrData(fileDtlInfo, fileName, data);
         } else if (data.error) { //ocr 이외 에러이면
             endProgressBar();
             alert(data.error);
@@ -399,25 +402,79 @@ var fn_processDtlImage = function (fileDtlInfo) {
 
 
 // OCR 데이터 line별 가공 & 상세 테이블 렌더링 & DB컬럼 조회
-var appendOcrData = function (fileDtlInfo, fileName, regions) {
-    var data = [];
-    for (var i = 0; i < regions.length; i++) {
-        for (var j = 0; j < regions[i].lines.length; j++) {
-            var item = '';
-            for (var k = 0; k < regions[i].lines[j].words.length; k++) {
-                item += regions[i].lines[j].words[k].text + ' ';
-            }
-            data.push({ 'location': regions[i].lines[j].boundingBox, 'text': item.trim() });
-        }
-    }
-    executeML(fileDtlInfo, fileName, data, 'ts');
+var appendOcrData = function (fileDtlInfo, fileName, data) {
+    var filePath = fileDtlInfo.convertedFilePath + fileName;
+    var param = {
+        'ocrData': data,
+        'filePath': filePath,
+        'fileDtlInfo': fileDtlInfo
+    };
+    executeML(param);
 };
+
+function executeML(totData) {
+
+    $('#progressMsgTitle').html('머신러닝 처리 중..');
+    $.ajax({
+        url: '/uiLearning/uiLearnTraining',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify(totData),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+            if (data.column) searchDBColumnsCount++;
+            if (data.message) {
+                alert(message);
+            } else {
+                //console.log(data);
+                lineText.push(data);
+                fn_processFinish(data.data, totData.fileDtlInfo); // 인식 결과
+                $('#docSid').val(data.data.docSid);
+                $('#docType').val(data.data.docCategory.DOCTYPE);
+                if (searchDBColumnsCount == 1) {
+
+                    var mainImgHtml = '';
+                    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
+                    //mainImgHtml += '<div id="redNemo">';
+                    //mainImgHtml += '</div>';
+                    mainImgHtml += '</div>';
+                    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
+                    mainImgHtml += '<div id="redZoomNemo">';
+                    mainImgHtml += '</div>';
+                    mainImgHtml += '</div>';
+
+                    $('#div_view_image').html(mainImgHtml);
+                    $('#mainImage').css('background-image', 'url("../../uploads/' + data.fileName + '")');
+                    $('#imageBox > li').eq(0).addClass('on');
+                    $('#div_image').css("display", "block");
+                    thumnImg();
+                    //$('#imageBox > li').eq(0).addClass('on');
+
+                    //selectTypoText(0, data.fileName);
+
+                }
+
+                if (totCount == searchDBColumnsCount) {
+                    thumbImgEvent();
+                }
+            }
+
+            endProgressBar();
+        },
+        error: function (err) {
+            console.log(err);
+            endProgressBar(progressId);
+            //endProgressBar();
+        }
+    });
+}
 
 /**
  * @param {any} type
  * ts : typoSentence , dd : domainDictionary , tc : textClassification , lm : labelMapping , sc : searchDBColumns
  */
-var executeML = function (fileDtlInfo, fileName, data, type) {
+var executeML_Old = function (fileDtlInfo, fileName, data, type) {
     var targetUrl;
 
     console.log(`다음 순서 type = ${type}`);
@@ -489,6 +546,80 @@ var executeML = function (fileDtlInfo, fileName, data, type) {
 
 // 인식 결과 처리
 function fn_processFinish(data, fileDtlInfo) {
+    console.log("data : " + JSON.stringify(data));
+    console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
+
+    var dataObj = {};
+    var dataVal = data.data;
+    dataObj["imgId"] = fileDtlInfo.imgId;
+
+
+        // TODO : 분석 결과를 정리하고 1 record로 생성한다.
+        var dtlHtml = '<tr>' +
+                            '<td><input type="checkbox" id="dtl_chk_${item.imgId}" name="dtl_chk" /></td>' +
+                            '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
+                            '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
+                            '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
+                            '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
+                            '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
+                            '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
+                            '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+                            '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
+                            '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+                            '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
+                            '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+                            '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+                            '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+                            '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+                            '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
+                            '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+                            '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
+                            '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
+                            '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+                            '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
+                            '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                            '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                            '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                            '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                            '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
+                            '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+                            '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
+                            '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+                            '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+                            '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+                            '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+                            '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+                            '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
+                            '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
+                            '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+                            '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+                     '</tr>';
+
+    $("#tbody_dtlList").empty().append(dtlHtml);
+    $("#div_dtl").css("display", "block");
+    function makeMLSelect(mlData, colnum, entry) {
+
+        var appendMLSelect = '<select>';
+        var hasColvalue = false;
+        for (var y = 0; y < mlData.length; y++) {
+
+            if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
+                hasColvalue = true;
+                appendMLSelect += '<option>' + mlData[y].text + '</option>';
+            } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
+                hasColvalue = true;
+                appendMLSelect += '<option>' + mlData[y].text + '</option>';
+            }
+
+        }
+        appendMLSelect += '</select>';
+
+        return hasColvalue ? appendMLSelect : '';
+    }
+}
+
+// 인식 결과 처리
+function fn_processFinish_Old(data, fileDtlInfo) {
     console.log("data : " + JSON.stringify(data));
     console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
 

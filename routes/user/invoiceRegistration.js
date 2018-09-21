@@ -132,6 +132,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     var returnObj = [];
     var convertType = '';
     var userId = req.session.userId;
+    var convertedImagePath = appRoot + '\\uploads\\';
 
     for (var i = 0; i < files.length; i++) {
         var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성 - 규칙 생기면 변경 필요
@@ -171,21 +172,23 @@ router.post('/uploadFile', upload.any(), function (req, res) {
             while (!isStop) {
                 try { // 하나의 파일 안의 여러 페이지면
                     var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg';
-                    var convertFilePath = files[i].path.split('.')[0] + '-' + j + '.jpg';
-                    var convertFileName = convertFilePath.split('\\')[1];
+                    var convertedFilePath = convertedImagePath.replace(/\\/gi, '/');
+                    var convertFile = files[i].path.split('.')[0] + '-' + j + '.jpg';
+                    var convertFileName = convertFile.split('\\')[1];
                     var _lastDotDtl = convertFileName.lastIndexOf('.');
                     var stat = fs.statSync(convertFileFullPath);
                     if (stat) {
                         var fileDtlParam = {
                             imgId: imgId,
-                            filePath: convertFilePath,
+                            filePath: convertFileFullPath,
                             oriFileName: convertFileName,
                             convertFileName: convertFileName,
                             svrFileName: Math.random().toString(26).slice(2),
                             fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
                             fileSize: stat.size,
                             contentType: 'image/jpeg',
-                            regId: userId
+                            regId: userId,
+                            convertedFilePath: convertedFilePath
                         };
                         returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
                         fileDtlArr.push(fileDtlParam);          // 변환 후 JPG 파일 정보
@@ -196,21 +199,23 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 } catch (err) { // 하나의 파일 안의 한 페이지면
                     try {
                         var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
-                        var convertFilePath = files[i].path.split('.')[0] + '.jpg';
-                        var convertFileName = convertFilePath.split('\\')[1];
+                        var convertedFilePath = convertedImagePath.replace(/\\/gi, '/');
+                        var convertFile = files[i].path.split('.')[0] + '.jpg';
+                        var convertFileName = convertFile.split('\\')[1];
                         var _lastDotDtl = convertFileName.lastIndexOf('.');
                         var stat2 = fs.statSync(convertFileFullPath);
                         if (stat2) {
                             var fileDtlParam = {
                                 imgId: imgId,
-                                filePath: convertFilePath,
+                                filePath: convertFileFullPath,
                                 oriFileName: convertFileName,
                                 convertFileName: convertFileName,
                                 svrFileName: Math.random().toString(26).slice(2),
                                 fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
                                 fileSize: stat2.size,
                                 contentType: 'image/jpeg',
-                                regId: userId
+                                regId: userId,
+                                convertedFilePath: convertedFilePath
                             };
                             returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
                             fileDtlInfo.push(fileDtlParam);         // 변환 후 JPG 파일 정보
