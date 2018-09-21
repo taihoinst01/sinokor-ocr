@@ -129,7 +129,6 @@ def eval(inputJson, docType):
             if inputItem['colLbl'] == 37:
                 entLoc = inputItem['sid'].split(",")[0:4]
                 vertMin = 999999
-
                 for lblItem in entryLabel:
                     lblLoc = lblItem['sid'].split(",")[0:4]
 
@@ -152,7 +151,7 @@ def eval(inputJson, docType):
                         # 20180911 수직기준으로 가까운 엔트리라벨을 체크하는데 만약 거리가 80이 넘는것만 있을경우 unknown
                         if bUtil.checkVerticalEntry(entLoc, lblLoc):
                             # 수직으로 같은 라인에 entryLabel이 여러개 일경우 가장 가까운 entryLabel 검색
-                            if int(entLoc[2]) - int(lblLoc[2]) > 0 and vertMin > int(entLoc[2]) - int(lblLoc[2]) :
+                            if int(entLoc[2]) - int(lblLoc[2]) > 0 and vertMin > int(entLoc[2]) - int(lblLoc[2]):
                                 vertMin = int(entLoc[2]) - int(lblLoc[2])
                                 inputItem['entryLbl'] = entryLabelDB(lblItem['colLbl'])
                                 vertItem = entryLabelDB(lblItem['colLbl'])
@@ -174,10 +173,6 @@ def eval(inputJson, docType):
                                         inputItem['entryLbl'] = 1
                                     elif int(inputItem['entryLbl']) == 2:
                                         inputItem['entryLbl'] = 3
-
-                        # NOT ENTRY Check
-                        # if horizColLbl == 36 or vertColLbl == 36:
-                        #     inputItem['entryLbl'] = 31
 
                 if 'entryLbl' not in inputItem:
                     inputItem['entryLbl'] = 31
@@ -253,7 +248,12 @@ if __name__ == '__main__':
         sentencesSid = bUtil.getDocSid(sentences)
 
         # TBL_FORM_MAPPING에 5개문장의 SID를 조회
-        formMappingRows = bUtil.selectFormMapping(sentencesSid)
+        if flag == "LEARN_N":
+            formMappingRows = bUtil.selectFormMapping(sentencesSid)
+        elif flag == "LEARN_Y":
+            # after training 에서 batchLearnList doctype 가져옴
+            formMappingRows = bUtil.selectBatchLearnList(re.sub(rootFilePath, "", str(sys.argv[1])))
+
 
         # ocr Contract mapping
         ocrData = bUtil.selectContractMapping(ocrData)
