@@ -595,7 +595,7 @@ function fn_processFinish(data, fileDtlInfo) {
                             '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
                      '</tr>';
 
-    $("#tbody_dtlList").empty().append(dtlHtml);
+    $("#tbody_dtlList").append(dtlHtml);
     $("#div_dtl").css("display", "block");
     function makeMLSelect(mlData, colnum, entry) {
 
