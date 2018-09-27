@@ -799,8 +799,8 @@ var thumbImgEvent = function () {
     $('.thumb-img').click(function () {
         $('#imageBox > li').removeClass('on');
         $(this).parent().addClass('on');
-        //$('#mainImage').css('background-image', $(this).css('background-image'));
-        $('#mainImage').css('background-image', $(this).children().prop('src'));
+        $('#mainImage').css('background-image', 'url("' + $(this).children().attr("src") + '")');
+        //$('#mainImage').css('background-image', $(this).children().prop('src'));
         //detailTable($(this).css('background-image').split('/')[4].split('")')[0]);
         //detailTable($(this).children().prop('src').split('/')[4].split('")')[0]);
     });
