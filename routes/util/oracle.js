@@ -462,7 +462,7 @@ exports.insertBatchColumnMappingFromUi = function (req, docType, done) {
         let selectSid = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL `;
         let selectBatchColumnMapping = `SELECT SEQNUM FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = :data AND CLASS = :class `;
         let insertBatchColumnMapping = `INSERT INTO TBL_BATCH_COLUMN_MAPPING_TRAIN VALUES 
-                                        (SEQ_BATCH_COLUMN_MAPPING_TRAIN.nextval, :data, :class, sysdate) `;
+                                        (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL, :data, :class, sysdate) `;
 
         try {
             conn = await oracledb.getConnection(dbConfig);
