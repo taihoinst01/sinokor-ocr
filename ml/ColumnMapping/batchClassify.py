@@ -11,7 +11,7 @@ import shutil
 import random
 import re
 import batchUtil as bUtil
-import operator
+
 
 id = "koreanre"
 pw = "koreanre01"
@@ -213,6 +213,7 @@ def insertBatchLearnList(docType, flag):
         raise Exception(str({'code': 500, 'message': 'TBL_BATCH_LEARN_LIST table insert',
                              'error': str(e).replace("'", "").replace('"', '')}))
 
+
 if __name__ == '__main__':
     try:
         # 입력받은 파일 패스로 ocr 데이터 조회
@@ -225,7 +226,7 @@ if __name__ == '__main__':
         obj = {}
         if len(ocrData) == 0 or 'error' in ocrData:
             obj["docCategory"] = bUtil.selectDocCategory(0)
-            insertBatchLearnList(obj["docCategory"]["DOCTYPE"])
+            insertBatchLearnList(obj["docCategory"]["DOCTYPE"], flag)
             print(re.sub('None', "null", json.dumps(obj)))
             sys.exit(1)
 
@@ -241,6 +242,17 @@ if __name__ == '__main__':
         # 문장단위로 for문
         sentences = bUtil.appendSentences(ocrData, bannedWords)
 
+        if flag == "LEARN_N":
+            # 5개 문장으로 notInvoice 점수 측정
+            ratio, notInvoiceData = bUtil.selectNotInvoice(sentences)
+
+            # notInvoice 점수가 0.9 이상일경우 notInvoice로 doctype변경후 종료
+            if ratio > 0.9:
+                obj["docCategory"] = bUtil.selectDocCategory(notInvoiceData[1])
+                insertBatchLearnList(obj["docCategory"]["DOCTYPE"], flag)
+                print(re.sub('None', "null", json.dumps(obj)))
+                sys.exit(1)
+
         # 최종 5개 문장이 추출되면 각문장의 단어를 TBL_OCR_SYMSPELL 에 조회후 없으면 INSERT
         bUtil.insertOcrSymspell(sentences)
 
@@ -254,11 +266,10 @@ if __name__ == '__main__':
             # after training 에서 batchLearnList doctype 가져옴
             formMappingRows = bUtil.selectBatchLearnList(re.sub(rootFilePath, "", str(sys.argv[1])))
 
-
         # ocr Contract mapping
         ocrData = bUtil.selectContractMapping(ocrData)
 
-        #
+        #flag가 LEARN_N 일경우 문서 종류만 분류 Y일경우 columnmapping
         if flag == "LEARN_N":
             if formMappingRows:
                 obj["docCategory"] = bUtil.selectDocCategory(formMappingRows[0][0])

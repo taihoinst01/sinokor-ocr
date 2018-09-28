@@ -11,6 +11,7 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 var request = require('sync-request');
 var sync = require('./sync.js');
 var oracle = require('./oracle.js');
+//var msopdf = require('node-msoffice-pdf');
 
 
 exports.select = function (req, done) {
@@ -2231,6 +2232,36 @@ exports.insertFormMapping = function (req, done) {
     });
 };
 
+exports.insertNotInvoce = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(`SELECT SEQNUM FROM TBL_NOTINVOICE_DATA WHERE DATA = LOWER(:data) AND DOCTYPE = :doctype `, req);
+            if (result.rows.length == 0) {
+                await conn.execute(`INSERT INTO
+                                        TBL_NOTINVOICE_DATA
+                                    VALUES
+                                        (seq_notinvoice_data.nextval, LOWER(:data), :doctype, sysdate) `,
+                                req);
+            }
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectDocCategoryFromDocName = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -2334,6 +2365,61 @@ exports.selectBannedWord = function (done) {
         }
     });
 };
+
+/*
+exports.convertMs = function (data, done) {
+    return new Promise(async function (resolve, reject) {
+        try {
+            convertMsToPdf(data, function (ret) {
+                return done(null, ret);
+            });
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, err);
+        } finally {
+
+        }
+    });
+};
+
+function convertMsToPdf(data, callback) {
+
+    msopdf(data, function (error, office) {
+        console.log(data);
+
+        if (error) {
+            console.log("Init failed", error);
+            return;
+        }
+
+        if (data[0] == "word") {
+            office.word({ input: data[1], output: data[2] }, function (error, pdf) {
+                if (error) {
+                    console.log("Woops", error);
+                } else {
+                    console.log("Saved to", pdf);
+                }
+            });
+        } else if (data[0] == "excel") {
+            office.excel({ input: data[1], output: data[2] }, function (error, pdf) {
+                if (error) {
+                    console.log("Woops", error);
+                } else {
+                    console.log("Saved to", pdf);
+                }
+            });
+        }
+
+        office.close(null, function (error) {
+            if (error) {
+                console.log("Woops", error);
+            } else {
+                console.log("Finished & closed");
+                callback("finish2");
+            }
+        });
+    });
+}
+*/
 
 function getConvertDate() {
     var today = new Date();

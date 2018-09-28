@@ -2,6 +2,7 @@ import cx_Oracle
 import json
 import operator
 import re
+from difflib import SequenceMatcher
 
 id = "koreanre"
 pw = "koreanre01"
@@ -258,4 +259,27 @@ def selectBatchLearnList(filepath):
 
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_BATCH_LEARN_LIST table select fail',
+                             'error': str(e).replace("'", "").replace('"', '')}))
+
+def similar(a, b):
+    return SequenceMatcher(None, a, b).ratio()
+
+def selectNotInvoice(sentences):
+    try:
+        text = ''
+        for item in sentences:
+            text += item["text"] + ","
+        text = text[:-1].lower()
+
+        selectNoInvoiceSql = "SELECT DATA,DOCTYPE FROM TBL_NOTINVOICE_DATA"
+        curs.execute(selectNoInvoiceSql)
+        selNotInvoice = curs.fetchall()
+
+        for rows in selNotInvoice:
+            ratio = similar(text, rows[0])
+            if ratio > 0.9:
+                return ratio, rows
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_NOTINVOICE_DATA table select fail',
                              'error': str(e).replace("'", "").replace('"', '')}))
