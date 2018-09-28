@@ -232,7 +232,7 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                             sync.await(oracle.insertContractMapping(item, sync.defer()));
                         }
                         //사용자가 지정한 컬럼라벨의 텍스트가 유효한 컬럼의 경우 OcrSymspell에 before text(중요!!) insert
-                        if ( (afterData.data[i].colLbl >= 5 && afterData.data[i].colLbl <= 34) || afterData.data[i].colLbl == 36) {
+                        if ( (afterData.data[i].colLbl >= 3 && afterData.data[i].colLbl <= 34) || afterData.data[i].colLbl == 36) {
                             sync.await(oracle.insertOcrSymsSingle(beforeData.data[j], sync.defer()));
                         }
                         afterData.data[i].sid = sync.await(oracle.selectSid(beforeData.data[j], sync.defer()));
