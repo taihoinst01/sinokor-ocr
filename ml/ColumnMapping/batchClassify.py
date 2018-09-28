@@ -52,7 +52,13 @@ def findLabelDB(inputsid):
             # 문서종류 and (Y좌표 and (X좌표 or 넓이))
             if (dbNum[0] == inputNum[0]) and (boundaryCheck(dbNum[2], inputNum[2]) and (
                     boundaryCheck(dbNum[1], inputNum[1]) or boundaryCheck(dbNum[3], inputNum[3]))):
-                ret.append(row[2])
+                sql = "SELECT SEQNUM, DATA, CLASS FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = '"+ inputsid + "'"
+                curs.execute(sql)
+                oneRow = curs.fetchall()
+                if len(oneRow) != 0:
+                    ret.append(oneRow[0][2])
+                else:
+                    ret.append(row[2])
         # {3~34}위치는 상관없이 text sid가 일치하면 label 매핑
         # text sid에 여러개의 label이 매핑되있을 경우 랜덤 매핑
         elif int(row[2]) != 38:
