@@ -35,6 +35,7 @@ var adminLearning = require('./routes/user/adminLearning');
 var ocrFormAnalysis = require('./routes/user/ocrFormAnalysis');
 var ocrHistorySearch = require('./routes/user/ocrHistorySearch');
 var newDocLearning = require('./routes/user/newDocLearning');
+var result = require('./routes/user/result');//jmh
 
 //admin
 var adminDashboard = require('./routes/admin/adminDashboard');
@@ -92,7 +93,9 @@ app.use('/invoiceProcessingStatus', invoiceProcessingStatus);
 app.use('/adminLearning', adminLearning);
 app.use('/ocrFormAnalysis', ocrFormAnalysis);
 app.use('/ocrHistorySearch', ocrHistorySearch);
-app.use('/newDocLearning', newDocLearning);
+app.use('/newDocLearning', newDocLearning); 
+app.use('/result', result);//jmh
+
 // admin
 app.use('/adminDashboard', adminDashboard);
 app.use('/userManagement', userManagement);
