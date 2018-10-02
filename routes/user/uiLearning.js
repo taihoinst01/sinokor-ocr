@@ -65,19 +65,37 @@ router.post('/', function (req, res) {
 router.post('/uiLearnTraining', function (req, res) {
     var ocrData = req.body.ocrData;
     var filePath = req.body.filePath;
-
+    var fileName = req.body.fileName;
+    var docType = req.body.docType;
+    var fileExt = filePath.split(".")[1];
     var returnObj;
     sync.fiber(function () {
         try {
+            console.log("docType : " + docType);
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
+            if (docType) {
+                pythonConfig.columnMappingOptions.args.push(JSON.stringify(docType));
+            }
             var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0]);
 
             var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
             var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
 
-            returnObj = { code: 200, 'fileName': filePath.split('/')[filePath.split('/').length-1].replace('.tif','.jpg'), 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
+            /*
+            var fileName = filePath.split('/')[filePath.split('/').length - 1]
+
+            if (fileExt.toLowerCase() == 'tif') {
+                fileName = fileName.replace('.tif', '.jpg');
+            } else if (fileExt.toLowerCase() == 'doc' || fileExt.toLowerCase() == 'docx'
+                || fileExt.toLowerCase() == 'xls' || fileExt.toLowerCase() == 'xlsx'
+                || fileExt.toLowerCase() == 'pdf') {
+                fileName = fileName.replace(/.docx|.doc|.xlsx|.xls|.pdf/gi, '.png');
+            }
+            */
+
+            returnObj = { code: 200, 'fileName': fileName, 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
         } catch (e) {
             console.log(resPyStr);
             returnObj = { 'code':500, 'message': e };
@@ -157,7 +175,7 @@ router.post('/uiTraining', function (req, res) {
             }            
 
             // Azure ml train 프록시 호출
-            var azureRes = request('POST', 'http://localhost:8888/ml/train', { json: { 'fmData': fmData, 'cmData': cmData } });
+            var azureRes = request('POST', 'http://172.16.53.143:8888/ml/train', { json: { 'fmData': fmData, 'cmData': cmData } });
 
             returnObj = { code: 200, message: 'ui training success' };
 

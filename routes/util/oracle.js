@@ -11,7 +11,7 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 var request = require('sync-request');
 var sync = require('./sync.js');
 var oracle = require('./oracle.js');
-//var msopdf = require('node-msoffice-pdf');
+var msopdf = require('node-msoffice-pdf');
 
 
 exports.select = function (req, done) {
@@ -2366,7 +2366,7 @@ exports.selectBannedWord = function (done) {
     });
 };
 
-/*
+
 exports.convertMs = function (data, done) {
     return new Promise(async function (resolve, reject) {
         try {
@@ -2384,7 +2384,7 @@ exports.convertMs = function (data, done) {
 function convertMsToPdf(data, callback) {
 
     msopdf(data, function (error, office) {
-        console.log(data);
+        var retPdf = '';
 
         if (error) {
             console.log("Init failed", error);
@@ -2397,6 +2397,7 @@ function convertMsToPdf(data, callback) {
                     console.log("Woops", error);
                 } else {
                     console.log("Saved to", pdf);
+                    retPdf = pdf;
                 }
             });
         } else if (data[0] == "excel") {
@@ -2405,6 +2406,7 @@ function convertMsToPdf(data, callback) {
                     console.log("Woops", error);
                 } else {
                     console.log("Saved to", pdf);
+                    retPdf = pdf;
                 }
             });
         }
@@ -2414,12 +2416,12 @@ function convertMsToPdf(data, callback) {
                 console.log("Woops", error);
             } else {
                 console.log("Finished & closed");
-                callback("finish2");
+                callback(retPdf);
             }
         });
     });
 }
-*/
+
 
 function getConvertDate() {
     var today = new Date();

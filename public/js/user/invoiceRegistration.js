@@ -10,9 +10,10 @@ var searchDBColumnsCount = 0;
 var lineText = [];
 var thumbImgs = []; // 썸네일 이미지 경로 배열
 var thumnImgPageCount = 1; // 썸네일 이미지 페이징 번호
-var thumnbImgPerPage = 10; // 한 페이지당 썸네일 이미지 개수
+var thumnbImgPerPage = 6; // 한 페이지당 썸네일 이미지 개수
 var x, y, textWidth, textHeight; // 문서 글씨 좌표
 var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, 마우스 이동 좌표
+var docType = '';
 
 /**
  * 전역변수 초기화
@@ -24,7 +25,7 @@ var initGlobalVariable = function () {
     lineText = [];
     thumbImgs = []; // 썸네일 이미지 경로 배열
     thumnImgPageCount = 1; // 썸네일 이미지 페이징 번호
-    thumnbImgPerPage = 10; // 한 페이지당 썸네일 이미지 개수
+    thumnbImgPerPage = 6; // 한 페이지당 썸네일 이미지 개수
     x = 0;
     y = 0;
     textWidth = 0;
@@ -119,7 +120,8 @@ var fn_uploadFileEvent = function () {
             console.log(`base 내용 : ${JSON.stringify(responseText.fileInfo)}`);
             console.log(`dtl 내용 : ${JSON.stringify(responseText.fileDtlInfo)}`);
 
-            totCount = responseText.fileInfo.length; 
+            //totCount = responseText.fileInfo.length; 
+            totCount = responseText.fileDtlInfo.length;
             // 문서 기본 정보 처리
             fn_processBaseImage(responseText.fileInfo);
             // 인식 결과 및 ML 처리
@@ -378,6 +380,7 @@ var fn_processDtlImage = function (fileDtlInfo) {
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader("Content-Type", "application/json");
         },
+        async: false,
         type: "POST",
         data: JSON.stringify({ 'fileInfo': fileDtlInfo }),
     }).done(function (data) {
@@ -407,7 +410,9 @@ var appendOcrData = function (fileDtlInfo, fileName, data) {
     var param = {
         'ocrData': data,
         'filePath': filePath,
-        'fileDtlInfo': fileDtlInfo
+        'fileDtlInfo': fileDtlInfo,
+        'fileName': fileName,
+        'docType': docType
     };
     executeML(param);
 };
@@ -419,6 +424,7 @@ function executeML(totData) {
         url: '/uiLearning/uiLearnTraining',
         type: 'post',
         datatype: 'json',
+        async: false,
         data: JSON.stringify(totData),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
@@ -429,8 +435,9 @@ function executeML(totData) {
             } else {
                 //console.log(data);
                 lineText.push(data);
-                fn_processFinish(data.data, totData.fileDtlInfo); // 인식 결과
+                //fn_processFinish(data.data, totData.fileDtlInfo); // 인식 결과
                 $('#docSid').val(data.data.docSid);
+                docType = data.data.docCategory.DOCTYPE;
                 $('#docType').val(data.data.docCategory.DOCTYPE);
                 if (searchDBColumnsCount == 1) {
 
@@ -448,7 +455,7 @@ function executeML(totData) {
                     $('#mainImage').css('background-image', 'url("../../uploads/' + data.fileName + '")');
                     $('#imageBox > li').eq(0).addClass('on');
                     $('#div_image').css("display", "block");
-                    thumnImg();
+                    
                     //$('#imageBox > li').eq(0).addClass('on');
 
                     //selectTypoText(0, data.fileName);
@@ -456,7 +463,10 @@ function executeML(totData) {
                 }
 
                 if (totCount == searchDBColumnsCount) {
+                    thumnImg();
+                    fn_processFinish(lineText);
                     thumbImgEvent();
+                    thumbImgPagingEvent();
                 }
             }
 
@@ -545,7 +555,80 @@ var executeML_Old = function (fileDtlInfo, fileName, data, type) {
 };
 
 // 인식 결과 처리
-function fn_processFinish(data, fileDtlInfo) {
+function fn_processFinish(data) {
+    var dataVal = [];
+    for (var i = 0; i < lineText.length; i++) {
+        for (var j = 0; j < lineText[i].data.data.length; j++) {
+            dataVal.push(lineText[i].data.data[j]);
+        }
+    }
+
+    // TODO : 분석 결과를 정리하고 1 record로 생성한다.
+    var dtlHtml = '<tr>' +
+        '<td><input type="checkbox" id="dtl_chk_${item.imgId}" name="dtl_chk" /></td>' +
+        '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
+        '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
+        '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
+        '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
+        '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
+        '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
+        '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+        '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
+        '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+        '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
+        '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+        '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+        '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+        '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+        '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
+        '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+        '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
+        '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
+        '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+        '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
+        '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+        '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+        '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+        '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+        '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
+        '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+        '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
+        '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+        '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+        '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+        '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+        '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+        '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
+        '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
+        '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+        '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+        '</tr>';
+
+    $("#tbody_dtlList").append(dtlHtml);
+    $("#div_dtl").css("display", "block");
+    function makeMLSelect(mlData, colnum, entry) {
+
+        var appendMLSelect = '<select>';
+        var hasColvalue = false;
+        for (var y = 0; y < mlData.length; y++) {
+
+            if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
+                hasColvalue = true;
+                appendMLSelect += '<option>' + mlData[y].text + '</option>';
+            } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
+                hasColvalue = true;
+                appendMLSelect += '<option>' + mlData[y].text + '</option>';
+            }
+
+        }
+        appendMLSelect += '</select>';
+
+        return hasColvalue ? appendMLSelect : '';
+    }
+}
+
+// 인식 결과 처리
+function fn_processFinish_Old1(data, fileDtlInfo) {
     console.log("data : " + JSON.stringify(data));
     console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
 
@@ -747,16 +830,18 @@ var thumnImg = function () {
     for (var i in thumbImgs) {
         if ($('#ul_image > li').length < thumnbImgPerPage) {
             //var imageTag = '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a></li>';
-            var imageTag = `<li><a href="#none" class="imgtmb thumb-img"><img src="../../uploads/${thumbImgs[i]}" style="width: 48px;" /></a></li>`;
+            var imageTag = `<li><a href="#none" class="imgtmb thumb-img"><img src="../../uploads/${thumbImgs[i]}" style="width: 48px; background-color:white" /></a></li>`;
             $('#ul_image').append(imageTag);
         } else {
             break;
         }
     }
-    $('#thumb-tot').attr('disabled', false);
+    //$('#thumb-tot').attr('disabled', false);
+    $('#thumb-tot').removeAttr('disabled');
     if (thumbImgs.length > thumnbImgPerPage) {
         $('#thumb-prev').attr('disabled', true);
-        $('#thumb-next').attr('disabled', false);
+        //$('#thumb-next').attr('disabled', false);
+        $('#thumb-next').removeAttr('disabled');
     } else {
         $('#thumb-prev').attr('disabled', true);
         $('#thumb-next').attr('disabled', true);
@@ -767,30 +852,33 @@ var thumnImg = function () {
 
 // 썸네일 이미지 페이징
 var thumbImgPaging = function (pageCount) {
-    $('#imageBox').html('');
+    $('#ul_image').html('');
     var startImgCnt = thumnbImgPerPage * pageCount - thumnbImgPerPage;
     var endImgCnt = thumnbImgPerPage * pageCount;
 
     if (startImgCnt == 0) {
         $('#thumb-prev').attr('disabled', true);
     } else {
-        $('#thumb-prev').attr('disabled', false);
+        //$('#thumb-prev').attr('disabled', false);
+        $('#thumb-prev').removeAttr('disabled');
     }
 
     if (endImgCnt >= thumbImgs.length) {
         endImgCnt = thumbImgs.length;
         $('#thumb-next').attr('disabled', true);
     } else {
-        $('#thumb-next').attr('disabled', false);
+        //$('#thumb-next').attr('disabled', false);
+        $('#thumb-next').removeAttr('disabled');
     }
 
     var imageTag = '';
     for (var i = startImgCnt; i < endImgCnt; i++) {
         imageTag += '<li>';
-        imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a>';
+        //imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a>';
+        imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img"><img src="../../uploads/' + thumbImgs[i] + '" style="width: 48px; background-color: white;"></a>';
         imageTag += '</li>';
     }
-    $('#imageBox').append(imageTag);
+    $('#ul_image').append(imageTag);
     thumbImgEvent();
 }
 
