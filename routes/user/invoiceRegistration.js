@@ -175,11 +175,16 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 
                 execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 ' + ifile + ' ' + ofile);
             } else if (files[i].originalname.split('.')[1] === 'xlsx' || files[i].originalname.split('.')[1] === 'xls' ||
-                files[i].originalname.split('.')[1] === 'XLSX' || files[i].originalname.split('.')[1] === 'XLS') {
+                files[i].originalname.split('.')[1] === 'XLSX' || files[i].originalname.split('.')[1] === 'XLS' ||
+                files[i].originalname.split('.')[1] === 'PDF' || files[i].originalname.split('.')[1] === 'pdf') {
                 ifile = appRoot + '\\' + files[i].path;
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
 
-                var ret = sync.await(oracle.convertMs(["excel", ifile, ofile], sync.defer()));
+                if (files[i].originalname.split('.')[1] === 'xlsx' || files[i].originalname.split('.')[1] === 'xls' ||
+                    files[i].originalname.split('.')[1] === 'XLSX' || files[i].originalname.split('.')[1] === 'XLS') {
+                    var ret = sync.await(oracle.convertMs(["excel", ifile, ofile], sync.defer()));
+                }
+                
                 ifile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.png';
 
@@ -250,7 +255,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
             var j = 0;
             while (!isStop) {
                 try { // 하나의 파일 안의 여러 페이지면
-                    if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' || files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls') {
+                    if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' || files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' || files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
                         var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.png';
                         var convertFile = files[i].path.split('.')[0] + '-' + j + '.png';
                     } else {
@@ -275,7 +280,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                             convertedFilePath: convertedFilePath
                         };
 
-                        if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' || files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls') {
+                        if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' || files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' || files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
                             returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.png');
                         } else {
                             returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
@@ -288,7 +293,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                     }
                 } catch (err) { // 하나의 파일 안의 한 페이지면
                     try {
-                        if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' || files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls') {
+                        if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' || files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' || files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
                             var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '.png';
                             var convertFile = files[i].path.split('.')[0] + '.png';
                         } else {
@@ -312,7 +317,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                                 regId: userId,
                                 convertedFilePath: convertedFilePath
                             };
-                            if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' || files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls') {
+                            if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' || files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' || files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
                                 returnObj.push(files[i].originalname.split('.')[0] + '.png');
                             } else {
                                 returnObj.push(files[i].originalname.split('.')[0] + '.jpg');

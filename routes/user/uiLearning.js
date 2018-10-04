@@ -66,17 +66,12 @@ router.post('/uiLearnTraining', function (req, res) {
     var ocrData = req.body.ocrData;
     var filePath = req.body.filePath;
     var fileName = req.body.fileName;
-    var docType = req.body.docType;
     var fileExt = filePath.split(".")[1];
     var returnObj;
     sync.fiber(function () {
         try {
-            console.log("docType : " + docType);
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
-            if (docType) {
-                pythonConfig.columnMappingOptions.args.push(JSON.stringify(docType));
-            }
             var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0]);
 

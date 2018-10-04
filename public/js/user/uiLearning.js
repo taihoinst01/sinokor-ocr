@@ -10,6 +10,7 @@ var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, �
 var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
 var docType = '';
+var currentImgCount = 0;
 
 $(function () {
 
@@ -20,6 +21,7 @@ $(function () {
     popUpEvent();
     docPopRadioEvent();
     editBannedword();
+    changeDocPopupImage();
 });
 
 // 초기 작업
@@ -99,12 +101,19 @@ function popUpRunEvent() {
             async: false,
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                progressId = showProgressBar();
+            },
             success: function (data) {
                 $('#docName').text(docName);
                 $('#docType').val(data.docType);
                 $('#docSid').val(data.docSid);
                 $('#docPredictionScore').text('');
-                $('#btn_pop_doc_cancel').click();
+                lineText[currentImgCount].data.docCategory.DOCNAME = data.docName;
+                lineText[currentImgCount].data.docCategory.DOCTYPE = data.docType;
+                lineText[currentImgCount].data.docSid = data.docSid;
+                //$('#btn_pop_doc_cancel').click();
+                endProgressBar(progressId);
             },
             error: function (err) {
                 console.log(err);
@@ -135,7 +144,8 @@ function popUpSearchDocCategory() {
                 success: function (data) {
                     data = data.data;
                     $('#docSearchResult').html('');
-                    $('.button_control10').attr('disabled', true);
+                    $('.button_control10 .button_control11').attr('disabled', true);
+                    $('.button_control10 .button_control12').attr('disabled', true);
                     docPopImagesCurrentCount = 1;
                     if (data.length == 0) {
                         return false;
@@ -404,8 +414,7 @@ function appendOcrData(fileInfo, data) {
     var param = {
         'ocrData': data,
         'filePath': fileInfo.filePath,
-        'fileName': fileInfo.convertFileName,
-        'docType': docType
+        'fileName': fileInfo.convertFileName
     }
     /*
     var param = {
@@ -515,7 +524,6 @@ function executeML(totData) {
                 thumbImgs.push(data.fileName);
                 selectTypoText(lineText.length-1, data.fileName);
                 $('#docSid').val(data.data.docSid);
-                docType = data.data.docCategory.DOCTYPE;
                 $('#docType').val(data.data.docCategory.DOCTYPE);
                 if (searchDBColumnsCount == 1) {
                     /*
@@ -631,6 +639,7 @@ function docComparePopup(imgIndex) {
     $('#docCompareBtn').unbind('click');
     $('#docCompareBtn').click(function (e) {
         docPopInit();
+        changeOcrDocPopupImage();
         selectClassificationSt($('#docPopImgPath').val());
         $('#mlPredictionDocName').val($('#docName').text());
         $('#mlPredictionPercent').val($('#docPredictionScore').text());
@@ -759,6 +768,7 @@ function detailTable(fileName) {
                     tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
                     tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
+                    tblTag += '<input type="hidden" value="' + fileName + '" />';
                     tblTag += '</label>';
                     tblTag += '</dt>';
                     tblTag += '<dd>';
@@ -777,6 +787,7 @@ function detailTable(fileName) {
                     tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
                     tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
                     tblSortTag += '<input type="hidden" value="' + data[i].location + '" />';
+                    tblSortTag += '<input type="hidden" value="' + fileName + '" />';
                     tblSortTag += '</label>';
                     tblSortTag += '</dt>';
                     tblSortTag += '<dd>';
@@ -795,6 +806,7 @@ function detailTable(fileName) {
                     tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
                     tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
+                    tblTag += '<input type="hidden" value="' + fileName + '" />';
                     tblTag += '</label>';
                     tblTag += '</dt>';
                     tblTag += '<dd>';
@@ -1201,25 +1213,35 @@ function uiTrainEvent() {
 function modifyTextData() {
     progressId = showProgressBar();
     var beforeData = lineText;
-    var afterData = {};
-    afterData.data = [];
-    for (var i = 1; i < lineText.length; i++) {
-        for (var j = 0; j < lineText[i].data.data.length; j++) {
-            beforeData[0].data.data.push(lineText[i].data.data[j]);
-        }
-    }
+    var afterData = [];
+    var array = [];
+    var dataCount = 0;
     beforeData = beforeData.slice(0);
 
     // afterData Processing
     $('#textResultTbl > dl').each(function (index, el) {
+        var fileName = $(el).find('label').children().eq(2).val();
         var location = $(el).find('label').children().eq(1).val();
         var text = $(el).find('label').children().eq(0).val();
         var colLbl = $(el).find('select').find('option:selected').val();
-        afterData.data.push({ 'location': location, 'text': text, 'colLbl': Number(colLbl ? colLbl : 38) });
+
+        if (array.length < beforeData[dataCount].data.data.length) {
+            array.push({ 'location': location, 'text': text, 'colLbl': Number(colLbl ? colLbl : 38) });
+        }
+
+        if (array.length == beforeData[dataCount].data.data.length) {
+            var obj = {}
+            obj.fileName = fileName;
+            obj.data = array;
+            afterData.push(obj);
+            dataCount++;
+            array = [];
+        }
+
     });
 
-    afterData.fileName = $('#imageBox > .on span').text();
-
+    //afterData.fileName = $('#imageBox > .on span').text();
+    /*
     $.ajax({
         url: '/uiLearning/uiTraining',
         type: 'post',
@@ -1241,11 +1263,10 @@ function modifyTextData() {
             endProgressBar(progressId);
         }
     });
-
+    */
     // find an array of data with the same filename
-    /*
     for (var i in beforeData) {
-        if (beforeData[i].fileName == afterData.fileName) {
+        if (beforeData[i].fileName == afterData[i].fileName) {
 
             $.ajax({
                 url: '/uiLearning/uiTraining',
@@ -1253,26 +1274,29 @@ function modifyTextData() {
                 datatype: "json",
                 data: JSON.stringify({
                     'beforeData': beforeData[i].data,
-                    'afterData': afterData,
-                    'docType': $('#docType').val(),
-                    'docSid': $('#docSid').val()
+                    'afterData': afterData[i],
+                    //'docType': $('#docType').val(),
+                    //'docSid': $('#docSid').val()
+                    'docType': lineText[i].data.docCategory.DOCTYPE,
+                    'docSid': lineText[i].data.docSid
                 }),
+                async: false,
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
                     //makeTrainingData();
-                    endProgressBar(progressId);
-                    alert("success training");
+                    
+                    if (beforeData.length - 1 == i) {
+                        endProgressBar(progressId);
+                        alert("success training");
+                    }
                 },
                 error: function (err) {
                     console.log(err);
                     endProgressBar(progressId);
                 }
             });
-
-            break;
         }
     }
-    */
 }
 
 function makeTrainingData() {
@@ -1507,4 +1531,152 @@ function editBannedword() {
         }
 
     });
+}
+
+// 문서 양식 조회 이미지 좌우 버튼 이벤트
+function changeDocPopupImage() {
+    $('#docSearchResultImg_thumbPrev').click(function () {
+        $('#docSearchResultImg_thumbNext').attr('disabled', false);
+        if (docPopImagesCurrentCount == 1) {
+            return false;
+        } else {
+            docPopImagesCurrentCount--;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            if (docPopImagesCurrentCount == 1) {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+            }
+        }
+    });
+
+    $('#docSearchResultImg_thumbNext').click(function () {
+        var totalCount = $('#countLast').html();
+        $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+        if (docPopImagesCurrentCount == totalCount) {
+            return false;
+        } else {
+            docPopImagesCurrentCount++;
+            $('#countCurrent').html(docPopImagesCurrentCount);
+            $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
+            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            if (docPopImagesCurrentCount == totalCount) {
+                $('#docSearchResultImg_thumbNext').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbNext').attr('disabled', false);
+            }
+        }
+    });
+}
+
+// 문서 양식 조회 이미지 좌우 버튼 이벤트
+function changeOcrDocPopupImage() {
+    var totalImgCount = lineText.length - 1;
+    currentImgCount = 0;
+
+    $('#ocrResultImg_thumbPrev').click(function () {
+        $('#docSearchResultImg_thumbNext').attr('disabled', false);
+        if (currentImgCount == 0) {
+            return false;
+        } else {
+            currentImgCount--;
+            var appendImg = '<img id="originImg" src="../../uploads/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
+            $('#originImgDiv').html(appendImg);
+            selectClassificationStOcr('', currentImgCount);
+            if (currentImgCount == 0) {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+            }
+        }
+    });
+
+    $('#ocrResultImg_thumbNext').click(function () {
+        $('#docSearchResultImg_thumbPrev').attr('disabled', false);
+        if (currentImgCount == totalImgCount) {
+            return false;
+        } else {
+            currentImgCount++;
+            var appendImg = '<img id="originImg" src="../../uploads/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
+            $('#originImgDiv').html(appendImg);
+            selectClassificationStOcr('', currentImgCount);
+            if (currentImgCount == totalImgCount) {
+                $('#docSearchResultImg_thumbNext').attr('disabled', true);
+            } else {
+                $('#docSearchResultImg_thumbNext').attr('disabled', false);
+            }
+        }
+    });
+}
+
+// 분류제외문장 조회
+function selectClassificationStOcr(filepath, currentImgCount) {
+
+    var param = {
+        filepath: filepath
+    };
+    var resultOcrData = '';
+    $.ajax({
+        //todo
+        url: '/batchLearning/selectClassificationSt',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            //addProgressBar(1, 99);
+        },
+        success: function (data) {
+            //console.log("SUCCESS selectClassificationSt : " + JSON.stringify(data));
+            if (data.code != 500 || data.data != null) {
+
+                var ocrdata = lineText[currentImgCount].data.data;
+
+                //순서 정렬 로직
+                let tempArr = new Array();
+                for (let item in ocrdata) {
+                    tempArr[item] = new Array(makeindex(ocrdata[item].location), ocrdata[item]);
+                }
+
+                tempArr.sort(function (a1, a2) {
+                    a1[0] = parseInt(a1[0]);
+                    a2[0] = parseInt(a2[0]);
+                    return (a1[0] < a2[0]) ? -1 : ((a1[0] > a2[0]) ? 1 : 0);
+                });
+
+                for (let i = 0; i < tempArr.length; i++) {
+
+                    var bannedCheck = true;
+                    for (let j = 0; j < data.bannedData.length; j++) {
+                        if (tempArr[i][1].text.toLowerCase().indexOf(data.bannedData[j].WORD) == 0) {
+                            bannedCheck = false;
+                            break;
+                        }
+                    }
+
+                    if (bannedCheck) {
+                        resultOcrData += '<tr class="ui_layer1_result_tr">';
+                        resultOcrData += '<td><input type="checkbox" class="ui_layer1_result_chk"></td>';
+                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
+                    } else {
+                        resultOcrData += '<tr class="ui_layer1_result_tr">';
+                        resultOcrData += '<td><input type="checkbox" checked="checked" class="ui_layer1_result_chk"></td>';
+                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
+                    }
+
+                }
+                $('#ui_layer1_result').empty().append(resultOcrData);
+                $('input[type=checkbox]').ezMark();
+
+            }
+
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    })
 }

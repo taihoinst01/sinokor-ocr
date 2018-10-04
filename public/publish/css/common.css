@@ -336,6 +336,8 @@ h3.tits:before,
 .ipt83:before,
 .button_control11:before,
 .button_control12:before,
+.button_control13:before,
+.button_control14:before,
 .searchIcon:before,
 #content h2:before {
     display: inline-block;
@@ -5223,6 +5225,50 @@ button[disabled] {
 }
 
     .button_control12:before {
+        background-position: -285px -100px;
+        content: '';
+        display: block;
+        width: 24px;
+        height: 44px;
+    }
+
+.button_control13 {
+    top: 410px !important;
+    left: 552px !important;
+    z-index: 500;
+    opacity: 0.8 !important;
+    position: absolute;
+    display: inline-block;
+    width: 64px;
+    height: 84px;
+    padding: 20px;
+    background: #605f5d;
+    cursor: pointer;
+}
+
+    .button_control13:before {
+        background-position: -260px -100px;
+        content: '';
+        display: block;
+        width: 24px;
+        height: 44px;
+    }
+
+.button_control14 {
+    top: 410px !important;
+    right: 551px !important;
+    z-index: 500;
+    opacity: 0.8 !important;
+    position: absolute;
+    display: inline-block;
+    width: 64px;
+    height: 84px;
+    padding: 20px;
+    background: #605f5d;
+    cursor: pointer;
+}
+
+    .button_control14:before {
         background-position: -285px -100px;
         content: '';
         display: block;

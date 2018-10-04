@@ -435,7 +435,7 @@ function executeML(totData) {
             } else {
                 //console.log(data);
                 lineText.push(data);
-                //fn_processFinish(data.data, totData.fileDtlInfo); // 인식 결과
+                fn_processFinish(data.data, totData.fileDtlInfo); // 인식 결과
                 $('#docSid').val(data.data.docSid);
                 docType = data.data.docCategory.DOCTYPE;
                 $('#docType').val(data.data.docCategory.DOCTYPE);
@@ -464,7 +464,7 @@ function executeML(totData) {
 
                 if (totCount == searchDBColumnsCount) {
                     thumnImg();
-                    fn_processFinish(lineText);
+                    //fn_processFinish(lineText);
                     thumbImgEvent();
                     thumbImgPagingEvent();
                 }
@@ -555,7 +555,7 @@ var executeML_Old = function (fileDtlInfo, fileName, data, type) {
 };
 
 // 인식 결과 처리
-function fn_processFinish(data) {
+function fn_processFinish_Old1(data) {
     var dataVal = [];
     for (var i = 0; i < lineText.length; i++) {
         for (var j = 0; j < lineText[i].data.data.length; j++) {
@@ -628,7 +628,7 @@ function fn_processFinish(data) {
 }
 
 // 인식 결과 처리
-function fn_processFinish_Old1(data, fileDtlInfo) {
+function fn_processFinish(data, fileDtlInfo) {
     console.log("data : " + JSON.stringify(data));
     console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
 
