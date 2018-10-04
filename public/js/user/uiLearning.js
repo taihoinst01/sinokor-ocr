@@ -98,7 +98,6 @@ function popUpRunEvent() {
             url: '/uiLearning/insertDoctypeMapping',
             type: 'post',
             datatype: 'json',
-            async: false,
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             beforeSend: function () {
@@ -1211,7 +1210,6 @@ function uiTrainEvent() {
 
 //개별 학습 학습 내용 추가 ui training add
 function modifyTextData() {
-    progressId = showProgressBar();
     var beforeData = lineText;
     var afterData = [];
     var array = [];
@@ -1280,14 +1278,16 @@ function modifyTextData() {
                     'docType': lineText[i].data.docCategory.DOCTYPE,
                     'docSid': lineText[i].data.docSid
                 }),
-                async: false,
                 contentType: 'application/json; charset=UTF-8',
+                beforeSend: function () {
+                    progressId = showProgressBar();
+                },
                 success: function (data) {
                     //makeTrainingData();
                     
                     if (beforeData.length - 1 == i) {
                         endProgressBar(progressId);
-                        alert("success training");
+                        //alert("success training");
                     }
                 },
                 error: function (err) {
