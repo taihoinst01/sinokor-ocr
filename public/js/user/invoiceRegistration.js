@@ -682,16 +682,16 @@ function fn_processFinish(data, fileDtlInfo) {
     $("#div_dtl").css("display", "block");
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select>';
+        var appendMLSelect = '<select onchange="zoomImg(this, ' + fileDtlInfo.convertFileName +')">';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option>' + mlData[y].text + '</option>';
+                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option>' + mlData[y].text + '</option>';
+                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
             }
 
         }
@@ -1000,4 +1000,53 @@ var insertCommError = function (eCode, type) {
             //console.log(err);
         }
     });
+}
+
+function zoomImg(e, fileName) {
+
+    var mainImage = $("#mainImage").css('background-image');
+    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
+
+    if (mainImage != fileName) {
+        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+    }
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
+    //imageZoom 고정크기
+    var fixWidth = 744;
+    var fixHeight = 1052;
+
+    var widthPercent = fixWidth / width;
+    var heightPercent = fixHeight / height;
+
+    $('#mainImage').hide();
+    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+
+    // 사각형 좌표값
+    var location = $(e).find('input[type=hidden]').val().split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+
+    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
+    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
+    //console.log(xPosition + yPosition);
+    $('#imageZoom').css('background-position', xPosition + yPosition);
+
+    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
+    $('#redZoomNemo').show();
+}
+
+function viewOriginImg() {
+    $('#imageZoom').hide();
+    $('#mainImage').show();
 }

@@ -89,7 +89,7 @@ function insertDoctypeMapping(req, done) {
                 insertFormMapping(topSentenses, docType);
             } else {
                 docType = selectDocCategoryFromDocName(data);
-
+                insertFormMapping(topSentenses, docType);
                 insertNotInvoce(topSentenses, docType);
             }
 
