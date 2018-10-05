@@ -538,6 +538,8 @@ function executeML(totData) {
                         docScore = data.score;
                     }
                     */
+                    $('#docName').text(data.data.docCategory.DOCNAME);
+                    $('#docPredictionScore').text((data.data.docCategory.DOCSCORE * 100) + ' %');
 
                     var mainImgHtml = '';
                     mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
@@ -756,8 +758,8 @@ function detailTable(fileName) {
             var entryColArr = item.entryMappingList;
             entryColArr.unshift(entryColArr.pop());
 
-            $('#docName').text(item.data.docCategory.DOCNAME);
-            $('#docPredictionScore').text((item.data.docCategory.DOCSCORE * 100) + ' %');
+            //$('#docName').text(item.data.docCategory.DOCNAME);
+            //$('#docPredictionScore').text((item.data.docCategory.DOCSCORE * 100) + ' %');
 
             for (var i in data) {
                 // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
