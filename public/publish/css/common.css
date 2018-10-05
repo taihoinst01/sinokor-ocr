@@ -5366,7 +5366,7 @@ button[disabled] {
 .pop_layer_K01 {
     margin-left: -820px !important;
     width: 1700px;
-    height: 900px;
+    height: 1000px;
     margin-top: -460px;
 }
 
@@ -5623,8 +5623,10 @@ button[disabled] {
     /*
          *  화면에 보여야 할 Table의 가로크기를 잡아줍니다.
          */
-    width: 1700px !important;
+    width: 1650px !important;
     table-layout: fixed;
+    margin-left: 22px;
+    margin-top: 20px;
 }
 
 .batch_pop_divHeadScroll {
@@ -5635,6 +5637,7 @@ button[disabled] {
     overflow-x: hidden;
     overflow-y: hidden;
     display: block !important;
+    border-radius: 5px;
 }
 
 .batch_pop_tblHead {
@@ -6174,7 +6177,7 @@ input:disabled {
 #div_view_image {
     height: 500px !important;
     overflow-y: scroll;
-    width: 1600px;
+    width: 1620px;
 }
 
 .pop_image_data {
@@ -6188,4 +6191,39 @@ input:disabled {
 .imgbox {
     height: 480px;
     width: 100%;
+}
+.pop_header h1 {
+    line-height: 42px;
+    padding: 0 0 0 26px;
+    font-size: 18px;
+    color: #fff;
+    font-weight: 300;
+    font-family: 'notokr-medium', sans-serif;
+    background-color: #0370b2;
+}
+
+.layer3_pop_footer {
+    width: 1660px;
+    height: 80px;
+    background: #eaeaea;
+    padding: 30px 20px;
+}
+
+    .layer3_pop_footer > .pop_close_btn {
+        display: inline-block;
+        min-width: 80px;
+        height: 41px;
+        padding: 9px 15px 11px;
+        margin: 0;
+        font-size: 15px;
+        color: #616363;
+        background: #eaeaea;
+        border: 1px solid;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+#div_invoice_view_image {
+    height: 305px !important;
+    overflow-y: scroll;
+    width: 1620px;
 }

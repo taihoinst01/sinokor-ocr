@@ -1,0 +1,183 @@
+﻿<!--Example
+<!DOCTYPE html>
+<html>
+<head>
+    <title>jmh_testPage</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <script type="text/javascript" src="/common/js/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="/js/user/result.js"></script>
+
+</head>
+<body>
+    입력 >>> <br />
+    구분 : <input type="text" id="user_name" /> <br />
+    나이 : <input type="text" id="user_age" /> <br />
+    휴대전화 : <input type="text" id="user_phone" /> <br />
+    <button type="submit" id="pass">전송</button> <br />
+
+    <br />출력 >>> <br />
+    <textarea id="resultValue01"></textarea>
+    <textarea id="resultValue02"></textarea>
+</body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>jmh_testPage</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <script type="text/javascript" src="/common/js/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="/js/user/result.js"></script>
+
+</head>
+<body>
+    <table style="border:solid">
+        <tr>
+            <td style="border:solid">
+                gubun :
+                <select class="gubun">
+                    <option value="WF_ApprovalCancel">WF_ApprovalCancel</option>
+                    <option value="WF_RemarkUpdate">WF_RemarkUpdate</option>
+                    <option value="WF_Registration">WF_Registration</option>
+                    <option value="WF_ReturnRegistration">WF_ReturnRegistration</option>
+                    <option value="WF_GetAllApprovalList">WF_GetAllApprovalList</option>
+                    <option value="WF_AllRegistration">WF_AllRegistration</option>
+                    <option value="WF_AllReturnRegistration">WF_AllReturnRegistration</option>
+                    <option value="WF_ApprovalCheck">WF_ApprovalCheck</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ApprovalCancel 입력 >>> <br />
+                gsProId : <input type="text" id="gsProId" /> <br />
+                gsInitialId : <input type="text" id="gsInitialId" /> <br />
+                sendid : <input type="text" id="sendid" /> <br />
+                gsSeqNo : <input type="text" id="gsSeqNo" /> <br />
+                gsPostType : <input type="text" id="gsPostType" /> <br />
+                ssUsrId : <input type="text" id="ssUsrId" /> <br />
+
+                <button type="submit" id="approvalCancelBtn">ApprovalCancel</button> <br />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                RemarkUpdate 입력 >>> <br />
+                proid : <input type="text" id="proid" /> <br />
+                recvid : <input type="text" id="recvid" /> <br />
+                seqno : <input type="text" id="seqno" /> <br />
+
+                <button type="submit" id="remarkUpdateBtn">RemarkUpdate</button> <br />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Registration 입력 >>> <br />
+                gsProId : <input type="text" id="gsProId1" /> <br />
+                hdnWorkGubun : <input type="text" id="hdnWorkGubun" /> <br />
+                info04 : <input type="text" id="info04" /> <br />
+                selHandlingUser : <input type="text" id="selHandlingUser" /> <br />
+                v_remark : <input type="text" id="v_remark" /> <br />
+                v_wf_line : <input type="text" id="v_wf_line" /> <br />
+                v_last : <input type="text" id="v_last" /> <br />
+                gsPostType : <input type="text" id="gsPostType1" /> <br />
+                index06 : <input type="text" id="index06" /> <br />
+                info01 : <input type="text" id="info01" /> <br />
+                info08 : <input type="text" id="info08" /> <br />
+                bizdvcd : <input type="text" id="bizdvcd" /> <br />
+                imgcnt : <input type="text" id="imgcnt" /> <br />
+                ssUsrId : <input type="text" id="ssUsrId" /> <br />
+
+                <button type="submit" id="registrationBtn">Registration</button> <br />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ReturnRegistration 입력 >>> <br />
+                proid : <input type="text" id="proid2" /> <br />
+                sendid : <input type="text" id="sendid1" /> <br />
+                recvid : <input type="text" id="recvid1" /> <br />
+                code : <input type="text" id="code" /> <br />
+                remark : <input type="text" id="remark" /> <br />
+                reason : <input type="text" id="reason" /> <br />
+                index06 : <input type="text" id="index061" /> <br />
+                info01 : <input type="text" id="info011" /> <br />
+                bizdvcd : <input type="text" id="bizdvcd1" /> <br />
+                imgcnt : <input type="text" id="imgcnt1" /> <br />
+                gsInfo09 : <input type="text" id="gsInfo09" /> <br />
+                ssC_APP : <input type="text" id="ssC_APP" /> <br />
+                ssUsrId : <input type="text" id="ssUsrId" /> <br />
+
+                <button type="submit" id="returnRegistrationBtn">ReturnRegistration</button> <br />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ApprovalCheck 입력 >>> <br />
+                proid : <input type="text" id="proid1" /> <br />
+                ssUsrId : <input type="text" id="ssUsrId" /> <br />
+                <button type="submit" id="approvalCheckBtn">ApprovalCheck</button> <br />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                AllRegistration 입력 >>> <br />
+                gsProId [|] : <input type="text" id="gsProId55" /> <br />
+                hdnWorkGubun : <input type="text" id="hdnWorkGubun55" /> <br />
+                info04 : <input type="text" id="info0455" /> <br />
+                selHandlingUser : <input type="text" id="selHandlingUser55" /> <br />
+                v_last : <input type="text" id="v_last55" /> <br />
+                gsPostType : <input type="text" id="gsPostType55" /> <br />
+                index06 : <input type="text" id="index0655" /> <br />
+                imgcnt [|] : <input type="text" id="imgcnt55" /> <br />
+                info01 [|] : <input type="text" id="info0155" /> <br />
+                info08 : <input type="text" id="info0855" /> <br />
+                bizdvcd : <input type="text" id="bizdvcd55" /> <br />
+                ssC_APP : <input type="text" id="ssC_APP55" /> <br />
+                ssUsrId : <input type="text" id="ssUsrId55" /> <br />
+                <button type="submit" id="allRegistrationBtn">AllRegistration</button> <br />
+            </td>
+         </tr>
+         <tr>
+             <td>
+                 AllReturnRegistration 입력 >>> <br />
+                 proid [|]: <input type="text" id="proid77" /> <br />
+                 sendid : <input type="text" id="sendid77" /> <br />
+                 recvid [|] : <input type="text" id="recvid77" /> <br />
+                 code : <input type="text" id="code77" /> <br />
+                 remark : <input type="text" id="remark77" /> <br />
+                 reason : <input type="text" id="reason77" /> <br />
+                 index06 : <input type="text" id="index0677" /> <br />
+                 info01 [|] : <input type="text" id="info0177" /> <br />
+                 imgcnt [|] : <input type="text" id="imgcnt77" /> <br />
+                 index03 [|] : <input type="text" id="index0377" /> <br />
+                 gsInfo09 [|] : <input type="text" id="gsInfo0977" /> <br />
+                 ssUsrId : <input type="text" id="ssUsrId77" /> <br />
+                 <button type="submit" id="allReturnRegistrationBtn">AllReturnRegistration</button> <br />
+             </td>
+        </tr>
+         <tr>
+             <td>
+                 GetAllApprovalList 입력 >>> <br />
+                 proid : <input type="text" id="proid66" /> <br />
+                 <button type="submit" id="getAllApprovalListBtn">GetAllApprovalList</button> <br />
+             </td>
+         </tr>
+        </table>
+
+
+
+
+
+
+</body>
+</html>
+
+

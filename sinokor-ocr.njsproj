@@ -1014,7 +1014,7 @@
     <Compile Include="routes\admin\userManagement.js" />
     <Compile Include="routes\index.js" />
     <Compile Include="routes\proxy\proxy.js" />
-    <Compile Include="routes\user\result.js" />
+    <Compile Include="routes\user\wF_WorkflowProc.js" />
     <Compile Include="routes\user\invoiceProcessingStatus.js">
       <SubType>Code</SubType>
     </Compile>
@@ -3801,7 +3801,7 @@
     <Content Include="views\common\leftSideBar.html" />
     <Content Include="views\index.html" />
     <Content Include="views\index_after.html" />
-    <Content Include="views\user\result.html" />
+    <Content Include="views\user\wF_WorkflowProc.html" />
     <Content Include="views\user\invoiceProcessingStatus.html">
       <SubType>Code</SubType>
     </Content>
