@@ -451,7 +451,7 @@ function executeML(totData) {
                     mainImgHtml += '</div>';
                     mainImgHtml += '</div>';
 
-                    $('#div_view_image').html(mainImgHtml);
+                    $('#div_invoice_view_image').html(mainImgHtml);
                     $('#mainImage').css('background-image', 'url("../../uploads/' + data.fileName + '")');
                     $('#imageBox > li').eq(0).addClass('on');
                     $('#div_image').css("display", "block");
@@ -537,7 +537,7 @@ var executeML_Old = function (fileDtlInfo, fileName, data, type) {
                                         <div id="imageZoom">
                                             <div id="redZoomNemo"></div>
                                         </div>`;
-                    $('#div_view_image').html(mainImgHtml);
+                    $('#div_invoice_view_image').html(mainImgHtml);
                     $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
                     $('#imageBox > li').eq(0).addClass('on');
                     thumnImg();

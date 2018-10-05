@@ -6222,3 +6222,8 @@ input:disabled {
         border-radius: 5px;
         cursor: pointer;
     }
+#div_invoice_view_image {
+    height: 305px !important;
+    overflow-y: scroll;
+    width: 1620px;
+}
