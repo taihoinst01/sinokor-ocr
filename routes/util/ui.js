@@ -82,13 +82,15 @@ function insertDoctypeMapping(req, done) {
                 convertedFilepath = copyFile(data.filepath, docType);
 
                 //20180911 TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
-                //insertFormMapping(topSentenses, docType);
+                insertFormMapping(topSentenses, docType);
             } else if (data.radioType == '1') {
                 docType = selectDocCategoryFromDocName(data);
 
-                //insertFormMapping(topSentenses, docType);
+                insertFormMapping(topSentenses, docType);
             } else {
                 docType = selectDocCategoryFromDocName(data);
+
+                insertNotInvoce(topSentenses, docType);
             }
 
             return done(null, [docType, docSid]);
@@ -223,6 +225,18 @@ function insertFormMapping(topSentenses, docType) {
 
         sync.await(oracle.insertFormMapping([formsid.slice(0, -1), docType], sync.defer()));
 
+    } catch (e) {
+        throw e;
+    }
+}
+
+function insertNotInvoce(topSentenses, docType) {
+    try {
+        var text = "";
+        for (var i in topSentenses) {
+            text += topSentenses[i].text + ",";
+        }
+        sync.await(oracle.insertNotInvoce([text.slice(0, -1), docType], sync.defer()));
     } catch (e) {
         throw e;
     }

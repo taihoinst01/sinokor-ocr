@@ -38,47 +38,127 @@ var router = express.Router();
  * *************************************************************/
 
 router.post('/imageUpload', upload.any(), function (req, res) {
-    var files = req.files;
-    var imagePath = propertiesConfig.filepath.imagePath;
-    var convertedImagePath = appRoot + '\\uploads\\';
-    var fileInfo = [];
-    var returnObj = [];
+    sync.fiber(function () {
+        var files = req.files;
+        var imagePath = propertiesConfig.filepath.imagePath;
+        var convertedImagePath = appRoot + '\\uploads\\';
+        var fileInfo = [];
+        var returnObj = [];
 
-    try {
-        for (var i = 0; i < files.length; i++) {
-            var fileObj = files[i];
-            var fileExt = fileObj.originalname.split('.')[1];
+        try {
+            for (var i = 0; i < files.length; i++) {
+                var fileObj = files[i];
+                var fileExt = fileObj.originalname.split('.')[1];
 
-            if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
-                var fileItem = {
-                    imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                    filePath: (appRoot + '/' + fileObj.path).replace(/\\/gi, '/'),
-                    oriFileName: fileObj.originalname,
-                    convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-                    convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
-                    fileExt: fileExt,
-                    fileSize: fileObj.size,
-                    contentType: fileObj.mimetype
-                };
-                fileInfo.push(fileItem);
+                if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
+                    var fileItem = {
+                        imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                        filePath: (appRoot + '/' + fileObj.path).replace(/\\/gi, '/'),
+                        oriFileName: fileObj.originalname,
+                        convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                        convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
+                        fileExt: fileExt,
+                        fileSize: fileObj.size,
+                        contentType: fileObj.mimetype
+                    };
+                    fileInfo.push(fileItem);
 
-                var fileNames = [];
-                returnObj.push(fileItem.convertFileName);
+                    var fileNames = [];
+                    returnObj.push(fileItem.convertFileName);
 
-                var ifile = convertedImagePath + fileObj.originalname;
-                var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
-                var result = execSync('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile);
-                if (result.status != 0) {
-                    throw new Error(result.stderr);
+                    var ifile = convertedImagePath + fileObj.originalname;
+                    var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
+                    var result = execSync('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile);
+                    if (result.status != 0) {
+                        throw new Error(result.stderr);
+                    }
+                } else if (fileExt.toLowerCase() === 'doc' || fileExt.toLowerCase() === 'docx'
+                    || fileExt.toLowerCase() === 'xls' || fileExt.toLowerCase() === 'xlsx'
+                    || fileExt.toLowerCase() === 'pdf') {
+
+
+                    var ifile = convertedImagePath + fileObj.originalname;
+                    var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
+
+                    var convertPdf = '';
+
+                    if (fileExt.toLowerCase() === 'doc' || fileExt.toLowerCase() === 'docx') {
+                        convertPdf = sync.await(oracle.convertMs(["word", ifile, ofile], sync.defer()));
+                    } else if (fileExt.toLowerCase() === 'xls' || fileExt.toLowerCase() === 'xlsx') {
+                        convertPdf = sync.await(oracle.convertMs(["excel", ifile, ofile], sync.defer()));
+                    }
+
+                    ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
+                    ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
+
+                    if (convertPdf || fileExt.toLowerCase() === 'pdf') {
+                        var result = execSync('module\\imageMagick\\convert.exe -density 300 ' + ifile + ' ' + ofile);
+
+                        if (result.status != 0) {
+                            throw new Error(result.stderr);
+                        }
+
+                        var isStop = false;
+                        var j = 0;
+                        while (!isStop) {
+                            try { // 하나의 파일 안의 여러 페이지면
+                                var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.png';
+                                var stat = fs.statSync(convertFileFullPath);
+                                if (stat) {
+                                    var fileItem = {
+                                        imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                                        filePath: (appRoot + '/' + fileObj.path).replace(/\\/gi, '/'),
+                                        oriFileName: fileObj.originalname,
+                                        convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                                        convertFileName: fileObj.originalname.split('.')[0] + '-' + j + '.png',
+                                        fileExt: fileExt,
+                                        fileSize: fileObj.size,
+                                        contentType: fileObj.mimetype
+                                    };
+                                    fileInfo.push(fileItem);
+                                    returnObj.push(fileItem.convertFileName);
+                                } else {
+                                    isStop = true;
+                                    break;
+                                }
+                            } catch (err) { // 하나의 파일 안의 한 페이지면
+                                try {
+                                    var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '.png';
+                                    var stat2 = fs.statSync(convertFileFullPath);
+                                    if (stat2) {
+                                        var fileItem = {
+                                            imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                                            filePath: (appRoot + '/' + fileObj.path).replace(/\\/gi, '/'),
+                                            oriFileName: fileObj.originalname,
+                                            convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                                            convertFileName: fileObj.originalname.split('.')[0] + '.png',
+                                            fileExt: fileExt,
+                                            fileSize: fileObj.size,
+                                            contentType: fileObj.mimetype
+                                        };
+                                        fileInfo.push(fileItem);
+                                        returnObj.push(fileItem.convertFileName);
+                                        break;
+                                    }
+                                } catch (e) {
+                                    break;
+                                }
+                            }
+                            j++;
+                        }
+
+                    } else {
+                        throw new Error("pdf convert fail");
+                    }
                 }
             }
+            res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
+        } catch (e) {
+            console.log(e);
+            res.send({ code: 500, message: [], error: e });
         }
-        res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
-    } catch (e) {
-        console.log(e);
-        res.send({ code: 500, message: [], error: e });
-    }
 
+    });
 
     /*
     for (var i = 0; i < files.length; i++) {
