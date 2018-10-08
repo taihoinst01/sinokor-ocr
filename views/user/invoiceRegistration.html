@@ -59,7 +59,7 @@
                             <span id="uploadInfoText" class="invoiceR_uploadText">Drag & Drop files here</span>
                             <form id="uploadFileForm" action="/invoiceRegistration/uploadFile" method="post" enctype="multipart/form-data">
                                 <p class="attach_btn attach_btn_k01">
-                                    <input type="file" id="uploadFile" name="file" value="upload"/>
+                                    <input type="file" id="uploadFile" name="file" value="upload" />
                                     <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
                                 </p>
                             </form>
@@ -101,7 +101,7 @@
                         <table class="invoiceR_tblBackground" cellspacing="0">
                             <tr>
                                 <td>
-                                    <div class="table_style02">                                     
+                                    <div class="table_style02">
                                         <div class="invoiceR_divHeadScroll">
                                             <table class="invoiceR_tblHead" border="0">
                                                 <caption>결재리스트(기본) 타이틀 정보</caption>
@@ -147,7 +147,7 @@
                                                     <col style="width:130px" />
                                                 </colgroup>
                                                 <tbody id="tbody_baseList">
-                                                    
+
                                                     <!--<tr>
                                                         <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="" class="sta00 stck_tr" name="st_ck01" /></div></th>
                                                         <td>ICR2018071000000123</td>
@@ -195,7 +195,7 @@
                                                         <td><label for="intxt_001" class="blind">마감년월</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
                                                         <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
                                                     </tr>-->
-                                                    
+
                                                 </tbody>
                                             </table>
                                         </div>
@@ -203,11 +203,11 @@
                                 </td>
                             </tr>
                         </table>
-                       
+
                         <!-- 버튼 영역 -->
                         <div class="fr mt10">
                             <button type="button" id="" class="button_st4">삭제</button>
-                            <button type="button" id="" class="button_st2">재처리</button>
+                            <button type="button" id="relayBtn" class="button_st2">전달</button>
                             <button type="button" id="" class="button_st1">저장</button>
                         </div>
                         <!-- // 버튼 영역 -->
@@ -371,53 +371,53 @@
                                             </colgroup>
                                             <tbody id="tbody_dtlList">
                                                 <!--
-    <tr>
-        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
-        <td>ICR2018071000000123</td>
-        <td>27</td>
-        <td>201807</td>
-        <td>리키타츠너</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>ICR2018071000000123</td>
-        <td>27</td>
-        <td>201807</td>
-        <td>리키타츠너</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>ICR2018071000000123</td>
-        <td>27</td>
-        <td>201807</td>
-        <td>리키타츠너</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>ICR2018071000000123</td>
-        <td>27</td>
-        <td>201807</td>
-        <td>리키타츠너</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>ICR2018071000000123</td>
-        <td>27</td>
-        <td>201807</td>
-        <td>리키타츠너</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-        <td>이라르</td>
-    </tr>
-    -->
+                                                <tr>
+                                                    <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
+                                                    <td>ICR2018071000000123</td>
+                                                    <td>27</td>
+                                                    <td>201807</td>
+                                                    <td>리키타츠너</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>ICR2018071000000123</td>
+                                                    <td>27</td>
+                                                    <td>201807</td>
+                                                    <td>리키타츠너</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>ICR2018071000000123</td>
+                                                    <td>27</td>
+                                                    <td>201807</td>
+                                                    <td>리키타츠너</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>ICR2018071000000123</td>
+                                                    <td>27</td>
+                                                    <td>201807</td>
+                                                    <td>리키타츠너</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>ICR2018071000000123</td>
+                                                    <td>27</td>
+                                                    <td>201807</td>
+                                                    <td>리키타츠너</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                    <td>이라르</td>
+                                                </tr>
+                                                -->
                                             </tbody>
                                         </table>
                                     </div>
@@ -438,8 +438,45 @@
             <!-- // Content -->
         </div>
     </div>
+
+    <!-- 팝업_유저찾기팝업 -->
+    <div id="layer1" class="poplayer">
+        <input type="hidden" id="docPopImgPath" />
+        <input type="hidden" id="docPopImgId" />
+        <input type="hidden" id="batchListRowNum" />
+        <div class="bg"></div>
+        <div class="pop_layer">
+            <div class="pop_popup0 icr_popup">
+                <div class="pop_header">
+                    <h1>ICR유저 찾기</h1>
+                </div>
+                <div class="tits22">
+                    <div class="inputst_role">
+                        <input type="radio" id="docManagerRadio" value="1" class="custom" name="radio_batch" checked="checked" />
+                        <label for="docManagerRadio">문서담당자</label>
+                        <input type="radio" id="icrManagerRadio" value="2" class="custom" name="radio_batch" />
+                        <label for="icrManagerRadio">ICR담당자</label>
+                        <input type="radio" id="approvalManagerRadio" value="3" class="custom" name="radio_batch" />
+                        <label for="approvalManagerRadio">결재담당자</label>
+                    </div>
+                    <input type="text" name="" id="" class="inputst_box01 invoice_doc_pop_ipt" value="" disabled />
+                    <button type="button" id="btn_pop_doc_cancel" class="ui_doc_pop_btn2 cbtn fr">취 소</button>
+                    <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1 ml5">저장</button>
+                </div>
+                <div class="pop_content">
+                    <table>
+
+                    </table>
+                </div>
+                <div class="pop_footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- // 팝업_유저찾기팝업 -->
     <script type="text/javascript">
-       
+
     </script>
 </body>
 </html>

@@ -64,6 +64,7 @@ var _init = function () {
     fn_scrollbarEvent();
     fn_buttonEvent();
     fn_uploadFileEvent();
+    fn_docEvent();
 };
 
 /****************************************************************************************
@@ -1049,4 +1050,19 @@ function zoomImg(e, fileName) {
 function viewOriginImg() {
     $('#imageZoom').hide();
     $('#mainImage').show();
+}
+
+/****************************************************************************************
+ * 문서기본정보 - 삭제,전달,저장
+ ****************************************************************************************/
+var fn_docEvent = function () {
+
+    //삭제
+
+    //전달
+    $('#relayBtn').click(function () {
+        layer_open('layer1');
+        console.log("ddd");
+    })
+    //저장
 }
