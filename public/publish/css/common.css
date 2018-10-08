@@ -6227,3 +6227,8 @@ input:disabled {
     overflow-y: scroll;
     width: 1620px;
 }
+
+.icr_popup {
+    width: 900px !important;
+    height: 720px !important;
+}
