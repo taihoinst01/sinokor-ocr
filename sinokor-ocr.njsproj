@@ -1014,6 +1014,7 @@
     <Compile Include="routes\admin\userManagement.js" />
     <Compile Include="routes\index.js" />
     <Compile Include="routes\proxy\proxy.js" />
+    <Compile Include="routes\user\result.js" />
     <Compile Include="routes\user\wF_WorkflowProc.js" />
     <Compile Include="routes\user\invoiceProcessingStatus.js">
       <SubType>Code</SubType>
