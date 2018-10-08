@@ -58,9 +58,9 @@ def checkVerticalEntry(entLoc, lblLoc):
 def chekOurShareEntry(horizItem, vertItem):
     try:
 
-        if (horizItem == 0 and vertItem == 30) or (horizItem == 30 and vertItem == 0):
+        if (int(horizItem) == 0 and int(vertItem) == 30) or (int(horizItem) == 30 and int(vertItem) == 0):
             return True
-        elif (horizItem == 2 and vertItem == 30) or (horizItem == 30 and vertItem == 2):
+        elif (int(horizItem) == 2 and int(vertItem) == 30) or (int(horizItem) == 30 and int(vertItem) == 2):
             return True
         else:
             return False
