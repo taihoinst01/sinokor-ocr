@@ -1727,7 +1727,7 @@ select:disabled + ul.idealSelect:before {
     .box_imgtmb ul li {
         float: left;
         width: 110px;
-        padding: 0;
+        padding: 15px 1px;
     }
 
     .box_imgtmb .box_img {
@@ -5737,7 +5737,7 @@ button[disabled] {
     /*
          *  화면에 보여야 할 Table의 가로크기를 잡아줍니다.
          */
-    width: 790px;
+    width: 100%;
     table-layout: fixed;
 }
 
@@ -5790,7 +5790,7 @@ button[disabled] {
     /*
          *  화면에 보여야 할 Table의 가로크기를 잡아줍니다.
          */
-    width: 1671px;
+    width: 100%;
     table-layout: fixed;
 }
 

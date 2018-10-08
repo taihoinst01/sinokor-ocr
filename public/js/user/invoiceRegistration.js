@@ -64,7 +64,30 @@ var _init = function () {
     fn_scrollbarEvent();
     fn_buttonEvent();
     fn_uploadFileEvent();
+    fn_sendDocumentToUser();
     fn_docEvent();
+};
+
+var fn_sendDocumentToUser = function () {
+    $('#sendDocBtn').click(function () {
+        $.ajax({
+            url: '/common/selectUserInfo',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({}),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                if (data.code == 200) {
+                    console.log(data)
+                } else {
+                    alert(data.error);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });   
 };
 
 /****************************************************************************************
@@ -683,7 +706,8 @@ function fn_processFinish(data, fileDtlInfo) {
     $("#div_dtl").css("display", "block");
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select onchange="zoomImg(this, ' + fileDtlInfo.convertFileName +')">';
+        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
@@ -694,10 +718,8 @@ function fn_processFinish(data, fileDtlInfo) {
                 hasColvalue = true;
                 appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
             }
-
         }
         appendMLSelect += '</select>';
-
         return hasColvalue ? appendMLSelect : '';
     }
 }
@@ -1004,7 +1026,6 @@ var insertCommError = function (eCode, type) {
 }
 
 function zoomImg(e, fileName) {
-
     var mainImage = $("#mainImage").css('background-image');
     mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
     mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
@@ -1032,7 +1053,7 @@ function zoomImg(e, fileName) {
     $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
 
     // 사각형 좌표값
-    var location = $(e).find('input[type=hidden]').val().split(',');
+    var location = $(e).val().split(',');
     x = parseInt(location[0]);
     y = parseInt(location[1]);
     textWidth = parseInt(location[2]);
@@ -1060,7 +1081,7 @@ var fn_docEvent = function () {
     //삭제
 
     //전달
-    $('#relayBtn').click(function () {
+    $('#sendDocBtn').click(function () {
         layer_open('layer1');
         console.log("ddd");
     })
