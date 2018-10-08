@@ -148,7 +148,7 @@ function ocrParsing(body) {
         }
 
         // ocr x location parsing
-        var xInterval = 3; // x pixel value
+        var xInterval = 20; // x pixel value
 
         for (var i = 0; i < data.length; i++) {
             for (var j = 0; j < data.length; j++) {
