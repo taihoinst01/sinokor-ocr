@@ -432,7 +432,7 @@ router.post('/selectTypoData2', function (req, res) {
 router.post('/selectUserInfo', function (req, res) {
     var returnObj;
     let userInfoArr;
-    var keyword = req.body.keyword ? req.body.keyword : '';
+    var keyword = req.body.param.keyword ? req.body.param.keyword : '';
 
     sync.fiber(function () {
         try {

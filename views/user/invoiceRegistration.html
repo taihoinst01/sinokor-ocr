@@ -458,17 +458,27 @@
                         <input type="radio" id="approvalManagerRadio" value="3" class="custom" name="radio_batch" />
                         <label for="approvalManagerRadio">결재담당자</label>
                     </div>
-                    <input type="text" name="" id="" class="inputst_box01 invoice_doc_pop_ipt" value="" disabled />
-                    <button type="button" id="btn_pop_doc_cancel" class="ui_doc_pop_btn2 cbtn fr">취 소</button>
-                    <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1 ml5">저장</button>
+                    <input type="text" name="searchManger" id="searchManger" class="inputst_box01 invoice_doc_pop_ipt" value="" />
+                    <button type="button" id="btn_pop_user_search" class="ui_doc_pop_btn1 ml5">검색</button>
                 </div>
                 <div class="pop_content">
                     <table>
-
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>이름</th>
+                                <th>소속팀</th>
+                                <th>소속파트</th>
+                            </tr>
+                        </thead>
+                        <tbody id="searchManagerResult">
+                           
+                        </tbody>
                     </table>
                 </div>
                 <div class="pop_footer">
-
+                    <button type="button" id="btn_pop_user_choice" class="ui_doc_pop_btn1 ml5">선택</button>
+                    <button type="button" id="btn_pop_doc_cancel" class="ui_doc_pop_btn2 cbtn fr">취 소</button>
                 </div>
             </div>
         </div>

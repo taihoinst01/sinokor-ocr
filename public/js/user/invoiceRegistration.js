@@ -64,30 +64,7 @@ var _init = function () {
     fn_scrollbarEvent();
     fn_buttonEvent();
     fn_uploadFileEvent();
-    fn_sendDocumentToUser();
     fn_docEvent();
-};
-
-var fn_sendDocumentToUser = function () {
-    $('#sendDocBtn').click(function () {
-        $.ajax({
-            url: '/common/selectUserInfo',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify({}),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-                if (data.code == 200) {
-                    console.log(data)
-                } else {
-                    alert(data.error);
-                }
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    });   
 };
 
 /****************************************************************************************
@@ -1082,8 +1059,57 @@ var fn_docEvent = function () {
 
     //전달
     $('#sendDocBtn').click(function () {
-        layer_open('layer1');
-        console.log("ddd");
+        layer_open('layer1');   
+    });
+
+    $('#btn_pop_user_search').click(function () {
+
+        var keyword = $('#searchManger').val();
+
+        if (!keyword) {
+            alert("검색하고자 하는 키워드를 입력해주세요");
+            return false;
+        }
+
+        console.log("111");
+
+        var param = {
+            keyword: $('#searchManger').val()
+        };
+
+        $.ajax({
+            url: '/common/selectUserInfo',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({param}),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                if (data.code == 200) {
+                    $('#searchManagerResult').empty();
+                    console.log(data);
+                    var data = data.data;
+                    var appendHtml = '';
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            appendHtml += '<tr>' +
+                                '<td><input type="checkbox"/></td>' +
+                                '<td>' + data[i].USERID + '</td>' +
+                                '<td>소속팀</td>' +
+                                '<td>소속파트</td>' +
+                                '</tr >'; 
+                        }
+
+                        $('#searchManagerResult').append(appendHtml);
+                    }
+                } else {
+                    alert(data.error);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
     })
+
     //저장
 }
