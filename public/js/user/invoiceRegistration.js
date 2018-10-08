@@ -48,7 +48,7 @@ var initForm = function () {
 
     $("#div_image").fadeOut("fast");
     $("#div_dtl").fadeOut("fast");
-    $("#div_base").fadeOut("fast");
+    //$("#div_base").fadeOut("fast");
 };
 
 $(function () {
@@ -64,6 +64,29 @@ var _init = function () {
     fn_scrollbarEvent();
     fn_buttonEvent();
     fn_uploadFileEvent();
+    fn_sendDocumentToUser();
+};
+
+var fn_sendDocumentToUser = function () {
+    $('#sendDocBtn').click(function () {
+        $.ajax({
+            url: '/common/selectUserInfo',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({}),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                if (data.code == 200) {
+                    console.log(data)
+                } else {
+                    alert(data.error);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });   
 };
 
 /****************************************************************************************
