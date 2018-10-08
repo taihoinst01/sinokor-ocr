@@ -48,7 +48,7 @@ var initForm = function () {
 
     $("#div_image").fadeOut("fast");
     $("#div_dtl").fadeOut("fast");
-    //$("#div_base").fadeOut("fast");
+    $("#div_base").fadeOut("fast");
 };
 
 $(function () {
