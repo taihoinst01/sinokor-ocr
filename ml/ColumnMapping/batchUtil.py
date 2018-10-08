@@ -46,7 +46,7 @@ def checkVerticalEntry(entLoc, lblLoc):
         lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
         entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
         # entryLabel이 오른쪽에서 가까울 경우 제외
-        if -10 < entwidthLoc - lblwidthLoc < 160:
+        if -50 < entwidthLoc - lblwidthLoc < 160:
             return True
         else:
             return False
@@ -283,3 +283,29 @@ def selectNotInvoice(sentences):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_NOTINVOICE_DATA table select fail',
                              'error': str(e).replace("'", "").replace('"', '')}))
+
+def classifyDocument(sentences):
+    try:
+        text = ''
+        for item in sentences:
+            text += item["text"] + ","
+        text = text[:-1].lower()
+
+        selectDocumentSql = "SELECT DATA, DOCTYPE FROM TBL_DOCUMENT_SENTENCE"
+        curs.execute(selectDocumentSql)
+        selDocument = curs.fetchall()
+
+        maxNum = 0
+        row = ''
+
+        for rows in selDocument:
+            ratio = similar(text, rows[0])
+            if ratio > maxNum:
+                maxNum = ratio
+                row = rows[1]
+
+        if maxNum > 0.9:
+            return maxNum, row
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_NOTINVOICE_DATA table select fail', 'error': str(e).replace("'", "").replace('"', '')}))

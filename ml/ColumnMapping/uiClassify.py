@@ -37,7 +37,7 @@ def isfloat(value):
 
 
 def boundaryCheck(str1, str2):
-    return abs(int(str1) - int(str2)) < 5
+    return abs(int(str1) - int(str2)) < 6
 
 
 def findLabelDB(inputsid):
@@ -144,9 +144,9 @@ def eval(inputJson, docType):
                 for lblItem in entryLabel:
                     lblLoc = lblItem['mappingSid'].split(",")[0:4]
                     
-                    horizItem = 0
+                    horizItem = 9999
                     horizColLbl = 0
-                    vertItem = 0
+                    vertItem = 9999
                     vertColLbl = 0
                     # 같은 문서 검사
                     if entLoc[0] == lblLoc[0]:
@@ -179,16 +179,16 @@ def eval(inputJson, docType):
                             for shareItem in entryLabel:
                                 shareLoc = shareItem['mappingSid'].split(",")[0:4]
                                 if shareItem['colLbl'] == 36 and (abs(int(lblLoc[1]) - int(shareLoc[1])) < 200 and -200 < int(lblLoc[2]) - int(shareLoc[2]) < 0):
-                                    if inputItem['entryLbl'] == 0:
+                                    if int(inputItem['entryLbl']) == 0:
                                         inputItem['entryLbl'] = 1
-                                    elif inputItem['entryLbl'] == 2:
+                                    elif int(inputItem['entryLbl']) == 2:
                                         inputItem['entryLbl'] = 3
 
                         # NOT ENTRY Check
                         # if horizColLbl == 36 or vertColLbl == 36:
                         #     inputItem['entryLbl'] = 31
 
-                if 'entryLbl' not in inputItem:                   
+                if 'entryLbl' not in inputItem or int(inputItem['entryLbl']) == 30:                   
                     inputItem['entryLbl'] = 31
 
         # for item in inputArr:

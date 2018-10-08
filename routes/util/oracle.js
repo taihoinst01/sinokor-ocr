@@ -471,10 +471,11 @@ exports.insertBatchColumnMappingFromUi = function (req, docType, done) {
             result = await conn.execute(selectSid, [req.text.replace(regExp, "")]);
             if (result.rows[0].SID) {              
                 var locArr = req.location.split(',');
+                var sid = result.rows[0].SID;
                 var colSid = docType + ',' + locArr[0] + ',' + locArr[1] + ',' + (Number(locArr[0]) + Number(locArr[2])) + ',' + result.rows[0].SID;
                 req.colSid = colSid;
                 result = await conn.execute(selectBatchColumnMapping, [colSid, req.colLbl]);
-                if (result.rows.length == 0) {
+                if ( result.rows.length == 0 && !(((req.colLbl >= 5 && req.colLbl <= 34) || req.colLbl == 36) && (sid == "0,0,0,0,0" || sid == "1,1,1,1,1")) ) {
                     await conn.execute(insertBatchColumnMapping, [colSid, req.colLbl]);
                     return done(null, req);
                 } else {
@@ -2245,6 +2246,36 @@ exports.insertNotInvoce = function (req, done) {
                                     VALUES
                                         (seq_notinvoice_data.nextval, LOWER(:data), :doctype, sysdate) `,
                                 req);
+            }
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertDocumentSentence = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(`SELECT SEQNUM FROM TBL_DOCUMENT_SENTENCE WHERE DATA = LOWER(:data) AND DOCTYPE = :doctype `, req);
+            if (result.rows.length == 0) {
+                await conn.execute(`INSERT INTO
+                                        TBL_DOCUMENT_SENTENCE
+                                    VALUES
+                                        (seq_document_sentence.nextval, LOWER(:data), :doctype, sysdate) `,
+                    req);
             }
 
             return done(null, null);
