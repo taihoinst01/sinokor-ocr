@@ -180,7 +180,7 @@ def eval(inputJson, docType):
                                     elif int(inputItem['entryLbl']) == 2:
                                         inputItem['entryLbl'] = 3
 
-                if 'entryLbl' not in inputItem:
+                if 'entryLbl' not in inputItem or int(inputItem['entryLbl']) == 30:
                     inputItem['entryLbl'] = 31
 
         # for item in inputArr:
@@ -249,12 +249,12 @@ if __name__ == '__main__':
         sentences = bUtil.appendSentences(ocrData, bannedWords)
 
         if flag == "LEARN_N":
-            # 5개 문장으로 notInvoice 점수 측정
-            ratio, notInvoiceData = bUtil.selectNotInvoice(sentences)
+            # 5개 문장으로 DB와 일치하는 notInvoice 확률 측정
+            ratio, notInvoiceData = bUtil.classifyDocument(sentences)
 
-            # notInvoice 점수가 0.9 이상일경우 notInvoice로 doctype변경후 종료
-            if ratio > 0.9:
-                obj["docCategory"] = bUtil.selectDocCategory(notInvoiceData[1])
+            # notInvoice 확률이 0.9 이상일경우 notInvoice로 doctype변경후 종료
+            if ratio > 0.9 and notInvoiceData == "1":
+                obj["docCategory"] = bUtil.selectDocCategory(notInvoiceData)
                 insertBatchLearnList(obj["docCategory"]["DOCTYPE"], flag)
                 print(re.sub('None', "null", json.dumps(obj)))
                 sys.exit(1)
@@ -268,6 +268,13 @@ if __name__ == '__main__':
         # TBL_FORM_MAPPING에 5개문장의 SID를 조회
         if flag == "LEARN_N":
             formMappingRows = bUtil.selectFormMapping(sentencesSid)
+
+            if len(formMappingRows) == 0:
+                ratio, doctype = bUtil.classifyDocument(sentences)
+                formMappingRows = []
+                docrow = []
+                docrow.append(doctype)
+                formMappingRows.append(docrow)
         elif flag == "LEARN_Y":
             # after training 에서 batchLearnList doctype 가져옴
             formMappingRows = bUtil.selectBatchLearnList(re.sub(rootFilePath, "", str(sys.argv[1])))

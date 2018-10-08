@@ -80,12 +80,15 @@ function insertDoctypeMapping(req, done) {
 
                 //20180911 TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
                 insertFormMapping(topSentenses, docType);
+                insertDocumentSentence(topSentenses, docType);
             } else if (data.radioType == '3') {
                 docType = selectDocCategoryFromDocName(data);
-                insertNotInvoce(topSentenses, docType);
+                //insertNotInvoce(topSentenses, docType);
+                insertDocumentSentence(topSentenses, docType);
             } else {
                 docType = selectDocCategoryFromDocName(data);
                 insertFormMapping(topSentenses, docType);
+                insertDocumentSentence(topSentenses, docType);
             }
 
             //20180911 TBL_BATCH_LEARN_LIST 에 update (statue = 'D')
@@ -215,6 +218,18 @@ function insertNotInvoce(topSentenses, docType) {
             text += topSentenses[i].text + ",";
         }
         sync.await(oracle.insertNotInvoce([text.slice(0, -1), docType], sync.defer()));
+    } catch (e) {
+        throw e;
+    }
+}
+
+function insertDocumentSentence(topSentenses, docType) {
+    try {
+        var text = "";
+        for (var i in topSentenses) {
+            text += topSentenses[i].text + ",";
+        }
+        sync.await(oracle.insertDocumentSentence([text.slice(0, -1), docType], sync.defer()));
     } catch (e) {
         throw e;
     }
