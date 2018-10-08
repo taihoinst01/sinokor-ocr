@@ -1064,14 +1064,7 @@ var fn_docEvent = function () {
 
     $('#btn_pop_user_search').click(function () {
 
-        var keyword = $('#searchManger').val();
-
-        if (!keyword) {
-            alert("검색하고자 하는 키워드를 입력해주세요");
-            return false;
-        }
-
-        console.log("111");
+        var keyword = $('#searchManger').val().trim();
 
         var param = {
             keyword: $('#searchManger').val()
