@@ -76,7 +76,10 @@ function ocrParsing(body) {
         }
 
         for (var i = 0; i < data.length; i++) {
-            if (data[i].location == '' && data[i].text == '') data.splice(i, 1);
+            if (data[i].location == '' && data[i].text == '') {
+                data.splice(i, 1);
+                i--;
+            }
         }
         // ocr text Unknown character parsing
         var ignoreChar = ['"'.charCodeAt(0), '\''.charCodeAt(0), '['.charCodeAt(0), ']'.charCodeAt(0),

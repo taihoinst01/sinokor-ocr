@@ -64,29 +64,7 @@ var _init = function () {
     fn_scrollbarEvent();
     fn_buttonEvent();
     fn_uploadFileEvent();
-    fn_sendDocumentToUser();
-};
-
-var fn_sendDocumentToUser = function () {
-    $('#sendDocBtn').click(function () {
-        $.ajax({
-            url: '/common/selectUserInfo',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify({}),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-                if (data.code == 200) {
-                    console.log(data)
-                } else {
-                    alert(data.error);
-                }
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    });   
+    fn_docEvent();
 };
 
 /****************************************************************************************
@@ -138,10 +116,10 @@ var fn_uploadFileEvent = function () {
             $("#progressMsgTitle").html('파일 업로드 완료..');
             addProgressBar(11, 20);
 
-            console.log(`base 사이즈 : ${responseText.fileInfo.length}`);
-            console.log(`dtl 사이즈 : ${responseText.fileDtlInfo.length}`);
-            console.log(`base 내용 : ${JSON.stringify(responseText.fileInfo)}`);
-            console.log(`dtl 내용 : ${JSON.stringify(responseText.fileDtlInfo)}`);
+            //console.log(`base 사이즈 : ${responseText.fileInfo.length}`);
+            //console.log(`dtl 사이즈 : ${responseText.fileDtlInfo.length}`);
+            //console.log(`base 내용 : ${JSON.stringify(responseText.fileInfo)}`);
+            //console.log(`dtl 내용 : ${JSON.stringify(responseText.fileDtlInfo)}`);
 
             //totCount = responseText.fileInfo.length; 
             totCount = responseText.fileDtlInfo.length;
@@ -373,24 +351,42 @@ var fn_search_image = function (imgId) {
  ****************************************************************************************/
 // 문서 기본 정보 append
 var fn_processBaseImage = function (fileInfo) {
-    var html = "";
-    console.log("fileInfo.. length... : " + fileInfo.length);
-    for (var i = 0, x = fileInfo.length; i < x; i++) {
-        var item = fileInfo[i];
-        html += `<tr>
-                    <td><input type="checkbox" id="base_chk_${item.imgId}" name="base_chk" /></td>
-                    <td>${item.imgId}</td>
-                    <td>${fileInfo.length}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>`;
-    }
-    $("#tbody_baseList").empty().append(html);
-    $("#div_base").css("display", "block");
+
+    $.ajax({
+        url: '/invoiceRegistration/selectDocument',
+        type: 'post',
+        datatype: 'json',
+        async: false,
+        data: JSON.stringify({}),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            //console.log(data);
+            if (data.code == 200) {
+                var html = "";
+                for (var i = 0; i < data.docData.length; i++) {
+                    var item = data.docData[i];
+                    html += `<tr>
+                                <td><input type="checkbox" id="base_chk_${item.DOCNUM}" name="base_chk" /></td>
+                                <td>${item.DOCNUM}</td>
+                                <td>${item.PAGECNT}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>`;
+                }
+                $("#tbody_baseList").empty().append(html);
+                $("#div_base").css("display", "block");
+            } else {
+                console.log(data.error);
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 };
 
 // ML 및 인식결과 append
@@ -652,8 +648,8 @@ function fn_processFinish_Old1(data) {
 
 // 인식 결과 처리
 function fn_processFinish(data, fileDtlInfo) {
-    console.log("data : " + JSON.stringify(data));
-    console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
+    //console.log("data : " + JSON.stringify(data));
+    //console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
 
     var dataObj = {};
     var dataVal = data.data;
@@ -1070,4 +1066,64 @@ function zoomImg(e, fileName) {
 function viewOriginImg() {
     $('#imageZoom').hide();
     $('#mainImage').show();
+}
+
+/****************************************************************************************
+ * 문서기본정보 - 삭제,전달,저장
+ ****************************************************************************************/
+var fn_docEvent = function () {
+
+    //삭제
+
+    //전달
+    $('#sendDocBtn').click(function () {
+        layer_open('layer1');   
+    });
+
+    $('#btn_pop_user_search').click(function () {
+
+        var param = {
+            docManagerChk: $('#docManagerChk').is(':checked'),
+            icrManagerChk: $('#icrManagerChk').is(':checked'),
+            approvalManagerChk: $('#approvalManagerChk').is(':checked'),
+            keyword: $('#searchManger').val().trim(),
+            team: $('#select_team').val(),
+            part: $('#select_part').val()
+        };
+
+        $.ajax({
+            url: '/common/selectUserInfo',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({param}),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                if (data.code == 200) {
+                    $('#searchManagerResult').empty();
+                    console.log(data);
+                    var data = data.data;
+                    var appendHtml = '';
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            appendHtml += '<tr>' +
+                                '<td><input type="checkbox"/></td>' +
+                                '<td>' + data[i].USERID + '</td>' +
+                                '<td>소속팀</td>' +
+                                '<td>소속파트</td>' +
+                                '</tr >'; 
+                        }
+
+                        $('#searchManagerResult').append(appendHtml);
+                    }
+                } else {
+                    alert(data.error);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    })
+
+    //저장
 }

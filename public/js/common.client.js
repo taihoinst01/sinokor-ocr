@@ -273,7 +273,7 @@ function endProgressBar(progressId) {
 
 // li 선택시 input[type=hidden]에 값 넣어주기
 function liSelect(e, val) {
-    $(e).parents('.select_style_K').find('.liSelectValue').val(val);
+    $(e).closest('.select_style').find('input[type=hidden]').val(val);
 }
 
 // 커스텀 테이블 스크롤

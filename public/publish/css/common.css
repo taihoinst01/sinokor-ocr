@@ -243,7 +243,9 @@ input.noline{border:none !important;}*/
 .mb0 {
     margin-bottom: 0px !important;
 }
-
+.mb20 {
+    margin-bottom: 20px !important;
+}
 .mb40 {
     margin-bottom: 40px !important;
 }
