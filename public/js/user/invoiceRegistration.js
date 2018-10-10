@@ -1064,10 +1064,13 @@ var fn_docEvent = function () {
 
     $('#btn_pop_user_search').click(function () {
 
-        var keyword = $('#searchManger').val().trim();
-
         var param = {
-            keyword: $('#searchManger').val()
+            docManagerChk: $('#docManagerChk').is(':checked'),
+            icrManagerChk: $('#icrManagerChk').is(':checked'),
+            approvalManagerChk: $('#approvalManagerChk').is(':checked'),
+            keyword: $('#searchManger').val().trim(),
+            team: $('#select_team').val(),
+            part: $('#select_part').val()
         };
 
         $.ajax({
