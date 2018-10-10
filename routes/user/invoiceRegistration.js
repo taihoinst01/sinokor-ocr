@@ -139,7 +139,21 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         var convertedImagePath = appRoot + '\\uploads\\';
 
         for (var i = 0; i < files.length; i++) {
-            var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성 - 규칙 생기면 변경 필요
+            var imgId = 'ICR';
+            var date = new Date();
+            var yyyymmdd = String(date.getFullYear()) + String(date.getMonth() + 1) + String(date.getDate());
+            var maxDocNum = sync.await(oracle.selectMaxDocNum(sync.defer()));
+            if (maxDocNum == 0) {
+                imgId += yyyymmdd + '0000001';
+            } else {
+                var Maxyyyymmdd = maxDocNum.substring(3, 11);
+                if (Number(Maxyyyymmdd) < Number(yyyymmdd)) {
+                    imgId += yyyymmdd + '0000001';
+                } else {
+                    imgId += Number(maxDocNum.substring(3, 18)) + 1;
+                }
+            }
+
             var ifile = "";
             var ofile = "";
 
@@ -334,10 +348,27 @@ router.post('/uploadFile', upload.any(), function (req, res) {
             endCount++;
         }
 
+        // TBL_DOCUMENT insert
+        sync.await(oracle.insertDocument([fileInfo], sync.defer()));
+
         res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlInfo });
     });
 
     
+});
+
+router.post('/selectDocument', function (req, res) {
+    var returnObj = {};
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.selectDocument(sync.defer()));
+            returnObj = { code: 200, docData: result };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
 });
 
 router.post('/uploadFile_Old', upload.any(), function (req, res) {
@@ -766,6 +797,35 @@ function textLabelTrain(data) {
     });
 }
 
+
+function createDocNum() {   
+    
+    sync.fiber(function () {
+        var documentNum = 'ICR';
+        var date = new Date();
+        var yyyymmdd = String(date.getFullYear()) + String(date.getMonth() + 1) + String(date.getDate());
+
+        try {
+            
+            var maxDocNum = sync.await(oracle.selectMaxDocNum(sync.defer()));            
+            if (maxDocNum == 0) {
+                documentNum += yyyymmdd + '0000001';
+            } else {
+                var Maxyyyymmdd = maxDocNum.substring(3, 11);
+                if (Number(Maxyyyymmdd) < Number(yyyymmdd)) {
+                    documentNum += yyyymmdd + '0000001';
+                } else {
+                    documentNum += Number(maxDocNum.substring(3, 18)) + 1;
+                }
+            }            
+            return documentNum;
+            
+        } catch (e) {
+            console.log(e);
+        }
+    });
+    
+}
 
 
 

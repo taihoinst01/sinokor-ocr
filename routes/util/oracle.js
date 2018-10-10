@@ -2295,6 +2295,84 @@ exports.insertNotInvoce = function (req, done) {
     });
 };
 
+exports.selectDocument = function (done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute('SELECT SEQNUM, DOCNUM, PAGECNT FROM TBL_DOCUMENT');
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+            
+        } catch (err) { // catches errors in getConnection and the query
+            console.log('oracle.js error');
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectMaxDocNum = function (done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute('SELECT NVL(MAX(DOCNUM),0) AS MAXDOCNUM FROM TBL_DOCUMENT');
+            return done(null, result.rows[0].MAXDOCNUM);
+
+        } catch (err) { // catches errors in getConnection and the query
+            console.log('oracle.js error');
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertDocument = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            await conn.execute(`INSERT INTO
+                                    TBL_DOCUMENT(SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE)
+                                VALUES 
+                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, :pageCnt, 'R') `, [req[0][0].imgId, req[0].length]);            
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.insertDocumentSentence = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
