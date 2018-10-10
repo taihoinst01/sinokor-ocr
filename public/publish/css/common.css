@@ -518,7 +518,7 @@ input[type='checkbox'] {
 .ez-checkbox {
     width: 22px;
     margin-right: 0px;
-    background-position: -100px -148px;
+    background-position: -40px -148px;
 }
 
 .ez-checked {
@@ -5890,9 +5890,10 @@ button[disabled] {
 
     .batch_pop2 .box_content_R .box_scroll_st99 {
         display: block;
-        height: 588px !important;
+        height: 595px !important;
         overflow: auto;
         padding: 0px 17px;
+        background: #eaeaea;
     }
 
 .batch_pop2 .pop_popup0 .pop_content .pop_box_11 {
@@ -5936,6 +5937,7 @@ button[disabled] {
 
 .batch_pop2 .box_content_R .title {
     padding: 17px;
+    background: #eaeaea;
 }
 
 .batch_pop2 .box_content_R h3.tits b {
@@ -5943,8 +5945,8 @@ button[disabled] {
 }
 
 .batch_pop2 .box_content_R .button_st1 {
-    height: 31px !important;
-    width: 100px !important;
+    height: 35px !important;
+    width: 140px !important;
     padding: 0 !important;
 }
 
@@ -6057,6 +6059,8 @@ input:disabled {
 
 .batch_pop2 select {
     width: 100%;
+    background: #eaeaea;
+    height: 30px;
 }
 
 .doc_popup {
@@ -6226,4 +6230,10 @@ input:disabled {
     height: 305px !important;
     overflow-y: scroll;
     width: 1620px;
+}
+
+.box_table_st04_01 > dl > dt input {
+    border: 1px solid #fff;
+    font-size: 16px !important;
+    background: #eaeaea;
 }

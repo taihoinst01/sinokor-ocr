@@ -34,7 +34,33 @@
 
     });
     */
-   
+    //contractNumberImport-계약번호 가져오기 Example
+    $("#contractNumberImport").on('click', function () {
+        var param = {
+            cdnNm: $("#cdnNm").val(),
+            ctNm: $("#ctNm").val(),
+            ttyYy: $("#ttyYy").val(),
+            brkNm: $("#brkNm").val()
+        };
+        $.ajax({
+            url: '/wF_WorkflowProc',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                //addProgressBar(1, 99);
+            },
+            success: function (data) {
+                console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
+                console.log("Success!!" + data);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
+
     //WF_ApprovalCancel-결제취소
     $("#approvalCancelBtn").on('click', function () {
         var param = {
@@ -57,15 +83,7 @@
             },
             success: function (data) {
                 console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
-
-                if (data == "1") {//gubun값이 WF_ApprovalCancel 일 경우
-                    console.log("Success!!" + data);
-                    alert("Success : " + data);
-                }
-                else {
-                    console.log("Fail!!");
-                    alert("Fail : " + data);
-                }
+                console.log("Success!!" + data);
             },
             error: function (err) {
                 console.log(err);
