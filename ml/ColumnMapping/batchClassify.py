@@ -135,11 +135,12 @@ def eval(inputJson, docType):
             if inputItem['colLbl'] == 37:
                 entLoc = inputItem['sid'].split(",")[0:4]
                 vertMin = 999999
+
+                horizItem = 9999
+                vertItem = 9999
+
                 for lblItem in entryLabel:
                     lblLoc = lblItem['sid'].split(",")[0:4]
-
-                    horizItem = 9999
-                    vertItem = 9999
 
                     # 같은 문서 검사
                     if entLoc[0] == lblLoc[0]:
@@ -248,12 +249,19 @@ if __name__ == '__main__':
         # 문장단위로 for문
         sentences = bUtil.appendSentences(ocrData, bannedWords)
 
+        #bannedword에 상관없이 similar에 사용할 5개 문장 추출
+        similarSentence = []
+        for item in ocrData:
+            similarSentence.append(item)
+            if len(similarSentence) == 5:
+                break
+
         if flag == "LEARN_N":
             # 5개 문장으로 DB와 일치하는 notInvoice 확률 측정
-            ratio, notInvoiceData = bUtil.classifyDocument(sentences)
+            ratio, notInvoiceData = bUtil.classifyDocument(similarSentence)
 
-            # notInvoice 확률이 0.9 이상일경우 notInvoice로 doctype변경후 종료
-            if ratio > 0.9 and notInvoiceData == "1":
+            # notInvoice 확률이 0.5 이상일경우 notInvoice로 doctype변경후 종료
+            if ratio > 0.5 and notInvoiceData == "1":
                 obj["docCategory"] = bUtil.selectDocCategory(notInvoiceData)
                 insertBatchLearnList(obj["docCategory"]["DOCTYPE"], flag)
                 print(re.sub('None', "null", json.dumps(obj)))
@@ -270,7 +278,7 @@ if __name__ == '__main__':
             formMappingRows = bUtil.selectFormMapping(sentencesSid)
 
             if len(formMappingRows) == 0:
-                ratio, doctype = bUtil.classifyDocument(sentences)
+                ratio, doctype = bUtil.classifyDocument(similarSentence)
                 formMappingRows = []
                 docrow = []
                 docrow.append(doctype)

@@ -29,6 +29,7 @@ function insertDoctypeMapping(req, done) {
             var retData = {};
             var data = req
             let topSentenses = []; // 문서판별을 위한 문장
+            var similarSentences = [];
             var docType;
             var docSid;
             var convertedFilepath;
@@ -69,6 +70,11 @@ function insertDoctypeMapping(req, done) {
                 }
             }
 
+            for (var i in data.textList) {
+                similarSentences.push(data.textList[i]);
+                if (similarSentences.length >= 5) break;
+            }
+
             //20180911 가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
             data = getSentenceSid(data);
             docSid = getDocSid(topSentenses);
@@ -83,14 +89,15 @@ function insertDoctypeMapping(req, done) {
 
                 //20180911 TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
                 insertFormMapping(topSentenses, docType);
+                insertDocumentSentence(similarSentences, docType);
             } else if (data.radioType == '1') {
                 docType = selectDocCategoryFromDocName(data);
-
                 insertFormMapping(topSentenses, docType);
+                insertDocumentSentence(similarSentences, docType);
             } else {
                 docType = selectDocCategoryFromDocName(data);
                 insertFormMapping(topSentenses, docType);
-                insertNotInvoce(topSentenses, docType);
+                insertDocumentSentence(similarSentences, docType);
             }
 
             return done(null, [docType, docSid]);
@@ -237,6 +244,18 @@ function insertNotInvoce(topSentenses, docType) {
             text += topSentenses[i].text + ",";
         }
         sync.await(oracle.insertNotInvoce([text.slice(0, -1), docType], sync.defer()));
+    } catch (e) {
+        throw e;
+    }
+}
+
+function insertDocumentSentence(topSentenses, docType) {
+    try {
+        var text = "";
+        for (var i in topSentenses) {
+            text += topSentenses[i].text + ",";
+        }
+        sync.await(oracle.insertDocumentSentence([text.slice(0, -1), docType], sync.defer()));
     } catch (e) {
         throw e;
     }
