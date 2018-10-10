@@ -13,6 +13,38 @@ var sync = require('./sync.js');
 var oracle = require('./oracle.js');
 var msopdf = require('node-msoffice-pdf');
 
+exports.selectUserInfo = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result
+        var userSql;
+        var returnObj = [];
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            userSql = "SELECT * FROM TBL_OCR_COMM_USER";
+            if (req != '') {
+                userSql += " WHERE USERID LIKE '%" + req + "%'";
+            }
+            result = await conn.execute(userSql);
+            if (result.rows.length > 0) {
+                returnObj = result.rows;
+            }
+
+            return done(null, returnObj);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
 
 exports.select = function (req, done) {
     return new Promise(async function (resolve, reject) {

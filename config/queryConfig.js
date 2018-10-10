@@ -347,10 +347,10 @@ var batchLearningConfig = {
             imgId IN `,
     deleteBatchLearningData:
         `UPDATE 
-            tbl_batch_learn_data
+            tbl_batch_learn_list
          SET
-            status = 'D'
-         WHERE imgId IN `,
+            status = 'R'
+         WHERE filepath = `,
     selectBatchAnswerFile:
         `SELECT
             imgId, pageNum, filePath, totalCount

@@ -429,6 +429,25 @@ router.post('/selectTypoData2', function (req, res) {
     });
 });
 
+router.post('/selectUserInfo', function (req, res) {
+    var returnObj;
+    let userInfoArr;
+    var keyword = req.body.param.keyword ? req.body.param.keyword : '';
+
+    sync.fiber(function () {
+        try {
+            userInfoArr = sync.await(oracle.selectUserInfo([keyword] ,sync.defer()));
+
+            returnObj = { code: 200, data: userInfoArr };
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
 // [POST] OCR API (request binary data)
 router.post('/ocr', function (req, res) {
     var fileInfo = req.body.fileInfo;
