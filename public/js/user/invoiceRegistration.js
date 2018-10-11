@@ -346,13 +346,6 @@ var fn_clickEvent = function () {
 
 var fn_search_dtl = function (seqNum, docNum) {
     //DB 조회후 클릭시 파일 정보 읽어와서 ocr 보냄
-    var obj = {};
-    obj.imgId = "ICR201810110000001";
-    obj.convertedFilePath = "C:/projectWork/koreanre/uploads/";
-    obj.filePath = "C:\\projectWork\\koreanre\\uploads\\26.jpg";
-    obj.oriFileName = "26.jpg";
-    obj.convertFileName = "26.jpg";
-
     var param = {
         seqNum: seqNum,
         imgId: docNum
