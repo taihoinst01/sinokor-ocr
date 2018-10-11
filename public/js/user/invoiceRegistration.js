@@ -174,6 +174,8 @@ var fn_search = function () {
                             <td>${nvl(entry["FAOTEAM"])}</td>
                             <td>${nvl(entry["FAOPART"])}</td>
                             <td>${nvl(entry["APPROVALREPORTER"])}</td>
+                            <td></td>
+                            <td></td>
                         </tr>`;
                 });
             } else {
@@ -342,8 +344,20 @@ var fn_clickEvent = function () {
     });
 };
 
-// document_dtl 조회
 var fn_search_dtl = function (seqNum, docNum) {
+    //DB 조회후 클릭시 파일 정보 읽어와서 ocr 보냄
+    var obj = {};
+    obj.imgId = "ICR201810110000001";
+    obj.convertedFilePath = "C:/projectWork/koreanre/uploads/";
+    obj.filePath = "C:\\projectWork\\koreanre\\uploads\\26.jpg";
+    obj.oriFileName = "26.jpg";
+    obj.convertFileName = "26.jpg";
+
+    fn_processDtlImage(obj);
+}
+
+// document_dtl 조회
+var fn_search_dtl_old = function (seqNum, docNum) {
     var param = {
         seqNum: seqNum,
         docNum: docNum
@@ -501,10 +515,10 @@ var fn_processBaseImage = function (fileInfo) {
                 var html = "";
                 for (var i = 0; i < data.docData.length; i++) {
                     var item = data.docData[i];
-                    html += `<tr>
+                    html += `<tr id="tr_base_${item.SEQNUM}-${item.DOCNUM}-${item.APPROVALSTATE}">
                                 <td><input type="checkbox" id="base_chk_${item.DOCNUM}" name="base_chk" /></td>
-                                <td>${item.DOCNUM}</td>
-                                <td>${item.PAGECNT}</td>
+                                <td name="td_base">${item.DOCNUM}</td>
+                                <td name="td_base">${item.PAGECNT}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -515,6 +529,7 @@ var fn_processBaseImage = function (fileInfo) {
                 }
                 $("#tbody_baseList").empty().append(html);
                 $("#div_base").css("display", "block");
+                fn_clickEvent();
             } else {
                 console.log(data.error);
             }
@@ -576,7 +591,7 @@ function executeML(totData) {
 
     $('#progressMsgTitle').html('머신러닝 처리 중..');
     $.ajax({
-        url: '/uiLearning/uiLearnTraining',
+        url: '/invoiceRegistration/uiLearnTraining',
         type: 'post',
         datatype: 'json',
         async: false,
@@ -720,7 +735,7 @@ function fn_processFinish_Old1(data) {
 
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
-        '<td><input type="checkbox" id="dtl_chk_${item.imgId}" name="dtl_chk" /></td>' +
+        `<td><input type="checkbox" value="${dataObj["imgId"]}" name="dtl_chk" /></td>` +
         '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
@@ -763,7 +778,8 @@ function fn_processFinish_Old1(data) {
     $("#div_dtl").css("display", "block");
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select>';
+        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 

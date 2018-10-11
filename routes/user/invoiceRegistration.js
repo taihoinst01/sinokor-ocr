@@ -18,6 +18,8 @@ var queryConfig = require(appRoot + '/config/queryConfig.js');
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 var msopdf = require('node-msoffice-pdf');
+var pythonConfig = require(appRoot + '/config/pythonConfig');
+var PythonShell = require('python-shell');
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
@@ -350,6 +352,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 
         // TBL_DOCUMENT insert
         sync.await(oracle.insertDocument([fileInfo], sync.defer()));
+        sync.await(oracle.insertOcrFileDtl(fileDtlInfo, sync.defer()));
 
         res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlInfo });
     });
@@ -827,6 +830,34 @@ function createDocNum() {
     
 }
 
+router.post('/uiLearnTraining', function (req, res) {
+    var ocrData = req.body.ocrData;
+    var filePath = req.body.filePath;
+    var fileName = req.body.fileName;
+    var fileExt = filePath.split(".")[1];
+    var imgId = req.body.fileDtlInfo.imgId;
+    var returnObj;
+    
+    sync.fiber(function () {
+        try {
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
+            var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var resPyArr = JSON.parse(resPyStr[0]);
 
+            var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
+            var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
+
+            returnObj = { code: 200, 'fileName': fileName, 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
+        } catch (e) {
+            console.log(resPyStr);
+            returnObj = { 'code': 500, 'message': e };
+
+        } finally {
+            res.send(returnObj);
+        }
+
+    });
+});
 
 module.exports = router;
