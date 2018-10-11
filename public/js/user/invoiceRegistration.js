@@ -353,7 +353,45 @@ var fn_search_dtl = function (seqNum, docNum) {
     obj.oriFileName = "26.jpg";
     obj.convertFileName = "26.jpg";
 
-    fn_processDtlImage(obj);
+    var param = {
+        seqNum: seqNum,
+        imgId: docNum
+    };
+
+    $.ajax({
+        url: '/invoiceRegistration/selectOcrFileDtl',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving document detail list...");
+            startProgressBar(); // start progressbar
+            addProgressBar(1, 1); // proceed progressbar
+        },
+        success: function (data) {
+            addProgressBar(2, 99); // proceed progressbar
+
+            for (var i in data.docData) {
+
+                var obj = {};
+                obj.imgId = data.docData[i].IMGID;
+                obj.convertedFilePath = "C:/projectWork/koreanre/uploads/";
+                obj.filePath = data.docData[i].FILEPATH;
+                obj.oriFileName = data.docData[i].ORIGINFILENAME;
+                obj.convertFileName = data.docData[i].ORIGINFILENAME;
+
+                fn_processDtlImage(obj);
+            }
+
+            endProgressBar(); // end progressbar
+        }, error: function (err) {
+            endProgressBar(); // end progressbar
+            console.log(err);
+        }
+    });
+
+    
 }
 
 // document_dtl 조회

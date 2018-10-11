@@ -374,6 +374,21 @@ router.post('/selectDocument', function (req, res) {
     });
 });
 
+router.post('/selectOcrFileDtl', function (req, res) {
+    var returnObj = {};
+    var imgId = req.body.imgId;
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.selectOcrFileDtl(imgId, sync.defer()));
+            returnObj = { code: 200, docData: result };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
 router.post('/uploadFile_Old', upload.any(), function (req, res) {
     var files = req.files;
     var endCount = 0;
