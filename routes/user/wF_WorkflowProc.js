@@ -12,12 +12,84 @@ router.get('/', function (req, res) {
 });
 
 router.post('/', function (req, res) {
-    if (req.body.gubun == "WF_ApprovalCancel" ||
+    var cdnNm = req.body.cdnNm.replace(/ /g, "&#32;");
+    var ctNm = req.body.ctNm.replace(/ /g, "&#32;");
+    var brkNm = req.body.brkNm.replace(/ /g, "&#32;");
+
+    var testData = `<? xml version = "1.0" encoding = "utf-8" ?>
+        <Root>
+            <Parameters>
+                <Parameter id="gv_encryptToken" type="STRING">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1538977070zPy86400zAy23zEyiGcouax2B8VWYvTGpTpGfriYx7AFx79ofx2FPQuPx2BQKaZoKevZt9rlgBrinl6bGLd37lNEQb9l3UF2Yi7KdaOlL6SXN57t24R6BCu6ci9x2Bs3MSkVc1SeWCtCX26FdQZ8CjeEmwnEmx2Bo9iVb46ZhNUoaMCB2QNXhtYIQLB1EgvXpOWx7AiOEtWsh8t4Mx2FZaOWR7TDLVUJx78mo4gZ8Q1Pi351WnNoMDUsfAx3Dx3DzKycdDADOKhSx7Aw0Ur5VCgEP9FDVx79s0qDNx78pnUNB8E3Wx78LoHcXOVQ2APc5DVwTabw1uex00x00x00x00x00zSSy00002471000zUURy226f595117d17c8czMykx79friwM6GDsx3Dz</Parameter>
+                <Parameter id="WMONID" type="STRING"></Parameter>
+                <Parameter id="lginIpAdr" type="STRING">111.222.333.444</Parameter>
+                <Parameter id="userId" type="STRING">9999068</Parameter>
+                <Parameter id="userEmpNo" type="STRING">9999068</Parameter>
+                <Parameter id="userDeptCd" type="STRING">999999</Parameter>
+                <Parameter id="frstRqseDttm" type="STRING"></Parameter>
+                <Parameter id="rqseDttm" type="STRING"></Parameter>
+                <Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>
+                <Parameter id="srnId" type="STRING"></Parameter>
+                <Parameter id="rqseSrvcNm" type="STRING">koreanre.co.ct.commonct.svc.CtCommonCheckSvc</Parameter>
+                <Parameter id="rqseMthdNm" type="STRING">readCtNoList</Parameter>
+                <Parameter id="rqseVoNm" type="STRING">koreanre.co.ct.commonct.vo.CtCommonCheckVO</Parameter>
+            </Parameters>
+            <Dataset id="searchDvo">
+                <ColumnInfo>
+                    <Column id="cdnNm" type="STRING" size="150" />
+                    <Column id="ctNm" type="STRING" size="150" />
+                    <Column id="ttyYy" type="STRING" size="4" />
+                    <Column id="brkNm" type="STRING" size="70" />
+                </ColumnInfo>
+                <Rows>
+                    <Row>
+                        <Col id="cdnNm">${cdnNm}</Col>
+                        <Col id="ctNm">${ctNm}</Col>
+                        <Col id="ttyYy">${req.body.ttyYy}</Col>
+                        <Col id="brkNm">${brkNm}</Col>
+                    </Row>
+                </Rows>
+            </Dataset>
+            <Dataset id="ctNoList.outlist.meta">
+                <ColumnInfo>
+                    <Column id="ctNo" type="STRING" size="14" />
+                    <Column id="ttyDtlNo" type="STRING" size="4" />
+                    <Column id="cdnCd" type="STRING" size="6" />
+                    <Column id="cdnNm" type="STRING" size="150" />
+                    <Column id="ctNm" type="STRING" size="150" />
+                    <Column id="ttyYy" type="STRING" size="4" />
+                    <Column id="brkCd" type="STRING" size="6" />
+                    <Column id="brkNm" type="STRING" size="70" />
+                </ColumnInfo>
+                <Rows>
+                </Rows>
+            </Dataset>
+        </Root>`;		
+    try {
+        var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', { //해당 URL에 POST방식으로 값을 전달.
+            headers: {
+                'content-type': 'text/xml'
+            },
+            body: testData
+        });
+        var data = res1.getBody('utf8');
+        if (data == null) {
+            console.log("실패...");
+        } else {
+            console.log("성공!!!!");
+        }
+    }
+    catch (e) {
+        console.log(e);
+    }
+        
+
+
+/*    if (req.body.gubun == "WF_ApprovalCancel" ||
         req.body.gubun == "WF_RemarkUpdate" ||
         req.body.gubun == "WF_Registration" ||
         req.body.gubun == "WF_ApprovalCheck" ||
         req.body.gubun == "WF_ReturnRegistration" ||
-        req.body.gubun == "WF_AllReturnRegistration" ) {
+        req.body.gubun == "WF_AllReturnRegistration") {
         var reqQuerystring = querystring.stringify(req.body);  //querystring모듈을 사용하여 전달받은 req값을 QueryString 으로변환
         console.log(reqQuerystring);
         try {
@@ -133,11 +205,27 @@ router.post('/', function (req, res) {
         catch (e) {
             console.log(e);
         }
+    } else if (req.body.rqseMthdNm == "readCtNoList") {
+        var reqQuerystring = querystring.stringify(req.body);  //querystring모듈을 사용하여 전달받은 req값을 QueryString 으로변환
+        console.log(reqQuerystring);
+        try {
+            var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', { //해당 URL에 POST방식으로 값을 전달.
+                headers: {
+                    'content-type': 'application/x-www-form-urlencoded'
+                },
+                body: reqQuerystring
+            });
+            var data = res1.getBody('utf8');
+            res.send(data.replace(/\r\n/g, '').trim());
+        }
+        catch (e) {
+            console.log(e);
+        }
     }
     else {
         console.log("실패~!!");
     }
-
+*/
 });
 router.get('/favicon.ico', function (req, res) {
     res.send();

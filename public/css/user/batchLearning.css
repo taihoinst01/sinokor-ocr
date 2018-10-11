@@ -2,3 +2,34 @@
 .w600 { width: 600px; }
 .pop_close_btn { float:right; background-color: white; font-size: 25px; font-weight:500; }
 #viewImage { width:  inherit; height: 800px; }
+
+
+.box_table_st04 > dl > dt input {
+    background: #eaeaea;
+}
+
+.box_table_st04 > dl > dt {
+    border-bottom: 1px solid #b6b6b6;
+}
+
+.box_table_st04 > dl > dd {
+    border-bottom: 1px solid #b6b6b6 !important;
+}
+
+.box_table_st04 > dl > .columnSelect {
+    border-bottom: 1px solid #b6b6b6 !important;
+}
+
+.layer2_tits_span {
+    font: 400 13.3333px Arial;
+    font-family: 'notokr-medium', sans-serif;
+    font-size: 18px;
+    margin-left: 20px;
+}
+
+h3.layer2_tits {
+    padding: 14px 0;
+    font-size: 14px;
+    font-family: 'notokr-medium', sans-serif;
+    background-color: #fff;
+}
