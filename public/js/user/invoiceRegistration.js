@@ -87,6 +87,10 @@ var fn_buttonEvent = function () {
     $("#btn_search").on("click", function () {
         fn_search();
     });
+
+    $("#ctnExtractionBtn").on("click", function () {
+        fn_ctnExtraction();
+    });
 };
 
 /****************************************************************************************
@@ -186,6 +190,138 @@ var fn_search = function () {
             console.log(err);
         }
     });
+};
+
+var fn_ctnExtraction = function () {
+    $("input[name=dtl_chk]").each(function () {
+
+        if (this.checked) {
+            var tdLength = $(this).parent().parent().find("td").length;
+
+            var dataObj = {};
+
+            var trText = $(this).parent().parent().html();
+            $(this).parent().parent().parent().last('</tr>').append('<tr>' + trText + '</tr>');
+
+            for (var i = 1; i < tdLength; i++) {
+                var text = $(this).parent().parent().find("td").eq(i).find("select :selected").text();
+                $(this).parent().parent().find("td").eq(i).html(text);
+                switch (i) {
+                    case 1:
+                        dataObj.OGCOMPANYNAME = text;
+                        break;
+                    case 2:
+                        dataObj.CTNM = text;
+                        break;
+                    case 3:
+                        dataObj.UY = text;
+                        break;
+                    case 4:
+                        dataObj.CURCD = text;
+                        break;
+                    case 5:
+                        dataObj.CURUNIT = text;
+                        break;
+                    case 6:
+                        dataObj.PAIDPERCENT = text;
+                        break;
+                    case 7:
+                        dataObj.PAIDSHARE = text;
+                        break;
+                    case 8:
+                        dataObj.OSLPERCENT = text;
+                        break;
+                    case 9:
+                        dataObj.OSLSHARE = text;
+                        break;
+                    case 10:
+                        dataObj.PM = text;
+                        break;
+                    case 11:
+                        dataObj.PMPFEND = text;
+                        break;
+                    case 12:
+                        dataObj.PMPFWOS = text;
+                        break;
+                    case 13:
+                        dataObj.XOLPM = text;
+                        break;
+                    case 14:
+                        dataObj.RETURNPM = text;
+                        break;
+                    case 15:
+                        dataObj.CN = text;
+                        break;
+                    case 16:
+                        dataObj.PROFITCN = text;
+                        break;
+                    case 17:
+                        dataObj.BROKERAGE = text;
+                        break;
+                    case 18:
+                        dataObj.TAX = text;
+                        break;
+                    case 19:
+                        dataObj.OVERRIDINGCOM = text;
+                        break;
+                    case 20:
+                        dataObj.CHARGE = text;
+                        break;
+                    case 21:
+                        dataObj.PMRESERVERTD1 = text;
+                        break;
+                    case 22:
+                        dataObj.PFPMRESERVERTD1 = text;
+                        break;
+                    case 23:
+                        dataObj.PMRESERVERTD2 = text;
+                        break;
+                    case 24:
+                        dataObj.PFPMRESERVERTD2 = text;
+                        break;
+                    case 25:
+                        dataObj.CLAIM = text;
+                        break;
+                    case 26:
+                        dataObj.LOSSRECOVERY = text;
+                        break;
+                    case 27:
+                        dataObj.CASHLOSS = text;
+                        break;
+                    case 28:
+                        dataObj.CASHLOSSRD = text;
+                        break;
+                    case 29:
+                        dataObj.LOSSRR = text;
+                        break;
+                    case 30:
+                        dataObj.LOSSRR2 = text;
+                        break;
+                    case 31:
+                        dataObj.LOSSPFENT = text;
+                        break;
+                    case 32:
+                        dataObj.LOSSPFWOA = text;
+                        break;
+                    case 33:
+                        dataObj.INTEREST = text;
+                        break;
+                    case 34:
+                        dataObj.TAXON = text;
+                        break;
+                    case 35:
+                        dataObj.MISCELLANEOUS = text;
+                        break;
+                    case 36:
+                        dataObj.CSCOSARFRNCNNT2 = text;
+                        break;
+                }
+
+            }
+
+        }
+
+    })
 };
 
 // 클릭 이벤트 (DOCUMENT)
@@ -640,7 +776,7 @@ function fn_processFinish(data, fileDtlInfo) {
 
         // TODO : 분석 결과를 정리하고 1 record로 생성한다.
         var dtlHtml = '<tr>' +
-                            '<td><input type="checkbox" id="dtl_chk_${item.imgId}" name="dtl_chk" /></td>' +
+                            `<td><input type="checkbox" value="${dataObj["imgId"]}" name="dtl_chk" /></td>` +
                             '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
                             '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
                             '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
