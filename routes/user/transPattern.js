@@ -33,7 +33,7 @@ function convertedOurShare(reqArr) {
 
     for (var i in reqArr.data) {
         var item = reqArr.data[i];
-        if (item.colLbl == 36 && pattern.test(item.text)) {
+        if ((item.colLbl == 36 || item.colLbl == 37) && pattern.test(item.text)) {
             item.origintext = item.text;
             var intArr = Number(item.text.replace(pattern, ''));
             item.text = String(intArr);
