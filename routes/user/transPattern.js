@@ -3,6 +3,8 @@
         
         //UY
         reqArr = convertedUY(reqArr);
+        //Entry
+        reqArr = convertedEntry(reqArr);
         //Our Share
         reqArr = convertedOurShare(reqArr);
         
@@ -21,6 +23,21 @@ function convertedUY(reqArr) {
             var intArr = Math.min.apply(null, arr.map(Number));
             item.origintext = item.text;
             item.text = String(intArr);
+        } else {
+            //console.log("no");
+        }
+    }
+    return reqArr;
+}
+
+function convertedEntry(reqArr) {
+    var pattern = /O/gi;
+
+    for (var i in reqArr.data) {
+        var item = reqArr.data[i];
+        if (item.colLbl == 37) {
+            item.origintext = item.text;
+            item.text = String(item.text.replace(pattern, '0'));
         } else {
             //console.log("no");
         }
