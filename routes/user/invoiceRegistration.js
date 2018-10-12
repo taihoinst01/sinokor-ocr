@@ -135,6 +135,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         var files = req.files;
         var endCount = 0;
         var fileInfo = [];
+        var fileInfo2 = [];
         var fileDtlInfo = [];
         var returnObj = [];
         var convertType = '';
@@ -142,6 +143,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         var convertedImagePath = appRoot + '\\uploads\\';
 
         for (var i = 0; i < files.length; i++) {
+            fileInfo2 = [];
             var imgId = 'ICR';
             var date = new Date();
             var yyyymmdd = String(date.getFullYear()) + String(date.getMonth() + 1) + String(date.getDate());
@@ -156,7 +158,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                     imgId += Number(maxDocNum.substring(3, 18)) + 1;
                 }
             }
-
+            console.log(imgId);
             var ifile = "";
             var ofile = "";
 
@@ -187,7 +189,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                     regId: userId,
                     row: i
                 };
-
+                fileInfo2.push(fileParam);  
                 fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
 
                 execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 ' + ifile + ' ' + ofile);
@@ -228,6 +230,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                     row: i
                 };
 
+                fileInfo2.push(fileParam); 
                 fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
 
                 execSync('module\\imageMagick\\convert.exe -quiet -density 300 ' + ifile + ' ' + ofile);
@@ -263,6 +266,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                     row: i
                 };
 
+                fileInfo2.push(fileParam); 
                 fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
 
                 execSync('module\\imageMagick\\convert.exe -quiet -density 300 ' + ifile + ' ' + ofile);
@@ -349,10 +353,11 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 j++;
             }
             endCount++;
+            sync.await(oracle.insertDocument([fileInfo2], sync.defer()));
         }
 
         // TBL_DOCUMENT insert
-        sync.await(oracle.insertDocument([fileInfo], sync.defer()));
+        //sync.await(oracle.insertDocument([fileInfo], sync.defer()));
         sync.await(oracle.insertOcrFileDtl(fileDtlInfo, sync.defer()));
 
         res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlInfo });
@@ -384,10 +389,15 @@ router.post('/deleteDocument', function (req, res) {
 
 router.post('/selectDocument', function (req, res) {
     var returnObj = {};
-    console.log(req.body.fileInfo[0].imgId);
+    var inputDocNum = "";
+    for (var i = 0; i < req.body.fileInfo.length; i++) {
+        inputDocNum += "'" + req.body.fileInfo[i].imgId + "'" + ", ";
+    }
+    var inputDocNum2 = inputDocNum.substring(0, inputDocNum.length - 2);
+    console.log("SELECT문에 삽입될 IMGID 값 : " + inputDocNum2);
     sync.fiber(function () {
         try {
-            var result = sync.await(oracle.selectDocument(req.body.fileInfo[0].imgId, sync.defer()));
+            var result = sync.await(oracle.selectDocument(inputDocNum2, sync.defer()));
             returnObj = { code: 200, docData: result };
         } catch (e) {
             returnObj = { code: 200, error: e };
