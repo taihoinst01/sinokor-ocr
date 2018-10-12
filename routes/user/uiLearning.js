@@ -15,7 +15,7 @@ var oracle = require('../util/oracle.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
 var ui = require('../util/ui.js');
-
+var transPantternVar = require('./transPattern');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -74,6 +74,9 @@ router.post('/uiLearnTraining', function (req, res) {
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
             var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0]);
+
+            resPyArr = transPantternVar.trans(resPyArr);
+
 
             var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
             var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
