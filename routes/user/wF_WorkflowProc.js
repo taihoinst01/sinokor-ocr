@@ -75,7 +75,10 @@ router.post('/', function (req, res) {
         if (data == null) {
             console.log("실패...");
         } else {
-            console.log("성공!!!!");
+            var resultData1 = data.split("</Dataset>");
+            var resultData2 = resultData1[1].split("<Rows>");
+            var resultData3 = resultData2[1].split("<Row>");
+            
         }
     }
     catch (e) {

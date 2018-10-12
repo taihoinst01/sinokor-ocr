@@ -351,13 +351,12 @@ var fn_search_image = function (imgId) {
  ****************************************************************************************/
 // 문서 기본 정보 append
 var fn_processBaseImage = function (fileInfo) {
-
     $.ajax({
         url: '/invoiceRegistration/selectDocument',
         type: 'post',
         datatype: 'json',
         async: false,
-        data: JSON.stringify({}),
+        data: JSON.stringify({ 'fileInfo': fileInfo}),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             //console.log(data);
@@ -366,7 +365,7 @@ var fn_processBaseImage = function (fileInfo) {
                 for (var i = 0; i < data.docData.length; i++) {
                     var item = data.docData[i];
                     html += `<tr>
-                                <td><input type="checkbox" id="base_chk_${item.DOCNUM}" name="base_chk" /></td>
+                                <td><input type="checkbox" class="base_chk_Yn" id="base_chk_${item.DOCNUM}" name="base_chk" /></td>
                                 <td>${item.DOCNUM}</td>
                                 <td>${item.PAGECNT}</td>
                                 <td></td>
@@ -1074,6 +1073,42 @@ function viewOriginImg() {
 var fn_docEvent = function () {
 
     //삭제
+    $('#deleteDocBtn').click(function () {
+        var rowData = new Array();
+        var tdArr = new Array();
+        var checkbox = $("input[name=base_chk]:checked");
+
+        // 체크된 체크박스 값을 가져온다
+        checkbox.each(function (i) {
+
+            var tr = checkbox.parent().parent().eq(i);
+            var td = tr.children();
+
+            // 체크된 row의 모든 값을 배열에 담는다.
+            rowData.push(tr.text());
+
+            // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
+            var docNum = td.eq(1).text();
+
+            // 가져온 값을 배열에 담는다.
+            tdArr.push(docNum);
+        });
+
+        $.ajax({
+            url: '/invoiceRegistration/deleteDocument',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({ 'docNum': tdArr }),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                alert(data.docData + " 건의 문서가 삭제되었습니다.");
+                fn_search();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
 
     //전달
     $('#sendDocBtn').click(function () {

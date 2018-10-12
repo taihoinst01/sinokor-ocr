@@ -68,6 +68,7 @@ var callbackDocumentList = function (rows, req, res) {
 };
 var fnSearchDocumentList = function (req, res) {
     var condQuery = ``;
+    var andQuery = ` AND APPROVALSTATE = 'R' `;
     var orderQuery = ` ORDER BY DEADLINEDT ASC `;
     var param = {
         docNum: commonUtil.nvl(req.body.docNum),
@@ -77,7 +78,7 @@ var fnSearchDocumentList = function (req, res) {
     if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND DOCUMENTMANAGER = '${param["documentManager"]}' `;
 
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
-    var listQuery = documentListQuery + condQuery + orderQuery;
+    var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
     console.log("base listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackDocumentList, req, res);
 
@@ -357,11 +358,33 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     
 });
 
+router.post('/deleteDocument', function (req, res) {
+    var returnObj = {};
+    var deleteCount = 0;
+    try {
+        for (var i = 0; i < req.body.docNum.length; i++) {
+            sync.fiber(function () {
+                    sync.await(oracle.deleteDocument(req.body.docNum[i], sync.defer()));
+            });
+            deleteCount += 1;
+        }
+        returnObj = { code: 200, docData: deleteCount }; 
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
+
+});
+
+
+
 router.post('/selectDocument', function (req, res) {
     var returnObj = {};
+    console.log(req.body.fileInfo[0].imgId);
     sync.fiber(function () {
         try {
-            var result = sync.await(oracle.selectDocument(sync.defer()));
+            var result = sync.await(oracle.selectDocument(req.body.fileInfo[0].imgId, sync.defer()));
             returnObj = { code: 200, docData: result };
         } catch (e) {
             returnObj = { code: 200, error: e };
