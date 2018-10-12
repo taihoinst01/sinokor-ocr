@@ -2301,7 +2301,7 @@ exports.selectDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute(`SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE FROM TBL_DOCUMENT WHERE DOCNUM = :docNum`,[req]);
+            result = await conn.execute(`SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE FROM TBL_DOCUMENT WHERE DOCNUM IN ( ` + req + `)`);
             if (result.rows.length > 0) {
                 return done(null, result.rows);
             } else {
