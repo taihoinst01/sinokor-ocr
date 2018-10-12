@@ -174,6 +174,8 @@ var fn_search = function () {
                             <td>${nvl(entry["FAOTEAM"])}</td>
                             <td>${nvl(entry["FAOPART"])}</td>
                             <td>${nvl(entry["APPROVALREPORTER"])}</td>
+                            <td></td>
+                            <td></td>
                         </tr>`;
                 });
             } else {
@@ -342,8 +344,51 @@ var fn_clickEvent = function () {
     });
 };
 
-// document_dtl 조회
 var fn_search_dtl = function (seqNum, docNum) {
+    //DB 조회후 클릭시 파일 정보 읽어와서 ocr 보냄
+    var param = {
+        seqNum: seqNum,
+        imgId: docNum
+    };
+
+    $.ajax({
+        url: '/invoiceRegistration/selectOcrFileDtl',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving document detail list...");
+            startProgressBar(); // start progressbar
+            addProgressBar(1, 1); // proceed progressbar
+        },
+        success: function (data) {
+            addProgressBar(2, 99); // proceed progressbar
+
+            for (var i in data.docData) {
+
+                var obj = {};
+                obj.imgId = data.docData[i].IMGID;
+                obj.convertedFilePath = "C:/projectWork/koreanre/uploads/";
+                obj.filePath = data.docData[i].FILEPATH;
+                obj.oriFileName = data.docData[i].ORIGINFILENAME;
+                obj.convertFileName = data.docData[i].ORIGINFILENAME;
+
+                fn_processDtlImage(obj);
+            }
+
+            endProgressBar(); // end progressbar
+        }, error: function (err) {
+            endProgressBar(); // end progressbar
+            console.log(err);
+        }
+    });
+
+    
+}
+
+// document_dtl 조회
+var fn_search_dtl_old = function (seqNum, docNum) {
     var param = {
         seqNum: seqNum,
         docNum: docNum
@@ -487,13 +532,12 @@ var fn_search_image = function (imgId) {
  ****************************************************************************************/
 // 문서 기본 정보 append
 var fn_processBaseImage = function (fileInfo) {
-
     $.ajax({
         url: '/invoiceRegistration/selectDocument',
         type: 'post',
         datatype: 'json',
         async: false,
-        data: JSON.stringify({}),
+        data: JSON.stringify({ 'fileInfo': fileInfo}),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             //console.log(data);
@@ -501,10 +545,10 @@ var fn_processBaseImage = function (fileInfo) {
                 var html = "";
                 for (var i = 0; i < data.docData.length; i++) {
                     var item = data.docData[i];
-                    html += `<tr>
-                                <td><input type="checkbox" id="base_chk_${item.DOCNUM}" name="base_chk" /></td>
-                                <td>${item.DOCNUM}</td>
-                                <td>${item.PAGECNT}</td>
+                    html += `<tr id="tr_base_${item.SEQNUM}-${item.DOCNUM}-${item.APPROVALSTATE}">
+                                <td><input type="checkbox" id="base_chk_${item.DOCNUM}" class ="base_chk_Yn" name="base_chk" /></td>
+                                <td name="td_base">${item.DOCNUM}</td>
+                                <td name="td_base">${item.PAGECNT}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -515,6 +559,7 @@ var fn_processBaseImage = function (fileInfo) {
                 }
                 $("#tbody_baseList").empty().append(html);
                 $("#div_base").css("display", "block");
+                fn_clickEvent();
             } else {
                 console.log(data.error);
             }
@@ -576,7 +621,7 @@ function executeML(totData) {
 
     $('#progressMsgTitle').html('머신러닝 처리 중..');
     $.ajax({
-        url: '/uiLearning/uiLearnTraining',
+        url: '/invoiceRegistration/uiLearnTraining',
         type: 'post',
         datatype: 'json',
         async: false,
@@ -720,7 +765,7 @@ function fn_processFinish_Old1(data) {
 
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
-        '<td><input type="checkbox" id="dtl_chk_${item.imgId}" name="dtl_chk" /></td>' +
+        `<td><input type="checkbox" value="${dataObj["imgId"]}" name="dtl_chk" /></td>` +
         '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
@@ -763,7 +808,8 @@ function fn_processFinish_Old1(data) {
     $("#div_dtl").css("display", "block");
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select>';
+        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
@@ -1210,6 +1256,47 @@ function viewOriginImg() {
 var fn_docEvent = function () {
 
     //삭제
+    $('#deleteDocBtn').click(function () {
+        var rowData = new Array();
+        var tdArr = new Array();
+        var checkbox = $("input[name=base_chk]:checked");
+        var deleteTr = [];
+        // 체크된 체크박스 값을 가져온다
+        checkbox.each(function (i) {
+
+            var tr = checkbox.parent().parent().eq(i);
+            var td = tr.children();
+
+            // 체크된 row의 모든 값을 배열에 담는다.
+            rowData.push(tr.text());
+
+            // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
+            var docNum = td.eq(1).text();
+
+            // 가져온 값을 배열에 담는다.
+            tdArr.push(docNum);
+            deleteTr.push(tr);
+        });
+
+        $.ajax({
+            url: '/invoiceRegistration/deleteDocument',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({ 'docNum': tdArr }),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                var totCnt = $("input[name = base_chk]");
+                $("#span_document_base").empty().html(`문서 기본정보 - ${totCnt.length - deleteTr.length}건`);
+                for (var i in deleteTr) {
+                    deleteTr[i].remove();
+                }
+                alert(data.docData + " 건의 문서가 삭제되었습니다.");
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
 
     //전달
     $('#sendDocBtn').click(function () {

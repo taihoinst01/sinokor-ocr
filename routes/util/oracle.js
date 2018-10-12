@@ -2295,13 +2295,13 @@ exports.insertNotInvoce = function (req, done) {
     });
 };
 
-exports.selectDocument = function (done) {
+exports.selectDocument = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute('SELECT SEQNUM, DOCNUM, PAGECNT FROM TBL_DOCUMENT');
+            result = await conn.execute(`SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE FROM TBL_DOCUMENT WHERE DOCNUM = :docNum`,[req]);
             if (result.rows.length > 0) {
                 return done(null, result.rows);
             } else {
@@ -2347,6 +2347,29 @@ exports.selectMaxDocNum = function (done) {
     });
 };
 
+//문서 기본정보 삭제
+exports.deleteDocument = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            await conn.execute(`UPDATE TBL_DOCUMENT SET APPROVALSTATE ='D' WHERE DOCNUM = :docNum `, [req]);
+            return done;
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.insertDocument = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -2354,9 +2377,9 @@ exports.insertDocument = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             await conn.execute(`INSERT INTO
-                                    TBL_DOCUMENT(SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE)
+                                    TBL_DOCUMENT(SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, MEMO)
                                 VALUES 
-                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, :pageCnt, 'R') `, [req[0][0].imgId, req[0].length]);            
+                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, :pageCnt, 'R', :memo) `, [req[0][0].imgId, req[0].length, req[0][0].oriFileName]);            
 
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
@@ -2495,6 +2518,74 @@ exports.selectBannedWord = function (done) {
             return done(null, result.rows);
         } catch (err) { // catches errors in getConnection and the query
             return done(null, err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertOcrFileDtl = function (data, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            var insertSql = queryConfig.commonConfig.insertFileDtlInfo;
+            conn = await oracledb.getConnection(dbConfig);
+
+            for (var i in data) {
+                var param = [];
+                param.push(data[i].imgId);
+                param.push(data[i].filePath);
+                param.push(data[i].oriFileName);
+                param.push(data[i].svrFileName);
+                param.push(data[i].fileExt);
+                param.push(data[i].fileSize);
+                param.push(data[i].contentType);
+                param.push("");
+                param.push("");
+
+                result = await conn.execute(insertSql, param);
+            }
+
+            conn.commit();
+
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectOcrFileDtl = function (imgId, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute('SELECT * FROM TBL_OCR_FILE_DTL WHERE IMGID = :imgId', [imgId]);
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+
+        } catch (err) { // catches errors in getConnection and the query
+            console.log('oracle.js error');
+            reject(err);
         } finally {
             if (conn) {   // the conn assignment worked, must release
                 try {

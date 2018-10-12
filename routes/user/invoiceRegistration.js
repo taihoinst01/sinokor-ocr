@@ -18,6 +18,8 @@ var queryConfig = require(appRoot + '/config/queryConfig.js');
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 var msopdf = require('node-msoffice-pdf');
+var pythonConfig = require(appRoot + '/config/pythonConfig');
+var PythonShell = require('python-shell');
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
@@ -68,6 +70,7 @@ var callbackDocumentList = function (rows, req, res) {
 };
 var fnSearchDocumentList = function (req, res) {
     var condQuery = ``;
+    var andQuery = ` AND APPROVALSTATE = 'R' `;
     var orderQuery = ` ORDER BY DEADLINEDT ASC `;
     var param = {
         docNum: commonUtil.nvl(req.body.docNum),
@@ -77,7 +80,7 @@ var fnSearchDocumentList = function (req, res) {
     if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND DOCUMENTMANAGER = '${param["documentManager"]}' `;
 
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
-    var listQuery = documentListQuery + condQuery + orderQuery;
+    var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
     console.log("base listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackDocumentList, req, res);
 
@@ -350,6 +353,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 
         // TBL_DOCUMENT insert
         sync.await(oracle.insertDocument([fileInfo], sync.defer()));
+        sync.await(oracle.insertOcrFileDtl(fileDtlInfo, sync.defer()));
 
         res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlInfo });
     });
@@ -357,11 +361,48 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     
 });
 
+router.post('/deleteDocument', function (req, res) {
+    var returnObj = {};
+    var deleteCount = 0;
+    try {
+        for (var i = 0; i < req.body.docNum.length; i++) {
+            sync.fiber(function () {
+                    sync.await(oracle.deleteDocument(req.body.docNum[i], sync.defer()));
+            });
+            deleteCount += 1;
+        }
+        returnObj = { code: 200, docData: deleteCount }; 
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
+
+});
+
+
+
 router.post('/selectDocument', function (req, res) {
     var returnObj = {};
+    console.log(req.body.fileInfo[0].imgId);
     sync.fiber(function () {
         try {
-            var result = sync.await(oracle.selectDocument(sync.defer()));
+            var result = sync.await(oracle.selectDocument(req.body.fileInfo[0].imgId, sync.defer()));
+            returnObj = { code: 200, docData: result };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+router.post('/selectOcrFileDtl', function (req, res) {
+    var returnObj = {};
+    var imgId = req.body.imgId;
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.selectOcrFileDtl(imgId, sync.defer()));
             returnObj = { code: 200, docData: result };
         } catch (e) {
             returnObj = { code: 200, error: e };
@@ -827,6 +868,34 @@ function createDocNum() {
     
 }
 
+router.post('/uiLearnTraining', function (req, res) {
+    var ocrData = req.body.ocrData;
+    var filePath = req.body.filePath;
+    var fileName = req.body.fileName;
+    var fileExt = filePath.split(".")[1];
+    var imgId = req.body.fileDtlInfo.imgId;
+    var returnObj;
+    
+    sync.fiber(function () {
+        try {
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
+            var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var resPyArr = JSON.parse(resPyStr[0]);
 
+            var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
+            var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
+
+            returnObj = { code: 200, 'fileName': fileName, 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
+        } catch (e) {
+            console.log(resPyStr);
+            returnObj = { 'code': 500, 'message': e };
+
+        } finally {
+            res.send(returnObj);
+        }
+
+    });
+});
 
 module.exports = router;
