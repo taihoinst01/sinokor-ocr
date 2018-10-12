@@ -87,6 +87,10 @@ var fn_buttonEvent = function () {
     $("#btn_search").on("click", function () {
         fn_search();
     });
+
+    $("#ctnExtractionBtn").on("click", function () {
+        fn_ctnExtraction();
+    });
 };
 
 /****************************************************************************************
@@ -170,6 +174,8 @@ var fn_search = function () {
                             <td>${nvl(entry["FAOTEAM"])}</td>
                             <td>${nvl(entry["FAOPART"])}</td>
                             <td>${nvl(entry["APPROVALREPORTER"])}</td>
+                            <td></td>
+                            <td></td>
                         </tr>`;
                 });
             } else {
@@ -186,6 +192,138 @@ var fn_search = function () {
             console.log(err);
         }
     });
+};
+
+var fn_ctnExtraction = function () {
+    $("input[name=dtl_chk]").each(function () {
+
+        if (this.checked) {
+            var tdLength = $(this).parent().parent().find("td").length;
+
+            var dataObj = {};
+
+            var trText = $(this).parent().parent().html();
+            $(this).parent().parent().parent().last('</tr>').append('<tr>' + trText + '</tr>');
+
+            for (var i = 1; i < tdLength; i++) {
+                var text = $(this).parent().parent().find("td").eq(i).find("select :selected").text();
+                $(this).parent().parent().find("td").eq(i).html(text);
+                switch (i) {
+                    case 1:
+                        dataObj.OGCOMPANYNAME = text;
+                        break;
+                    case 2:
+                        dataObj.CTNM = text;
+                        break;
+                    case 3:
+                        dataObj.UY = text;
+                        break;
+                    case 4:
+                        dataObj.CURCD = text;
+                        break;
+                    case 5:
+                        dataObj.CURUNIT = text;
+                        break;
+                    case 6:
+                        dataObj.PAIDPERCENT = text;
+                        break;
+                    case 7:
+                        dataObj.PAIDSHARE = text;
+                        break;
+                    case 8:
+                        dataObj.OSLPERCENT = text;
+                        break;
+                    case 9:
+                        dataObj.OSLSHARE = text;
+                        break;
+                    case 10:
+                        dataObj.PM = text;
+                        break;
+                    case 11:
+                        dataObj.PMPFEND = text;
+                        break;
+                    case 12:
+                        dataObj.PMPFWOS = text;
+                        break;
+                    case 13:
+                        dataObj.XOLPM = text;
+                        break;
+                    case 14:
+                        dataObj.RETURNPM = text;
+                        break;
+                    case 15:
+                        dataObj.CN = text;
+                        break;
+                    case 16:
+                        dataObj.PROFITCN = text;
+                        break;
+                    case 17:
+                        dataObj.BROKERAGE = text;
+                        break;
+                    case 18:
+                        dataObj.TAX = text;
+                        break;
+                    case 19:
+                        dataObj.OVERRIDINGCOM = text;
+                        break;
+                    case 20:
+                        dataObj.CHARGE = text;
+                        break;
+                    case 21:
+                        dataObj.PMRESERVERTD1 = text;
+                        break;
+                    case 22:
+                        dataObj.PFPMRESERVERTD1 = text;
+                        break;
+                    case 23:
+                        dataObj.PMRESERVERTD2 = text;
+                        break;
+                    case 24:
+                        dataObj.PFPMRESERVERTD2 = text;
+                        break;
+                    case 25:
+                        dataObj.CLAIM = text;
+                        break;
+                    case 26:
+                        dataObj.LOSSRECOVERY = text;
+                        break;
+                    case 27:
+                        dataObj.CASHLOSS = text;
+                        break;
+                    case 28:
+                        dataObj.CASHLOSSRD = text;
+                        break;
+                    case 29:
+                        dataObj.LOSSRR = text;
+                        break;
+                    case 30:
+                        dataObj.LOSSRR2 = text;
+                        break;
+                    case 31:
+                        dataObj.LOSSPFENT = text;
+                        break;
+                    case 32:
+                        dataObj.LOSSPFWOA = text;
+                        break;
+                    case 33:
+                        dataObj.INTEREST = text;
+                        break;
+                    case 34:
+                        dataObj.TAXON = text;
+                        break;
+                    case 35:
+                        dataObj.MISCELLANEOUS = text;
+                        break;
+                    case 36:
+                        dataObj.CSCOSARFRNCNNT2 = text;
+                        break;
+                }
+
+            }
+
+        }
+
+    })
 };
 
 // 클릭 이벤트 (DOCUMENT)
@@ -206,8 +344,51 @@ var fn_clickEvent = function () {
     });
 };
 
-// document_dtl 조회
 var fn_search_dtl = function (seqNum, docNum) {
+    //DB 조회후 클릭시 파일 정보 읽어와서 ocr 보냄
+    var param = {
+        seqNum: seqNum,
+        imgId: docNum
+    };
+
+    $.ajax({
+        url: '/invoiceRegistration/selectOcrFileDtl',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving document detail list...");
+            startProgressBar(); // start progressbar
+            addProgressBar(1, 1); // proceed progressbar
+        },
+        success: function (data) {
+            addProgressBar(2, 99); // proceed progressbar
+
+            for (var i in data.docData) {
+
+                var obj = {};
+                obj.imgId = data.docData[i].IMGID;
+                obj.convertedFilePath = "C:/projectWork/koreanre/uploads/";
+                obj.filePath = data.docData[i].FILEPATH;
+                obj.oriFileName = data.docData[i].ORIGINFILENAME;
+                obj.convertFileName = data.docData[i].ORIGINFILENAME;
+
+                fn_processDtlImage(obj);
+            }
+
+            endProgressBar(); // end progressbar
+        }, error: function (err) {
+            endProgressBar(); // end progressbar
+            console.log(err);
+        }
+    });
+
+    
+}
+
+// document_dtl 조회
+var fn_search_dtl_old = function (seqNum, docNum) {
     var param = {
         seqNum: seqNum,
         docNum: docNum
@@ -364,10 +545,10 @@ var fn_processBaseImage = function (fileInfo) {
                 var html = "";
                 for (var i = 0; i < data.docData.length; i++) {
                     var item = data.docData[i];
-                    html += `<tr>
-                                <td><input type="checkbox" class="base_chk_Yn" id="base_chk_${item.DOCNUM}" name="base_chk" /></td>
-                                <td>${item.DOCNUM}</td>
-                                <td>${item.PAGECNT}</td>
+                    html += `<tr id="tr_base_${item.SEQNUM}-${item.DOCNUM}-${item.APPROVALSTATE}">
+                                <td><input type="checkbox" id="base_chk_${item.DOCNUM}" class ="base_chk_Yn" name="base_chk" /></td>
+                                <td name="td_base">${item.DOCNUM}</td>
+                                <td name="td_base">${item.PAGECNT}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -378,6 +559,7 @@ var fn_processBaseImage = function (fileInfo) {
                 }
                 $("#tbody_baseList").empty().append(html);
                 $("#div_base").css("display", "block");
+                fn_clickEvent();
             } else {
                 console.log(data.error);
             }
@@ -439,7 +621,7 @@ function executeML(totData) {
 
     $('#progressMsgTitle').html('머신러닝 처리 중..');
     $.ajax({
-        url: '/uiLearning/uiLearnTraining',
+        url: '/invoiceRegistration/uiLearnTraining',
         type: 'post',
         datatype: 'json',
         async: false,
@@ -583,7 +765,7 @@ function fn_processFinish_Old1(data) {
 
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
-        '<td><input type="checkbox" id="dtl_chk_${item.imgId}" name="dtl_chk" /></td>' +
+        `<td><input type="checkbox" value="${dataObj["imgId"]}" name="dtl_chk" /></td>` +
         '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
@@ -626,7 +808,8 @@ function fn_processFinish_Old1(data) {
     $("#div_dtl").css("display", "block");
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select>';
+        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
@@ -657,7 +840,7 @@ function fn_processFinish(data, fileDtlInfo) {
 
         // TODO : 분석 결과를 정리하고 1 record로 생성한다.
         var dtlHtml = '<tr>' +
-                            '<td><input type="checkbox" id="dtl_chk_${item.imgId}" name="dtl_chk" /></td>' +
+                            `<td><input type="checkbox" value="${dataObj["imgId"]}" name="dtl_chk" /></td>` +
                             '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
                             '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
                             '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
@@ -1077,7 +1260,7 @@ var fn_docEvent = function () {
         var rowData = new Array();
         var tdArr = new Array();
         var checkbox = $("input[name=base_chk]:checked");
-
+        var deleteTr = [];
         // 체크된 체크박스 값을 가져온다
         checkbox.each(function (i) {
 
@@ -1092,6 +1275,7 @@ var fn_docEvent = function () {
 
             // 가져온 값을 배열에 담는다.
             tdArr.push(docNum);
+            deleteTr.push(tr);
         });
 
         $.ajax({
@@ -1101,8 +1285,12 @@ var fn_docEvent = function () {
             data: JSON.stringify({ 'docNum': tdArr }),
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
+                var totCnt = $("input[name = base_chk]");
+                $("#span_document_base").empty().html(`문서 기본정보 - ${totCnt.length - deleteTr.length}건`);
+                for (var i in deleteTr) {
+                    deleteTr[i].remove();
+                }
                 alert(data.docData + " 건의 문서가 삭제되었습니다.");
-                fn_search();
             },
             error: function (err) {
                 console.log(err);
