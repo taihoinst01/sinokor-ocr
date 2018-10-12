@@ -766,7 +766,7 @@ function detailTable(fileName) {
                 if (data[i].colLbl == 37) {
                     tblTag += '<dl>';
                     tblTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
-                    tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                    tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:150px;">';
                     tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
                     tblTag += '<input type="hidden" value="' + fileName + '" />';
@@ -785,7 +785,7 @@ function detailTable(fileName) {
                 } else if (data[i].colLbl == 38) {
                     tblSortTag += '<dl>';
                     tblSortTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
-                    tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                    tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:150px;">';
                     tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
                     tblSortTag += '<input type="hidden" value="' + data[i].location + '" />';
                     tblSortTag += '<input type="hidden" value="' + fileName + '" />';
@@ -804,7 +804,7 @@ function detailTable(fileName) {
                 } else {
                     tblTag += '<dl>';
                     tblTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
-                    tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                    tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:150px;">';
                     tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
                     tblTag += '<input type="hidden" value="' + fileName + '" />';
