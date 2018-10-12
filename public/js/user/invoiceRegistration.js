@@ -97,6 +97,8 @@ var fn_buttonEvent = function () {
  * FILE UPLOAD EVENT
  ****************************************************************************************/
 var fn_uploadFileEvent = function () {
+    fileDropDown();
+
     $("#uploadFile").change(function () {
         if ($(this).val() !== "") {
             initGlobalVariable();   // 전역변수 초기화
@@ -141,6 +143,49 @@ var fn_uploadFileEvent = function () {
             //console.log(e);
         }
     });
+
+
+    // 파일 드롭 다운
+    function fileDropDown() {
+        var dropZone = $("#uploadForm");
+        //Drag기능
+        dropZone.on('dragenter', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            // 드롭다운 영역 css
+            dropZone.css('background-color', '#E3F2FC');
+        });
+        dropZone.on('dragleave', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            // 드롭다운 영역 css
+            dropZone.css('background-color', '#FFFFFF');
+        });
+        dropZone.on('dragover', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            // 드롭다운 영역 css
+            dropZone.css('background-color', '#E3F2FC');
+        });
+        dropZone.on('drop', function (e) {
+            e.preventDefault();
+            // 드롭다운 영역 css
+            dropZone.css('background-color', '#FFFFFF');
+
+            var files = e.originalEvent.dataTransfer.files;
+            if (files != null) {
+                if (files.length < 1) {
+                    alert("폴더 업로드 불가");
+                    return;
+                }
+                selectFile(files)
+            } else {
+                alert("ERROR");
+            }
+        });
+    }
+
+    
 };
 
 /****************************************************************************************
