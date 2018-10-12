@@ -5464,7 +5464,7 @@ button[disabled] {
 }
 
 .lnb_menu02 .lnb_menu_icon, .lnb_menu03 .lnb_menu_icon, .lnb_menu05 .lnb_menu_icon, .lnb_menu06 .lnb_menu_icon {
-    vertical-align: sub;
+    vertical-align: middle;
 }
 
 .select_style_K {

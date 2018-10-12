@@ -30,6 +30,7 @@ var uiLearning = require('./routes/user/uiLearning');
 var batchLearning = require('./routes/user/batchLearning');
 var documentCheck = require('./routes/user/documentCheck');
 var invoiceProcessingStatus = require('./routes/user/invoiceProcessingStatus');
+var test = require('./routes/user/test');
 
 var adminLearning = require('./routes/user/adminLearning');
 var ocrFormAnalysis = require('./routes/user/ocrFormAnalysis');
@@ -89,6 +90,7 @@ app.use('/uiLearning', uiLearning);
 app.use('/batchLearning', batchLearning);
 app.use('/documentCheck', documentCheck);
 app.use('/invoiceProcessingStatus', invoiceProcessingStatus);
+app.use('/test', test);
 
 app.use('/adminLearning', adminLearning);
 app.use('/ocrFormAnalysis', ocrFormAnalysis);
