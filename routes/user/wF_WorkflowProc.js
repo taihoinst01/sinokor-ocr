@@ -16,7 +16,8 @@ router.get('/', function (req, res) {
 router.post('/', function (req, res) {
     var cdnNm = req.body.cdnNm.replace(/ /g, "&#32;");
     var ctNm = req.body.ctNm.replace(/ /g, "&#32;");
-    var brkNm = req.body.brkNm.replace(/ /g, "&#32;");
+    //var brkNm = req.body.brkNm.replace(/ /g, "&#32;");
+    var brkNm = '';
 
     var testData = 
         '<? xml version = "1.0" encoding = "utf-8" ?>'+
