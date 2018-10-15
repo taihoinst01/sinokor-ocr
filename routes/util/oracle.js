@@ -2349,7 +2349,7 @@ exports.selectDocument = function (req, done) {
             }
             
         } catch (err) { // catches errors in getConnection and the query
-            console.log('oracle.js error');w
+            console.log('oracle.js error');
             reject(err);
         } finally {
             if (conn) {   // the conn assignment worked, must release
@@ -2417,9 +2417,9 @@ exports.insertDocument = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             await conn.execute(`INSERT INTO
-                                    TBL_APPROVAL_MASTER22(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM)
+                                    TBL_APPROVAL_MASTER22(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM )
                                 VALUES
-                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :scannerNum) `, [req[0][0].imgId, req[0].length, req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
+                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :nowNum) `, [req[0][0].imgId, req[0].length, req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
