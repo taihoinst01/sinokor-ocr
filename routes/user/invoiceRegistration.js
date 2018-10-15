@@ -80,11 +80,11 @@ var fnSearchDocumentList = function (req, res) {
         documentManager: commonUtil.nvl(req.body.documentManager)
     };
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
-    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND MANAGERNUM = '${param["documentManager"]}' `;
+    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM = '${param["documentManager"]}' `;
 
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
     var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
-    console.log("base listQuery : " + listQuery);
+    //console.log("base listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackDocumentList, req, res);
 
 };
