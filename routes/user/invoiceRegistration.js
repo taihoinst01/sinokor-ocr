@@ -78,9 +78,10 @@ var fnSearchDocumentList = function (req, res) {
         docNum: commonUtil.nvl(req.body.docNum),
         documentManager: commonUtil.nvl(req.body.documentManager)
     };
+
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
     if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM = '${param["documentManager"]}' `;
-
+    if (commonUtil.isNull(param["docNum"]) && commonUtil.isNull(param["documentManager"]) && req.user.icrApproval == 'Y') condQuery += " AND NOWNUM = '" + req.user.userId + "' ";
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
     var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
     //console.log("base listQuery : " + listQuery);
@@ -350,7 +351,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     
 });
 //문서전달
-router.post('/sendDocument', function (req, res) {
+/*router.post('/sendDocument', function (req, res) {
     var returnObj = {};
     var sendCount = 0;
     try {
@@ -367,7 +368,7 @@ router.post('/sendDocument', function (req, res) {
         res.send(returnObj);
     }
 
-});
+});*/
 //문서삭제
 router.post('/deleteDocument', function (req, res) {
     var returnObj = {};
@@ -902,6 +903,26 @@ router.post('/uiLearnTraining', function (req, res) {
             var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
 
             returnObj = { code: 200, 'fileName': fileName, 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
+        } catch (e) {
+            console.log(resPyStr);
+            returnObj = { 'code': 500, 'message': e };
+
+        } finally {
+            res.send(returnObj);
+        }
+
+    });
+});
+
+router.post('/refuseDoc', function (req, res) {
+    var refuseType = req.body.refuseType;
+    var docNumArr = req.body.docNumArr;
+
+    sync.fiber(function () {
+        try {
+            sync.await(oracle.updateApprovalMaster([refuseType, docNumArr], sync.defer()));
+
+            returnObj = { code: 200, data: 'refuse success'};
         } catch (e) {
             console.log(resPyStr);
             returnObj = { 'code': 500, 'message': e };

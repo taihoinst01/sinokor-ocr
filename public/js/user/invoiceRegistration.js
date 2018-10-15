@@ -263,7 +263,7 @@ var fn_search = function () {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     appendHtml += '<tr id="tr_base_' + entry.SEQNUM + '-' + entry.DOCNUM + '-' + entry.STATUS + '">' +
-                        '<td><input type="checkbox" id="base_chk_' + entry.DOCNUM + '" name="base_chk" /></td>' +
+                        '<td><input type="checkbox" id="base_chk_' + entry.DOCNUM + '" name="base_chk" value="' + entry.DOCNUM + '" /></td>' +
                         '<td name="td_base">' + entry.DOCNUM + '</td>' +
                         '<td name="td_base">' + nvl2(entry.PAGECNT, 0) + '</td>' +
                         '<td name="td_base">' + entry.NOWNUM + '</td>' +
@@ -756,7 +756,7 @@ var fn_processBaseImage = function (fileInfo) {
                                 '<td><input type="checkbox" id="base_chk_' + item.DOCNUM + '" class ="base_chk_Yn" name="base_chk" /></td>' +
                                 '<td name="td_base">' + item.DOCNUM + '</td>' +
                                 '<td name="td_base">' + item.PAGECNT + '</td>' +
-                                '<td name="td_base">' + item.DRAFTERNUM + '</td>' +
+                                '<td name="td_base">' + item.NOWNUM + '</td>' +
                                 '<td></td>' +
                                 '<td></td>' +
                                 '<td></td>' +
@@ -1508,7 +1508,7 @@ var fn_docEvent = function () {
         // 체크된 체크박스 값을 가져온다
         checkbox.each(function (i) {
 
-            var tr = checkbox.parent().parent().eq(i);
+            var tr = checkbox.parent().parent().parent().eq(i);
             var td = tr.children();
 
             // 체크된 row의 모든 값을 배열에 담는다.
@@ -1544,7 +1544,19 @@ var fn_docEvent = function () {
 
     //전달
     $('#sendDocBtn').click(function () {
-        layer_open('layer1');   
+        if ($('#icrApproval').val() == 'Y') {
+            if ($('input[name="base_chk"]:checked').length > 0) {
+                var docNumArr = [];
+                $('input[name="base_chk"]:checked').each(function (i, e) {
+                    docNumArr.push($(e).val());
+                });
+                refuseDoc('icrApproval', docNumArr);
+            } else {
+                alert('반려 할 문서가 없습니다.');
+            }
+        } else {
+            layer_open('layer1');
+        }
     });
 
     $('#btn_pop_user_search').click(function () {
@@ -1600,3 +1612,19 @@ var fn_docEvent = function () {
 
     //저장
 }
+
+var refuseDoc = function (refuseType, docNumArr) {
+    $.ajax({
+        url: '/invoiceRegistration/refuseDoc',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'refuseType': refuseType, 'docNumArr': docNumArr }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+};
