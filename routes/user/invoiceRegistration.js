@@ -20,6 +20,7 @@ var oracle = require('../util/oracle.js');
 var msopdf = require('node-msoffice-pdf');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
+var transPantternVar = require('./transPattern');
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
@@ -52,8 +53,10 @@ router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 router.get('/', function (req, res) {
-    console.log("check");
-    if (req.isAuthenticated()) res.render('user/invoiceRegistration', { currentUser: req.user });
+    if (req.isAuthenticated()) res.render('user/invoiceRegistration', {
+        currentUser: req.user,
+
+    });
     else res.redirect("/logout");
 });
 router.post('/', function (req, res) {
@@ -347,7 +350,26 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 
     
 });
+//문서전달
+router.post('/sendDocument', function (req, res) {
+    var returnObj = {};
+    var sendCount = 0;
+    try {
+        for (var i = 0; i < req.body.docNum.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.deleteDocument(req.body.docNum[i], sync.defer()));
+            });
+            deleteCount += 1;
+        }
+        returnObj = { code: 200, docData: deleteCount };
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
 
+});
+//문서삭제
 router.post('/deleteDocument', function (req, res) {
     var returnObj = {};
     var deleteCount = 0;
@@ -395,7 +417,7 @@ router.post('/selectOcrFileDtl', function (req, res) {
     sync.fiber(function () {
         try {
             var result = sync.await(oracle.selectOcrFileDtl(imgId, sync.defer()));
-            returnObj = { code: 200, docData: result };
+            returnObj = { code: 200, docData: result, fileRootPath: appRoot + '/uploads/'  };
         } catch (e) {
             returnObj = { code: 200, error: e };
         } finally {
@@ -874,6 +896,8 @@ router.post('/uiLearnTraining', function (req, res) {
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
             var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0]);
+
+            resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
 
             var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
             var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));

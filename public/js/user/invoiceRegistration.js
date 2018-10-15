@@ -67,6 +67,7 @@ var _init = function () {
     fn_uploadFileEvent();
     fn_docEvent();
     fn_checkboxEvent();
+    fn_searchDocEnterEvent();
     ocrResult();
 };
 
@@ -243,7 +244,7 @@ var fn_uploadFileEvent = function () {
  ****************************************************************************************/
 var fn_search = function () {
     var param = {
-        docNum: nvl($("#docNum").val()),
+        docNum: nvl($("#docNum").val().toUpperCase()),
         documentManager: nvl($("#documentManager").val())
     };
 
@@ -287,6 +288,12 @@ var fn_search = function () {
             endProgressBar();
             console.log(err);
         }
+    });
+};
+
+var fn_searchDocEnterEvent = function () {
+    $('#docNum').keyup(function (e) {
+        if (e.keyCode == 13) $('#btn_search').click();
     });
 };
 
@@ -465,7 +472,7 @@ var fn_search_dtl = function (seqNum, docNum) {
 
                 var obj = {};
                 obj.imgId = data.docData[i].IMGID;
-                obj.convertedFilePath = "D:/gitRepos/sinokor-ocr/uploads/";
+                obj.convertedFilePath = data.fileRootPath;
                 obj.filePath = data.docData[i].FILEPATH;
                 obj.oriFileName = data.docData[i].ORIGINFILENAME;
                 obj.convertFileName = data.docData[i].ORIGINFILENAME;
@@ -1489,7 +1496,7 @@ var fn_docEvent = function () {
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
                 var totCnt = $("input[name = base_chk]");
-                $("#span_document_base").empty().html('문서 기본정보 - ' + totCnt.length - deleteTr.length + '건');
+                $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + '건');
                 for (var i in deleteTr) {
                     deleteTr[i].remove();
                 }
@@ -1516,6 +1523,7 @@ var fn_docEvent = function () {
             team: $('#select_team').val(),
             part: $('#select_part').val()
         };
+
 
         $.ajax({
             url: '/common/selectUserInfo',
@@ -1551,6 +1559,10 @@ var fn_docEvent = function () {
             }
         });
     })
+
+    $("#btn_pop_user_choice").click(function () {
+        
+    });
 
     //저장
 }
