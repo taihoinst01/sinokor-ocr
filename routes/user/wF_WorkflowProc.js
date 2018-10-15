@@ -2,6 +2,8 @@
 var express = require('express');
 var request = require('sync-request'); // 비동기방식 -> 동기방식
 var querystring = require('querystring'); // JSON -> QueryString 변환
+var xml2js = require('xml2js');
+var parser = new xml2js.Parser();
 
 var router = express.Router();
 
@@ -65,22 +67,181 @@ router.post('/', function (req, res) {
     '</Rows>' +
     '</Dataset>' +
         '</Root>';
-    console.log(testData);
+    //console.log(testData);
     try {
+        /*
         var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', { //해당 URL에 POST방식으로 값을 전달.
             headers: {
                 'content-type': 'text/xml'
             },
             body: testData
         });
-        var data = res1.getBody('utf8');
+        */
+        //var data = res1.getBody('utf8');
+        var data = `
+<?xml version="1.0" encoding="UTF-8" ?>	
+<Root xmlns="http://www.tobesoft.com/platform/dataset" ver="5000">	
+    <Parameters>
+        <Parameter id="gv_encryptToken" type="string">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1538977070zPy86400zAy23zEyiGcouax2B8VWYvTGpTpGfriYx7AFx79ofx2FPQuPx2BQKaZoKevZt9rlgBrinl6bGLd37lNEQb9l3UF2Yi7KdaOlL6SXN57t24R6BCu6ci9x2Bs3MSkVc1SeWCtCX26FdQZ8CjeEmwnEmx2Bo9iVb46ZhNUoaMCB2QNXhtYIQLB1EgvXpOWx7AiOEtWsh8t4Mx2FZaOWR7TDLVUJx78mo4gZ8Q1Pi351WnNoMDUsfAx3Dx3DzKycdDADOKhSx7Aw0Ur5VCgEP9FDVx79s0qDNx78pnUNB8E3Wx78LoHcXOVQ2APc5DVwTabw1uex00x00x00x00x00zSSy00002471000zUURy226f595117d17c8czMykx79friwM6GDsx3Dz</Parameter>	
+        <Parameter id="WMONID" type="string"/>	
+        <Parameter id="lginIpAdr" type="string">111.222.333.444</Parameter>	
+        <Parameter id="userId" type="string">9999068</Parameter>	
+        <Parameter id="userEmpNo" type="string">9999068</Parameter>	
+        <Parameter id="userDeptCd" type="string">999999</Parameter>	
+        <Parameter id="frstRqseDttm" type="datetime">20181008144649777</Parameter>	
+        <Parameter id="rqseDttm" type="datetime">20181008144649777</Parameter>	
+        <Parameter id="lngeClsfCd" type="string">ko-kr</Parameter>	
+        <Parameter id="srnId" type="string"/>	
+        <Parameter id="rqseSrvcNm" type="string">koreanre.co.ct.commonct.svc.CtCommonCheckSvc</Parameter>	
+        <Parameter id="rqseMthdNm" type="string">readCtNoList</Parameter>	
+        <Parameter id="rqseVoNm" type="string">koreanre.co.ct.commonct.vo.CtCommonCheckVO</Parameter>	
+        <Parameter id="ctDetlSno" type="int">0</Parameter>	
+        <Parameter id="ncnt" type="int">0</Parameter>	
+        <Parameter id="srvcExcId" type="string">sdapp01_dctCon1_koreanre.co.ct.commonct.svc.CtCommonCheckSvc:readCtNoList(koreanre.co.ct.commonct.vo.CtCommonCheckVO)_106_1538977609778</Parameter>	
+        <Parameter id="rspDttm" type="datetime">20181008144650481</Parameter>	
+        <Parameter id="ErrorCode" type="int">0</Parameter>	
+        <Parameter id="ErrorMsg" type="string">{&quot;message&quot;:&#32;[{&#10;&#32;&quot;id&quot;:&#32;&quot;&quot;,&#10;&#32;&quot;msg&quot;:&#32;&quot;정상처리되었습니다.&quot;&#10;}]}</Parameter>	
+    </Parameters>	
+    <Dataset id="searchDvo">
+        <ColumnInfo>	
+            <Column id="cdnNm" type="string" size="150"/>	
+            <Column id="ctNm" type="string" size="150"/>	
+            <Column id="ttyYy" type="string" size="4"/>	
+            <Column id="brkNm" type="string" size="70"/>	
+        </ColumnInfo>	
+        <Rows>	
+            <Row>	
+                <Col id="cdnNm">TOKIO&#32;MARINE&#32;INS&#32;-&#32;MALAYSIA</Col>	
+                <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL</Col>	
+                <Col id="ttyYy">2014</Col>	
+                <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
+            </Row>	
+        </Rows>	
+    </Dataset>	
+    <Dataset id="ctNoList">
+        <ColumnInfo>	
+            <Column id="ctNo" type="string" size="14"/>	
+            <Column id="ttyDtlNo" type="string" size="4"/>	
+            <Column id="cdnCd" type="string" size="6"/>	
+            <Column id="cdnNm" type="string" size="150"/>	
+            <Column id="ctNm" type="string" size="150"/>	
+            <Column id="ttyYy" type="string" size="4"/>	
+            <Column id="brkCd" type="string" size="6"/>	
+            <Column id="brkNm" type="string" size="70"/>	
+        </ColumnInfo>	
+        <Rows>	
+            <Row>	
+                <Col id="ctNo">C2014010027279</Col>	
+                <Col id="ttyDtlNo">C201</Col>	
+                <Col id="cdnCd">MY0119</Col>	
+                <Col id="cdnNm">TOKIO&#32;MARINE&#32;INS&#32;-&#32;MALAYSIA</Col>	
+                <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL&#32;1</Col>	
+                <Col id="ttyYy">2014</Col>	
+                <Col id="brkCd">MY0088</Col>	
+                <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
+            </Row>	
+            <Row>	
+                <Col id="ctNo">C2014010027280</Col>	
+                <Col id="ttyDtlNo">C202</Col>	
+                <Col id="cdnCd">MY0119</Col>	
+                <Col id="cdnNm">TOKIO&#32;MARINE&#32;INS&#32;-&#32;MALAYSIA</Col>	
+                <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL&#32;2</Col>	
+                <Col id="ttyYy">2014</Col>	
+                <Col id="brkCd">MY0088</Col>	
+                <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
+            </Row>	
+            <Row>	
+                <Col id="ctNo">C2014010027281</Col>	
+                <Col id="ttyDtlNo">C203</Col>	
+                <Col id="cdnCd">MY0119</Col>	
+                <Col id="cdnNm">TOKIO&#32;MARINE&#32;INS&#32;-&#32;MALAYSIA</Col>	
+                <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL&#32;3</Col>	
+                <Col id="ttyYy">2014</Col>	
+                <Col id="brkCd">MY0088</Col>	
+                <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
+            </Row>	
+            <Row>	
+                <Col id="ctNo">C2014010027282</Col>	
+                <Col id="ttyDtlNo">C204</Col>	
+                <Col id="cdnCd">MY0119</Col>	
+                <Col id="cdnNm">TOKIO&#32;MARINE&#32;INS&#32;-&#32;MALAYSIA</Col>	
+                <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL&#32;4</Col>	
+                <Col id="ttyYy">2014</Col>	
+                <Col id="brkCd">MY0088</Col>	
+                <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
+            </Row>	
+            <Row>	
+                <Col id="ctNo">C2014010027283</Col>	
+                <Col id="ttyDtlNo">C205</Col>	
+                <Col id="cdnCd">MY0119</Col>	
+                <Col id="cdnNm">TOKIO&#32;MARINE&#32;INS&#32;-&#32;MALAYSIA</Col>	
+                <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL&#32;5</Col>	
+                <Col id="ttyYy">2014</Col>	
+                <Col id="brkCd">MY0088</Col>	
+                <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
+            </Row>	
+            <Row>	
+                <Col id="ctNo">C2014010027284</Col>	
+                <Col id="ttyDtlNo">C206</Col>	
+                <Col id="cdnCd">MY0119</Col>	
+                <Col id="cdnNm">TOKIO&#32;MARINE&#32;INS&#32;-&#32;MALAYSIA</Col>	
+                <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL&#32;6</Col>	
+                <Col id="ttyYy">2014</Col>	
+                <Col id="brkCd">MY0088</Col>	
+                <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
+            </Row>	
+        </Rows>	
+    </Dataset>	
+</Root>`;
         if (data == null) {
             console.log("실패...");
         } else {
+            /*
             var resultData1 = data.split("</Dataset>");
             var resultData2 = resultData1[1].split("<Rows>");
             var resultData3 = resultData2[1].split("<Row>");
-            
+            */
+
+            parser.parseString(data, function (err, result) {
+                //console.log(result);
+                var dataSet = '';
+                for (var i in result.Root.Dataset) {
+                    if (result.Root.Dataset[i].$.id == "ctNoList") {
+                        dataSet = result.Root.Dataset[i];
+                        break;
+                    }
+                }
+                var row = dataSet.Rows[0].Row;
+                var rowData = [];
+
+                for (var i in row) {
+                    var obj = {};
+                    for (var j in row[i].Col) {
+                        if (row[i].Col[j].$.id == "ctNo") {
+                            obj.ctNo = row[i].Col[j]._;
+                        } else if (row[i].Col[j].$.id == "ttyDtlNo") {
+                            obj.ttyDtlNo = row[i].Col[j]._;
+                        } else if (row[i].Col[j].$.id == "cdnCd") {
+                            obj.cdnCd = row[i].Col[j]._;
+                        } else if (row[i].Col[j].$.id == "cdnNm") {
+                            obj.cdnNm = row[i].Col[j]._;
+                        } else if (row[i].Col[j].$.id == "ctNm") {
+                            obj.ctNm = row[i].Col[j]._;
+                        } else if (row[i].Col[j].$.id == "ttyYy") {
+                            obj.ttyYy = row[i].Col[j]._;
+                        } else if (row[i].Col[j].$.id == "brkCd") {
+                            obj.brkCd = row[i].Col[j]._;
+                        } else if (row[i].Col[j].$.id == "brkNm") {
+                            obj.brkNm = row[i].Col[j]._;
+                        }
+                    }
+                    rowData.push(obj);
+                }
+                res.send({ data: rowData });
+            });
+            //var dataSet = data.split(/<Dataset id="ctNoList">*<\/Dataset>/gi);
+            //var rows = dataSet[1].split('<Rows>');
+            //var row = rows[1].replace(/ /g, "&#32;").split('<Row>');
         }
     }
     catch (e) {

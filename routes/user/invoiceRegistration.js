@@ -17,7 +17,6 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
-var msopdf = require('node-msoffice-pdf');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
 var transPantternVar = require('./transPattern');
