@@ -1071,13 +1071,14 @@ function fn_processFinish(data, fileDtlInfo) {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);
-            for (var i in data) {
+            var dtlHtml = '';
+            for (var i in data.data) {
                 // TODO : 분석 결과를 정리하고 1 record로 생성한다.
-                var dtlHtml = '<tr>' +
+                dtlHtml += '<tr>' +
                     '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-                    '<td>' + data[i].cdnNm + '</td> <!--출재사명-->' +
-                    '<td>' + data[i].ctNm + '</td> <!--계약명-->' +
-                    '<td>' + data[i].ttyYy + '</td> <!--UY-->' +
+                    '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
+                    '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
+                    '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
                     '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
                     '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
                     '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
@@ -1114,7 +1115,7 @@ function fn_processFinish(data, fileDtlInfo) {
                     '</tr>';
             }
 
-            $("#tbody_dtlList").append(dtlHtml);
+            $("#tbody_dtlList").empty().append(dtlHtml);
             $("#tbody_dtlList input[type=checkbox]").ezMark();
             $("#div_dtl").css("display", "block");
         },
