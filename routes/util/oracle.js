@@ -11,7 +11,6 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 var request = require('sync-request');
 var sync = require('./sync.js');
 var oracle = require('./oracle.js');
-var msopdf = require('node-msoffice-pdf');
 
 exports.selectUserInfo = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -2349,7 +2348,7 @@ exports.selectDocument = function (req, done) {
             }
             
         } catch (err) { // catches errors in getConnection and the query
-            console.log('oracle.js error');w
+            console.log('oracle.js error');
             reject(err);
         } finally {
             if (conn) {   // the conn assignment worked, must release
@@ -2417,9 +2416,9 @@ exports.insertDocument = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             await conn.execute(`INSERT INTO
-                                    TBL_APPROVAL_MASTER22(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM)
+                                    TBL_APPROVAL_MASTER22(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM )
                                 VALUES
-                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :scannerNum) `, [req[0][0].imgId, req[0].length, req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
+                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :nowNum) `, [req[0][0].imgId, req[0].length, req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
