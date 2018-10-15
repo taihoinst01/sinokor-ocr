@@ -464,7 +464,7 @@ var fn_search_dtl = function (seqNum, docNum) {
 
                 var obj = {};
                 obj.imgId = data.docData[i].IMGID;
-                obj.convertedFilePath = "C:/projectWork/koreanre/uploads/";
+                obj.convertedFilePath = data.fileRootPath;
                 obj.filePath = data.docData[i].FILEPATH;
                 obj.oriFileName = data.docData[i].ORIGINFILENAME;
                 obj.convertFileName = data.docData[i].ORIGINFILENAME;

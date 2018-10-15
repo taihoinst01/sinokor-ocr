@@ -395,7 +395,7 @@ router.post('/selectOcrFileDtl', function (req, res) {
     sync.fiber(function () {
         try {
             var result = sync.await(oracle.selectOcrFileDtl(imgId, sync.defer()));
-            returnObj = { code: 200, docData: result };
+            returnObj = { code: 200, docData: result, fileRootPath: appRoot + '/uploads/'  };
         } catch (e) {
             returnObj = { code: 200, error: e };
         } finally {
