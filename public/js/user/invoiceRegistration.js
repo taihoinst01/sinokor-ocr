@@ -1360,7 +1360,7 @@ var fn_docEvent = function () {
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
                 var totCnt = $("input[name = base_chk]");
-                $("#span_document_base").empty().html('문서 기본정보 - ' + totCnt.length - deleteTr.length + '건');
+                $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + '건');
                 for (var i in deleteTr) {
                     deleteTr[i].remove();
                 }
@@ -1387,6 +1387,7 @@ var fn_docEvent = function () {
             team: $('#select_team').val(),
             part: $('#select_part').val()
         };
+
 
         $.ajax({
             url: '/common/selectUserInfo',
@@ -1421,6 +1422,10 @@ var fn_docEvent = function () {
             }
         });
     })
+
+    $("#btn_pop_user_choice").click(function () {
+        
+    });
 
     //저장
 }

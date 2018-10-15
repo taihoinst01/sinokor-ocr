@@ -365,7 +365,26 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 
     
 });
+//문서전달
+router.post('/sendDocument', function (req, res) {
+    var returnObj = {};
+    var sendCount = 0;
+    try {
+        for (var i = 0; i < req.body.docNum.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.deleteDocument(req.body.docNum[i], sync.defer()));
+            });
+            deleteCount += 1;
+        }
+        returnObj = { code: 200, docData: deleteCount };
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
 
+});
+//문서삭제
 router.post('/deleteDocument', function (req, res) {
     var returnObj = {};
     var deleteCount = 0;
