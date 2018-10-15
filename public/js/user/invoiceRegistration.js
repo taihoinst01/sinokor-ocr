@@ -68,6 +68,7 @@ var _init = function () {
     fn_docEvent();
     fn_checkboxEvent();
     fn_searchDocEnterEvent();
+    ocrResult();
 };
 
 /****************************************************************************************
@@ -648,11 +649,89 @@ var fn_checkboxEvent = function () {
         if ($(this).is(':checked')) {
             $('#tbody_dtlList .ez-checkbox').addClass('ez-checked');
             $('#tbody_dtlList input[type=checkbox]').prop('checked', true);
+            $('#deleteRow').attr('disabled', false);
         } else {
             $('#tbody_dtlList .ez-checkbox').removeClass('ez-checked');
             $('#tbody_dtlList input[type=checkbox]').prop('checked', false);
+            $('#deleteRow').attr('disabled', true);
         }
     });
+}
+
+
+//인식결과 
+var ocrResult = function () {
+
+    //행 추가
+    $('#addRow').click(function () {
+
+        var appendRowHtml = '<tr><td><input type="checkbox" value="" name="dtl_chk"></td>' +
+            '<td><input type="text" name=""></td> <!--출재사명-->' +
+            '<td><input type="text" name=""></td> <!--계약명-->' +
+            '<td><input type="text" name=""></td> <!--UY-->' +
+            '<td><input type="text" name=""></td> <!--화폐코드-->' +
+            '<td><input type="text" name=""></td> <!--화폐단위-->' +
+            '<td><input type="text" name=""></td> <!--Paid(100%)-->' +
+            '<td><input type="text" name=""></td> <!--Paid(Our Share)-->' +
+            '<td><input type="text" name=""></td> <!--OSL(100%)-->' +
+            '<td><input type="text" name=""></td> <!--OSL(Our Share)-->' +
+            '<td><input type="text" name=""></td> <!--PREMIUM-->' +
+            '<td><input type="text" name=""></td> <!--PREMIUM P/F ENT-->' +
+            '<td><input type="text" name=""></td> <!--PREMIUM P/F WOS-->' +
+            '<td><input type="text" name=""></td> <!--XOL PREMIUM-->' +
+            '<td><input type="text" name=""></td> <!--RETURN PREMIUM-->' +
+            '<td><input type="text" name=""></td> <!--COMMISION -->' +
+            '<td><input type="text" name=""></td> <!--PROFIT COMMISION-->' +
+            '<td><input type="text" name=""></td> <!--BROKERAGE-->' +
+            '<td><input type="text" name=""></td> <!--TEX-->' +
+            '<td><input type="text" name=""></td> <!-- OVERIDING COM-->' +
+            '<td><input type="text" name=""></td> <!--CHARGE-->' +
+            '<td><input type="text" name=""></td> <!--PREMIUM RESERVE RTD-->' +
+            '<td><input type="text" name=""></td> <!--P/F PREMIUM RESERVE RTD-->' +
+            '<td><input type="text" name=""></td> <!--P/F PREMIUM RESERVE RLD-->' +
+            '<td><input type="text" name=""></td> <!--P/F PREMIUM RESERVE RLD-->' +
+            '<td><input type="text" name=""></td> <!--CLAIM -->' +
+            '<td><input type="text" name=""></td> <!--LOSS RECOVERY -->' +
+            '<td><input type="text" name=""></td> <!--CASH LOSS -->' +
+            '<td><input type="text" name=""></td> <!--CASH LOSS REFUND -->' +
+            '<td><input type="text" name=""></td> <!--LOSS RESERVE RTD -->' +
+            '<td><input type="text" name=""></td> <!--LOSS RESERVE RLD -->' +
+            '<td><input type="text" name=""></td> <!--LOSS P/F ENT -->' +
+            '<td><input type="text" name=""></td> <!--LOSS P/F WOA -->' +
+            '<td><input type="text" name=""></td> <!--INTEREST -->' +
+            '<td><input type="text" name=""></td> <!--TAX ON -->' +
+            '<td><input type="text" name=""></td> <!--MISCELLANEOUS -->' +
+            '<td><input type="text" name=""></td> <!--YOUR REF -->' +
+            '</tr > '
+        $('#tbody_dtlList').append(appendRowHtml);
+        $('#tbody_dtlList input[type=checkbox]:last').ezMark();
+    });
+
+    //행 삭제
+    $('#deleteRow').click(function () {
+        $('input[name=dtl_chk]').each(function () {
+            if ($(this).is(':checked')) {
+                $(this).closest('tr').remove();
+            }
+        });
+    });
+
+    //체크박스 여부에 따른 행 삭제 버튼 활성화/비활성화
+    $(document).on('click', 'input[name=dtl_chk]', function () {
+        var hasChk = false;
+        $('input[name = dtl_chk]').each(function () {
+            if ($(this).is(':checked')) {
+                hasChk = true;
+                return false;
+            }
+        });
+
+        if (hasChk) {
+            $('#deleteRow').attr('disabled', false);
+        } else {
+            $('#deleteRow').attr('disabled', true);
+        }
+    })
 }
 
 /****************************************************************************************
