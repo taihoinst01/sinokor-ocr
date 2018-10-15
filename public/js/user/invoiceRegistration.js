@@ -1587,7 +1587,13 @@ var refuseDoc = function (refuseType, docNumArr) {
         data: JSON.stringify({ 'refuseType': refuseType, 'docNumArr': docNumArr }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
+            if (data.code == 200) {
+                $('#docNum').val('');
+                $('#documentManager').val('');
+                $('#btn_search').click();
+            } else {
+                alert(data.message);
+            }
         },
         error: function (err) {
             console.log(err);
