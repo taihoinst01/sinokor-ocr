@@ -1547,10 +1547,20 @@ var fn_docEvent = function () {
         if ($('#icrApproval').val() == 'Y') {
             if ($('input[name="base_chk"]:checked').length > 0) {
                 var docNumArr = [];
-                $('input[name="base_chk"]:checked').each(function (i, e) {
-                    docNumArr.push($(e).val());
+                $('input[name="base_chk"]:checked').each(function (i, e) {                   
+                    if ($('#userId').val() == $(e).closest('td').children().eq(3).text()) {
+                        docNumArr.push($(e).val());
+                    }
                 });
-                refuseDoc('icrApproval', docNumArr);
+                if (docNumArr.length > 0) {
+                    refuseDoc('icrApproval', docNumArr);
+                } else {
+                    $('input[name="base_chk"]:checked').each(function (i, e) {
+                        $(e).parent().removeClass('ez-checked');
+                        $(e).prop('checked', false);
+                    });
+                    alert('반려 할 문서가 없습니다.(문서 담당자가 아닙니다)');
+                }
             } else {
                 alert('반려 할 문서가 없습니다.');
             }
