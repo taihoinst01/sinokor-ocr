@@ -2636,6 +2636,34 @@ exports.selectOcrFileDtl = function (imgId, done) {
     });
 };
 
+exports.updateApprovalMaster = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var targetCol;
+            if (req[0] == 'icrApproval') {
+                targetCol = 'UPLOADNUM';
+            }
+            await conn.execute('UPDATE TBL_APPROVAL_MASTER22 SET ', [imgId]);
+            
+
+        } catch (err) { // catches errors in getConnection and the query
+            console.log('oracle.js error');
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 /*
 exports.convertMs = function (data, done) {
     return new Promise(async function (resolve, reject) {
