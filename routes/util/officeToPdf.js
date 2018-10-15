@@ -9,6 +9,13 @@ var child = exec('java -jar C:/Main.jar',
     }
 });
  
+var childLibre = exec('"C:/Program Files/LibreOffice/program/python.exe" c:/util/unoconv/unoconv.py -f pdf -o c:/tmp/text.pdf c:/tmp/text.xlsx',
+  function (error, stdout, stderr){
+    console.log('Output -> ' + stdout);
+    if(error !== null){
+      console.log("Error -> "+error);
+    }
+});
 
 msopdf(null, function(error, office) { 
 
