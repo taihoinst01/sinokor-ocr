@@ -11,7 +11,7 @@ module.exports = {
                 reqArr = convertedUY(reqArr);
                 //Entry
                 reqArr = convertedEntry(reqArr);
-                //Our Share & Entry
+                //Our Share
                 reqArr = convertedOurShare(reqArr);
                 //Currency Code
                 reqArr = sync.await(convertedCurrencyCode(reqArr, sync.defer()));
@@ -61,6 +61,26 @@ function convertedEntry(reqArr) {
             //console.log("no");
         }
     }
+
+    pattern = /[^0-9\.]+/g;
+    var isMinus;
+    for (var i in reqArr.data) {
+        isMinus = false;
+        var item = reqArr.data[i];
+        if (item.colLbl == 37 && pattern.test(item.text)) {
+            if (item.text.indexOf('(') != -1 && item.text.indexOf(')') != -1) {
+                isMinus = true;
+            }
+            var intArr = Number(item.text.replace(pattern, ''));
+            if (item.text != String(intArr)) {
+                item.originText = item.text;
+                item.text = ((isMinus)? '-' : '' ) + String(intArr);
+            }
+        } else {
+            //console.log("no");
+        }
+    }
+
     return reqArr;
 }
 
@@ -69,7 +89,7 @@ function convertedOurShare(reqArr) {
 
     for (var i in reqArr.data) {
         var item = reqArr.data[i];
-        if ((item.colLbl == 36 || item.colLbl == 37) && pattern.test(item.text)) {
+        if (item.colLbl == 36 && pattern.test(item.text)) {
             var intArr = Number(item.text.replace(pattern, ''));
             if (item.text != String(intArr)) {
                 item.originText = item.text;

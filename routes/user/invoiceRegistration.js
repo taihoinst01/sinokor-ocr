@@ -20,6 +20,7 @@ var oracle = require('../util/oracle.js');
 var msopdf = require('node-msoffice-pdf');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
+var transPantternVar = require('./transPattern');
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
@@ -874,6 +875,8 @@ router.post('/uiLearnTraining', function (req, res) {
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
             var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0]);
+
+            resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
 
             var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
             var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
