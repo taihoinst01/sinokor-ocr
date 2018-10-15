@@ -70,14 +70,14 @@ var callbackDocumentList = function (rows, req, res) {
 };
 var fnSearchDocumentList = function (req, res) {
     var condQuery = ``;
-    var andQuery = ` AND APPROVALSTATE = 'R' `;
-    var orderQuery = ` ORDER BY DEADLINEDT ASC `;
+    var andQuery = ` AND STATUS = 'ZZ' `;
+    var orderQuery = ` ORDER BY DOCNUM ASC `;
     var param = {
         docNum: commonUtil.nvl(req.body.docNum),
         documentManager: commonUtil.nvl(req.body.documentManager)
     };
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
-    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND DOCUMENTMANAGER = '${param["documentManager"]}' `;
+    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND MANAGERNUM = '${param["documentManager"]}' `;
 
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
     var listQuery = documentListQuery + condQuery + andQuery + orderQuery;

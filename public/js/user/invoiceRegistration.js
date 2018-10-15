@@ -241,11 +241,11 @@ var fn_search = function () {
             console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
-                    appendHtml += `<tr id="tr_base_${entry['SEQNUM']}-${entry['DOCNUM']}-${entry['APPROVALSTATE']}">
+                    appendHtml += `<tr id="tr_base_${entry['SEQNUM']}-${entry['DOCNUM']}-${entry['STATUS']}">
                             <td><input type="checkbox" id="base_chk_${entry["DOCNUM"]}" name="base_chk" /></td>
                             <td name="td_base">${entry["DOCNUM"]}</td>
                             <td name="td_base">${nvl2(entry["PAGECNT"], 0)}</td>
-                            <td>${nvl(entry["DOCUMENTMANAGER"])}</td>
+                            <td name="td_base">${entry["DRAFTERNUM"]}</td>
                             <td>${nvl(entry["FAOTEAM"])}</td>
                             <td>${nvl(entry["FAOPART"])}</td>
                             <td>${nvl(entry["APPROVALREPORTER"])}</td>
@@ -254,7 +254,7 @@ var fn_search = function () {
                         </tr>`;
                 });
             } else {
-                appendHtml += `<tr><td colspan="7">조회된 데이터가 없습니다.</td></tr>`;
+                appendHtml += '<tr><td colspan="7">조회된 데이터가 없습니다.</td></tr>';
             }
             $("#tbody_baseList").empty().append(appendHtml);
             $("#span_document_base").empty().html(`문서 기본정보 - ${data.length}건`);
@@ -620,11 +620,11 @@ var fn_processBaseImage = function (fileInfo) {
                 var html = "";
                 for (var i = 0; i < data.docData.length; i++) {
                     var item = data.docData[i];
-                    html += `<tr id="tr_base_${item.SEQNUM}-${item.DOCNUM}-${item.APPROVALSTATE}">
+                    html += `<tr id="tr_base_${item.SEQNUM}-${item.DOCNUM}-${item.STATUS}">
                                 <td><input type="checkbox" id="base_chk_${item.DOCNUM}" class ="base_chk_Yn" name="base_chk" /></td>
                                 <td name="td_base">${item.DOCNUM}</td>
                                 <td name="td_base">${item.PAGECNT}</td>
-                                <td></td>
+                                <td name="td_base">${item.DRAFTERNUM}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

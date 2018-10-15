@@ -22,9 +22,9 @@ var sessionConfig = {
             userId = :id `,
     leftSideBarInvoiceRegistration:
         `SELECT COUNT(*) AS CNT
-           FROM TBL_DOCUMENT
-          WHERE APPROVALSTATE = 'R'
-            AND APPROVALREPORTER = :id 
+           FROM TBL_APPROVAL_MASTER
+          WHERE STATUS = 'ZZ'
+            AND APPROVERNUM = :id 
         `,
     leftSideBarMyApproval:
         ` SELECT COUNT(*) AS CNT
@@ -94,9 +94,8 @@ var dbcolumnsConfig = {
 
 var invoiceRegistrationConfig = {
     selectDocumentList:
-        `SELECT SEQNUM, DOCNUM, PAGECNT, APPROVALSTATE, DEADLINEDT, REGDT, FAOTEAM, FAOPART, APPROVALREPORTER, DOCUMENTMANAGER, MEMO,
-                DECODE(APPROVALSTATE, 'P', 'P', 'C', 'C', 'R', 'R', 'U', 'U', '') AS APPROVALSTATE_STR
-            FROM TBL_DOCUMENT
+        `SELECT SEQNUM, DOCNUM, STATUS, DRAFTERNUM, DRAFTDATE, MANAGERNUM, APPROVERNUM, APPROVALDATE, MEMO, REGDATE, PAGECNT               
+            FROM TBL_APPROVAL_MASTER
            WHERE 1=1 `,
     selectDocumentDtlList:
         `SELECT A.SEQNUM, 

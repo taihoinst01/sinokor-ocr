@@ -1,0 +1,1 @@
+@"C:\Program Files\LibreOffice\program\python.exe" c:\util\unoconv\unoconv.py %*
