@@ -17,7 +17,6 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
-var msopdf = require('node-msoffice-pdf');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
 var transPantternVar = require('./transPattern');
@@ -79,9 +78,10 @@ var fnSearchDocumentList = function (req, res) {
         docNum: commonUtil.nvl(req.body.docNum),
         documentManager: commonUtil.nvl(req.body.documentManager)
     };
+
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
     if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM = '${param["documentManager"]}' `;
-
+    if (commonUtil.isNull(param["docNum"]) && commonUtil.isNull(param["documentManager"]) && req.user.icrApproval == 'Y') condQuery += " AND DRAFTERNUM = '" + req.user.userId + "' ";
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
     var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
     //console.log("base listQuery : " + listQuery);
