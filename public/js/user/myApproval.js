@@ -258,7 +258,7 @@ var fn_search = function () {
                         '</tr>';
                 });
             } else {
-                appendHtml += '<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>';
+                appendHtml += '<tr><td colspan="8">조회할 데이터가 없습니다.</td></tr>';
             }
 
             $("#tbody_baseList").empty().append(appendHtml);
