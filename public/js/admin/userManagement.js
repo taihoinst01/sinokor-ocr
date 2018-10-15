@@ -22,7 +22,7 @@ $(function () {
     });
 
     fn_searchUser();
-    fn_searchHighApproval(0, "");
+    //fn_searchHighApproval(0, "");
 
 
     // 사용자 비밀번호 수정
@@ -93,7 +93,7 @@ function fn_searchUser() {
                         '<td>' + nvl(entry.ICRAPPROVAL) + '</td>' + 
                         '<td>' + nvl(entry.MIDDLEAPPROVAL) + '</td>' + 
                         '<td>' + nvl(entry.LASTAPPROVAL) + '</td>' + 
-                        '<td>' + nvl(entry.HIGHAPPROVALID) + '</td>' + 
+                        '<td>' + nvl(entry.ADMIN) + '</td>' + 
                         '<td>' + nvl(entry.LASTLOGINDATE) + '</td>' + 
                         '<td>' + nvl(entry.OCRUSECOUNT) + '</td>' + 
                         '<td><button class="btn btn_delete" onclick="javascript:openDeleteUser(' + entry.SEQNUM + ')">삭제</button></td>;' + 
@@ -146,14 +146,14 @@ function fn_chooseUser(seqNum) {
                             $("#approval1").parent().addClass('ez-checked');
                         }
                         if (nvl(entry["MIDDLEAPPROVAL"]) == "Y") {
-                            $("#approval2").prop("checked", true);
-                            $("#approval2").parent().addClass('ez-checked');
-                        }
-                        if (nvl(entry["LASTAPPROVAL"]) == "Y") {
                             $("#approval3").prop("checked", true);
                             $("#approval3").parent().addClass('ez-checked');
                         }
-                        fn_searchHighApproval(entry["SEQNUM"], entry["HIGHAPPROVALID"]); // 상위결재자 목록 조회
+                        if (nvl(entry["LASTAPPROVAL"]) == "Y") {
+                            $("#approval4").prop("checked", true);
+                            $("#approval4").parent().addClass('ez-checked');
+                        }
+                        //fn_searchHighApproval(entry["SEQNUM"], entry["HIGHAPPROVALID"]); // 상위결재자 목록 조회
                     }
                 });
             } else {
@@ -240,8 +240,8 @@ var fn_getParam = function () {
         email: nvl($("#email").val()),
         note: nvl($("#note").val()),
         scanApproval: $("#approval1").is(":checked") ? "Y" : "N",
-        middleApproval: $("#approval2").is(":checked") ? "Y" : "N",
-        lastApproval: $("#approval3").is(":checked") ? "Y" : "N",
+        middleApproval: $("#approval3").is(":checked") ? "Y" : "N",
+        lastApproval: $("#approval4").is(":checked") ? "Y" : "N",
         highApprovalId: nvl($("#highApprovalId").val())
     };
     return param;
