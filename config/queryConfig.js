@@ -25,7 +25,7 @@ var sessionConfig = {
         `SELECT COUNT(*) AS CNT
            FROM TBL_APPROVAL_MASTER
           WHERE STATUS = 'ZZ'
-            AND APPROVERNUM = :id 
+            AND NOWNUM = :id 
         `,
     leftSideBarMyApproval:
         ` SELECT COUNT(*) AS CNT
@@ -95,8 +95,8 @@ var dbcolumnsConfig = {
 
 var invoiceRegistrationConfig = {
     selectDocumentList:
-        `SELECT SEQNUM, DOCNUM, STATUS, PAGECNT, DRAFERNUM
-            FROM TBL_APPROVAL_MASTER22
+        `SELECT SEQNUM, DOCNUM, STATUS, PAGECNT, NOWNUM
+            FROM TBL_APPROVAL_MASTER
            WHERE 1=1 `,
     selectDocumentDtlList:
         `SELECT A.SEQNUM, 

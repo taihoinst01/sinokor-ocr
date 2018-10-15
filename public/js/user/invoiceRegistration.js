@@ -756,7 +756,7 @@ var fn_processBaseImage = function (fileInfo) {
                                 '<td><input type="checkbox" id="base_chk_' + item.DOCNUM + '" class ="base_chk_Yn" name="base_chk" /></td>' +
                                 '<td name="td_base">' + item.DOCNUM + '</td>' +
                                 '<td name="td_base">' + item.PAGECNT + '</td>' +
-                                '<td name="td_base">' + item.DRAFTERNUM + '</td>' +
+                                '<td name="td_base">' + item.NOWNUM + '</td>' +
                                 '<td></td>' +
                                 '<td></td>' +
                                 '<td></td>' +
@@ -1474,7 +1474,7 @@ var fn_docEvent = function () {
         // 체크된 체크박스 값을 가져온다
         checkbox.each(function (i) {
 
-            var tr = checkbox.parent().parent().eq(i);
+            var tr = checkbox.parent().parent().parent().eq(i);
             var td = tr.children();
 
             // 체크된 row의 모든 값을 배열에 담는다.

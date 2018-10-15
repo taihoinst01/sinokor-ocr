@@ -2340,7 +2340,7 @@ exports.selectDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute(`SELECT SEQNUM, DOCNUM, PAGECNT, STATUS, DRAFTERNUM FROM TBL_APPROVAL_MASTER22 WHERE DOCNUM IN ( ` + req + `)`);
+            result = await conn.execute(`SELECT SEQNUM, DOCNUM, PAGECNT, STATUS, NOWNUM FROM TBL_APPROVAL_MASTER WHERE DOCNUM IN ( ` + req + `)`);
             if (result.rows.length > 0) {
                 return done(null, result.rows);
             } else {
@@ -2368,7 +2368,7 @@ exports.selectMaxDocNum = function (done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute('SELECT NVL(MAX(DOCNUM),0) AS MAXDOCNUM FROM TBL_APPROVAL_MASTER22');
+            result = await conn.execute('SELECT NVL(MAX(DOCNUM),0) AS MAXDOCNUM FROM TBL_APPROVAL_MASTER');
             return done(null, result.rows[0].MAXDOCNUM);
 
         } catch (err) { // catches errors in getConnection and the query
@@ -2393,7 +2393,7 @@ exports.deleteDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute(`UPDATE TBL_APPROVAL_MASTER22 SET STATUS ='06' WHERE DOCNUM = :docNum `, [req]);
+            await conn.execute(`UPDATE TBL_APPROVAL_MASTER SET STATUS ='06' WHERE DOCNUM = :docNum `, [req]);
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2416,7 +2416,7 @@ exports.insertDocument = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             await conn.execute(`INSERT INTO
-                                    TBL_APPROVAL_MASTER22(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM )
+                                    TBL_APPROVAL_MASTER(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM )
                                 VALUES
                                     (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :nowNum) `, [req[0][0].imgId, req[0].length, req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
             return done(null, null);
