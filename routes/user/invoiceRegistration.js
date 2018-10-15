@@ -54,7 +54,11 @@ router.get('/favicon.ico', function (req, res) {
 });
 router.get('/', function (req, res) {
     console.log("check");
-    if (req.isAuthenticated()) res.render('user/invoiceRegistration', { currentUser: req.user });
+    console.log(req.session)
+    if (req.isAuthenticated()) res.render('user/invoiceRegistration', {
+        currentUser: req.user,
+
+    });
     else res.redirect("/logout");
 });
 router.post('/', function (req, res) {

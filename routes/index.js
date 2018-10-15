@@ -141,7 +141,7 @@ passport.use(new LocalStrategy({
     passReqToCallback: true
 }, function (req, userId, userPw, done) {
     oracledb.getConnection(dbConfig, function (err, connection) {
-        connection.execute(queryConfig.sessionConfig.loginQuery, [userId],function (err, result) {
+        connection.execute(queryConfig.sessionConfig.loginQuery, [userId], function (err, result) {
             result = result.rows;
             if (err) {
                 console.log('err :' + err);
@@ -166,6 +166,10 @@ passport.use(new LocalStrategy({
                             userId: userId,
                             email: result[0].EMAIL,
                             auth: result[0].AUTH,
+                            scanApproval: result[0].SCANAPPROVAL,
+                            icrApproval: result[0].ICRAPPROVAL,
+                            middleApproval: result[0].MIDDLEAPPROVAL,
+                            lastApproval: result[0].LASTAPPROVAL,
                             lastLoginDate: result[0].LASTLOGINDATE
                         };
                         return done(null, sessionInfo);
