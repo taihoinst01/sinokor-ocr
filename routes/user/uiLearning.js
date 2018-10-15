@@ -75,8 +75,7 @@ router.post('/uiLearnTraining', function (req, res) {
             var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0]);
 
-            resPyArr = transPantternVar.trans(resPyArr);
-
+            resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
 
             var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
             var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));

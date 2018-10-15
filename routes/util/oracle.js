@@ -1348,6 +1348,46 @@ exports.insertContractMapping = function (req, done) {
         }
     });
 };
+
+exports.selectCurCd = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let sql = "SELECT beforeText, afterText FROM tbl_curcd_mapping WHERE beforeText like '%" + req.split(' ')[1] + "%'";
+            result = await conn.execute(sql);
+
+            if (result.rows.length > 0) {
+                if (result.rows.length == 1) {
+                    return done(null, result.rows[0].AFTERTEXT);
+                } else {
+                    for (var i in result.rows) {
+                        var row = result.rows[i];
+                        if (req == row.BEFORETEXT) {
+                            return done(null, row.AFTERTEXT);
+                        }
+                    }
+                    return done(null, result.rows[0].AFTERTEXT);
+                }
+            } else {
+                return done(null, req);
+            }
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectCurcdMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
