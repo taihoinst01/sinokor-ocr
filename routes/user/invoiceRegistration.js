@@ -917,6 +917,7 @@ router.post('/uiLearnTraining', function (req, res) {
 router.post('/refuseDoc', function (req, res) {
     var refuseType = req.body.refuseType;
     var docNumArr = req.body.docNumArr;
+    var returnObj;
 
     sync.fiber(function () {
         try {

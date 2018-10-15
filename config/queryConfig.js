@@ -45,17 +45,11 @@ var sessionConfig = {
 var userMngConfig = {
     selUserList:
         `SELECT
-            A.seqNum, A.userId, A.auth, A.email, A.note, A.scanApproval, A.icrApproval, A.middleApproval, A.lastApproval, A.ocrUseCount,
-            (SELECT 
-                B.userId 
-             FROM
-                tbl_ocr_comm_user B
-             WHERE
-                B.seqNum = A.highApprovalId) AS highApprovalId,
-            TO_CHAR(A.joinDate,'YYYY-MM-DD') AS joinDate,
-            TO_CHAR(A.lastLoginDate,'YYYY-MM-DD hh24:mi:ss') AS lastLoginDate
+            seqNum, userId, auth, email, note, scanApproval, icrApproval, middleApproval, lastApproval, ocrUseCount, admin,
+            TO_CHAR(joinDate,'YYYY-MM-DD') AS joinDate,
+            TO_CHAR(lastLoginDate,'YYYY-MM-DD hh24:mi:ss') AS lastLoginDate
          FROM
-            tbl_ocr_comm_user A `,
+            tbl_ocr_comm_user `,
     insertUser:
         `INSERT INTO
             tbl_ocr_comm_user (seqNum, userId, userPw, auth, email, note, scanApproval, middleApproval, lastApproval, highApprovalId, joinDate, ocrUseCount)
