@@ -263,13 +263,13 @@ var fn_search = function () {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     appendHtml += '<tr id="tr_base_' + entry.SEQNUM + '-' + entry.DOCNUM + '-' + entry.STATUS + '">' +
-                        '<td><input type="checkbox" id="base_chk_' + entry.DOCNUM + '" name="base_chk" /></td>' +
+                        '<td><input type="checkbox" id="base_chk_' + entry.DOCNUM + '" name="base_chk" value="' + entry.DOCNUM + '" /></td>' +
                         '<td name="td_base">' + entry.DOCNUM + '</td>' +
                         '<td name="td_base">' + nvl2(entry.PAGECNT, 0) + '</td>' +
-                        '<td name="td_base">' + entry.DRAFTERNUM + '</td>' +
-                        '<td>' + nvl(entry.FAOTEAM) + '</td>' +
-                        '<td>' + nvl(entry.FAOPART) + '</td>' +
-                        '<td>' + nvl(entry.APPROVALREPORTER) + '</td>' +
+                        '<td name="td_base">' + entry.NOWNUM + '</td>' +
+                        '<td></td>' +
+                        '<td></td>' +
+                        '<td></td>' +
                         '<td></td>' +
                         '<td></td>' +
                         '</tr>';
@@ -756,7 +756,7 @@ var fn_processBaseImage = function (fileInfo) {
                                 '<td><input type="checkbox" id="base_chk_' + item.DOCNUM + '" class ="base_chk_Yn" name="base_chk" /></td>' +
                                 '<td name="td_base">' + item.DOCNUM + '</td>' +
                                 '<td name="td_base">' + item.PAGECNT + '</td>' +
-                                '<td name="td_base">' + item.DRAFTERNUM + '</td>' +
+                                '<td name="td_base">' + item.NOWNUM + '</td>' +
                                 '<td></td>' +
                                 '<td></td>' +
                                 '<td></td>' +
@@ -1046,51 +1046,85 @@ function fn_processFinish(data, fileDtlInfo) {
     var dataVal = data.data;
     dataObj["imgId"] = fileDtlInfo.imgId;
 
+    var cdnNm = '';
+    var ctNm = '';
+    var ttyYy = '';
 
-        // TODO : 분석 결과를 정리하고 1 record로 생성한다.
-        var dtlHtml = '<tr>' +
-                            '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-                            '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
-                            '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
-                            '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
-                            '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
-                            '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
-                            '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
-                            '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
-                            '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
-                            '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
-                            '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
-                            '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
-                            '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
-                            '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
-                            '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
-                            '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
-                            '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
-                            '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
-                            '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
-                            '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
-                            '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
-                            '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
-                            '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-                            '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                            '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                            '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
-                            '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
-                            '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
-                            '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
-                            '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
-                            '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
-                            '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
-                            '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
-                            '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
-                            '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
-                            '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
-                            '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
-                     '</tr>';
+    for (var i in dataVal) {
+        if (dataVal[i].colLbl == 0) {
+            cdnNm = dataVal[i].text;
+        }
+        if (dataVal[i].colLbl == 1) {
+            ctNm = dataVal[i].text;
+        }
+        if (dataVal[i].colLbl == 2) {
+            ttyYy = dataVal[i].text;
+        }
+    }
 
-    $("#tbody_dtlList").append(dtlHtml);
-    $("#tbody_dtlList input[type=checkbox]").ezMark();
-    $("#div_dtl").css("display", "block");
+    $.ajax({
+        url: '/wF_WorkflowProc/',
+        type: 'post',
+        datatype: 'json',
+        async: false,
+        data: JSON.stringify({cdnNm: cdnNm, ctNm: ctNm, ttyYy: ttyYy}),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+            for (var i in data) {
+                // TODO : 분석 결과를 정리하고 1 record로 생성한다.
+                var dtlHtml = '<tr>' +
+                    '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
+                    '<td>' + data[i].cdnNm + '</td> <!--출재사명-->' +
+                    '<td>' + data[i].ctNm + '</td> <!--계약명-->' +
+                    '<td>' + data[i].ttyYy + '</td> <!--UY-->' +
+                    '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
+                    '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
+                    '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
+                    '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+                    '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
+                    '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+                    '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
+                    '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+                    '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+                    '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+                    '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+                    '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
+                    '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+                    '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
+                    '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
+                    '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+                    '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
+                    '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                    '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                    '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                    '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                    '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
+                    '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+                    '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
+                    '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+                    '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+                    '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+                    '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+                    '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+                    '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
+                    '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
+                    '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+                    '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+                    '</tr>';
+            }
+
+            $("#tbody_dtlList").append(dtlHtml);
+            $("#tbody_dtlList input[type=checkbox]").ezMark();
+            $("#div_dtl").css("display", "block");
+        },
+        error: function (err) {
+            console.log(err);
+            endProgressBar(progressId);
+            //endProgressBar();
+        }
+    });
+
     function makeMLSelect(mlData, colnum, entry) {
 
         var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
@@ -1474,7 +1508,7 @@ var fn_docEvent = function () {
         // 체크된 체크박스 값을 가져온다
         checkbox.each(function (i) {
 
-            var tr = checkbox.parent().parent().eq(i);
+            var tr = checkbox.parent().parent().parent().eq(i);
             var td = tr.children();
 
             // 체크된 row의 모든 값을 배열에 담는다.
@@ -1510,7 +1544,19 @@ var fn_docEvent = function () {
 
     //전달
     $('#sendDocBtn').click(function () {
-        layer_open('layer1');   
+        if ($('#icrApproval').val() == 'Y') {
+            if ($('input[name="base_chk"]:checked').length > 0) {
+                var docNumArr = [];
+                $('input[name="base_chk"]:checked').each(function (i, e) {
+                    docNumArr.push($(e).val());
+                });
+                refuseDoc('icrApproval', docNumArr);
+            } else {
+                alert('반려 할 문서가 없습니다.');
+            }
+        } else {
+            layer_open('layer1');
+        }
     });
 
     $('#btn_pop_user_search').click(function () {
@@ -1566,3 +1612,19 @@ var fn_docEvent = function () {
 
     //저장
 }
+
+var refuseDoc = function (refuseType, docNumArr) {
+    $.ajax({
+        url: '/invoiceRegistration/refuseDoc',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'refuseType': refuseType, 'docNumArr': docNumArr }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+};
