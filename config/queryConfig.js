@@ -7,6 +7,7 @@ var sessionConfig = {
     loginQuery:
         `SELECT
             seqnum, userId, userPw, auth, email, ocrUseCount,
+            scanApproval,icrApproval,middleApproval,lastApproval,
             TO_CHAR(joinDate, 'yyyy-mm-dd hh:mi:ss') AS joinDate, 
             TO_CHAR(lastLoginDate, 'yyyy-mm-dd hh:mi:ss') AS lastLoginDate
          FROM
@@ -94,8 +95,8 @@ var dbcolumnsConfig = {
 
 var invoiceRegistrationConfig = {
     selectDocumentList:
-        `SELECT SEQNUM, DOCNUM, STATUS, DRAFTERNUM, DRAFTDATE, MANAGERNUM, APPROVERNUM, APPROVALDATE, MEMO, REGDATE, PAGECNT               
-            FROM TBL_APPROVAL_MASTER
+        `SELECT SEQNUM, DOCNUM, STATUS, PAGECNT, NOWNUM
+            FROM TBL_APPROVAL_MASTER22
            WHERE 1=1 `,
     selectDocumentDtlList:
         `SELECT A.SEQNUM, 

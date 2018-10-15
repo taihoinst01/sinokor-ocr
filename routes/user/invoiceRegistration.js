@@ -52,8 +52,10 @@ router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 router.get('/', function (req, res) {
-    console.log("check");
-    if (req.isAuthenticated()) res.render('user/invoiceRegistration', { currentUser: req.user });
+    if (req.isAuthenticated()) res.render('user/invoiceRegistration', {
+        currentUser: req.user,
+
+    });
     else res.redirect("/logout");
 });
 router.post('/', function (req, res) {
@@ -77,11 +79,11 @@ var fnSearchDocumentList = function (req, res) {
         documentManager: commonUtil.nvl(req.body.documentManager)
     };
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
-    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND MANAGERNUM = '${param["documentManager"]}' `;
+    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM = '${param["documentManager"]}' `;
 
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
     var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
-    console.log("base listQuery : " + listQuery);
+    //console.log("base listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackDocumentList, req, res);
 
 };
@@ -347,7 +349,26 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 
     
 });
+//문서전달
+router.post('/sendDocument', function (req, res) {
+    var returnObj = {};
+    var sendCount = 0;
+    try {
+        for (var i = 0; i < req.body.docNum.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.deleteDocument(req.body.docNum[i], sync.defer()));
+            });
+            deleteCount += 1;
+        }
+        returnObj = { code: 200, docData: deleteCount };
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
 
+});
+//문서삭제
 router.post('/deleteDocument', function (req, res) {
     var returnObj = {};
     var deleteCount = 0;
