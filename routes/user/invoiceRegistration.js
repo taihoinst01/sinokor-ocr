@@ -351,7 +351,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     
 });
 //문서전달
-router.post('/sendDocument', function (req, res) {
+/*router.post('/sendDocument', function (req, res) {
     var returnObj = {};
     var sendCount = 0;
     try {
@@ -368,7 +368,7 @@ router.post('/sendDocument', function (req, res) {
         res.send(returnObj);
     }
 
-});
+});*/
 //문서삭제
 router.post('/deleteDocument', function (req, res) {
     var returnObj = {};
