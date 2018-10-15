@@ -53,8 +53,6 @@ router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 router.get('/', function (req, res) {
-    console.log("check");
-    console.log(req.session)
     if (req.isAuthenticated()) res.render('user/invoiceRegistration', {
         currentUser: req.user,
 

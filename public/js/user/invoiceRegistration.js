@@ -67,6 +67,7 @@ var _init = function () {
     fn_uploadFileEvent();
     fn_docEvent();
     fn_checkboxEvent();
+    fn_searchDocEnterEvent();
 };
 
 /****************************************************************************************
@@ -242,7 +243,7 @@ var fn_uploadFileEvent = function () {
  ****************************************************************************************/
 var fn_search = function () {
     var param = {
-        docNum: nvl($("#docNum").val()),
+        docNum: nvl($("#docNum").val().toUpperCase()),
         documentManager: nvl($("#documentManager").val())
     };
 
@@ -286,6 +287,12 @@ var fn_search = function () {
             endProgressBar();
             console.log(err);
         }
+    });
+};
+
+var fn_searchDocEnterEvent = function () {
+    $('#docNum').keyup(function (e) {
+        if (e.keyCode == 13) $('#btn_search').click();
     });
 };
 
