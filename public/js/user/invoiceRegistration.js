@@ -265,10 +265,10 @@ var fn_search = function () {
                         '<td><input type="checkbox" id="base_chk_' + entry.DOCNUM + '" name="base_chk" /></td>' +
                         '<td name="td_base">' + entry.DOCNUM + '</td>' +
                         '<td name="td_base">' + nvl2(entry.PAGECNT, 0) + '</td>' +
-                        '<td name="td_base">' + entry.DRAFTERNUM + '</td>' +
-                        '<td>' + nvl(entry.FAOTEAM) + '</td>' +
-                        '<td>' + nvl(entry.FAOPART) + '</td>' +
-                        '<td>' + nvl(entry.APPROVALREPORTER) + '</td>' +
+                        '<td name="td_base">' + entry.NOWNUM + '</td>' +
+                        '<td></td>' +
+                        '<td></td>' +
+                        '<td></td>' +
                         '<td></td>' +
                         '<td></td>' +
                         '</tr>';

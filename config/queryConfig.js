@@ -95,8 +95,8 @@ var dbcolumnsConfig = {
 
 var invoiceRegistrationConfig = {
     selectDocumentList:
-        `SELECT SEQNUM, DOCNUM, STATUS, DRAFTERNUM, DRAFTDATE, MANAGERNUM, APPROVERNUM, APPROVALDATE, MEMO, REGDATE, PAGECNT               
-            FROM TBL_APPROVAL_MASTER
+        `SELECT SEQNUM, DOCNUM, STATUS, PAGECNT, NOWNUM
+            FROM TBL_APPROVAL_MASTER22
            WHERE 1=1 `,
     selectDocumentDtlList:
         `SELECT A.SEQNUM, 
