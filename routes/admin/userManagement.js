@@ -68,7 +68,7 @@ var callbackSearch = function (rows, req, res) {
 var fnSearch = function (req, res) {
     var orderQuery = ` ORDER BY A.SEQNUM DESC `;
     var query = selectQuery + orderQuery;
-    console.log(`fnSearch query : ${query}`);
+    //console.log(`fnSearch query : ${query}`);
     commonDB.reqQuery(query, callbackSearch, req, res);
 };
 // 사용자 조회

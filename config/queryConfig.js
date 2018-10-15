@@ -44,7 +44,7 @@ var sessionConfig = {
 var userMngConfig = {
     selUserList:
         `SELECT
-            A.seqNum, A.userId, A.auth, A.email, A.note, A.scanApproval, A.middleApproval, A.lastApproval, A.ocrUseCount,
+            A.seqNum, A.userId, A.auth, A.email, A.note, A.scanApproval, A.icrApproval, A.middleApproval, A.lastApproval, A.ocrUseCount,
             (SELECT 
                 B.userId 
              FROM
