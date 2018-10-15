@@ -14,6 +14,7 @@ var thumnbImgPerPage = 6; // 한 페이지당 썸네일 이미지 개수
 var x, y, textWidth, textHeight; // 문서 글씨 좌표
 var mouseX, mouseY, mouseMoveX, mouseMoveY; // 마우스 이동 시작 좌표, 마우스 이동 좌표
 var docType = '';
+var progressId; // progress Id
 
 /**
  * 전역변수 초기화
@@ -97,7 +98,7 @@ var fn_buttonEvent = function () {
  * FILE UPLOAD EVENT
  ****************************************************************************************/
 var fn_uploadFileEvent = function () {
-    fileDropDown();
+
 
     $("#uploadFile").change(function () {
         if ($(this).val() !== "") {
@@ -146,45 +147,74 @@ var fn_uploadFileEvent = function () {
 
 
     // 파일 드롭 다운
-    function fileDropDown() {
-        var dropZone = $("#uploadForm");
-        //Drag기능
-        dropZone.on('dragenter', function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            // 드롭다운 영역 css
-            dropZone.css('background-color', '#E3F2FC');
-        });
-        dropZone.on('dragleave', function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            // 드롭다운 영역 css
-            dropZone.css('background-color', '#FFFFFF');
-        });
-        dropZone.on('dragover', function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            // 드롭다운 영역 css
-            dropZone.css('background-color', '#E3F2FC');
-        });
-        dropZone.on('drop', function (e) {
-            e.preventDefault();
-            // 드롭다운 영역 css
-            dropZone.css('background-color', '#FFFFFF');
+    var dropZone = $("#uploadForm");
+    //Drag기능
+    dropZone.on('dragenter', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        // 드롭다운 영역 css
+        dropZone.css('background-color', '#E3F2FC');
+    });
+    dropZone.on('dragleave', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        // 드롭다운 영역 css
+        dropZone.css('background-color', 'transparent');
+    });
+    dropZone.on('dragover', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        // 드롭다운 영역 css
+        dropZone.css('background-color', '#E3F2FC');
+    });
+    dropZone.on('drop', function (e) {
+        e.preventDefault();
+        // 드롭다운 영역 css
+        dropZone.css('background-color', 'transparent');
 
-            var files = e.originalEvent.dataTransfer.files;
-            if (files != null) {
-                if (files.length < 1) {
-                    alert("폴더 업로드 불가");
-                    return;
-                }
-                selectFile(files)
-            } else {
-                alert("ERROR");
+        var files = e.originalEvent.dataTransfer.files;
+        if (files != null) {
+            if (files.length < 1) {
+                alert("폴더 업로드 불가");
+                return;
             }
-        });
-    }
+            F_FileMultiUpload(files, dropZone);
 
+        } else {
+            alert("ERROR");
+        }
+    });
+    
+    // 파일 멀티 업로드
+    function F_FileMultiUpload(files, obj) {
+        if (confirm(files.length + "개의 파일을 업로드 하시겠습니까?")) {
+            var data = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                data.append('file', files[i]);
+            }
+
+            $.ajax({
+                url: "/invoiceRegistration/uploadFile",
+                method: 'post',
+                data: data,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                beforeSend: function () {
+                    $("#progressMsgTitle").html("파일 업로드 중..");
+                    progressId = showProgressBar();
+                },
+                success: function (data) {
+                    endProgressBar(progressId);
+                    alert("업로드 성공");
+                },
+                error: function (e) {
+                    console.log("업로드 에러");
+                    endProgressBar(progressId);
+                }
+            });
+        }
+    }
     
 };
 
