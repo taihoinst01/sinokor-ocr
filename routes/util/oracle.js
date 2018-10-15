@@ -2637,7 +2637,7 @@ exports.selectOcrFileDtl = function (imgId, done) {
     });
 };
 
-
+/*
 exports.convertMs = function (data, done) {
     return new Promise(async function (resolve, reject) {
         try {
@@ -2692,7 +2692,7 @@ function convertMsToPdf(data, callback) {
         });
     });
 }
-
+*/
 
 function getConvertDate() {
     var today = new Date();

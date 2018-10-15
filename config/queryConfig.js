@@ -7,6 +7,7 @@ var sessionConfig = {
     loginQuery:
         `SELECT
             seqnum, userId, userPw, auth, email, ocrUseCount,
+            scanApproval,icrApproval,middleApproval,lastApproval,
             TO_CHAR(joinDate, 'yyyy-mm-dd hh:mi:ss') AS joinDate, 
             TO_CHAR(lastLoginDate, 'yyyy-mm-dd hh:mi:ss') AS lastLoginDate
          FROM
@@ -44,7 +45,7 @@ var sessionConfig = {
 var userMngConfig = {
     selUserList:
         `SELECT
-            A.seqNum, A.userId, A.auth, A.email, A.note, A.scanApproval, A.middleApproval, A.lastApproval, A.ocrUseCount,
+            A.seqNum, A.userId, A.auth, A.email, A.note, A.scanApproval, A.icrApproval, A.middleApproval, A.lastApproval, A.ocrUseCount,
             (SELECT 
                 B.userId 
              FROM

@@ -66,6 +66,8 @@ var _init = function () {
     fn_buttonEvent();
     fn_uploadFileEvent();
     fn_docEvent();
+    fn_checkboxEvent();
+    fn_searchDocEnterEvent();
 };
 
 /****************************************************************************************
@@ -178,6 +180,7 @@ var fn_uploadFileEvent = function () {
                 alert("폴더 업로드 불가");
                 return;
             }
+
             F_FileMultiUpload(files, dropZone);
 
         } else {
@@ -188,6 +191,8 @@ var fn_uploadFileEvent = function () {
     // 파일 멀티 업로드
     function F_FileMultiUpload(files, obj) {
         if (confirm(files.length + "개의 파일을 업로드 하시겠습니까?")) {
+            initGlobalVariable();   // 전역변수 초기화
+            initForm();             // 폼 초기화
             var data = new FormData();
             for (var i = 0; i < files.length; i++) {
                 data.append('file', files[i]);
@@ -204,9 +209,24 @@ var fn_uploadFileEvent = function () {
                     $("#progressMsgTitle").html("파일 업로드 중..");
                     progressId = showProgressBar();
                 },
-                success: function (data) {
-                    endProgressBar(progressId);
-                    alert("업로드 성공");
+                success: function (responseText, statusText) {
+                    $("#progressMsgTitle").html('파일 업로드 완료..');
+
+                    //console.log('base 사이즈 :' + responseText.fileInfo.length);
+                    //console.log('dtl 사이즈 :' + responseText.fileDtlInfo.length);
+                    //console.log('base 내용 :' + JSON.stringify(responseText.fileInfo));
+                    //console.log('dtl 내용 :' + JSON.stringify(responseText.fileDtlInfo));
+
+                    //totCount = responseText.fileInfo.length; 
+                    totCount = responseText.fileDtlInfo.length;
+                    // 문서 기본 정보 처리
+                    fn_processBaseImage(responseText.fileInfo);
+                    // 인식 결과 및 ML 처리
+                    for (var i = 0, x = responseText.fileDtlInfo.length; i < x; i++) {
+                        fn_processDtlImage(responseText.fileDtlInfo[i]);
+                    }
+
+                    endProgressBar();
                 },
                 error: function (e) {
                     console.log("업로드 에러");
@@ -223,7 +243,7 @@ var fn_uploadFileEvent = function () {
  ****************************************************************************************/
 var fn_search = function () {
     var param = {
-        docNum: nvl($("#docNum").val()),
+        docNum: nvl($("#docNum").val().toUpperCase()),
         documentManager: nvl($("#documentManager").val())
     };
 
@@ -257,6 +277,7 @@ var fn_search = function () {
                 appendHtml += '<tr><td colspan="7">조회된 데이터가 없습니다.</td></tr>';
             }
             $("#tbody_baseList").empty().append(appendHtml);
+            $("#tbody_baseList input[type=checkbox]").ezMark();
             $("#span_document_base").empty().html("문서 기본정보 - " + data.length + "건");
             $("#div_base").fadeIn();
             fn_clickEvent();
@@ -266,6 +287,12 @@ var fn_search = function () {
             endProgressBar();
             console.log(err);
         }
+    });
+};
+
+var fn_searchDocEnterEvent = function () {
+    $('#docNum').keyup(function (e) {
+        if (e.keyCode == 13) $('#btn_search').click();
     });
 };
 
@@ -444,7 +471,7 @@ var fn_search_dtl = function (seqNum, docNum) {
 
                 var obj = {};
                 obj.imgId = data.docData[i].IMGID;
-                obj.convertedFilePath = "C:/projectWork/koreanre/uploads/";
+                obj.convertedFilePath = data.fileRootPath;
                 obj.filePath = data.docData[i].FILEPATH;
                 obj.oriFileName = data.docData[i].ORIGINFILENAME;
                 obj.convertFileName = data.docData[i].ORIGINFILENAME;
@@ -537,6 +564,7 @@ var fn_search_dtl_old = function (seqNum, docNum) {
                 appendHtml += '<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>';
             }
             $("#tbody_dtlList").empty().html(appendHtml);
+            $("#tbody_dtlList input[type=checkbox]").ezMark();
             $("#span_document_dtl").empty().html('인식 결과 -' + data.length + '건');
             $("#div_dtl").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
@@ -601,6 +629,32 @@ var fn_search_image = function (imgId) {
     });
 };
 
+// [Checkbox Event]
+var fn_checkboxEvent = function () {
+
+    //문서 기본정보 모두선택 체크
+    $('#docListAllChk').on('click', function () {
+        if ($(this).is(':checked')) {
+            $('#tbody_baseList .ez-checkbox').addClass('ez-checked');
+            $('#tbody_baseList input[type=checkbox]').prop('checked', true);
+        } else {
+            $('#tbody_baseList .ez-checkbox').removeClass('ez-checked');
+            $('#tbody_baseList input[type=checkbox]').prop('checked', false);
+        }
+    });
+
+    //인식 결과 모두선택 체크
+    $('#ocrResultAllChk').on('click', function () {
+        if ($(this).is(':checked')) {
+            $('#tbody_dtlList .ez-checkbox').addClass('ez-checked');
+            $('#tbody_dtlList input[type=checkbox]').prop('checked', true);
+        } else {
+            $('#tbody_dtlList .ez-checkbox').removeClass('ez-checked');
+            $('#tbody_dtlList input[type=checkbox]').prop('checked', false);
+        }
+    });
+}
+
 /****************************************************************************************
  * ML
  ****************************************************************************************/
@@ -632,6 +686,7 @@ var fn_processBaseImage = function (fileInfo) {
                             '</tr>';
                 }
                 $("#tbody_baseList").empty().append(html);
+                $("#tbody_baseList input[type=checkbox]").ezMark();
                 $("#div_base").css("display", "block");
                 fn_clickEvent();
             } else {
@@ -879,6 +934,7 @@ function fn_processFinish_Old1(data) {
         '</tr>';
 
     $("#tbody_dtlList").append(dtlHtml);
+    $("#tbody_dtlList input[type=checkbox]").ezMark();
     $("#div_dtl").css("display", "block");
     function makeMLSelect(mlData, colnum, entry) {
 
@@ -954,6 +1010,7 @@ function fn_processFinish(data, fileDtlInfo) {
                      '</tr>';
 
     $("#tbody_dtlList").append(dtlHtml);
+    $("#tbody_dtlList input[type=checkbox]").ezMark();
     $("#div_dtl").css("display", "block");
     function makeMLSelect(mlData, colnum, entry) {
 
@@ -1412,6 +1469,7 @@ var fn_docEvent = function () {
                         }
 
                         $('#searchManagerResult').append(appendHtml);
+                        $('#searchManagerResult input[type=checkbox]').ezMark();
                     }
                 } else {
                     alert(data.error);

@@ -84,19 +84,20 @@ function fn_searchUser() {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     appendHtml += 
-                    `<tr>
-                        <td scope="row">${nvl(entry.SEQNUM)}</td>
-                        <td><a href="#none" onclick="javascript:fn_chooseUser(${entry.SEQNUM});" class="tip" title="사번:${nvl(entry.USERID)}">${nvl(entry.USERID)}</a></td>
-                        <td>${nvl(entry.EMAIL)}</td>;
-                        <td>${nvl(entry.NOTE)}</td>;
-                        <td>${nvl(entry.SCANAPPROVAL)}</td>;
-                        <td>${nvl(entry.MIDDLEAPPROVAL)}</td>
-                        <td>${nvl(entry.LASTAPPROVAL)}</td>
-                        <td>${nvl(entry.HIGHAPPROVALID)}</td>
-                        <td>${nvl(entry.LASTLOGINDATE)}</td>
-                        <td>${nvl(entry.OCRUSECOUNT)}</td>
-                        <td><button class="btn btn_delete" onclick="javascript:openDeleteUser('${entry.SEQNUM}')">삭제</button></td>;
-                     </tr>`;
+                    '<tr>' + 
+                        '<td scope="row">' + nvl(entry.SEQNUM) + '</td>' + 
+                    '<td><a href="#none" onclick="javascript:fn_chooseUser(' + entry.SEQNUM + ');" class="tip" title="사번:' + nvl(entry.USERID) + '">' + nvl(entry.USERID) + '</a></td>' + 
+                        '<td>' + nvl(entry.EMAIL) + '</td>' + 
+                        '<td>' + nvl(entry.NOTE) + '</td>' + 
+                        '<td>' + nvl(entry.SCANAPPROVAL) + '</td>' + 
+                        '<td>' + nvl(entry.ICRAPPROVAL) + '</td>' + 
+                        '<td>' + nvl(entry.MIDDLEAPPROVAL) + '</td>' + 
+                        '<td>' + nvl(entry.LASTAPPROVAL) + '</td>' + 
+                        '<td>' + nvl(entry.HIGHAPPROVALID) + '</td>' + 
+                        '<td>' + nvl(entry.LASTLOGINDATE) + '</td>' + 
+                        '<td>' + nvl(entry.OCRUSECOUNT) + '</td>' + 
+                        '<td><button class="btn btn_delete" onclick="javascript:openDeleteUser(' + entry.SEQNUM + ')">삭제</button></td>;' + 
+                    '</tr>';
                 });
                 //<td><button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn" onclick="javascript:openUpdatePw(${entry.seqNum}, ${entry.userId})">수정</button></td>
             }

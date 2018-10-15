@@ -520,7 +520,7 @@ input[type='checkbox'] {
 .ez-checkbox {
     width: 22px;
     margin-right: 0px;
-    background-position: -40px -148px;
+    background-position: -42px -148px;
 }
 
 .ez-checked {
@@ -1729,7 +1729,7 @@ select:disabled + ul.idealSelect:before {
     .box_imgtmb ul li {
         float: left;
         width: 110px;
-        padding: 15px 1px;
+        padding: 10px 1px;
     }
 
     .box_imgtmb .box_img {
@@ -4812,11 +4812,11 @@ h3.tits span {
 }
 
 thead .ez-checkbox {
-    background-position: -71px -148px;
+    background-position: -70px -148px;
 }
 
 thead .ez-checked {
-    background-position: -130px -148px;
+    background-position: -129px -148px;
 }
 
 #ocrProgress {
@@ -5175,9 +5175,11 @@ button[disabled] {
 }
 
 #uploadSucessForm #touchSlider {
-    height: 140px !important;
+    height: 150px !important;
 }
-
+#uploadSucessForm .box_imgtmb {
+    max-height: 150px;
+}
 #docSearchResultMask {
     width: 496px;
     height: 481px;
