@@ -11,7 +11,7 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 var request = require('sync-request');
 var sync = require('./sync.js');
 var oracle = require('./oracle.js');
-var msopdf = require('node-msoffice-pdf');
+//var msopdf = require('node-msoffice-pdf');
 
 exports.selectUserInfo = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -2598,7 +2598,7 @@ exports.selectOcrFileDtl = function (imgId, done) {
     });
 };
 
-
+/*
 exports.convertMs = function (data, done) {
     return new Promise(async function (resolve, reject) {
         try {
@@ -2653,7 +2653,7 @@ function convertMsToPdf(data, callback) {
         });
     });
 }
-
+*/
 
 function getConvertDate() {
     var today = new Date();
