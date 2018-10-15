@@ -68,6 +68,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 
                     var ifile = convertedImagePath + fileObj.originalname;
                     var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
+                    //execSync('java -jar C:/Main.jar' + ifile);
                     var result = execSync('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile);
                     if (result.status != 0) {
                         throw new Error(result.stderr);
@@ -82,10 +83,17 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 
                     var convertPdf = '';
 
+                    /*
                     if (fileExt.toLowerCase() === 'doc' || fileExt.toLowerCase() === 'docx') {
                         convertPdf = sync.await(oracle.convertMs(["word", ifile, ofile], sync.defer()));
                     } else if (fileExt.toLowerCase() === 'xls' || fileExt.toLowerCase() === 'xlsx') {
                         convertPdf = sync.await(oracle.convertMs(["excel", ifile, ofile], sync.defer()));
+                    }
+                    */
+                    //execSync('java -jar C:/Main.jar' + ifile);
+                    if (fileExt.toLowerCase() === 'doc' || fileExt.toLowerCase() === 'docx' ||
+                        fileExt.toLowerCase() === 'xls' || fileExt.toLowerCase() === 'xlsx') {
+                        convertPdf = execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" c:/util/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);
                     }
 
                     ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';

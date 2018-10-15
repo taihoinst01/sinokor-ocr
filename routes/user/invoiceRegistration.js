@@ -167,6 +167,8 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 ifile = appRoot + '\\' + files[i].path;
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
 
+                //execSync('java -jar C:/Main.jar' + ifile);
+
                 // 파일 정보 추출
                 var fileObj = files[i];                             // 파일
                 var filePath = fileObj.path;                        // 파일 경로
@@ -199,9 +201,12 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 ifile = appRoot + '\\' + files[i].path;
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
 
+                //execSync('java -jar C:/Main.jar' + ifile);
+
                 if (files[i].originalname.split('.')[1] === 'xlsx' || files[i].originalname.split('.')[1] === 'xls' ||
                     files[i].originalname.split('.')[1] === 'XLSX' || files[i].originalname.split('.')[1] === 'XLS') {
-                    var ret = sync.await(oracle.convertMs(["excel", ifile, ofile], sync.defer()));
+                    //var ret = sync.await(oracle.convertMs(["excel", ifile, ofile], sync.defer()));
+                    execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" c:/util/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);
                 }
                 
                 ifile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
@@ -239,7 +244,10 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 ifile = appRoot + '\\' + files[i].path;
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
 
-                var ret = sync.await(oracle.convertMs(["word", ifile, ofile], sync.defer()));
+                //execSync('java -jar C:/Main.jar' + ifile);
+
+                //var ret = sync.await(oracle.convertMs(["word", ifile, ofile], sync.defer()));
+                execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" c:/util/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);
                 ifile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.png';
 
