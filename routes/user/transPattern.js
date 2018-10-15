@@ -1,14 +1,28 @@
-﻿module.exports = {
-    trans: function (reqArr) {
-        
-        //UY
-        reqArr = convertedUY(reqArr);
-        //Entry
-        reqArr = convertedEntry(reqArr);
-        //Our Share
-        reqArr = convertedOurShare(reqArr);
-        
-        return reqArr;
+﻿var oracledb = require('oracledb');
+var dbConfig = require('../../config/dbConfig.js');
+var sync = require('../util/sync.js');
+var oracle = require('../util/oracle.js');
+
+module.exports = {
+    trans: function (reqArr, done) {
+        sync.fiber(function () {
+            try {
+                //UY
+                reqArr = convertedUY(reqArr);
+                //Entry
+                reqArr = convertedEntry(reqArr);
+                //Our Share & Entry
+                reqArr = convertedOurShare(reqArr);
+                //Currency Code
+                reqArr = sync.await(convertedCurrencyCode(reqArr, sync.defer()));
+
+                return done(null, reqArr);
+
+            } catch (e) {
+                console.log(e);
+            }
+
+        });        
     }
 };
 
@@ -21,8 +35,10 @@ function convertedUY(reqArr) {
         if (item.colLbl == 2 && pattern.test(item.text)) {
             var arr = item.text.match(pattern);
             var intArr = Math.min.apply(null, arr.map(Number));
-            item.origintext = item.text;
-            item.text = String(intArr);
+            if (item.text != String(intArr)) {
+                item.originText = item.text;
+                item.text = String(intArr);
+            }
         } else {
             //console.log("no");
         }
@@ -36,8 +52,11 @@ function convertedEntry(reqArr) {
     for (var i in reqArr.data) {
         var item = reqArr.data[i];
         if (item.colLbl == 37) {
-            item.origintext = item.text;
-            item.text = String(item.text.replace(pattern, '0'));
+            var convertText = String(item.text.replace(pattern, '0'));
+            if (item.text != convertText) {
+                item.originText = item.text;
+                item.text = convertText;
+            }
         } else {
             //console.log("no");
         }
@@ -51,12 +70,35 @@ function convertedOurShare(reqArr) {
     for (var i in reqArr.data) {
         var item = reqArr.data[i];
         if ((item.colLbl == 36 || item.colLbl == 37) && pattern.test(item.text)) {
-            item.origintext = item.text;
             var intArr = Number(item.text.replace(pattern, ''));
-            item.text = String(intArr);
+            if (item.text != String(intArr)) {
+                item.originText = item.text;
+                item.text = String(intArr);
+            }
         } else {
             //console.log("no");
         }
     }
     return reqArr;
+}
+
+function convertedCurrencyCode(reqArr, done) {
+    sync.fiber(function () {
+        try {
+            for (var i in reqArr.data) {
+                var item = reqArr.data[i];
+                if (item.colLbl == 3) {
+                    var curCds = sync.await(oracle.selectCurCd(item.text, sync.defer()));
+                    if (item.text != curCds) {
+                        item.originText = item.text;
+                        item.text = curCds;
+                    }
+                }
+            }
+            return done(null, reqArr);
+        } catch (e) {
+            console.log(e);
+        }
+
+    });
 }

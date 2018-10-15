@@ -123,10 +123,10 @@ var fn_uploadFileEvent = function () {
             $("#progressMsgTitle").html('파일 업로드 완료..');
             addProgressBar(11, 20);
 
-            //console.log(`base 사이즈 : ${responseText.fileInfo.length}`);
-            //console.log(`dtl 사이즈 : ${responseText.fileDtlInfo.length}`);
-            //console.log(`base 내용 : ${JSON.stringify(responseText.fileInfo)}`);
-            //console.log(`dtl 내용 : ${JSON.stringify(responseText.fileDtlInfo)}`);
+            //console.log('base 사이즈 :' + responseText.fileInfo.length);
+            //console.log('dtl 사이즈 :' + responseText.fileDtlInfo.length);
+            //console.log('base 내용 :' + JSON.stringify(responseText.fileInfo));
+            //console.log('dtl 내용 :' + JSON.stringify(responseText.fileDtlInfo));
 
             //totCount = responseText.fileInfo.length; 
             totCount = responseText.fileDtlInfo.length;
@@ -241,23 +241,23 @@ var fn_search = function () {
             console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
-                    appendHtml += `<tr id="tr_base_${entry['SEQNUM']}-${entry['DOCNUM']}-${entry['STATUS']}">
-                            <td><input type="checkbox" id="base_chk_${entry["DOCNUM"]}" name="base_chk" /></td>
-                            <td name="td_base">${entry["DOCNUM"]}</td>
-                            <td name="td_base">${nvl2(entry["PAGECNT"], 0)}</td>
-                            <td name="td_base">${entry["DRAFTERNUM"]}</td>
-                            <td>${nvl(entry["FAOTEAM"])}</td>
-                            <td>${nvl(entry["FAOPART"])}</td>
-                            <td>${nvl(entry["APPROVALREPORTER"])}</td>
-                            <td></td>
-                            <td></td>
-                        </tr>`;
+                    appendHtml += '<tr id="tr_base_' + entry.SEQNUM + '-' + entry.DOCNUM + '-' + entry.STATUS + '">' +
+                        '<td><input type="checkbox" id="base_chk_' + entry.DOCNUM + '" name="base_chk" /></td>' +
+                        '<td name="td_base">' + entry.DOCNUM + '</td>' +
+                        '<td name="td_base">' + nvl2(entry.PAGECNT, 0) + '</td>' +
+                        '<td name="td_base">' + entry.DRAFTERNUM + '</td>' +
+                        '<td>' + nvl(entry.FAOTEAM) + '</td>' +
+                        '<td>' + nvl(entry.FAOPART) + '</td>' +
+                        '<td>' + nvl(entry.APPROVALREPORTER) + '</td>' +
+                        '<td></td>' +
+                        '<td></td>' +
+                        '</tr>';
                 });
             } else {
                 appendHtml += '<tr><td colspan="7">조회된 데이터가 없습니다.</td></tr>';
             }
             $("#tbody_baseList").empty().append(appendHtml);
-            $("#span_document_base").empty().html(`문서 기본정보 - ${data.length}건`);
+            $("#span_document_base").empty().html("문서 기본정보 - " + data.length + "건");
             $("#div_base").fadeIn();
             fn_clickEvent();
             endProgressBar();
@@ -485,60 +485,59 @@ var fn_search_dtl_old = function (seqNum, docNum) {
             console.log(data);
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
-                    appendHtml += `
-                        <tr id="tr_dtl_${entry['IMGID']}" name="tr_dtl" style="cursor:pointer">
-                            <td><input type="checkbox" id="dtl_chk_${entry["DOCNUM"]}" name="dtl_chk" /></td>
-                            <td name="td_dtl">${entry["IMGFILESTARTNO"]}<th>
-                            <td name="td_dtl">${entry["IMGFILESTARTNO"]} </th>
-                            <td name="td_dtl">${nvl(entry["OGCOMPANYNAME"])}</td>
-                            <td name="td_dtl">${nvl(entry["CTNM"])}</td>
-                            <td name="td_dtl">${nvl(entry["UY"])}</td>
-                            <td name="td_dtl">${nvl(entry["CONTRACTNUM"])}</td>
-                            <td name="td_dtl">${nvl(entry["CURCD"])}</td>
-                            <td name="td_dtl">${nvl(entry["PAIDPERCENT"])}</td>
-                            <td name="td_dtl">${nvl(entry["PAIDSHARE"])}</td>
-                            <td name="td_dtl">${nvl(entry["OSLPERCENT"])}</td>
-                            <td name="td_dtl">${nvl(entry["OSLSHARE"])}</td>
-                            <td name="td_dtl">${nvl(entry["GROSSPM"])}</td>
-                            <td name="td_dtl">${nvl(entry["PM"])}</td>
-                            <td name="td_dtl">${nvl(entry["PMPFEND"])}</td>
-                            <td name="td_dtl">${nvl(entry["PMPFWOS"])}</td>
-                            <td name="td_dtl">${nvl(entry["XOLPM"])}</td>
-                            <td name="td_dtl">${nvl(entry["RETURNPM"])}</td>
-                            <td name="td_dtl">${nvl(entry["GROSSCN"])}</td>
-                            <td name="td_dtl">${nvl(entry["CN"])}</td>
-                            <td name="td_dtl">${nvl(entry["PROFITCN"])}</td>
-                            <td name="td_dtl">${nvl(entry["BROKERAGE"])}</td>
-                            <td name="td_dtl">${nvl(entry["TAX"])}</td>
-                            <td name="td_dtl">${nvl(entry["OVERRIDINGCOM"])}</td>
-                            <td name="td_dtl">${nvl(entry["CHARGE"])}</td>
-                            <td name="td_dtl">${nvl(entry["PMRESERVERTD1"])}</td>
-                            <td name="td_dtl">${nvl(entry["PFPMRESERVERTD1"])}</td>
-                            <td name="td_dtl">${nvl(entry["PMRESERVERTD2"])}</td>
-                            <td name="td_dtl">${nvl(entry["PFPMRESERVERTD2"])}</td>
-                            <td name="td_dtl">${nvl(entry["CLAIM"])}</td>
-                            <td name="td_dtl">${nvl(entry["LOSSRECOVERY"])}</td>
-                            <td name="td_dtl">${nvl(entry["CASHLOSS"])}</td>
-                            <td name="td_dtl">${nvl(entry["CASHLOSSRD"])}</td>
-                            <td name="td_dtl">${nvl(entry["LOSSRR"])}</td>
-                            <td name="td_dtl">${nvl(entry["LOSSRR2"])}</td>
-                            <td name="td_dtl">${nvl(entry["LOSSPFEND"])}</td>
-                            <td name="td_dtl">${nvl(entry["LOSSPFWOA"])}</td>
-                            <td name="td_dtl">${nvl(entry["INTEREST"])}</td>
-                            <td name="td_dtl">${nvl(entry["TAXON"])}</td>
-                            <td name="td_dtl">${nvl(entry["MISCELLANEOUS"])}</td>
-                            <td name="td_dtl">${nvl(entry["PMBL"])}</td>
-                            <td name="td_dtl">${nvl(entry["CMBL"])}</td>
-                            <td name="td_dtl">${nvl(entry["NTBL"])}</td>
-                            <td name="td_dtl">${nvl(entry["CSCOSARFRNCNNT2"])}</td>
-                        </tr>
-                    `;
+                    appendHtml += 
+                        '<tr id="tr_dtl_' + entry.IMGID + '" name="tr_dtl" style="cursor:pointer">' +
+                            '<td><input type="checkbox" id="dtl_chk_'+ entry.DOCNUM + '" name="dtl_chk" /></td>' +
+                            '<td name="td_dtl">' + entry.IMGFILESTARTNO + '<th>' +
+                            '<td name="td_dtl">' + entry.IMGFILESTARTNO + '</th>' +
+                            '<td name="td_dtl">' + nvl(entry.OGCOMPANYNAME) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.CTNM) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.UY) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.CONTRACTNUM) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.CURCD) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.PAIDPERCENT) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.PAIDSHARE) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.OSLPERCENT) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.OSLSHARE) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.GROSSPM) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.PM) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.PMPFEND) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.PMPFWOS) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.XOLPM) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.RETURNPM) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.GROSSCN) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.CN) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.PROFITCN) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.BROKERAGE) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.TAX) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.OVERRIDINGCOM) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.CHARGE) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.PMRESERVERTD1) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.PFPMRESERVERTD1) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.PMRESERVERTD2) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.PFPMRESERVERTD2) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.CLAIM) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.LOSSRECOVERY) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.CASHLOSS) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.CASHLOSSRD) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.LOSSRR) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.LOSSRR2) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.LOSSPFEND) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.LOSSPFWOA) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.INTEREST) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.TAXON) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.MISCELLANEOUS) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.PMBL) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.CMBL) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.NTBL) + '</td>' +
+                            '<td name="td_dtl">' + nvl(entry.CSCOSARFRNCNNT2) + '</td>' +
+                        '</tr>';
                 });
             } else {
-                appendHtml += `<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>`;
+                appendHtml += '<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>';
             }
             $("#tbody_dtlList").empty().html(appendHtml);
-            $("#span_document_dtl").empty().html(`인식 결과 - ${data.length}건`);
+            $("#span_document_dtl").empty().html('인식 결과 -' + data.length + '건');
             $("#div_dtl").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
             endProgressBar(); // end progressbar
@@ -572,23 +571,23 @@ var fn_search_image = function (imgId) {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     if (index == 0) {
-                        $("#main_image").prop("src", `../../${nvl(entry.ORIGINFILENAME)}`);
+                        $("#main_image").prop("src", '../../' + nvl(entry.ORIGINFILENAME));
                         $("#main_image").prop("alt", entry.ORIGINFILENAME);
-                        imageHtml += `<li class="on">
-                                        <div class="box_img"><i><img src="../../${nvl(entry.ORIGINFILENAME)}" title="${nvl(entry.ORIGINFILENAME)}"></i></div>
-                                        <span>${nvl(entry.ORIGINFILENAME)}</span>
-                                    </li> `;
+                        imageHtml += '<li class="on">' + 
+                                        '<div class="box_img"><i><img src="../../' + nvl(entry.ORIGINFILENAME) + '" title="' + nvl(entry.ORIGINFILENAME) + '"></i></div>' +
+                                        '<span>' + nvl(entry.ORIGINFILENAME) + '</span>' +
+                                    '</li> ';
                     } else {
-                        imageHtml += `
-                                    <li>
-                                        <div class="box_img"><i><img src="../../${nvl(entry.ORIGINFILENAME)}" title="${nvl(entry.ORIGINFILENAME)}"></i></div>
-                                        <span>${nvl(entry.ORIGINFILENAME)}</span>
-                                    </li> `;
+                        imageHtml += 
+                                    '<li>' +
+                                        '<div class="box_img"><i><img src="../../' + nvl(entry.ORIGINFILENAME) + '" title="' + nvl(entry.ORIGINFILENAME) + '"></i></div>' +
+                                        '<span>' + nvl(entry.ORIGINFILENAME) + '</span>' +
+                                    '</li>';
                     }
                 });
             } else {
-                //appendHtml += `<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>`;
-                imageHtml += `<li>문서 이미지가 존재하지 않습니다.</li>`;
+                //appendHtml += '<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>';
+                imageHtml += '<li>문서 이미지가 존재하지 않습니다.</li>';
             }
             //$("#div_view_image").empty().append(imageHtml);
             $("#ul_image").empty().append(imageHtml);
@@ -620,17 +619,17 @@ var fn_processBaseImage = function (fileInfo) {
                 var html = "";
                 for (var i = 0; i < data.docData.length; i++) {
                     var item = data.docData[i];
-                    html += `<tr id="tr_base_${item.SEQNUM}-${item.DOCNUM}-${item.STATUS}">
-                                <td><input type="checkbox" id="base_chk_${item.DOCNUM}" class ="base_chk_Yn" name="base_chk" /></td>
-                                <td name="td_base">${item.DOCNUM}</td>
-                                <td name="td_base">${item.PAGECNT}</td>
-                                <td name="td_base">${item.DRAFTERNUM}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>`;
+                    html += '<tr id="tr_base_' + item.SEQNUM+ '-' + item.DOCNUM + '-' + item.STATUS + '">' +
+                                '<td><input type="checkbox" id="base_chk_' + item.DOCNUM + '" class ="base_chk_Yn" name="base_chk" /></td>' +
+                                '<td name="td_base">' + item.DOCNUM + '</td>' +
+                                '<td name="td_base">' + item.PAGECNT + '</td>' +
+                                '<td name="td_base">' + item.DRAFTERNUM + '</td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                            '</tr>';
                 }
                 $("#tbody_baseList").empty().append(html);
                 $("#div_base").css("display", "block");
@@ -762,7 +761,7 @@ function executeML(totData) {
 var executeML_Old = function (fileDtlInfo, fileName, data, type) {
     var targetUrl;
 
-    console.log(`다음 순서 type = ${type}`);
+    console.log('다음 순서 type =' + type);
 
     if (type == 'ts') {
         targetUrl = '/invoiceRegistration/typoSentence';
@@ -805,13 +804,13 @@ var executeML_Old = function (fileDtlInfo, fileName, data, type) {
                 searchDBColumnsCount++;
 
                 if (searchDBColumnsCount == 1) {
-                    var mainImgHtml = `
-                                        <div id="mainImage">
-                                            <div id="redNemo"></div>
-                                        </div>
-                                        <div id="imageZoom">
-                                            <div id="redZoomNemo"></div>
-                                        </div>`;
+                    var mainImgHtml = 
+                                        '<div id="mainImage">' +
+                                            '<div id="redNemo"></div>' +
+                                        '</div>' +
+                                        '<div id="imageZoom">' + 
+                                            '<div id="redZoomNemo"></div>' +
+                                        '</div>';
                     $('#div_invoice_view_image').html(mainImgHtml);
                     $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
                     $('#imageBox > li').eq(0).addClass('on');
@@ -840,7 +839,7 @@ function fn_processFinish_Old1(data) {
 
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
-        `<td><input type="checkbox" value="${dataObj["imgId"]}" name="dtl_chk" /></td>` +
+        '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
         '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
@@ -915,7 +914,7 @@ function fn_processFinish(data, fileDtlInfo) {
 
         // TODO : 분석 결과를 정리하고 1 record로 생성한다.
         var dtlHtml = '<tr>' +
-                            `<td><input type="checkbox" value="${dataObj["imgId"]}" name="dtl_chk" /></td>` +
+                            '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
                             '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
                             '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
                             '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
@@ -1033,52 +1032,52 @@ function fn_processFinish_Old(data, fileDtlInfo) {
         console.log("dataObj : " + JSON.stringify(dataObj));
 
         // TODO : 분석 결과를 정리하고 1 record로 생성한다.
-        var dtlHtml = `<tr>
-                                <td><input type="checkbox" id="dtl_chk_${item.imgId}" name="dtl_chk" /></td>
-                                <td></td>
-                                <td></td>
-                                <td>${dataObj.cscoSaRfrnCnnt2}</td> 
-                                <td>${dataObj.ctnm}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>`;
+        var dtlHtml = '<tr>' +
+                                '<td><input type="checkbox" id="dtl_chk_' + item.imgId + '" name="dtl_chk" /></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td>' + dataObj.cscoSaRfrnCnnt2 + '</td>' +
+                                '<td>' + dataObj.ctnm + '</td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                                '<td></td>' +
+                            '</tr>';
 
         $("#tbody_dtlInfo").empty().append(dtlHtml);
     }
@@ -1105,7 +1104,7 @@ var thumnImg = function () {
     for (var i in thumbImgs) {
         if ($('#ul_image > li').length < thumnbImgPerPage) {
             //var imageTag = '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a></li>';
-            var imageTag = `<li><a href="#none" class="imgtmb thumb-img"><img src="../../uploads/${thumbImgs[i]}" style="width: 48px; background-color:white" /></a></li>`;
+            var imageTag = '<li><a href="#none" class="imgtmb thumb-img"><img src="../../uploads/' + thumbImgs[i] + '" style="width: 48px; background-color:white" /></a></li>';
             $('#ul_image').append(imageTag);
         } else {
             break;
@@ -1361,7 +1360,7 @@ var fn_docEvent = function () {
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
                 var totCnt = $("input[name = base_chk]");
-                $("#span_document_base").empty().html(`문서 기본정보 - ${totCnt.length - deleteTr.length}건`);
+                $("#span_document_base").empty().html('문서 기본정보 - ' + totCnt.length - deleteTr.length + '건');
                 for (var i in deleteTr) {
                     deleteTr[i].remove();
                 }
@@ -1393,7 +1392,7 @@ var fn_docEvent = function () {
             url: '/common/selectUserInfo',
             type: 'post',
             datatype: "json",
-            data: JSON.stringify({param}),
+            data: JSON.stringify({'param': param}),
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
                 if (data.code == 200) {

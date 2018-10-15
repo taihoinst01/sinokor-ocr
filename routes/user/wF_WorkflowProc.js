@@ -16,54 +16,56 @@ router.post('/', function (req, res) {
     var ctNm = req.body.ctNm.replace(/ /g, "&#32;");
     var brkNm = req.body.brkNm.replace(/ /g, "&#32;");
 
-    var testData = `<? xml version = "1.0" encoding = "utf-8" ?>
-        <Root>
-            <Parameters>
-                <Parameter id="gv_encryptToken" type="STRING">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1538977070zPy86400zAy23zEyiGcouax2B8VWYvTGpTpGfriYx7AFx79ofx2FPQuPx2BQKaZoKevZt9rlgBrinl6bGLd37lNEQb9l3UF2Yi7KdaOlL6SXN57t24R6BCu6ci9x2Bs3MSkVc1SeWCtCX26FdQZ8CjeEmwnEmx2Bo9iVb46ZhNUoaMCB2QNXhtYIQLB1EgvXpOWx7AiOEtWsh8t4Mx2FZaOWR7TDLVUJx78mo4gZ8Q1Pi351WnNoMDUsfAx3Dx3DzKycdDADOKhSx7Aw0Ur5VCgEP9FDVx79s0qDNx78pnUNB8E3Wx78LoHcXOVQ2APc5DVwTabw1uex00x00x00x00x00zSSy00002471000zUURy226f595117d17c8czMykx79friwM6GDsx3Dz</Parameter>
-                <Parameter id="WMONID" type="STRING"></Parameter>
-                <Parameter id="lginIpAdr" type="STRING">111.222.333.444</Parameter>
-                <Parameter id="userId" type="STRING">9999068</Parameter>
-                <Parameter id="userEmpNo" type="STRING">9999068</Parameter>
-                <Parameter id="userDeptCd" type="STRING">999999</Parameter>
-                <Parameter id="frstRqseDttm" type="STRING"></Parameter>
-                <Parameter id="rqseDttm" type="STRING"></Parameter>
-                <Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>
-                <Parameter id="srnId" type="STRING"></Parameter>
-                <Parameter id="rqseSrvcNm" type="STRING">koreanre.co.ct.commonct.svc.CtCommonCheckSvc</Parameter>
-                <Parameter id="rqseMthdNm" type="STRING">readCtNoList</Parameter>
-                <Parameter id="rqseVoNm" type="STRING">koreanre.co.ct.commonct.vo.CtCommonCheckVO</Parameter>
-            </Parameters>
-            <Dataset id="searchDvo">
-                <ColumnInfo>
-                    <Column id="cdnNm" type="STRING" size="150" />
-                    <Column id="ctNm" type="STRING" size="150" />
-                    <Column id="ttyYy" type="STRING" size="4" />
-                    <Column id="brkNm" type="STRING" size="70" />
-                </ColumnInfo>
-                <Rows>
-                    <Row>
-                        <Col id="cdnNm">${cdnNm}</Col>
-                        <Col id="ctNm">${ctNm}</Col>
-                        <Col id="ttyYy">${req.body.ttyYy}</Col>
-                        <Col id="brkNm">${brkNm}</Col>
-                    </Row>
-                </Rows>
-            </Dataset>
-            <Dataset id="ctNoList.outlist.meta">
-                <ColumnInfo>
-                    <Column id="ctNo" type="STRING" size="14" />
-                    <Column id="ttyDtlNo" type="STRING" size="4" />
-                    <Column id="cdnCd" type="STRING" size="6" />
-                    <Column id="cdnNm" type="STRING" size="150" />
-                    <Column id="ctNm" type="STRING" size="150" />
-                    <Column id="ttyYy" type="STRING" size="4" />
-                    <Column id="brkCd" type="STRING" size="6" />
-                    <Column id="brkNm" type="STRING" size="70" />
-                </ColumnInfo>
-                <Rows>
-                </Rows>
-            </Dataset>
-        </Root>`;		
+    var testData = 
+        '<? xml version = "1.0" encoding = "utf-8" ?>'+
+        '<Root>'+
+            '<Parameters>'+
+                '<Parameter id="gv_encryptToken" type="STRING">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1539564980zPy86400zAy23zEyP7D2Wpx2Bf0dkRRoplRJmZ0Q3Za7WHjeSKx78rg3x78rcDe0bGsQMsAlvwOn7rqK48NEQpA8pi2x7A0PVVN0NZg4x7As0RJFx79YbNw0MoHnIx7Aj7x797CB8bx7A0QYP68D763IdCx2FEWx79UXEIVT6TgScx7A64SUjXXf55fMVMbaUfQ2frENHx2BPtQf2A81Px79GGIt6dB5uQ1D8x7AWjAR9KuA5KfjGOgZjbSDbkqGnPGAx3Dx3DzKyF8x78ICfDirBJ4BDeVx78e5S1x7AaUSDYhrZlx79Wbl1x78FbugXOagNG0cfIx787hj2x78Hd33QDbx00x00x00x00x00zSSy00002479000zUURy1f9d134b0e195793zMyfsNjWrhSdZkx3Dz</Parameter>'+
+                '<Parameter id="WMONID" type="STRING"></Parameter>'+
+                '<Parameter id="lginIpAdr" type="STRING">111.222.333.444</Parameter>' +
+                '<Parameter id="userId" type="STRING">9999068</Parameter>' +
+                '<Parameter id="userEmpNo" type="STRING">9999068</Parameter>' +
+                '<Parameter id="userDeptCd" type="STRING">999999</Parameter>' +
+                '<Parameter id="frstRqseDttm" type="STRING"></Parameter>' +
+                '<Parameter id="rqseDttm" type="STRING"></Parameter>' +
+                '<Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>' +
+                '<Parameter id="srnId" type="STRING"></Parameter>' +
+                '<Parameter id="rqseSrvcNm" type="STRING">koreanre.co.ct.commonct.svc.CtCommonCheckSvc</Parameter>' +
+                '<Parameter id="rqseMthdNm" type="STRING">readCtNoList</Parameter>' +
+                '<Parameter id="rqseVoNm" type="STRING">koreanre.co.ct.commonct.vo.CtCommonCheckVO</Parameter>' +
+        '</Parameters>' +
+    '<Dataset id="searchDvo">' +
+    '<ColumnInfo>' +
+    '<Column id="cdnNm" type="STRING" size="150" />' +
+    '<Column id="ctNm" type="STRING" size="150" />' +
+    '<Column id="ttyYy" type="STRING" size="4" />' +
+    '<Column id="brkNm" type="STRING" size="70" />' +
+    '</ColumnInfo>' +
+    '<Rows>' +
+    '<Row>' +
+    '<Col id="cdnNm">'+cdnNm+'</Col>' +
+        '<Col id="ctNm">'+ctNm+'</Col>' +
+            '<Col id="ttyYy">' +req.body.ttyYy+'</Col>' +
+                '<Col id="brkNm">' +brkNm+'</Col>' +
+    '</Row>' +
+    '</Rows>' +
+    '</Dataset>' +
+    '<Dataset id="ctNoList.outlist.meta">' +
+    '<ColumnInfo>' +
+    '<Column id="ctNo" type="STRING" size="14" />' +
+    '<Column id="ttyDtlNo" type="STRING" size="4" />' +
+    '<Column id="cdnCd" type="STRING" size="6" />' +
+    '<Column id="cdnNm" type="STRING" size="150" />' +
+    '<Column id="ctNm" type="STRING" size="150" />' +
+    '<Column id="ttyYy" type="STRING" size="4" />' +
+    '<Column id="brkCd" type="STRING" size="6" />' +
+    '<Column id="brkNm" type="STRING" size="70" />' +
+    '</ColumnInfo>' +
+    '<Rows>' +
+    '</Rows>' +
+    '</Dataset>' +
+        '</Root>';
+    console.log(testData);
     try {
         var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', { //해당 URL에 POST방식으로 값을 전달.
             headers: {
