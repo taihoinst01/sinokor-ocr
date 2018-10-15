@@ -68,13 +68,14 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 
                     var ifile = convertedImagePath + fileObj.originalname;
                     var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
-                    //execSync('java -jar C:/Main.jar' + ifile);
+
                     var result = execSync('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile);
                     if (result.status != 0) {
                         throw new Error(result.stderr);
                     }
-                } else if (fileExt.toLowerCase() === 'doc' || fileExt.toLowerCase() === 'docx'
-                    || fileExt.toLowerCase() === 'xls' || fileExt.toLowerCase() === 'xlsx'
+                } else if (fileExt.toLowerCase() === 'docx' || fileExt.toLowerCase() === 'doc'
+                    || fileExt.toLowerCase() === 'xlsx' || fileExt.toLowerCase() === 'xls'
+                    || fileExt.toLowerCase() === 'pptx' || fileExt.toLowerCase() === 'ppt'
                     || fileExt.toLowerCase() === 'pdf') {
 
 
@@ -83,22 +84,19 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 
                     var convertPdf = '';
 
-                    /*
-                    if (fileExt.toLowerCase() === 'doc' || fileExt.toLowerCase() === 'docx') {
-                        convertPdf = sync.await(oracle.convertMs(["word", ifile, ofile], sync.defer()));
-                    } else if (fileExt.toLowerCase() === 'xls' || fileExt.toLowerCase() === 'xlsx') {
-                        convertPdf = sync.await(oracle.convertMs(["excel", ifile, ofile], sync.defer()));
-                    }
-                    */
-                    //execSync('java -jar C:/Main.jar' + ifile);
-                    if (fileExt.toLowerCase() === 'doc' || fileExt.toLowerCase() === 'docx' ||
-                        fileExt.toLowerCase() === 'xls' || fileExt.toLowerCase() === 'xlsx') {
-                        convertPdf = execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" c:/util/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);
+                    //file decription 운영 경로
+                    //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar ' + ifile);
+
+                    //file convert MsOffice to Pdf
+                    if ( !(fileExt.toLowerCase() === 'pdf') ) {
+                        //convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);  //운영
+                        convertPdf = execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" C:/projectWork/koreanre/module/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);
                     }
 
                     ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
                     ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
 
+                    //file convert Pdf to Png
                     if (convertPdf || fileExt.toLowerCase() === 'pdf') {
                         var result = execSync('module\\imageMagick\\convert.exe -density 300 ' + ifile + ' ' + ofile);
 
