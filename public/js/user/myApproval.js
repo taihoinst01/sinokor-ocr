@@ -47,15 +47,16 @@ var buttonEvent = function () {
     });
     // 승인
     $("#btn_baseList_approval").on("click", function () {
-        fn_baseList_chk('C');
+        fn_baseList_chk('승인');
     });
     // 반려
     $("#btn_baseList_return").on("click", function () {
-        fn_baseList_chk('R');
+        fn_baseList_chk('반려');
+
     });
-    // 전달
+    // 진행
     $("#btn_baseList_forward").on("click", function () {
-        fn_baseList_chk('P');
+        fn_baseList_chk('진행');
     });
 };
 // [이벤트] 날짜 (datepicker)
@@ -380,6 +381,32 @@ var fn_search_image = function (imgId) {
 };
 // 체크된 문서 갯수 확인하고 승인/반려/전달 실행
 var fn_baseList_chk = function (flag) {
+
+    if (flag == '승인') {
+        if ($('#middleApproval') == 'Y') {
+
+        } else if ($('#lastApproval') == 'Y') {
+
+        }
+    }
+    else if (flag == '반려') {
+        if ($('#middleApproval') == 'Y') {
+
+        } else if ($('#lastApproval') == 'Y') {
+
+        }
+    } else if (flag == '진행') {
+        if ($('#middleApproval') == 'Y') {
+
+        } else if ($('#lastApproval') == 'Y') {
+
+        }
+    }
+    
+
+
+
+  /*  기존소스
     var chkCnt = 0;
     var arrSeqNum = [];
     var arrState = [];
@@ -387,7 +414,7 @@ var fn_baseList_chk = function (flag) {
     var arrReporter = [];
     var arrManager = [];
     var val = "";
-    $("input[name=chk_document]").each(function (index, value) {
+   *  $("input[name=chk_document]").each(function (index, value) {
         if ($(this).is(":checked")) {
             val = $(this).val().split("-");  // value="${entry['SEQNUM']}-${entry['DOCNUM']}"
             var memo = "memo_" + val[0] + "-" + val[1];
@@ -418,9 +445,9 @@ var fn_baseList_chk = function (flag) {
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             beforeSend: function () {
-                if (flag == "C") $("#progressMsgTitle").html("승인처리 중 입니다.");
-                else if (flag == "R") $("#progressMsgTitle").html("반려처리 중 입니다.");
-                else if (flag == "P") $("#progressMsgTitle").html("전달 중 입니다.");
+                if (flag == "승인") $("#progressMsgTitle").html("승인처리 중 입니다.");
+                else if (flag == "반려") $("#progressMsgTitle").html("반려처리 중 입니다.");
+                else if (flag == "진행") $("#progressMsgTitle").html("전달 중 입니다.");
                 progressId = showProgressBar();
                 //startProgressBar(); // start progressbar
                 //addProgressBar(1, 99); // proceed progressbar
@@ -441,7 +468,7 @@ var fn_baseList_chk = function (flag) {
     } else {
         alert("선택된 문서가 없습니다.");
         return;
-    }
+    }*/
 }
 
 
