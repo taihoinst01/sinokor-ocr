@@ -2404,6 +2404,29 @@ exports.selectMaxDocNum = function (done) {
     });
 };
 
+//문서 기본정보 / 인식결과 전달
+exports.sendApprovalDocument = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET MIDDLENUM = :middleNum, NOWNUM = :nowNum, STATUS = '02', DRAFTDATE = sysdate WHERE DOCNUM = :docNum ", req);
+            return done;
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 //문서 기본정보 전달
 exports.sendDocument = function (req, done) {
     return new Promise(async function (resolve, reject) {

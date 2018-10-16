@@ -350,6 +350,27 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 
     
 });
+
+//전달/결재상신
+router.post('/sendApprovalDocument', function (req, res) {
+    var returnObj = {};
+    var sendCount = 0;
+    try {
+        for (var i = 0; i < req.body.docInfo.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.sendApprovalDocument([req.body.userChoiceId[0], req.body.userChoiceId[0], req.body.docInfo[i]], sync.defer()));
+            });
+            sendCount += 1;
+        }
+        returnObj = { code: 200, docData: sendCount };
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
+
+});
+
 //문서전달
 router.post('/sendDocument', function (req, res) {
     var returnObj = {};
