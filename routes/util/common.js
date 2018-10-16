@@ -90,7 +90,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                     //file convert MsOffice to Pdf
                     if ( !(fileExt.toLowerCase() === 'pdf') ) {
                         //convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);  //운영
-                        convertPdf = execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" C:/projectWork/koreanre/module/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);
+                        convertPdf = execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" C:/projectWork/koreanre/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
                     }
 
                     ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
@@ -98,7 +98,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 
                     //file convert Pdf to Png
                     if (convertPdf || fileExt.toLowerCase() === 'pdf') {
-                        var result = execSync('module\\imageMagick\\convert.exe -density 300 ' + ifile + ' ' + ofile);
+                        var result = execSync('module\\imageMagick\\convert.exe -density 300 "' + ifile + '" "' + ofile + '"');
 
                         if (result.status != 0) {
                             throw new Error(result.stderr);
