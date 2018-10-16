@@ -2636,6 +2636,34 @@ exports.selectOcrFileDtl = function (imgId, done) {
     });
 };
 
+exports.selectApprovalMasterFromDocNum = function (docNum, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute('SELECT * FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum', [docNum]);
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+
+        } catch (err) { // catches errors in getConnection and the query
+            console.log('oracle.js error');
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.updateApprovalMaster = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;

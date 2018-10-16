@@ -170,7 +170,8 @@ passport.use(new LocalStrategy({
                             icrApproval: result[0].ICRAPPROVAL,
                             middleApproval: result[0].MIDDLEAPPROVAL,
                             lastApproval: result[0].LASTAPPROVAL,
-                            lastLoginDate: result[0].LASTLOGINDATE
+                            lastLoginDate: result[0].LASTLOGINDATE,
+                            admin: result[0].ADMIN
                         };
                         return done(null, sessionInfo);
                     }
