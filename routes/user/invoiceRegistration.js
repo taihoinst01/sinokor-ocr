@@ -80,7 +80,9 @@ var fnSearchDocumentList = function (req, res) {
     };
 
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
-    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM LIKE '%${param["documentManager"]}%' `;
+    //스캔담당자 입력 시
+    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND UPLOADNUM LIKE '%${param["documentManager"]}%' `;
+    //조회버튼만 클릭 시
     if (commonUtil.isNull(param["docNum"]) && commonUtil.isNull(param["documentManager"]) && req.user.icrApproval == 'Y') condQuery += " AND NOWNUM = '" + req.user.userId + "' ";
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
     var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
