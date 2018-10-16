@@ -21,10 +21,28 @@ exports.selectUserInfo = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            userSql = "SELECT * FROM TBL_OCR_COMM_USER";
-            if (req != '') {
-                userSql += " WHERE USERID LIKE '%" + req + "%'";
+            userSql = "SELECT * FROM TBL_OCR_COMM_USER WHERE 1=1 ";
+            if (req.keyword != '') {
+                userSql += "AND USERID LIKE '%" + req.keyword + "%' ";
             }
+            if (req.docManagerChk || req.icrManagerChk || req.middleManagerChk || req.approvalManagerChk) {
+                userSql += "AND ( ";
+                if (req.docManagerChk) {
+                    userSql += "SCANAPPROVAL = 'Y' OR ";
+                }
+                if (req.icrManagerChk) {
+                    userSql += "ICRAPPROVAL = 'Y' OR ";
+                }
+                if (req.middleManagerChk) {
+                    userSql += "MIDDLEAPPROVAL = 'Y' OR ";
+                }
+                if (req.approvalManagerChk) {
+                    userSql += "LASTAPPROVAL = 'Y' OR ";
+                }
+                userSql = userSql.substring(0, userSql.length - 3);
+                userSql += ") ORDER BY USERID ASC";
+            }            
+ 
             result = await conn.execute(userSql);
             if (result.rows.length > 0) {
                 returnObj = result.rows;

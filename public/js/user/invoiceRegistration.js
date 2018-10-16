@@ -1575,12 +1575,12 @@ var fn_docEvent = function () {
         var param = {
             docManagerChk: $('#docManagerChk').is(':checked'),
             icrManagerChk: $('#icrManagerChk').is(':checked'),
+            middleManagerChk: $('#middleManagerChk').is(':checked'),
             approvalManagerChk: $('#approvalManagerChk').is(':checked'),
             keyword: $('#searchManger').val().trim(),
             team: $('#select_team').val(),
             part: $('#select_part').val()
         };
-
 
         $.ajax({
             url: '/common/selectUserInfo',

@@ -438,11 +438,11 @@ router.post('/selectTypoData2', function (req, res) {
 router.post('/selectUserInfo', function (req, res) {
     var returnObj;
     let userInfoArr;
-    var keyword = req.body.param.keyword ? req.body.param.keyword : '';
+    var param = req.body.param;
 
     sync.fiber(function () {
         try {
-            userInfoArr = sync.await(oracle.selectUserInfo([keyword] ,sync.defer()));
+            userInfoArr = sync.await(oracle.selectUserInfo(param ,sync.defer()));
 
             returnObj = { code: 200, data: userInfoArr };
         } catch (e) {
