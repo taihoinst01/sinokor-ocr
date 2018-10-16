@@ -256,6 +256,99 @@ function uploadFileEvent() {
             //console.log(e);
         }
     });
+
+    // 파일 드롭 다운
+    var dropZone = $("#uploadForm");
+    //Drag기능
+    dropZone.on('dragenter', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        // 드롭다운 영역 css
+        dropZone.css('background-color', '#E3F2FC');
+    });
+    dropZone.on('dragleave', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        // 드롭다운 영역 css
+        dropZone.css('background-color', 'transparent');
+    });
+    dropZone.on('dragover', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        // 드롭다운 영역 css
+        dropZone.css('background-color', '#E3F2FC');
+    });
+    dropZone.on('drop', function (e) {
+        e.preventDefault();
+        // 드롭다운 영역 css
+        dropZone.css('background-color', 'transparent');
+
+        var files = e.originalEvent.dataTransfer.files;
+        if (files != null) {
+            if (files.length > 1) {
+                alert("2개 이상 업로드 불가합니다");
+                return;
+            }
+
+            F_FileMultiUpload(files, dropZone);
+
+        } else {
+            alert("ERROR");
+        }
+    });
+
+    // 파일 멀티 업로드
+    function F_FileMultiUpload(files, obj) {
+        if (confirm(files[0].name + " 파일을 업로드 하시겠습니까?")) {
+            var data = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                data.append('file', files[i]);
+            }
+
+            lineText = [];
+            $('#imageBox').html('');
+            totCount = 0;
+            ocrCount = 0;
+            searchDBColumnsCount = 0;
+
+            $.ajax({
+                url: "/common/imageUpload",
+                method: 'post',
+                data: data,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                beforeSend: function () {
+                    $("#progressMsgTitle").html("파일 업로드 중..");
+                    progressId = showProgressBar();
+                },
+                success: function (responseText, statusText) {
+                    //console.log(responseText);
+                    $('#progressMsgTitle').html('파일 업로드 완료..');
+                    $('.button_control').attr('disabled', false);
+                    $('#textResultTbl').html('');
+                    //addProgressBar(11, 20);
+                    if (responseText.message.length > 0) {
+                        //console.log(responseText);
+                        totCount = responseText.message.length;
+                        for (var i = 0; i < responseText.fileInfo.length; i++) {
+                            processImage(responseText.fileInfo[i]);
+                        }
+                        /*
+                        for (var i = 0; i < responseText.message.length; i++) {
+                            processImage(responseText.message[i]);
+                        }
+                        */
+                    }
+                    //endProgressBar();
+                },
+                error: function (e) {
+                    console.log("업로드 에러");
+                    endProgressBar(progressId);
+                }
+            });
+        }
+    }
 }
 
 // OCR API
@@ -330,6 +423,7 @@ function changeOcrImg(data) {
     $('#imageBox > li').removeClass('on');
     $(data).parent().parent().parent().addClass('on');
     var fileName = data.src.substring(data.src.lastIndexOf("/") + 1, data.src.length);
+    $('#imageZoom').hide();
     $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
 }
 
@@ -917,7 +1011,7 @@ function detailTable(fileName) {
     }
     $('#textResultTbl').append(tblTag).append(tblSortTag);
     // input 태그 마우스오버 말풍선 Tooltip 적용
-    $('input[type=checkbox]').ezMark();
+    $('#textResultTbl input[type=checkbox]').ezMark();
     new $.Zebra_Tooltips($('.tip'));
     dbSelectClickEvent();
 

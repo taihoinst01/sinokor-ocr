@@ -215,7 +215,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 //file convert to MsOffice to Pdf
                 if ( !(files[i].originalname.split('.')[1] === 'PDF' || files[i].originalname.split('.')[1] === 'pdf') ) {
                     //execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);   //운영
-                    execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" C:/projectWork/koreanre/module/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);
+                    execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" C:/projectWork/koreanre/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
                 }
                 
                 ifile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
@@ -248,7 +248,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
 
                 //file convert Pdf to Png
-                execSync('module\\imageMagick\\convert.exe -quiet -density 300 ' + ifile + ' ' + ofile);
+                execSync('module\\imageMagick\\convert.exe -quiet -density 300 "' + ifile + '" "' + ofile +'"');
             }
             
             var isStop = false;
@@ -283,7 +283,10 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                             convertedFilePath: convertedFilePath
                         };
 
-                        if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' || files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' || files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
+                        if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' ||
+                            files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' ||
+                            files[i].originalname.split('.')[1].toLowerCase() === 'pptx' || files[i].originalname.split('.')[1].toLowerCase() === 'ppt' ||
+                            files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
                             returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.png');
                         } else {
                             returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
@@ -323,7 +326,10 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                                 regId: userId,
                                 convertedFilePath: convertedFilePath
                             };
-                            if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' || files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' || files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
+                            if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' ||
+                                files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' ||
+                                files[i].originalname.split('.')[1].toLowerCase() === 'pptx' || files[i].originalname.split('.')[1].toLowerCase() === 'ppt' ||
+                                files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
                                 returnObj.push(files[i].originalname.split('.')[0] + '.png');
                             } else {
                                 returnObj.push(files[i].originalname.split('.')[0] + '.jpg');

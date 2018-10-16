@@ -95,6 +95,11 @@ var fn_buttonEvent = function () {
     $("#ctnExtractionBtn").on("click", function () {
         fn_ContractNumExtraction();
     });
+
+    $("#reTrainBtn").on("click", function () {
+        fn_reTrain();
+    });
+
 };
 
 /****************************************************************************************
@@ -242,6 +247,209 @@ var fn_uploadFileEvent = function () {
 /****************************************************************************************
  * Function
  ****************************************************************************************/
+var fn_reTrain = function () {
+    var fileName = $('#ul_image .on img').attr('src');
+    fn_initUiTraining();
+    layer_open('layer2');
+
+    var mainImgHtml = '';
+    mainImgHtml += '<div id="popupMainImage" class="ui_mainImage">';
+    mainImgHtml += '<div id="redNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
+    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    $('#img_content').html(mainImgHtml);
+    $('#popupMainImage').css('background-image', 'url("' + fileName + '")');
+
+    fileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length);
+    var data = '';
+
+    for (var i in lineText) {
+        if (lineText[i].fileName == fileName) {
+            data = lineText[i];
+            break;
+        }
+    }
+
+    var mlData = data.data.data;
+    var columnArr = data.column;
+    var entryColArr = data.entryMappingList;
+
+    var tblTag = '';
+    var tblSortTag = '';
+
+    columnArr.unshift(columnArr.pop());
+    entryColArr.unshift(entryColArr.pop());
+
+    for (var i in mlData) {
+        // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
+        if (mlData[i].colLbl == 37) {
+            tblTag += '<dl>';
+            tblTag += '<dt onclick="zoomImg(this)">';
+            tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+            tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+            tblTag += '</label>';
+            tblTag += '</dt>';
+            tblTag += '<dd>';
+            tblTag += '<input type="checkbox" class="entryChk" checked>';
+            tblTag += '</dd>';
+            tblTag += '<dd class="columnSelect" style="display:none">';
+            tblTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblTag += '</dd>';
+            tblTag += '<dd class="entrySelect">';
+            tblTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblTag += '</dd>';
+            tblTag += '</dl>';
+        } else if (mlData[i].colLbl == 38) {
+            tblSortTag += '<dl>';
+            tblSortTag += '<dt onclick="zoomImg(this)">';
+            tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblSortTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+            tblSortTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+            tblSortTag += '</label>';
+            tblSortTag += '</dt>';
+            tblSortTag += '<dd>';
+            tblSortTag += '<input type="checkbox" class="entryChk">';
+            tblSortTag += '</dd>';
+            tblSortTag += '<dd class="columnSelect">';
+            tblSortTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblSortTag += '</dd>';
+            tblSortTag += '<dd class="entrySelect" style="display:none">';
+            tblSortTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblSortTag += '</dd>';
+            tblSortTag += '</dl>';
+        } else {
+            tblTag += '<dl>';
+            tblTag += '<dt onclick="zoomImg(this)">';
+            tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+            tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+            tblTag += '</label>';
+            tblTag += '</dt>';
+            tblTag += '<dd>';
+            tblTag += '<input type="checkbox" class="entryChk">';
+            tblTag += '</dd>';
+            tblTag += '<dd class="columnSelect">';
+            tblTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblTag += '</dd>';
+            tblTag += '<dd class="entrySelect" style="display:none">';
+            tblTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblTag += '</dd>';
+            tblTag += '</dl>';
+        }
+    }
+
+    $('#textResultTbl').append(tblTag).append(tblSortTag);
+    // input 태그 마우스오버 말풍선 Tooltip 적용
+    $('input[type=checkbox]').ezMark();
+    new $.Zebra_Tooltips($('.tip'));
+    dbSelectClickEvent();
+
+    $(".entryChk").change(function () {
+
+        if ($(this).is(":checked")) {
+            $(this).closest('dl').find('.columnSelect').hide();
+            $(this).closest('dl').find('.entrySelect').show();
+        } else {
+            $(this).closest('dl').find('.columnSelect').show();
+            $(this).closest('dl').find('.entrySelect').hide();
+        }
+
+    })
+}
+
+function dbSelectClickEvent() {
+    $('.selectBox > li').click(function (e) {
+        if ($(this).children('ul').css('display') == 'none') {
+            $('.selectBox > li').removeClass('on');
+            $('.selectBox > li > ul').hide();
+            $('.selectBox > li > ul').css('visibility', 'hidden').css('z-index', '0');
+            $(this).addClass('on');
+            $(this).children('ul').show();
+            $(this).children('ul').css('visibility', 'visible').css('z-index', '1');
+            $('.box_table_st').css('height', Number($('.box_table_st').height() + $(this).children('ul').height()) + 'px');
+        } else {
+            $(this).children('ul').hide();
+            $(this).children('ul').css('visibility', 'hidden').css('z-index', '0');
+            $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).children('ul').height()) + 'px');
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    $('.selectBox > li > ul > li').click(function (e) {
+        if ($(this).children('ul').css('display') == 'none') {
+            $('.selectBox > li > ul > li > ul').hide();
+            $('.selectBox > li > ul > li > ul').css('visibility', 'hidden');
+            $(this).children('ul').show();
+            $(this).children('ul').css('visibility', 'visible').css('z-index', '2');
+        } else {
+            $(this).children('ul').hide();
+            $(this).children('ul').css('visibility', 'hidden');
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    $('.selectBox > li > ul > li > ul > li').click(function (e) {
+        var firstCategory = $(this).parent().prev().children('span').text();
+        var lastCategory = ($(this).children('a').text() == '키워드') ? '' : ' 값';
+        $(this).parent().parent().parent().prev().text(firstCategory);
+        $(this).parent().parent().children('ul').hide();
+        $(this).parent().parent().children('ul').css('visibility', 'hidden');
+        $(this).parent().parent().parent().parent().children('ul').hide();
+        $(this).parent().parent().parent().parent().children('ul').css('visibility', 'hidden').css('z-index', '0');
+        $('.box_table_st').css('height', Number($('.box_table_st').height() - $(this).parent().parent().parent().parent().children('ul').height()) + 'px')
+        e.preventDefault();
+        e.stopPropagation();
+    });
+}
+
+// 컬럼 select html 가공 함수
+function appendOptionHtml(targetColumn, columns) {
+
+    var selectHTML = '<select>';
+    for (var i in columns) {
+        var optionHTML = '';
+        if (targetColumn == columns[i].COLNUM) {
+            optionHTML = '<option value="' + columns[i].COLNUM + '" selected>' + columns[i].COLNAME + '</option>';
+        } else {
+            optionHTML = '<option value="' + columns[i].COLNUM + '">' + columns[i].COLNAME + '</option>';
+        }
+        selectHTML += optionHTML
+    }
+    selectHTML += '</select>'
+
+    return selectHTML;
+}
+
+// Entry컬럼 select html 가공 함수
+function appendEntryOptionHtml(targetColumn, columns) {
+
+    var selectHTML = '<select>';
+    for (var i in columns) {
+        var optionHTML = '';
+        if (targetColumn == columns[i].COLNUM) {
+            optionHTML = '<option value="' + targetColumn + '" selected>' + columns[i].COLNAME + '</option>';
+        } else {
+            optionHTML = '<option value="' + targetColumn + '">' + columns[i].COLNAME + '</option>';
+        }
+        selectHTML += optionHTML
+    }
+    selectHTML += '</select>'
+
+    return selectHTML;
+}
+
+// UI학습 팝업 초기화
+var fn_initUiTraining = function () {
+    $('#imgNameTag').text('');
+    $("#uiImg").html('');
+    $("#textResultTbl").html('');
+};
+
 var fn_search = function () {
     var param = {
         docNum: nvl($("#docNum").val().toUpperCase()),
@@ -709,11 +917,17 @@ var ocrResult = function () {
 
     //행 삭제
     $('#deleteRow').click(function () {
-        $('input[name=dtl_chk]').each(function () {
-            if ($(this).is(':checked')) {
-                $(this).closest('tr').remove();
-            }
-        });
+
+        if (confirm("행 삭제를 하시겠습니까?")) {
+
+            $('input[name=dtl_chk]').each(function () {
+                if ($(this).is(':checked')) {
+                    $(this).closest('tr').remove();
+                }
+            });
+
+            $('#deleteRow').prop('disabled', true);
+        }
     });
 
     //체크박스 여부에 따른 행 삭제 버튼 활성화/비활성화
@@ -1364,8 +1578,14 @@ var thumnImg = function () {
     console.log("thumbImgs : " + thumbImgs);
     for (var i in thumbImgs) {
         if ($('#ul_image > li').length < thumnbImgPerPage) {
-            //var imageTag = '<li><a href="#none" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a></li>';
-            var imageTag = '<li><a href="#none" class="imgtmb thumb-img"><img src="../../uploads/' + thumbImgs[i] + '" style="width: 48px; background-color:white" /></a></li>';
+            var imageTag = '';
+
+            if (i == 0) {
+                imageTag = '<li class="on"><a href="#none" class="imgtmb thumb-img"><img src="../../uploads/' + thumbImgs[i] + '" style="width: 48px; background-color:white" /></a></li>';
+            } else {
+                imageTag = '<li><a href="#none" class="imgtmb thumb-img"><img src="../../uploads/' + thumbImgs[i] + '" style="width: 48px; background-color:white" /></a></li>';
+            }
+            
             $('#ul_image').append(imageTag);
         } else {
             break;
@@ -1420,7 +1640,7 @@ var thumbImgPaging = function (pageCount) {
 // 썸네일 이미지 클릭 이벤트
 var thumbImgEvent = function () {
     $('.thumb-img').click(function () {
-        $('#imageBox > li').removeClass('on');
+        $('#ul_image > li').removeClass('on');
         $(this).parent().addClass('on');
         $('#mainImage').css('background-image', 'url("' + $(this).children().attr("src") + '")');
         //$('#mainImage').css('background-image', $(this).children().prop('src'));
