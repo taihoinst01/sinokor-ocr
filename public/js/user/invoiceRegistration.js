@@ -709,11 +709,17 @@ var ocrResult = function () {
 
     //행 삭제
     $('#deleteRow').click(function () {
-        $('input[name=dtl_chk]').each(function () {
-            if ($(this).is(':checked')) {
-                $(this).closest('tr').remove();
-            }
-        });
+
+        if (confirm("행 삭제를 하시겠습니까?")) {
+
+            $('input[name=dtl_chk]').each(function () {
+                if ($(this).is(':checked')) {
+                    $(this).closest('tr').remove();
+                }
+            });
+
+            $('#deleteRow').prop('disabled', true);
+        }
     });
 
     //체크박스 여부에 따른 행 삭제 버튼 활성화/비활성화
