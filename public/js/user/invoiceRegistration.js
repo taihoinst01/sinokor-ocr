@@ -1562,7 +1562,7 @@ var fn_docEvent = function () {
             if ($('input[name="base_chk"]:checked').length > 0) {
                 var docNumArr = [];
                 $('input[name="base_chk"]:checked').each(function (i, e) {
-                    if ($('#userId').val() == $(e).closest('td').children().eq(3).text()) {
+                    if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
                         docNumArr.push($(e).val());
                     }
                 });
