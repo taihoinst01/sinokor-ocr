@@ -8,6 +8,8 @@ var router = express.Router();
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
+var sync = require('../util/sync.js');
+var batch = require('../util/myApproval.js');
 
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
@@ -35,7 +37,7 @@ var callbackApprovalList = function (rows, req, res) {
 var fnSearchApprovalList = function (req, res) {
     // 조회 조건 생성
     var condQuery = ``;
-    var orderQuery = ` ORDER BY DEADLINEDT ASC `;
+    var orderQuery = ` ORDER BY DOCNUM ASC `;
     var param = {
         docNum: commonUtil.nvl(req.body.docNum),
         faoTeam: commonUtil.nvl(req.body.faoTeam),
@@ -47,17 +49,17 @@ var fnSearchApprovalList = function (req, res) {
         approvalState: commonUtil.nvl(req.body.approvalState)
     };
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
-    if (!commonUtil.isNull(param["faoTeam"])) condQuery += ` AND FAOTEAM = '${param["faoTeam"]}' `;
-    if (!commonUtil.isNull(param["faoPart"])) condQuery += ` AND FAOPART = '${param["faoPart"]}' `;
-    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND DOCUMENTMANAGER = '${param["documentManager"]}' `;
-    if (!commonUtil.isNull(param["deadLineDt"])) condQuery += ` AND DEADLINEDT = '${param["deadLineDt"]}' `;
+    //if (!commonUtil.isNull(param["faoTeam"])) condQuery += ` AND FAOTEAM = '${param["faoTeam"]}' `;
+    //if (!commonUtil.isNull(param["faoPart"])) condQuery += ` AND FAOPART = '${param["faoPart"]}' `;
+    //if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND DOCUMENTMANAGER = '${param["documentManager"]}' `;
+    //if (!commonUtil.isNull(param["deadLineDt"])) condQuery += ` AND DEADLINEDT = '${param["deadLineDt"]}' `;
     //if (!commonUtil.isNull(param["searchStartDate"]) && !commonUtil.isNull(param["searchEndDate"]))
     //    condQuery += ` AND REGDT BETWEEN TO_DATE('${param["searchStartDate"]}', 'yyyymmdd') AND TO_DATE('${param["searchEndDate"]}', 'yyyymmdd') `;
-    if (!commonUtil.isNull(param["approvalState"])) condQuery += ` AND APPROVALSTATE IN ${param["approvalState"]} `;
+    if (!commonUtil.isNull(param["approvalState"])) condQuery += ` AND STATUS IN ${param["approvalState"]} `;
 
-    var approvalListQuery = queryConfig.myApprovalConfig.selectApprovalList;
+    var approvalListQuery = "SELECT * FROM TBL_APPROVAL_MASTER WHERE NOWNUM = '" + param.documentManager + "'";
     var listQuery = approvalListQuery + condQuery + orderQuery;
-    console.log("base listQuery : " + listQuery);
+    //console.log("base listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackApprovalList, req, res);
 };
 

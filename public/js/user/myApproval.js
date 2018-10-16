@@ -223,23 +223,21 @@ var fn_search = function () {
             //addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
+            console.log(data);
             //$("#div_base").hide();
             //addProgressBar(2, 99); // proceed progressbar
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     var state = "";
-                    switch (nvl(entry['APPROVALSTATE'])) {
-                        case "P":
+                    switch (nvl(entry['STATUS'])) {
+                        case "02":
                             state = "진행";
                             break;
-                        case "C":
+                        case "03":
                             state = "승인";
                             break;
-                        case "R":
+                        case "04":
                             state = "반려";
-                            break;
-                        case "U":
-                            state = "업로드";
                             break;
                         default:
                             break;

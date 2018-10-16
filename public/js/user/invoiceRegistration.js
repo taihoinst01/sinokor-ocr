@@ -117,6 +117,7 @@ var fn_uploadFileEvent = function () {
     });
 
     $("#uploadFileBtn").click(function () {
+		thumbImgs = [];
         $("#uploadFile").click();
     });
 
@@ -140,10 +141,13 @@ var fn_uploadFileEvent = function () {
             totCount = responseText.fileDtlInfo.length;
             // 문서 기본 정보 처리
             fn_processBaseImage(responseText.fileInfo);
+
+            /*
             // 인식 결과 및 ML 처리
-            for (var i = 0, x = responseText.fileDtlInfo.length; i < x; i++) {
+            for (var i = 0, x = responseText.fileInfo[0].pageCount; i < x; i++) {
                 fn_processDtlImage(responseText.fileDtlInfo[i]);
             }
+            */
 
             //endProgressBar();
         },
@@ -471,7 +475,7 @@ var fn_search = function () {
         },
         success: function (data) {
             var appendHtml = "";
-            console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
+            //console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     appendHtml += '<tr id="tr_base_' + entry.SEQNUM + '-' + entry.DOCNUM + '-' + entry.STATUS + '">' +
@@ -649,7 +653,7 @@ var fn_clickEvent = function () {
         var numArr = id.replace("tr_base_", "");
         var seqNum = numArr.split("-")[0];
         var docNum = numArr.split("-")[1];
-        fn_search_dtl(seqNum, docNum); // document_dtl 조회
+        fn_search_dtl(docNum); // document_dtl 조회
     });
     // Document DTL 클릭 시 이미지 조회
     $("td[name='td_dtl']").on("click", function () {
@@ -659,10 +663,9 @@ var fn_clickEvent = function () {
     });
 };
 
-var fn_search_dtl = function (seqNum, docNum) {
+var fn_search_dtl = function (docNum) {
     //DB 조회후 클릭시 파일 정보 읽어와서 ocr 보냄
     var param = {
-        seqNum: seqNum,
         docNum: docNum
     };
 
@@ -678,20 +681,19 @@ var fn_search_dtl = function (seqNum, docNum) {
             addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
+            //console.log(data);
             addProgressBar(2, 99); // proceed progressbar
-
             for (var i in data.docData) {
 
                 var obj = {};
-                obj.imgId = data.docData[i].DOCNUM;
+                obj.imgId = data.docData[i].IMGID;
                 obj.convertedFilePath = data.fileRootPath;
                 obj.filePath = data.docData[i].FILEPATH;
-                obj.oriFileName = data.docData[i].FILENAME.split('.')[0] + '.jpg';
-                obj.convertFileName = data.docData[i].FILENAME.split('.')[0] + '.jpg';
-
+                obj.oriFileName = data.docData[i].ORIGINFILENAME;
+                obj.convertFileName = data.docData[i].ORIGINFILENAME;
                 fn_processDtlImage(obj);
             }
-
+            
             endProgressBar(); // end progressbar
         }, error: function (err) {
             endProgressBar(); // end progressbar
@@ -936,15 +938,9 @@ var ocrResult = function () {
 
     //체크박스 여부에 따른 행 삭제 버튼 활성화/비활성화
     $(document).on('click', 'input[name=dtl_chk]', function () {
-        var hasChk = false;
-        $('input[name = dtl_chk]').each(function () {
-            if ($(this).is(':checked')) {
-                hasChk = true;
-                return false;
-            }
-        });
 
-        if (hasChk) {
+        var chkCnt = $('input[name="dtl_chk"]:checked').length;
+        if (chkCnt >= 1) {
             $('#deleteRow').attr('disabled', false);
         } else {
             $('#deleteRow').attr('disabled', true);
@@ -997,6 +993,7 @@ var fn_processBaseImage = function (fileInfo) {
                 $("#tbody_baseList input[type=checkbox]").ezMark();
                 $("#div_base").css("display", "block");
                 fn_clickEvent();
+				fn_search_dtl(fileInfo[0].imgId);
             } else {
                 console.log(data.error);
             }
@@ -1579,7 +1576,7 @@ var thumbImgPagingEvent = function () {
 
 // 초기 썸네일 이미지 렌더링
 var thumnImg = function () {
-    console.log("thumbImgs : " + thumbImgs);
+    //console.log("thumbImgs : " + thumbImgs);
     for (var i in thumbImgs) {
         if ($('#ul_image > li').length < thumnbImgPerPage) {
             var imageTag = '';

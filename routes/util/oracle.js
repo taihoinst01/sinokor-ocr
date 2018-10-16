@@ -2482,7 +2482,7 @@ exports.insertDocument = function (req, done) {
             await conn.execute(`INSERT INTO
                                     TBL_APPROVAL_MASTER(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM )
                                 VALUES
-                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :nowNum) `, [req[0][0].imgId, req[0].length, req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
+                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :nowNum) `, [req[0][0].imgId, req[1], req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);

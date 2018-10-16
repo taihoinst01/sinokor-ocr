@@ -140,7 +140,6 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         var files = req.files;
         var endCount = 0;
         var fileInfo = [];
-        var fileInfo2 = [];
         var fileDtlInfo = [];
         var returnObj = [];
         var convertType = '';
@@ -148,7 +147,8 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         var convertedImagePath = appRoot + '\\uploads\\';
 
         for (var i = 0; i < files.length; i++) {
-            fileInfo2 = [];
+            var fileInfo2 = [];
+            var fileDtlInfoTemp = [];
             var imgId = 'ICR';
             var date = new Date();
             var yyyymmdd = String(date.getFullYear()) + String(date.getMonth() + 1) + String(date.getDate());
@@ -163,7 +163,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                     imgId += Number(maxDocNum.substring(3, 18)) + 1;
                 }
             }
-            console.log(imgId);
+            //console.log(imgId);
             var ifile = "";
             var ofile = "";
 
@@ -295,6 +295,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                         }
                         
                         fileDtlInfo.push(fileDtlParam);          // 변환 후 JPG 파일 정보
+						fileDtlInfoTemp.push(fileDtlParam);
                     } else {
                         isStop = true;
                         break;
@@ -337,6 +338,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                                 returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
                             }
                             fileDtlInfo.push(fileDtlParam);         // 변환 후 JPG 파일 정보
+							fileDtlInfoTemp.push(fileDtlParam);
                             break;
                         }
                     } catch (e) {
@@ -346,7 +348,8 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 j++;
             }
             endCount++;
-            sync.await(oracle.insertDocument([fileInfo2], sync.defer()));
+            sync.await(oracle.insertDocument([fileInfo2, fileDtlInfoTemp.length], sync.defer()));
+            fileInfo[i].pageCount = fileDtlInfoTemp.length;
         }
 
         // TBL_DOCUMENT insert
@@ -427,7 +430,7 @@ router.post('/selectDocument', function (req, res) {
         inputDocNum += "'" + req.body.fileInfo[i].imgId + "'" + ", ";
     }
     var inputDocNum2 = inputDocNum.substring(0, inputDocNum.length - 2);
-    console.log("SELECT문에 삽입될 IMGID 값 : " + inputDocNum2);
+    //console.log("SELECT문에 삽입될 IMGID 값 : " + inputDocNum2);
     sync.fiber(function () {
         try {
             var result = sync.await(oracle.selectDocument(inputDocNum2, sync.defer()));
@@ -445,8 +448,8 @@ router.post('/selectOcrFileDtl', function (req, res) {
     var docNum = req.body.docNum;
     sync.fiber(function () {
         try {
-            //var result = sync.await(oracle.selectOcrFileDtl(imgId, sync.defer()));
-            var result = sync.await(oracle.selectApprovalMasterFromDocNum(docNum, sync.defer()));
+            var result = sync.await(oracle.selectOcrFileDtl(docNum, sync.defer()));
+            //var result = sync.await(oracle.selectApprovalMasterFromDocNum(docNum, sync.defer()));
             returnObj = { code: 200, docData: result, fileRootPath: appRoot + '\\uploads\\'  };
         } catch (e) {
             returnObj = { code: 200, error: e };
