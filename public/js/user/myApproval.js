@@ -249,8 +249,8 @@ var fn_search = function () {
                         '<td name="td_base">' + entry["DOCNUM"] + '</td>' +
                         '<td name="td_base">' + nvl(entry["PAGECNT"]) + '</td>' +
                         '<td name="td_base">' + nvl(entry["DEADLINEDT"]) + '</td>' +
-                        '<td class="selectTd">' + makeApprovalReporter(docId, entry["APPROVALREPORTER"]) + '</td>' +
-                        '<td class="selectTd">' + makeDocumentManager(docId, entry["DOCUMENTMANAGER"]) + '</td>' +
+                        '<td class="td_base">' + nvl(entry["ICRNUM"]) + '</td>' +
+                        '<td class="td_base">' + nvl(entry["NOWNUM"]) + '</td>' +
                         '<td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="memo_' + docId + '" class="inputst_box01" value="' + nvl(entry["MEMO"]) + '" /></td>' +
                         '<td name="td_base">' + state + '</td>' +
                         '</tr>';
