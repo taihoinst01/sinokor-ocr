@@ -292,7 +292,7 @@ var fn_search = function () {
 };
 
 var fn_searchDocEnterEvent = function () {
-    $('#docNum').keyup(function (e) {
+    $('#docNum, #documentManager').keyup(function (e) {
         if (e.keyCode == 13) $('#btn_search').click();
     });
 };
@@ -451,7 +451,7 @@ var fn_search_dtl = function (seqNum, docNum) {
     //DB 조회후 클릭시 파일 정보 읽어와서 ocr 보냄
     var param = {
         seqNum: seqNum,
-        imgId: docNum
+        docNum: docNum
     };
 
     $.ajax({
@@ -471,11 +471,11 @@ var fn_search_dtl = function (seqNum, docNum) {
             for (var i in data.docData) {
 
                 var obj = {};
-                obj.imgId = data.docData[i].IMGID;
+                obj.imgId = data.docData[i].DOCNUM;
                 obj.convertedFilePath = data.fileRootPath;
                 obj.filePath = data.docData[i].FILEPATH;
-                obj.oriFileName = data.docData[i].ORIGINFILENAME;
-                obj.convertFileName = data.docData[i].ORIGINFILENAME;
+                obj.oriFileName = data.docData[i].FILENAME.split('.')[0] + '.jpg';
+                obj.convertFileName = data.docData[i].FILENAME.split('.')[0] + '.jpg';
 
                 fn_processDtlImage(obj);
             }
@@ -1081,7 +1081,6 @@ function fn_processFinish(data, fileDtlInfo) {
         data: JSON.stringify({cdnNm: cdnNm, ctNm: ctNm, ttyYy: ttyYy}),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
             var dtlHtml = '';
             for (var i in data.data) {
                 // TODO : 분석 결과를 정리하고 1 record로 생성한다.
@@ -1133,7 +1132,6 @@ function fn_processFinish(data, fileDtlInfo) {
         error: function (err) {
             console.log(err);
             endProgressBar(progressId);
-            //endProgressBar();
         }
     });
 
@@ -1155,6 +1153,10 @@ function fn_processFinish(data, fileDtlInfo) {
         appendMLSelect += '</select>';
         return hasColvalue ? appendMLSelect : '';
     }
+}
+
+function fn_ContractNumExtraction() {
+
 }
 
 // 인식 결과 처리
@@ -1586,12 +1588,12 @@ var fn_docEvent = function () {
         var param = {
             docManagerChk: $('#docManagerChk').is(':checked'),
             icrManagerChk: $('#icrManagerChk').is(':checked'),
+            middleManagerChk: $('#middleManagerChk').is(':checked'),
             approvalManagerChk: $('#approvalManagerChk').is(':checked'),
             keyword: $('#searchManger').val().trim(),
             team: $('#select_team').val(),
             part: $('#select_part').val()
         };
-
 
         $.ajax({
             url: '/common/selectUserInfo',

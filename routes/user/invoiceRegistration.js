@@ -80,7 +80,7 @@ var fnSearchDocumentList = function (req, res) {
     };
 
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
-    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM = '${param["documentManager"]}' `;
+    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM LIKE '%${param["documentManager"]}%' `;
     if (commonUtil.isNull(param["docNum"]) && commonUtil.isNull(param["documentManager"]) && req.user.icrApproval == 'Y') condQuery += " AND NOWNUM = '" + req.user.userId + "' ";
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
     var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
@@ -413,11 +413,12 @@ router.post('/selectDocument', function (req, res) {
 
 router.post('/selectOcrFileDtl', function (req, res) {
     var returnObj = {};
-    var imgId = req.body.imgId;
+    var docNum = req.body.docNum;
     sync.fiber(function () {
         try {
-            var result = sync.await(oracle.selectOcrFileDtl(imgId, sync.defer()));
-            returnObj = { code: 200, docData: result, fileRootPath: appRoot + '/uploads/'  };
+            //var result = sync.await(oracle.selectOcrFileDtl(imgId, sync.defer()));
+            var result = sync.await(oracle.selectApprovalMasterFromDocNum(docNum, sync.defer()));
+            returnObj = { code: 200, docData: result, fileRootPath: appRoot + '\\uploads\\'  };
         } catch (e) {
             returnObj = { code: 200, error: e };
         } finally {
