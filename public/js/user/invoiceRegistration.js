@@ -1561,7 +1561,7 @@ var fn_docEvent = function () {
         if ($('#icrApproval').val() == 'Y') {
             if ($('input[name="base_chk"]:checked').length > 0) {
                 var docNumArr = [];
-                $('input[name="base_chk"]:checked').each(function (i, e) {                   
+                $('input[name="base_chk"]:checked').each(function (i, e) {
                     if ($('#userId').val() == $(e).closest('td').children().eq(3).text()) {
                         docNumArr.push($(e).val());
                     }
@@ -1579,24 +1579,25 @@ var fn_docEvent = function () {
                 alert('반려 할 문서가 없습니다.');
             }
         }
-        else if($('#scanApproval').val() == 'Y) {
+        else if ($('#scanApproval').val() == 'Y') {
             var isCheckboxYn = false;
-        var arr_checkboxYn = document.getElementsByName("base_chk");
-        for (var i = 0; i < arr_checkboxYn.length; i++) {
-            if (arr_checkboxYn[i].checked == true) {
-                isCheckboxYn = true;
-                break;
+            var arr_checkboxYn = document.getElementsByName("base_chk");
+
+            for (var i = 0; i < arr_checkboxYn.length; i++) {
+                if (arr_checkboxYn[i].checked == true) {
+                    isCheckboxYn = true;
+                    break;
+                }
             }
-        }
-        if (isCheckboxYn) {
-            layer_open('layer1');
-        } else {
-            alert("전달할 문서를 선택하세요.");
-        }
-        }
+            if (isCheckboxYn) {
+                layer_open('layer1');
+            } else {
+                alert("전달할 문서를 선택하세요.");
+            }
+        }        
         else {
             layer_open('layer1');
-        }
+        }       
     });
 
     $('#btn_pop_user_search').click(function () {
