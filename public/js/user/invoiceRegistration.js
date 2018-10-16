@@ -1510,7 +1510,20 @@ var fn_docEvent = function () {
 
     //전달
     $('#sendDocBtn').click(function () {
-        layer_open('layer1');   
+        //문서 체크여부 확인
+        var isCheckboxYn = false;
+        var arr_checkboxYn = document.getElementsByName("base_chk");
+        for (var i = 0; i < arr_checkboxYn.length; i++) {
+            if (arr_checkboxYn[i].checked == true) {
+                isCheckboxYn = true;
+                break;
+            }
+        }
+        if (isCheckboxYn) {
+            layer_open('layer1');
+        } else {
+            alert("전달할 문서를 선택하세요.");
+        } 
     });
 
     $('#btn_pop_user_search').click(function () {
@@ -1540,7 +1553,7 @@ var fn_docEvent = function () {
                     if (data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
                             appendHtml += '<tr>' +
-                                '<td><input type="checkbox"/></td>' +
+                                '<td><input type="checkbox" name="btn_pop_user_search_base_chk"/></td>' +
                                 '<td>' + data[i].USERID + '</td>' +
                                 '<td>소속팀</td>' +
                                 '<td>소속파트</td>' +
@@ -1560,8 +1573,75 @@ var fn_docEvent = function () {
         });
     })
 
+    //결제담당자 선택시 발생이벤트.
     $("#btn_pop_user_choice").click(function () {
-        
+        //선택된 유저ID 추출(단일 건)
+        var userChoiceRowData = new Array();
+        var userChoiceTdArr = new Array();
+        var popUserCheckbox = $("input[name=btn_pop_user_search_base_chk]:checked");
+
+        //선택된 문서번호 추출(단일 or 다중 건)
+        var docNumRowData = new Array();
+        var docNumTdArr = new Array();
+        var popDocnumCheckbox = $("input[name=base_chk]:checked");
+        var deleteTr = [];
+        // 체크된 문서번호 값을 가져온다
+        popDocnumCheckbox.each(function (i) {
+            var popDoctr = popDocnumCheckbox.parent().parent().parent().eq(i);
+            var popDoctd = popDoctr.children();
+
+            // 체크된 row의 모든 값을 배열에 담는다.
+            docNumRowData.push(popDoctd.text());
+
+            // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
+            var docNum = popDoctd.eq(1).text();
+
+            // 가져온 값을 배열에 담는다.
+            docNumTdArr.push(docNum);
+            deleteTr.push(popDoctr);
+        });
+        // 체크된 체크박스 값을 가져온다
+        popUserCheckbox.each(function (i) {
+            var popUsertr = popUserCheckbox.parent().parent().parent().eq(i);
+            var popUsertd = popUsertr.children();
+
+            userChoiceRowData.push(popUsertr.text());
+
+            var userId = popUsertd.eq(1).text();
+
+            userChoiceTdArr.push(userId);
+        });
+
+        if (userChoiceTdArr.length > 1) {
+            alert("한명의 담당자만 선택 가능합니다.");
+        }
+        else {
+            if (confirm(userChoiceTdArr[0] + "를 선택하셨습니다. 결제를 진행하시겠습니까?")) { 
+            $.ajax({
+                url: '/invoiceRegistration/sendDocument',
+                type: 'post',
+                datatype: "json",
+                data: JSON.stringify({
+                    'userId': userChoiceTdArr,
+                    'docNum': docNumTdArr
+                }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
+                        $('#layer1').fadeOut();
+                        var totCnt = $("input[name = base_chk]");
+                        $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + '건');
+                        for (var i in deleteTr) {
+                            deleteTr[i].remove();
+                        }
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+                });
+            }
+        }
     });
 
     //저장
