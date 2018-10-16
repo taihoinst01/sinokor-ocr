@@ -19,6 +19,11 @@
     <!-- // 계산서 조회 전용 js -->
 </head>
 <body>
+    <input type="hidden" id="scanApproval" value="<%=currentUser.scanApproval%>" />
+    <input type="hidden" id="icrApproval" value="<%=currentUser.icrApproval%>" />
+    <input type="hidden" id="middleApproval" value="<%=currentUser.middleApproval%>" />
+    <input type="hidden" id="lastApproval" value="<%=currentUser.lastApproval%>" />
+
     <div id="mask"></div>
     <div id="wrap">
         <!--로딩바-->
@@ -187,8 +192,7 @@
                                         <col style="width:170px" />
                                         <col style="width:50px" />
                                     </colgroup>
-                                    <tbody id="tbody_baseList">
-                                    </tbody>
+                                    <tbody id="tbody_baseList"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -250,16 +254,14 @@
                                                     <col style="width:120px" />
                                                     <col style="width:120px" />
                                                 </colgroup>
-                                                <tbody id="tbody_dtlList">
-
-                                                </tbody>
+                                                <tbody id="tbody_dtlList"></tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </td>
                             </tr>
                         </table>
-                        
+
                     </div>
                     <!-- // 상세결재리스트 영역 -->
 
@@ -275,8 +277,7 @@
                     <div class="box_imgtmb">
                         <button type="button" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
                         <div id="touchSlider">
-                            <ul id="ul_image">
-                            </ul>
+                            <ul id="ul_image"></ul>
                         </div>
                         <button type="button" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
                         <div id="count" class="count"><span>1</span> / 1</div>
