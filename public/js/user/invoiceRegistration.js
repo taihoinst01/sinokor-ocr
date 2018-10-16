@@ -93,7 +93,7 @@ var fn_buttonEvent = function () {
     });
 
     $("#ctnExtractionBtn").on("click", function () {
-        fn_ctnExtraction();
+        fn_ContractNumExtraction();
     });
 };
 
@@ -1057,6 +1057,81 @@ function fn_processFinish(data, fileDtlInfo) {
     var dataVal = data.data;
     dataObj["imgId"] = fileDtlInfo.imgId;
 
+
+    // TODO : 분석 결과를 정리하고 1 record로 생성한다.
+    var dtlHtml = '<tr>' +
+        '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
+        '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
+        '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
+        '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
+        '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
+        '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
+        '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
+        '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+        '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
+        '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+        '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
+        '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+        '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+        '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+        '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+        '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
+        '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+        '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
+        '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
+        '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+        '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
+        '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+        '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+        '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+        '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+        '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
+        '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+        '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
+        '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+        '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+        '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+        '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+        '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+        '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
+        '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
+        '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+        '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+        '</tr>';
+
+    $("#tbody_dtlList").empty().append(dtlHtml);
+    $("#tbody_dtlList input[type=checkbox]").ezMark();
+    $("#div_dtl").css("display", "block");
+    function makeMLSelect(mlData, colnum, entry) {
+
+        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        appendMLSelect += '<option value="선택">선택</option>';
+        var hasColvalue = false;
+        for (var y = 0; y < mlData.length; y++) {
+
+            if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
+                hasColvalue = true;
+                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+            } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
+                hasColvalue = true;
+                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+            }
+        }
+        appendMLSelect += '</select>';
+        return hasColvalue ? appendMLSelect : '';
+    }
+}
+
+//계약 번호 추출
+function fn_ContractNumExtraction() {
+    //console.log("data : " + JSON.stringify(data));
+    //console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
+    
+    var dataObj = {};
+    var dataVal = lineText[0].data.data;
+    var fileName = lineText[0].fileName;
+    dataObj["imgId"] = $("input[name='dtl_chk']").val();
+
     var cdnNm = '';
     var ctNm = '';
     var ttyYy = '';
@@ -1080,6 +1155,10 @@ function fn_processFinish(data, fileDtlInfo) {
         async: false,
         data: JSON.stringify({cdnNm: cdnNm, ctNm: ctNm, ttyYy: ttyYy}),
         contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("계약번호 추출 중..");
+            progressId = showProgressBar();
+        },
         success: function (data) {
             var dtlHtml = '';
             for (var i in data.data) {
@@ -1128,6 +1207,8 @@ function fn_processFinish(data, fileDtlInfo) {
             $("#tbody_dtlList").empty().append(dtlHtml);
             $("#tbody_dtlList input[type=checkbox]").ezMark();
             $("#div_dtl").css("display", "block");
+
+            endProgressBar(progressId);
         },
         error: function (err) {
             console.log(err);
@@ -1137,7 +1218,7 @@ function fn_processFinish(data, fileDtlInfo) {
 
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileName + '\')">';
         appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
@@ -1153,10 +1234,6 @@ function fn_processFinish(data, fileDtlInfo) {
         appendMLSelect += '</select>';
         return hasColvalue ? appendMLSelect : '';
     }
-}
-
-function fn_ContractNumExtraction() {
-
 }
 
 // 인식 결과 처리
