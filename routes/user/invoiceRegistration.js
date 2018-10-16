@@ -413,11 +413,12 @@ router.post('/selectDocument', function (req, res) {
 
 router.post('/selectOcrFileDtl', function (req, res) {
     var returnObj = {};
-    var imgId = req.body.imgId;
+    var docNum = req.body.docNum;
     sync.fiber(function () {
         try {
-            var result = sync.await(oracle.selectOcrFileDtl(imgId, sync.defer()));
-            returnObj = { code: 200, docData: result, fileRootPath: appRoot + '/uploads/'  };
+            //var result = sync.await(oracle.selectOcrFileDtl(imgId, sync.defer()));
+            var result = sync.await(oracle.selectApprovalMasterFromDocNum(docNum, sync.defer()));
+            returnObj = { code: 200, docData: result, fileRootPath: appRoot + '\\uploads\\'  };
         } catch (e) {
             returnObj = { code: 200, error: e };
         } finally {

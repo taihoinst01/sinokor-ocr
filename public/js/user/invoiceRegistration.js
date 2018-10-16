@@ -451,7 +451,7 @@ var fn_search_dtl = function (seqNum, docNum) {
     //DB 조회후 클릭시 파일 정보 읽어와서 ocr 보냄
     var param = {
         seqNum: seqNum,
-        imgId: docNum
+        docNum: docNum
     };
 
     $.ajax({
@@ -471,11 +471,11 @@ var fn_search_dtl = function (seqNum, docNum) {
             for (var i in data.docData) {
 
                 var obj = {};
-                obj.imgId = data.docData[i].IMGID;
+                obj.imgId = data.docData[i].DOCNUM;
                 obj.convertedFilePath = data.fileRootPath;
                 obj.filePath = data.docData[i].FILEPATH;
-                obj.oriFileName = data.docData[i].ORIGINFILENAME;
-                obj.convertFileName = data.docData[i].ORIGINFILENAME;
+                obj.oriFileName = data.docData[i].FILENAME.split('.')[0] + '.jpg';
+                obj.convertFileName = data.docData[i].FILENAME.split('.')[0] + '.jpg';
 
                 fn_processDtlImage(obj);
             }
