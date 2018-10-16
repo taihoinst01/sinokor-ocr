@@ -1718,6 +1718,32 @@ var fn_docEvent = function () {
         }
     });
 
+
+    //전달/결재상신버튼 클릭 시 발생이벤트.
+    $('#sendApprovalBtn').click(function () {
+        //선택된 문서번호 추출(단일 or 다중 건)
+        var docNumRowData = new Array();
+        var docNumTdArr = new Array();
+        var popDocnumCheckbox = $("input[name=base_chk]:checked");
+        var deleteTr = [];
+
+        // 체크된 문서번호 값을 가져온다
+        popDocnumCheckbox.each(function (i) {
+            var popDoctr = popDocnumCheckbox.parent().parent().parent().eq(i);
+            var popDoctd = popDoctr.children();
+
+            // 체크된 row의 모든 값을 배열에 담는다.
+            docNumRowData.push(popDoctd.text());
+
+            // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
+            var docNum = popDoctd.eq(1).text();
+            var pageCnt = popDoctd.eq(2).text();
+            var nowNum = 
+            // 가져온 값을 배열에 담는다.
+            docNumTdArr.push(docNum);
+            deleteTr.push(popDoctr);
+        });
+    });
     //저장
 }
 
