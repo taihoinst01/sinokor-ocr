@@ -731,8 +731,19 @@ var ocrResult = function () {
         } else {
             $('#deleteRow').attr('disabled', true);
         }
-    })
+    });
+
+    //셀렉트박스 더블클릭시 수정폼
+    $(document).on('dblclick', '.selectDbClick', function () {
+        var selectVal = $(this).val().split('_')[1] == undefined ? "" : $(this).val().split('_')[1];
+        var editHtml = '<input type="text" value="' + selectVal + '">';
+        var td = $(this).closest('td');
+        td.empty().append(editHtml);
+        td.find('input[type=text]').focus();
+    });
 }
+
+
 
 /****************************************************************************************
  * ML
@@ -1017,7 +1028,7 @@ function fn_processFinish_Old1(data) {
     $("#div_dtl").css("display", "block");
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
         appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
@@ -1126,17 +1137,17 @@ function fn_processFinish(data, fileDtlInfo) {
 
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
         appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
@@ -1477,7 +1488,7 @@ function zoomImg(e, fileName) {
     $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
 
     // 사각형 좌표값
-    var location = $(e).val().split(',');
+    var location = $(e).val().split('_')[0].split(',');
     x = parseInt(location[0]);
     y = parseInt(location[1]);
     textWidth = parseInt(location[2]);
