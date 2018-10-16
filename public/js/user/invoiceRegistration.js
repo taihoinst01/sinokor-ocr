@@ -1637,26 +1637,27 @@ var fn_docEvent = function () {
     $('#sendDocBtn').click(function () {
         if ($('#icrApproval').val() == 'Y') {
             if ($('input[name="base_chk"]:checked').length > 0) {
-                var docNumArr = [];
-                $('input[name="base_chk"]:checked').each(function (i, e) {
-                    if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
-                        docNumArr.push($(e).val());
-                    }
-                });
-                if (docNumArr.length > 0) {
-                    refuseDoc('icrApproval', docNumArr);
-                } else {
+                if (confirm('반려 하시겠습니까?')) {
+                    var docNumArr = [];
                     $('input[name="base_chk"]:checked').each(function (i, e) {
-                        $(e).parent().removeClass('ez-checked');
-                        $(e).prop('checked', false);
+                        if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
+                            docNumArr.push($(e).val());
+                        }
                     });
-                    alert('반려 할 문서가 없습니다.(문서 담당자가 아닙니다)');
+                    if (docNumArr.length > 0) {
+                        refuseDoc('icrApproval', docNumArr);
+                    } else {
+                        $('input[name="base_chk"]:checked').each(function (i, e) {
+                            $(e).parent().removeClass('ez-checked');
+                            $(e).prop('checked', false);
+                        });
+                        alert('반려 할 문서가 없습니다.(문서 담당자가 아닙니다)');
+                    }
                 }
             } else {
                 alert('반려 할 문서가 없습니다.');
             }
-        }
-        else if ($('#scanApproval').val() == 'Y') {
+        } else if ($('#scanApproval').val() == 'Y') {
             var isCheckboxYn = false;
             var arr_checkboxYn = document.getElementsByName("base_chk");
 
