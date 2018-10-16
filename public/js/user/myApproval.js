@@ -207,7 +207,7 @@ var fn_search = function () {
         searchEndDate: nvl($("#searchEndDate").val()),
         approvalState: approvalState
     };
-    console.log("조건 : " + JSON.stringify(param));
+    //console.log("조건 : " + JSON.stringify(param));
 
     var progressId;
     var appendHtml = "";
@@ -244,17 +244,26 @@ var fn_search = function () {
                             break;
                     }
                     var docId = nvl(entry['SEQNUM']) + '-' + nvl(entry['DOCNUM']);
-                    appendHtml +=
-                        '<tr id="tr_base_' + entry["SEQNUM"] + '-' + entry["DOCNUM"] + '-' + entry["APPROVALSTATE"] + '" style="cursor:pointer">' +
-                        '<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + docId + '" class="sta00 stck_tr" name="chk_document" /></div></th>' +
-                        '<td name="td_base">' + entry["DOCNUM"] + '</td>' +
-                        '<td name="td_base">' + nvl(entry["PAGECNT"]) + '</td>' +
-                        '<td name="td_base">' + nvl(entry["DEADLINEDT"]) + '</td>' +
-                        '<td class="td_base">' + nvl(entry["ICRNUM"]) + '</td>' +
-                        '<td class="td_base">' + nvl(entry["NOWNUM"]) + '</td>' +
-                        '<td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="memo_' + docId + '" class="inputst_box01" value="' + nvl(entry["MEMO"]) + '" /></td>' +
-                        '<td name="td_base">' + state + '</td>' +
-                        '</tr>';
+                    if ($('#middleApproval').val() == 'Y' || $('#lastApproval').val() == 'Y') {
+                        appendHtml +=
+                            '<tr id="tr_base_' + entry["SEQNUM"] + '-' + entry["DOCNUM"] + '-' + entry["APPROVALSTATE"] + '" style="cursor:pointer">' +
+                            '<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + docId + '" class="sta00 stck_tr" name="chk_document" /></div></th>' +
+                            '<td name="td_base">' + entry["DOCNUM"] + '</td>' +
+                            '<td name="td_base">' + nvl(entry["PAGECNT"]) + '</td>' +
+                            '<td name="td_base">' + nvl(entry["DEADLINEDT"]) + '</td>';
+                        if ($('#middleApproval').val() == 'Y') {
+                            appendHtml += '<td class="td_base">' + nvl(entry["ICRNUM"]) + '</td>';
+                        } else {
+                            appendHtml += '<td class="td_base" > ' + nvl(entry["MIDDLENUM"]) + '</td>';
+                        }
+                        appendHtml +=
+                            '<td class="td_base">' + nvl(entry["NOWNUM"]) + '</td>' +
+                            '<td><label for="intxt_001" class="blind">메모1</label><input type="text" name="intxt_0" id="memo_' + docId + '" class="inputst_box01" value="' + nvl(entry["MEMO"]) + '" /></td>' +
+                            '<td name="td_base">' + state + '</td>' +
+                            '</tr>';
+                    } else {
+                        appendHtml += '<tr><td colspan="8">권한이 없습니다.</td></tr>';
+                    }
                 });
             } else {
                 appendHtml += '<tr><td colspan="8">조회할 데이터가 없습니다.</td></tr>';
