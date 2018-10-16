@@ -72,7 +72,7 @@ var callbackDocumentList = function (rows, req, res) {
 };
 var fnSearchDocumentList = function (req, res) {
     var condQuery = ``;
-    var andQuery = ` AND STATUS = 'ZZ' `;
+    var andQuery = ` AND (STATUS = 'ZZ' OR STATUS = '04') `;
     var orderQuery = ` ORDER BY DOCNUM ASC `;
     var param = {
         docNum: commonUtil.nvl(req.body.docNum),
