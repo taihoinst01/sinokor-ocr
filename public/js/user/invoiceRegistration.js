@@ -1070,7 +1070,6 @@ function fn_processFinish(data, fileDtlInfo) {
         data: JSON.stringify({cdnNm: cdnNm, ctNm: ctNm, ttyYy: ttyYy}),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
             var dtlHtml = '';
             for (var i in data.data) {
                 // TODO : 분석 결과를 정리하고 1 record로 생성한다.
@@ -1122,7 +1121,6 @@ function fn_processFinish(data, fileDtlInfo) {
         error: function (err) {
             console.log(err);
             endProgressBar(progressId);
-            //endProgressBar();
         }
     });
 
@@ -1144,6 +1142,10 @@ function fn_processFinish(data, fileDtlInfo) {
         appendMLSelect += '</select>';
         return hasColvalue ? appendMLSelect : '';
     }
+}
+
+function fn_ContractNumExtraction() {
+
 }
 
 // 인식 결과 처리
