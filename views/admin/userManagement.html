@@ -106,7 +106,7 @@
                                     <th scope="row">ICR결재자</th>
                                     <th scope="row">중간결재자</th>
                                     <th scope="row">최종결재자</th>
-                                    <th scope="row">상위결재자ID</th>
+                                    <th scope="row">관리자</th>
                                     <th scope="row">최종접속일</th>
                                     <th scope="row">OCR이용횟수</th>
                                     <th scope="row">삭제</th>
@@ -167,24 +167,14 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label>상위결재자</label></dt>
-                            <dd>
-                                <input type="hidden" id="highApprovalId" value="" />
-                                <div class="select_style w100">
-                                    <span class="ctrl"><span class="arrow"></span></span>
-                                    <button type="button" class="btnSelector">전 체</button>
-                                    <ul id="ul_highApproval" class="aList"></ul>
-                                </div>
-                            </dd>
-                        </dl>
-
-                        <dl>
                             <dt><label for="">결재자</label></dt>
                             <dd>
                                 <div class="checkbox-options">
                                     <input type="checkbox" value="1" id="approval1" name="approval" /><label for="approval1"><span>스캔결재자</span></label>
-                                    <input type="checkbox" value="2" id="approval2" name="approval" /><label for="approval2"><span>중간결재자</span></label>
-                                    <input type="checkbox" value="3" id="approval3" name="approval" /><label for="approval3"><span>최종결재자</span></label>
+                                    <input type="checkbox" value="2" id="approval2" name="approval" /><label for="approval2"><span>ICR결재자</span></label>
+                                    <input type="checkbox" value="3" id="approval3" name="approval" /><label for="approval3"><span>중간결재자</span></label>
+                                    <input type="checkbox" value="4" id="approval4" name="approval" /><label for="approval4"><span>최종결재자</span></label>
+                                    <input type="checkbox" value="5" id="admin" name="admin" /><label for="admin"><span>관리자</span></label>
                                 </div>
                             </dd>
                         </dl>

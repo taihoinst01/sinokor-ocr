@@ -16,7 +16,8 @@ router.get('/', function (req, res) {
 router.post('/', function (req, res) {
     var cdnNm = req.body.cdnNm.replace(/ /g, "&#32;");
     var ctNm = req.body.ctNm.replace(/ /g, "&#32;");
-    var brkNm = req.body.brkNm.replace(/ /g, "&#32;");
+    //var brkNm = req.body.brkNm.replace(/ /g, "&#32;");
+    var brkNm = '';
 
     var testData = 
         '<? xml version = "1.0" encoding = "utf-8" ?>'+
@@ -76,8 +77,10 @@ router.post('/', function (req, res) {
             },
             body: testData
         });
+        var data = res1.getBody('utf8');
         */
-        //var data = res1.getBody('utf8');
+
+        //TEST DATA
         var data = `
 <?xml version="1.0" encoding="UTF-8" ?>	
 <Root xmlns="http://www.tobesoft.com/platform/dataset" ver="5000">	
@@ -196,52 +199,48 @@ router.post('/', function (req, res) {
         if (data == null) {
             console.log("실패...");
         } else {
-            /*
-            var resultData1 = data.split("</Dataset>");
-            var resultData2 = resultData1[1].split("<Rows>");
-            var resultData3 = resultData2[1].split("<Row>");
-            */
 
             parser.parseString(data, function (err, result) {
                 //console.log(result);
                 var dataSet = '';
+                var rowData = [];
                 for (var i in result.Root.Dataset) {
                     if (result.Root.Dataset[i].$.id == "ctNoList") {
                         dataSet = result.Root.Dataset[i];
                         break;
                     }
                 }
-                var row = dataSet.Rows[0].Row;
-                var rowData = [];
 
-                for (var i in row) {
-                    var obj = {};
-                    for (var j in row[i].Col) {
-                        if (row[i].Col[j].$.id == "ctNo") {
-                            obj.ctNo = row[i].Col[j]._;
-                        } else if (row[i].Col[j].$.id == "ttyDtlNo") {
-                            obj.ttyDtlNo = row[i].Col[j]._;
-                        } else if (row[i].Col[j].$.id == "cdnCd") {
-                            obj.cdnCd = row[i].Col[j]._;
-                        } else if (row[i].Col[j].$.id == "cdnNm") {
-                            obj.cdnNm = row[i].Col[j]._;
-                        } else if (row[i].Col[j].$.id == "ctNm") {
-                            obj.ctNm = row[i].Col[j]._;
-                        } else if (row[i].Col[j].$.id == "ttyYy") {
-                            obj.ttyYy = row[i].Col[j]._;
-                        } else if (row[i].Col[j].$.id == "brkCd") {
-                            obj.brkCd = row[i].Col[j]._;
-                        } else if (row[i].Col[j].$.id == "brkNm") {
-                            obj.brkNm = row[i].Col[j]._;
+                if (dataSet.Rows[0].Row) {
+                    var row = dataSet.Rows[0].Row;
+
+                    for (var i in row) {
+                        var obj = {};
+                        for (var j in row[i].Col) {
+                            if (row[i].Col[j].$.id == "ctNo") {
+                                obj.ctNo = row[i].Col[j]._;
+                            } else if (row[i].Col[j].$.id == "ttyDtlNo") {
+                                obj.ttyDtlNo = row[i].Col[j]._;
+                            } else if (row[i].Col[j].$.id == "cdnCd") {
+                                obj.cdnCd = row[i].Col[j]._;
+                            } else if (row[i].Col[j].$.id == "cdnNm") {
+                                obj.cdnNm = row[i].Col[j]._;
+                            } else if (row[i].Col[j].$.id == "ctNm") {
+                                obj.ctNm = row[i].Col[j]._;
+                            } else if (row[i].Col[j].$.id == "ttyYy") {
+                                obj.ttyYy = row[i].Col[j]._;
+                            } else if (row[i].Col[j].$.id == "brkCd") {
+                                obj.brkCd = row[i].Col[j]._;
+                            } else if (row[i].Col[j].$.id == "brkNm") {
+                                obj.brkNm = row[i].Col[j]._;
+                            }
                         }
+                        rowData.push(obj);
                     }
-                    rowData.push(obj);
                 }
+
                 res.send({ data: rowData });
             });
-            //var dataSet = data.split(/<Dataset id="ctNoList">*<\/Dataset>/gi);
-            //var rows = dataSet[1].split('<Rows>');
-            //var row = rows[1].replace(/ /g, "&#32;").split('<Row>');
         }
     }  
     catch (e) {

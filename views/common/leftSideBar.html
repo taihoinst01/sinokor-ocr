@@ -77,17 +77,23 @@
         <li><a href="/documentCheck" class="lnb_menu05" title="문서 조회"><i class="lnb_menu_icon"></i><span class="lnb_menu_title">문서 조회</span></a></li>
         <li><a href="/invoiceProcessingStatus" class="lnb_menu06" title="계산서 처리 현황"><i class="lnb_menu_icon"></i><span class="lnb_menu_title">계산서 처리 현황</span></a></li>
     </ul>
+    <%
+        if(currentUser.admin == 'Y'){
+    %>
     <h3>관리자용 <span>메뉴</span></h3>
     <ul class="mt10">
         <!--<li><a href="/adminDashboard" class="" title="관리자 대시보드"><span>관리자 대시보드</span></a></li>-->
         <li><a href="/userManagement" class="lnb_menu11" title="사용자관리"><i class="lnb_menu_icon"></i><span class="lnb_menu_title">사용자관리</span></a></li>
     </ul>
+    <%
+        }
+    %>
     <!--
     <div class="btn_content_infor">
         <a href="#none" class="btn_st05 btn_reduction" title="메뉴작게보기">메뉴작게보기</a>
         <a href="#none" class="btn_st05 btn_expansion" style="display:none;" title="메뉴크게보기">메뉴크게보기</a>
     </div>
-        
+
     -->
 </div>
 
