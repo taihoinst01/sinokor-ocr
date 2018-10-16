@@ -7,7 +7,7 @@ var sessionConfig = {
     loginQuery:
         `SELECT
             seqnum, userId, userPw, auth, email, ocrUseCount,
-            scanApproval,icrApproval,middleApproval,lastApproval,
+            scanApproval,icrApproval,middleApproval,lastApproval, admin,
             TO_CHAR(joinDate, 'yyyy-mm-dd hh:mi:ss') AS joinDate, 
             TO_CHAR(lastLoginDate, 'yyyy-mm-dd hh:mi:ss') AS lastLoginDate
          FROM
