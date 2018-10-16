@@ -932,15 +932,9 @@ var ocrResult = function () {
 
     //체크박스 여부에 따른 행 삭제 버튼 활성화/비활성화
     $(document).on('click', 'input[name=dtl_chk]', function () {
-        var hasChk = false;
-        $('input[name = dtl_chk]').each(function () {
-            if ($(this).is(':checked')) {
-                hasChk = true;
-                return false;
-            }
-        });
 
-        if (hasChk) {
+        var chkCnt = $('input[name="dtl_chk"]:checked').length;
+        if (chkCnt >= 1) {
             $('#deleteRow').attr('disabled', false);
         } else {
             $('#deleteRow').attr('disabled', true);
