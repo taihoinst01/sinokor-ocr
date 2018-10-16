@@ -80,7 +80,7 @@ var fnSearchDocumentList = function (req, res) {
     };
 
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
-    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM = '${param["documentManager"]}' `;
+    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM LIKE '%${param["documentManager"]}%' `;
     if (commonUtil.isNull(param["docNum"]) && commonUtil.isNull(param["documentManager"]) && req.user.icrApproval == 'Y') condQuery += " AND NOWNUM = '" + req.user.userId + "' ";
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
     var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
@@ -351,24 +351,25 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     
 });
 //문서전달
-/*router.post('/sendDocument', function (req, res) {
+router.post('/sendDocument', function (req, res) {
     var returnObj = {};
     var sendCount = 0;
     try {
         for (var i = 0; i < req.body.docNum.length; i++) {
+            console.log(req.body.userId[0], req.body.docNum[i]+"&&&&&&&&&&&&&&&&&&&&&");
             sync.fiber(function () {
-                sync.await(oracle.deleteDocument(req.body.docNum[i], sync.defer()));
+                sync.await(oracle.sendDocument([req.body.userId[0], req.body.userId[0], req.body.docNum[i]], sync.defer()));
             });
-            deleteCount += 1;
+            sendCount += 1;
         }
-        returnObj = { code: 200, docData: deleteCount };
+        returnObj = { code: 200, docData: sendCount };
     } catch (e) {
         returnObj = { code: 200, error: e };
     } finally {
         res.send(returnObj);
     }
 
-});*/
+});
 //문서삭제
 router.post('/deleteDocument', function (req, res) {
     var returnObj = {};
