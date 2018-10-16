@@ -93,7 +93,7 @@ var fn_buttonEvent = function () {
     });
 
     $("#ctnExtractionBtn").on("click", function () {
-        fn_ctnExtraction();
+        fn_ContractNumExtraction();
     });
 };
 
@@ -1063,6 +1063,81 @@ function fn_processFinish(data, fileDtlInfo) {
     var dataVal = data.data;
     dataObj["imgId"] = fileDtlInfo.imgId;
 
+
+    // TODO : 분석 결과를 정리하고 1 record로 생성한다.
+    var dtlHtml = '<tr>' +
+        '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
+        '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
+        '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
+        '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
+        '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
+        '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
+        '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
+        '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+        '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
+        '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+        '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
+        '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+        '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+        '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+        '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+        '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
+        '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+        '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
+        '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
+        '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+        '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
+        '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+        '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+        '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+        '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+        '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
+        '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+        '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
+        '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+        '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+        '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+        '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+        '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+        '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
+        '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
+        '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+        '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+        '</tr>';
+
+    $("#tbody_dtlList").empty().append(dtlHtml);
+    $("#tbody_dtlList input[type=checkbox]").ezMark();
+    $("#div_dtl").css("display", "block");
+    function makeMLSelect(mlData, colnum, entry) {
+
+        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        appendMLSelect += '<option value="선택">선택</option>';
+        var hasColvalue = false;
+        for (var y = 0; y < mlData.length; y++) {
+
+            if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
+                hasColvalue = true;
+                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+            } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
+                hasColvalue = true;
+                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+            }
+        }
+        appendMLSelect += '</select>';
+        return hasColvalue ? appendMLSelect : '';
+    }
+}
+
+//계약 번호 추출
+function fn_ContractNumExtraction() {
+    //console.log("data : " + JSON.stringify(data));
+    //console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
+    
+    var dataObj = {};
+    var dataVal = lineText[0].data.data;
+    var fileName = lineText[0].fileName;
+    dataObj["imgId"] = $("input[name='dtl_chk']").val();
+
     var cdnNm = '';
     var ctNm = '';
     var ttyYy = '';
@@ -1086,6 +1161,10 @@ function fn_processFinish(data, fileDtlInfo) {
         async: false,
         data: JSON.stringify({cdnNm: cdnNm, ctNm: ctNm, ttyYy: ttyYy}),
         contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("계약번호 추출 중..");
+            progressId = showProgressBar();
+        },
         success: function (data) {
             var dtlHtml = '';
             for (var i in data.data) {
@@ -1134,6 +1213,8 @@ function fn_processFinish(data, fileDtlInfo) {
             $("#tbody_dtlList").empty().append(dtlHtml);
             $("#tbody_dtlList input[type=checkbox]").ezMark();
             $("#div_dtl").css("display", "block");
+
+            endProgressBar(progressId);
         },
         error: function (err) {
             console.log(err);
@@ -1143,7 +1224,7 @@ function fn_processFinish(data, fileDtlInfo) {
 
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileName + '\')">';
         appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
@@ -1159,10 +1240,6 @@ function fn_processFinish(data, fileDtlInfo) {
         appendMLSelect += '</select>';
         return hasColvalue ? appendMLSelect : '';
     }
-}
-
-function fn_ContractNumExtraction() {
-
 }
 
 // 인식 결과 처리
@@ -1566,27 +1643,45 @@ var fn_docEvent = function () {
     $('#sendDocBtn').click(function () {
         if ($('#icrApproval').val() == 'Y') {
             if ($('input[name="base_chk"]:checked').length > 0) {
-                var docNumArr = [];
-                $('input[name="base_chk"]:checked').each(function (i, e) {                   
-                    if ($('#userId').val() == $(e).closest('td').children().eq(3).text()) {
-                        docNumArr.push($(e).val());
-                    }
-                });
-                if (docNumArr.length > 0) {
-                    refuseDoc('icrApproval', docNumArr);
-                } else {
+                if (confirm('반려 하시겠습니까?')) {
+                    var docNumArr = [];
                     $('input[name="base_chk"]:checked').each(function (i, e) {
-                        $(e).parent().removeClass('ez-checked');
-                        $(e).prop('checked', false);
+                        if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
+                            docNumArr.push($(e).val());
+                        }
                     });
-                    alert('반려 할 문서가 없습니다.(문서 담당자가 아닙니다)');
+                    if (docNumArr.length > 0) {
+                        refuseDoc('icrApproval', docNumArr);
+                    } else {
+                        $('input[name="base_chk"]:checked').each(function (i, e) {
+                            $(e).parent().removeClass('ez-checked');
+                            $(e).prop('checked', false);
+                        });
+                        alert('반려 할 문서가 없습니다.(문서 담당자가 아닙니다)');
+                    }
                 }
             } else {
                 alert('반려 할 문서가 없습니다.');
             }
-        } else {
+        } else if ($('#scanApproval').val() == 'Y') {
+            var isCheckboxYn = false;
+            var arr_checkboxYn = document.getElementsByName("base_chk");
+
+            for (var i = 0; i < arr_checkboxYn.length; i++) {
+                if (arr_checkboxYn[i].checked == true) {
+                    isCheckboxYn = true;
+                    break;
+                }
+            }
+            if (isCheckboxYn) {
+                layer_open('layer1');
+            } else {
+                alert("전달할 문서를 선택하세요.");
+            }
+        }        
+        else {
             layer_open('layer1');
-        }
+        }       
     });
 
     $('#btn_pop_user_search').click(function () {
@@ -1616,7 +1711,7 @@ var fn_docEvent = function () {
                     if (data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
                             appendHtml += '<tr>' +
-                                '<td><input type="checkbox"/></td>' +
+                                '<td><input type="checkbox" name="btn_pop_user_search_base_chk"/></td>' +
                                 '<td>' + data[i].USERID + '</td>' +
                                 '<td>소속팀</td>' +
                                 '<td>소속파트</td>' +
@@ -1636,10 +1731,103 @@ var fn_docEvent = function () {
         });
     })
 
+    //결제담당자 선택시 발생이벤트.
     $("#btn_pop_user_choice").click(function () {
-        
+        //선택된 유저ID 추출(단일 건)
+        var userChoiceRowData = new Array();
+        var userChoiceTdArr = new Array();
+        var popUserCheckbox = $("input[name=btn_pop_user_search_base_chk]:checked");
+
+        //선택된 문서번호 추출(단일 or 다중 건)
+        var docNumRowData = new Array();
+        var docNumTdArr = new Array();
+        var popDocnumCheckbox = $("input[name=base_chk]:checked");
+        var deleteTr = [];
+        // 체크된 문서번호 값을 가져온다
+        popDocnumCheckbox.each(function (i) {
+            var popDoctr = popDocnumCheckbox.parent().parent().parent().eq(i);
+            var popDoctd = popDoctr.children();
+
+            // 체크된 row의 모든 값을 배열에 담는다.
+            docNumRowData.push(popDoctd.text());
+
+            // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
+            var docNum = popDoctd.eq(1).text();
+
+            // 가져온 값을 배열에 담는다.
+            docNumTdArr.push(docNum);
+            deleteTr.push(popDoctr);
+        });
+        // 체크된 체크박스 값을 가져온다
+        popUserCheckbox.each(function (i) {
+            var popUsertr = popUserCheckbox.parent().parent().parent().eq(i);
+            var popUsertd = popUsertr.children();
+
+            userChoiceRowData.push(popUsertr.text());
+
+            var userId = popUsertd.eq(1).text();
+
+            userChoiceTdArr.push(userId);
+        });
+
+        if (userChoiceTdArr.length > 1) {
+            alert("한명의 담당자만 선택 가능합니다.");
+        }
+        else {
+            if (confirm(userChoiceTdArr[0] + "를 선택하셨습니다. 결제를 진행하시겠습니까?")) { 
+            $.ajax({
+                url: '/invoiceRegistration/sendDocument',
+                type: 'post',
+                datatype: "json",
+                data: JSON.stringify({
+                    'userId': userChoiceTdArr,
+                    'docNum': docNumTdArr
+                }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
+                        $('#layer1').fadeOut();
+                        var totCnt = $("input[name = base_chk]");
+                        $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + '건');
+                        for (var i in deleteTr) {
+                            deleteTr[i].remove();
+                        }
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+                });
+            }
+        }
     });
 
+
+    //전달/결재상신버튼 클릭 시 발생이벤트.
+    $('#sendApprovalBtn').click(function () {
+        //선택된 문서번호 추출(단일 or 다중 건)
+        var docNumRowData = new Array();
+        var docNumTdArr = new Array();
+        var popDocnumCheckbox = $("input[name=base_chk]:checked");
+        var deleteTr = [];
+
+        // 체크된 문서번호 값을 가져온다
+        popDocnumCheckbox.each(function (i) {
+            var popDoctr = popDocnumCheckbox.parent().parent().parent().eq(i);
+            var popDoctd = popDoctr.children();
+
+            // 체크된 row의 모든 값을 배열에 담는다.
+            docNumRowData.push(popDoctd.text());
+
+            // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
+            var docNum = popDoctd.eq(1).text();
+            var pageCnt = popDoctd.eq(2).text();
+            var nowNum = 
+            // 가져온 값을 배열에 담는다.
+            docNumTdArr.push(docNum);
+            deleteTr.push(popDoctr);
+        });
+    });
     //저장
 }
 
