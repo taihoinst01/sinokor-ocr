@@ -292,7 +292,7 @@ var fn_search = function () {
 };
 
 var fn_searchDocEnterEvent = function () {
-    $('#docNum').keyup(function (e) {
+    $('#docNum, #documentManager').keyup(function (e) {
         if (e.keyCode == 13) $('#btn_search').click();
     });
 };

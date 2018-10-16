@@ -80,7 +80,7 @@ var fnSearchDocumentList = function (req, res) {
     };
 
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
-    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM = '${param["documentManager"]}' `;
+    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM LIKE '%${param["documentManager"]}%' `;
     if (commonUtil.isNull(param["docNum"]) && commonUtil.isNull(param["documentManager"]) && req.user.icrApproval == 'Y') condQuery += " AND NOWNUM = '" + req.user.userId + "' ";
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
     var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
