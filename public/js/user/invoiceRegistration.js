@@ -917,11 +917,17 @@ var ocrResult = function () {
 
     //행 삭제
     $('#deleteRow').click(function () {
-        $('input[name=dtl_chk]').each(function () {
-            if ($(this).is(':checked')) {
-                $(this).closest('tr').remove();
-            }
-        });
+
+        if (confirm("행 삭제를 하시겠습니까?")) {
+
+            $('input[name=dtl_chk]').each(function () {
+                if ($(this).is(':checked')) {
+                    $(this).closest('tr').remove();
+                }
+            });
+
+            $('#deleteRow').prop('disabled', true);
+        }
     });
 
     //체크박스 여부에 따른 행 삭제 버튼 활성화/비활성화
@@ -1851,26 +1857,27 @@ var fn_docEvent = function () {
     $('#sendDocBtn').click(function () {
         if ($('#icrApproval').val() == 'Y') {
             if ($('input[name="base_chk"]:checked').length > 0) {
-                var docNumArr = [];
-                $('input[name="base_chk"]:checked').each(function (i, e) {
-                    if ($('#userId').val() == $(e).closest('td').children().eq(3).text()) {
-                        docNumArr.push($(e).val());
-                    }
-                });
-                if (docNumArr.length > 0) {
-                    refuseDoc('icrApproval', docNumArr);
-                } else {
+                if (confirm('반려 하시겠습니까?')) {
+                    var docNumArr = [];
                     $('input[name="base_chk"]:checked').each(function (i, e) {
-                        $(e).parent().removeClass('ez-checked');
-                        $(e).prop('checked', false);
+                        if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
+                            docNumArr.push($(e).val());
+                        }
                     });
-                    alert('반려 할 문서가 없습니다.(문서 담당자가 아닙니다)');
+                    if (docNumArr.length > 0) {
+                        refuseDoc('icrApproval', docNumArr);
+                    } else {
+                        $('input[name="base_chk"]:checked').each(function (i, e) {
+                            $(e).parent().removeClass('ez-checked');
+                            $(e).prop('checked', false);
+                        });
+                        alert('반려 할 문서가 없습니다.(문서 담당자가 아닙니다)');
+                    }
                 }
             } else {
                 alert('반려 할 문서가 없습니다.');
             }
-        }
-        else if ($('#scanApproval').val() == 'Y') {
+        } else if ($('#scanApproval').val() == 'Y') {
             var isCheckboxYn = false;
             var arr_checkboxYn = document.getElementsByName("base_chk");
 
@@ -2009,6 +2016,32 @@ var fn_docEvent = function () {
         }
     });
 
+
+    //전달/결재상신버튼 클릭 시 발생이벤트.
+    $('#sendApprovalBtn').click(function () {
+        //선택된 문서번호 추출(단일 or 다중 건)
+        var docNumRowData = new Array();
+        var docNumTdArr = new Array();
+        var popDocnumCheckbox = $("input[name=base_chk]:checked");
+        var deleteTr = [];
+
+        // 체크된 문서번호 값을 가져온다
+        popDocnumCheckbox.each(function (i) {
+            var popDoctr = popDocnumCheckbox.parent().parent().parent().eq(i);
+            var popDoctd = popDoctr.children();
+
+            // 체크된 row의 모든 값을 배열에 담는다.
+            docNumRowData.push(popDoctd.text());
+
+            // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
+            var docNum = popDoctd.eq(1).text();
+            var pageCnt = popDoctd.eq(2).text();
+            var nowNum = 
+            // 가져온 값을 배열에 담는다.
+            docNumTdArr.push(docNum);
+            deleteTr.push(popDoctr);
+        });
+    });
     //저장
 }
 
