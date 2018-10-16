@@ -2645,10 +2645,17 @@ exports.updateApprovalMaster = function (req, done) {
             var targetCol;
             if (req[0] == 'icrApproval') {
                 targetCol = 'UPLOADNUM';
-            }
-            await conn.execute('UPDATE TBL_APPROVAL_MASTER22 SET ', [imgId]);
-            
+            } else if (req[0] == 'middleApproval') {
+                targetCol = 'ICRNUM';
+            } else if (req[0] == 'lastApproval') {
+                targetCol = 'MIDDLENUM';
+            } else {
 
+            }
+            for (var i in req[1]) {
+                await conn.execute('UPDATE TBL_APPROVAL_MASTER SET NOWNUM = (SELECT ' + targetCol +' FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum ) WHERE DOCNUM = :docNum', [req[1][i]]);
+            }          
+            return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             console.log('oracle.js error');
             reject(err);

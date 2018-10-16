@@ -1071,13 +1071,14 @@ function fn_processFinish(data, fileDtlInfo) {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             console.log(data);
-            for (var i in data) {
+            var dtlHtml = '';
+            for (var i in data.data) {
                 // TODO : 분석 결과를 정리하고 1 record로 생성한다.
-                var dtlHtml = '<tr>' +
+                dtlHtml += '<tr>' +
                     '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-                    '<td>' + data[i].cdnNm + '</td> <!--출재사명-->' +
-                    '<td>' + data[i].ctNm + '</td> <!--계약명-->' +
-                    '<td>' + data[i].ttyYy + '</td> <!--UY-->' +
+                    '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
+                    '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
+                    '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
                     '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
                     '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
                     '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
@@ -1114,7 +1115,7 @@ function fn_processFinish(data, fileDtlInfo) {
                     '</tr>';
             }
 
-            $("#tbody_dtlList").append(dtlHtml);
+            $("#tbody_dtlList").empty().append(dtlHtml);
             $("#tbody_dtlList input[type=checkbox]").ezMark();
             $("#div_dtl").css("display", "block");
         },
@@ -1547,10 +1548,20 @@ var fn_docEvent = function () {
         if ($('#icrApproval').val() == 'Y') {
             if ($('input[name="base_chk"]:checked').length > 0) {
                 var docNumArr = [];
-                $('input[name="base_chk"]:checked').each(function (i, e) {
-                    docNumArr.push($(e).val());
+                $('input[name="base_chk"]:checked').each(function (i, e) {                   
+                    if ($('#userId').val() == $(e).closest('td').children().eq(3).text()) {
+                        docNumArr.push($(e).val());
+                    }
                 });
-                refuseDoc('icrApproval', docNumArr);
+                if (docNumArr.length > 0) {
+                    refuseDoc('icrApproval', docNumArr);
+                } else {
+                    $('input[name="base_chk"]:checked').each(function (i, e) {
+                        $(e).parent().removeClass('ez-checked');
+                        $(e).prop('checked', false);
+                    });
+                    alert('반려 할 문서가 없습니다.(문서 담당자가 아닙니다)');
+                }
             } else {
                 alert('반려 할 문서가 없습니다.');
             }
@@ -1621,7 +1632,13 @@ var refuseDoc = function (refuseType, docNumArr) {
         data: JSON.stringify({ 'refuseType': refuseType, 'docNumArr': docNumArr }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
+            if (data.code == 200) {
+                $('#docNum').val('');
+                $('#documentManager').val('');
+                $('#btn_search').click();
+            } else {
+                alert(data.message);
+            }
         },
         error: function (err) {
             console.log(err);
