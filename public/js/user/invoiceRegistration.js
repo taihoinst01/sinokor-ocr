@@ -453,7 +453,11 @@ var fn_initUiTraining = function () {
 var fn_search = function () {
     var param = {
         docNum: nvl($("#docNum").val().toUpperCase()),
-        documentManager: nvl($("#documentManager").val())
+        documentManager: nvl($("#documentManager").val()),
+        scanApproval: nvl($("#scanApproval").val()),//스캔담당자
+        icrApproval: nvl($("#icrApproval").val()),//ICR담당자
+        middleApproval: nvl($("#middleApproval").val()),//중간결재자
+        lastApproval: nvl($("#lastApproval").val())//최종결재자
     };
 
     $.ajax({
