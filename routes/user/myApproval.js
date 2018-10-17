@@ -117,8 +117,6 @@ var fnSelectUsers = function (req, res) {
     commonDB.reqQuery(query, callbackSelectUsers, req, res);
 };
 
-module.exports = router;
-
 //내 결제 - 반려
 router.post('/cancelDocument', function (req, res) {
     var returnObj = {};
@@ -149,3 +147,25 @@ router.post('/cancelDocument', function (req, res) {
         res.send(returnObj);
     }
 });
+
+//결재리스트(기본) C -> D 전달
+router.post('/sendApprovalDocumentCtoD', function (req, res) {
+    var returnObj = {};
+    var sendCount = 0;
+    try {
+        for (var i = 0; i < req.body.docInfo.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.sendApprovalDocumentCtoD([req.body.userChoiceId[0], req.body.userChoiceId[0], req.body.docInfo[i]], sync.defer()));
+            });
+            sendCount += 1;
+        }
+        returnObj = { code: 200, docData: sendCount };
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
+
+});
+
+module.exports = router;

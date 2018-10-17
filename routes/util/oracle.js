@@ -2451,6 +2451,29 @@ exports.sendApprovalDocument = function (req, done) {
     });
 };
 
+//결재리스트(기본) C -> D 전달
+exports.sendApprovalDocumentCtoD = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET FINALNUM = :finalnum, NOWNUM = :nowNum, STATUS = '02' WHERE DOCNUM = :docNum ", req);
+            return done;
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 //문서 기본정보 전달
 exports.sendDocument = function (req, done) {
     return new Promise(async function (resolve, reject) {
