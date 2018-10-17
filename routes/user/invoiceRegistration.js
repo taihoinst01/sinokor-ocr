@@ -199,7 +199,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 fileInfo2.push(fileParam);  
                 fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
 
-                execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 ' + ifile + ' ' + ofile);
+                execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 "' + ifile + '" "' + ofile + '"');
             } else if (files[i].originalname.split('.')[1] === 'xlsx' || files[i].originalname.split('.')[1] === 'xls' ||
                 files[i].originalname.split('.')[1] === 'XLSX' || files[i].originalname.split('.')[1] === 'XLS' ||
                 files[i].originalname.split('.')[1] === 'docx' || files[i].originalname.split('.')[1] === 'doc' ||
@@ -250,7 +250,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
 
                 //file convert Pdf to Png
-                execSync('module\\imageMagick\\convert.exe -quiet -density 300 "' + ifile + '" "' + ofile +'"');
+                execSync('module\\imageMagick\\convert.exe -quiet -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile +'"');
             }
             
             var isStop = false;
