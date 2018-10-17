@@ -1854,7 +1854,7 @@ var fn_docEvent = function () {
         });
     });
 
-    //전달
+    //전달(업로드 담당자의 경우 -> 전달기능 // ICR담당자의 경우 -> 반려기능)
     $('#sendDocBtn').click(function () {
         if ($('#icrApproval').val() == 'Y') {
             if ($('input[name="base_chk"]:checked').length > 0) {
@@ -2109,7 +2109,7 @@ var fn_docEvent = function () {
                 alert("전달할 문서를 선택하세요.");
             }
         } else {
-            alert("결제상신에 대한 권한이 없습니다.");
+            alert("전달/결제상신에 대한 권한이 없습니다.");
         }        
     });
 
