@@ -1,44 +1,4 @@
-﻿.icr_popup {
-    width: 1000px !important;
-    height: 720px !important;
-}
-
-.invoice_Dl_01 {
-    width: 298px !important;
-}
-
-.invoice_Dl_02 {
-    width: 150px !important;
-}
-
-.invoice_Dl_03 {
-    width: 200px !important;
-}
-.invoice_Dl_04 {
-    width: 200px !important;
-}
-
-.invoice_Dl_05 {
-    width: 50px !important;
-}
-
-.select_style_K01 {
-    min-width: inherit !important;
-    width: 100% !important;
-}
-
-.label_k01 {
-    line-height: 3;
-}
-
-.ez_chk_k01 {
-    vertical-align: sub;
-}
-
-.box_table_st04 > dl > dt input {
-    background: #eaeaea;
-}
-
+﻿
 #docName {
     margin-left: 10px;
     color: dodgerblue;
