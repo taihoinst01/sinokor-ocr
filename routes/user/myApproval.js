@@ -10,6 +10,7 @@ var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 var sync = require('../util/sync.js');
 var batch = require('../util/myApproval.js');
+var oracle = require('../util/oracle.js');
 
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
@@ -145,5 +146,27 @@ var fnSelectUsers = function (req, res) {
     var query = queryConfig.myApprovalConfig.selectUsers;
     commonDB.reqQuery(query, callbackSelectUsers, req, res);
 };
+
+
+
+//결재리스트(기본) C -> D 전달
+router.post('/sendApprovalDocumentCtoD', function (req, res) {
+    var returnObj = {};
+    var sendCount = 0;
+    try {
+        for (var i = 0; i < req.body.docInfo.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.sendApprovalDocumentCtoD([req.body.userChoiceId[0], req.body.userChoiceId[0], req.body.docInfo[i]], sync.defer()));
+            });
+            sendCount += 1;
+        }
+        returnObj = { code: 200, docData: sendCount };
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
+
+});
 
 module.exports = router;

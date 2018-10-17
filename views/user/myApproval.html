@@ -19,6 +19,7 @@
     <!-- // 계산서 조회 전용 js -->
 </head>
 <body>
+    <input type="hidden" id="userId" value="<%=currentUser.userId%>" />
     <input type="hidden" id="scanApproval" value="<%=currentUser.scanApproval%>" />
     <input type="hidden" id="icrApproval" value="<%=currentUser.icrApproval%>" />
     <input type="hidden" id="middleApproval" value="<%=currentUser.middleApproval%>" />
@@ -199,9 +200,21 @@
 
                         <!-- 버튼 영역 -->
                         <div class="fr mt10">
+                            <%
+                            if(currentUser.scanApproval == 'Y' || currentUser.icrApproval == 'Y') {
+                            %>
+                            <button type="button" id="btn_baseList_return" class="button_st2" disabled>반려</button>
+                            <button type="button" id="btn_baseList_forward" class="button_st2" disabled>전달</button>
+                            <button type="button" id="btn_baseList_approval" class="button_st1" disabled>승인</button>
+                            <%
+                            } else{
+                            %>
                             <button type="button" id="btn_baseList_return" class="button_st2">반려</button>
                             <button type="button" id="btn_baseList_forward" class="button_st2">전달</button>
                             <button type="button" id="btn_baseList_approval" class="button_st1">승인</button>
+                            <%
+                            }
+                            %>
                         </div>
                         <!-- // 버튼 영역 -->
                     </div>
@@ -292,5 +305,108 @@
         <!-- // Content -->
 
     </div>
+
+    <!-- 팝업_유저찾기팝업 -->
+    <div id="layer1" class="poplayer">
+        <input type="hidden" id="docPopImgPath" />
+        <input type="hidden" id="docPopImgId" />
+        <input type="hidden" id="batchListRowNum" />
+        <div class="bg"></div>
+        <div class="pop_layer">
+            <div class="pop_popup0 icr_popup">
+                <div class="pop_header">
+                    <h1>ICR유저 찾기</h1>
+                </div>
+                <div class="pop_content">
+                    <div class="box_txt_st01 st00_sh mb20">
+                        <dl class="invoice_Dl_01">
+                            <dt>
+                                <label for="intxt_01">
+                                    검색조건
+                                </label>
+                            </dt>
+                            <dd>
+                                <input type="checkbox" id="docManagerChk" class="ez_chk_k01" name="docManagerChk" />
+                                <label class="label_k01 mr5" for="docManagerChk">문서담당자</label>
+                                <input type="checkbox" id="icrManagerChk" class="ez_chk_k01" name="icrManagerChk" />
+                                <label class="label_k01 mr5" for="icrManagerChk">ICR담당자</label>
+                                <input type="checkbox" id="middleManagerChk" class="ez_chk_k01" name="middleManagerChk" />
+                                <label class="label_k01" for="middleManagerChk">중간담당자</label>
+                                <input type="checkbox" id="approvalManagerChk" class="ez_chk_k01" name="approvalManagerChk" />
+                                <label class="label_k01" for="approvalManagerChk">결재담당자</label>
+                            </dd>
+                        </dl>
+                        <dl class="invoice_Dl_02">
+                            <dt>
+                                <label for="intxt_01">
+                                    이름
+                                </label>
+                            </dt>
+                            <dd>
+                                <input type="text" name="searchManger" id="searchManger" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl class="invoice_Dl_03">
+                            <dt><label for="intxt_02">소속팀</label></dt>
+                            <dd>
+                                <div class="select_style select_style_K01">
+                                    <input type="hidden" id="select_team" value="전체" />
+                                    <span class="ctrl"><span class="arrow"></span></span>
+                                    <button type="button" class="myValue btnSelector">전체</button>
+                                    <ul id="teamList" class="aList">
+                                        <li><a onclick="liSelect(this, 'all')">전체</a></li>
+                                        <li><a onclick="liSelect(this, '소속팀1')">소속팀1</a></li>
+                                        <li><a onclick="liSelect(this, '소속팀2')">소속팀2</a></li>
+                                        <li><a onclick="liSelect(this, '소속팀3')">소속팀3</a></li>
+                                    </ul>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl class="invoice_Dl_04">
+                            <dt><label for="intxt_02">소속파트</label></dt>
+                            <dd>
+                                <div class="select_style select_style_K01">
+                                    <input type="hidden" id="select_part" value="전체" />
+                                    <span class="ctrl"><span class="arrow"></span></span>
+                                    <button type="button" class="myValue btnSelector">전체</button>
+                                    <ul id="partList" class="aList">
+                                        <li><a onclick="liSelect(this, 'all')">전체</a></li>
+                                        <li><a onclick="liSelect(this, '소속파트1')">소속파트1</a></li>
+                                        <li><a onclick="liSelect(this, '소속파트2')">소속파트2</a></li>
+                                        <li><a onclick="liSelect(this, '소속파트3')">소속파트3</a></li>
+                                    </ul>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl class="invoice_Dl_05">
+                            <dt><label for="intxt_02"></label></dt>
+                            <dd>
+                                <button type="button" id="btn_pop_user_search" class="button_st3">검색</button>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <div class="table_style03">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>항목</th>
+                                    <th>이름</th>
+                                    <th>소속팀</th>
+                                    <th>소속파트</th>
+                                </tr>
+                            </thead>
+                            <tbody id="searchManagerResult"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="pop_footer">
+                    <button type="button" id="btn_pop_user_choice" class="ui_doc_pop_btn1 ml5">선택</button>
+                    <button type="button" id="btn_pop_doc_cancel" class="ui_doc_pop_btn2 cbtn fr">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- // 팝업_유저찾기팝업 -->
 </body>
 </html>

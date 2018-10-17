@@ -877,7 +877,7 @@ select:disabled + ul.idealSelect:before {
     .gnb_box .gnb_infor {
         float: left;
         line-height: 30px;
-        padding: 0 0 0 30px;
+        padding: 0 30px 0 30px;
         margin: 16px 14px 0 0;
         background: rgba(255, 255, 255, .1);
         border-radius: 5px;
@@ -906,6 +906,7 @@ select:disabled + ul.idealSelect:before {
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
+                margin-right: 5px;
             }
 
         .gnb_box .gnb_infor i.tmb {
@@ -6239,5 +6240,47 @@ input:disabled {
 .box_table_st04_01 > dl > dt input {
     border: 1px solid #fff;
     font-size: 16px !important;
+    background: #eaeaea;
+}
+
+.icr_popup {
+    width: 1100px !important;
+    height: 720px !important;
+}
+
+.invoice_Dl_01 {
+    width: 398px !important;
+}
+
+.invoice_Dl_02 {
+    width: 150px !important;
+}
+
+.invoice_Dl_03 {
+    width: 200px !important;
+}
+
+.invoice_Dl_04 {
+    width: 200px !important;
+}
+
+.invoice_Dl_05 {
+    width: 50px !important;
+}
+
+.select_style_K01 {
+    min-width: inherit !important;
+    width: 100% !important;
+}
+
+.label_k01 {
+    line-height: 3;
+}
+
+.ez_chk_k01 {
+    vertical-align: sub;
+}
+
+.box_table_st04 > dl > dt input {
     background: #eaeaea;
 }
