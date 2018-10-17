@@ -43,3 +43,7 @@
     margin-left: 10px;
     color: dodgerblue;
 }
+
+li.on img {
+    border: 3px solid #0075bb;
+}

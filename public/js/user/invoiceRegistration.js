@@ -676,6 +676,18 @@ function popUpRunEvent() {
                 $('#docType').val(data.docType);
                 $('#docSid').val(data.docSid);
                 $('#docPredictionScore').text('');
+
+                var fileName = $('#ul_image .on img').attr('src');
+                fileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length);
+
+                var currentImgCount = 0;
+                for (var i in lineText) {
+                    if (lineText[i].fileName == fileName) {
+                        currentImgCount = i;
+                        break;
+                    }
+                }
+
                 lineText[currentImgCount].data.docCategory.DOCNAME = data.docName;
                 lineText[currentImgCount].data.docCategory.DOCTYPE = data.docType;
                 lineText[currentImgCount].data.docSid = data.docSid;
@@ -819,24 +831,31 @@ var fn_uiTrain = function () {
 
 //개별 학습 학습 내용 추가 ui training add
 function modifyTextData() {
-    var beforeData = lineText;
+    var fileName = $('#ul_image .on img').attr('src');
+    fileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length);
+    var beforeData = '';
+    for (var i in lineText) {
+        if (lineText[i].fileName == fileName) {
+            beforeData = lineText[i];
+            break;
+        }
+    }
+    
     var afterData = [];
     var array = [];
     var dataCount = 0;
-    beforeData = beforeData.slice(0);
 
     // afterData Processing
     $('#textResultTbl > dl').each(function (index, el) {
-        var fileName = $(el).find('label').children().eq(2).val();
         var location = $(el).find('label').children().eq(1).val();
         var text = $(el).find('label').children().eq(0).val();
         var colLbl = $(el).find('select').find('option:selected').val();
 
-        if (array.length < beforeData[dataCount].data.data.length) {
+        if (array.length < beforeData.data.data.length) {
             array.push({ 'location': location, 'text': text, 'colLbl': Number(colLbl ? colLbl : 38) });
         }
 
-        if (array.length == beforeData[dataCount].data.data.length) {
+        if (array.length == beforeData.data.data.length) {
             var obj = {}
             obj.fileName = fileName;
             obj.data = array;
@@ -848,20 +867,19 @@ function modifyTextData() {
     });
 
     // find an array of data with the same filename
-    for (var i in beforeData) {
-        if (beforeData[i].fileName == afterData[i].fileName) {
+        if (beforeData.fileName == afterData[0].fileName) {
 
             $.ajax({
                 url: '/uiLearning/uiTraining',
                 type: 'post',
                 datatype: "json",
                 data: JSON.stringify({
-                    'beforeData': beforeData[i].data,
-                    'afterData': afterData[i],
+                    'beforeData': beforeData.data,
+                    'afterData': afterData[0],
                     //'docType': $('#docType').val(),
                     //'docSid': $('#docSid').val()
-                    'docType': lineText[i].data.docCategory.DOCTYPE,
-                    'docSid': lineText[i].data.docSid
+                    'docType': beforeData.data.docCategory.DOCTYPE,
+                    'docSid': beforeData.data.docSid
                 }),
                 contentType: 'application/json; charset=UTF-8',
                 beforeSend: function () {
@@ -870,7 +888,7 @@ function modifyTextData() {
                 success: function (data) {
                     //makeTrainingData();
 
-                    if (beforeData.length - 1 == i) {
+                    if (data.code == 200) {
                         endProgressBar(progressId);
                         //alert("success training");
                     }
@@ -881,7 +899,6 @@ function modifyTextData() {
                 }
             });
         }
-    }
 }
 
 // UI학습 팝업 초기화
