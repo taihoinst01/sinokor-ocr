@@ -2839,7 +2839,7 @@ exports.approvalProcess = function (req, done) {
         var approvalNum = req[2] ? req[2] : null;
         var approvalDate = req[3] ? req[3] : null;
         var approvalComment = req[4] ? req[4] : null;
-        var nextApprovalNum = ((req[5] ? req[5] : null) == '03') ? '(BLANK)' : req[5];
+        var nextApprovalNum = ((req[5] ? req[5] : null) == '03') ? '' : req[5];
 
         let conn;
         let result;
