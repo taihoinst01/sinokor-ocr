@@ -78,7 +78,7 @@
         <li><a href="/invoiceProcessingStatus" class="lnb_menu06" title="계산서 처리 현황"><i class="lnb_menu_icon"></i><span class="lnb_menu_title">계산서 처리 현황</span></a></li>
     </ul>
     <%
-        if(currentUser.admin == 'Y'){
+    if(currentUser.admin == 'Y'){
     %>
     <h3>관리자용 <span>메뉴</span></h3>
     <ul class="mt10">
@@ -86,7 +86,7 @@
         <li><a href="/userManagement" class="lnb_menu11" title="사용자관리"><i class="lnb_menu_icon"></i><span class="lnb_menu_title">사용자관리</span></a></li>
     </ul>
     <%
-        }
+    }
     %>
     <!--
     <div class="btn_content_infor">
@@ -95,7 +95,15 @@
     </div>
 
     -->
+
 </div>
+
+<!-- 로그인 사용자 정보 -->
+<input type="hidden" id="userId" value="<%=currentUser.userId%>" />
+<input type="hidden" id="scanApproval" value="<%=currentUser.scanApproval%>" />
+<input type="hidden" id="icrApproval" value="<%=currentUser.icrApproval%>" />
+<input type="hidden" id="middleApproval" value="<%=currentUser.middleApproval%>" />
+<input type="hidden" id="lastApproval" value="<%=currentUser.lastApproval%>" />
 
 <script>
     $(window).on('load', function () {

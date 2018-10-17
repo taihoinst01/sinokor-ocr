@@ -5,7 +5,7 @@ $(document).ready(function () {
     fn_loadLeftSideBarMyApproval();             // 레프트사이드바 내결재(진행 수) 표시
 });
 
-// 레프트사이드바 계산서등록(반려된 수) 표시
+// 레프트사이드바 계산서등록 표시
 function fn_loadLeftSideBarInvoiceRegistration() {
     $.ajax({
         url: '/common/leftSideBarInvoiceRegistration',
@@ -24,7 +24,7 @@ function fn_loadLeftSideBarInvoiceRegistration() {
         }
     });
 }
-// 레프트사이드바 내결재(진행 수) 표시
+// 레프트사이드바 내결재 표시
 function fn_loadLeftSideBarMyApproval() {
     $.ajax({
         url: '/common/leftSideBarMyApproval',

@@ -24,14 +24,16 @@ var sessionConfig = {
     leftSideBarInvoiceRegistration:
         `SELECT COUNT(*) AS CNT
            FROM TBL_APPROVAL_MASTER
-          WHERE STATUS = 'ZZ'
+          WHERE 1=1
+            AND (STATUS = '02' or STATUS = '03' or STATUS = '04' )
             AND NOWNUM = :id 
         `,
     leftSideBarMyApproval:
         ` SELECT COUNT(*) AS CNT
-            FROM TBL_DOCUMENT
-           WHERE APPROVALSTATE = 'P'
-             AND DOCUMENTMANAGER = :id
+            FROM TBL_APPROVAL_MASTER
+           WHERE 1=1
+             AND (STATUS = '02' or STATUS = '03' or STATUS = '04' )
+             AND NOWNUM = :id
         `,
     updateOcrCount:
         ` UPDATE TBL_OCR_COMM_USER

@@ -706,20 +706,20 @@ router.post('/headerUserPopChangePw', function (req, res) {
 
 // [POST] 레프트사이드바 계산서등록(반려된 수) 표시
 var callbackLeftSideBarInvoiceRegistration = function (rows, req, res) {
-    res.send({ code: 200, cnt: rows });
+    res.send({ code: 200, cnt: rows[0].CNT });
 };
 router.post('/leftSideBarInvoiceRegistration', function (req, res) {
     var param = [req.session.userId];
-    commonDB.reqCountQueryParam(queryConfig.sessionConfig.leftSideBarInvoiceRegistration, param, callbackLeftSideBarInvoiceRegistration, req, res);
+    commonDB.reqCountQueryParam2(queryConfig.sessionConfig.leftSideBarInvoiceRegistration, param, callbackLeftSideBarInvoiceRegistration, req, res);
 });
 
 // [POST] 레프트사이드바 내결재(진행 수) 표시
 var callbackLeftSideBarMyApproval = function (rows, req, res) {
-    res.send({ code: 200, cnt: rows });
+    res.send({ code: 200, cnt: rows[0].CNT });
 };
 router.post('/leftSideBarMyApproval', function (req, res) {
     var param = [req.session.userId];
-    commonDB.reqCountQueryParam(queryConfig.sessionConfig.leftSideBarMyApproval, param, callbackLeftSideBarMyApproval, req, res);
+    commonDB.reqCountQueryParam2(queryConfig.sessionConfig.leftSideBarMyApproval, param, callbackLeftSideBarMyApproval, req, res);
 });
 
 // [POST] Increase OCR COUNT
