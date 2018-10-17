@@ -4,8 +4,8 @@ var request = require('sync-request'); // 비동기방식 -> 동기방식
 var querystring = require('querystring'); // JSON -> QueryString 변환
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
-var sync = require('./sync.js');
-var oracle = require('./oracle.js');
+var sync = require('../util/sync.js');
+var oracle = require('../util/oracle.js');
 
 var router = express.Router();
 
