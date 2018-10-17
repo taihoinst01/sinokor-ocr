@@ -197,6 +197,13 @@ var fn_search = function () {
         approvalState = approvalState.slice(0, -1); // 마지막 구분자 제거
         approvalState += ")";
     }
+    
+    var level = '';
+    if ($('#middleApproval').val() == 'Y') {
+        level = 'middleApproval';
+    } else if ($('#lastApproval').val() == 'Y') {
+        level = 'lastApproval';
+    }
     var param = {
         docNum: nvl($("#docNum").val()),
         faoTeam: nvl($("#select_faoTeam").val()),
@@ -205,7 +212,8 @@ var fn_search = function () {
         deadLineDt: nvl($("#deadLineDt").val()),
         searchStartDate: nvl($("#searchStartDate").val()),
         searchEndDate: nvl($("#searchEndDate").val()),
-        approvalState: approvalState
+        approvalState: approvalState,
+        level: level
     };
     //console.log("조건 : " + JSON.stringify(param));
 
@@ -399,17 +407,46 @@ var fn_baseList_chk = function (flag) {
         if (flag == '승인') {
             if ($('#middleApproval').val() == 'Y') {
 
-        } else if ($('#lastApproval').val() == 'Y') {
+            } else if ($('#lastApproval').val() == 'Y') {
+                var arrDocInfo = [];
+                $('input[name=chk_document]:checked').each(function () {
+                    var docInfoDetail = {
+                        docNum: $(this).closest('tr').find('td:eq(0)').text(),
+                        finalApproval: $('#userId').val()
+                    };
+                    arrDocInfo.push(docInfoDetail);
+                })
+                var param = {
+                    arrDocInfo: arrDocInfo
+                };
 
+                $.ajax({
+                    url: '/myApproval/finalApproval',
+                    type: 'post',
+                    datatype: "json",
+                    data: JSON.stringify({ 'param': param }),
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert($("input[name=chk_document]:checked").length + "건의 문서가 승인 되었습니다.");
+                            $("input[name=chk_document]:checked").closest('tr').remove();
+                        } else {
+                            alert(data.error);
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
         }
-    }
-    else if (flag == '반려') {
-        //중간결재자 - 반려
-        if ($('#middleApproval').val() == 'Y') {
-            var level = 'middleApproval';
-        } else if ($('#lastApproval').val() == 'Y') {
-            var level = 'lastApproval';
-        }
+        else if (flag == '반려') {
+            //중간결재자 - 반려
+            if ($('#middleApproval').val() == 'Y') {
+                var level = 'middleApproval';
+            } else if ($('#lastApproval').val() == 'Y') {
+                var level = 'lastApproval';
+            }
             var rowData = new Array();
             var tdArr = new Array();
             var checkbox = $("input[name=chk_document]:checked");
@@ -570,11 +607,10 @@ var fn_baseList_chk = function (flag) {
                         }),
                         contentType: 'application/json; charset=UTF-8',
                         success: function (data) {
-                            if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
-                                $('#layer1').fadeOut();
-                                $("input[name=chk_document]:checked").closest('tr').remove();
-                                $("#span_document_base").empty().html('문서 기본정보 - ' + $("input[name=chk_document]").length + '건');
-                            }
+                            alert(data.docData + "건의 문서가 전달 되었습니다.");
+                            $('#layer1').fadeOut();
+                            $("input[name=chk_document]:checked").closest('tr').remove();
+                            $("#span_document_base").empty().html('문서 기본정보 - ' + $("input[name=chk_document]").length + '건');                          
                         },
                         error: function (err) {
                             console.log(err);
