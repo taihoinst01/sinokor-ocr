@@ -105,36 +105,6 @@ var fnSearchApprovalImageList = function (req, res) {
     commonDB.reqQuery(listQuery, callbackApprovalImageList, req, res);
 };
 
-// [POST] 문서 승인/반려/전달
-router.post('/updateState', function (req, res) {
-    if (req.isAuthenticated()) fnUpdateState(req, res);
-});
-var callbackUpdateState = function (rows, req, res) {
-    if (req.isAuthenticated()) res.send({ code: "200" });
-};
-var fnUpdateState = function (req, res) {
-    var flag = req.body.flag;
-    var arrSeqNum = req.body.arrSeqNum;
-    var arrState = req.body.arrState;
-    var arrMemo = req.body.arrMemo;
-    var arrReporter = req.body.arrReporter;
-    var arrManager = req.body.arrManager;
-
-    console.log("arrManager : " + JSON.stringify(arrManager));
-
-    var query = queryConfig.myApprovalConfig.updateDocument;
-
-    for (var i = 0; i < arrSeqNum.length; i++) {
-        query += ` APPROVALSTATE = '${flag}', `;
-        query += ` MEMO = '${arrMemo[i]}', `;
-        query += ` APPROVALREPORTER = '${arrReporter[i]}', `;
-        query += ` DOCUMENTMANAGER = '${arrManager[i]}' `;
-        query += ` WHERE SEQNUM = '${arrSeqNum[i]}' `;
-        console.log("쿼리 : " + query);
-        commonDB.reqQuery(query, callbackUpdateState, req, res);
-    }
-};
-
 // [POST] 사용자 조회
 router.post('/selectUsers', function (req, res) {
     if (req.isAuthenticated()) fnSelectUsers(req, res);
@@ -147,7 +117,36 @@ var fnSelectUsers = function (req, res) {
     commonDB.reqQuery(query, callbackSelectUsers, req, res);
 };
 
+//내 결제 - 반려
+router.post('/cancelDocument', function (req, res) {
+    var returnObj = {};
+    var cancelCount = 0;
 
+    try {
+        if (req.body.level == 'middleApproval') {
+            var middleNum = 'MIDDLENUM = NULL, NOWNUM = ICRNUM';
+        for (var i = 0; i < req.body.docNum.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.cancelDocument([middleNum, req.body.docNum[i]], sync.defer()));
+            });
+            cancelCount += 1;
+        }
+        } else if (req.body.level == 'lastApproval') {
+            var finalNum = 'FINALNUM = NULL, NOWNUM = MIDDLENUM';
+        for (var i = 0; i < req.body.docNum.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.cancelDocument([finalNum, req.body.docNum[i]], sync.defer()));
+            });
+            cancelCount += 1;
+        }
+    }
+        returnObj = { code: 200, docData: cancelCount };
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
+});
 
 //결재리스트(기본) C -> D 전달
 router.post('/sendApprovalDocumentCtoD', function (req, res) {

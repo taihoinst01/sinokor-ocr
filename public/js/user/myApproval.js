@@ -246,7 +246,7 @@ var fn_search = function () {
                     var docId = nvl(entry['SEQNUM']) + '-' + nvl(entry['DOCNUM']);
                     if ($('#middleApproval').val() == 'Y' || $('#lastApproval').val() == 'Y') {
                         appendHtml +=
-                            '<tr id="tr_base_' + entry["SEQNUM"] + '-' + entry["DOCNUM"] + '-' + entry["APPROVALSTATE"] + '" style="cursor:pointer">' +
+                            '<tr id="tr_base_' + entry["SEQNUM"] + '-' + entry["DOCNUM"] + '-' + entry["STATUS"] + '" style="cursor:pointer" name ="tr_base_chk">' +
                             '<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + docId + '" class="sta00 stck_tr" name="chk_document" /></div></th>' +
                             '<td name="td_base">' + entry["DOCNUM"] + '</td>' +
                             '<td name="td_base">' + nvl(entry["PAGECNT"]) + '</td>' +
@@ -397,22 +397,65 @@ var fn_baseList_chk = function (flag) {
     } else {      
 
         if (flag == '승인') {
-            if ($('#middleApproval') == 'Y') {
-
-            } else if ($('#lastApproval') == 'Y') {
-
-            }
-        }
-        else if (flag == '반려') {
-            if ($('#middleApproval') == 'Y') {
-
-            } else if ($('#lastApproval') == 'Y') {
-
-            }
-        } else if (flag == '진행') {
             if ($('#middleApproval').val() == 'Y') {
-                layer_open('layer1');
-            } else if ($('#lastApproval') == 'Y') {
+
+        } else if ($('#lastApproval').val() == 'Y') {
+
+        }
+    }
+    else if (flag == '반려') {
+        //중간결재자 - 반려
+        if ($('#middleApproval').val() == 'Y') {
+            var level = 'middleApproval';
+        } else if ($('#lastApproval').val() == 'Y') {
+            var level = 'lastApproval';
+        }
+            var rowData = new Array();
+            var tdArr = new Array();
+            var checkbox = $("input[name=chk_document]:checked");
+            var deleteTr = [];
+            // 체크된 체크박스 값을 가져온다
+            checkbox.each(function (i) {
+
+                var tr = checkbox.parent().parent().parent().parent().eq(i);
+                var td = tr.children();
+
+                // 체크된 row의 모든 값을 배열에 담는다.
+                rowData.push(tr.text());
+
+                // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
+                var docNum = td.eq(1).text();
+
+                // 가져온 값을 배열에 담는다.
+                tdArr.push(docNum);
+                deleteTr.push(tr);
+            });
+            $.ajax({
+                url: '/myApproval/cancelDocument',
+                type: 'post',
+                datatype: "json",
+                data: JSON.stringify({
+                    'docNum': tdArr,
+                    'level': level
+                }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    var totCnt = $("input[name = tr_base_chk]");
+                    $("#span_document").empty().html('결재리스트(기본) ' + (totCnt.length - deleteTr.length) + ' 건');
+                    for (var i in deleteTr) {
+                        deleteTr[i].remove();
+                    }
+                    alert(data.docData + " 건의 문서가 반려되었습니다.");
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        
+    } else if (flag == '진행') {
+        if ($('#middleApproval').val() == 'Y') {
+            layer_open('layer1');
+        } else if ($('#lastApproval') == 'Y') {
 
             }
         }
