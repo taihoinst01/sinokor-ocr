@@ -7,6 +7,7 @@ module.exports = {
     trans: function (reqArr, done) {
         sync.fiber(function () {
             try {
+                //console.log(reqArr);
                 //UY
                 reqArr = convertedUY(reqArr);
                 //Entry
@@ -15,7 +16,8 @@ module.exports = {
                 reqArr = convertedOurShare(reqArr);
                 //Currency Code
                 reqArr = sync.await(convertedCurrencyCode(reqArr, sync.defer()));
-
+                //Specific documents
+                reqArr = convertedSpecificDocuments(reqArr);
                 return done(null, reqArr);
 
             } catch (e) {
@@ -90,7 +92,7 @@ function convertedOurShare(reqArr) {
     for (var i in reqArr.data) {
         var item = reqArr.data[i];
         if (item.colLbl == 36 && pattern.test(item.text)) {
-            var intArr = Number(item.text.replace(pattern, ''));
+            var intArr = Number(item.text.replace(/ /gi,'').replace(pattern, ''));
             if (item.text != String(intArr)) {
                 item.originText = item.text;
                 item.text = String(intArr);
@@ -121,4 +123,41 @@ function convertedCurrencyCode(reqArr, done) {
         }
 
     });
+}
+
+function convertedSpecificDocuments(reqArr) {
+    // BT
+    if (reqArr.docCategory.DOCNAME == 'BT') {
+        var oslLocation;
+        var oslMappingSid;
+        var oslSid;
+        var oslText;
+        var yourShare;
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.entryLbl && item.entryLbl == 2) { // OSL(100%) entry
+                oslLocation = item.location;
+                oslMappingSid = item.mappingSid;
+                oslSid = item.sid;
+                oslText = item.text;
+            } else if (item.colLbl == 36) { // Our Share Label
+                yourShare = item.text;
+            }
+        }
+
+        if (oslText && yourShare) {
+            reqArr.data.push({
+                'entryLbl': 3,
+                'text': String(Number(Number(oslText) * (Number(yourShare) / 100)).toFixed(2)),
+                'colLbl': 37,
+                'location': oslLocation,
+                'colAccu': 0.99,
+                'mappingSid': oslMappingSid,
+                'sid': oslSid
+            });
+        }
+
+    }
+
+    return reqArr;
 }
