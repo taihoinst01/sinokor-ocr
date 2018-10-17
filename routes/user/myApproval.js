@@ -8,6 +8,9 @@ var router = express.Router();
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
+var sync = require('../util/sync.js');
+var batch = require('../util/myApproval.js');
+var oracle = require('../util/oracle.js');
 
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
@@ -35,7 +38,7 @@ var callbackApprovalList = function (rows, req, res) {
 var fnSearchApprovalList = function (req, res) {
     // 조회 조건 생성
     var condQuery = ``;
-    var orderQuery = ` ORDER BY DEADLINEDT ASC `;
+    var orderQuery = ` ORDER BY DOCNUM ASC `;
     var param = {
         docNum: commonUtil.nvl(req.body.docNum),
         faoTeam: commonUtil.nvl(req.body.faoTeam),
@@ -47,17 +50,17 @@ var fnSearchApprovalList = function (req, res) {
         approvalState: commonUtil.nvl(req.body.approvalState)
     };
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
-    if (!commonUtil.isNull(param["faoTeam"])) condQuery += ` AND FAOTEAM = '${param["faoTeam"]}' `;
-    if (!commonUtil.isNull(param["faoPart"])) condQuery += ` AND FAOPART = '${param["faoPart"]}' `;
-    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND DOCUMENTMANAGER = '${param["documentManager"]}' `;
-    if (!commonUtil.isNull(param["deadLineDt"])) condQuery += ` AND DEADLINEDT = '${param["deadLineDt"]}' `;
+    //if (!commonUtil.isNull(param["faoTeam"])) condQuery += ` AND FAOTEAM = '${param["faoTeam"]}' `;
+    //if (!commonUtil.isNull(param["faoPart"])) condQuery += ` AND FAOPART = '${param["faoPart"]}' `;
+    //if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND DOCUMENTMANAGER = '${param["documentManager"]}' `;
+    //if (!commonUtil.isNull(param["deadLineDt"])) condQuery += ` AND DEADLINEDT = '${param["deadLineDt"]}' `;
     //if (!commonUtil.isNull(param["searchStartDate"]) && !commonUtil.isNull(param["searchEndDate"]))
     //    condQuery += ` AND REGDT BETWEEN TO_DATE('${param["searchStartDate"]}', 'yyyymmdd') AND TO_DATE('${param["searchEndDate"]}', 'yyyymmdd') `;
-    if (!commonUtil.isNull(param["approvalState"])) condQuery += ` AND APPROVALSTATE IN ${param["approvalState"]} `;
+    if (!commonUtil.isNull(param["approvalState"])) condQuery += ` AND STATUS IN ${param["approvalState"]} `;
 
-    var approvalListQuery = queryConfig.myApprovalConfig.selectApprovalList;
+    var approvalListQuery = "SELECT * FROM TBL_APPROVAL_MASTER WHERE NOWNUM = '" + param.documentManager + "'";
     var listQuery = approvalListQuery + condQuery + orderQuery;
-    console.log("base listQuery : " + listQuery);
+    //console.log("base listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackApprovalList, req, res);
 };
 
@@ -102,36 +105,6 @@ var fnSearchApprovalImageList = function (req, res) {
     commonDB.reqQuery(listQuery, callbackApprovalImageList, req, res);
 };
 
-// [POST] 문서 승인/반려/전달
-router.post('/updateState', function (req, res) {
-    if (req.isAuthenticated()) fnUpdateState(req, res);
-});
-var callbackUpdateState = function (rows, req, res) {
-    if (req.isAuthenticated()) res.send({ code: "200" });
-};
-var fnUpdateState = function (req, res) {
-    var flag = req.body.flag;
-    var arrSeqNum = req.body.arrSeqNum;
-    var arrState = req.body.arrState;
-    var arrMemo = req.body.arrMemo;
-    var arrReporter = req.body.arrReporter;
-    var arrManager = req.body.arrManager;
-
-    console.log("arrManager : " + JSON.stringify(arrManager));
-
-    var query = queryConfig.myApprovalConfig.updateDocument;
-
-    for (var i = 0; i < arrSeqNum.length; i++) {
-        query += ` APPROVALSTATE = '${flag}', `;
-        query += ` MEMO = '${arrMemo[i]}', `;
-        query += ` APPROVALREPORTER = '${arrReporter[i]}', `;
-        query += ` DOCUMENTMANAGER = '${arrManager[i]}' `;
-        query += ` WHERE SEQNUM = '${arrSeqNum[i]}' `;
-        console.log("쿼리 : " + query);
-        commonDB.reqQuery(query, callbackUpdateState, req, res);
-    }
-};
-
 // [POST] 사용자 조회
 router.post('/selectUsers', function (req, res) {
     if (req.isAuthenticated()) fnSelectUsers(req, res);
@@ -143,5 +116,56 @@ var fnSelectUsers = function (req, res) {
     var query = queryConfig.myApprovalConfig.selectUsers;
     commonDB.reqQuery(query, callbackSelectUsers, req, res);
 };
+
+//내 결제 - 반려
+router.post('/cancelDocument', function (req, res) {
+    var returnObj = {};
+    var cancelCount = 0;
+
+    try {
+        if (req.body.level == 'middleApproval') {
+            var middleNum = 'MIDDLENUM = NULL, NOWNUM = ICRNUM';
+        for (var i = 0; i < req.body.docNum.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.cancelDocument([middleNum, req.body.docNum[i]], sync.defer()));
+            });
+            cancelCount += 1;
+        }
+        } else if (req.body.level == 'lastApproval') {
+            var finalNum = 'FINALNUM = NULL, NOWNUM = MIDDLENUM';
+        for (var i = 0; i < req.body.docNum.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.cancelDocument([finalNum, req.body.docNum[i]], sync.defer()));
+            });
+            cancelCount += 1;
+        }
+    }
+        returnObj = { code: 200, docData: cancelCount };
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
+});
+
+//결재리스트(기본) C -> D 전달
+router.post('/sendApprovalDocumentCtoD', function (req, res) {
+    var returnObj = {};
+    var sendCount = 0;
+    try {
+        for (var i = 0; i < req.body.docInfo.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.sendApprovalDocumentCtoD([req.body.userChoiceId[0], req.body.userChoiceId[0], req.body.docInfo[i]], sync.defer()));
+            });
+            sendCount += 1;
+        }
+        returnObj = { code: 200, docData: sendCount };
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
+
+});
 
 module.exports = router;

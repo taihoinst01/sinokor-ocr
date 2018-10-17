@@ -72,7 +72,7 @@ var callbackDocumentList = function (rows, req, res) {
 };
 var fnSearchDocumentList = function (req, res) {
     var condQuery = ``;
-    var andQuery = ` AND STATUS = 'ZZ' `;
+    var andQuery = ` AND (STATUS = 'ZZ' OR STATUS = '04') `;
     var orderQuery = ` ORDER BY DOCNUM ASC `;
     var param = {
         docNum: commonUtil.nvl(req.body.docNum),
@@ -80,7 +80,9 @@ var fnSearchDocumentList = function (req, res) {
     };
 
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
-    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND NOWNUM LIKE '%${param["documentManager"]}%' `;
+    //스캔담당자 입력 시
+    if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND UPLOADNUM LIKE '%${param["documentManager"]}%' `;
+    //조회버튼만 클릭 시
     if (commonUtil.isNull(param["docNum"]) && commonUtil.isNull(param["documentManager"]) && req.user.icrApproval == 'Y') condQuery += " AND NOWNUM = '" + req.user.userId + "' ";
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
     var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
@@ -138,7 +140,6 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         var files = req.files;
         var endCount = 0;
         var fileInfo = [];
-        var fileInfo2 = [];
         var fileDtlInfo = [];
         var returnObj = [];
         var convertType = '';
@@ -146,7 +147,8 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         var convertedImagePath = appRoot + '\\uploads\\';
 
         for (var i = 0; i < files.length; i++) {
-            fileInfo2 = [];
+            var fileInfo2 = [];
+            var fileDtlInfoTemp = [];
             var imgId = 'ICR';
             var date = new Date();
             var yyyymmdd = String(date.getFullYear()) + String(date.getMonth() + 1) + String(date.getDate());
@@ -161,7 +163,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                     imgId += Number(maxDocNum.substring(3, 18)) + 1;
                 }
             }
-            console.log(imgId);
+            //console.log(imgId);
             var ifile = "";
             var ofile = "";
 
@@ -293,6 +295,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                         }
                         
                         fileDtlInfo.push(fileDtlParam);          // 변환 후 JPG 파일 정보
+						fileDtlInfoTemp.push(fileDtlParam);
                     } else {
                         isStop = true;
                         break;
@@ -335,6 +338,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                                 returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
                             }
                             fileDtlInfo.push(fileDtlParam);         // 변환 후 JPG 파일 정보
+							fileDtlInfoTemp.push(fileDtlParam);
                             break;
                         }
                     } catch (e) {
@@ -344,7 +348,8 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 j++;
             }
             endCount++;
-            sync.await(oracle.insertDocument([fileInfo2], sync.defer()));
+            sync.await(oracle.insertDocument([fileInfo2, fileDtlInfoTemp.length], sync.defer()));
+            fileInfo[i].pageCount = fileDtlInfoTemp.length;
         }
 
         // TBL_DOCUMENT insert
@@ -356,6 +361,27 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 
     
 });
+
+//전달/결재상신
+router.post('/sendApprovalDocument', function (req, res) {
+    var returnObj = {};
+    var sendCount = 0;
+    try {
+        for (var i = 0; i < req.body.docInfo.length; i++) {
+            sync.fiber(function () {
+                sync.await(oracle.sendApprovalDocument([req.body.userChoiceId[0], req.body.userChoiceId[0], req.body.docInfo[i]], sync.defer()));
+            });
+            sendCount += 1;
+        }
+        returnObj = { code: 200, docData: sendCount };
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
+
+});
+
 //문서전달
 router.post('/sendDocument', function (req, res) {
     var returnObj = {};
@@ -404,7 +430,7 @@ router.post('/selectDocument', function (req, res) {
         inputDocNum += "'" + req.body.fileInfo[i].imgId + "'" + ", ";
     }
     var inputDocNum2 = inputDocNum.substring(0, inputDocNum.length - 2);
-    console.log("SELECT문에 삽입될 IMGID 값 : " + inputDocNum2);
+    //console.log("SELECT문에 삽입될 IMGID 값 : " + inputDocNum2);
     sync.fiber(function () {
         try {
             var result = sync.await(oracle.selectDocument(inputDocNum2, sync.defer()));
@@ -422,8 +448,8 @@ router.post('/selectOcrFileDtl', function (req, res) {
     var docNum = req.body.docNum;
     sync.fiber(function () {
         try {
-            //var result = sync.await(oracle.selectOcrFileDtl(imgId, sync.defer()));
-            var result = sync.await(oracle.selectApprovalMasterFromDocNum(docNum, sync.defer()));
+            var result = sync.await(oracle.selectOcrFileDtl(docNum, sync.defer()));
+            //var result = sync.await(oracle.selectApprovalMasterFromDocNum(docNum, sync.defer()));
             returnObj = { code: 200, docData: result, fileRootPath: appRoot + '\\uploads\\'  };
         } catch (e) {
             returnObj = { code: 200, error: e };

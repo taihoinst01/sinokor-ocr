@@ -2404,6 +2404,76 @@ exports.selectMaxDocNum = function (done) {
     });
 };
 
+//내 결재 - 반려(중간결재자)
+exports.cancelDocument = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='04', " + req[0] + " WHERE DOCNUM = '"+ req[1]+ "'");
+            return done;
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+
+//문서 기본정보 / 인식결과 전달
+exports.sendApprovalDocument = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET MIDDLENUM = :middleNum, NOWNUM = :nowNum, STATUS = '02', DRAFTDATE = sysdate WHERE DOCNUM = :docNum ", req);
+            return done;
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+//결재리스트(기본) C -> D 전달
+exports.sendApprovalDocumentCtoD = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET FINALNUM = :finalnum, NOWNUM = :nowNum, STATUS = '02' WHERE DOCNUM = :docNum ", req);
+            return done;
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 //문서 기본정보 전달
 exports.sendDocument = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -2459,7 +2529,7 @@ exports.insertDocument = function (req, done) {
             await conn.execute(`INSERT INTO
                                     TBL_APPROVAL_MASTER(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM )
                                 VALUES
-                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :nowNum) `, [req[0][0].imgId, req[0].length, req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
+                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :nowNum) `, [req[0][0].imgId, req[1], req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
