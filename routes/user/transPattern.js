@@ -54,7 +54,7 @@ function convertedEntry(reqArr) {
     for (var i in reqArr.data) {
         var item = reqArr.data[i];
         if (item.colLbl == 37) {
-            var convertText = String(item.text.replace(pattern, '0'));
+            var convertText = String(item.text.replace(/ /gi, '').replace(pattern, '0'));
             if (item.text != convertText) {
                 item.originText = item.text;
                 item.text = convertText;
