@@ -38,3 +38,8 @@
 .box_table_st04 > dl > dt input {
     background: #eaeaea;
 }
+
+#docName {
+    margin-left: 10px;
+    color: dodgerblue;
+}
