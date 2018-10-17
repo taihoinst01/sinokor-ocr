@@ -2810,6 +2810,67 @@ exports.updateApprovalMaster = function (req, done) {
     });
 };
 
+exports.selectApprovalDtl = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute('SELECT * FROM TBL_APPROVAL_DTL WHERE DOCNUM = :docNum', [req]);
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+        } catch (err) {
+            reject(err);
+        } finally {
+
+        }
+    });
+};
+
+// req = [문서번호, 결재상태코드, 결제사원번호(현재유저), 결재일시, 결재의견, 다음결재사원번호(다음유저)];
+// 파라미터 중 없는 것들은 null로 작성, 순서 지킬 것!
+exports.approvalProcess = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var status = req[1] ? req[1] : null;
+        var approvalNum = req[2] ? req[2] : null;
+        var approvalDate = req[3] ? req[3] : null;
+        var approvalComment = req[4] ? req[4] : null;
+        var nextApprovalNum = ((req[5] ? req[5] : null) == '03') ? '(BLANK)' : req[5];
+
+        let conn;
+        let result;
+        let approvalSql;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            // 해당 문서번호 순번 채번
+            approvalSql = 'SELECT NVL(MAX(SEQNUM) + 1,1) AS SEQNUM FROM TBL_APPROVAL_DTL WHERE DOCNUM = :docNum';
+            result = await conn.execute(approvalSql, [req[0]]);
+            var insertSeqNum = result.rows[0].SEQNUM;
+
+            // 이전 순번 디테일 테이블 결재상태코드 3 변환
+            if (insertSeqNum != 1) {
+                approvalSql = 'UPDATE TBL_APPROVAL_DTL SET STATUS = :status WHERE DOCNUM = :docNum AND SEQNUM = :seqNum';
+                await conn.execute(approvalSql, ['03', req[0], insertSeqNum-1]);
+            }
+
+            await conn.execute('INSERT INTO TBL_APPROVAL_DTL VALUES (:docNum, :seqNum, :status, :approvalNum, ' +
+                ':approvalDate, :approvalComment, :nextApprovalNum)',
+                [req[0], insertSeqNum, status, approvalNum, approvalDate, approvalComment, nextApprovalNum]);
+            
+        } catch (err) {
+            reject(err);
+        } finally {
+            return done(null, null);
+        }
+    });
+};
+
 /*
 exports.convertMs = function (data, done) {
     return new Promise(async function (resolve, reject) {

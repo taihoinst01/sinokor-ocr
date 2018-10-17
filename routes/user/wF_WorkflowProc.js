@@ -4,6 +4,8 @@ var request = require('sync-request'); // 비동기방식 -> 동기방식
 var querystring = require('querystring'); // JSON -> QueryString 변환
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
+var sync = require('./sync.js');
+var oracle = require('./oracle.js');
 
 var router = express.Router();
 
@@ -392,7 +394,166 @@ router.post('/', function (req, res) {
     }
 */
 });
+
+router.post('/IF-2', function (req, res) {
+    var docNum = req.body.docNum;
+    var status = req.body.status;
+    var drafterNum = req.body.drafterNum;
+    var draftDate = req.body.draftDate;
+    var nowNum = req.body.nowNum;
+
+    sync.fiber(function () {
+        try {
+            var approvalDtls = sync.await(oracle.selectApprovalDtl(docNum, sync.defer()));
+
+            var data =
+            '<?xml version="1.0" encoding="utf-8"?>' +
+                '<Root>' +
+                '<Parameters>' +
+                    '<Parameter id="gv_encryptToken" type="STRING">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1539564980zPy86400zAy23zEyP7D2Wpx2Bf0dkRRoplRJmZ0Q3Za7WHjeSKx78rg3x78rcDe0bGsQMsAlvwOn7rqK48NEQpA8pi2x7A0PVVN0NZg4x7As0RJFx79YbNw0MoHnIx7Aj7x797CB8bx7A0QYP68D763IdCx2FEWx79UXEIVT6TgScx7A64SUjXXf55fMVMbaUfQ2frENHx2BPtQf2A81Px79GGIt6dB5uQ1D8x7AWjAR9KuA5KfjGOgZjbSDbkqGnPGAx3Dx3DzKyF8x78ICfDirBJ4BDeVx78e5S1x7AaUSDYhrZlx79Wbl1x78FbugXOagNG0cfIx787hj2x78Hd33QDbx00x00x00x00x00zSSy00002479000zUURy1f9d134b0e195793zMyfsNjWrhSdZkx3Dz</Parameter>' +
+                    '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
+                    '<Parameter id="lginIpAdr" type="STRING" />' +
+                    '<Parameter id="userId" type="STRING">2011813</Parameter>' +
+                    '<Parameter id="userEmpNo" type="STRING">2011813</Parameter>' +
+                    '<Parameter id="userDeptCd" type="STRING">240050</Parameter>' +
+                    '<Parameter id="frstRqseDttm" type="STRING">20181015210404674</Parameter>' +
+                    '<Parameter id="rqseDttm" type="STRING">20181015210404674</Parameter>' +
+                    '<Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>' +
+                    '<Parameter id="srnId" type="STRING">CTCTM107</Parameter>' +
+                    '<Parameter id="rqseSrvcNm" type="STRING">koreanre.co.co.aprco.svc.CoAprSvc</Parameter>' +
+                    '<Parameter id="rqseMthdNm" type="STRING">saveAprInfoForIcr</Parameter>' +
+                    '<Parameter id="rqseVoNm" type="STRING">koreanre.co.co.aprco.vo.CoAprVo</Parameter>' +
+                '</Parameters>' +
+                '<Dataset id="coAprMngnIfDcDVoList">' +
+                    '<ColumnInfo>' +
+                        '<Column id="imgId" type="STRING" size="18" />' +
+                        '<Column id="aprPrgStatCd" type="STRING" size="2" />' +
+                        '<Column id="drftEmpNo" type="STRING" size="7" />' +
+                        '<Column id="drfDt" type="DATE" size="0" />' +
+                        '<Column id="prinEmpNo" type="STRING" size="7" />' +
+                        '<Column id="fnlApvrEmpNo" type="STRING" size="7" />' +
+                        '<Column id="fnlAprlDt" type="DATE" size="0" />' +
+                    '</ColumnInfo>' +
+                    '<Rows>' +
+                        '<Row>' +
+                            '<Col id="imgId">' + docNum + '</Col>' +
+                            '<Col id="aprPrgStatCd">' + status + '</Col>' +
+                            '<Col id="drftEmpNo">' + drafterNum + '</Col>' +
+                            '<Col id="drfDt">' + draftDate + '</Col>' +
+                            '<Col id="prinEmpNo">' + nowNum + '</Col>' +
+                        '</Row>' +
+                    '</Rows>' +
+                '</Dataset>' +
+                    '<Dataset id="coApvrDcDVoList">' +
+                        '<ColumnInfo>' +
+                            '<Column id="imgId" type="STRING" size="18" />' +
+                            '<Column id="apvrSno" type="INT" size="9" />' +
+                            '<Column id="aprStatCd" type="STRING" size="2" />' +
+                            '<Column id="apvrEmpNo" type="STRING" size="7" />' +
+                            '<Column id="aprDt" type="DATE" size="0" />' +
+                            '<Column id="aprOpnn" type="STRING" size="4000" />' +
+                            '<Column id="aftApvrEmpNo" type="STRING" size="7" />' +
+                        '</ColumnInfo>' +
+                        '<Rows>' + convertdtlToXml(approvalDtls) + '</Rows>' +
+                    '</Dataset>' +
+                '</Root>';
+
+            var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+                headers: {
+                    'content-type': 'text/xml'
+                },
+                body: data
+            });
+            
+            //var data = res1.getBody('utf8');
+            res.send({ 'code': res1.statusCode });
+        } catch (e) {
+            console.log(e);
+        }
+
+    });
+        
+});
+
 router.get('/favicon.ico', function (req, res) {
     res.send();
 });
+
+function if2Xml() {
+    var data =
+        '<?xml version="1.0" encoding="utf-8"?>' +
+        '<Root>' +
+        '<Parameters>' +
+        '<Parameter id="gv_encryptToken" type="STRING">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1539564980zPy86400zAy23zEyP7D2Wpx2Bf0dkRRoplRJmZ0Q3Za7WHjeSKx78rg3x78rcDe0bGsQMsAlvwOn7rqK48NEQpA8pi2x7A0PVVN0NZg4x7As0RJFx79YbNw0MoHnIx7Aj7x797CB8bx7A0QYP68D763IdCx2FEWx79UXEIVT6TgScx7A64SUjXXf55fMVMbaUfQ2frENHx2BPtQf2A81Px79GGIt6dB5uQ1D8x7AWjAR9KuA5KfjGOgZjbSDbkqGnPGAx3Dx3DzKyF8x78ICfDirBJ4BDeVx78e5S1x7AaUSDYhrZlx79Wbl1x78FbugXOagNG0cfIx787hj2x78Hd33QDbx00x00x00x00x00zSSy00002479000zUURy1f9d134b0e195793zMyfsNjWrhSdZkx3Dz</Parameter>' +
+        '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
+        '<Parameter id="lginIpAdr" type="STRING" />' +
+        '<Parameter id="userId" type="STRING">2011813</Parameter>' +
+        '<Parameter id="userEmpNo" type="STRING">2011813</Parameter>' +
+        '<Parameter id="userDeptCd" type="STRING">240050</Parameter>' +
+        '<Parameter id="frstRqseDttm" type="STRING">20181015210404674</Parameter>' +
+        '<Parameter id="rqseDttm" type="STRING">20181015210404674</Parameter>' +
+        '<Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>' +
+        '<Parameter id="srnId" type="STRING">CTCTM107</Parameter>' +
+        '<Parameter id="rqseSrvcNm" type="STRING">koreanre.co.co.aprco.svc.CoAprSvc</Parameter>' +
+        '<Parameter id="rqseMthdNm" type="STRING">saveAprInfoForIcr</Parameter>' +
+        '<Parameter id="rqseVoNm" type="STRING">koreanre.co.co.aprco.vo.CoAprVo</Parameter>' +
+        '</Parameters>' +
+        '<Dataset id="coAprMngnIfDcDVoList">' +
+        '<ColumnInfo>' +
+        '<Column id="imgId" type="STRING" size="18" />' +
+        '<Column id="aprPrgStatCd" type="STRING" size="2" />' +
+        '<Column id="drftEmpNo" type="STRING" size="7" />' +
+        '<Column id="drfDt" type="DATE" size="0" />' +
+        '<Column id="prinEmpNo" type="STRING" size="7" />' +
+        '<Column id="fnlApvrEmpNo" type="STRING" size="7" />' +
+        '<Column id="fnlAprlDt" type="DATE" size="0" />' +
+        '</ColumnInfo>' +
+        '<Rows>' +
+        '<Row>' +
+        '<Col id="imgId">' + docNum + '</Col>' +
+        '<Col id="aprPrgStatCd">' + status + '</Col>' +
+        '<Col id="drftEmpNo">' + drafterNum + '</Col>' +
+        '<Col id="drfDt">' + draftDate + '</Col>' +
+        '<Col id="prinEmpNo">' + nowNum + '</Col>' +
+        '</Row>' +
+        '</Rows>' +
+        '</Dataset>' +
+        '<Dataset id="coApvrDcDVoList">' +
+        '<ColumnInfo>' +
+        '<Column id="imgId" type="STRING" size="18" />' +
+        '<Column id="apvrSno" type="INT" size="9" />' +
+        '<Column id="aprStatCd" type="STRING" size="2" />' +
+        '<Column id="apvrEmpNo" type="STRING" size="7" />' +
+        '<Column id="aprDt" type="DATE" size="0" />' +
+        '<Column id="aprOpnn" type="STRING" size="4000" />' +
+        '<Column id="aftApvrEmpNo" type="STRING" size="7" />' +
+        '</ColumnInfo>' +
+        '<Rows>' + convertdtlToXml(approvalDtls) + '</Rows>' +
+        '</Dataset>' +
+        '</Root>';
+
+    return data;
+}
+
+function convertdtlToXml(data) {
+    var dtlXml = '';
+    for (var i in data) {
+        dtlXml +=
+            '<Row>' +
+                '<Col id="imgId">' + data[i].DOCNUM + '</Col>' +
+                '<Col id="apvrSno">' + data[i].SEQNUM + '</Col>' +
+                '<Col id="aprStatCd">' + data[i].STATUS + '</Col>' +
+                '<Col id="apvrEmpNo">' + data[i].APPROVALNUM + '</Col>' +
+                '<Col id="aprDt">' + data[i].APPROVALDATE + '</Col>';
+        if (data[i].STATUS == '04') {
+            dtlXml +=
+                '<Col id="aprOpnn">' + data[i].APPROVALCOMMENT.replace(/ /gi, '&#32;') + '</Col>';
+        }
+        dtlXml +=
+                '<Col id="aftApvrEmpNo">' + data[i].NEXTAPPROVALNUM + '</Col>' +
+            '</Row>';
+    }
+    return dtlXml;
+}
+
 module.exports = router;
