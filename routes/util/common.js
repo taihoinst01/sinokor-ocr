@@ -73,6 +73,25 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                     if (result.status != 0) {
                         throw new Error(result.stderr);
                     }
+                } else if (fileExt.toLowerCase() === 'png') {
+                    var fileItem = {
+                        imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                        filePath: (appRoot + '/' + fileObj.path).replace(/\\/gi, '/'),
+                        oriFileName: fileObj.originalname,
+                        convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                        convertFileName: fileObj.originalname.split('.')[0] + '.png',
+                        fileExt: fileExt,
+                        fileSize: fileObj.size,
+                        contentType: fileObj.mimetype
+                    };
+                    fileInfo.push(fileItem);
+
+                    var fileNames = [];
+                    returnObj.push(fileItem.convertFileName);
+
+                    var ifile = convertedImagePath + fileObj.originalname;
+                    var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
+
                 } else if (fileExt.toLowerCase() === 'docx' || fileExt.toLowerCase() === 'doc'
                     || fileExt.toLowerCase() === 'xlsx' || fileExt.toLowerCase() === 'xls'
                     || fileExt.toLowerCase() === 'pptx' || fileExt.toLowerCase() === 'ppt'
