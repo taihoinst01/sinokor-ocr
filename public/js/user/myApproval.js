@@ -429,7 +429,7 @@ var fn_baseList_chk = function (flag) {
                     success: function (data) {
                         if (data.code == 200) {
                             alert($("input[name=chk_document]:checked").length + "건의 문서가 승인 되었습니다.");
-                            $("input[name=chk_document]:checked").closest('tr').remove();
+                            $("input[name=chk_document]:checked").closest('tr').find('td:last').html('승인');
                         } else {
                             alert(data.error);
                         }
