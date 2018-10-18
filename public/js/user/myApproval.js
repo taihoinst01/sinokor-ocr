@@ -231,13 +231,16 @@ var fn_search = function () {
             //startProgressBar(); // start progressbar
             //addProgressBar(1, 1); // proceed progressbar
         },
-        success: function (data) {
-            console.log(data);
+        success: function (data) {           
             //$("#div_base").hide();
             //addProgressBar(2, 99); // proceed progressbar
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     var state = "";
+                    var endDate = '';
+                    if (!(nvl(entry["FINALDATE"]) == null)) {
+                        endDate = (nvl(entry["FINALDATE"]).substring(0, 7)).replace('-','');
+                    }
                     switch (nvl(entry['STATUS'])) {
                         case "02":
                             state = "진행";
@@ -258,7 +261,7 @@ var fn_search = function () {
                             '<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + docId + '" class="sta00 stck_tr" name="chk_document" /></div></th>' +
                             '<td name="td_base">' + entry["DOCNUM"] + '</td>' +
                             '<td name="td_base">' + nvl(entry["PAGECNT"]) + '</td>' +
-                            '<td name="td_base">' + nvl(entry["DEADLINEDT"]) + '</td>';
+                            '<td name="td_base">' + endDate + '</td>';
                         if ($('#middleApproval').val() == 'Y') {
                             appendHtml += '<td class="td_base">' + nvl(entry["ICRNUM"]) + '</td>';
                         } else {
@@ -450,8 +453,11 @@ var fn_baseList_chk = function (flag) {
             }
             var rowData = new Array();
             var tdArr = new Array();
+            var statusTdArr = new Array();
             var checkbox = $("input[name=chk_document]:checked");
             var deleteTr = [];
+
+            var statusCnt = 0;
             // 체크된 체크박스 값을 가져온다
             checkbox.each(function (i) {
 
@@ -463,37 +469,72 @@ var fn_baseList_chk = function (flag) {
 
                 // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
                 var docNum = td.eq(1).text();
-
+                var status = td.eq(7).text();
                 // 가져온 값을 배열에 담는다.
                 tdArr.push(docNum);
+                // 상태=승인 값 추출
+                statusTdArr.push(status); 
                 deleteTr.push(tr);
             });
-            $.ajax({
-                url: '/myApproval/cancelDocument',
-                type: 'post',
-                datatype: "json",
-                data: JSON.stringify({
-                    'docNum': tdArr,
-                    'level': level
-                }),
-                contentType: 'application/json; charset=UTF-8',
-                success: function (data) {
-                    var totCnt = $("input[name = chk_document]");
-                    $("#span_document").empty().html('결재리스트(기본) - ' + (totCnt.length - deleteTr.length) + ' 건');
-                    for (var i in deleteTr) {
-                        deleteTr[i].remove();
-                    }
-                    alert(data.docData + " 건의 문서가 반려되었습니다.");
-                },
-                error: function (err) {
-                    console.log(err);
+            for (var i = 0; i < statusTdArr.length; i++) {
+                if (statusTdArr[i] == '승인') {
+                    statusCnt += 1;
                 }
-            });
+            }
+            if (statusCnt > 0) {
+                alert("이미 결재완료 된 문서가 존재합니다.");
+            } else {
+                $.ajax({
+                    url: '/myApproval/cancelDocument',
+                    type: 'post',
+                    datatype: "json",
+                    data: JSON.stringify({
+                        'docNum': tdArr,
+                        'level': level
+                    }),
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function (data) {
+                        var totCnt = $("input[name = chk_document]");
 
+                        if (confirm(data.docData + " 건의 문서를 반려 하시겠습니까 ?")) {
+                            $("#span_document").empty().html('결재리스트(기본) - ' + (totCnt.length - deleteTr.length) + ' 건');
+                                for (var i in deleteTr) {
+                                    deleteTr[i].remove();
+                                }
+                            alert(data.docData + " 건의 문서가 반려되었습니다.");
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }          
         }
         //내 결재 - 전달
-        else if ($('#middleApproval').val() == 'Y') {          
+        else if ($('#middleApproval').val() == 'Y') {    
+            var tdArr = new Array();
+            var checkbox = $("input[name=chk_document]:checked");
+            var statusCnt = 0;
+            // 체크된 체크박스 값들 중 결제완료 된 경우를 예외시킨다.
+            checkbox.each(function (i) {
+
+                var tr = checkbox.parent().parent().parent().parent().eq(i);
+                var td = tr.children();
+
+                var status = td.eq(7).text();
+
+                tdArr.push(status);
+            });
+            for (var i = 0; i < tdArr.length; i++ ) {
+                if (tdArr[i] == '승인') {
+                    statusCnt += 1;
+                }
+            }
+            if (statusCnt > 0) {
+                alert("이미 결재완료 된 문서가 존재합니다.");
+            } else {
                 layer_open('layer1');            
+            }
         } else {
             alert("전달에 대한 권한이 없습니다.");
         }  
