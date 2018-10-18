@@ -392,23 +392,38 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     
 });
 
-//전달/결재상신
+//전달/결재상신(ICR담당자 -> 중간결재자)
 router.post('/sendApprovalDocument', function (req, res) {
+    var userChoiceId = req.body.userChoiceId;
+    var docInfo = req.body.docInfo;
+    var userId = req.body.userId;
+
     var returnObj = {};
+    var approvalDtlData = [];
     var sendCount = 0;
-    try {
-        for (var i = 0; i < req.body.docInfo.length; i++) {
-            sync.fiber(function () {
-                sync.await(oracle.sendApprovalDocument([req.body.userChoiceId[0], req.body.userChoiceId[0], req.body.docInfo[i]], sync.defer()));
-            });
-            sendCount += 1;
+    sync.fiber(function () {
+        try {
+            for (var i = 0; i < docInfo.length; i++) {               
+                var draftDate = sync.await(oracle.sendApprovalDocument([userChoiceId[0], userChoiceId[0], docInfo[i]], sync.defer()));
+                approvalDtlData.push({
+                    'docNum': docInfo[i],
+                    'status': '02',
+                    'approvalNum': userId,
+                    'approvalDate': draftDate,
+                    'approvalComment': null,
+                    'nextApprovalNum': userChoiceId[0]
+                });
+                sendCount += 1;
+            }
+            sync.await(oracle.approvalDtlProcess(approvalDtlData, sync.defer()));
+            returnObj = { code: 200, docData: sendCount };
+        
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
         }
-        returnObj = { code: 200, docData: sendCount };
-    } catch (e) {
-        returnObj = { code: 200, error: e };
-    } finally {
-        res.send(returnObj);
-    }
+    });
 
 });
 
