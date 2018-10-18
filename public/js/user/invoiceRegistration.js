@@ -1804,13 +1804,13 @@ function fn_processFinish(data, fileDtlInfo) {
 
         var appendMLSelect = '';
         if (colnum == 0) {
-            appendMLSelect = '<select name="cdnNm" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" name="cdnNm" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
         } else if (colnum == 1) {
-            appendMLSelect = '<select name="ctNm" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" name="ctNm" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
         } else if (colnum == 2) {
-            appendMLSelect = '<select name="ttyYy" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" name="ttyYy" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
         } else {
-            appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
         }
         appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
@@ -1959,7 +1959,7 @@ function fn_ContractNumExtraction() {
 
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileName + '\')">';
+        var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileName + '\')">';
         appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
@@ -2618,6 +2618,10 @@ var fn_docEvent = function () {
             var userChoiceTdArr = new Array();
             var popUserChoiceCheckbox = $("input[name=btn_pop_user_search_base_chk]:checked");
 
+            var mlExportRowData = [];
+            var mlExporttdArr = [];
+            var dtlList = $("#tbody_dtlList tr");
+
             // 체크된 문서정보를 가져온다
             popDocInfoCheckbox.each(function (i) {
                 var popDoctr = popDocInfoCheckbox.parent().parent().parent().eq(i);
@@ -2645,6 +2649,52 @@ var fn_docEvent = function () {
 
                 userChoiceTdArr.push(userChoiceId);
             });
+
+            // 추출한 DATA
+            for (var i = 0; i < dtlList.length; i++) {
+                var dtlTdList = dtlList.eq(i).find('td');
+                mlExporttdArr = [];
+                for (var j = 0; j < dtlTdList.length; j++) {
+                    var value = '';
+                    if (j == 0) {
+                        value = dtlTdList.eq(j).find('input[name=dtl_chk]').is(':checked');
+                        if (value == true) {
+                            value = "Y";
+                        } else {
+                            value = "N";
+                        }
+                    } else if (j >= 1 && j <= 4) {
+                        value = dtlTdList.eq(j).text();
+                    } else if (j >= 5) {
+                        if (dtlTdList.eq(j).find('select').length == 1) {
+                            value = dtlTdList.eq(j).find('select option:selected').text();
+                        } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
+                            value = dtlTdList.eq(j).find('input[type="text"]').val();
+                        } else {
+                            value = '';
+                        }
+                    }
+                    mlExporttdArr.push(value);
+                }
+                mlExportRowData.push(mlExporttdArr);
+            }
+            //추출한 DOCNUM
+            var mlDocNum = $("input[name='dtl_chk']").val();
+
+            for (var i in mlExportRowData) {
+                if (mlExportRowData[i][0] == true && (mlExportRowData[i][4] == '' || mlExportRowData[i][4] == null)) {
+                    alert("계약번호를 확인 할수 없습니다.");
+                    return;
+                }
+
+                for (var j in mlExportRowData[i]) {
+                    if (mlExportRowData[i][0] == true && mlExportRowData[i][j] == '선택') {
+                        alert("인식결과의 값을 선택해야 합니다.");
+                        return;
+                    }
+                }
+            }
+
             if (userChoiceTdArr.length > 1) {
                 alert("한명의 담당자만 선택 가능합니다.");
             }
@@ -2654,6 +2704,7 @@ var fn_docEvent = function () {
                     type: 'post',
                     datatype: "json",
                     data: JSON.stringify({
+                        'mlData': { mlDocNum: mlDocNum, mlExportData: mlExportRowData },
                         'userChoiceId': userChoiceTdArr,
                         'docInfo': docInfoTdArr,
                         'userId': userId
@@ -2667,6 +2718,7 @@ var fn_docEvent = function () {
                             for (var i in deleteTr) {
                                 deleteTr[i].remove();
                             }
+                            $("#tbody_dtlList").empty();
                         }
                     },
                     error: function (err) {

@@ -2881,6 +2881,32 @@ exports.approvalDtlProcess = function (req, done) {
     });
 };
 
+exports.insertDocumentDtl = function (mlData, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var insertDocumentDtlSql = queryConfig.invoiceRegistrationConfig.insertDocumentDtl;
+            var deleteDocumentDtlSql = queryConfig.invoiceRegistrationConfig.deleteDocumentDtl;
+
+            await conn.execute(deleteDocumentDtlSql, [mlData.mlDocNum]);
+
+            for (var i = 0; i < mlData.mlExportData.length; i++) {
+                mlData.mlExportData[i].push(mlData.mlDocNum);
+                await conn.execute(insertDocumentDtlSql, mlData.mlExportData[i]);
+            }
+
+        } catch (err) {
+            reject(err);
+        } finally {
+            return done(null, null);
+        }
+    });
+};
+
 /*
 exports.convertMs = function (data, done) {
     return new Promise(async function (resolve, reject) {
