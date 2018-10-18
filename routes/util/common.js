@@ -73,6 +73,25 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                     if (result.status != 0) {
                         throw new Error(result.stderr);
                     }
+                } else if (fileExt.toLowerCase() === 'png') {
+                    var fileItem = {
+                        imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                        filePath: (appRoot + '/' + fileObj.path).replace(/\\/gi, '/'),
+                        oriFileName: fileObj.originalname,
+                        convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                        convertFileName: fileObj.originalname.split('.')[0] + '.png',
+                        fileExt: fileExt,
+                        fileSize: fileObj.size,
+                        contentType: fileObj.mimetype
+                    };
+                    fileInfo.push(fileItem);
+
+                    var fileNames = [];
+                    returnObj.push(fileItem.convertFileName);
+
+                    var ifile = convertedImagePath + fileObj.originalname;
+                    var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
+
                 } else if (fileExt.toLowerCase() === 'docx' || fileExt.toLowerCase() === 'doc'
                     || fileExt.toLowerCase() === 'xlsx' || fileExt.toLowerCase() === 'xls'
                     || fileExt.toLowerCase() === 'pptx' || fileExt.toLowerCase() === 'ppt'
@@ -704,13 +723,22 @@ router.post('/headerUserPopChangePw', function (req, res) {
     commonDB.reqQuery(query, callbackHeaderUserPopChangePw, req, res);
 });
 
-// [POST] 레프트사이드바 계산서등록(반려된 수) 표시
+// [POST] 레프트사이드바 계산서등록(진행 수) 표시
 var callbackLeftSideBarInvoiceRegistration = function (rows, req, res) {
     res.send({ code: 200, cnt: rows[0].CNT });
 };
 router.post('/leftSideBarInvoiceRegistration', function (req, res) {
-    var param = [req.session.userId];
-    commonDB.reqCountQueryParam2(queryConfig.sessionConfig.leftSideBarInvoiceRegistration, param, callbackLeftSideBarInvoiceRegistration, req, res);
+    var param = [];
+    var andQuery = '';
+    if (req.body.scanApproval == 'Y' && req.body.adminApproval == 'N') {
+        andQuery = 'AND UPLOADNUM = ' + "'" + req.session.userId + "' AND ICRNUM IS NULL AND MIDDLENUM IS NULL AND FINALNUM IS NULL";
+    } else if (req.body.icrApproval == 'Y' && req.body.adminApproval == 'N') {
+        andQuery = 'AND ICRNUM = ' + "'" + req.session.userId + "' AND MIDDLENUM IS NULL AND FINALNUM IS NULL";
+    } else if (req.body.adminApproval == 'Y') {
+        andQuery = "AND MIDDLENUM IS NULL AND FINALNUM IS NULL";
+    }
+    commonDB.reqCountQueryParam2(queryConfig.sessionConfig.leftSideBarInvoiceRegistration + andQuery, param, callbackLeftSideBarInvoiceRegistration, req, res);
+   
 });
 
 // [POST] 레프트사이드바 내결재(진행 수) 표시
@@ -718,8 +746,16 @@ var callbackLeftSideBarMyApproval = function (rows, req, res) {
     res.send({ code: 200, cnt: rows[0].CNT });
 };
 router.post('/leftSideBarMyApproval', function (req, res) {
-    var param = [req.session.userId];
-    commonDB.reqCountQueryParam2(queryConfig.sessionConfig.leftSideBarMyApproval, param, callbackLeftSideBarMyApproval, req, res);
+    var param = [];
+    var andQuery='';
+    if (req.body.middleApproval == 'Y' && req.body.adminApproval == 'N') {
+        andQuery = 'AND MIDDLENUM = ' + "'" + req.session.userId + "'";
+    } else if (req.body.lastApproval == 'Y' && req.body.adminApproval == 'N') {
+        andQuery = 'AND FINALNUM = ' + "'" + req.session.userId + "'";
+    } else if (req.body.adminApproval == 'Y') {
+        andQuery = "OR STATUS = '03' AND MIDDLENUM IS NOT NULL";
+    }
+    commonDB.reqCountQueryParam2(queryConfig.sessionConfig.leftSideBarMyApproval + andQuery, param, callbackLeftSideBarMyApproval, req, res);
 });
 
 // [POST] Increase OCR COUNT

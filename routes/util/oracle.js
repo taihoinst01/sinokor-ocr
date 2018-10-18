@@ -2867,6 +2867,33 @@ function convertMsToPdf(data, callback) {
 }
 */
 
+//결재리스트(기본) D 승인
+exports.finalApproval = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let arrDocInfo = req.body.param.arrDocInfo;
+
+            for (let i = 0; i < arrDocInfo.length; i++) {
+                await conn.execute(`UPDATE TBL_APPROVAL_MASTER SET FINALAPPROVAL = '${arrDocInfo[i].finalApproval}', NOWNUM = '', STATUS = '03', FINALDATE = sysdate WHERE DOCNUM = '${arrDocInfo[i].docNum}'`);
+            }
+            return done(null, null);;
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();

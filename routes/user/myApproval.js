@@ -47,18 +47,26 @@ var fnSearchApprovalList = function (req, res) {
         deadLineDt: commonUtil.nvl(req.body.deadLineDt),
         searchStartDate: commonUtil.nvl(req.body.searchStartDate),
         searchEndDate: commonUtil.nvl(req.body.searchEndDate),
-        approvalState: commonUtil.nvl(req.body.approvalState)
+        approvalState: commonUtil.nvl(req.body.approvalState),
+        level: commonUtil.nvl(req.body.level)
     };
-    if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
-    //if (!commonUtil.isNull(param["faoTeam"])) condQuery += ` AND FAOTEAM = '${param["faoTeam"]}' `;
-    //if (!commonUtil.isNull(param["faoPart"])) condQuery += ` AND FAOPART = '${param["faoPart"]}' `;
-    //if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND DOCUMENTMANAGER = '${param["documentManager"]}' `;
-    //if (!commonUtil.isNull(param["deadLineDt"])) condQuery += ` AND DEADLINEDT = '${param["deadLineDt"]}' `;
-    //if (!commonUtil.isNull(param["searchStartDate"]) && !commonUtil.isNull(param["searchEndDate"]))
-    //    condQuery += ` AND REGDT BETWEEN TO_DATE('${param["searchStartDate"]}', 'yyyymmdd') AND TO_DATE('${param["searchEndDate"]}', 'yyyymmdd') `;
-    if (!commonUtil.isNull(param["approvalState"])) condQuery += ` AND STATUS IN ${param["approvalState"]} `;
 
-    var approvalListQuery = "SELECT * FROM TBL_APPROVAL_MASTER WHERE NOWNUM = '" + param.documentManager + "'";
+    if (param["level"] == 'middleApproval') {
+        // 현업담당자C가 조회할때
+        condQuery += ` AND MIDDLENUM = '${param["documentManager"]}'`;
+        if (!commonUtil.isNull(param["approvalState"])) {
+            condQuery += `AND STATUS IN ${param["approvalState"]}`;
+        } 
+    } else if (param["level"] == 'lastApproval') {
+        // 현업담당자D가 조회할때
+        condQuery += ` AND FINALNUM = '${param["documentManager"]}'`;
+        if (!commonUtil.isNull(param["approvalState"])) {
+            condQuery += ` AND STATUS IN ${param["approvalState"]}`
+        } 
+    }
+ 
+
+    var approvalListQuery = "SELECT * FROM TBL_APPROVAL_MASTER WHERE 1=1 ";
     var listQuery = approvalListQuery + condQuery + orderQuery;
     //console.log("base listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackApprovalList, req, res);
@@ -162,6 +170,26 @@ router.post('/sendApprovalDocumentCtoD', function (req, res) {
         returnObj = { code: 200, docData: sendCount };
     } catch (e) {
         returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
+
+});
+
+//결재리스트(기본) D 승인
+router.post('/finalApproval', function (req, res) {
+    var returnObj = {};
+    var sendCount = 0;
+
+    try {
+        
+        sync.fiber(function () {
+            sync.await(oracle.finalApproval(req));
+        });
+       
+        returnObj = { code: 200 };
+    } catch (e) {
+        returnObj = { code: 500, error: e };
     } finally {
         res.send(returnObj);
     }

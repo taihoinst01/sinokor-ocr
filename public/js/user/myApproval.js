@@ -197,6 +197,13 @@ var fn_search = function () {
         approvalState = approvalState.slice(0, -1); // 마지막 구분자 제거
         approvalState += ")";
     }
+    
+    var level = '';
+    if ($('#middleApproval').val() == 'Y') {
+        level = 'middleApproval';
+    } else if ($('#lastApproval').val() == 'Y') {
+        level = 'lastApproval';
+    }
     var param = {
         docNum: nvl($("#docNum").val()),
         faoTeam: nvl($("#select_faoTeam").val()),
@@ -205,7 +212,8 @@ var fn_search = function () {
         deadLineDt: nvl($("#deadLineDt").val()),
         searchStartDate: nvl($("#searchStartDate").val()),
         searchEndDate: nvl($("#searchEndDate").val()),
-        approvalState: approvalState
+        approvalState: approvalState,
+        level: level
     };
     //console.log("조건 : " + JSON.stringify(param));
 
@@ -401,10 +409,39 @@ var fn_baseList_chk = function (flag) {
             if ($('#middleApproval').val() == 'Y') {
 
             } else if ($('#lastApproval').val() == 'Y') {
+                var arrDocInfo = [];
+                $('input[name=chk_document]:checked').each(function () {
+                    var docInfoDetail = {
+                        docNum: $(this).closest('tr').find('td:eq(0)').text(),
+                        finalApproval: $('#userId').val()
+                    };
+                    arrDocInfo.push(docInfoDetail);
+                })
+                var param = {
+                    arrDocInfo: arrDocInfo
+                };
 
+                $.ajax({
+                    url: '/myApproval/finalApproval',
+                    type: 'post',
+                    datatype: "json",
+                    data: JSON.stringify({ 'param': param }),
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert($("input[name=chk_document]:checked").length + "건의 문서가 승인 되었습니다.");
+                            $("input[name=chk_document]:checked").closest('tr').find('td:last').html('승인');
+                        } else {
+                            alert(data.error);
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
             }
         }
-        //내결재 - 반려기능
+            //내결재 - 반려기능
         else if (flag == '반려') {
             if ($('#middleApproval').val() == 'Y') {
                 var level = 'middleApproval';

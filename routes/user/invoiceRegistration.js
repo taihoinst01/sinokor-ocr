@@ -199,7 +199,37 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 fileInfo2.push(fileParam);  
                 fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
 
-                execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 ' + ifile + ' ' + ofile);
+                execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 "' + ifile + '" "' + ofile + '"');
+            } else if (files[i].originalname.split('.')[1] === 'PNG' || files[i].originalname.split('.')[1] === 'png'){
+                ifile = appRoot + '\\' + files[i].path;
+                ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.png';
+
+                //execSync('java -jar C:/Main.jar' + ifile);
+
+                // 파일 정보 추출
+                var fileObj = files[i];                             // 파일
+                var filePath = fileObj.path;                        // 파일 경로
+                var oriFileName = fileObj.originalname;             // 파일 원본명
+                var _lastDot = oriFileName.lastIndexOf('.');
+                var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
+                var fileSize = fileObj.size;                        // 파일 크기
+                var contentType = fileObj.mimetype;                 // 컨텐트타입
+                var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
+
+                var fileParam = {
+                    imgId: imgId,
+                    filePath: filePath,
+                    oriFileName: oriFileName,
+                    convertFileName: '',
+                    svrFileName: svrFileName,
+                    fileExt: fileExt,
+                    fileSize: fileSize,
+                    contentType: contentType,
+                    regId: userId,
+                    row: i
+                };
+                fileInfo2.push(fileParam);
+                fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
             } else if (files[i].originalname.split('.')[1] === 'xlsx' || files[i].originalname.split('.')[1] === 'xls' ||
                 files[i].originalname.split('.')[1] === 'XLSX' || files[i].originalname.split('.')[1] === 'XLS' ||
                 files[i].originalname.split('.')[1] === 'docx' || files[i].originalname.split('.')[1] === 'doc' ||
@@ -250,7 +280,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
 
                 //file convert Pdf to Png
-                execSync('module\\imageMagick\\convert.exe -quiet -density 300 "' + ifile + '" "' + ofile +'"');
+                execSync('module\\imageMagick\\convert.exe -quiet -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile +'"');
             }
             
             var isStop = false;
@@ -260,7 +290,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                     if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' ||
                         files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' ||
                         files[i].originalname.split('.')[1].toLowerCase() === 'pptx' || files[i].originalname.split('.')[1].toLowerCase() === 'ppt' ||
-                        files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
+                        files[i].originalname.split('.')[1].toLowerCase() === 'pdf' || files[i].originalname.split('.')[1].toLowerCase() === 'png') {
                         var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.png';
                         var convertFile = files[i].path.split('.')[0] + '-' + j + '.png';
                     } else {
@@ -288,7 +318,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                         if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' ||
                             files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' ||
                             files[i].originalname.split('.')[1].toLowerCase() === 'pptx' || files[i].originalname.split('.')[1].toLowerCase() === 'ppt' ||
-                            files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
+                            files[i].originalname.split('.')[1].toLowerCase() === 'pdf' || files[i].originalname.split('.')[1].toLowerCase() === 'png') {
                             returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.png');
                         } else {
                             returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
@@ -305,7 +335,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                         if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' ||
                             files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' ||
                             files[i].originalname.split('.')[1].toLowerCase() === 'pptx' || files[i].originalname.split('.')[1].toLowerCase() === 'ppt' ||
-                            files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
+                            files[i].originalname.split('.')[1].toLowerCase() === 'pdf' || files[i].originalname.split('.')[1].toLowerCase() === 'png') {
                             var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '.png';
                             var convertFile = files[i].path.split('.')[0] + '.png';
                         } else {
@@ -332,7 +362,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                             if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' ||
                                 files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' ||
                                 files[i].originalname.split('.')[1].toLowerCase() === 'pptx' || files[i].originalname.split('.')[1].toLowerCase() === 'ppt' ||
-                                files[i].originalname.split('.')[1].toLowerCase() === 'pdf') {
+                                files[i].originalname.split('.')[1].toLowerCase() === 'pdf' || files[i].originalname.split('.')[1].toLowerCase() === 'png') {
                                 returnObj.push(files[i].originalname.split('.')[0] + '.png');
                             } else {
                                 returnObj.push(files[i].originalname.split('.')[0] + '.jpg');

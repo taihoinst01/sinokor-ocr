@@ -22,18 +22,12 @@ var sessionConfig = {
          WHERE
             userId = :id `,
     leftSideBarInvoiceRegistration:
-        `SELECT COUNT(*) AS CNT
-           FROM TBL_APPROVAL_MASTER
-          WHERE 1=1
-            AND (STATUS = '02' or STATUS = '03' or STATUS = '04' )
-            AND NOWNUM = :id 
-        `,
+        "SELECT COUNT(*) AS CNT FROM TBL_APPROVAL_MASTER WHERE 1=1 AND (STATUS = 'ZZ' or STATUS = '04' ) " ,
     leftSideBarMyApproval:
         ` SELECT COUNT(*) AS CNT
             FROM TBL_APPROVAL_MASTER
            WHERE 1=1
-             AND (STATUS = '02' or STATUS = '03' or STATUS = '04' )
-             AND NOWNUM = :id
+             AND (STATUS = '02' or STATUS = '04' )
         `,
     updateOcrCount:
         ` UPDATE TBL_OCR_COMM_USER
