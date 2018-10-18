@@ -2950,7 +2950,7 @@ exports.finalApproval = function (req, done) {
             for (let i = 0; i < arrDocInfo.length; i++) {
                 await conn.execute(`UPDATE TBL_APPROVAL_MASTER SET FINALAPPROVAL = '${arrDocInfo[i].finalApproval}', NOWNUM = '', STATUS = '03', FINALDATE = sysdate WHERE DOCNUM = '${arrDocInfo[i].docNum}'`);
             }
-            return done(null, null);;
+            return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
