@@ -558,6 +558,7 @@ var fn_baseList_chk = function (flag) {
                     //선택된 문서번호 추출(단일 or 다중 건)
                     var docInfoRowData = new Array();
                     var docInfoTdArr = new Array();
+                    var commentArr = new Array();
                     var popDocInfoCheckbox = $("input[name=chk_document]:checked");
                     var deleteTr = [];
 
@@ -576,9 +577,11 @@ var fn_baseList_chk = function (flag) {
 
                         // td.eq(0)은 체크박스 이므로  td.eq(1)의  값부터 가져온다.
                         var docNum = popDoctd.eq(1).text();
+                        var comment = popDoctr.find('input').eq(1).val();
 
                         // 가져온 값을 배열에 담는다.
                         docInfoTdArr.push(docNum);
+                        commentArr.push(comment);
                         deleteTr.push(popDoctr);
                     });
 
@@ -604,7 +607,8 @@ var fn_baseList_chk = function (flag) {
                             data: JSON.stringify({
                                 'userChoiceId': userChoiceTdArr,
                                 'docInfo': docInfoTdArr,
-                                'userId': userId
+                                'userId': userId,
+                                'comment': commentArr
                             }),
                             contentType: 'application/json; charset=UTF-8',
                             success: function (data) {

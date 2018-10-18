@@ -158,21 +158,36 @@ router.post('/cancelDocument', function (req, res) {
 
 //결재리스트(기본) C -> D 전달
 router.post('/sendApprovalDocumentCtoD', function (req, res) {
+    var userChoiceId = req.body.userChoiceId;
+    var docInfo = req.body.docInfo;
+    var userId = req.body.userId;
+    var comment = req.body.comment;
+    var approvalDtlData = [];
     var returnObj = {};
     var sendCount = 0;
-    try {
-        for (var i = 0; i < req.body.docInfo.length; i++) {
-            sync.fiber(function () {
-                sync.await(oracle.sendApprovalDocumentCtoD([req.body.userChoiceId[0], req.body.userChoiceId[0], req.body.docInfo[i]], sync.defer()));
-            });
-            sendCount += 1;
+
+    sync.fiber(function () {
+        try {
+            for (var i = 0; i < docInfo.length; i++) {
+                sync.await(oracle.sendApprovalDocumentCtoD([userChoiceId[0], userChoiceId[0], docInfo[i]], sync.defer()));
+                approvalDtlData.push({
+                    'docNum': docInfo[i],
+                    'status': '02',
+                    'approvalNum': userId,
+                    'approvalDate': null,
+                    'approvalComment': (comment[i] != '') ? comment[i] : null,
+                    'nextApprovalNum': userChoiceId[0]
+                });
+                sendCount += 1;
+            }
+            sync.await(oracle.approvalDtlProcess(approvalDtlData, sync.defer()));
+            returnObj = { code: 200, docData: sendCount };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
         }
-        returnObj = { code: 200, docData: sendCount };
-    } catch (e) {
-        returnObj = { code: 200, error: e };
-    } finally {
-        res.send(returnObj);
-    }
+    });
 
 });
 

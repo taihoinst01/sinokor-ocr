@@ -2460,7 +2460,7 @@ exports.sendApprovalDocumentCtoD = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             await conn.execute("UPDATE TBL_APPROVAL_MASTER SET FINALNUM = :finalnum, NOWNUM = :nowNum, STATUS = '02' WHERE DOCNUM = :docNum ", req);
-            return done;
+            return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
@@ -2839,7 +2839,6 @@ exports.approvalDtlProcess = function (req, done) {
         let conn;
         let result;
         let approvalSql;
-
         try {
             conn = await oracledb.getConnection(dbConfig);
             for (var i in req) {
@@ -2860,10 +2859,19 @@ exports.approvalDtlProcess = function (req, done) {
                     approvalSql = 'UPDATE TBL_APPROVAL_DTL SET STATUS = :status WHERE DOCNUM = :docNum AND SEQNUM = :seqNum';
                     await conn.execute(approvalSql, ['03', docNum, insertSeqNum - 1]);
                 }
-
+                
+                var dateQuery;
+                var params;
+                if (approvalDate) {
+                    dateQuery = ':approvalDate';
+                    params = [docNum, insertSeqNum, status, approvalNum, approvalDate, approvalComment, nextApprovalNum];
+                } else {
+                    dateQuery = 'sysdate';
+                    params = [docNum, insertSeqNum, status, approvalNum, approvalComment, nextApprovalNum];
+                }
                 approvalSql = 'INSERT INTO TBL_APPROVAL_DTL VALUES (:docNum, :seqNum, :status, :approvalNum, ' +
-                    ':approvalDate, :approvalComment, :nextApprovalNum)';
-                await conn.execute(approvalSql, [docNum, insertSeqNum, status, approvalNum, approvalDate, approvalComment, nextApprovalNum]);
+                    dateQuery + ', :approvalComment, :nextApprovalNum)';
+                await conn.execute(approvalSql, params);
             }
         } catch (err) {
             reject(err);
