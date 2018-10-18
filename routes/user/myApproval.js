@@ -127,52 +127,80 @@ var fnSelectUsers = function (req, res) {
 
 //내 결제 - 반려
 router.post('/cancelDocument', function (req, res) {
+    var docNum = req.body.docNum;
+    var level = req.body.level;
+    var comment = req.body.comment;
+    var middleNumArr = req.body.middleNum;
+    var userId = req.body.userId;
+    var approvalDtlData = [];
     var returnObj = {};
     var cancelCount = 0;
 
-    try {
-        if (req.body.level == 'middleApproval') {
-            var middleNum = 'MIDDLENUM = NULL, NOWNUM = ICRNUM';
-        for (var i = 0; i < req.body.docNum.length; i++) {
-            sync.fiber(function () {
-                sync.await(oracle.cancelDocument([middleNum, req.body.docNum[i]], sync.defer()));
-            });
-            cancelCount += 1;
+    sync.fiber(function () {
+        try {
+            for (var i = 0; i < docNum.length; i++) {
+                if (level == 'middleApproval') {
+                    var middleNum = 'MIDDLENUM = NULL, NOWNUM = ICRNUM';                 
+                    sync.await(oracle.cancelDocument([middleNum, docNum[i]], sync.defer()));
+                    cancelCount += 1;                   
+                } else if (level == 'lastApproval') {
+                    var finalNum = 'FINALNUM = NULL, NOWNUM = MIDDLENUM';                 
+                    sync.await(oracle.cancelDocument([finalNum, docNum[i]], sync.defer()));
+                    cancelCount += 1;               
+                }
+                approvalDtlData.push({
+                    'docNum': docNum[i],
+                    'status': '04',
+                    'approvalNum': userId,
+                    'approvalDate': null,
+                    'approvalComment': (comment[i] != '') ? comment[i] : null,
+                    'nextApprovalNum': middleNumArr[i]
+                });
+            }
+            sync.await(oracle.approvalDtlProcess(approvalDtlData, sync.defer()));
+
+            returnObj = { code: 200, docData: cancelCount };
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
         }
-        } else if (req.body.level == 'lastApproval') {
-            var finalNum = 'FINALNUM = NULL, NOWNUM = MIDDLENUM';
-        for (var i = 0; i < req.body.docNum.length; i++) {
-            sync.fiber(function () {
-                sync.await(oracle.cancelDocument([finalNum, req.body.docNum[i]], sync.defer()));
-            });
-            cancelCount += 1;
-        }
-    }
-        returnObj = { code: 200, docData: cancelCount };
-    } catch (e) {
-        returnObj = { code: 200, error: e };
-    } finally {
-        res.send(returnObj);
-    }
+    });
 });
 
 //결재리스트(기본) C -> D 전달
 router.post('/sendApprovalDocumentCtoD', function (req, res) {
+    var userChoiceId = req.body.userChoiceId;
+    var docInfo = req.body.docInfo;
+    var userId = req.body.userId;
+    var comment = req.body.comment;
+    var approvalDtlData = [];
     var returnObj = {};
     var sendCount = 0;
-    try {
-        for (var i = 0; i < req.body.docInfo.length; i++) {
-            sync.fiber(function () {
-                sync.await(oracle.sendApprovalDocumentCtoD([req.body.userChoiceId[0], req.body.userChoiceId[0], req.body.docInfo[i]], sync.defer()));
-            });
-            sendCount += 1;
+
+    sync.fiber(function () {
+        try {
+            for (var i = 0; i < docInfo.length; i++) {
+                sync.await(oracle.sendApprovalDocumentCtoD([userChoiceId[0], userChoiceId[0], docInfo[i]], sync.defer()));
+                approvalDtlData.push({
+                    'docNum': docInfo[i],
+                    'status': '02',
+                    'approvalNum': userId,
+                    'approvalDate': null,
+                    'approvalComment': (comment[i] != '') ? comment[i] : null,
+                    'nextApprovalNum': userChoiceId[0]
+                });
+                sendCount += 1;
+            }
+            sync.await(oracle.approvalDtlProcess(approvalDtlData, sync.defer()));
+            returnObj = { code: 200, docData: sendCount };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
         }
-        returnObj = { code: 200, docData: sendCount };
-    } catch (e) {
-        returnObj = { code: 200, error: e };
-    } finally {
-        res.send(returnObj);
-    }
+    });
 
 });
 
