@@ -87,8 +87,14 @@ function popUpRunEvent() {
             docName = 'NotInvoice';
         }
 
+        var filePath = $("#docPopImgPath").val();
+        filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
+
+        var fileName = $("#originImg").attr("src");
+        fileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length);
+
         var param = {
-            filepath: $('#docPopImgPath').val(),
+            filepath: filePath + fileName,
             docName: docName,
             radioType: chkValue,
             textList: textList,
