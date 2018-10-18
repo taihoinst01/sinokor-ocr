@@ -1796,7 +1796,7 @@ function fn_processFinish(data, fileDtlInfo) {
     $("#btn_pop_ui_close").click();
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
         appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
