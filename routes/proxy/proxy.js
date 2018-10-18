@@ -16,7 +16,7 @@ router.get('/favicon.ico', function (req, res) {
 router.post('/ocr', function (req, res) {
     var fileInfo = req.body.fileInfo;
     //var fileName = req.body.fileName;
-
+    console.time("ocrTime");
     var formData = {
         file: {
             value: fs.createReadStream('./uploads/' + fileInfo.convertFileName),
@@ -29,6 +29,7 @@ router.post('/ocr', function (req, res) {
 
     request.post({ url: propertiesConfig.proxy.serverUrl + '/ocr/api', formData: formData }, function (err, httpRes, body) {
         //if (err) res.send({ 'code': 500, 'error': err });
+        console.timeEnd("ocrTime");
         res.send(ocrParsing(body));
     });
 
