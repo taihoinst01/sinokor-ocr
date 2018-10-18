@@ -2509,7 +2509,7 @@ exports.deleteDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='06' WHERE DOCNUM = :docNum ", req[0]);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='06' WHERE DOCNUM = '" + req + "'");
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2887,6 +2887,32 @@ exports.approvalDtlProcess = function (req, done) {
                 console.log('기간계(IF-2) statusCode : ' + azureRes.code);
                 */
             }
+        } catch (err) {
+            reject(err);
+        } finally {
+            return done(null, null);
+        }
+    });
+};
+
+exports.insertDocumentDtl = function (mlData, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var insertDocumentDtlSql = queryConfig.invoiceRegistrationConfig.insertDocumentDtl;
+            var deleteDocumentDtlSql = queryConfig.invoiceRegistrationConfig.deleteDocumentDtl;
+
+            await conn.execute(deleteDocumentDtlSql, [mlData.mlDocNum]);
+
+            for (var i = 0; i < mlData.mlExportData.length; i++) {
+                mlData.mlExportData[i].push(mlData.mlDocNum);
+                await conn.execute(insertDocumentDtlSql, mlData.mlExportData[i]);
+            }
+
         } catch (err) {
             reject(err);
         } finally {

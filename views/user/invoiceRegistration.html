@@ -68,8 +68,19 @@
                             <span id="uploadInfoText" class="invoiceR_uploadText">Drag & Drop files here</span>
                             <form id="uploadFileForm" action="/invoiceRegistration/uploadFile" method="post" enctype="multipart/form-data">
                                 <p class="attach_btn attach_btn_k01">
+                                    <%
+                                    if(currentUser.scanApproval == 'Y') {
+                                    %>
                                     <input type="file" id="uploadFile" name="file" value="upload" multiple />
                                     <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
+                                    <%
+                                    } else {
+                                    %>
+                                    <input type="file" id="uploadFile" name="file" value="upload" multiple disabled/>
+                                    <label id="uploadFileBtn" for="customer_file" disabled>계산서 업로드</label>
+                                    <%
+                                    }
+                                    %>
                                 </p>
                             </form>
                         </div>
@@ -92,13 +103,33 @@
                             <dl class="kDl02">
                                 <dt><label for="intxt_02">문서담당자</label></dt>
                                 <dd>
+                                    <%
+                                    if(currentUser.scanApproval == 'Y') {
+                                    %>
+                                    <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="" placeholder="<%=currentUser.userId%>" disabled />
+                                    <%
+                                    } else {
+                                    %>
                                     <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="" placeholder="홍길동" />
+                                    <%
+                                    }
+                                    %>
                                 </dd>
                             </dl>
                             <dl class="kDl03">
                                 <dt><label for="intxt_02"></label></dt>
                                 <dd>
+                                    <%
+                                    if(currentUser.icrApproval == 'Y' || currentUser.scanApproval == 'Y') {
+                                    %>
                                     <button type="button" id="btn_search" class="button_st3">조회</button>
+                                    <%
+                                    } else {
+                                    %>
+                                    <button type="button" id="btn_search" class="button_st3" disabled>조회</button>
+                                    <%
+                                    }
+                                    %>
                                 </dd>
                             </dl>
                         </div>
@@ -304,8 +335,8 @@
                                                     <th scope="row">계약명</th>
                                                     <th scope="row">UY</th>
                                                     <th scope="row">계약번호</th>
-                                                    <th scope="row">페이지번호 FROM</th>
-                                                    <th scope="row">페이지번호 TO</th>
+                                                    <th scope="row">페이지번호<br />FROM</th>
+                                                    <th scope="row">페이지번호<br />TO</th>
                                                     <th scope="row">화폐코드</th>
                                                     <th scope="row">화폐단위</th>
                                                     <th scope="row">PAID<br />(100%)</th>

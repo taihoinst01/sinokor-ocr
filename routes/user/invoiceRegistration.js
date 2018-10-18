@@ -75,15 +75,24 @@ var fnSearchDocumentList = function (req, res) {
     var andQuery = ` AND (STATUS = 'ZZ' OR STATUS = '04') `;
     var orderQuery = ` ORDER BY DOCNUM ASC `;
     var param = {
+        userId: commonUtil.nvl(req.body.userId),
         docNum: commonUtil.nvl(req.body.docNum),
-        documentManager: commonUtil.nvl(req.body.documentManager)
+        documentManager: commonUtil.nvl(req.body.documentManager),
+        scanApproval: commonUtil.nvl(req.body.scanApproval),
+        icrApproval: commonUtil.nvl(req.body.icrApproval),
     };
+    if (!commonUtil.isNull(param["scanApproval"]) && param["scanApproval"] == 'Y') {
+        condQuery += " AND UPLOADNUM = '" + req.session.userId + "' ";
+    } else if (!commonUtil.isNull(param["icrApproval"]) && param["icrApproval"] == 'Y') {
+        condQuery += " AND ICRNUM = '" + req.session.userId + "' ";
+    }
 
+    //문서번호 입력 시
     if (!commonUtil.isNull(param["docNum"])) condQuery += ` AND DOCNUM LIKE '%${param["docNum"]}%' `;
     //스캔담당자 입력 시
     if (!commonUtil.isNull(param["documentManager"])) condQuery += ` AND UPLOADNUM LIKE '%${param["documentManager"]}%' `;
-    //조회버튼만 클릭 시
-    if (commonUtil.isNull(param["docNum"]) && commonUtil.isNull(param["documentManager"]) && req.user.icrApproval == 'Y') condQuery += " AND NOWNUM = '" + req.user.userId + "' ";
+
+ 
     var documentListQuery = queryConfig.invoiceRegistrationConfig.selectDocumentList;
     var listQuery = documentListQuery + condQuery + andQuery + orderQuery;
     //console.log("base listQuery : " + listQuery);
@@ -399,6 +408,7 @@ router.post('/sendApprovalDocument', function (req, res) {
     var userChoiceId = req.body.userChoiceId;
     var docInfo = req.body.docInfo;
     var userId = req.body.userId;
+    var mlData = req.body.mlData;
 
     var returnObj = {};
     var approvalDtlData = [];
@@ -417,6 +427,7 @@ router.post('/sendApprovalDocument', function (req, res) {
                 });
                 sendCount += 1;
             }
+            sync.await(oracle.insertDocumentDtl(mlData, sync.defer()));
             sync.await(oracle.approvalDtlProcess(approvalDtlData, sync.defer()));
             returnObj = { code: 200, docData: sendCount };
         
