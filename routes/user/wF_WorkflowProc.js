@@ -395,7 +395,7 @@ router.post('/', function (req, res) {
 */
 });
 
-router.post('/IF-2', function (req, res) {
+router.post('/IF2', function (req, res) {
     var docNum = req.body.docNum;
     var status = req.body.status;
     var drafterNum = req.body.drafterNum;

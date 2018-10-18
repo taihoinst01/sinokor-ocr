@@ -504,7 +504,7 @@ exports.insertBatchColumnMapping = function (req, filepath, done) {
     });
 };
 
-exports.insertBatchColumnMappingFromUi = function (req, docType, done) {
+exports.insertBatchColumnMappingFromUi = function (req, docType, before, done) {
     return new Promise(async function (resolve, reject) {
         var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
         let conn;
@@ -513,6 +513,7 @@ exports.insertBatchColumnMappingFromUi = function (req, docType, done) {
         let selectBatchColumnMapping = `SELECT SEQNUM FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = :data AND CLASS = :class `;
         let insertBatchColumnMapping = `INSERT INTO TBL_BATCH_COLUMN_MAPPING_TRAIN VALUES 
                                         (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL, :data, :class, sysdate) `;
+        let updateBatchColumnMapping = 'UPDATE TBL_BATCH_COLUMN_MAPPING_TRAIN SET CLASS = :class WHERE DATA = :data';
 
         try {
             conn = await oracledb.getConnection(dbConfig);
@@ -523,11 +524,14 @@ exports.insertBatchColumnMappingFromUi = function (req, docType, done) {
                 var sid = result.rows[0].SID;
                 var colSid = docType + ',' + locArr[0] + ',' + locArr[1] + ',' + (Number(locArr[0]) + Number(locArr[2])) + ',' + result.rows[0].SID;
                 req.colSid = colSid;
-                result = await conn.execute(selectBatchColumnMapping, [colSid, req.colLbl]);
+                result = await conn.execute(selectBatchColumnMapping, [colSid, before.colLbl]);
                 if ( result.rows.length == 0 && !(((req.colLbl >= 5 && req.colLbl <= 34) || req.colLbl == 36) && (sid == "0,0,0,0,0" || sid == "1,1,1,1,1")) ) {
                     await conn.execute(insertBatchColumnMapping, [colSid, req.colLbl]);
                     return done(null, req);
                 } else {
+                    if (result.rows.length > 0 && req.colLbl == 38) {
+                        await conn.execute(updateBatchColumnMapping, [req.colLbl, colSid]);
+                    }
                     return done(null, null);
                 }
             }          
@@ -2532,7 +2536,7 @@ exports.deleteDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='06' WHERE DOCNUM = :docNum ", req[0]);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='06' WHERE DOCNUM = '" + req + "'");
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2899,7 +2903,43 @@ exports.approvalDtlProcess = function (req, done) {
                 approvalSql = 'INSERT INTO TBL_APPROVAL_DTL VALUES (:docNum, :seqNum, :status, :approvalNum, ' +
                     dateQuery + ', :approvalComment, :nextApprovalNum)';
                 await conn.execute(approvalSql, params);
+
+                /*
+                var azureRes = request('POST', 'http://localhost/wF_WorkflowProc/IF2', {
+                    json: {
+                        'docNum': docNum, 'status': status, 'drafterNum': null,
+                        'draftDate': null, 'nowNum': approvalNum
+                    }
+                });
+                console.log('기간계(IF-2) statusCode : ' + azureRes.code);
+                */
             }
+        } catch (err) {
+            reject(err);
+        } finally {
+            return done(null, null);
+        }
+    });
+};
+
+exports.insertDocumentDtl = function (mlData, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var insertDocumentDtlSql = queryConfig.invoiceRegistrationConfig.insertDocumentDtl;
+            var deleteDocumentDtlSql = queryConfig.invoiceRegistrationConfig.deleteDocumentDtl;
+
+            await conn.execute(deleteDocumentDtlSql, [mlData.mlDocNum]);
+
+            for (var i = 0; i < mlData.mlExportData.length; i++) {
+                mlData.mlExportData[i].push(mlData.mlDocNum);
+                await conn.execute(insertDocumentDtlSql, mlData.mlExportData[i]);
+            }
+
         } catch (err) {
             reject(err);
         } finally {
@@ -2970,14 +3010,21 @@ exports.finalApproval = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let result;
+        var dateArr = [];
         try {
             conn = await oracledb.getConnection(dbConfig);
             let arrDocInfo = req.body.param.arrDocInfo;
 
             for (let i = 0; i < arrDocInfo.length; i++) {
                 await conn.execute(`UPDATE TBL_APPROVAL_MASTER SET FINALAPPROVAL = '${arrDocInfo[i].finalApproval}', NOWNUM = '', STATUS = '03', FINALDATE = sysdate WHERE DOCNUM = '${arrDocInfo[i].docNum}'`);
+                result = await conn.execute('SELECT FINALDATE FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum', [arrDocInfo[i].docNum]);
+                if (result.rows.length > 0) {
+                    dateArr.push(result.rows[0].FINALDATE);
+                } else {
+                    dateArr.push(null);
+                }
             }
-            return done(null, null);
+            return done(null, dateArr);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {

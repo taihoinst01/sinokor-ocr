@@ -5019,6 +5019,10 @@ button[disabled] {
     opacity: 0.5;
     cursor: default;
 }
+label[disabled] {
+    opacity: 0.5;
+    cursor: default !important;
+}
 
 .dcmtChkImg {
     min-height: 674px !important;

@@ -45,11 +45,12 @@ def findLabelDB(inputsid):
     curs.execute(sql)
     rows = curs.fetchall()
     result = []
-    # {0,1,2,3,35,36,37} db에 위치가 일치하면 text sid와 상관없이 label 매핑
+    # {0,1,2,3,35,36,37,38} db에 위치가 일치하면 text sid와 상관없이 label 매핑
     # 위치가 일치하고 label이 여러개일 경우 랜덤 매핑
     ret = []
     for row in rows:
-        if int(row[2]) != 38 and (int(row[2]) < 4 or int(row[2]) > 34):
+        if int(row[2]) < 4 or int(row[2]) > 34:
+        #if int(row[2]) != 38 and (int(row[2]) < 4 or int(row[2]) > 34):
             dbNum = str(row[1]).split(",")
             inputNum = str(inputsid).split(",")
             # 문서종류 and (Y좌표 and (X좌표 or 넓이))
@@ -61,7 +62,7 @@ def findLabelDB(inputsid):
         elif int(row[2]) != 38:
             dbNum = str(row[1]).split(",")
             inputNum = str(inputsid).split(",")
-            if dbNum[0] == inputNum[0] and dbNum[4:] == inputNum[4:]:
+            if dbNum[0] == inputNum[0] and dbNum[4:] == inputNum[4:]:               
                 ret.append(row[2])
         else:
             if row[1] == inputsid:
@@ -73,7 +74,10 @@ def findLabelDB(inputsid):
         result.append(0)
         return result
     else:
-        result.append(int(random.sample(ret, 1)[0]))
+        if '38' not in ret:
+            result.append(int(random.sample(ret, 1)[0]))
+        else:
+            result.append(38)
         result.append(0.99)
         return result
 
