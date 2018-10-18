@@ -408,6 +408,7 @@ router.post('/sendApprovalDocument', function (req, res) {
     var userChoiceId = req.body.userChoiceId;
     var docInfo = req.body.docInfo;
     var userId = req.body.userId;
+    var mlData = req.body.mlData;
 
     var returnObj = {};
     var approvalDtlData = [];
@@ -426,6 +427,7 @@ router.post('/sendApprovalDocument', function (req, res) {
                 });
                 sendCount += 1;
             }
+            sync.await(oracle.insertDocumentDtl(mlData, sync.defer()));
             sync.await(oracle.approvalDtlProcess(approvalDtlData, sync.defer()));
             returnObj = { code: 200, docData: sendCount };
         
