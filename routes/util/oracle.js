@@ -2505,7 +2505,7 @@ exports.deleteDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='06' WHERE DOCNUM = :docNum ", req[0]);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='06' WHERE DOCNUM = '" + req + "'");
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);

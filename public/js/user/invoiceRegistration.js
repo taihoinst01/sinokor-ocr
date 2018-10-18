@@ -41,9 +41,9 @@ var initGlobalVariable = function () {
 };
 
 // 폼 초기화
-var initForm = function () {
+var initForm = function ({ type }) {
+
     $("#span_document_base").html("문서 기본정보");
-    $("#tbody_baseList").html("");
     $("#span_document_dtl").html("인식 결과");
     $("#tbody_dtlList").html("");
     $("#main_image").prop("src", "");
@@ -52,7 +52,14 @@ var initForm = function () {
 
     $("#div_image").fadeOut("fast");
     $("#div_dtl").fadeOut("fast");
-    $("#div_base").fadeOut("fast");
+
+    if (type == 1) {
+
+        $("#tbody_baseList").html("");
+        $("#div_base").fadeOut("fast");
+    } else if (type == 2) {
+
+    }
 };
 
 $(function () {
@@ -63,7 +70,7 @@ $(function () {
  * INIT
  ****************************************************************************************/
 var _init = function () {
-    initForm();
+    initForm(1);
     initGlobalVariable();
     fn_scrollbarEvent();
     fn_buttonEvent();
@@ -123,13 +130,14 @@ var fn_uploadFileEvent = function () {
     $("#uploadFile").change(function () {
         if ($(this).val() !== "") {
             initGlobalVariable();   // 전역변수 초기화
-            initForm();             // 폼 초기화
+            initForm(1);             // 폼 초기화
             $('#uploadFileForm').submit();
         }
     });
 
     $("#uploadFileBtn").click(function () {
-		thumbImgs = [];
+        thumbImgs = [];
+        $("#uploadFile").val('');
         $("#uploadFile").click();
     });
 
@@ -214,7 +222,7 @@ var fn_uploadFileEvent = function () {
     function F_FileMultiUpload(files, obj) {
         if (confirm(files.length + "개의 파일을 업로드 하시겠습니까?")) {
             initGlobalVariable();   // 전역변수 초기화
-            initForm();             // 폼 초기화
+            initForm(1);             // 폼 초기화
             var data = new FormData();
             for (var i = 0; i < files.length; i++) {
                 data.append('file', files[i]);
@@ -2359,90 +2367,111 @@ var fn_docEvent = function () {
 
     //삭제
     $('#deleteDocBtn').click(function () {
-        var rowData = new Array();
-        var tdArr = new Array();
-        var checkbox = $("input[name=base_chk]:checked");
-        var deleteTr = [];
-        // 체크된 체크박스 값을 가져온다
-        checkbox.each(function (i) {
+        if ($('input[name="base_chk"]:checked').length > 0) {
+            var managerChk = true;
+            $('input[name="base_chk"]:checked').each(function () {
+                if ($('#userId').val() != $(this).closest('tr').children().eq(3).text()) {
+                    alert("문서 담당자가 아닙니다. 다시 선택해주세요.");
+                    managerChk = false;
+                    $('input[name="base_chk"]:checked').parent().removeClass('ez-checked');
+                    $('input[name="base_chk"]:checked').prop('checked', false);
+                    $('input[name="docListAllChk"]:checked').parent().removeClass('ez-checked');
+                    $('input[name="docListAllChk"]:checked').prop('checked', false);
 
-            var tr = checkbox.parent().parent().parent().eq(i);
-            var td = tr.children();
-
-            // 체크된 row의 모든 값을 배열에 담는다.
-            rowData.push(tr.text());
-
-            // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
-            var docNum = td.eq(1).text();
-
-            // 가져온 값을 배열에 담는다.
-            tdArr.push(docNum);
-            deleteTr.push(tr);
-        });
-
-        $.ajax({
-            url: '/invoiceRegistration/deleteDocument',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify({ 'docNum': tdArr }),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-                var totCnt = $("input[name = base_chk]");
-                $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + '건');
-                for (var i in deleteTr) {
-                    deleteTr[i].remove();
+                    return false;
                 }
-                alert(data.docData + " 건의 문서가 삭제되었습니다.");
-            },
-            error: function (err) {
-                console.log(err);
+            });
+
+            if (managerChk == false) return;
+
+            if (confirm("삭제하시겠습니까?")) {
+
+                var rowData = new Array();
+                var tdArr = new Array();
+                var checkbox = $("input[name=base_chk]:checked");
+                var deleteTr = [];
+                // 체크된 체크박스 값을 가져온다
+                checkbox.each(function (i) {
+
+                    var tr = checkbox.parent().parent().parent().eq(i);
+                    var td = tr.children();
+
+                    // 체크된 row의 모든 값을 배열에 담는다.
+                    rowData.push(tr.text());
+
+                    // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
+                    var docNum = td.eq(1).text();
+
+                    // 가져온 값을 배열에 담는다.
+                    tdArr.push(docNum);
+                    deleteTr.push(tr);
+                });
+
+                $.ajax({
+                    url: '/invoiceRegistration/deleteDocument',
+                    type: 'post',
+                    datatype: "json",
+                    data: JSON.stringify({ 'docNum': tdArr }),
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function (data) {
+                        initForm(2);
+                        for (var i in deleteTr) {
+                            deleteTr[i].remove();
+                        }
+                        var totCnt = $("input[name = base_chk]").length;
+                        $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt) + '건');
+                        alert(data.docData + " 건의 문서가 삭제되었습니다.");
+                        
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
             }
-        });
+        } else {
+            alert('문서를 선택하세요');
+        }
     });
 
     //전달(업로드 담당자의 경우 -> 전달기능 // ICR담당자의 경우 -> 반려기능)
     $('#sendDocBtn').click(function () {
-        if ($('#icrApproval').val() == 'Y') {
-            if ($('input[name="base_chk"]:checked').length > 0) {
-                if (confirm('반려 하시겠습니까?')) {
-                    var docNumArr = [];
-                    $('input[name="base_chk"]:checked').each(function (i, e) {
-                        if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
-                            docNumArr.push($(e).val());
-                        }
-                    });
-                    if (docNumArr.length > 0) {
-                        refuseDoc('icrApproval', docNumArr);
-                    } else {
-                        $('input[name="base_chk"]:checked').each(function (i, e) {
-                            $(e).parent().removeClass('ez-checked');
-                            $(e).prop('checked', false);
-                        });
-                        alert('반려 할 문서가 없습니다.(문서 담당자가 아닙니다)');
-                    }
+        
+        if ($('input[name="base_chk"]:checked').length > 0) {
+            var managerChk = true;
+            $('input[name="base_chk"]:checked').each(function () {
+                if ($('#userId').val() != $(this).closest('tr').children().eq(3).text()) {
+                    alert("문서 담당자가 아닙니다. 다시 선택해주세요.");
+                    managerChk = false;
+                    $('input[name="base_chk"]:checked').parent().removeClass('ez-checked');
+                    $('input[name="base_chk"]:checked').prop('checked', false);
+                    $('input[name="docListAllChk"]:checked').parent().removeClass('ez-checked');
+                    $('input[name="docListAllChk"]:checked').prop('checked', false);
+                    
+                    return false;
                 }
-            } else {
-                alert('반려 할 문서가 없습니다.');
-            }
-        } else if ($('#scanApproval').val() == 'Y') {
-            var isCheckboxYn = false;
-            var arr_checkboxYn = document.getElementsByName("base_chk");
+            });
+            
+            if (managerChk == false) return;
 
-            for (var i = 0; i < arr_checkboxYn.length; i++) {
-                if (arr_checkboxYn[i].checked == true) {
-                    isCheckboxYn = true;
-                    break;
-                }
-            }
-            if (isCheckboxYn) {
-                layer_open('layer1');
-            } else {
-                alert("전달할 문서를 선택하세요.");
-            }
-        }        
-        else {
-            layer_open('layer1');
-        }       
+            if ($('#icrApproval').val() == 'Y') {
+                    if (confirm('반려 하시겠습니까?')) {
+                        var docNumArr = [];
+                        $('input[name="base_chk"]:checked').each(function (i, e) {
+                            if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
+                                docNumArr.push($(e).val());
+                            }
+                        });
+                        if (docNumArr.length > 0) {
+                            refuseDoc('icrApproval', docNumArr);
+                        }
+                    }
+           
+            } else if ($('#scanApproval').val() == 'Y') {                       
+                layer_open('layer1');            
+            }                  
+        } else {
+            alert('문서를 선택하세요');
+        }
     });
 
     $('#btn_pop_user_search').click(function () {
@@ -2550,8 +2579,9 @@ var fn_docEvent = function () {
                         success: function (data) {
                             if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
                                 $('#layer1').fadeOut();
-                                var totCnt = $("input[name = base_chk]");
-                                $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + '건');
+                                initForm(2);
+                                var totCnt = $("input[name = base_chk]").length;
+                                $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt) + '건');
                                 for (var i in deleteTr) {
                                     deleteTr[i].remove();
                                 }
