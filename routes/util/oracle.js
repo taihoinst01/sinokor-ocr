@@ -2509,7 +2509,7 @@ exports.deleteDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='06' WHERE DOCNUM = :docNum ", req[0]);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='06' WHERE DOCNUM = '" + req + "'");
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2876,6 +2876,16 @@ exports.approvalDtlProcess = function (req, done) {
                 approvalSql = 'INSERT INTO TBL_APPROVAL_DTL VALUES (:docNum, :seqNum, :status, :approvalNum, ' +
                     dateQuery + ', :approvalComment, :nextApprovalNum)';
                 await conn.execute(approvalSql, params);
+
+                /*
+                var azureRes = request('POST', 'http://localhost/wF_WorkflowProc/IF2', {
+                    json: {
+                        'docNum': docNum, 'status': status, 'drafterNum': null,
+                        'draftDate': null, 'nowNum': approvalNum
+                    }
+                });
+                console.log('기간계(IF-2) statusCode : ' + azureRes.code);
+                */
             }
         } catch (err) {
             reject(err);
