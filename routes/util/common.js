@@ -236,6 +236,25 @@ router.post('/imageUpload', upload.any(), function (req, res) {
     */
 });
 
+router.post('/approvalDtlProcess', function (req, res) {
+    var data = req.body.data;
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            sync.await(oracle.approvalDtlProcess(data, sync.defer()));
+            
+            returnObj = { code: 200, message: 'modify textData success' };
+
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
 router.post('/modifyTextData', function (req, res) {
     var beforeData = req.body.beforeData;
     var afterData = req.body.afterData;

@@ -2436,7 +2436,8 @@ exports.sendApprovalDocument = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             await conn.execute("UPDATE TBL_APPROVAL_MASTER SET MIDDLENUM = :middleNum, NOWNUM = :nowNum, STATUS = '02', DRAFTDATE = sysdate WHERE DOCNUM = :docNum ", req);
-            return done;
+            result = await conn.execute("SELECT DRAFTDATE FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum ", [req[2]]);
+            return done(null, result.rows[0].DRAFTDATE);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
@@ -2833,36 +2834,37 @@ exports.selectApprovalDtl = function (req, done) {
 
 // req = [문서번호, 결재상태코드, 결제사원번호(현재유저), 결재일시, 결재의견, 다음결재사원번호(다음유저)];
 // 파라미터 중 없는 것들은 null로 작성, 순서 지킬 것!
-exports.approvalProcess = function (req, done) {
+exports.approvalDtlProcess = function (req, done) {
     return new Promise(async function (resolve, reject) {
-        var status = req[1] ? req[1] : null;
-        var approvalNum = req[2] ? req[2] : null;
-        var approvalDate = req[3] ? req[3] : null;
-        var approvalComment = req[4] ? req[4] : null;
-        var nextApprovalNum = ((req[5] ? req[5] : null) == '03') ? '' : req[5];
-
         let conn;
         let result;
         let approvalSql;
 
         try {
             conn = await oracledb.getConnection(dbConfig);
+            for (var i in req) {
+                var docNum = req[i].docNum ? req[i].docNum : '';
+                var status = req[i].status ? req[i].status : null;
+                var approvalNum = req[i].approvalNum ? req[i].approvalNum : null;
+                var approvalDate = req[i].approvalDate ? req[i].approvalDate : null;
+                var approvalComment = req[i].approvalComment ? req[i].approvalComment : null;
+                var nextApprovalNum = ((req[i].nextApprovalNum ? req[i].nextApprovalNum : null) == '03') ? '' : req[i].nextApprovalNum;
 
-            // 해당 문서번호 순번 채번
-            approvalSql = 'SELECT NVL(MAX(SEQNUM) + 1,1) AS SEQNUM FROM TBL_APPROVAL_DTL WHERE DOCNUM = :docNum';
-            result = await conn.execute(approvalSql, [req[0]]);
-            var insertSeqNum = result.rows[0].SEQNUM;
+                // 해당 문서번호 순번 채번
+                approvalSql = 'SELECT NVL(MAX(SEQNUM) + 1,1) AS SEQNUM FROM TBL_APPROVAL_DTL WHERE DOCNUM = :docNum';
+                result = await conn.execute(approvalSql, [docNum]);
+                var insertSeqNum = result.rows[0].SEQNUM;
 
-            // 이전 순번 디테일 테이블 결재상태코드 03 변환
-            if (insertSeqNum != 1) {
-                approvalSql = 'UPDATE TBL_APPROVAL_DTL SET STATUS = :status WHERE DOCNUM = :docNum AND SEQNUM = :seqNum';
-                await conn.execute(approvalSql, ['03', req[0], insertSeqNum-1]);
+                // 이전 순번 디테일 테이블 결재상태코드 03 변환
+                if (insertSeqNum != 1) {
+                    approvalSql = 'UPDATE TBL_APPROVAL_DTL SET STATUS = :status WHERE DOCNUM = :docNum AND SEQNUM = :seqNum';
+                    await conn.execute(approvalSql, ['03', docNum, insertSeqNum - 1]);
+                }
+
+                approvalSql = 'INSERT INTO TBL_APPROVAL_DTL VALUES (:docNum, :seqNum, :status, :approvalNum, ' +
+                    ':approvalDate, :approvalComment, :nextApprovalNum)';
+                await conn.execute(approvalSql, [docNum, insertSeqNum, status, approvalNum, approvalDate, approvalComment, nextApprovalNum]);
             }
-
-            approvalSql = 'INSERT INTO TBL_APPROVAL_DTL VALUES (:docNum, :seqNum, :status, :approvalNum, ' +
-                ':approvalDate, :approvalComment, :nextApprovalNum)';
-            await conn.execute(approvalSql, [req[0], insertSeqNum, status, approvalNum, approvalDate, approvalComment, nextApprovalNum]);
-            
         } catch (err) {
             reject(err);
         } finally {
