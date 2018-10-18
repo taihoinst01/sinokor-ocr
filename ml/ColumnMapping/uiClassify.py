@@ -62,9 +62,8 @@ def findLabelDB(inputsid):
         elif int(row[2]) != 38:
             dbNum = str(row[1]).split(",")
             inputNum = str(inputsid).split(",")
-            if dbNum[0] == inputNum[0] and dbNum[4:] == inputNum[4:]:
-                if '38' not in ret:
-                    ret.append(row[2])
+            if dbNum[0] == inputNum[0] and dbNum[4:] == inputNum[4:]:               
+                ret.append(row[2])
         else:
             if row[1] == inputsid:
                 ret.append(row[2])
@@ -75,7 +74,10 @@ def findLabelDB(inputsid):
         result.append(0)
         return result
     else:
-        result.append(int(random.sample(ret, 1)[0]))
+        if '38' not in ret:
+            result.append(int(random.sample(ret, 1)[0]))
+        else:
+            result.append(38)
         result.append(0.99)
         return result
 
