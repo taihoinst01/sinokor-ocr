@@ -2853,15 +2853,15 @@ exports.approvalProcess = function (req, done) {
             result = await conn.execute(approvalSql, [req[0]]);
             var insertSeqNum = result.rows[0].SEQNUM;
 
-            // 이전 순번 디테일 테이블 결재상태코드 3 변환
+            // 이전 순번 디테일 테이블 결재상태코드 03 변환
             if (insertSeqNum != 1) {
                 approvalSql = 'UPDATE TBL_APPROVAL_DTL SET STATUS = :status WHERE DOCNUM = :docNum AND SEQNUM = :seqNum';
                 await conn.execute(approvalSql, ['03', req[0], insertSeqNum-1]);
             }
 
-            await conn.execute('INSERT INTO TBL_APPROVAL_DTL VALUES (:docNum, :seqNum, :status, :approvalNum, ' +
-                ':approvalDate, :approvalComment, :nextApprovalNum)',
-                [req[0], insertSeqNum, status, approvalNum, approvalDate, approvalComment, nextApprovalNum]);
+            approvalSql = 'INSERT INTO TBL_APPROVAL_DTL VALUES (:docNum, :seqNum, :status, :approvalNum, ' +
+                ':approvalDate, :approvalComment, :nextApprovalNum)';
+            await conn.execute(approvalSql, [req[0], insertSeqNum, status, approvalNum, approvalDate, approvalComment, nextApprovalNum]);
             
         } catch (err) {
             reject(err);
