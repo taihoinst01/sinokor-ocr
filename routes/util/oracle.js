@@ -2876,6 +2876,16 @@ exports.approvalDtlProcess = function (req, done) {
                 approvalSql = 'INSERT INTO TBL_APPROVAL_DTL VALUES (:docNum, :seqNum, :status, :approvalNum, ' +
                     dateQuery + ', :approvalComment, :nextApprovalNum)';
                 await conn.execute(approvalSql, params);
+
+                /*
+                var azureRes = request('POST', 'http://localhost/wF_WorkflowProc/IF2', {
+                    json: {
+                        'docNum': docNum, 'status': status, 'drafterNum': null,
+                        'draftDate': null, 'nowNum': approvalNum
+                    }
+                });
+                console.log('기간계(IF-2) statusCode : ' + azureRes.code);
+                */
             }
         } catch (err) {
             reject(err);
