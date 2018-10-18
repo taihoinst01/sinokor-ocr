@@ -161,8 +161,9 @@ router.post('/uiTraining', function (req, res) {
                         }
                         afterData.data[i].sid = sync.await(oracle.selectSid(beforeData.data[j], sync.defer()));
                         //라벨이 변경된 경우만 트레이닝 insert
-                        if ((docType != 0 && docType != 1) && (afterData.data[i].colLbl == 0 || (afterData.data[i].colLbl && afterData.data[i].colLbl != 38))) {
-                            var item = sync.await(oracle.insertBatchColumnMappingFromUi(afterData.data[i], docType, sync.defer()));
+                        if ((docType != 0 && docType != 1) && (afterData.data[i].colLbl == 0 || (afterData.data[i].colLbl && afterData.data[i].colLbl != 38) ||
+                            (beforeData.data[j].colLbl != 38 && afterData.data[i].colLbl == 38))) {
+                            var item = sync.await(oracle.insertBatchColumnMappingFromUi(afterData.data[i], docType, beforeData.data[j], sync.defer()));
                             if (item) {
                                 cmData.push({ 'data': item.colSid, 'class': item.colLbl });
                             }

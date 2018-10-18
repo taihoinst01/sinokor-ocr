@@ -504,7 +504,7 @@ exports.insertBatchColumnMapping = function (req, filepath, done) {
     });
 };
 
-exports.insertBatchColumnMappingFromUi = function (req, docType, done) {
+exports.insertBatchColumnMappingFromUi = function (req, docType, before, done) {
     return new Promise(async function (resolve, reject) {
         var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
         let conn;
@@ -513,6 +513,7 @@ exports.insertBatchColumnMappingFromUi = function (req, docType, done) {
         let selectBatchColumnMapping = `SELECT SEQNUM FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = :data AND CLASS = :class `;
         let insertBatchColumnMapping = `INSERT INTO TBL_BATCH_COLUMN_MAPPING_TRAIN VALUES 
                                         (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL, :data, :class, sysdate) `;
+        let updateBatchColumnMapping = 'UPDATE TBL_BATCH_COLUMN_MAPPING_TRAIN SET CLASS = :class WHERE DATA = :data';
 
         try {
             conn = await oracledb.getConnection(dbConfig);
@@ -523,11 +524,14 @@ exports.insertBatchColumnMappingFromUi = function (req, docType, done) {
                 var sid = result.rows[0].SID;
                 var colSid = docType + ',' + locArr[0] + ',' + locArr[1] + ',' + (Number(locArr[0]) + Number(locArr[2])) + ',' + result.rows[0].SID;
                 req.colSid = colSid;
-                result = await conn.execute(selectBatchColumnMapping, [colSid, req.colLbl]);
+                result = await conn.execute(selectBatchColumnMapping, [colSid, before.colLbl]);
                 if ( result.rows.length == 0 && !(((req.colLbl >= 5 && req.colLbl <= 34) || req.colLbl == 36) && (sid == "0,0,0,0,0" || sid == "1,1,1,1,1")) ) {
                     await conn.execute(insertBatchColumnMapping, [colSid, req.colLbl]);
                     return done(null, req);
                 } else {
+                    if (result.rows.length > 0 && req.colLbl == 38) {
+                        await conn.execute(updateBatchColumnMapping, [req.colLbl, colSid]);
+                    }
                     return done(null, null);
                 }
             }          
