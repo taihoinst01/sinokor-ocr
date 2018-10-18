@@ -191,7 +191,7 @@ function copyFile(src, docType) {
         } catch (e) {
             if (e.code != 'EEXIST') throw e;
         }
-        execSync('module\\imageMagick\\convert.exe -density 800x800 ' + src + ' ' + (convertedFilepath + '/' + docType + '.jpg'));
+        execSync('module\\imageMagick\\convert.exe -density 800x800 "' + src + '" ' + (convertedFilepath + '/' + docType + '.jpg'));
         sync.await(oracle.updateDocCategoryToFilePath(['/' + (convertedFilepath.split('/')[2] + '/' + docType + '.jpg'), docType], sync.defer()));
 
         return (convertedFilepath + '/' + docType + '.jpg');

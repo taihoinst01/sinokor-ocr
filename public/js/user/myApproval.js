@@ -262,7 +262,7 @@ var fn_search = function () {
                         if ($('#middleApproval').val() == 'Y') {
                             appendHtml += '<td class="td_base">' + nvl(entry["ICRNUM"]) + '</td>';
                         } else {
-                            appendHtml += '<td class="td_base" > ' + nvl(entry["MIDDLENUM"]) + '</td>';
+                            appendHtml += '<td class="td_base" >' + nvl(entry["MIDDLENUM"]) + '</td>';
                         }
                         appendHtml +=
                             '<td class="td_base">' + nvl(entry["NOWNUM"]) + '</td>' +
@@ -270,7 +270,7 @@ var fn_search = function () {
                             '<td name="td_base">' + state + '</td>' +
                             '</tr>';
                     } else {
-                        appendHtml += '<tr><td colspan="8">권한이 없습니다.</td></tr>';
+                        appendHtml += '<tr><td colspan="8">조회할 데이터가 없습니다.</td></tr>';
                     }
                 });
             } else {
@@ -334,7 +334,8 @@ var fn_search_dtl = function (seqNum, docNum) {
             $("#span_document_dtl").empty().html('결재리스트(상세) -' + data.length + '건');
             $("#div_dtl").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
-            endProgressBar(progressId); // end progressbar
+            endProgressBar(progressId); // end progressbar\
+
         }, error: function (err) {
             endProgressBar(progressId); // end progressbar
             console.log(err);
@@ -396,14 +397,14 @@ var fn_search_image = function (imgId) {
         }
     });
 };
-// 체크된 문서 갯수 확인하고 승인/반려/전달 실행
+
+// 체크된 문서확인하고 승인/반려/전달 실행
 var fn_baseList_chk = function (flag) {
 
     if ($('input[name=chk_document]:checked').length == 0) {
-        alert('선택된 항목이 없습니다.')
+        alert('결재 문서를 선택해주세요.');
         return false;
-    } else {      
-
+    } else {
         if (flag == '승인') {
             if ($('#middleApproval').val() == 'Y') {
 
@@ -440,8 +441,8 @@ var fn_baseList_chk = function (flag) {
                 });
             }
         }
+            //내결재 - 반려기능
         else if (flag == '반려') {
-            //중간결재자 - 반려
             if ($('#middleApproval').val() == 'Y') {
                 var level = 'middleApproval';
             } else if ($('#lastApproval').val() == 'Y') {
@@ -449,6 +450,8 @@ var fn_baseList_chk = function (flag) {
             }
             var rowData = new Array();
             var tdArr = new Array();
+            var commentArr = new Array();
+            var middleNumArr = new Array();
             var checkbox = $("input[name=chk_document]:checked");
             var deleteTr = [];
             // 체크된 체크박스 값을 가져온다
@@ -462,9 +465,12 @@ var fn_baseList_chk = function (flag) {
 
                 // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
                 var docNum = td.eq(1).text();
-
+                var comment = tr.find('input').eq(1).val();
+                var middleNum = td.eq(4).text();
                 // 가져온 값을 배열에 담는다.
                 tdArr.push(docNum);
+                commentArr.push(comment);
+                middleNumArr.push(middleNum);
                 deleteTr.push(tr);
             });
             $.ajax({
@@ -473,12 +479,15 @@ var fn_baseList_chk = function (flag) {
                 datatype: "json",
                 data: JSON.stringify({
                     'docNum': tdArr,
-                    'level': level
+                    'level': level,
+                    'comment': commentArr,
+                    'middleNum': middleNumArr,
+                    'userId': $('#documentManager').val()
                 }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
-                    var totCnt = $("input[name = tr_base_chk]");
-                    $("#span_document").empty().html('결재리스트(기본) ' + (totCnt.length - deleteTr.length) + ' 건');
+                    var totCnt = $("input[name = chk_document]");
+                    $("#span_document").empty().html('결재리스트(기본) - ' + (totCnt.length - deleteTr.length) + ' 건');
                     for (var i in deleteTr) {
                         deleteTr[i].remove();
                     }
@@ -488,207 +497,148 @@ var fn_baseList_chk = function (flag) {
                     console.log(err);
                 }
             });
-        
-    } else if (flag == '진행') {
-        if ($('#middleApproval').val() == 'Y') {
-            layer_open('layer1');
-        } else if ($('#lastApproval') == 'Y') {
 
-            }
         }
-    }
-    
-
-    $('#btn_pop_user_search').click(function () {
-
-        var param = {
-            docManagerChk: $('#docManagerChk').is(':checked'),
-            icrManagerChk: $('#icrManagerChk').is(':checked'),
-            middleManagerChk: $('#middleManagerChk').is(':checked'),
-            approvalManagerChk: $('#approvalManagerChk').is(':checked'),
-            keyword: $('#searchManger').val().trim(),
-            team: $('#select_team').val(),
-            part: $('#select_part').val()
-        };
-
-        $.ajax({
-            url: '/common/selectUserInfo',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify({ 'param': param }),
-            contentType: 'application/json; charset=UTF-8',
-            success: function (data) {
-                if (data.code == 200) {
-                    $('#searchManagerResult').empty();
-                    console.log(data);
-                    var data = data.data;
-                    var appendHtml = '';
-                    if (data.length > 0) {
-                        for (var i = 0; i < data.length; i++) {
-                            appendHtml += '<tr>' +
-                                '<td><input type="checkbox" name="btn_pop_user_search_base_chk"/></td>' +
-                                '<td>' + data[i].USERID + '</td>' +
-                                '<td>소속팀</td>' +
-                                '<td>소속파트</td>' +
-                                '</tr >';
-                        }
-
-                        $('#searchManagerResult').append(appendHtml);
-                        $('#searchManagerResult input[type=checkbox]').ezMark();
-                    }
-                } else {
-                    alert(data.error);
-                }
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    })
-
-    //결제담당자 선택시 발생이벤트.
-    $("#btn_pop_user_choice").click(function () {
-        if ($('input[name=btn_pop_user_search_base_chk]:checked').length == 0) {
-            alert("담당자를 선택해주세요");
+        //내 결재 - 전달
+        else if ($('#middleApproval').val() == 'Y') {          
+                layer_open('layer1');            
         } else {
-            if ($('#middleApproval').val() == 'Y') {
-                //현재 로그인된 계정아이디
-                var userId = $('#userId').val();
-
-                //선택된 문서번호 추출(단일 or 다중 건)
-                var docInfoRowData = new Array();
-                var docInfoTdArr = new Array();
-                var popDocInfoCheckbox = $("input[name=chk_document]:checked");
+            alert("전달에 대한 권한이 없습니다.");
+        }  
 
 
-                //선택된 유저ID 추출(단일 건)
-                var userChoiceRowData = new Array();
-                var userChoiceTdArr = new Array();
-                var popUserChoiceCheckbox = $("input[name=btn_pop_user_search_base_chk]:checked");
+        $('#btn_pop_user_search').click(function () {
 
-                // 체크된 문서정보를 가져온다
-                popDocInfoCheckbox.each(function (i) {
-                    var popDoctr = popDocInfoCheckbox.closest('tr');
-                    var popDoctd = popDoctr.children();
+            var param = {
+                docManagerChk: $('#docManagerChk').is(':checked'),
+                icrManagerChk: $('#icrManagerChk').is(':checked'),
+                middleManagerChk: $('#middleManagerChk').is(':checked'),
+                approvalManagerChk: $('#approvalManagerChk').is(':checked'),
+                keyword: $('#searchManger').val().trim(),
+                team: $('#select_team').val(),
+                part: $('#select_part').val()
+            };
 
-                    // 체크된 row의 모든 값을 배열에 담는다.
-                    docInfoRowData.push(popDoctd.text());
+            $.ajax({
+                url: '/common/selectUserInfo',
+                type: 'post',
+                datatype: "json",
+                data: JSON.stringify({ 'param': param }),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    if (data.code == 200) {
+                        $('#searchManagerResult').empty();
+                        console.log(data);
+                        var data = data.data;
+                        var appendHtml = '';
+                        if (data.length > 0) {
+                            for (var i = 0; i < data.length; i++) {
+                                appendHtml += '<tr>' +
+                                    '<td><input type="checkbox" name="btn_pop_user_search_base_chk"/></td>' +
+                                    '<td>' + data[i].USERID + '</td>' +
+                                    '<td>소속팀</td>' +
+                                    '<td>소속파트</td>' +
+                                    '</tr >';
+                            }
 
-                    // td.eq(0)은 체크박스 이므로  td.eq(1)의  값부터 가져온다.
-                    var docNum = popDoctd.eq(1).text();
-
-                    // 가져온 값을 배열에 담는다.
-                    docInfoTdArr.push(docNum);
-                });
-
-                // 체크된 담당자를 가져온다
-                popUserChoiceCheckbox.each(function (i) {
-                    var popUsertr = popUserChoiceCheckbox.parent().parent().parent().eq(i);
-                    var popUsertd = popUsertr.children();
-
-                    userChoiceRowData.push(popUsertr.text());
-
-                    var userChoiceId = popUsertd.eq(1).text();
-
-                    userChoiceTdArr.push(userChoiceId);
-                });
-                if (userChoiceTdArr.length > 1) {
-                    alert("한명의 담당자만 선택 가능합니다.");
-                }
-                else {
-                    $.ajax({
-                        url: '/myApproval/sendApprovalDocumentCtoD',
-                        type: 'post',
-                        datatype: "json",
-                        data: JSON.stringify({
-                            'userChoiceId': userChoiceTdArr,
-                            'docInfo': docInfoTdArr,
-                            'userId': userId
-                        }),
-                        contentType: 'application/json; charset=UTF-8',
-                        success: function (data) {
-                            alert(data.docData + "건의 문서가 전달 되었습니다.");
-                            $('#layer1').fadeOut();
-                            $("input[name=chk_document]:checked").closest('tr').remove();
-                            $("#span_document_base").empty().html('문서 기본정보 - ' + $("input[name=chk_document]").length + '건');                          
-                        },
-                        error: function (err) {
-                            console.log(err);
+                            $('#searchManagerResult').append(appendHtml);
+                            $('#searchManagerResult input[type=checkbox]').ezMark();
                         }
-                    });
+                    } else {
+                        alert(data.error);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
                 }
-            }
-        }
-    });
+            });
+        })
 
+        //결재담당자 선택시 발생이벤트.
+        $("#btn_pop_user_choice").click(function () {
+            if ($('input[name=btn_pop_user_search_base_chk]:checked').length == 0) {
+                alert("담당자를 선택해주세요");
+            } else {
+                if ($('#middleApproval').val() == 'Y') {
+                    //현재 로그인된 계정아이디
+                    var userId = $('#userId').val();
 
+                    //선택된 문서번호 추출(단일 or 다중 건)
+                    var docInfoRowData = new Array();
+                    var docInfoTdArr = new Array();
+                    var commentArr = new Array();
+                    var popDocInfoCheckbox = $("input[name=chk_document]:checked");
+                    var deleteTr = [];
 
-  /*  기존소스
-    var chkCnt = 0;
-    var arrSeqNum = [];
-    var arrState = [];
-    var arrMemo = [];
-    var arrReporter = [];
-    var arrManager = [];
-    var val = "";
-   *  $("input[name=chk_document]").each(function (index, value) {
-        if ($(this).is(":checked")) {
-            val = $(this).val().split("-");  // value="${entry['SEQNUM']}-${entry['DOCNUM']}"
-            var memo = "memo_" + val[0] + "-" + val[1];
-            var reporter = "reporter_" + val[0] + "-" + val[1];
-            var manager = "manager_" + val[0] + "-" + val[1];
-            arrSeqNum.push(val[0]);
-            arrState.push(val[2]);
-            arrMemo.push(nvl($("#" + memo).val()));
-            arrReporter.push(nvl($("#" + reporter).val()));
-            arrManager.push(nvl($("#" + manager).val()));
-            chkCnt++;
-        }
-    });
-    var progressId;
-    if (chkCnt > 0) {
-        var param = {
-            flag: flag,
-            arrSeqNum: arrSeqNum,
-            arrState: arrState,
-            arrMemo: arrMemo,
-            arrReporter: arrReporter,
-            arrManager: arrManager
-        };
-        $.ajax({
-            url: '/myApproval/updateState',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify(param),
-            contentType: 'application/json; charset=UTF-8',
-            beforeSend: function () {
-                if (flag == "승인") $("#progressMsgTitle").html("승인처리 중 입니다.");
-                else if (flag == "반려") $("#progressMsgTitle").html("반려처리 중 입니다.");
-                else if (flag == "진행") $("#progressMsgTitle").html("전달 중 입니다.");
-                progressId = showProgressBar();
-                //startProgressBar(); // start progressbar
-                //addProgressBar(1, 99); // proceed progressbar
-            },
-            success: function (data) {
-                if (flag == "C") alert("승인처리 되었습니다.");
-                else if (flag == "R") alert("반려처리 되었습니다.");
-                else if (flag == "P") alert("전달되었습니다.");
-                else alert("잘못된 경로로 접근하였습니다.");
-                $("#btn_search").click();
-                endProgressBar(progressId);
-            },
-            error: function (err) {
-                console.log(err);
-                endProgressBar(progressId);
+                    //선택된 유저ID 추출(단일 건)
+                    var userChoiceRowData = new Array();
+                    var userChoiceTdArr = new Array();
+                    var popUserChoiceCheckbox = $("input[name=btn_pop_user_search_base_chk]:checked");
+
+                    // 체크된 문서정보를 가져온다
+                    popDocInfoCheckbox.each(function (i) {
+                        var popDoctr = popDocInfoCheckbox.parent().parent().parent().parent().eq(i);
+                        var popDoctd = popDoctr.children();
+
+                        // 체크된 row의 모든 값을 배열에 담는다.
+                        docInfoRowData.push(popDoctd.text());
+
+                        // td.eq(0)은 체크박스 이므로  td.eq(1)의  값부터 가져온다.
+                        var docNum = popDoctd.eq(1).text();
+                        var comment = popDoctr.find('input').eq(1).val();
+
+                        // 가져온 값을 배열에 담는다.
+                        docInfoTdArr.push(docNum);
+                        commentArr.push(comment);
+                        deleteTr.push(popDoctr);
+                    });
+
+                    // 체크된 담당자를 가져온다
+                    popUserChoiceCheckbox.each(function (i) {
+                        var popUsertr = popUserChoiceCheckbox.parent().parent().parent().eq(i);
+                        var popUsertd = popUsertr.children();
+
+                        userChoiceRowData.push(popUsertr.text());
+
+                        var userChoiceId = popUsertd.eq(1).text();
+
+                        userChoiceTdArr.push(userChoiceId);
+                    });
+                    if (userChoiceTdArr.length > 1) {
+                        alert("한명의 담당자만 선택 가능합니다.");
+                    }
+                    else {
+                        $.ajax({
+                            url: '/myApproval/sendApprovalDocumentCtoD',
+                            type: 'post',
+                            datatype: "json",
+                            data: JSON.stringify({
+                                'userChoiceId': userChoiceTdArr,
+                                'docInfo': docInfoTdArr,
+                                'userId': userId,
+                                'comment': commentArr
+                            }),
+                            contentType: 'application/json; charset=UTF-8',
+                            success: function (data) {
+                                if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
+                                    $('#layer1').fadeOut();
+                                    var totCnt = $("input[name = chk_document]");
+                                    $("#span_document").empty().html('결재리스트(기본) - ' + (totCnt.length - deleteTr.length) + ' 건');
+                                    for (var i in deleteTr) {
+                                        deleteTr[i].remove();
+                                    }
+                                }
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        });
+                    }
+                }
             }
         });
-    } else {
-        alert("선택된 문서가 없습니다.");
-        return;
-    }*/
+    }
 }
-
-
 
 // [시작 함수]
 var _init = function () {
@@ -696,6 +646,3 @@ var _init = function () {
     buttonEvent();
     datePickerEvent();
 };
-
-
-

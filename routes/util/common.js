@@ -236,6 +236,25 @@ router.post('/imageUpload', upload.any(), function (req, res) {
     */
 });
 
+router.post('/approvalDtlProcess', function (req, res) {
+    var data = req.body.data;
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            sync.await(oracle.approvalDtlProcess(data, sync.defer()));
+            
+            returnObj = { code: 200, message: 'modify textData success' };
+
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
 router.post('/modifyTextData', function (req, res) {
     var beforeData = req.body.beforeData;
     var afterData = req.body.afterData;
@@ -723,22 +742,39 @@ router.post('/headerUserPopChangePw', function (req, res) {
     commonDB.reqQuery(query, callbackHeaderUserPopChangePw, req, res);
 });
 
-// [POST] 레프트사이드바 계산서등록(반려된 수) 표시
+// [POST] 레프트사이드바 계산서등록(진행 수) 표시
 var callbackLeftSideBarInvoiceRegistration = function (rows, req, res) {
-    res.send({ code: 200, cnt: rows });
+    res.send({ code: 200, cnt: rows[0].CNT });
 };
 router.post('/leftSideBarInvoiceRegistration', function (req, res) {
-    var param = [req.session.userId];
-    commonDB.reqCountQueryParam(queryConfig.sessionConfig.leftSideBarInvoiceRegistration, param, callbackLeftSideBarInvoiceRegistration, req, res);
+    var param = [];
+    var andQuery = '';
+    if (req.body.scanApproval == 'Y' && req.body.adminApproval == 'N') {
+        andQuery = 'AND UPLOADNUM = ' + "'" + req.session.userId + "' AND ICRNUM IS NULL AND MIDDLENUM IS NULL AND FINALNUM IS NULL";
+    } else if (req.body.icrApproval == 'Y' && req.body.adminApproval == 'N') {
+        andQuery = 'AND ICRNUM = ' + "'" + req.session.userId + "' AND MIDDLENUM IS NULL AND FINALNUM IS NULL";
+    } else if (req.body.adminApproval == 'Y') {
+        andQuery = "AND MIDDLENUM IS NULL AND FINALNUM IS NULL";
+    }
+    commonDB.reqCountQueryParam2(queryConfig.sessionConfig.leftSideBarInvoiceRegistration + andQuery, param, callbackLeftSideBarInvoiceRegistration, req, res);
+   
 });
 
 // [POST] 레프트사이드바 내결재(진행 수) 표시
 var callbackLeftSideBarMyApproval = function (rows, req, res) {
-    res.send({ code: 200, cnt: rows });
+    res.send({ code: 200, cnt: rows[0].CNT });
 };
 router.post('/leftSideBarMyApproval', function (req, res) {
-    var param = [req.session.userId];
-    commonDB.reqCountQueryParam(queryConfig.sessionConfig.leftSideBarMyApproval, param, callbackLeftSideBarMyApproval, req, res);
+    var param = [];
+    var andQuery='';
+    if (req.body.middleApproval == 'Y' && req.body.adminApproval == 'N') {
+        andQuery = 'AND MIDDLENUM = ' + "'" + req.session.userId + "'";
+    } else if (req.body.lastApproval == 'Y' && req.body.adminApproval == 'N') {
+        andQuery = 'AND FINALNUM = ' + "'" + req.session.userId + "'";
+    } else if (req.body.adminApproval == 'Y') {
+        andQuery = "OR STATUS = '03' AND MIDDLENUM IS NOT NULL";
+    }
+    commonDB.reqCountQueryParam2(queryConfig.sessionConfig.leftSideBarMyApproval + andQuery, param, callbackLeftSideBarMyApproval, req, res);
 });
 
 // [POST] Increase OCR COUNT

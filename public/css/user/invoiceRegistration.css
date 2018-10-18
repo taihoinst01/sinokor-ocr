@@ -7,3 +7,15 @@
 li.on img {
     border: 3px solid #0075bb;
 }
+
+.box_table_st04 > dl > dt input {
+    background: #eaeaea;
+}
+
+#popupRedNemo, #popupRedZoomNemo {
+    display: none;
+    border: 2px solid red;
+    position: absolute;
+    top: 185px;
+    width: 100%;
+}

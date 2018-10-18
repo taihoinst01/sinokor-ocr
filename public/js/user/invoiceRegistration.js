@@ -265,16 +265,17 @@ var fn_uploadFileEvent = function () {
  ****************************************************************************************/
 var fn_reTrain = function () {
     var fileName = $('#ul_image .on img').attr('src');
+    $("input[name=popupDocNum]").val($("input[name='dtl_chk']").val());
     fn_initUiTraining();
     layer_open('layer2');
 
     var mainImgHtml = '';
     mainImgHtml += '<div id="popupMainImage" class="ui_mainImage">';
-    mainImgHtml += '<div id="redNemo">';
+    mainImgHtml += '<div id="popupRedNemo">';
     mainImgHtml += '</div>';
     mainImgHtml += '</div>';
-    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
-    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '<div id="popupImageZoom" ondblclick="popupViewOriginImg()">';
+    mainImgHtml += '<div id="popupRedZoomNemo">';
     mainImgHtml += '</div>';
     mainImgHtml += '</div>';
     $('#img_content').html(mainImgHtml);
@@ -308,7 +309,7 @@ var fn_reTrain = function () {
         // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
         if (mlData[i].colLbl == 37) {
             tblTag += '<dl>';
-            tblTag += '<dt onclick="zoomImg(this)">';
+            tblTag += '<dt onclick="popupZoomImg(this)">';
             tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
             tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
             tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
@@ -326,7 +327,7 @@ var fn_reTrain = function () {
             tblTag += '</dl>';
         } else if (mlData[i].colLbl == 38) {
             tblSortTag += '<dl>';
-            tblSortTag += '<dt onclick="zoomImg(this)">';
+            tblSortTag += '<dt onclick="popupZoomImg(this)">';
             tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
             tblSortTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
             tblSortTag += '<input type="hidden" value="' + mlData[i].location + '" />';
@@ -344,7 +345,7 @@ var fn_reTrain = function () {
             tblSortTag += '</dl>';
         } else {
             tblTag += '<dl>';
-            tblTag += '<dt onclick="zoomImg(this)">';
+            tblTag += '<dt onclick="popupZoomImg(this)">';
             tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
             tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
             tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
@@ -655,8 +656,14 @@ function popUpRunEvent() {
             docName = 'NotInvoice';
         }
 
+        var filePath = $("#docPopImgPath").val();
+        filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
+
+        var fileName = $("#originImg").attr("src");
+        fileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length);
+
         var param = {
-            filepath: $('#docPopImgPath').val(),
+            filepath: filePath + fileName,
             docName: docName,
             radioType: chkValue,
             textList: textList,
@@ -891,6 +898,8 @@ function modifyTextData() {
                     if (data.code == 200) {
                         endProgressBar(progressId);
                         //alert("success training");
+
+                        fn_search_dtl($("input[name=popupDocNum]").val());
                     }
                 },
                 error: function (err) {
@@ -1784,6 +1793,7 @@ function fn_processFinish(data, fileDtlInfo) {
     $("#tbody_dtlList").empty().append(dtlHtml);
     $("#tbody_dtlList input[type=checkbox]").ezMark();
     $("#div_dtl").css("display", "block");
+    $("#btn_pop_ui_close").click();
     function makeMLSelect(mlData, colnum, entry) {
 
         var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
@@ -2276,6 +2286,52 @@ function viewOriginImg() {
     $('#mainImage').show();
 }
 
+function popupZoomImg(e) {
+    var mainImage = $("#popupMainImage").css('background-image');
+    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
+
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#popupMainImage').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
+    //imageZoom 고정크기
+    var fixWidth = 992;
+    var fixHeight = 1402;
+
+    var widthPercent = fixWidth / width;
+    var heightPercent = fixHeight / height;
+
+    $('#popupMainImage').hide();
+    $('#popupImageZoom').css('height', '570px').css('background-image', $('#popupMainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+
+    // 사각형 좌표값
+    var location = $(e).find('input[type=hidden]').val().split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+
+    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
+    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
+    //console.log(xPosition + yPosition);
+    $('#popupImageZoom').css('background-position', xPosition + yPosition);
+
+    $('#popupRedZoomNemo').css('width', '100%');
+    $('#popupRedZoomNemo').css('height', (textHeight + 5) + 'px');
+    $('#popupRedZoomNemo').show();
+}
+
+function popupViewOriginImg() {
+    $('#popupImageZoom').hide();
+    $('#popupMainImage').show();
+}
+
 /****************************************************************************************
  * 문서기본정보 - 삭제,전달,저장
  ****************************************************************************************/
@@ -2547,7 +2603,7 @@ var fn_docEvent = function () {
                         if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
                             $('#layer1').fadeOut();
                             var totCnt = $("input[name = base_chk]");
-                            $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + '건');
+                            $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + ' 건');
                             for (var i in deleteTr) {
                                 deleteTr[i].remove();
                             }
