@@ -30,19 +30,29 @@ module.exports = {
 
 // UY outputs only year
 function convertedUY(reqArr) {
-    var pattern = /2\d\d\d/ig;
+    var pattern = /20\d\d/ig;
+    var lastPattern = /19\d\d/ig;
 
     for (var i in reqArr.data) {
         var item = reqArr.data[i];
-        if (item.colLbl == 2 && pattern.test(item.text)) {
-            var arr = item.text.match(pattern);
-            var intArr = Math.min.apply(null, arr.map(Number));
-            if (item.text != String(intArr)) {
-                item.originText = item.text;
-                item.text = String(intArr);
+
+        if (item.colLbl == 2) {
+            if (pattern.test(item.text) || lastPattern.test(item.text)) {
+                var arr;
+                if (pattern.test(item.text)) {
+                    arr = item.text.match(pattern);
+                } else {
+                    arr = item.text.match(lastPattern);
+                }
+                var intArr = Math.min.apply(null, arr.map(Number));
+                if (item.text != String(intArr)) {
+                    item.originText = item.text;
+                    item.text = String(intArr);
+                }
+            } else {
+                item.colLbl = 38;
             }
         } else {
-            //console.log("no");
         }
     }
     return reqArr;

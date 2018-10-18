@@ -1167,6 +1167,7 @@ var fn_search_dtl = function (docNum) {
     
 }
 
+/*
 // document_dtl 조회
 var fn_search_dtl_old = function (seqNum, docNum) {
     var param = {
@@ -1198,6 +1199,9 @@ var fn_search_dtl_old = function (seqNum, docNum) {
                             '<td name="td_dtl">' + nvl(entry.OGCOMPANYNAME) + '</td>' +
                             '<td name="td_dtl">' + nvl(entry.CTNM) + '</td>' +
                             '<td name="td_dtl">' + nvl(entry.UY) + '</td>' +
+                            '<td name="td_dtl">'</td>' +
+                            '<td name="td_dtl"></td>' +
+                            '<td name="td_dtl"></td>' +
                             '<td name="td_dtl">' + nvl(entry.CONTRACTNUM) + '</td>' +
                             '<td name="td_dtl">' + nvl(entry.CURCD) + '</td>' +
                             '<td name="td_dtl">' + nvl(entry.PAIDPERCENT) + '</td>' +
@@ -1253,6 +1257,7 @@ var fn_search_dtl_old = function (seqNum, docNum) {
         }
     });
 };
+*/
 
 // img 조회
 var fn_search_image = function (imgId) {
@@ -1346,6 +1351,9 @@ var ocrResult = function () {
             '<td><input type="text" name=""></td> <!--출재사명-->' +
             '<td><input type="text" name=""></td> <!--계약명-->' +
             '<td><input type="text" name=""></td> <!--UY-->' +
+            '<td><input type="text" name=""></td> <!--계약번호-->' +
+            '<td><input type="text" name=""></td> <!--페이지번호 FROM-->' +
+            '<td><input type="text" name=""></td> <!--페이지번호 TO-->' +
             '<td><input type="text" name=""></td> <!--화폐코드-->' +
             '<td><input type="text" name=""></td> <!--화폐단위-->' +
             '<td><input type="text" name=""></td> <!--Paid(100%)-->' +
@@ -1582,6 +1590,7 @@ function executeML(totData) {
  * @param {any} type
  * ts : typoSentence , dd : domainDictionary , tc : textClassification , lm : labelMapping , sc : searchDBColumns
  */
+/*
 var executeML_Old = function (fileDtlInfo, fileName, data, type) {
     var targetUrl;
 
@@ -1651,7 +1660,9 @@ var executeML_Old = function (fileDtlInfo, fileName, data, type) {
         }
     });
 };
+*/
 
+/*
 // 인식 결과 처리
 function fn_processFinish_Old1(data) {
     var dataVal = [];
@@ -1667,6 +1678,9 @@ function fn_processFinish_Old1(data) {
         '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
+        '<td></td> <!--계약번호-->' +
+        '<td></td> <!--페이지번호 FROM-->' +
+        '<td></td> <!--페이지번호 TO-->' +
         '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
         '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
         '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
@@ -1726,6 +1740,7 @@ function fn_processFinish_Old1(data) {
         return hasColvalue ? appendMLSelect : '';
     }
 }
+*/
 
 // 인식 결과 처리
 function fn_processFinish(data, fileDtlInfo) {
@@ -1743,6 +1758,9 @@ function fn_processFinish(data, fileDtlInfo) {
         '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
+        '<td></td> <!--계약번호-->' +
+        '<td></td> <!--페이지번호 FROM-->' +
+        '<td></td> <!--페이지번호 TO-->' +
         '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
         '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
         '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
@@ -1784,7 +1802,7 @@ function fn_processFinish(data, fileDtlInfo) {
     $("#btn_pop_ui_close").click();
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+        var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
         appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
@@ -1848,6 +1866,9 @@ function fn_ContractNumExtraction() {
                     '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
                     '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
                     '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
+                    '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->' +
+                    '<td>' + makePageNum( (parseInt(i) + 1), data.data.length) + '</td> <!--페이지번호 FROM-->' +
+                    '<td>' + makePageNum( data.data.length, data.data.length) + '</td> <!--페이지번호 TO-->' +
                     '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
                     '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
                     '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
@@ -1913,6 +1934,20 @@ function fn_ContractNumExtraction() {
         }
         appendMLSelect += '</select>';
         return hasColvalue ? appendMLSelect : '';
+    }
+
+    function makePageNum(currentNum, lastNum) {
+        var appendPageSelect = '<select>';
+        for (var y = 0; y < lastNum; y++) {
+            if ((y + 1) == currentNum) {
+                appendPageSelect += '<option selected>' + (y + 1) + '</option>';
+            } else {
+                appendPageSelect += '<option>' + (y+1) + '</option>';
+            }
+            
+        }
+        appendPageSelect += '</select>';
+        return appendPageSelect;
     }
 }
 
@@ -2293,7 +2328,7 @@ function popupZoomImg(e) {
     var heightPercent = fixHeight / height;
 
     $('#popupMainImage').hide();
-    $('#popupImageZoom').css('height', '570px').css('background-image', $('#popupMainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+    $('#popupImageZoom').css('height', '570px').css('backgroud-repeat', 'no-repeat').css('background-image', $('#popupMainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
 
     // 사각형 좌표값
     var location = $(e).find('input[type=hidden]').val().split(',');
@@ -2307,7 +2342,7 @@ function popupZoomImg(e) {
     //console.log(xPosition + yPosition);
     $('#popupImageZoom').css('background-position', xPosition + yPosition);
 
-    $('#popupRedZoomNemo').css('width', '100%');
+    //$('#popupRedZoomNemo').css('width', '100%');
     $('#popupRedZoomNemo').css('height', (textHeight + 5) + 'px');
     $('#popupRedZoomNemo').show();
 }
