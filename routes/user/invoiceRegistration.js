@@ -147,6 +147,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         var convertedImagePath = appRoot + '\\uploads\\';
 
         for (var i = 0; i < files.length; i++) {
+            console.time("file upload & convert");
             var fileInfo2 = [];
             var fileDtlInfoTemp = [];
             var imgId = 'ICR';
@@ -242,11 +243,11 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
 
                 //file decription 운영
-                //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar ' + ifile);
+                //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
 
                 //file convert to MsOffice to Pdf
                 if ( !(files[i].originalname.split('.')[1] === 'PDF' || files[i].originalname.split('.')[1] === 'pdf') ) {
-                    //execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);   //운영
+                    //execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');   //운영
                     execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" C:/projectWork/koreanre/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
                 }
                 
@@ -380,6 +381,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
             endCount++;
             sync.await(oracle.insertDocument([fileInfo2, fileDtlInfoTemp.length], sync.defer()));
             fileInfo[i].pageCount = fileDtlInfoTemp.length;
+            console.timeEnd("file upload & convert");
         }
 
         // TBL_DOCUMENT insert
@@ -970,6 +972,7 @@ router.post('/uiLearnTraining', function (req, res) {
     
     sync.fiber(function () {
         try {
+            console.time("mlTime");
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
             var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
@@ -979,7 +982,7 @@ router.post('/uiLearnTraining', function (req, res) {
 
             var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
             var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
-
+            console.timeEnd("mlTime");
             returnObj = { code: 200, 'fileName': fileName, 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
         } catch (e) {
             console.log(resPyStr);

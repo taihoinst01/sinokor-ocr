@@ -70,6 +70,7 @@ router.post('/uiLearnTraining', function (req, res) {
     var returnObj;
     sync.fiber(function () {
         try {
+            console.time("mlTime");
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
             var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
@@ -91,7 +92,7 @@ router.post('/uiLearnTraining', function (req, res) {
                 fileName = fileName.replace(/.docx|.doc|.xlsx|.xls|.pdf/gi, '.png');
             }
             */
-
+            console.timeEnd("mlTime");
             returnObj = { code: 200, 'fileName': fileName, 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
         } catch (e) {
             console.log(resPyStr);

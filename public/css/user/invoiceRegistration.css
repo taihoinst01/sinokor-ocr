@@ -19,3 +19,7 @@ li.on img {
     top: 185px;
     width: 100%;
 }
+
+#popupImageZoom {
+    background-repeat: no-repeat;
+}

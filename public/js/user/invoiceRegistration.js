@@ -1198,6 +1198,9 @@ var fn_search_dtl_old = function (seqNum, docNum) {
                             '<td name="td_dtl">' + nvl(entry.OGCOMPANYNAME) + '</td>' +
                             '<td name="td_dtl">' + nvl(entry.CTNM) + '</td>' +
                             '<td name="td_dtl">' + nvl(entry.UY) + '</td>' +
+                            '<td name="td_dtl">' + /*계약번호*/ + '</td>' +
+                            '<td name="td_dtl">' + /*페이지FROM*/ + '</td>' +
+                            '<td name="td_dtl">' + /*페이지TO*/ + '</td>' +
                             '<td name="td_dtl">' + nvl(entry.CONTRACTNUM) + '</td>' +
                             '<td name="td_dtl">' + nvl(entry.CURCD) + '</td>' +
                             '<td name="td_dtl">' + nvl(entry.PAIDPERCENT) + '</td>' +
@@ -1346,6 +1349,9 @@ var ocrResult = function () {
             '<td><input type="text" name=""></td> <!--출재사명-->' +
             '<td><input type="text" name=""></td> <!--계약명-->' +
             '<td><input type="text" name=""></td> <!--UY-->' +
+            '<td><input type="text" name=""></td> <!--계약번호-->' +
+            '<td><input type="text" name=""></td> <!--페이지번호 FROM-->' +
+            '<td><input type="text" name=""></td> <!--페이지번호 TO-->' +
             '<td><input type="text" name=""></td> <!--화폐코드-->' +
             '<td><input type="text" name=""></td> <!--화폐단위-->' +
             '<td><input type="text" name=""></td> <!--Paid(100%)-->' +
@@ -1667,6 +1673,9 @@ function fn_processFinish_Old1(data) {
         '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
+        '<td>' + /*todo*/ + '</td> <!--계약번호-->' +
+        '<td>' + /*todo*/ + '</td> <!--페이지번호 FROM-->' +
+        '<td>' + /*todo*/ + '</td> <!--페이지번호 TO-->' +
         '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
         '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
         '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
@@ -1743,6 +1752,9 @@ function fn_processFinish(data, fileDtlInfo) {
         '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
+        '<td>' + /* todo */ + '</td> <!--계약번호-->' +
+        '<td>' + /* todo */ + '</td> <!--페이지번호 FROM-->' +
+        '<td>' + /* todo */ + '</td> <!--페이지번호 TO-->' +
         '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
         '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
         '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
@@ -1848,6 +1860,9 @@ function fn_ContractNumExtraction() {
                     '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
                     '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
                     '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
+                    '<td>' + /*todo*/ + '</td> <!--계약번호-->' +
+                    '<td>' + /*todo*/ + '</td> <!--페이지번호 TO-->' +
+                    '<td>' + /*todo*/ + '</td> <!--페이지번호 FROM-->' +
                     '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
                     '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
                     '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
@@ -2293,7 +2308,7 @@ function popupZoomImg(e) {
     var heightPercent = fixHeight / height;
 
     $('#popupMainImage').hide();
-    $('#popupImageZoom').css('height', '570px').css('background-image', $('#popupMainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+    $('#popupImageZoom').css('height', '570px').css('backgroud-repeat', 'no-repeat').css('background-image', $('#popupMainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
 
     // 사각형 좌표값
     var location = $(e).find('input[type=hidden]').val().split(',');
@@ -2307,7 +2322,7 @@ function popupZoomImg(e) {
     //console.log(xPosition + yPosition);
     $('#popupImageZoom').css('background-position', xPosition + yPosition);
 
-    $('#popupRedZoomNemo').css('width', '100%');
+    //$('#popupRedZoomNemo').css('width', '100%');
     $('#popupRedZoomNemo').css('height', (textHeight + 5) + 'px');
     $('#popupRedZoomNemo').show();
 }
