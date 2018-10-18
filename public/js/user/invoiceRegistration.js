@@ -1146,6 +1146,8 @@ var fn_search_dtl = function (docNum) {
         success: function (data) {
             //console.log(data);
             addProgressBar(2, 99); // proceed progressbar
+            thumbImgs = [];
+            totCount = data.docData.length;
             for (var i in data.docData) {
 
                 var obj = {};
@@ -1874,6 +1876,21 @@ function fn_ContractNumExtraction() {
             var text = $("select[name='ttyYy'] option:eq(" + i + ")").text();
             ttyYy.push(text);
         }
+    }
+
+    if (cdnNm.length == 0) {
+        alert("출재사명이 없습니다.");
+        return;
+    }
+
+    if (ctNm.length == 0) {
+        alert("계약명이 없습니다.");
+        return;
+    }
+
+    if (ttyYy.length == 0) {
+        alert("UY가 없습니다.");
+        return;
     }
 
     var extCount = (cdnNm.length) * (ctNm.length) * (ttyYy.length);
