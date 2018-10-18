@@ -2293,7 +2293,7 @@ function popupZoomImg(e) {
     var heightPercent = fixHeight / height;
 
     $('#popupMainImage').hide();
-    $('#popupImageZoom').css('height', '570px').css('background-image', $('#popupMainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+    $('#popupImageZoom').css('height', '570px').css('backgroud-repeat', 'no-repeat').css('background-image', $('#popupMainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
 
     // 사각형 좌표값
     var location = $(e).find('input[type=hidden]').val().split(',');
@@ -2307,7 +2307,7 @@ function popupZoomImg(e) {
     //console.log(xPosition + yPosition);
     $('#popupImageZoom').css('background-position', xPosition + yPosition);
 
-    $('#popupRedZoomNemo').css('width', '100%');
+    //$('#popupRedZoomNemo').css('width', '100%');
     $('#popupRedZoomNemo').css('height', (textHeight + 5) + 'px');
     $('#popupRedZoomNemo').show();
 }
