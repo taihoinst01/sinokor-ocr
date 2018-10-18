@@ -265,6 +265,7 @@ var fn_uploadFileEvent = function () {
  ****************************************************************************************/
 var fn_reTrain = function () {
     var fileName = $('#ul_image .on img').attr('src');
+    $("input[name=popupDocNum]").val($("input[name='dtl_chk']").val());
     fn_initUiTraining();
     layer_open('layer2');
 
@@ -897,6 +898,8 @@ function modifyTextData() {
                     if (data.code == 200) {
                         endProgressBar(progressId);
                         //alert("success training");
+
+                        fn_search_dtl($("input[name=popupDocNum]").val());
                     }
                 },
                 error: function (err) {
@@ -1778,6 +1781,7 @@ function fn_processFinish(data, fileDtlInfo) {
     $("#tbody_dtlList").empty().append(dtlHtml);
     $("#tbody_dtlList input[type=checkbox]").ezMark();
     $("#div_dtl").css("display", "block");
+    $("#btn_pop_ui_close").click();
     function makeMLSelect(mlData, colnum, entry) {
 
         var appendMLSelect = '<select onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
