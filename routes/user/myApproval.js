@@ -206,22 +206,33 @@ router.post('/sendApprovalDocumentCtoD', function (req, res) {
 
 //결재리스트(기본) D 승인
 router.post('/finalApproval', function (req, res) {
+    var arrDocInfo = req.body.param.arrDocInfo;
+    var approvalDtlData = [];
     var returnObj = {};
     var sendCount = 0;
 
-    try {
-        
-        sync.fiber(function () {
-            sync.await(oracle.finalApproval(req, sync.defer()));
-        });
-       
-        returnObj = { code: 200 };
-    } catch (e) {
-        returnObj = { code: 500, error: e };
-    } finally {
-        res.send(returnObj);
-    }
+    sync.fiber(function () {
+        try {
+            var dateArr = sync.await(oracle.finalApproval(req, sync.defer()));
+            for (var i in arrDocInfo) {
+                approvalDtlData.push({
+                    'docNum': arrDocInfo[i].docNum,
+                    'status': '03',
+                    'approvalNum': arrDocInfo[i].finalApproval,
+                    'approvalDate': dateArr[i],
+                    'approvalComment': null,
+                    'nextApprovalNum': ''
+                });
+            }
+            sync.await(oracle.approvalDtlProcess(approvalDtlData, sync.defer()));
 
+            returnObj = { code: 200 };
+        } catch (e) {
+            returnObj = { code: 500, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
 });
 
 module.exports = router;

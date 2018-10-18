@@ -2943,14 +2943,21 @@ exports.finalApproval = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let result;
+        var dateArr = [];
         try {
             conn = await oracledb.getConnection(dbConfig);
             let arrDocInfo = req.body.param.arrDocInfo;
 
             for (let i = 0; i < arrDocInfo.length; i++) {
                 await conn.execute(`UPDATE TBL_APPROVAL_MASTER SET FINALAPPROVAL = '${arrDocInfo[i].finalApproval}', NOWNUM = '', STATUS = '03', FINALDATE = sysdate WHERE DOCNUM = '${arrDocInfo[i].docNum}'`);
+                result = await conn.execute('SELECT FINALDATE FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum', [arrDocInfo[i].docNum]);
+                if (result.rows.length > 0) {
+                    dateArr.push(result.rows[0].FINALDATE);
+                } else {
+                    dateArr.push(null);
+                }
             }
-            return done(null, null);
+            return done(null, dateArr);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
