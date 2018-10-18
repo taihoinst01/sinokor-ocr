@@ -193,6 +193,20 @@ module.exports = function (pool) {
         });
     };
 
+    // 일반 쿼리 요청 (파라미터, rows 포함, 결과값이 COUNT 일때)
+    var reqCountQueryParam2 = function (sql, param, callbackFunc, req, res) {
+        pool.getConnection(function (err, connection) {
+            connection.execute(sql, param, function (err, result) {
+                if (err) {
+                    console.error("OracleDB err : ", err);
+                    console.log(sql);
+                }
+                callbackFunc(result.rows ? result.rows : 0, req, res);
+                connection.release();
+            });
+        });
+    };
+
     // 파일정보 DB INSERT
     var insertFileInfo = function (fileInfo, flag, callbackFunc,req ,res) {
         if (flag == "ocr_file") {
@@ -400,6 +414,7 @@ module.exports = function (pool) {
     module.exports.queryNoRows = queryNoRows;
     module.exports.queryNoRows2 = queryNoRows2;
     module.exports.reqCountQueryParam = reqCountQueryParam;
+    module.exports.reqCountQueryParam2 = reqCountQueryParam2;
     module.exports.insertFileInfo = insertFileInfo;
     module.exports.reqBatchQueryParam = reqBatchQueryParam;
     module.exports.reqInsertExcelDataPath = reqInsertExcelDataPath;

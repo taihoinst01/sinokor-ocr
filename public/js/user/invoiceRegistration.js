@@ -2588,7 +2588,7 @@ var fn_docEvent = function () {
                         if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
                             $('#layer1').fadeOut();
                             var totCnt = $("input[name = base_chk]");
-                            $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + '건');
+                            $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + ' 건');
                             for (var i in deleteTr) {
                                 deleteTr[i].remove();
                             }
