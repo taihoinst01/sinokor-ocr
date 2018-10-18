@@ -262,7 +262,7 @@ var fn_search = function () {
                         if ($('#middleApproval').val() == 'Y') {
                             appendHtml += '<td class="td_base">' + nvl(entry["ICRNUM"]) + '</td>';
                         } else {
-                            appendHtml += '<td class="td_base" > ' + nvl(entry["MIDDLENUM"]) + '</td>';
+                            appendHtml += '<td class="td_base" >' + nvl(entry["MIDDLENUM"]) + '</td>';
                         }
                         appendHtml +=
                             '<td class="td_base">' + nvl(entry["NOWNUM"]) + '</td>' +
@@ -450,6 +450,8 @@ var fn_baseList_chk = function (flag) {
             }
             var rowData = new Array();
             var tdArr = new Array();
+            var commentArr = new Array();
+            var middleNumArr = new Array();
             var checkbox = $("input[name=chk_document]:checked");
             var deleteTr = [];
             // 체크된 체크박스 값을 가져온다
@@ -463,9 +465,12 @@ var fn_baseList_chk = function (flag) {
 
                 // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
                 var docNum = td.eq(1).text();
-
+                var comment = tr.find('input').eq(1).val();
+                var middleNum = td.eq(4).text();
                 // 가져온 값을 배열에 담는다.
                 tdArr.push(docNum);
+                commentArr.push(comment);
+                middleNumArr.push(middleNum);
                 deleteTr.push(tr);
             });
             $.ajax({
@@ -474,7 +479,10 @@ var fn_baseList_chk = function (flag) {
                 datatype: "json",
                 data: JSON.stringify({
                     'docNum': tdArr,
-                    'level': level
+                    'level': level,
+                    'comment': commentArr,
+                    'middleNum': middleNumArr,
+                    'userId': $('#documentManager').val()
                 }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {

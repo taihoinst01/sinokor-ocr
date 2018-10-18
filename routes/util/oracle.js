@@ -2412,7 +2412,7 @@ exports.cancelDocument = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='04', " + req[0] + " WHERE DOCNUM = '"+ req[1]+ "'");
-            return done;
+            return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
