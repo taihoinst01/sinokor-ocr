@@ -114,12 +114,21 @@ var fn_clickEvent = function () {
         var docNum = numArr.split("-")[1];
         fn_search_dtl(seqNum, docNum); // document_dtl 조회
     });
+
+ /* 기존소스
+  * $("td[name='td_base']").on("click", function () {
+        var id = $(this).parent().attr("id");
+        var numArr = id.replace("tr_base_", "");
+        var seqNum = numArr.split("-")[0];
+        var docNum = numArr.split("-")[1];
+        fn_search_dtl(seqNum, docNum); // document_dtl 조회
+    });
     // Document DTL 클릭 시 이미지 조회
     $("tr[name='tr_dtl']").on("click", function () {
         var id = $(this).attr("id");
         var imgId = id.replace("tr_dtl_", "");
         fn_search_image(imgId); // image 조회
-    });
+    }); */
 };
 
 // [사용자조회]
@@ -296,12 +305,84 @@ var fn_search = function () {
 
 // document_dtl 조회
 var fn_search_dtl = function (seqNum, docNum) {
-    var param = {
-        seqNum: seqNum,
-        docNum: docNum
-    };
+    var seqNum = seqNum;
+    var docNum = docNum;
     var progressId;
     var appendHtml = "";
+    $.ajax({
+        url: '/myApproval/searchApprovalDtlList',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'docNum': docNum }),
+        contentType: 'application/json; charset=UTF-8',
+    /*  beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving document detail list...");
+            progressId = showProgressBar();
+            //startProgressBar(); // start progressbar
+            //addProgressBar(1, 1); // proceed progressbar
+        },*/
+        success: function (data) {
+            //addProgressBar(2, 99); // proceed progressbar
+            if (data.docData.length > 0) {
+                for (var i = 0; i < data.docData.length; i++) {
+                     appendHtml += 
+                     '<tr id="tr_dtl_' + data.docData[0].DOCNUM + '" name="tr_dtl" style="cursor:pointer">' +
+                     '<td>' + data.docData[i].OGCOMPANYNAME + '</td>' +
+                     '<td>' + data.docData[i].CTNM + '</td>' +
+                     '<td>' + data.docData[i].UY + '</td>' +
+                     '<td>' + data.docData[i].CTNO + '</td>' +
+                     '<td>' + data.docData[i].PAGEFROM + '</td>' +
+                     '<td>' + data.docData[i].PAGETO + '</td>' +
+                     '<td>' + data.docData[i].CURCD + '</td>' +
+                     '<td>' + data.docData[i].CURUNIT + '</td>' +
+                     '<td>' + data.docData[i].PAIDPERCENT + '</td>' +
+                     '<td>' + data.docData[i].PAIDSHARE + '</td>' +
+                     '<td>' + data.docData[i].OSLPERCENT + '</td>' +
+                     '<td>' + data.docData[i].OSLSHARE + '</td>' +
+                     '<td>' + data.docData[i].PM + '</td>' +
+                     '<td>' + data.docData[i].PMPFEND + '</td>' +
+                     '<td>' + data.docData[i].PMPFWOS + '</td>' +
+                     '<td>' + data.docData[i].XOLPM + '</td>' +
+                     '<td>' + data.docData[i].RETURNPM + '</td>' +
+                     '<td>' + data.docData[i].CN + '</td>' +
+                     '<td>' + data.docData[i].PROFITCN + '</td>' +
+                     '<td>' + data.docData[i].BROKERAGE + '</td>' +
+                     '<td>' + data.docData[i].TAX + '</td>' +
+                     '<td>' + data.docData[i].OVERRIDINGCOM + '</td>' +
+                     '<td>' + data.docData[i].CHARGE + '</td>' +
+                     '<td>' + data.docData[i].PMRESERVERTD + '</td>' +
+                     '<td>' + data.docData[i].PFPMRESERVERTD + '</td>' +
+                     '<td>' + data.docData[i].PMRESERVERLD + '</td>' +
+                     '<td>' + data.docData[i].PFPMRESERVERLD + '</td>' +
+                     '<td>' + data.docData[i].CLAIM + '</td>' +
+                     '<td>' + data.docData[i].LOSSRECOVERY + '</td>' +
+                     '<td>' + data.docData[i].CASHLOSS + '</td>' +
+                     '<td>' + data.docData[i].CASHLOSSRD + '</td>' +
+                     '<td>' + data.docData[i].LOSSRR + '</td>' +
+                     '<td>' + data.docData[i].LOSSRR2 + '</td>' +
+                     '<td>' + data.docData[i].LOSSPFENT + '</td>' +
+                     '<td>' + data.docData[i].LOSSPFWOA + '</td>' +
+                     '<td>' + data.docData[i].INTEREST + '</td>' +
+                     '<td>' + data.docData[i].TAXON + '</td>' +
+                     '<td>' + data.docData[i].MISCELLANEOUS + '</td>' +
+                     '<td>' + data.docData[i].CSCOSARFRNCNNT2 + '</td>' +
+                    '</tr>';    
+                }               
+            } else {
+                appendHtml += '<tr><td colspan="6">조회할 데이터가 없습니다.</td></tr>';
+            }
+            $("#tbody_dtlList").empty().html(appendHtml);
+            $("#span_document_dtl").empty().html('결재리스트(상세) -' + data.docData.length + '건');
+            $("#div_dtl").fadeIn('slow');
+            fn_clickEvent(); // regist and refresh click event
+            endProgressBar(progressId); // end progressbar\
+        },
+        error: function (err) {
+            endProgressBar(progressId); // end progressbar
+            console.log(err);
+        }
+    });
+ /* 기존소스
     $.ajax({
         url: '/myApproval/searchApprovalDtlList',
         type: 'post',
@@ -316,9 +397,11 @@ var fn_search_dtl = function (seqNum, docNum) {
         },
         success: function (data) {
             //addProgressBar(2, 99); // proceed progressbar
-            console.log(data);
             if (data.length > 0) {
-                $.each(data, function (index, entry) {
+
+
+               
+                * $.each(data, function (index, entry) {
                     appendHtml += 
                         '<tr id="tr_dtl_' + entry["IMGID"] + '" name="tr_dtl" style="cursor:pointer">' +
                             '<th scope="row">' + entry["IMGFILESTARTNO"] + ' ~ ' + entry["IMGFILESTARTNO"] +'</th>' +
@@ -329,9 +412,9 @@ var fn_search_dtl = function (seqNum, docNum) {
                             '<td>' + nvl(entry["NTBL"]) + '</td>' +
                             '<td>' + nvl(entry["ENTRYNO"]) + '</td>' +
                         '</tr>';
-                });
+                }); 
             } else {
-                appendHtml += '<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>';
+                appendHtml += '<tr><td colspan="6">조회할 데이터가 없습니다.</td></tr>';
             }
             $("#tbody_dtlList").empty().html(appendHtml);
             $("#span_document_dtl").empty().html('결재리스트(상세) -' + data.length + '건');
@@ -343,7 +426,7 @@ var fn_search_dtl = function (seqNum, docNum) {
             endProgressBar(progressId); // end progressbar
             console.log(err);
         }
-    });
+    });*/
 };
 
 // img 조회

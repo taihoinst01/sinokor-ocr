@@ -2498,6 +2498,33 @@ exports.sendDocument = function (req, done) {
     });
 };
 
+//결재리스트 (상세)
+exports.searchApprovalDtlList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute(` SELECT * FROM TBL_DOCUMENT_DTL WHERE DOCNUM = :docNum`, req);
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 //문서 기본정보 삭제
 exports.deleteDocument = function (req, done) {
     return new Promise(async function (resolve, reject) {

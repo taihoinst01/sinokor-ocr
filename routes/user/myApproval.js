@@ -74,24 +74,53 @@ var fnSearchApprovalList = function (req, res) {
 
 // [POST] 문서 상세 리스트 조회 
 router.post('/searchApprovalDtlList', function (req, res) {
-    if (req.isAuthenticated()) fnSearchApprovalDtlList(req, res);
+    var returnObj = {};
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.searchApprovalDtlList([req.body.docNum], sync.defer()));
+            returnObj = { code: 200, docData: result };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+     });
+    // 기존소스
+    //if (req.isAuthenticated()) fnSearchApprovalDtlList(req, res);
 });
-var callbackApprovalDtlList = function (rows, req, res) {
-    if (req.isAuthenticated()) res.send(rows);
-};
-var fnSearchApprovalDtlList = function (req, res) {
+
+//var callbackApprovalDtlList = function (rows, req, res) {
+//    if (req.isAuthenticated()) res.send(rows);
+//};
+
+
+/* 기존소스
+ * var fnSearchApprovalDtlList = function (req, res) {
     var param = {
         seqNum: req.body.seqNum,
         docNum: req.body.docNum
     };
-    var condQuery = ` AND A.DOCNUM = '${param.docNum}' `;
-    var orderQuery = ` ORDER BY B.SEQNUM ASC `;
+    var condQuery = ` AND DOCNUM = '${param.docNum}' `;
+    var orderQuery = ` ORDER BY SEQNUM ASC `;
+
+    var returnObj = {};
+    var deleteCount = 0;
+    try {
+            sync.fiber(function () {
+                sync.await(oracle.searchApprovalDtlList(req.body.docNum, sync.defer()));
+            });
+        returnObj = { code: 200, docData: deleteCount };
+    } catch (e) {
+        returnObj = { code: 200, error: e };
+    } finally {
+        res.send(returnObj);
+    }
 
     var approvalListDtlQuery = queryConfig.myApprovalConfig.selectApprovalDtlList;
     var listQuery = approvalListDtlQuery + condQuery + orderQuery;
     console.log("dtl listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackApprovalList, req, res);
-};
+};*/
 
 // [POST] 문서 이미지 리스트 조회 
 router.post('/searchApprovalImageList', function (req, res) {

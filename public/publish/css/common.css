@@ -5687,7 +5687,7 @@ button[disabled] {
     /*
          *  화면에 보여야 할 Table의 가로크기를 잡아줍니다.
          */
-    width: 791px !important;
+    width: 100% !important;
     table-layout: fixed;
 }
 
