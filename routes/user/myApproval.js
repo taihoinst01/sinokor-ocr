@@ -212,7 +212,7 @@ router.post('/finalApproval', function (req, res) {
     try {
         
         sync.fiber(function () {
-            sync.await(oracle.finalApproval(req, done));
+            sync.await(oracle.finalApproval(req, sync.defer()));
         });
        
         returnObj = { code: 200 };
