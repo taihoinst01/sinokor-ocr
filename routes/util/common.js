@@ -47,6 +47,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 
         try {
             for (var i = 0; i < files.length; i++) {
+                console.time("file upload & convert");
                 var fileObj = files[i];
                 var fileExt = fileObj.originalname.split('.')[1];
 
@@ -104,11 +105,11 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                     var convertPdf = '';
 
                     //file decription 운영 경로
-                    //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar ' + ifile);
+                    //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
 
                     //file convert MsOffice to Pdf
                     if ( !(fileExt.toLowerCase() === 'pdf') ) {
-                        //convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o ' + ofile + ' ' + ifile);  //운영
+                        //convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');  //운영
                         convertPdf = execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" C:/projectWork/koreanre/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
                     }
 
@@ -117,7 +118,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 
                     //file convert Pdf to Png
                     if (convertPdf || fileExt.toLowerCase() === 'pdf') {
-                        var result = execSync('module\\imageMagick\\convert.exe -density 300 "' + ifile + '" "' + ofile + '"');
+                        var result = execSync('module\\imageMagick\\convert.exe -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
 
                         if (result.status != 0) {
                             throw new Error(result.stderr);
@@ -176,6 +177,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                         throw new Error("pdf convert fail");
                     }
                 }
+                console.timeEnd("file upload & convert");
             }
             res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
         } catch (e) {
@@ -496,6 +498,7 @@ router.post('/selectUserInfo', function (req, res) {
 router.post('/ocr', function (req, res) {
     var fileInfo = req.body.fileInfo;
 
+    console.time("ocrTime")
     fs.readFile(fileInfo.convertedFilePath + fileInfo.convertFileName , function (err, data) {
         if (err) { // fs error
             console.log(err);
@@ -531,8 +534,10 @@ router.post('/ocr', function (req, res) {
                     res.send({ error: '요청 에러가 발생했습니다.' });
                 } else {
                     if ((JSON.parse(body)).code) { // ocr api error
+                        console.timeEnd("ocrTime");
                         res.send({ code: (JSON.parse(body)).code, message: (JSON.parse(body)).message });
                     } else { // 성공
+                        console.timeEnd("ocrTime");
                         res.send(ocrParsing(body));
                     }
                 }
