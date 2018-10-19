@@ -276,6 +276,12 @@ function liSelect(e, val) {
     $(e).closest('.select_style').find('input[type=hidden]').val(val);
 }
 
+// 유저찾기 팝업 - 담당자 클릭 이벤트 
+$(document).on('click', '#searchManagerResult tr', function () {
+    $('#searchManagerResult tr').removeClass('on');
+    $(this).addClass('on');
+})
+
 // 커스텀 테이블 스크롤
 $(function () {
     // divBodyScroll의 스크롤이 동작할때에 함수를 불러옵니다.
