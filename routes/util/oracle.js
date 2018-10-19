@@ -2894,7 +2894,7 @@ exports.selectApprovalDtl = function (req, done) {
 
 // req = [문서번호, 결재상태코드, 결제사원번호(현재유저), 결재일시, 결재의견, 다음결재사원번호(다음유저)];
 // 파라미터 중 없는 것들은 null로 작성, 순서 지킬 것!
-exports.approvalDtlProcess = function (req, done) {
+exports.approvalDtlProcess = function (req, token, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let result;
@@ -2965,7 +2965,7 @@ exports.approvalDtlProcess = function (req, done) {
                     '<?xml version="1.0" encoding="utf-8"?>' +
                     '<Root>' +
                     '<Parameters>' +
-                    '<Parameter id="gv_encryptToken" type="STRING">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1539564980zPy86400zAy23zEyP7D2Wpx2Bf0dkRRoplRJmZ0Q3Za7WHjeSKx78rg3x78rcDe0bGsQMsAlvwOn7rqK48NEQpA8pi2x7A0PVVN0NZg4x7As0RJFx79YbNw0MoHnIx7Aj7x797CB8bx7A0QYP68D763IdCx2FEWx79UXEIVT6TgScx7A64SUjXXf55fMVMbaUfQ2frENHx2BPtQf2A81Px79GGIt6dB5uQ1D8x7AWjAR9KuA5KfjGOgZjbSDbkqGnPGAx3Dx3DzKyF8x78ICfDirBJ4BDeVx78e5S1x7AaUSDYhrZlx79Wbl1x78FbugXOagNG0cfIx787hj2x78Hd33QDbx00x00x00x00x00zSSy00002479000zUURy1f9d134b0e195793zMyfsNjWrhSdZkx3Dz</Parameter>' +
+                    '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>' +
                     '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
                     '<Parameter id="lginIpAdr" type="STRING" />' +
                     '<Parameter id="userId" type="STRING">2011813</Parameter>' +
