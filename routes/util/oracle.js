@@ -2486,7 +2486,7 @@ exports.sendDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET DRAFTERNUM = :drafterNum,ICRNUM = :icrNum, NOWNUM = :nowNum WHERE DOCNUM = :docNum ", req);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET DRAFTERNUM = :drafterNum, ICRNUM = :icrNum, NOWNUM = :nowNum WHERE DOCNUM = :docNum ", req);
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);

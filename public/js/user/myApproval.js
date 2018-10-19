@@ -208,9 +208,11 @@ var fn_search = function () {
     }
     
     var level = '';
-    if ($('#middleApproval').val() == 'Y') {
+    if ($('#adminApproval').val() == 'Y') {
+        level = 'adminApproval';
+    }else if ( $('#middleApproval').val() == 'Y' && $('#adminApproval').val() == 'N' ) {
         level = 'middleApproval';
-    } else if ($('#lastApproval').val() == 'Y') {
+    } else if ( $('#lastApproval').val() == 'Y' && $('#adminApproval').val() == 'N' ) {
         level = 'lastApproval';
     }
     var param = {
@@ -222,7 +224,8 @@ var fn_search = function () {
         searchStartDate: nvl($("#searchStartDate").val()),
         searchEndDate: nvl($("#searchEndDate").val()),
         approvalState: approvalState,
-        level: level
+        level: level,
+        adminApproval: $('#adminApproval').val()
     };
     //console.log("조건 : " + JSON.stringify(param));
 

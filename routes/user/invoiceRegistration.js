@@ -80,10 +80,13 @@ var fnSearchDocumentList = function (req, res) {
         documentManager: commonUtil.nvl(req.body.documentManager),
         scanApproval: commonUtil.nvl(req.body.scanApproval),
         icrApproval: commonUtil.nvl(req.body.icrApproval),
+        adminApproval: commonUtil.nvl(req.body.adminApproval)
     };
-    if (!commonUtil.isNull(param["scanApproval"]) && param["scanApproval"] == 'Y') {
+    if (param["adminApproval"] == 'Y') {
+        andQuery = '';
+    } else if (!commonUtil.isNull(param["scanApproval"]) && param["scanApproval"] == 'Y' && param["adminApproval"] == 'N') {
         condQuery += " AND UPLOADNUM = '" + req.session.userId + "' ";
-    } else if (!commonUtil.isNull(param["icrApproval"]) && param["icrApproval"] == 'Y') {
+    } else if (!commonUtil.isNull(param["icrApproval"]) && param["icrApproval"] == 'Y' && param["adminApproval"] == 'N') {
         condQuery += " AND ICRNUM = '" + req.session.userId + "' ";
     }
 
