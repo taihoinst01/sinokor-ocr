@@ -1475,7 +1475,8 @@ var fn_processBaseImage = function (fileInfo) {
                 $("#tbody_baseList input[type=checkbox]").ezMark();
                 $("#div_base").css("display", "block");
                 fn_clickEvent();
-				fn_search_dtl(fileInfo[0].imgId);
+                endProgressBar();
+				//fn_search_dtl(fileInfo[0].imgId); // 첫번째 로우 ml 수행 함수
             } else {
                 console.log(data.error);
             }
