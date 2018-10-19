@@ -175,7 +175,8 @@ passport.use(new LocalStrategy({
                                         icrApproval: 'Y',
                                         middleApproval: 'Y',
                                         lastApproval: 'Y',
-                                        admin: 'N'
+                                        admin: 'N',
+                                        token:stdout[1]
                                     };
                                     return done(null, sessionInfo);
                                 });
@@ -198,7 +199,47 @@ passport.use(new LocalStrategy({
                         req.flash("errors", "비밀번호가 일치하지 않습니다.");
                         return done(false, null);
                     } else {
+                        /*
+                        var child = exec('java -jar C:/ICR/app/source/module/sso.jar Login ' + userId + ' ' + userPw,
+                            function (error, stdout, stderr) {
+                                if (error !== null) {
+                                    console.log("Error -> " + error);
+                                }
 
+                                stdout = stdout.split("token:");
+
+                                if (stdout[1]) {
+                                    var sessionInfo = {
+                                        userId: userId,
+                                        email: result[0].EMAIL,
+                                        auth: result[0].AUTH,
+                                        scanApproval: result[0].SCANAPPROVAL,
+                                        icrApproval: result[0].ICRAPPROVAL,
+                                        middleApproval: result[0].MIDDLEAPPROVAL,
+                                        lastApproval: result[0].LASTAPPROVAL,
+                                        lastLoginDate: result[0].LASTLOGINDATE,
+                                        admin: result[0].ADMIN,
+                                        token:stdout[1]
+                                    };
+
+                                    return done(null, sessionInfo);
+                                } else {
+                                    var sessionInfo = {
+                                        userId: userId,
+                                        email: result[0].EMAIL,
+                                        auth: result[0].AUTH,
+                                        scanApproval: result[0].SCANAPPROVAL,
+                                        icrApproval: result[0].ICRAPPROVAL,
+                                        middleApproval: result[0].MIDDLEAPPROVAL,
+                                        lastApproval: result[0].LASTAPPROVAL,
+                                        lastLoginDate: result[0].LASTLOGINDATE,
+                                        admin: result[0].ADMIN
+                                    };
+                                    return done(null, sessionInfo);
+                                }
+
+                            });
+                        */
                         var sessionInfo = {
                             userId: userId,
                             email: result[0].EMAIL,
@@ -208,7 +249,8 @@ passport.use(new LocalStrategy({
                             middleApproval: result[0].MIDDLEAPPROVAL,
                             lastApproval: result[0].LASTAPPROVAL,
                             lastLoginDate: result[0].LASTLOGINDATE,
-                            admin: result[0].ADMIN
+                            admin: result[0].ADMIN,
+                            token: 'tokenTest'
                         };
                         return done(null, sessionInfo);
                     }

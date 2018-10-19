@@ -1829,10 +1829,10 @@ function fn_processFinish(data, fileDtlInfo) {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
@@ -2736,15 +2736,14 @@ var fn_docEvent = function () {
             var mlDocNum = $("input[name='dtl_chk']").val();
 
             for (var i in mlExportRowData) {
-                if (mlExportRowData[i][0] == true && (mlExportRowData[i][4] == '' || mlExportRowData[i][4] == null)) {
+                if (mlExportRowData[i][0] == "Y" && (mlExportRowData[i][4] == '' || mlExportRowData[i][4] == null)) {
                     alert("계약번호를 확인 할수 없습니다.");
                     return;
                 }
 
                 for (var j in mlExportRowData[i]) {
-                    if (mlExportRowData[i][0] == true && mlExportRowData[i][j] == '선택') {
-                        alert("인식결과의 값을 선택해야 합니다.");
-                        return;
+                    if (mlExportRowData[i][0] == "Y" && mlExportRowData[i][j] == '선택') {
+                        mlExportRowData[i][j] = "0";
                     }
                 }
             }

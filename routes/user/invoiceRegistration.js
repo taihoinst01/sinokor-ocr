@@ -431,7 +431,7 @@ router.post('/sendApprovalDocument', function (req, res) {
                 sendCount += 1;
             }
             sync.await(oracle.insertDocumentDtl(mlData, sync.defer()));
-            sync.await(oracle.approvalDtlProcess(approvalDtlData, sync.defer()));
+            sync.await(oracle.approvalDtlProcess(approvalDtlData, req.user.token, sync.defer()));
             returnObj = { code: 200, docData: sendCount };
         
         } catch (e) {
