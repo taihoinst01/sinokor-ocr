@@ -2468,8 +2468,8 @@ exports.sendApprovalDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET MIDDLENUM = :middleNum, NOWNUM = :nowNum, STATUS = '02', DRAFTDATE = sysdate WHERE DOCNUM = :docNum ", req);
-            result = await conn.execute("SELECT DRAFTDATE FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum ", [req[2]]);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET DRAFTERNUM = :draftNum, MIDDLENUM = :middleNum, NOWNUM = :nowNum, STATUS = '02', DRAFTDATE = sysdate WHERE DOCNUM = :docNum ", req);
+            result = await conn.execute("SELECT DRAFTDATE FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum ", [req[3]]);
             return done(null, result.rows[0].DRAFTDATE);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2515,7 +2515,7 @@ exports.sendDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET DRAFTERNUM = :drafterNum, ICRNUM = :icrNum, NOWNUM = :nowNum WHERE DOCNUM = :docNum ", req);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET ICRNUM = :icrNum, NOWNUM = :nowNum WHERE DOCNUM = :docNum ", req);
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2538,7 +2538,7 @@ exports.searchApprovalDtlList = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute(` SELECT * FROM TBL_DOCUMENT_DTL WHERE DOCNUM = :docNum`, req);
+            result = await conn.execute(` SELECT * FROM TBL_DOCUMENT_DTL WHERE STATUS = 'Y' AND DOCNUM = :docNum`, req);
             if (result.rows.length > 0) {
                 return done(null, result.rows);
             } else {
@@ -2894,11 +2894,12 @@ exports.selectApprovalDtl = function (req, done) {
 
 // req = [문서번호, 결재상태코드, 결제사원번호(현재유저), 결재일시, 결재의견, 다음결재사원번호(다음유저)];
 // 파라미터 중 없는 것들은 null로 작성, 순서 지킬 것!
-exports.approvalDtlProcess = function (req, done) {
+exports.approvalDtlProcess = function (req, token, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let result;
         let approvalSql;
+        var approvalDtls;
         try {
             conn = await oracledb.getConnection(dbConfig);
             for (var i in req) {
@@ -2934,19 +2935,100 @@ exports.approvalDtlProcess = function (req, done) {
                 await conn.execute(approvalSql, params);
 
                 /*
-                var azureRes = request('POST', 'http://localhost/wF_WorkflowProc/IF2', {
-                    json: {
-                        'docNum': docNum, 'status': status, 'drafterNum': null,
-                        'draftDate': null, 'nowNum': approvalNum
+                //기간계 IF-2
+                result = await conn.execute('SELECT * FROM TBL_APPROVAL_DTL WHERE DOCNUM = :docNum', [docNum]);
+                if (result.rows.length > 0) {
+                    approvalDtls = result.rows;
+                } else {
+                    approvalDtls = [];
+                }
+
+                var dtlXml = '';
+                for (var i in approvalDtls) {
+                    dtlXml +=
+                        '<Row>' +
+                    '<Col id="imgId">' + approvalDtls[i].DOCNUM + '</Col>' +
+                    '<Col id="apvrSno">' + approvalDtls[i].SEQNUM + '</Col>' +
+                    '<Col id="aprStatCd">' + approvalDtls[i].STATUS + '</Col>' +
+                    '<Col id="apvrEmpNo">' + approvalDtls[i].APPROVALNUM + '</Col>' +
+                        '<Col id="aprDt"></Col>';//'<Col id="aprDt">' + approvalDtls[i].APPROVALDATE + '</Col>';
+                    if (approvalDtls[i].STATUS == '04') {
+                        dtlXml +=
+                            '<Col id="aprOpnn">' + data[i].APPROVALCOMMENT ? data[i].APPROVALCOMMENT.replace(/ /gi, '&#32;') : '' + '</Col>';
                     }
+                    dtlXml +=
+                        '<Col id="aftApvrEmpNo">' + approvalDtls[i].NEXTAPPROVALNUM + '</Col>' +
+                        '</Row>';
+                }
+
+                var data =
+                    '<?xml version="1.0" encoding="utf-8"?>' +
+                    '<Root>' +
+                    '<Parameters>' +
+                    '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>' +
+                    '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
+                    '<Parameter id="lginIpAdr" type="STRING" />' +
+                    '<Parameter id="userId" type="STRING">2011813</Parameter>' +
+                    '<Parameter id="userEmpNo" type="STRING">2011813</Parameter>' +
+                    '<Parameter id="userDeptCd" type="STRING">240050</Parameter>' +
+                    '<Parameter id="frstRqseDttm" type="STRING">20181015210404674</Parameter>' +
+                    '<Parameter id="rqseDttm" type="STRING">20181015210404674</Parameter>' +
+                    '<Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>' +
+                    '<Parameter id="srnId" type="STRING">CTCTM107</Parameter>' +
+                    '<Parameter id="rqseSrvcNm" type="STRING">koreanre.co.co.aprco.svc.CoAprSvc</Parameter>' +
+                    '<Parameter id="rqseMthdNm" type="STRING">saveAprInfoForIcr</Parameter>' +
+                    '<Parameter id="rqseVoNm" type="STRING">koreanre.co.co.aprco.vo.CoAprVo</Parameter>' +
+                    '</Parameters>' +
+                    '<Dataset id="coAprMngnIfDcDVoList">' +
+                    '<ColumnInfo>' +
+                    '<Column id="imgId" type="STRING" size="18" />' +
+                    '<Column id="aprPrgStatCd" type="STRING" size="2" />' +
+                    '<Column id="drftEmpNo" type="STRING" size="7" />' +
+                    '<Column id="drfDt" type="DATE" size="0" />' +
+                    '<Column id="prinEmpNo" type="STRING" size="7" />' +
+                    '<Column id="fnlApvrEmpNo" type="STRING" size="7" />' +
+                    '<Column id="fnlAprlDt" type="DATE" size="0" />' +
+                    '</ColumnInfo>' +
+                    '<Rows>' +
+                    '<Row>' +
+                    '<Col id="imgId">' + docNum + '</Col>' +
+                    '<Col id="aprPrgStatCd">' + status + '</Col>' +
+                    '<Col id="drftEmpNo">' + approvalNum + '</Col>' +
+                    '<Col id="drfDt">' + ' ' + '</Col>' +
+                    '<Col id="prinEmpNo">' + nextApprovalNum + '</Col>' +
+                    '</Row>' +
+                    '</Rows>' +
+                    '</Dataset>' +
+                    '<Dataset id="coApvrDcDVoList">' +
+                    '<ColumnInfo>' +
+                    '<Column id="imgId" type="STRING" size="18" />' +
+                    '<Column id="apvrSno" type="INT" size="9" />' +
+                    '<Column id="aprStatCd" type="STRING" size="2" />' +
+                    '<Column id="apvrEmpNo" type="STRING" size="7" />' +
+                    '<Column id="aprDt" type="DATE" size="0" />' +
+                    '<Column id="aprOpnn" type="STRING" size="4000" />' +
+                    '<Column id="aftApvrEmpNo" type="STRING" size="7" />' +
+                    '</ColumnInfo>' +
+                    '<Rows>' + dtlXml + '</Rows>' +
+                    '</Dataset>' +
+                    '</Root>';
+                
+                var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+                    headers: {
+                        'content-type': 'text/xml'
+                    },
+                    body: data
                 });
-                console.log('기간계(IF-2) statusCode : ' + azureRes.code);
+                
+                console.log('IF-2 기간계 status code : ' + res1.statusCode);
                 */
             }
         } catch (err) {
+            console.log(err);
             reject(err);
         } finally {
             return done(null, null);
+            //return done(null, res1.statusCode);
         }
     });
 };

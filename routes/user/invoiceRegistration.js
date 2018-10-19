@@ -419,7 +419,7 @@ router.post('/sendApprovalDocument', function (req, res) {
     sync.fiber(function () {
         try {
             for (var i = 0; i < docInfo.length; i++) {               
-                var draftDate = sync.await(oracle.sendApprovalDocument([userChoiceId[0], userChoiceId[0], docInfo[i]], sync.defer()));
+                var draftDate = sync.await(oracle.sendApprovalDocument([req.body.userId, userChoiceId[0], userChoiceId[0], docInfo[i]], sync.defer()));
                 approvalDtlData.push({
                     'docNum': docInfo[i],
                     'status': '02',
@@ -431,7 +431,7 @@ router.post('/sendApprovalDocument', function (req, res) {
                 sendCount += 1;
             }
             sync.await(oracle.insertDocumentDtl(mlData, sync.defer()));
-            sync.await(oracle.approvalDtlProcess(approvalDtlData, sync.defer()));
+            sync.await(oracle.approvalDtlProcess(approvalDtlData, req.user.token, sync.defer()));
             returnObj = { code: 200, docData: sendCount };
         
         } catch (e) {
@@ -450,7 +450,7 @@ router.post('/sendDocument', function (req, res) {
     try {
         for (var i = 0; i < req.body.docNum.length; i++) {
             sync.fiber(function () {
-                sync.await(oracle.sendDocument([req.body.userId[0], req.body.userId[0], req.body.userId[0], req.body.docNum[i]], sync.defer()));
+                sync.await(oracle.sendDocument([ req.body.userId[0], req.body.userId[0], req.body.docNum[i]], sync.defer()));
             });
             sendCount += 1;
         }
