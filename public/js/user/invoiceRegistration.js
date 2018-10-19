@@ -2736,14 +2736,14 @@ var fn_docEvent = function () {
             var mlDocNum = $("input[name='dtl_chk']").val();
 
             for (var i in mlExportRowData) {
-                if (mlExportRowData[i][0] == true && (mlExportRowData[i][4] == '' || mlExportRowData[i][4] == null)) {
+                if (mlExportRowData[i][0] == "Y" && (mlExportRowData[i][4] == '' || mlExportRowData[i][4] == null)) {
                     alert("계약번호를 확인 할수 없습니다.");
                     return;
                 }
 
                 for (var j in mlExportRowData[i]) {
-                    if (mlExportRowData[i][0] == true && mlExportRowData[i][j] == '선택') {
-                        mlExportRowData[i][j] == 0;
+                    if (mlExportRowData[i][0] == "Y" && mlExportRowData[i][j] == '선택') {
+                        mlExportRowData[i][j] = "0";
                     }
                 }
             }
