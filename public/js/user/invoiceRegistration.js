@@ -2736,8 +2736,7 @@ var fn_docEvent = function () {
 
                 for (var j in mlExportRowData[i]) {
                     if (mlExportRowData[i][0] == true && mlExportRowData[i][j] == '선택') {
-                        alert("인식결과의 값을 선택해야 합니다.");
-                        return;
+                        mlExportRowData[i][j] == 0;
                     }
                 }
             }
