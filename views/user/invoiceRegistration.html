@@ -31,7 +31,8 @@
 </head>
 <body>
     <input type="hidden" id="userId" value="<%=currentUser.userId%>" />
-    <input type="hidden" id="scanApproval" value="<%=currentUser.scanApproval%>" />
+    <input type="hidden" id="adminApproval" value="<%=currentUser.admin%>" />
+    <input type="hidden" id="scanApporval" value="<%=currentUser.scanApproval%>" />
     <input type="hidden" id="icrApproval" value="<%=currentUser.icrApproval%>" />
     <input type="hidden" id="middleApproval" value="<%=currentUser.middleApproval%>" />
     <input type="hidden" id="lastApproval" value="<%=currentUser.lastApproval%>" />
@@ -104,7 +105,7 @@
                                 <dt><label for="intxt_02">문서담당자</label></dt>
                                 <dd>
                                     <%
-                                    if(currentUser.scanApproval == 'Y') {
+                                    if ( currentUser.scanApproval == 'Y' && currentUser.adminApproval == 'N' ) {
                                     %>
                                     <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="" placeholder="<%=currentUser.userId%>"  />
                                     <%
@@ -662,7 +663,6 @@
         </div>
     </div>
     <!-- //Ui 재학습 Popup-->
-
     <!-- 팝업_문서비교레이어팝업 -->
     <div id="layer3" class="poplayer">
         <input type="hidden" id="ocrData" />

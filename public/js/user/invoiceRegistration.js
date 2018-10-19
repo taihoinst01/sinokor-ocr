@@ -932,7 +932,8 @@ var fn_search = function () {
         scanApproval: nvl($("#scanApproval").val()),//스캔담당자
         icrApproval: nvl($("#icrApproval").val()),//ICR담당자
         middleApproval: nvl($("#middleApproval").val()),//중간결재자
-        lastApproval: nvl($("#lastApproval").val())//최종결재자
+        lastApproval: nvl($("#lastApproval").val()),//최종결재자
+        adminApproval: nvl($("#adminApproval").val())//관리자 
     };
 
     $.ajax({
@@ -1828,10 +1829,10 @@ function fn_processFinish(data, fileDtlInfo) {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
@@ -2427,7 +2428,7 @@ var fn_docEvent = function () {
         if ($('input[name="base_chk"]:checked').length > 0) {
             var managerChk = true;
             $('input[name="base_chk"]:checked').each(function () {
-                if ($('#userId').val() != $(this).closest('tr').children().eq(3).text()) {
+                if ($('#userId').val() != $(this).closest('tr').children().eq(3).text() && nvl($("#adminApproval").val() == 'N' ) ) {
                     alert("문서 담당자가 아닙니다. 다시 선택해주세요.");
                     managerChk = false;
                     $('input[name="base_chk"]:checked').parent().removeClass('ez-checked');
@@ -2495,8 +2496,12 @@ var fn_docEvent = function () {
         
         if ($('input[name="base_chk"]:checked').length > 0) {
             var managerChk = true;
+            var userId = $('#userId').val();
             $('input[name="base_chk"]:checked').each(function () {
-                if ($('#userId').val() != $(this).closest('tr').children().eq(3).text()) {
+                if (nvl($("#adminApproval").val() == 'Y')) {
+                    userId = $(this).closest('tr').children().eq(3).text();
+                }
+                if (userId != $(this).closest('tr').children().eq(3).text() && nvl($("#adminApproval").val() == 'N' )) {
                     alert("문서 담당자가 아닙니다. 다시 선택해주세요.");
                     managerChk = false;
                     $('input[name="base_chk"]:checked').parent().removeClass('ez-checked');
@@ -2615,8 +2620,10 @@ var fn_docEvent = function () {
                 userChoiceRowData.push(popUsertr.text());
 
                 var userId = popUsertd.eq(1).text();
-
-                userChoiceTdArr.push(userId);
+                if ($('#adminApproval').val() == 'Y') {
+                    userId = $('#userId').val();
+                }
+                    userChoiceTdArr.push(userId);
             });
 
             if (userChoiceTdArr.length > 1) {
@@ -2650,7 +2657,7 @@ var fn_docEvent = function () {
                     });
                 }
             }
-        } else if ($('#icrApproval').val() == 'Y') {
+        } else if (($('#icrApproval').val() == 'Y' && $("#adminApproval").val() == 'N') || $("#adminApproval").val() == 'Y') {
             //현재 로그인된 계정아이디
             var userId = $('#userId').val();
 
@@ -2778,7 +2785,7 @@ var fn_docEvent = function () {
 
     //전달/결재상신버튼 클릭 시 발생이벤트.
     $('#sendApprovalBtn').click(function () {
-        if ($('#icrApproval').val() == 'Y') {
+        if (($('#icrApproval').val() == 'Y' && $("#adminApproval").val() == 'N') || $("#adminApproval").val() == 'Y') {
             var isCheckboxYn = false;
             var arr_checkboxYn = document.getElementsByName("base_chk");
 
