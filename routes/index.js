@@ -89,6 +89,7 @@ router.post("/login",
             if (req.body.remember_me == "on") {
                 res.cookie('ocr_userid', req.body.userId, { maxAge: 604800000 }); // save cookie 7days
             }
+
             commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [req.body.userId], callbackUpdate, req, res);
             sess.userId = req.body.userId;
             next();
@@ -152,8 +153,42 @@ passport.use(new LocalStrategy({
                     req.flash("errors", "사용자 ID를 입력해주세요.");
                     return done(false, null);
                 } else if (result.length === 0) {
+
+                    /*
+                    var child = exec('java -jar C:/ICR/app/source/module/sso.jar Login ' + userId + ' ' + userPw,
+                        function (error, stdout, stderr) {
+                            if (error !== null) {
+                                console.log("Error -> " + error);
+                                req.flash("errors", "해당 사용자가 존재하지 않습니다.");
+                                return done(false, null);
+                            }
+
+                            stdout = stdout.split("token:");
+
+                            if (stdout[1]) {
+                                connection.execute(queryConfig.userMngConfig.insertUser, [userId, userPw,'','auth sso','Y','Y','Y','Y'], function (err, result) {
+                                    var sessionInfo = {
+                                        userId: userId,
+                                        email: result[0].EMAIL,
+                                        auth: 'USER',
+                                        scanApproval: 'Y',
+                                        icrApproval: 'Y',
+                                        middleApproval: 'Y',
+                                        lastApproval: 'Y',
+                                        admin: 'N'
+                                    };
+                                    return done(null, sessionInfo);
+                                });
+                            } else {
+                                req.flash("errors", "해당 사용자가 존재하지 않습니다.");
+                                return done(false, null);
+                            }
+
+                        });
+                    */
                     req.flash("errors", "해당 사용자가 존재하지 않습니다.");
                     return done(false, null);
+
                 } else {
                     //if (!bcrypt.compareSync(userPw, result[0].userPw)) {
                     if (commonUtil.isNull(userPw)) {
@@ -163,30 +198,6 @@ passport.use(new LocalStrategy({
                         req.flash("errors", "비밀번호가 일치하지 않습니다.");
                         return done(false, null);
                     } else {
-
-                        /*
-                        var child = exec('java -jar C:/ICR/app/source/module/sso.jar Login ' + userId + ' ' + userPw,
-                            function (error, stdout, stderr) {
-                                if (error !== null) {
-                                    console.log("Error -> " + error);
-                                    return done(false, null);
-                                }
-                                console.log('Token -> ' + stdout);
-
-                                var sessionInfo = {
-                                    userId: userId,
-                                    email: result[0].EMAIL,
-                                    auth: result[0].AUTH,
-                                    scanApproval: result[0].SCANAPPROVAL,
-                                    icrApproval: result[0].ICRAPPROVAL,
-                                    middleApproval: result[0].MIDDLEAPPROVAL,
-                                    lastApproval: result[0].LASTAPPROVAL,
-                                    lastLoginDate: result[0].LASTLOGINDATE,
-                                    admin: result[0].ADMIN
-                                };
-                                return done(null, sessionInfo);
-                       });
-                       */
 
                         var sessionInfo = {
                             userId: userId,
@@ -205,7 +216,8 @@ passport.use(new LocalStrategy({
             }
         });
     });
-}));
+    }
+));
 
 // Auto login (deprecate : 2018-07-05)
 /* Fake, in-memory database of remember me tokens */
