@@ -16,16 +16,18 @@ router.get('/', function (req, res) {
 });
 
 router.post('/', function (req, res) {
-    var cdnNm = req.body.cdnNm.replace(/ /g, "&#32;");
-    var ctNm = req.body.ctNm.replace(/ /g, "&#32;");
+    var cdnNm = req.body.cdnNm.replace(/&/g, '').replace(/  /g, ' ').replace(/ /g, "&#32;");
+    var ctNm = req.body.ctNm.replace(/&/g, '').replace(/  /g, ' ').replace(/ /g, "&#32;");
     //var brkNm = req.body.brkNm.replace(/ /g, "&#32;");
     var brkNm = '';
+    var ttyYy = req.body.ttyYy;
+    var token = req.session.passport.user.token;
 
     var testData = 
         '<? xml version = "1.0" encoding = "utf-8" ?>'+
         '<Root>'+
             '<Parameters>'+
-                '<Parameter id="gv_encryptToken" type="STRING">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1539564980zPy86400zAy23zEyP7D2Wpx2Bf0dkRRoplRJmZ0Q3Za7WHjeSKx78rg3x78rcDe0bGsQMsAlvwOn7rqK48NEQpA8pi2x7A0PVVN0NZg4x7As0RJFx79YbNw0MoHnIx7Aj7x797CB8bx7A0QYP68D763IdCx2FEWx79UXEIVT6TgScx7A64SUjXXf55fMVMbaUfQ2frENHx2BPtQf2A81Px79GGIt6dB5uQ1D8x7AWjAR9KuA5KfjGOgZjbSDbkqGnPGAx3Dx3DzKyF8x78ICfDirBJ4BDeVx78e5S1x7AaUSDYhrZlx79Wbl1x78FbugXOagNG0cfIx787hj2x78Hd33QDbx00x00x00x00x00zSSy00002479000zUURy1f9d134b0e195793zMyfsNjWrhSdZkx3Dz</Parameter>'+
+                '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>'+
                 '<Parameter id="WMONID" type="STRING"></Parameter>'+
                 '<Parameter id="lginIpAdr" type="STRING">111.222.333.444</Parameter>' +
                 '<Parameter id="userId" type="STRING">9999068</Parameter>' +
@@ -49,9 +51,9 @@ router.post('/', function (req, res) {
     '<Rows>' +
     '<Row>' +
     '<Col id="cdnNm">'+cdnNm+'</Col>' +
-        '<Col id="ctNm">'+ctNm+'</Col>' +
-            '<Col id="ttyYy">' +req.body.ttyYy+'</Col>' +
-                '<Col id="brkNm">' +brkNm+'</Col>' +
+    '<Col id="ctNm">'+ctNm+'</Col>' +
+    '<Col id="ttyYy">'+ttyYy+'</Col>' +
+    '<Col id="brkNm">'+brkNm+'</Col>' +
     '</Row>' +
     '</Rows>' +
     '</Dataset>' +
