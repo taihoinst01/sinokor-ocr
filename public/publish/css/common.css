@@ -5458,15 +5458,15 @@ label[disabled] {
 }
 
 .lnb_menu_count {
-    display: inline-block;
+    display: none;
     width: 23px;
     height: 15px;
     background-color: #ec8200;
     color: #fff;
-    border-radius: 3px;
+    border-radius: 7px;
     text-align: center;
     margin-left: 6px;
-    font-size: 17px;
+    font-size: 11px;
     display: none;
 }
 
@@ -6283,4 +6283,8 @@ input:disabled {
 
 .ez_chk_k01 {
     vertical-align: sub;
+}
+
+.lnb_menu_count.on {
+    display:inline-block !important;
 }

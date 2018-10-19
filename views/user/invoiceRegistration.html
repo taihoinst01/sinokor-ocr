@@ -76,8 +76,8 @@
                                     <%
                                     } else {
                                     %>
-                                    <input type="file" id="uploadFile" name="file" value="upload" multiple disabled/>
-                                    <label id="uploadFileBtn" for="customer_file" disabled>계산서 업로드</label>
+                                    <input type="file" id="uploadFile" name="file" value="upload" multiple />
+                                    <label id="uploadFileBtn" for="customer_file" >계산서 업로드</label>
                                     <%
                                     }
                                     %>
@@ -106,7 +106,7 @@
                                     <%
                                     if(currentUser.scanApproval == 'Y') {
                                     %>
-                                    <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="" placeholder="<%=currentUser.userId%>" disabled />
+                                    <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="" placeholder="<%=currentUser.userId%>"  />
                                     <%
                                     } else {
                                     %>
@@ -126,7 +126,7 @@
                                     <%
                                     } else {
                                     %>
-                                    <button type="button" id="btn_search" class="button_st3" disabled>조회</button>
+                                    <button type="button" id="btn_search" class="button_st3" >조회</button>
                                     <%
                                     }
                                     %>
