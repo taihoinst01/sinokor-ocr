@@ -20,6 +20,7 @@
 </head>
 <body>
     <input type="hidden" id="userId" value="<%=currentUser.userId%>" />
+    <input type="hidden" id="adminApproval" value="<%=currentUser.admin%>" />
     <input type="hidden" id="scanApproval" value="<%=currentUser.scanApproval%>" />
     <input type="hidden" id="icrApproval" value="<%=currentUser.icrApproval%>" />
     <input type="hidden" id="middleApproval" value="<%=currentUser.middleApproval%>" />
@@ -203,9 +204,9 @@
                             <%
                             if(currentUser.scanApproval == 'Y' || currentUser.icrApproval == 'Y') {
                             %>
-                            <button type="button" id="btn_baseList_return" class="button_st2" disabled>반려</button>
-                            <button type="button" id="btn_baseList_forward" class="button_st2" disabled>전달</button>
-                            <button type="button" id="btn_baseList_approval" class="button_st1" disabled>승인</button>
+                            <button type="button" id="btn_baseList_return" class="button_st2" >반려</button>
+                            <button type="button" id="btn_baseList_forward" class="button_st2" >전달</button>
+                            <button type="button" id="btn_baseList_approval" class="button_st1" >승인</button>
                             <%
                             } else{
                             %>

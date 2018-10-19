@@ -125,7 +125,7 @@ function fn_loadLeftSideBarInvoiceRegistration() {
         },
         success: function (data) {
             console.log("leftSideBar ir : " + JSON.stringify(data));
-            if (data.cnt > 0) $("#span_leftsidebar_ir").show().html(data.cnt);
+            if (data.cnt > 0) $("#span_leftsidebar_ir").html(data.cnt).addClass('on');
         },
         error: function (err) {
             console.log(err);
@@ -144,7 +144,7 @@ function fn_loadLeftSideBarMyApproval() {
         },
         success: function (data) {
             console.log("leftSideBar ir : " + JSON.stringify(data));
-            if(data.cnt > 0 ) $("#span_leftsidebar_ma").show().html(data.cnt);
+            if (data.cnt > 0) $("#span_leftsidebar_ma").html(data.cnt).addClass('on');
         },
         error: function (err) {
             console.log(err);
