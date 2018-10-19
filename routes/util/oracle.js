@@ -2468,8 +2468,8 @@ exports.sendApprovalDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET MIDDLENUM = :middleNum, NOWNUM = :nowNum, STATUS = '02', DRAFTDATE = sysdate WHERE DOCNUM = :docNum ", req);
-            result = await conn.execute("SELECT DRAFTDATE FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum ", [req[2]]);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET DRAFTERNUM = :draftNum, MIDDLENUM = :middleNum, NOWNUM = :nowNum, STATUS = '02', DRAFTDATE = sysdate WHERE DOCNUM = :docNum ", req);
+            result = await conn.execute("SELECT DRAFTDATE FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum ", [req[3]]);
             return done(null, result.rows[0].DRAFTDATE);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2515,7 +2515,7 @@ exports.sendDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET DRAFTERNUM = :drafterNum, ICRNUM = :icrNum, NOWNUM = :nowNum WHERE DOCNUM = :docNum ", req);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET ICRNUM = :icrNum, NOWNUM = :nowNum WHERE DOCNUM = :docNum ", req);
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2538,7 +2538,7 @@ exports.searchApprovalDtlList = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute(` SELECT * FROM TBL_DOCUMENT_DTL WHERE DOCNUM = :docNum`, req);
+            result = await conn.execute(` SELECT * FROM TBL_DOCUMENT_DTL WHERE STATUS = 'Y' AND DOCNUM = :docNum`, req);
             if (result.rows.length > 0) {
                 return done(null, result.rows);
             } else {
