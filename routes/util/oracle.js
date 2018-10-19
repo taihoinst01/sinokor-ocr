@@ -2045,6 +2045,35 @@ exports.insertBatchLearnList = function (req, done) {
         }
     });
 };
+exports.selectEntryMappingUnit = function (done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            result = await conn.execute('SELECT COLNUM, CREDIT, DEBIT FROM TBL_ENTRY_MAPPING_UNIT');
+
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+        } catch (err) {
+            console.log(err);
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
 
 exports.insertDoctypeMapping = function (req, done) {
     return new Promise(async function (resolve, reject) {

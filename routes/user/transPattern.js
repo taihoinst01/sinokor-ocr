@@ -7,11 +7,10 @@ module.exports = {
     trans: function (reqArr, done) {
         sync.fiber(function () {
             try {
-                //console.log(reqArr);
                 //UY
                 reqArr = convertedUY(reqArr);
                 //Entry
-                reqArr = convertedEntry(reqArr);
+                reqArr = sync.await(convertedEntry(reqArr, sync.defer()));
                 //Our Share
                 reqArr = convertedOurShare(reqArr);
                 //Currency Code
@@ -28,8 +27,9 @@ module.exports = {
     }
 };
 
-// UY outputs only year
+
 function convertedUY(reqArr) {
+    // UY outputs only year START
     var pattern = /20\d\d/ig;
     var lastPattern = /19\d\d/ig;
 
@@ -55,48 +55,76 @@ function convertedUY(reqArr) {
         } else {
         }
     }
+    // UY outputs only year END
     return reqArr;
 }
 
-function convertedEntry(reqArr) {
-    var pattern = /O/gi;
+function convertedEntry(reqArr, done) {
+    sync.fiber(function () {
+        try {
+            // convert char to number START
+            var pattern = /O/gi;
 
-    for (var i in reqArr.data) {
-        var item = reqArr.data[i];
-        if (item.colLbl == 37) {
-            var convertText = String(item.text.replace(/ /gi, '').replace(pattern, '0'));
-            if (item.text != convertText) {
-                item.originText = item.text;
-                item.text = convertText;
+            for (var i in reqArr.data) {
+                var item = reqArr.data[i];
+                if (item.colLbl == 37) {
+                    var convertText = String(item.text.replace(/ /gi, '').replace(pattern, '0'));
+                    if (item.text != convertText) {
+                        item.originText = item.text;
+                        item.text = convertText;
+                    }
+                } else {
+                }
             }
-        } else {
-            //console.log("no");
+            // convert char to number END
+
+            // remove characters , convert to - or + START
+            pattern = /[^0-9\.]+/g;
+            var isMinus;
+            var isPlus;
+            var units = sync.await(oracle.selectEntryMappingUnit(sync.defer()));
+
+            for (var i in reqArr.data) {
+                isMinus = false;
+                isPlus = false;
+                var item = reqArr.data[i];
+                if (item.colLbl == 37 && pattern.test(item.text)) {
+                    if (item.text.indexOf('(') != -1 && item.text.indexOf(')') != -1) {
+                        isMinus = true;
+                    } else if (item.text.indexOf('CR') != -1 || item.text.indexOf('DR') != -1) {
+                        for (var j in units) {
+                            if (units[i].COLNUM == item.entryLbl) {
+                                if ((item.text.indexOf('CR') != -1 && units[i].CREDIT == '-')
+                                    || (item.text.indexOf('DR') != -1 && units[i].DEBIT == '-')) {
+                                    isMinus = true;
+                                } else if ((item.text.indexOf('CR') != -1 && units[i].CREDIT == '+')
+                                    || (item.text.indexOf('DR') != -1 && units[i].DEBIT == '+')){
+                                    isPlus = true;
+                                }
+                            }
+                        }
+                    }
+                    var intArr = Number(item.text.replace(pattern, ''));
+                    if (item.text != String(intArr)) {
+                        item.originText = item.text;
+                        item.text = ((isMinus) ? '-' : '') + String(intArr);
+                        item.text = ((isPlus) ? '+' : '') + String(intArr);
+                    }
+                } else {
+                }
+            }
+            // remove characters , convert to - or + END
+
+        } catch (e) {
+            console.log(e);
+        } finally {
+            return done(null, reqArr);
         }
-    }
-
-    pattern = /[^0-9\.]+/g;
-    var isMinus;
-    for (var i in reqArr.data) {
-        isMinus = false;
-        var item = reqArr.data[i];
-        if (item.colLbl == 37 && pattern.test(item.text)) {
-            if (item.text.indexOf('(') != -1 && item.text.indexOf(')') != -1) {
-                isMinus = true;
-            }
-            var intArr = Number(item.text.replace(pattern, ''));
-            if (item.text != String(intArr)) {
-                item.originText = item.text;
-                item.text = ((isMinus)? '-' : '' ) + String(intArr);
-            }
-        } else {
-            //console.log("no");
-        }
-    }
-
-    return reqArr;
+    });   
 }
 
 function convertedOurShare(reqArr) {
+    // remove characters START
     var pattern = /[^0-9\.]+/g;
 
     for (var i in reqArr.data) {
@@ -108,15 +136,18 @@ function convertedOurShare(reqArr) {
                 item.text = String(intArr);
             }
         } else {
-            //console.log("no");
         }
     }
+    // remove characters END
+
     return reqArr;
 }
 
 function convertedCurrencyCode(reqArr, done) {
     sync.fiber(function () {
         try {
+
+            // convert currency code to DB data START
             for (var i in reqArr.data) {
                 var item = reqArr.data[i];
                 if (item.colLbl == 3) {
@@ -127,9 +158,12 @@ function convertedCurrencyCode(reqArr, done) {
                     }
                 }
             }
-            return done(null, reqArr);
+            // convert currency code to DB data END
+            
         } catch (e) {
             console.log(e);
+        } finally {
+            return done(null, reqArr);
         }
 
     });
