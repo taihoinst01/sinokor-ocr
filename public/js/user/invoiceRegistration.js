@@ -1829,10 +1829,10 @@ function fn_processFinish(data, fileDtlInfo) {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
