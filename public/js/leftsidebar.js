@@ -57,9 +57,9 @@ function fn_loadLeftSideBarMyApproval() {
         success: function (data) {
             //console.log("leftSideBar ir : " + JSON.stringify(data));
             if (data.cnt > 99) {
-                $("#span_leftsidebar_ma").show().html("99+");
+                $("#span_leftsidebar_ma").html("99+").addClass('on');
             } else if (data.cnt > 0) {
-                $("#span_leftsidebar_ma").show().html(data.cnt);
+                $("#span_leftsidebar_ma").html(data.cnt).addClass('on');
             }
         },
         error: function (err) {
