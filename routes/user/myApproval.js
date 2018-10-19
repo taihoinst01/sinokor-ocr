@@ -129,13 +129,26 @@ router.post('/searchApprovalDtlList', function (req, res) {
 };*/
 
 // [POST] 문서 이미지 리스트 조회 
-router.post('/searchApprovalImageList', function (req, res) {
-    if (req.isAuthenticated()) fnSearchApprovalImageList(req, res);
+/*router.post('/searchApprovalImageList', function (req, res) {
+    var returnObj = {};
+    var imgId = req.body.imgId;
+
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.searchApprovalImageList([imgId], sync.defer()));
+            returnObj = { code: 200, docData: result };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
 });
 var callbackApprovalImageList = function (rows, req, res) {
     if (req.isAuthenticated()) res.send(rows);
 };
-var fnSearchApprovalImageList = function (req, res) {
+/* 기존소스
+ * var fnSearchApprovalImageList = function (req, res) {
     var param = {
         imgId: req.body.imgId
     };
@@ -146,8 +159,8 @@ var fnSearchApprovalImageList = function (req, res) {
     var listQuery = approvalListDtlQuery + condQuery + orderQuery;
     console.log("img listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackApprovalImageList, req, res);
-};
-
+};*/
+*/
 // [POST] 사용자 조회
 router.post('/selectUsers', function (req, res) {
     if (req.isAuthenticated()) fnSelectUsers(req, res);

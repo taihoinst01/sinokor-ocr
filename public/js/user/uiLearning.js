@@ -871,7 +871,7 @@ function detailTable(fileName) {
                     } else {
                         tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:150px;">';
                     }
-                    tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
+                    tblTag += '<input type="text" value="' + data[i].text + '" style="width:40px !important; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
                     tblTag += '<input type="hidden" value="' + fileName + '" />';
                     tblTag += '</label>';
@@ -894,7 +894,7 @@ function detailTable(fileName) {
                     } else {
                         tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:150px;">';
                     }
-                    tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
+                    tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:440px !important; border:0;" />';
                     tblSortTag += '<input type="hidden" value="' + data[i].location + '" />';
                     tblSortTag += '<input type="hidden" value="' + fileName + '" />';
                     tblSortTag += '</label>';
@@ -917,7 +917,7 @@ function detailTable(fileName) {
                     } else {
                         tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:150px;">';
                     }
-                    tblTag += '<input type="text" value="' + data[i].text + '" style="width:100%; border:0;" />';
+                    tblTag += '<input type="text" value="' + data[i].text + '" style="440px !important; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
                     tblTag += '<input type="hidden" value="' + fileName + '" />';
                     tblTag += '</label>';

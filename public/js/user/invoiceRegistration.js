@@ -1118,13 +1118,16 @@ var fn_ctnExtraction = function () {
 };
 
 // 클릭 이벤트 (DOCUMENT)
-var fn_clickEvent = function () {
+var fn_clickEvent = function () {//jmh
     // Document 클릭 시 상세 조회
     $("td[name='td_base']").on("click", function () {
         var id = $(this).parent().attr("id");
         var numArr = id.replace("tr_base_", "");
         var seqNum = numArr.split("-")[0];
         var docNum = numArr.split("-")[1];
+        $("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked');   
+        $("input:checkbox[id='base_chk_" + docNum+"']").attr("checked", true);
+
         fn_search_dtl(docNum); // document_dtl 조회
     });
     // Document DTL 클릭 시 이미지 조회
