@@ -91,14 +91,14 @@ function convertedEntry(reqArr, done) {
                 if (item.colLbl == 37 && pattern.test(item.text)) {
                     if (item.text.indexOf('(') != -1 && item.text.indexOf(')') != -1) {
                         isMinus = true;
-                    } else if (item.text.indexOf('CR') != -1 || item.text.indexOf('DR') != -1) {
+                    } else if (item.text.toUpperCase().indexOf('CR') != -1 || item.text.toUpperCase().indexOf('DR') != -1) {
                         for (var j in units) {
-                            if (units[i].COLNUM == item.entryLbl) {
-                                if ((item.text.indexOf('CR') != -1 && units[i].CREDIT == '-')
-                                    || (item.text.indexOf('DR') != -1 && units[i].DEBIT == '-')) {
+                            if (units[j].COLNUM == item.entryLbl) {
+                                if ((item.text.toUpperCase().indexOf('CR') != -1 && units[j].CREDIT == '-')
+                                    || (item.text.toUpperCase().indexOf('DR') != -1 && units[j].DEBIT == '-')) {
                                     isMinus = true;
-                                } else if ((item.text.indexOf('CR') != -1 && units[i].CREDIT == '+')
-                                    || (item.text.indexOf('DR') != -1 && units[i].DEBIT == '+')){
+                                } else if ((item.text.toUpperCase().indexOf('CR') != -1 && units[j].CREDIT == '+')
+                                    || (item.text.toUpperCase().indexOf('DR') != -1 && units[j].DEBIT == '+')){
                                     isPlus = true;
                                 }
                             }
@@ -108,7 +108,7 @@ function convertedEntry(reqArr, done) {
                     if (item.text != String(intArr)) {
                         item.originText = item.text;
                         item.text = ((isMinus) ? '-' : '') + String(intArr);
-                        item.text = ((isPlus) ? '+' : '') + String(intArr);
+                        item.text = ((isPlus) ? '' : '') + item.text;
                     }
                 } else {
                 }
