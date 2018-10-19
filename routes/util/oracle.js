@@ -2899,6 +2899,7 @@ exports.approvalDtlProcess = function (req, done) {
         let conn;
         let result;
         let approvalSql;
+        var approvalDtls;
         try {
             conn = await oracledb.getConnection(dbConfig);
             for (var i in req) {
@@ -2934,19 +2935,100 @@ exports.approvalDtlProcess = function (req, done) {
                 await conn.execute(approvalSql, params);
 
                 /*
-                var azureRes = request('POST', 'http://localhost/wF_WorkflowProc/IF2', {
-                    json: {
-                        'docNum': docNum, 'status': status, 'drafterNum': null,
-                        'draftDate': null, 'nowNum': approvalNum
+                //기간계 IF-2
+                result = await conn.execute('SELECT * FROM TBL_APPROVAL_DTL WHERE DOCNUM = :docNum', [docNum]);
+                if (result.rows.length > 0) {
+                    approvalDtls = result.rows;
+                } else {
+                    approvalDtls = [];
+                }
+
+                var dtlXml = '';
+                for (var i in approvalDtls) {
+                    dtlXml +=
+                        '<Row>' +
+                    '<Col id="imgId">' + approvalDtls[i].DOCNUM + '</Col>' +
+                    '<Col id="apvrSno">' + approvalDtls[i].SEQNUM + '</Col>' +
+                    '<Col id="aprStatCd">' + approvalDtls[i].STATUS + '</Col>' +
+                    '<Col id="apvrEmpNo">' + approvalDtls[i].APPROVALNUM + '</Col>' +
+                        '<Col id="aprDt"></Col>';//'<Col id="aprDt">' + approvalDtls[i].APPROVALDATE + '</Col>';
+                    if (approvalDtls[i].STATUS == '04') {
+                        dtlXml +=
+                            '<Col id="aprOpnn">' + data[i].APPROVALCOMMENT ? data[i].APPROVALCOMMENT.replace(/ /gi, '&#32;') : '' + '</Col>';
                     }
+                    dtlXml +=
+                        '<Col id="aftApvrEmpNo">' + approvalDtls[i].NEXTAPPROVALNUM + '</Col>' +
+                        '</Row>';
+                }
+
+                var data =
+                    '<?xml version="1.0" encoding="utf-8"?>' +
+                    '<Root>' +
+                    '<Parameters>' +
+                    '<Parameter id="gv_encryptToken" type="STRING">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1539564980zPy86400zAy23zEyP7D2Wpx2Bf0dkRRoplRJmZ0Q3Za7WHjeSKx78rg3x78rcDe0bGsQMsAlvwOn7rqK48NEQpA8pi2x7A0PVVN0NZg4x7As0RJFx79YbNw0MoHnIx7Aj7x797CB8bx7A0QYP68D763IdCx2FEWx79UXEIVT6TgScx7A64SUjXXf55fMVMbaUfQ2frENHx2BPtQf2A81Px79GGIt6dB5uQ1D8x7AWjAR9KuA5KfjGOgZjbSDbkqGnPGAx3Dx3DzKyF8x78ICfDirBJ4BDeVx78e5S1x7AaUSDYhrZlx79Wbl1x78FbugXOagNG0cfIx787hj2x78Hd33QDbx00x00x00x00x00zSSy00002479000zUURy1f9d134b0e195793zMyfsNjWrhSdZkx3Dz</Parameter>' +
+                    '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
+                    '<Parameter id="lginIpAdr" type="STRING" />' +
+                    '<Parameter id="userId" type="STRING">2011813</Parameter>' +
+                    '<Parameter id="userEmpNo" type="STRING">2011813</Parameter>' +
+                    '<Parameter id="userDeptCd" type="STRING">240050</Parameter>' +
+                    '<Parameter id="frstRqseDttm" type="STRING">20181015210404674</Parameter>' +
+                    '<Parameter id="rqseDttm" type="STRING">20181015210404674</Parameter>' +
+                    '<Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>' +
+                    '<Parameter id="srnId" type="STRING">CTCTM107</Parameter>' +
+                    '<Parameter id="rqseSrvcNm" type="STRING">koreanre.co.co.aprco.svc.CoAprSvc</Parameter>' +
+                    '<Parameter id="rqseMthdNm" type="STRING">saveAprInfoForIcr</Parameter>' +
+                    '<Parameter id="rqseVoNm" type="STRING">koreanre.co.co.aprco.vo.CoAprVo</Parameter>' +
+                    '</Parameters>' +
+                    '<Dataset id="coAprMngnIfDcDVoList">' +
+                    '<ColumnInfo>' +
+                    '<Column id="imgId" type="STRING" size="18" />' +
+                    '<Column id="aprPrgStatCd" type="STRING" size="2" />' +
+                    '<Column id="drftEmpNo" type="STRING" size="7" />' +
+                    '<Column id="drfDt" type="DATE" size="0" />' +
+                    '<Column id="prinEmpNo" type="STRING" size="7" />' +
+                    '<Column id="fnlApvrEmpNo" type="STRING" size="7" />' +
+                    '<Column id="fnlAprlDt" type="DATE" size="0" />' +
+                    '</ColumnInfo>' +
+                    '<Rows>' +
+                    '<Row>' +
+                    '<Col id="imgId">' + docNum + '</Col>' +
+                    '<Col id="aprPrgStatCd">' + status + '</Col>' +
+                    '<Col id="drftEmpNo">' + approvalNum + '</Col>' +
+                    '<Col id="drfDt">' + ' ' + '</Col>' +
+                    '<Col id="prinEmpNo">' + nextApprovalNum + '</Col>' +
+                    '</Row>' +
+                    '</Rows>' +
+                    '</Dataset>' +
+                    '<Dataset id="coApvrDcDVoList">' +
+                    '<ColumnInfo>' +
+                    '<Column id="imgId" type="STRING" size="18" />' +
+                    '<Column id="apvrSno" type="INT" size="9" />' +
+                    '<Column id="aprStatCd" type="STRING" size="2" />' +
+                    '<Column id="apvrEmpNo" type="STRING" size="7" />' +
+                    '<Column id="aprDt" type="DATE" size="0" />' +
+                    '<Column id="aprOpnn" type="STRING" size="4000" />' +
+                    '<Column id="aftApvrEmpNo" type="STRING" size="7" />' +
+                    '</ColumnInfo>' +
+                    '<Rows>' + dtlXml + '</Rows>' +
+                    '</Dataset>' +
+                    '</Root>';
+                
+                var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+                    headers: {
+                        'content-type': 'text/xml'
+                    },
+                    body: data
                 });
-                console.log('기간계(IF-2) statusCode : ' + azureRes.code);
+                
+                console.log('IF-2 기간계 status code : ' + res1.statusCode);
                 */
             }
         } catch (err) {
+            console.log(err);
             reject(err);
         } finally {
             return done(null, null);
+            //return done(null, res1.statusCode);
         }
     });
 };
