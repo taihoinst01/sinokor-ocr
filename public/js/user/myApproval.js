@@ -662,7 +662,6 @@ var fn_baseList_chk = function (flag) {
                         if (data.length > 0) {
                             for (var i = 0; i < data.length; i++) {
                                 appendHtml += '<tr>' +
-                                    '<td><input type="checkbox" name="btn_pop_user_search_base_chk"/></td>' +
                                     '<td>' + data[i].USERID + '</td>' +
                                     '<td>소속팀</td>' +
                                     '<td>소속파트</td>' +
@@ -670,7 +669,6 @@ var fn_baseList_chk = function (flag) {
                             }
 
                             $('#searchManagerResult').append(appendHtml);
-                            $('#searchManagerResult input[type=checkbox]').ezMark();
                         }
                     } else {
                         alert(data.error);
@@ -684,8 +682,11 @@ var fn_baseList_chk = function (flag) {
 
         //결재담당자 선택시 발생이벤트.
         $("#btn_pop_user_choice").click(function () {
-            if ($('input[name=btn_pop_user_search_base_chk]:checked').length == 0) {
-                alert("담당자를 선택해주세요");
+            var choiceCnt = $('#searchManagerResult tr.on').length;
+
+            if (choiceCnt == 0) {
+                alert('담당자를 선택해주세요');
+                return false;
             } else {
                 if ($('#middleApproval').val() == 'Y') {
                     //현재 로그인된 계정아이디
@@ -702,6 +703,7 @@ var fn_baseList_chk = function (flag) {
                     var userChoiceRowData = new Array();
                     var userChoiceTdArr = new Array();
                     var popUserChoiceCheckbox = $("input[name=btn_pop_user_search_base_chk]:checked");
+                    var popUserChoice = $("#searchManagerResult tr.on");
 
                     // 체크된 문서정보를 가져온다
                     popDocInfoCheckbox.each(function (i) {
@@ -722,47 +724,45 @@ var fn_baseList_chk = function (flag) {
                     });
 
                     // 체크된 담당자를 가져온다
-                    popUserChoiceCheckbox.each(function (i) {
-                        var popUsertr = popUserChoiceCheckbox.parent().parent().parent().eq(i);
+                    popUserChoice.each(function (i) {
+                        var popUsertr = popUserChoice;
                         var popUsertd = popUsertr.children();
 
                         userChoiceRowData.push(popUsertr.text());
 
-                        var userChoiceId = popUsertd.eq(1).text();
+                        var userChoiceId = popUsertd.eq(0).text();
 
                         userChoiceTdArr.push(userChoiceId);
                     });
-                    if (userChoiceTdArr.length > 1) {
-                        alert("한명의 담당자만 선택 가능합니다.");
-                    }
-                    else {
-                        $.ajax({
-                            url: '/myApproval/sendApprovalDocumentCtoD',
-                            type: 'post',
-                            datatype: "json",
-                            data: JSON.stringify({
-                                'userChoiceId': userChoiceTdArr,
-                                'docInfo': docInfoTdArr,
-                                'userId': userId,
-                                'comment': commentArr
-                            }),
-                            contentType: 'application/json; charset=UTF-8',
-                            success: function (data) {
-                                if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
-                                    $('#layer1').fadeOut();
-                                    var totCnt = $("input[name = chk_document]");
-                                    $("#span_document").empty().html('결재리스트(기본) - ' + (totCnt.length - deleteTr.length) + ' 건');
-                                    for (var i in deleteTr) {
-                                        deleteTr[i].remove();
-                                    }
+
+                   
+                    $.ajax({
+                        url: '/myApproval/sendApprovalDocumentCtoD',
+                        type: 'post',
+                        datatype: "json",
+                        data: JSON.stringify({
+                            'userChoiceId': userChoiceTdArr,
+                            'docInfo': docInfoTdArr,
+                            'userId': userId,
+                            'comment': commentArr
+                        }),
+                        contentType: 'application/json; charset=UTF-8',
+                        success: function (data) {
+                            if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
+                                $('#layer1').fadeOut();
+                                var totCnt = $("input[name = chk_document]");
+                                $("#span_document").empty().html('결재리스트(기본) - ' + (totCnt.length - deleteTr.length) + ' 건');
+                                for (var i in deleteTr) {
+                                    deleteTr[i].remove();
                                 }
-                            },
-                            error: function (err) {
-                                console.log(err);
                             }
-                        });
-                    }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
                 }
+                
             }
         });
     }

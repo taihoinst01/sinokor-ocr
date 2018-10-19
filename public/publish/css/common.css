@@ -6249,7 +6249,7 @@ input:disabled {
 
 .icr_popup {
     width: 1100px !important;
-    height: 720px !important;
+    height: 540px !important;
 }
 
 .invoice_Dl_01 {
@@ -6287,4 +6287,15 @@ input:disabled {
 
 .lnb_menu_count.on {
     display:inline-block !important;
+}
+
+#searchManagerResult tr.on {
+    background-color: #939393 !important;
+}
+    #searchManagerResult tr.on td{
+        color: white !important;
+    }
+.searchManagerResultDiv {
+    height: 250px;
+    overflow: overlay;
 }
