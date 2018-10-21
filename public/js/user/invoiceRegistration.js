@@ -1912,7 +1912,6 @@ function fn_ContractNumExtraction() {
                     url: '/wF_WorkflowProc/',
                     type: 'post',
                     datatype: 'json',
-                    async: false,
                     data: JSON.stringify({ cdnNm: cdnNm[l], ctNm: ctNm[j], ttyYy: ttyYy[k] }),
                     contentType: 'application/json; charset=UTF-8',
                     beforeSend: function () {
@@ -1970,8 +1969,8 @@ function fn_ContractNumExtraction() {
                         $("#tbody_dtlList").append(dtlHtml);
                         $("#tbody_dtlList input[type=checkbox]").ezMark();
                         $("#div_dtl").css("display", "block");
-
                         endProgressBar(progressId);
+                        
                     },
                     error: function (err) {
                         console.log(err);
@@ -1982,7 +1981,6 @@ function fn_ContractNumExtraction() {
         }
 
     }
-
     function makeMLSelect(mlData, colnum, entry) {
 
         var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileName + '\')">';
