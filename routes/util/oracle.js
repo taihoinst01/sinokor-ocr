@@ -2468,8 +2468,8 @@ exports.sendApprovalDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET MIDDLENUM = :middleNum, NOWNUM = :nowNum, STATUS = '02', DRAFTDATE = sysdate WHERE DOCNUM = :docNum ", req);
-            result = await conn.execute("SELECT DRAFTDATE FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum ", [req[2]]);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET DRAFTERNUM = :draftNum, MIDDLENUM = :middleNum, NOWNUM = :nowNum, STATUS = '02', DRAFTDATE = sysdate WHERE DOCNUM = :docNum ", req);
+            result = await conn.execute("SELECT DRAFTDATE FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum ", [req[3]]);
             return done(null, result.rows[0].DRAFTDATE);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2515,7 +2515,7 @@ exports.sendDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET DRAFTERNUM = :drafterNum, ICRNUM = :icrNum, NOWNUM = :nowNum WHERE DOCNUM = :docNum ", req);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET ICRNUM = :icrNum, NOWNUM = :nowNum WHERE DOCNUM = :docNum ", req);
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2538,7 +2538,7 @@ exports.searchApprovalDtlList = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute(` SELECT * FROM TBL_DOCUMENT_DTL WHERE DOCNUM = :docNum`, req);
+            result = await conn.execute(` SELECT * FROM TBL_DOCUMENT_DTL WHERE STATUS = 'Y' AND DOCNUM = :docNum`, req);
             if (result.rows.length > 0) {
                 return done(null, result.rows);
             } else {
@@ -2558,6 +2558,33 @@ exports.searchApprovalDtlList = function (req, done) {
     });
 };
 
+/*//결재리스트 (상세 이미지)
+exports.searchApprovalImageList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            result = await conn.execute( "SELECT * FROM TBL_OCR_FILE_DTL WHERE IMGID = "+"'"+ req[0]+"'");
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+*/
 //문서 기본정보 삭제
 exports.deleteDocument = function (req, done) {
     return new Promise(async function (resolve, reject) {
@@ -2894,7 +2921,7 @@ exports.selectApprovalDtl = function (req, done) {
 
 // req = [문서번호, 결재상태코드, 결제사원번호(현재유저), 결재일시, 결재의견, 다음결재사원번호(다음유저)];
 // 파라미터 중 없는 것들은 null로 작성, 순서 지킬 것!
-exports.approvalDtlProcess = function (req, done) {
+exports.approvalDtlProcess = function (req, token, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let result;
@@ -2965,7 +2992,7 @@ exports.approvalDtlProcess = function (req, done) {
                     '<?xml version="1.0" encoding="utf-8"?>' +
                     '<Root>' +
                     '<Parameters>' +
-                    '<Parameter id="gv_encryptToken" type="STRING">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1539564980zPy86400zAy23zEyP7D2Wpx2Bf0dkRRoplRJmZ0Q3Za7WHjeSKx78rg3x78rcDe0bGsQMsAlvwOn7rqK48NEQpA8pi2x7A0PVVN0NZg4x7As0RJFx79YbNw0MoHnIx7Aj7x797CB8bx7A0QYP68D763IdCx2FEWx79UXEIVT6TgScx7A64SUjXXf55fMVMbaUfQ2frENHx2BPtQf2A81Px79GGIt6dB5uQ1D8x7AWjAR9KuA5KfjGOgZjbSDbkqGnPGAx3Dx3DzKyF8x78ICfDirBJ4BDeVx78e5S1x7AaUSDYhrZlx79Wbl1x78FbugXOagNG0cfIx787hj2x78Hd33QDbx00x00x00x00x00zSSy00002479000zUURy1f9d134b0e195793zMyfsNjWrhSdZkx3Dz</Parameter>' +
+                    '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>' +
                     '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
                     '<Parameter id="lginIpAdr" type="STRING" />' +
                     '<Parameter id="userId" type="STRING">2011813</Parameter>' +

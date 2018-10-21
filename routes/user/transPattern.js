@@ -81,25 +81,22 @@ function convertedEntry(reqArr, done) {
             // remove characters , convert to - or + START
             pattern = /[^0-9\.]+/g;
             var isMinus;
-            var isPlus;
+            var isContrary;
             var units = sync.await(oracle.selectEntryMappingUnit(sync.defer()));
 
             for (var i in reqArr.data) {
                 isMinus = false;
-                isPlus = false;
+                isContrary = false;
                 var item = reqArr.data[i];
                 if (item.colLbl == 37 && pattern.test(item.text)) {
                     if (item.text.indexOf('(') != -1 && item.text.indexOf(')') != -1) {
                         isMinus = true;
-                    } else if (item.text.indexOf('CR') != -1 || item.text.indexOf('DR') != -1) {
+                    } else if (item.text.toUpperCase().indexOf('CR') != -1 || item.text.toUpperCase().indexOf('DR') != -1) {
                         for (var j in units) {
-                            if (units[i].COLNUM == item.entryLbl) {
-                                if ((item.text.indexOf('CR') != -1 && units[i].CREDIT == '-')
-                                    || (item.text.indexOf('DR') != -1 && units[i].DEBIT == '-')) {
-                                    isMinus = true;
-                                } else if ((item.text.indexOf('CR') != -1 && units[i].CREDIT == '+')
-                                    || (item.text.indexOf('DR') != -1 && units[i].DEBIT == '+')){
-                                    isPlus = true;
+                            if (units[j].COLNUM == item.entryLbl) {
+                                if ((item.text.toUpperCase().indexOf('CR') != -1 && units[j].CREDIT == '-')
+                                    || (item.text.toUpperCase().indexOf('DR') != -1 && units[j].DEBIT == '-')) {
+                                    isContrary = true;
                                 }
                             }
                         }
@@ -108,7 +105,14 @@ function convertedEntry(reqArr, done) {
                     if (item.text != String(intArr)) {
                         item.originText = item.text;
                         item.text = ((isMinus) ? '-' : '') + String(intArr);
-                        item.text = ((isPlus) ? '+' : '') + String(intArr);
+                        if (isContrary) {
+                            if (Number(item.text) > 0) {
+                                item.text = '-' + item.text;
+                            } else {
+                                item.text = item.text.replace(/-/gi, '');
+                            }
+                        }
+                        
                     }
                 } else {
                 }
