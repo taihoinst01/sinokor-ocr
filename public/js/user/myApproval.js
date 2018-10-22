@@ -327,6 +327,7 @@ var fn_search_dtl = function (seqNum, docNum) {
                 for (var i = 0; i < data.docData.length; i++) {
                      appendHtml += 
                      '<tr id="tr_dtl_' + data.docData[0].DOCNUM + '" name="tr_dtl" style="cursor:pointer">' +
+                     '<td>' + /*todo*/ + '</td> <!--계산서구분-->' +
                      '<td>' + data.docData[i].OGCOMPANYNAME + '</td>' +
                      '<td>' + data.docData[i].CTNM + '</td>' +
                      '<td>' + data.docData[i].UY + '</td>' +
