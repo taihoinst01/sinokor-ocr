@@ -129,10 +129,9 @@ router.post('/searchApprovalDtlList', function (req, res) {
 };*/
 
 // [POST] 문서 이미지 리스트 조회 
-/*router.post('/searchApprovalImageList', function (req, res) {
+router.post('/searchApprovalImageList', function (req, res) {
     var returnObj = {};
     var imgId = req.body.imgId;
-
     sync.fiber(function () {
         try {
             var result = sync.await(oracle.searchApprovalImageList([imgId], sync.defer()));
@@ -144,10 +143,10 @@ router.post('/searchApprovalDtlList', function (req, res) {
         }
     });
 });
+/* 기존소스
 var callbackApprovalImageList = function (rows, req, res) {
     if (req.isAuthenticated()) res.send(rows);
 };
-/* 기존소스
  * var fnSearchApprovalImageList = function (req, res) {
     var param = {
         imgId: req.body.imgId
@@ -160,7 +159,6 @@ var callbackApprovalImageList = function (rows, req, res) {
     console.log("img listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackApprovalImageList, req, res);
 };*/
-*/
 // [POST] 사용자 조회
 router.post('/selectUsers', function (req, res) {
     if (req.isAuthenticated()) fnSelectUsers(req, res);
