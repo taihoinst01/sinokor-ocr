@@ -160,7 +160,6 @@ var callbackApprovalImageList = function (rows, req, res) {
     console.log("img listQuery : " + listQuery);
     commonDB.reqQuery(listQuery, callbackApprovalImageList, req, res);
 };*/
-*/
 // [POST] 사용자 조회
 router.post('/selectUsers', function (req, res) {
     if (req.isAuthenticated()) fnSelectUsers(req, res);
