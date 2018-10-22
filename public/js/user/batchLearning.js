@@ -149,7 +149,7 @@ var buttonEvent = function () {
         if (docData && docData.DOCTYPE != 0) {
             modifyTextData();
         } else {
-            alert('There is no document form, I do not training.');
+            fn_alert('alert', 'There is no document form, I do not training.');
             return;
         }
         */
@@ -254,12 +254,12 @@ var fn_excelUpload = function () {
             console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
             if (data["code"] == "200") {
                 if (data["fileCnt"] > 0 || data["dataCnt"] > 0) {
-                    alert("엑셀 파일의 정답 데이터가 INSERT 되었습니다.");
+                    fn_alert('alert', "엑셀 파일의 정답 데이터가 INSERT 되었습니다.");
                 } else {
-                    alert("INSERT 할 파일이 없습니다.");
+                    fn_alert('alert', "INSERT 할 파일이 없습니다.");
                 }
             } else {
-                alert("엑셀 파일 업로드 중 오류가 발생하였습니다.");
+                fn_alert('alert', "엑셀 파일 업로드 중 오류가 발생하였습니다.");
             }
             $('#btn_excelUpload').removeClass('on');
         },
@@ -314,7 +314,7 @@ function fileUpload() {
                     console.log("fileName : " + JSON.stringify(fileName));
                     if (i === (totCount - 1)) {
                         lastYN = true;
-                        alert("등록이 완료되었습니다.");
+                        fn_alert('alert', "등록이 완료되었습니다.");
                         endProgressBar(progressId);
                     }
                     //insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
@@ -371,7 +371,7 @@ var insertBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
                 console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
                 endProgressBar();
                 if (lastYN) {
-                    //alert("파일 등록이 완료되었습니다.");
+                    //fn_alert('alert', "파일 등록이 완료되었습니다.");
                     searchBatchLearnDataList("LEARN_N");
                 }
             },
@@ -504,11 +504,11 @@ function processImage(fileInfo, fileName, lastYn, answerRows, fileToPage) {
             //execBatchLearningData(fileInfo, fileName, data.regions, lastYn); // goto STEP 3
         } else if (data.error) { //ocr 이외 에러이면
             endProgressBar(progressId);
-            alert(data.error);
+            fn_alert('alert', data.error);
         } else { // ocr 에러 이면
             insertCommError(data.code, 'ocr');
             endProgressBar(progressId);
-            alert(data.message);
+            fn_alert('alert', data.message);
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
     });
@@ -1593,8 +1593,8 @@ function fn_viewImageData(filepath, rowNum, imgId, obj) {
             $('.batch_pop_divBodyScroll').scrollTop(0);
 
         } else {
-            var deleteFlag = confirm("없는 파일입니다 삭제하시겠습니까?");
-            if (deleteFlag == true) {
+            fn_alert('confirm', "없는 파일입니다 삭제하시겠습니까?", function () {
+
                 var param = {
                     filepath: filepath,
                     imgId: imgId
@@ -1609,7 +1609,7 @@ function fn_viewImageData(filepath, rowNum, imgId, obj) {
                         progressId = showProgressBar();
                     },
                     success: function (data) {
-                        alert("삭제되었습니다.");
+                        fn_alert('alert', "삭제되었습니다.");
                         endProgressBar(progressId);
                         $(obj).closest('tr').remove();
                         $('.rowNum' + rowNum).remove();
@@ -1621,9 +1621,8 @@ function fn_viewImageData(filepath, rowNum, imgId, obj) {
                         console.log(err);
                     }
                 });
-            } else {
 
-            }
+            });
         }
     });
 
@@ -1661,7 +1660,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
             //console.log("/batchLearning/searchBatchLearnData result :");
             //console.log(data);           
             if (data.code == 400) {
-                alert(data.msg);
+                fn_alert('alert', data.msg);
                 return;
             }
 
@@ -1676,7 +1675,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
                 }
 
             } else {
-                alert("잘못된 요청입니다.");
+                fn_alert('alert', "잘못된 요청입니다.");
                 return;
             }
 
@@ -1705,7 +1704,7 @@ var fn_syncServerFile = function () {
             console.log("file count : " + responseText.fileInfo.length);
             // FILE INSERT
             if (isNull(responseText.fileInfo)) {
-                alert("신규 등록할 파일이 존재하지 않습니다.");
+                fn_alert('alert', "신규 등록할 파일이 존재하지 않습니다.");
             } else {
                 var insertPromise = new Promise(function (resolve, reject) {
                     var totCount = responseText.message.length;
@@ -1730,13 +1729,13 @@ var fn_syncServerFile = function () {
                         if (i == (totCount - 1)) lastYN = true;
                         //insertSyncBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);
                     }
-                    alert("백그라운드에서 파일을 처리중입니다.");
-                    //alert("완료");
+                    fn_alert('alert', "백그라운드에서 파일을 처리중입니다.");
+                    //fn_alert('alert', "완료");
                 }, function (err) {
-                    alert("파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + err);
+                    fn_alert('alert', "파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + err);
                 });
                 insertPromise.then().catch(function (e) {
-                    alert("파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + e);
+                    fn_alert('alert', "파일 업로드에 실패했습니다.\n관리자에게 문의해주세요." + e);
                     console.log(e);
                 });
             }
@@ -1789,7 +1788,7 @@ var insertSyncBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
                 console.log("SUCCESS insertBatchLearningBaseData : " + JSON.stringify(data));
                 endProgressBar(progressId);
                 if (lastYN) {
-                    alert("파일 등록이 완료되었습니다.");
+                    fn_alert('alert', "파일 등록이 완료되었습니다.");
                     searchBatchLearnDataList("LEARN_N");
                 }
             },
@@ -1830,7 +1829,7 @@ var fn_imageDelete = function () {
         });
     }
     if (chkSize > 0) {
-        if (confirm("삭제하시겠습니까?")) {
+        fn_alert('confirm', "삭제하시겠습니까?", function() {
             var param = { imgIdArray: imgIdArray };
             $.ajax({
                 url: '/batchLearning/deleteBatchLearningData',
@@ -1839,7 +1838,7 @@ var fn_imageDelete = function () {
                 data: JSON.stringify(param),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (responseText, statusText) {
-                    alert("삭제 되었습니다.");
+                    fn_alert('alert', "삭제 되었습니다.");
                     searchBatchLearnDataList(addCond);
                     $('#btn_imageDelete').removeClass('on');
                 },
@@ -1847,10 +1846,10 @@ var fn_imageDelete = function () {
                     console.log(err);
                 }
             });
-        }
+        })
     } else {
         $('#btn_imageDelete').removeClass('on');
-        alert("삭제할 파일이 선택되지 않았습니다.");
+        fn_alert('alert', "삭제할 파일이 선택되지 않았습니다.");
         return;
     }
 };
@@ -1876,13 +1875,13 @@ var fn_popBatchRun = function () {
                     imgIdArray.push($(this).val());
                 });
                 if (chkCnt == 0) {
-                    alert("학습할 데이터가 없습니다.");
+                    fn_alert('alert', "학습할 데이터가 없습니다.");
                     return;
                 } else {
                     searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
                 }
             } else {
-                //alert("Before Training 상태에서만 배치학습이 가능합니다.");
+                //fn_alert('alert', "Before Training 상태에서만 배치학습이 가능합니다.");
                 //return;
             }
             break;
@@ -1899,7 +1898,7 @@ var fn_popBatchRun = function () {
                     }
                 });
                 if (chkCnt == 0) {
-                    alert("선택된 학습이 없습니다.");
+                    fn_alert('alert', "선택된 학습이 없습니다.");
                     return;
                 } else {
                     //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
@@ -1916,7 +1915,7 @@ var fn_popBatchRun = function () {
                     }
                 });
                 if (chkCnt == 0) {
-                    alert("선택된 학습이 없습니다.");
+                    fn_alert('alert', "선택된 학습이 없습니다.");
                     return;
                 } else {
                     batchLearnTraining(imgIdArray, "LEARN_Y");
@@ -1924,7 +1923,7 @@ var fn_popBatchRun = function () {
             }
             break;
         case "2":        // 학습 범위 지정
-            alert("준비중 입니다.");
+            fn_alert('alert', "준비중 입니다.");
             break;
         default:
             break;
@@ -1951,13 +1950,13 @@ var fn_addTraining = function () {
         if (docType && (docType != 0 || docType != '')) {
             docTypeArray.push(docType);
         } else {
-            alert('document type is empty : ' + $(this).closest('tr').find('.fileNamePath').eq(0).text());
+            fn_alert('alert', 'document type is empty : ' + $(this).closest('tr').find('.fileNamePath').eq(0).text());
             hasNoCheck = true;
             return false;
         }      
     });
     if (chkCnt == 0) {
-        alert("선택된 학습이 없습니다.");
+        fn_alert('alert', "선택된 학습이 없습니다.");
         return false;
     } else if (hasNoCheck == false) {
         //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
@@ -1986,7 +1985,7 @@ var addBatchTraining = function (filePathArray, docTypeArray, imgIdArray) {
             $("#progressMsgTitle").html("processing learn data...");
             console.log(data);
             if (data.code == 200) {
-                alert(data.msg);
+                fn_alert('alert', data.msg);
             }
             searchBatchLearnDataList(addCond);
         },
@@ -2013,7 +2012,7 @@ var fn_uiTraining = function () {
     let chkBefore = $("#tab_before").closest("li").hasClass("on");
 
     if (chkBefore) {
-        alert("UI학습은 학습이 완료된 파일만 가능합니다.");
+        fn_alert('alert', "UI학습은 학습이 완료된 파일만 가능합니다.");
         return;
     } else {
         $("input[name=listCheck_after]").each(function (index, entry) {
@@ -2024,10 +2023,10 @@ var fn_uiTraining = function () {
         });
 
         if (chkCnt == 0) {
-            alert("선택된 파일이 없습니다.");
+            fn_alert('alert', "선택된 파일이 없습니다.");
             return;
         } else if (chkCnt > 1) {
-            alert("한번에 하나의 파일만 UI학습이 가능합니다.");
+            fn_alert('alert', "한번에 하나의 파일만 UI학습이 가능합니다.");
             return;
         } else {
             imgIdArray.push(imgId);
@@ -2455,7 +2454,7 @@ function modifyTextData() {
             progressId = showProgressBar();
         },
         success: function (data) {
-            alert("success training");
+            fn_alert('alert', "success training");
             endProgressBar(progressId);
         },
         error: function (err) {
@@ -2560,7 +2559,7 @@ var uiTrainingBtn = function () {
         success: function (data) {
             if (data.code == 200) {
                 //addProgressBar(81, 100);
-                alert(data.message);
+                fn_alert('alert', data.message);
                 //popupEvent.batchClosePopup('retrain');
             }
         },
@@ -2636,7 +2635,7 @@ function insertColMapping(data) {
         success: function (res) {
             console.log(res);
             //addProgressBar(81, 100);
-            alert("success training");
+            fn_alert('alert', "success training");
             //callback(data);
         },
         error: function (err) {
@@ -2790,7 +2789,7 @@ function popUpSearchDocCategory() {
                 }
             });
         } else {
-            alert('Please enter your search keyword');
+            fn_alert('alert', 'Please enter your search keyword');
         }
     });
 }
@@ -2803,7 +2802,7 @@ function popUpRunEvent() {
         var chkValue = $('input:radio[name=radio_batch]:checked').val();
 
         if ((chkValue == '1' && $('#orgDocName').val() == '') || (chkValue == '2' && $('#newDocName').val() == '')) {
-            alert('The document name is missing');
+            fn_alert('alert', 'The document name is missing');
             return false;
         }
 
@@ -3065,7 +3064,7 @@ function processImage_TEST(fileName) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
-        alert(errorString);
+        fn_alert('alert', errorString);
     });
 };
 

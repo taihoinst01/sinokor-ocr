@@ -246,7 +246,7 @@ function ocrApi() {
             //analysisImg();
 
         } else {
-            alert('분석할 문서를 선택해주세요.');
+            fn_alert('alert', '분석할 문서를 선택해주세요.');
         }
     });
 }
@@ -317,7 +317,7 @@ function processImage(fileName) {
         var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
         errorString += (jqXHR.responseText === "") ? "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
             jQuery.parseJSON(jqXHR.responseText).message : jQuery.parseJSON(jqXHR.responseText).error.message;
-        alert(errorString);
+        fn_alert('alert', errorString);
     });
 };
 
@@ -448,14 +448,14 @@ function validationCheck(value) {
 function excelSaveEvent() {
     $('#sucessExcelBtn').click(function () {
         if ($('.t01').text() == '0') {
-            alert('확인된 양식의 문서가 없습니다.');
+            fn_alert('alert', '확인된 양식의 문서가 없습니다.');
         } else {
             window.location = '/ocrFormAnalysis/downloadExcel?fileName=' + $('#successExcelName').val();
         }
     });
     $('#failExcelBtn').click(function () {
         if ($('.t04').text() == '0') {
-            alert('미확인된 양식의 문서가 없습니다.');
+            fn_alert('alert', '미확인된 양식의 문서가 없습니다.');
         } else {
             window.location = '/ocrFormAnalysis/downloadExcel?fileName=' + $('#failExcelName').val();
         }
@@ -531,7 +531,7 @@ function checkDocBtn() {
     $('#checkDocBtn').click(function () {
         currentPage = 1;
         if (checkCount == 0) {
-            alert("양식 분석 실행 후 클릭해주세요.");
+            fn_alert('alert', "양식 분석 실행 후 클릭해주세요.");
             return false;
         } else if (checkCount > 1) {
             $('#rightPagingBtn').attr('disabled', false);
@@ -647,7 +647,7 @@ function uploadFile() {
             });
         } else {
             $(this).val('');
-            alert('파일 형식이 올바르지 않습니다.');
+            fn_alert('alert', '파일 형식이 올바르지 않습니다.');
         }
     });
 
@@ -682,7 +682,7 @@ function deleteFile() {
                 }
             });
         } else {
-            alert('삭제할 이미지를 선택해주세요.');
+            fn_alert('alert', '삭제할 이미지를 선택해주세요.');
         }
     });
 }
@@ -693,7 +693,7 @@ function modifyOcrdata() {
         var modifyData = [];
 
         if ($('#textResultTbl > tbody > tr').length == 0) {
-            alert('수정 사항이 없습니다.');
+            fn_alert('alert', '수정 사항이 없습니다.');
             return false;
         }
 
@@ -709,6 +709,6 @@ function modifyOcrdata() {
             modifyData.push(item);
         }
         ocrdata[currentPage - 1].lineText = modifyData;
-        alert('수정 완료');
+        fn_alert('alert', '수정 완료');
     });
 }

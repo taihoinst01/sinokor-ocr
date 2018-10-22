@@ -207,20 +207,20 @@ var fn_uploadFileEvent = function () {
         var files = e.originalEvent.dataTransfer.files;
         if (files != null) {
             if (files.length < 1) {
-                alert("폴더 업로드 불가");
+                fn_alert('alert', "폴더 업로드 불가");
                 return;
             }
 
             F_FileMultiUpload(files, dropZone);
 
         } else {
-            alert("ERROR");
+            fn_alert('alert', "ERROR");
         }
     });
     
     // 파일 멀티 업로드
     function F_FileMultiUpload(files, obj) {
-        if (confirm(files.length + "개의 파일을 업로드 하시겠습니까?")) {
+        fn_alert('confirm', files.length + "개의 파일을 업로드 하시겠습니까?", function () {
             initGlobalVariable();   // 전역변수 초기화
             initForm(1);             // 폼 초기화
             var data = new FormData();
@@ -263,7 +263,7 @@ var fn_uploadFileEvent = function () {
                     endProgressBar(progressId);
                 }
             });
-        }
+        });
     }
     
 };
@@ -641,7 +641,7 @@ function popUpRunEvent() {
         var chkValue = $('input:radio[name=radio_batch]:checked').val();
 
         if ((chkValue == '1' && $('#orgDocName').val() == '') || (chkValue == '2' && $('#newDocName').val() == '')) {
-            alert('The document name is missing');
+            fn_alert('alert', 'The document name is missing');
             return false;
         }
 
@@ -764,7 +764,7 @@ function popUpSearchDocCategory() {
                 }
             });
         } else {
-            alert('Please enter your search keyword');
+            fn_alert('alert', 'Please enter your search keyword');
         }
     });
 }
@@ -788,7 +788,7 @@ function popUpInsertDocCategory() {
                         $('#docName').text(data.docCategory[0].DOCNAME);
                         $('#layer1').fadeOut();
                     } else {
-                        alert(data.message);
+                        fn_alert('alert', data.message);
                     }
                 },
                 error: function (err) {
@@ -905,7 +905,7 @@ function modifyTextData() {
 
                     if (data.code == 200) {
                         endProgressBar(progressId);
-                        //alert("success training");
+                        //fn_alert('alert', "success training");
 
                         fn_search_dtl($("input[name=popupDocNum]").val());
                     }
@@ -1409,7 +1409,7 @@ var ocrResult = function () {
     //행 삭제
     $('#deleteRow').click(function () {
 
-        if (confirm("행 삭제를 하시겠습니까?")) {
+        fn_alert('confirm', "행 삭제를 하시겠습니까?", function () {
 
             $('input[name=dtl_chk]').each(function () {
                 if ($(this).is(':checked')) {
@@ -1418,7 +1418,7 @@ var ocrResult = function () {
             });
 
             $('#deleteRow').prop('disabled', true);
-        }
+        });
     });
 
     //체크박스 여부에 따른 행 삭제 버튼 활성화/비활성화
@@ -1514,11 +1514,11 @@ var fn_processDtlImage = function (fileDtlInfo) {
             oriOcrData.push({ fileName: fileName, data: JSON.stringify(data) });
         } else if (data.error) { //ocr 이외 에러이면
             endProgressBar();
-            alert(data.error);
+            fn_alert('alert', data.error);
         } else { // ocr 에러 이면
             insertCommError(data.code, 'ocr');
             endProgressBar();
-            alert(data.message);
+            fn_alert('alert', data.message);
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
     });
@@ -1552,7 +1552,7 @@ function executeML(totData) {
             console.log(data);
             if (data.column) searchDBColumnsCount++;
             if (data.message) {
-                alert(message);
+                fn_alert('alert', message);
             } else {
                 //console.log(data);
                 lineText.push(data);
@@ -1892,17 +1892,17 @@ function fn_ContractNumExtraction() {
     }
 
     if (cdnNm.length == 0) {
-        alert("출재사명이 없습니다.");
+        fn_alert('alert', "출재사명이 없습니다.");
         return;
     }
 
     if (ctNm.length == 0) {
-        alert("계약명이 없습니다.");
+        fn_alert('alert', "계약명이 없습니다.");
         return;
     }
 
     if (ttyYy.length == 0) {
-        alert("UY가 없습니다.");
+        fn_alert('alert', "UY가 없습니다.");
         return;
     }
 
@@ -2431,7 +2431,7 @@ var fn_docEvent = function () {
             var managerChk = true;
             $('input[name="base_chk"]:checked').each(function () {
                 if ($('#userId').val() != $(this).closest('tr').children().eq(3).text() && nvl($("#adminApproval").val() == 'N' ) ) {
-                    alert("문서 담당자가 아닙니다. 다시 선택해주세요.");
+                    fn_alert('alert', "문서 담당자가 아닙니다. 다시 선택해주세요.");
                     managerChk = false;
                     $('input[name="base_chk"]:checked').parent().removeClass('ez-checked');
                     $('input[name="base_chk"]:checked').prop('checked', false);
@@ -2444,7 +2444,7 @@ var fn_docEvent = function () {
 
             if (managerChk == false) return;
 
-            if (confirm("삭제하시겠습니까?")) {
+            fn_alert('confirm', "삭제하시겠습니까?", function () {
 
                 var rowData = new Array();
                 var tdArr = new Array();
@@ -2480,16 +2480,16 @@ var fn_docEvent = function () {
                         }
                         var totCnt = $("input[name = base_chk]").length;
                         $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt) + '건');
-                        alert(data.docData + " 건의 문서가 삭제되었습니다.");
-                        
+                        fn_alert('alert', data.docData + " 건의 문서가 삭제되었습니다.");
+
                     },
                     error: function (err) {
                         console.log(err);
                     }
                 });
-            }
+            });
         } else {
-            alert('문서를 선택하세요');
+            fn_alert('alert', '문서를 선택하세요');
         }
     });
 
@@ -2504,7 +2504,7 @@ var fn_docEvent = function () {
                     userId = $(this).closest('tr').children().eq(3).text();
                 }
                 if (userId != $(this).closest('tr').children().eq(3).text() && nvl($("#adminApproval").val() == 'N' )) {
-                    alert("문서 담당자가 아닙니다. 다시 선택해주세요.");
+                    fn_alert('alert', "문서 담당자가 아닙니다. 다시 선택해주세요.");
                     managerChk = false;
                     $('input[name="base_chk"]:checked').parent().removeClass('ez-checked');
                     $('input[name="base_chk"]:checked').prop('checked', false);
@@ -2518,23 +2518,23 @@ var fn_docEvent = function () {
             if (managerChk == false) return;
 
             if ($('#icrApproval').val() == 'Y') {
-                    if (confirm('반려 하시겠습니까?')) {
-                        var docNumArr = [];
-                        $('input[name="base_chk"]:checked').each(function (i, e) {
-                            if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
-                                docNumArr.push($(e).val());
-                            }
-                        });
-                        if (docNumArr.length > 0) {
-                            refuseDoc('icrApproval', docNumArr);
+                fn_alert('confirm', '반려 하시겠습니까?', function () {
+                    var docNumArr = [];
+                    $('input[name="base_chk"]:checked').each(function (i, e) {
+                        if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
+                            docNumArr.push($(e).val());
                         }
+                    });
+                    if (docNumArr.length > 0) {
+                        refuseDoc('icrApproval', docNumArr);
                     }
+                });
            
             } else if ($('#scanApproval').val() == 'Y') {                       
                 layer_open('layer1');            
             }                  
         } else {
-            alert('문서를 선택하세요');
+            fn_alert('alert', '문서를 선택하세요');
         }
     });
 
@@ -2574,7 +2574,7 @@ var fn_docEvent = function () {
                         $('#searchManagerResult').append(appendHtml);
                     }
                 } else {
-                    alert(data.error);
+                    fn_alert('alert', data.error);
                 }
             },
             error: function (err) {
@@ -2633,7 +2633,7 @@ var fn_docEvent = function () {
                         userChoiceTdArr.push(userId);
                 });
 
-                if (fn_alert('confirm', userChoiceTdArr[0] + "를 선택하셨습니다. 결제를 진행하시겠습니까?", function () {
+                fn_alert('confirm', userChoiceTdArr[0] + "를 선택하셨습니다. 결제를 진행하시겠습니까?", function () {
                     $.ajax({
                         url: '/invoiceRegistration/sendDocument',
                         type: 'post',
@@ -2644,7 +2644,7 @@ var fn_docEvent = function () {
                         }),
                         contentType: 'application/json; charset=UTF-8',
                         success: function (data) {
-                            alert(data.docData + "건의 문서가 전달 되었습니다.");
+                            fn_alert('alert', data.docData + "건의 문서가 전달 되었습니다.");
                             $('#layer1').fadeOut();
                             initForm(2);
                             var totCnt = $("input[name = base_chk]").length;
@@ -2657,8 +2657,8 @@ var fn_docEvent = function () {
                             console.log(err);
                         }
                     });
-                })) {
-                }
+                }); 
+                
                 
             }
             
@@ -2739,7 +2739,7 @@ var fn_docEvent = function () {
 
                 for (var i in mlExportRowData) {
                     if (mlExportRowData[i][0] == "Y" && (mlExportRowData[i][4] == '' || mlExportRowData[i][4] == null)) {
-                        alert("계약번호를 확인 할수 없습니다.");
+                        fn_alert('alert', "계약번호를 확인 할수 없습니다.");
                         return;
                     }
 
@@ -2762,7 +2762,7 @@ var fn_docEvent = function () {
                     }),
                     contentType: 'application/json; charset=UTF-8',
                     success: function (data) {
-                        if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
+                        fn_alert('confirm', data.docData + "건의 문서가 전달 되었습니다.", function () {
                             $('#layer1').fadeOut();
                             var totCnt = $("input[name = base_chk]");
                             $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + ' 건');
@@ -2770,7 +2770,7 @@ var fn_docEvent = function () {
                                 deleteTr[i].remove();
                             }
                             $("#tbody_dtlList").empty();
-                        }
+                        });
                     },
                     error: function (err) {
                         console.log(err);
@@ -2798,10 +2798,10 @@ var fn_docEvent = function () {
             if (isCheckboxYn) {
                 layer_open('layer1');
             } else {
-                alert("전달할 문서를 선택하세요.");
+                fn_alert('alert', "전달할 문서를 선택하세요.");
             }
         } else {
-            alert("전달/결제상신에 대한 권한이 없습니다.");
+            fn_alert('alert', "전달/결제상신에 대한 권한이 없습니다.");
         }        
     });
 
@@ -2821,7 +2821,7 @@ var refuseDoc = function (refuseType, docNumArr) {
                 $('#documentManager').val('');
                 $('#btn_search').click();
             } else {
-                alert(data.message);
+                fn_alert('alert', data.message);
             }
         },
         error: function (err) {

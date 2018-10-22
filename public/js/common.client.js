@@ -314,10 +314,15 @@ var fn_alert = function ( type, contents, callback ) {
     layer_open('layer_alert');
 
     // confirm 확인버튼
-    $('#btn_layer_alert_submit').on('click', function () {
+    $('#btn_layer_alert_submit').click('click', function () {
         $('#layer_alert').fadeOut();
+        $('#btn_layer_alert_submit').unbind();
         if (type == 'confirm') {
             callback();
         }
     });
+}
+
+function submitConfirm() {
+
 }

@@ -6316,9 +6316,10 @@ input:disabled {
 #layer_alert {
     z-index: 2000 !important;
 }
-#layer_alert .pop_layer {
-    z-index: 2000 !important;
-}
+    #layer_alert .pop_layer {
+        z-index: 2000 !important;
+        top: 20% !important;
+    }
 #layer_alert .bg {
     z-index: 200 !important;
 }
