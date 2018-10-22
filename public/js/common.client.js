@@ -300,7 +300,7 @@ $(function () {
 /**
  * alert 팝업
  *  {'alert', '내용'}
- *  {'confirm', '내용'}
+ *  {'confirm', '내용', 콜백함수}
  * */
 var fn_alert = function ( type, contents, callback ) {
 
