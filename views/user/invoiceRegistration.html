@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
-    <title alt="계산서 등록">KoreanRe OCR Service - 계산서 등록</title>
+    <title>ICR</title>
     <%include  ../common/commonLib.html%>
 
     <!-- 문서 조회 학습 전용 css -->
@@ -426,53 +426,53 @@
                                             </colgroup>
                                             <tbody id="tbody_dtlList">
                                                 <!--
-                                                <tr>
-                                                    <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                                    <td>ICR2018071000000123</td>
-                                                    <td>27</td>
-                                                    <td>201807</td>
-                                                    <td>리키타츠너</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>ICR2018071000000123</td>
-                                                    <td>27</td>
-                                                    <td>201807</td>
-                                                    <td>리키타츠너</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>ICR2018071000000123</td>
-                                                    <td>27</td>
-                                                    <td>201807</td>
-                                                    <td>리키타츠너</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>ICR2018071000000123</td>
-                                                    <td>27</td>
-                                                    <td>201807</td>
-                                                    <td>리키타츠너</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>ICR2018071000000123</td>
-                                                    <td>27</td>
-                                                    <td>201807</td>
-                                                    <td>리키타츠너</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                    <td>이라르</td>
-                                                </tr>
-                                                -->
+                                <tr>
+                                    <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="sta01" class="sta00 stck_tr" name="st_ck01" /></div></th>
+                                    <td>ICR2018071000000123</td>
+                                    <td>27</td>
+                                    <td>201807</td>
+                                    <td>리키타츠너</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>ICR2018071000000123</td>
+                                    <td>27</td>
+                                    <td>201807</td>
+                                    <td>리키타츠너</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>ICR2018071000000123</td>
+                                    <td>27</td>
+                                    <td>201807</td>
+                                    <td>리키타츠너</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>ICR2018071000000123</td>
+                                    <td>27</td>
+                                    <td>201807</td>
+                                    <td>리키타츠너</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>ICR2018071000000123</td>
+                                    <td>27</td>
+                                    <td>201807</td>
+                                    <td>리키타츠너</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                    <td>이라르</td>
+                                </tr>
+                                -->
                                             </tbody>
                                         </table>
                                     </div>
@@ -481,9 +481,11 @@
                         </tr>
                     </table>
                     <!-- 버튼 영역 -->
-                    <div class="fr mt10">
-                        <button type="button" id="deleteRow" class="button_st4" disabled>행 삭제</button>
-                        <button type="button" id="addRow" class="button_st2">행 추가</button>
+                    <div class="mt10 fl">
+                        <button type="button" id="deleteRow" class="btn_small" disabled>행 삭제</button>
+                        <button type="button" id="addRow" class="btn_small">행 추가</button>
+                    </div>
+                    <div class="mt10 fr">
                         <button type="button" id="sendApprovalBtn" class="button_st2 btnK01">전달/결재상신</button>
                         <button type="button" id="reTrainBtn" class="button_st2 btnK01">재학습</button>
                         <button type="button" id="ctnExtractionBtn" class="button_st1 btnK01">계약번호 추출</button>

@@ -118,6 +118,20 @@ function getNowDate(separator) {
         leadingZeros(d.getMonth() + 1, 2) + separator +
         leadingZeros(d.getDate(), 2);
 }
+
+
+/**
+ * getNowYearMonth
+ * 현재일자
+ * @param separator       구분자
+ * @returns date(yyyymm)    yyyy + 구분자 + mm + 구분자 + dd
+ */
+function getNowYearMonth() {
+    var d = new Date();
+    return leadingZeros(d.getFullYear(), 4) + 
+        leadingZeros(d.getMonth() + 1, 2)
+}
+
 /**
  * getNowTime
  * 현재시각
@@ -324,6 +338,3 @@ var fn_alert = function ( type, contents, callback ) {
     });
 }
 
-function submitConfirm() {
-
-}

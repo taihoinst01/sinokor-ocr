@@ -1472,7 +1472,7 @@ var fn_processBaseImage = function (fileInfo) {
                                 '<td></td>' +
                                 '<td></td>' +
                                 '<td></td>' +
-                                '<td></td>' +
+                                '<td class="td_dbclick">' + getNowYearMonth()+ '</td>' +
                                 '<td></td>' +
                             '</tr>';
                 }
@@ -1779,6 +1779,7 @@ function fn_processFinish(mlData, imgId) {
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
         '<td><input type="checkbox" value="' + imgId + '" name="dtl_chk" /></td>' +
+        '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
         '<td>' + makeMLSelect(mlData, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(mlData, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(mlData, 2, null) + '</td> <!--UY-->' +
@@ -1923,11 +1924,11 @@ function fn_ContractNumExtraction() {
     for (var l = 0; l < cdnNm.length; l++) {
         for (var j = 0; j < ctNm.length; j++) {
             for (var k = 0; k < ttyYy.length; k++) {
-
                 $.ajax({
                     url: '/wF_WorkflowProc/',
                     type: 'post',
                     datatype: 'json',
+                    async: false,
                     data: JSON.stringify({ cdnNm: cdnNm[l], ctNm: ctNm[j], ttyYy: ttyYy[k] }),
                     contentType: 'application/json; charset=UTF-8',
                     beforeSend: function () {
@@ -1935,6 +1936,7 @@ function fn_ContractNumExtraction() {
                         progressId = showProgressBar();
                     },
                     success: function (data) {
+
                         var dtlHtml = '';
                         for (var i in data.data) {
                             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
@@ -1987,7 +1989,13 @@ function fn_ContractNumExtraction() {
                         $("#tbody_dtlList input[type=checkbox]").ezMark();
                         $("#div_dtl").css("display", "block");
                         endProgressBar(progressId);
-                        
+
+                        if (l == cdnNm.length -1 && k == ttyYy.length - 1) {
+                            if ($("#tbody_dtlList").length == 1) {
+                                fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
+                            }
+                        }
+
                     },
                     error: function (err) {
                         console.log(err);
@@ -2892,3 +2900,27 @@ var refuseDoc = function (refuseType, docNumArr) {
         }
     });
 };
+
+// 마감년월 더블클릭시 수정
+$(document).on('dblclick', '.td_dbclick', function (e) {
+    var orignalText = $(this).text() == '' ? '' : $(this).text();
+    var appendIptHtml = '<input type="text" name="ipt_nowYearMonth" value="' + orignalText + '">';
+    $(this).empty().append(appendIptHtml);
+    $('input[name=ipt_nowYearMonth]').focus();
+});
+
+// 마감년월 수정 후 값 체크 yyyymm
+$(document).on('focusout', 'input[name=ipt_nowYearMonth]', function () {
+    var data = $(this).val();;
+    var regex = /^[0-9]{6}$/g;
+
+    if (regex.test(data)) {
+        num = num.replace(/,/g, "");
+        return isNaN(num) ? false : true;
+    } else {
+        fn_alert('alert', '올바른형식이 아닙니다.<br> yyyymm 숫자형식으로 입력해주세요.');
+        $(this).val('').focus();
+        return false
+    }
+
+});
