@@ -112,11 +112,20 @@ var fn_clickEvent = function () {
         var numArr = id.replace("tr_base_", "");
         var seqNum = numArr.split("-")[0];
         var docNum = numArr.split("-")[1];
-
-        $("input:checkbox[id='chk_document_" + docNum + "']").parent().addClass('ez-checked');
-        $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", true);
+        
+        //체크여부확인
+        var chkResult1 = document.getElementById("chk_document_" + docNum);
+        var chkResult2 = chkResult1.getAttribute("checked")
+        if(chkResult2 == null ) {
+            $("input:checkbox[id='chk_document_" + docNum + "']").parent().addClass('ez-checked');
+            $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", true);
+        }else {
+            $("input:checkbox[id='chk_document_" + docNum + "']").parent().removeClass('ez-checked');
+            $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", false);
+        }
 
         fn_search_dtl(seqNum, docNum); // document_dtl 조회
+        $("td[name='td_base']").unbind();
     });
 
    // Document DTL 클릭 시 이미지 조회
@@ -124,6 +133,7 @@ var fn_clickEvent = function () {
         var id = $(this).attr("id");
         var imgId = id.replace("tr_dtl_", "");
         fn_search_image(imgId); // image 조회
+        $("td[name='td_base']").unbind();
     });
 };
 
@@ -326,47 +336,47 @@ var fn_search_dtl = function (seqNum, docNum) {
             if (data.docData.length > 0) {
                 for (var i = 0; i < data.docData.length; i++) {
                      appendHtml += 
-                     '<tr id="tr_dtl_' + data.docData[0].DOCNUM + '" name="tr_dtl" style="cursor:pointer">' +
+                     '<tr id="tr_dtl_' + data.docData[i].DOCNUM + '" name="tr_dtl" style="cursor:pointer">' +
                      '<td>' + /*todo*/ + '</td> <!--계산서구분-->' +
                      '<td>' + data.docData[i].OGCOMPANYNAME + '</td>' +
                      '<td>' + data.docData[i].CTNM + '</td>' +
                      '<td>' + data.docData[i].UY + '</td>' +
-                     '<td>' + data.docData[i].CTNO + '</td>' +
-                     '<td>' + data.docData[i].PAGEFROM + '</td>' +
-                     '<td>' + data.docData[i].PAGETO + '</td>' +
-                     '<td>' + data.docData[i].CURCD + '</td>' +
-                     '<td>' + data.docData[i].CURUNIT + '</td>' +
-                     '<td>' + data.docData[i].PAIDPERCENT + '</td>' +
-                     '<td>' + data.docData[i].PAIDSHARE + '</td>' +
-                     '<td>' + data.docData[i].OSLPERCENT + '</td>' +
-                     '<td>' + data.docData[i].OSLSHARE + '</td>' +
-                     '<td>' + data.docData[i].PM + '</td>' +
-                     '<td>' + data.docData[i].PMPFEND + '</td>' +
-                     '<td>' + data.docData[i].PMPFWOS + '</td>' +
-                     '<td>' + data.docData[i].XOLPM + '</td>' +
-                     '<td>' + data.docData[i].RETURNPM + '</td>' +
-                     '<td>' + data.docData[i].CN + '</td>' +
-                     '<td>' + data.docData[i].PROFITCN + '</td>' +
-                     '<td>' + data.docData[i].BROKERAGE + '</td>' +
-                     '<td>' + data.docData[i].TAX + '</td>' +
-                     '<td>' + data.docData[i].OVERRIDINGCOM + '</td>' +
-                     '<td>' + data.docData[i].CHARGE + '</td>' +
-                     '<td>' + data.docData[i].PMRESERVERTD + '</td>' +
-                     '<td>' + data.docData[i].PFPMRESERVERTD + '</td>' +
-                     '<td>' + data.docData[i].PMRESERVERLD + '</td>' +
-                     '<td>' + data.docData[i].PFPMRESERVERLD + '</td>' +
-                     '<td>' + data.docData[i].CLAIM + '</td>' +
-                     '<td>' + data.docData[i].LOSSRECOVERY + '</td>' +
-                     '<td>' + data.docData[i].CASHLOSS + '</td>' +
-                     '<td>' + data.docData[i].CASHLOSSRD + '</td>' +
-                     '<td>' + data.docData[i].LOSSRR + '</td>' +
-                     '<td>' + data.docData[i].LOSSRR2 + '</td>' +
-                     '<td>' + data.docData[i].LOSSPFENT + '</td>' +
-                     '<td>' + data.docData[i].LOSSPFWOA + '</td>' +
-                     '<td>' + data.docData[i].INTEREST + '</td>' +
-                     '<td>' + data.docData[i].TAXON + '</td>' +
-                     '<td>' + data.docData[i].MISCELLANEOUS + '</td>' +
-                     '<td>' + data.docData[i].CSCOSARFRNCNNT2 + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CTNO,'') + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PAGEFROM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PAGETO, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CURCD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CURUNIT, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PAIDPERCENT, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PAIDSHARE, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].OSLPERCENT, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].OSLSHARE, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PMPFEND, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PMPFWOS, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].XOLPM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].RETURNPM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CN, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PROFITCN, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].BROKERAGE, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].TAX, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].OVERRIDINGCOM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CHARGE, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PMRESERVERTD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PFPMRESERVERTD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PMRESERVERLD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PFPMRESERVERLD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CLAIM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].LOSSRECOVERY, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CASHLOSS, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CASHLOSSRD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].LOSSRR, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].LOSSRR2, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].LOSSPFENT, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].LOSSPFWOA, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].INTEREST, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].TAXON, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].MISCELLANEOUS, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CSCOSARFRNCNNT2, 0) + '</td>' +
                     '</tr>';    
                 }               
             } else {

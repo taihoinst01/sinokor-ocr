@@ -48,7 +48,8 @@ var fnSearchApprovalList = function (req, res) {
         searchStartDate: commonUtil.nvl(req.body.searchStartDate),
         searchEndDate: commonUtil.nvl(req.body.searchEndDate),
         approvalState: commonUtil.nvl(req.body.approvalState),
-        level: commonUtil.nvl(req.body.level)
+        level: commonUtil.nvl(req.body.level),
+        adminApproval: commonUtil.nvl(req.body.adminApproval)
     };
     if (param["level"] == 'adminApproval') {
         //관리자가 조회할때
@@ -70,7 +71,6 @@ var fnSearchApprovalList = function (req, res) {
             condQuery += ` AND STATUS IN ${param["approvalState"]}`
         } 
     }
- 
 
     var approvalListQuery = "SELECT * FROM TBL_APPROVAL_MASTER WHERE 1=1 ";
     var listQuery = approvalListQuery + condQuery + orderQuery;

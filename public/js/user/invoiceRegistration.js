@@ -1125,8 +1125,8 @@ var fn_clickEvent = function () {//jmh
         var numArr = id.replace("tr_base_", "");
         var seqNum = numArr.split("-")[0];
         var docNum = numArr.split("-")[1];
+
         $("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked');   
-        $("input:checkbox[id='base_chk_" + docNum+"']").attr("checked", true);
 
         fn_search_dtl(docNum); // document_dtl 조회
     });
