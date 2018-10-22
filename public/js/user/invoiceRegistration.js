@@ -1363,8 +1363,8 @@ var ocrResult = function () {
 
         var appendRowHtml = '<tr><td><input type="checkbox" value="" name="dtl_chk"></td>' +
             '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
-            '<td><input type="text" name=""></td> <!--출재사명-->' +
-            '<td><input type="text" name=""></td> <!--계약명-->' +
+            '<td><input type="text" name="moveFocus" onkeydown=moveFocus("test1")></td> <!--출재사명-->' +
+            '<td><input type="text" name="" onkeydown=moveFocus("test2")></td> <!--계약명-->' +
             '<td><input type="text" name=""></td> <!--UY-->' +
             '<td><input type="text" name=""></td> <!--계약번호-->' +
             '<td><input type="text" name=""></td> <!--페이지번호 FROM-->' +
