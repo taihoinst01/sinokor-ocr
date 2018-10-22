@@ -1362,6 +1362,7 @@ var ocrResult = function () {
     $('#addRow').click(function () {
 
         var appendRowHtml = '<tr><td><input type="checkbox" value="" name="dtl_chk"></td>' +
+            '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
             '<td><input type="text" name=""></td> <!--출재사명-->' +
             '<td><input type="text" name=""></td> <!--계약명-->' +
             '<td><input type="text" name=""></td> <!--UY-->' +
@@ -1770,6 +1771,7 @@ function fn_processFinish(data, fileDtlInfo) {
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
         '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
+        '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
         '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
@@ -1928,6 +1930,7 @@ function fn_ContractNumExtraction() {
                             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
                             dtlHtml += '<tr>' +
                                 '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
+                                '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
                                 '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
                                 '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
                                 '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
