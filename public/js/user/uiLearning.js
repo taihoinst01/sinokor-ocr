@@ -64,7 +64,7 @@ function popUpRunEvent() {
         var chkValue = $('input:radio[name=radio_batch]:checked').val();
 
         if ((chkValue == '1' && $('#orgDocName').val() == '') || (chkValue == '2' && $('#newDocName').val() == '')) {
-            alert('The document name is missing');
+            fn_alert('alert', 'The document name is missing');
             return false;
         }
 
@@ -175,7 +175,7 @@ function popUpSearchDocCategory() {
                 }
             });
         } else {
-            alert('Please enter your search keyword');
+            fn_alert('alert', 'Please enter your search keyword');
         }
     });
 }
@@ -199,7 +199,7 @@ function popUpInsertDocCategory() {
                         $('#docName').text(data.docCategory[0].DOCNAME);
                         $('#layer1').fadeOut();
                     } else {
-                        alert(data.message);
+                        fn_alert('alert', data.message);
                     }
                 },
                 error: function (err) {
@@ -292,20 +292,20 @@ function uploadFileEvent() {
         var files = e.originalEvent.dataTransfer.files;
         if (files != null) {
             if (files.length > 1) {
-                alert("2개 이상 업로드 불가합니다");
+                fn_alert('alert', "2개 이상 업로드 불가합니다");
                 return;
             }
 
             F_FileMultiUpload(files, dropZone);
 
         } else {
-            alert("ERROR");
+            fn_alert('alert', "ERROR");
         }
     });
 
     // 파일 멀티 업로드
     function F_FileMultiUpload(files, obj) {
-        if (confirm(files[0].name + " 파일을 업로드 하시겠습니까?")) {
+        fn_alert('confirm', files[0].name + " 파일을 업로드 하시겠습니까?", function () {
             var data = new FormData();
             for (var i = 0; i < files.length; i++) {
                 data.append('file', files[i]);
@@ -353,7 +353,7 @@ function uploadFileEvent() {
                     endProgressBar(progressId);
                 }
             });
-        }
+        });
     }
 }
 
@@ -383,13 +383,13 @@ function processImage(fileInfo) {
             appendOcrData(fileInfo, data);
         } else if (data.error) { //ocr 이외 에러이면
             //endProgressBar();
-            //alert(data.error);
+            //fn_alert('alert', data.error);
             //location.href = '/uiLearning';
         } else { // ocr 에러 이면
             insertCommError(data.code, 'ocr');
             endProgressBar(progressId);
             //endProgressBar();
-            alert(data.message);
+            fn_alert('alert', data.message);
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
     });
@@ -616,7 +616,7 @@ function executeML(totData) {
             console.log(data);
             if (data.column) searchDBColumnsCount++;
             if (data.message) {
-                alert(message);
+                fn_alert('alert', message);
             } else {
                 //console.log(data);
                 lineText.push(data);
@@ -1315,7 +1315,7 @@ function uiTrainEvent() {
         if (docData && docData.DOCTYPE != 0) {
             modifyTextData();
         } else {
-            alert('There is no document form, I do not training.');
+            fn_alert('alert', 'There is no document form, I do not training.');
             return;
         }
         */
@@ -1368,7 +1368,7 @@ function modifyTextData() {
         success: function (data) {
             //makeTrainingData();
             endProgressBar(progressId);
-            alert("success training");
+            fn_alert('alert', "success training");
         },
         error: function (err) {
             console.log(err);
@@ -1401,7 +1401,7 @@ function modifyTextData() {
                     
                     if (beforeData.length - 1 == i) {
                         endProgressBar(progressId);
-                        //alert("success training");
+                        //fn_alert('alert', "success training");
                     }
                 },
                 error: function (err) {
@@ -1418,7 +1418,7 @@ function makeTrainingData() {
     trainData.data = [];
 
     if (lineText[0] == null) {
-        alert("학습할 데이터가 없습니다.");
+        fn_alert('alert', "학습할 데이터가 없습니다.");
         return;
     }
 
@@ -1517,7 +1517,7 @@ function uiTrainAjax() {
         success: function (data) {
             if (data.code == 200) {
                 addProgressBar(81, 100);
-                alert(data.message);
+                fn_alert('alert', data.message);
                 //popupEvent.batchClosePopup('retrain');
             }
         },
@@ -1587,7 +1587,7 @@ function addColumnMappingTrain(data, callback, progressId) {
         contentType: 'application/json; charset=UTF-8',
         success: function (res) {
             console.log(res);
-            alert("success training");
+            fn_alert('alert', "success training");
             //addProgressBar(81, 100);
             //callback(data);
             endProgressBar(progressId);

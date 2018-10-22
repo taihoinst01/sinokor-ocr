@@ -503,7 +503,7 @@ var fn_search_image = function (imgId) {
 var fn_baseList_chk = function (flag) {
 
     if ($('input[name=chk_document]:checked').length == 0) {
-        alert('결재 문서를 선택해주세요.');
+        fn_alert('alert', '결재 문서를 선택해주세요.');
         return false;
     } else {
         if (flag == '승인') {
@@ -530,10 +530,10 @@ var fn_baseList_chk = function (flag) {
                     contentType: 'application/json; charset=UTF-8',
                     success: function (data) {
                         if (data.code == 200) {
-                            alert($("input[name=chk_document]:checked").length + "건의 문서가 승인 되었습니다.");
+                            fn_alert('alert', $("input[name=chk_document]:checked").length + "건의 문서가 승인 되었습니다.");
                             $("input[name=chk_document]:checked").closest('tr').find('td:last').html('승인');
                         } else {
-                            alert(data.error);
+                            fn_alert('alert', data.error);
                         }
                     },
                     error: function (err) {
@@ -586,7 +586,7 @@ var fn_baseList_chk = function (flag) {
                 }
             }
             if (statusCnt > 0) {
-                alert("이미 결재완료 된 문서가 존재합니다.");
+                fn_alert('alert', "이미 결재완료 된 문서가 존재합니다.");
             } else {
                 $.ajax({
                     url: '/myApproval/cancelDocument',
@@ -603,13 +603,13 @@ var fn_baseList_chk = function (flag) {
                     success: function (data) {
                         var totCnt = $("input[name = chk_document]");
 
-                        if (confirm(data.docData + " 건의 문서를 반려 하시겠습니까 ?")) {
+                        fn_alert('confirm', data.docData + " 건의 문서를 반려 하시겠습니까 ?", function () {
                             $("#span_document").empty().html('결재리스트(기본) - ' + (totCnt.length - deleteTr.length) + ' 건');
-                                for (var i in deleteTr) {
-                                    deleteTr[i].remove();
-                                }
-                            alert(data.docData + " 건의 문서가 반려되었습니다.");
-                        }
+                            for (var i in deleteTr) {
+                                deleteTr[i].remove();
+                            }
+                            fn_alert('alert', data.docData + " 건의 문서가 반려되었습니다.");
+                        });
                     },
                     error: function (err) {
                         console.log(err);
@@ -638,12 +638,12 @@ var fn_baseList_chk = function (flag) {
                 }
             }
             if (statusCnt > 0) {
-                alert("이미 결재완료 된 문서가 존재합니다.");
+                fn_alert('alert', "이미 결재완료 된 문서가 존재합니다.");
             } else {
                 layer_open('layer1');            
             }
         } else {
-            alert("전달에 대한 권한이 없습니다.");
+            fn_alert('alert', "전달에 대한 권한이 없습니다.");
         }  
 
 
@@ -683,7 +683,7 @@ var fn_baseList_chk = function (flag) {
                             $('#searchManagerResult').append(appendHtml);
                         }
                     } else {
-                        alert(data.error);
+                        fn_alert('alert', data.error);
                     }
                 },
                 error: function (err) {
@@ -697,7 +697,7 @@ var fn_baseList_chk = function (flag) {
             var choiceCnt = $('#searchManagerResult tr.on').length;
 
             if (choiceCnt == 0) {
-                alert('담당자를 선택해주세요');
+                fn_alert('alert', '담당자를 선택해주세요');
                 return false;
             } else {
                 if ($('#middleApproval').val() == 'Y') {
@@ -760,14 +760,14 @@ var fn_baseList_chk = function (flag) {
                         }),
                         contentType: 'application/json; charset=UTF-8',
                         success: function (data) {
-                            if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
+                            fn_alert('confirm', data.docData + "건의 문서가 전달 되었습니다.", function () {
                                 $('#layer1').fadeOut();
                                 var totCnt = $("input[name = chk_document]");
                                 $("#span_document").empty().html('결재리스트(기본) - ' + (totCnt.length - deleteTr.length) + ' 건');
                                 for (var i in deleteTr) {
                                     deleteTr[i].remove();
                                 }
-                            }
+                            });
                         },
                         error: function (err) {
                             console.log(err);
