@@ -2587,7 +2587,7 @@ var fn_docEvent = function () {
         var choiceCnt = $('#searchManagerResult tr.on').length;
 
         if (choiceCnt == 0) {
-            alert('담당자를 선택해주세요');
+            fn_alert('alert', '담당자를 선택해주세요');
             return false;
         } else {
             if ($('#scanApproval').val() == 'Y') {
@@ -2632,7 +2632,7 @@ var fn_docEvent = function () {
                         userChoiceTdArr.push(userId);
                 });
 
-                if (confirm(userChoiceTdArr[0] + "를 선택하셨습니다. 결제를 진행하시겠습니까?")) {
+                if (fn_alert('confirm', userChoiceTdArr[0] + "를 선택하셨습니다. 결제를 진행하시겠습니까?", function () {
                     $.ajax({
                         url: '/invoiceRegistration/sendDocument',
                         type: 'post',
@@ -2656,6 +2656,7 @@ var fn_docEvent = function () {
                             console.log(err);
                         }
                     });
+                })) {
                 }
                 
             }
