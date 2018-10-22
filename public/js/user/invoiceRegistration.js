@@ -2911,13 +2911,10 @@ $(document).on('dblclick', '.td_dbclick', function (e) {
 
 // 마감년월 수정 후 값 체크 yyyymm
 $(document).on('focusout', 'input[name=ipt_nowYearMonth]', function () {
-    var data = $(this).val();
-    var num = String(data).replace(/^\s+|\s+$/g, "");
-
+    var data = $(this).val();;
     var regex = /^[0-9]{6}$/g;
 
-
-    if (regex.test(num)) {
+    if (regex.test(data)) {
         num = num.replace(/,/g, "");
         return isNaN(num) ? false : true;
     } else {
