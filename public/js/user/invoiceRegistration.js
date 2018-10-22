@@ -1118,13 +1118,16 @@ var fn_ctnExtraction = function () {
 };
 
 // 클릭 이벤트 (DOCUMENT)
-var fn_clickEvent = function () {
+var fn_clickEvent = function () {//jmh
     // Document 클릭 시 상세 조회
     $("td[name='td_base']").on("click", function () {
         var id = $(this).parent().attr("id");
         var numArr = id.replace("tr_base_", "");
         var seqNum = numArr.split("-")[0];
         var docNum = numArr.split("-")[1];
+        $("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked');   
+        $("input:checkbox[id='base_chk_" + docNum+"']").attr("checked", true);
+
         fn_search_dtl(docNum); // document_dtl 조회
     });
     // Document DTL 클릭 시 이미지 조회
@@ -1913,7 +1916,6 @@ function fn_ContractNumExtraction() {
                     url: '/wF_WorkflowProc/',
                     type: 'post',
                     datatype: 'json',
-                    async: false,
                     data: JSON.stringify({ cdnNm: cdnNm[l], ctNm: ctNm[j], ttyYy: ttyYy[k] }),
                     contentType: 'application/json; charset=UTF-8',
                     beforeSend: function () {
@@ -1971,8 +1973,8 @@ function fn_ContractNumExtraction() {
                         $("#tbody_dtlList").append(dtlHtml);
                         $("#tbody_dtlList input[type=checkbox]").ezMark();
                         $("#div_dtl").css("display", "block");
-
                         endProgressBar(progressId);
+                        
                     },
                     error: function (err) {
                         console.log(err);
@@ -1983,7 +1985,6 @@ function fn_ContractNumExtraction() {
         }
 
     }
-
     function makeMLSelect(mlData, colnum, entry) {
 
         var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileName + '\')">';

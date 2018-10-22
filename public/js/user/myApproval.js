@@ -112,23 +112,19 @@ var fn_clickEvent = function () {
         var numArr = id.replace("tr_base_", "");
         var seqNum = numArr.split("-")[0];
         var docNum = numArr.split("-")[1];
+
+        $("input:checkbox[id='chk_document_" + docNum + "']").parent().addClass('ez-checked');
+        $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", true);
         fn_search_dtl(seqNum, docNum); // document_dtl 조회
     });
 
- /* 기존소스
-  * $("td[name='td_base']").on("click", function () {
-        var id = $(this).parent().attr("id");
-        var numArr = id.replace("tr_base_", "");
-        var seqNum = numArr.split("-")[0];
-        var docNum = numArr.split("-")[1];
-        fn_search_dtl(seqNum, docNum); // document_dtl 조회
-    });
-    // Document DTL 클릭 시 이미지 조회
+/*  //기존소스
+   // Document DTL 클릭 시 이미지 조회
     $("tr[name='tr_dtl']").on("click", function () {
         var id = $(this).attr("id");
         var imgId = id.replace("tr_dtl_", "");
         fn_search_image(imgId); // image 조회
-    }); */
+    });*/
 };
 
 // [사용자조회]
@@ -237,12 +233,12 @@ var fn_search = function () {
         datatype: "json",
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
-        beforeSend: function () {
+        /*beforeSend: function () {
             $("#progressMsgTitle").html("retrieving document list...");
             progressId = showProgressBar();
             //startProgressBar(); // start progressbar
             //addProgressBar(1, 1); // proceed progressbar
-        },
+        },*/
         success: function (data) {           
             //$("#div_base").hide();
             //addProgressBar(2, 99); // proceed progressbar
@@ -267,10 +263,11 @@ var fn_search = function () {
                             break;
                     }
                     var docId = nvl(entry['SEQNUM']) + '-' + nvl(entry['DOCNUM']);
+                    var idValue = "chk_document_" + nvl(entry['DOCNUM']);
                     if ($('#middleApproval').val() == 'Y' || $('#lastApproval').val() == 'Y') {
                         appendHtml +=
                             '<tr id="tr_base_' + entry["SEQNUM"] + '-' + entry["DOCNUM"] + '-' + entry["STATUS"] + '" style="cursor:pointer" name ="tr_base_chk">' +
-                            '<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + docId + '" class="sta00 stck_tr" name="chk_document" /></div></th>' +
+                        '<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + docId + '" class="sta00 stck_tr" name="chk_document" id = "'+ idValue +'" /></div></th>' +
                             '<td name="td_base">' + entry["DOCNUM"] + '</td>' +
                             '<td name="td_base">' + nvl(entry["PAGECNT"]) + '</td>' +
                             '<td name="td_base">' + endDate + '</td>';
@@ -455,19 +452,21 @@ var fn_search_image = function (imgId) {
         success: function (data) {
             //addProgressBar(2, 99); // proceed progressbar
             if (data.length > 0) {
+                alert(data.docData[0] + "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&1");
                 $.each(data, function (index, entry) {
                     if (index == 0) {
-                        $("#main_image").prop("src", '../../' + nvl(entry.ORIGINFILENAME));
-                        $("#main_image").prop("alt", entry.ORIGINFILENAME);
+                        $("#main_image").prop("src", '../../' + data.docData[0].ORIGINFILENAME);
+                        $("#main_image").prop("alt", data.docData[0].ORIGINFILENAME);
                         imageHtml += '<li class="on">' +
-                                        '<div class="box_img"><i><img src="../../' + nvl(entry.ORIGINFILENAME) + '" title="' + nvl(entry.ORIGINFILENAME) + '"></i></div>' +
-                                        '<span>' + nvl(entry.ORIGINFILENAME) + '</span>' +
+                            '<div class="box_img"><i><img src="../../' + data.docData[0].ORIGINFILENAME + '" title="' + data.docData[0].ORIGINFILENAME + '"></i></div>' +
+                            '<span>' + data.docData[0].ORIGINFILENAME + '</span>' +
                                     '</li>';
                     } else {
+                        alert(data.docData[0] + "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&2");
                         imageHtml += 
                                     '<li>' +
-                                        '<div class="box_img"><i><img src="../../' + nvl(entry.ORIGINFILENAME) + '" title="' + nvl(entry.ORIGINFILENAME) + '"></i></div>' + 
-                                        '<span>' + nvl(entry.ORIGINFILENAME) + '</span>' +
+                        '<div class="box_img"><i><img src="../../' + data.docData[0].ORIGINFILENAME + '" title="' + data.docData[0].ORIGINFILENAME + '"></i></div>' + 
+                        '<span>' + data.docData[0].ORIGINFILENAME + '</span>' +
                                     '</li>';
                     }
                 });
