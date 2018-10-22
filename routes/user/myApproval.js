@@ -38,7 +38,7 @@ var callbackApprovalList = function (rows, req, res) {
 var fnSearchApprovalList = function (req, res) {
     // 조회 조건 생성
     var condQuery = ``;
-    var orderQuery = ` ORDER BY DOCNUM ASC `;
+    var orderQuery = ` ORDER BY DOCNUM DESC `;
     var param = {
         docNum: commonUtil.nvl(req.body.docNum),
         faoTeam: commonUtil.nvl(req.body.faoTeam),
@@ -51,6 +51,11 @@ var fnSearchApprovalList = function (req, res) {
         level: commonUtil.nvl(req.body.level),
         adminApproval: commonUtil.nvl(req.body.adminApproval)
     };
+    if (param["docNum"] != '') {
+        condQuery += ' AND DOCNUM LIKE \'%' + param["docNum"] + '%\'';
+    }
+
+
     if (param["level"] == 'adminApproval') {
         //관리자가 조회할때
         if (!commonUtil.isNull(param["approvalState"])) {

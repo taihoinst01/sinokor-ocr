@@ -40,9 +40,9 @@ var checkboxEvent = function () {
 var buttonEvent = function () {
     // 문서 리스트 조회
     $("#btn_search").on("click", function () {
-        $("#div_base").hide();
-        $("#div_dtl").hide();
-        $("#div_image").hide();
+        //$("#div_base").hide();
+        //$("#div_dtl").hide();
+        //$("#div_image").hide();
         fn_search();
     });
     // 승인
@@ -106,6 +106,9 @@ var datePickerEvent = function () {
  ***************************************************/
 // 클릭 이벤트 (DOCUMENT)
 var fn_clickEvent = function () {
+    $("td[name='td_base']").unbind();
+    //$("tr[name='tr_dtl']").unbind();
+
     // Document 클릭 시 상세 조회
     $("td[name='td_base']").on("click", function () {
         var id = $(this).parent().attr("id");
@@ -119,22 +122,25 @@ var fn_clickEvent = function () {
         if(chkResult2 == null ) {
             $("input:checkbox[id='chk_document_" + docNum + "']").parent().addClass('ez-checked');
             $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", true);
+            fn_search_dtl(seqNum, docNum); // document_dtl 조회
         }else {
             $("input:checkbox[id='chk_document_" + docNum + "']").parent().removeClass('ez-checked');
             $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", false);
         }
 
-        fn_search_dtl(seqNum, docNum); // document_dtl 조회
-        $("td[name='td_base']").unbind();
+        fn_search_image(docNum);
+        //$("td[name='td_base']").unbind();
     });
 
+    /*
    // Document DTL 클릭 시 이미지 조회
     $("tr[name='tr_dtl']").on("click", function () {
         var id = $(this).attr("id");
         var imgId = id.replace("tr_dtl_", "");
         fn_search_image(imgId); // image 조회
-        $("td[name='td_base']").unbind();
+        //$("td[name='td_base']").unbind();
     });
+    */
 };
 
 // [사용자조회]
@@ -304,7 +310,12 @@ var fn_search = function () {
             $("#div_base").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
             $('input[type=checkbox]').ezMark();
-            endProgressBar(progressId); // end progressbar
+
+            console.log($('#tbody_baseList > tr').length);
+            if($('#tbody_baseList > tr').length > 0){
+                $('#tbody_baseList > tr').eq(0).find('td[name="td_base"]').eq(0).click();
+             }
+            //endProgressBar(progressId); // end progressbar
         },
         error: function (err) {
             endProgressBar(progressId); // end progressbar
@@ -386,7 +397,14 @@ var fn_search_dtl = function (seqNum, docNum) {
             $("#span_document_dtl").empty().html('결재리스트(상세) -' + data.docData.length + '건');
             $("#div_dtl").fadeIn('slow');
             fn_clickEvent(); // regist and refresh click event
-            endProgressBar(progressId); // end progressbar\
+            if (!$('#tbody_dtlList > tr').find('td').eq(0).attr('colspan')) {
+                $('#tbody_dtlList > tr').eq(0).find('td').eq(0).click();
+            } else {
+                $('#mainImgDiv').html('');
+                $('#ul_image').html('');
+
+            }
+            //endProgressBar(progressId); // end progressbar\
         },
         error: function (err) {
             endProgressBar(progressId); // end progressbar
@@ -463,6 +481,7 @@ var fn_search_image = function (imgId) {
         success: function (data) {
             //addProgressBar(2, 99); // proceed progressbar
             if (data.docData.length > 0) {
+                $('#mainImgDiv').html('<img id="main_image" src="" alt="샘플이미지" />');
                 $.each(data.docData, function (index, entry) {
                     if (index == 0) {
                         $("#main_image").prop("src", '../../uploads/' + entry.ORIGINFILENAME);
@@ -480,6 +499,7 @@ var fn_search_image = function (imgId) {
                     }
                 });
             } else {
+                $('#mainImgDiv').html('');
                 //appendHtml += '<tr><td colspan="7">조회할 데이터가 없습니다.</td></tr>';
                 imageHtml += '<li>문서 이미지가 존재하지 않습니다.</li>';
             }
@@ -781,4 +801,5 @@ var _init = function () {
     checkboxEvent();
     buttonEvent();
     datePickerEvent();
+    fn_search();
 };
