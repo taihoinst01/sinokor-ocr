@@ -335,51 +335,47 @@ var fn_search_dtl = function (seqNum, docNum) {
             //addProgressBar(2, 99); // proceed progressbar
             if (data.docData.length > 0) {
                 for (var i = 0; i < data.docData.length; i++) {
-    /*                if (data.docData[i] == null) {
-                        data.docData[i]
-                    }*/
-
                      appendHtml += 
                      '<tr id="tr_dtl_' + data.docData[i].DOCNUM + '" name="tr_dtl" style="cursor:pointer">' +
                      '<td>' + data.docData[i].OGCOMPANYNAME + '</td>' +
                      '<td>' + data.docData[i].CTNM + '</td>' +
                      '<td>' + data.docData[i].UY + '</td>' +
-                     '<td>' + data.docData[i].CTNO + '</td>' +
-                     '<td>' + data.docData[i].PAGEFROM + '</td>' +
-                     '<td>' + data.docData[i].PAGETO + '</td>' +
-                     '<td>' + data.docData[i].CURCD + '</td>' +
-                     '<td>' + data.docData[i].CURUNIT + '</td>' +
-                     '<td>' + data.docData[i].PAIDPERCENT + '</td>' +
-                     '<td>' + data.docData[i].PAIDSHARE + '</td>' +
-                     '<td>' + data.docData[i].OSLPERCENT + '</td>' +
-                     '<td>' + data.docData[i].OSLSHARE + '</td>' +
-                     '<td>' + data.docData[i].PM + '</td>' +
-                     '<td>' + data.docData[i].PMPFEND + '</td>' +
-                     '<td>' + data.docData[i].PMPFWOS + '</td>' +
-                     '<td>' + data.docData[i].XOLPM + '</td>' +
-                     '<td>' + data.docData[i].RETURNPM + '</td>' +
-                     '<td>' + data.docData[i].CN + '</td>' +
-                     '<td>' + data.docData[i].PROFITCN + '</td>' +
-                     '<td>' + data.docData[i].BROKERAGE + '</td>' +
-                     '<td>' + data.docData[i].TAX + '</td>' +
-                     '<td>' + data.docData[i].OVERRIDINGCOM + '</td>' +
-                     '<td>' + data.docData[i].CHARGE + '</td>' +
-                     '<td>' + data.docData[i].PMRESERVERTD + '</td>' +
-                     '<td>' + data.docData[i].PFPMRESERVERTD + '</td>' +
-                     '<td>' + data.docData[i].PMRESERVERLD + '</td>' +
-                     '<td>' + data.docData[i].PFPMRESERVERLD + '</td>' +
-                     '<td>' + data.docData[i].CLAIM + '</td>' +
-                     '<td>' + data.docData[i].LOSSRECOVERY + '</td>' +
-                     '<td>' + data.docData[i].CASHLOSS + '</td>' +
-                     '<td>' + data.docData[i].CASHLOSSRD + '</td>' +
-                     '<td>' + data.docData[i].LOSSRR + '</td>' +
-                     '<td>' + data.docData[i].LOSSRR2 + '</td>' +
-                     '<td>' + data.docData[i].LOSSPFENT + '</td>' +
-                     '<td>' + data.docData[i].LOSSPFWOA + '</td>' +
-                     '<td>' + data.docData[i].INTEREST + '</td>' +
-                     '<td>' + data.docData[i].TAXON + '</td>' +
-                     '<td>' + data.docData[i].MISCELLANEOUS + '</td>' +
-                     '<td>' + data.docData[i].CSCOSARFRNCNNT2 + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CTNO,'') + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PAGEFROM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PAGETO, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CURCD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CURUNIT, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PAIDPERCENT, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PAIDSHARE, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].OSLPERCENT, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].OSLSHARE, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PMPFEND, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PMPFWOS, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].XOLPM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].RETURNPM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CN, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PROFITCN, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].BROKERAGE, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].TAX, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].OVERRIDINGCOM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CHARGE, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PMRESERVERTD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PFPMRESERVERTD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PMRESERVERLD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].PFPMRESERVERLD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CLAIM, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].LOSSRECOVERY, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CASHLOSS, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CASHLOSSRD, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].LOSSRR, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].LOSSRR2, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].LOSSPFENT, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].LOSSPFWOA, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].INTEREST, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].TAXON, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].MISCELLANEOUS, 0) + '</td>' +
+                     '<td>' + nvl2(data.docData[i].CSCOSARFRNCNNT2, 0) + '</td>' +
                     '</tr>';    
                 }               
             } else {
