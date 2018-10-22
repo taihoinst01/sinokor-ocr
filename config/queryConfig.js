@@ -117,12 +117,12 @@ var invoiceRegistrationConfig = {
                 TBL_DOCUMENT_DTL B
           WHERE A.IMGID = B.IMGID `,
     insertDocumentDtl:
-        `INSERT INTO TBL_DOCUMENT_DTL (SEQNUM, STATUS, OGCOMPANYNAME, CTNM, UY, CTNO, PAGEFROM, PAGETO, CURCD, CURUNIT
+        `INSERT INTO TBL_DOCUMENT_DTL (SEQNUM, STATUS, INVOICETYPE, OGCOMPANYNAME, CTNM, UY, CTNO, PAGEFROM, PAGETO, CURCD, CURUNIT
                 , PAIDPERCENT, PAIDSHARE, OSLPERCENT, OSLSHARE, PM, PMPFEND, PMPFWOS, XOLPM, RETURNPM, CN, PROFITCN
                 , BROKERAGE, TAX, OVERRIDINGCOM, CHARGE, PMRESERVERTD, PFPMRESERVERTD, PMRESERVERLD, PFPMRESERVERLD
                 , CLAIM, LOSSRECOVERY, CASHLOSS, CASHLOSSRD, LOSSRR, LOSSRR2, LOSSPFENT, LOSSPFWOA, INTEREST, TAXON, MISCELLANEOUS
                 , CSCOSARFRNCNNT2, DOCNUM ) 
-         VALUES(seq_document_dtl.nextval, :status, :ogcompanyname, :ctnm, :uy, :ctno, :pagefrom, :pageto, :curcd
+         VALUES(seq_document_dtl.nextval, :status, :invoicetype, :ogcompanyname, :ctnm, :uy, :ctno, :pagefrom, :pageto, :curcd
                 , :curunit, :paidpercent, :paidshare, :oslpercent, :oslshare, :pm, :pmpfend, :pmpfwos, :xolpm, :returnpm
                 , :cn, :profitcn, :brokerage, :tax, :overridingcom, :charge, :pmreservertd, :pfpmreservertd, :pmreserverld
                 , :pfpmreserverld, :claim, :lossrecovery, :cashloss, :cashlossrd, :lossrr, :lossrr2, :losspfent, :losspfwoa
