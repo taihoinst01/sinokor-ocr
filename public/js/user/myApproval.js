@@ -112,11 +112,21 @@ var fn_clickEvent = function () {
         var numArr = id.replace("tr_base_", "");
         var seqNum = numArr.split("-")[0];
         var docNum = numArr.split("-")[1];
-
-        $("input:checkbox[id='chk_document_" + docNum + "']").parent().addClass('ez-checked');
-        $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", true);
+        
+        //체크여부확인
+        var chkResult1 = document.getElementById("chk_document_" + docNum);
+        alert(chkResult1);
+        var chkResult2 = chkResult1.getAttribute("checked")
+        if(chkResult2 == null ) {
+            $("input:checkbox[id='chk_document_" + docNum + "']").parent().addClass('ez-checked');
+            $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", true);
+        }else {
+            $("input:checkbox[id='chk_document_" + docNum + "']").parent().removeClass('ez-checked');
+            $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", false);
+        }
 
         fn_search_dtl(seqNum, docNum); // document_dtl 조회
+        $("td[name='td_base']").unbind();
     });
 
    // Document DTL 클릭 시 이미지 조회
@@ -124,6 +134,7 @@ var fn_clickEvent = function () {
         var id = $(this).attr("id");
         var imgId = id.replace("tr_dtl_", "");
         fn_search_image(imgId); // image 조회
+        $("td[name='td_base']").unbind();
     });
 };
 
@@ -325,8 +336,12 @@ var fn_search_dtl = function (seqNum, docNum) {
             //addProgressBar(2, 99); // proceed progressbar
             if (data.docData.length > 0) {
                 for (var i = 0; i < data.docData.length; i++) {
+    /*                if (data.docData[i] == null) {
+                        data.docData[i]
+                    }*/
+
                      appendHtml += 
-                     '<tr id="tr_dtl_' + data.docData[0].DOCNUM + '" name="tr_dtl" style="cursor:pointer">' +
+                     '<tr id="tr_dtl_' + data.docData[i].DOCNUM + '" name="tr_dtl" style="cursor:pointer">' +
                      '<td>' + data.docData[i].OGCOMPANYNAME + '</td>' +
                      '<td>' + data.docData[i].CTNM + '</td>' +
                      '<td>' + data.docData[i].UY + '</td>' +
