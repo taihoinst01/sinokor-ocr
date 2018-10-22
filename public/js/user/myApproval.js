@@ -115,7 +115,6 @@ var fn_clickEvent = function () {
         
         //체크여부확인
         var chkResult1 = document.getElementById("chk_document_" + docNum);
-        alert(chkResult1);
         var chkResult2 = chkResult1.getAttribute("checked")
         if(chkResult2 == null ) {
             $("input:checkbox[id='chk_document_" + docNum + "']").parent().addClass('ez-checked');
