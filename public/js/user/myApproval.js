@@ -115,16 +115,16 @@ var fn_clickEvent = function () {
 
         $("input:checkbox[id='chk_document_" + docNum + "']").parent().addClass('ez-checked');
         $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", true);
+
         fn_search_dtl(seqNum, docNum); // document_dtl 조회
     });
 
-/*  //기존소스
    // Document DTL 클릭 시 이미지 조회
     $("tr[name='tr_dtl']").on("click", function () {
         var id = $(this).attr("id");
         var imgId = id.replace("tr_dtl_", "");
         fn_search_image(imgId); // image 조회
-    });*/
+    });
 };
 
 // [사용자조회]
@@ -443,7 +443,7 @@ var fn_search_image = function (imgId) {
         datatype: "json",
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
-        beforeSend: function () {
+       beforeSend: function () {
             $("#progressMsgTitle").html("retrieving document image list...");
             progressId = showProgressBar();
             //startProgressBar(); // start progressbar
@@ -451,22 +451,20 @@ var fn_search_image = function (imgId) {
         },
         success: function (data) {
             //addProgressBar(2, 99); // proceed progressbar
-            if (data.length > 0) {
-                alert(data.docData[0] + "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&1");
-                $.each(data, function (index, entry) {
+            if (data.docData.length > 0) {
+                $.each(data.docData, function (index, entry) {
                     if (index == 0) {
-                        $("#main_image").prop("src", '../../' + data.docData[0].ORIGINFILENAME);
-                        $("#main_image").prop("alt", data.docData[0].ORIGINFILENAME);
+                        $("#main_image").prop("src", '../../uploads/' + entry.ORIGINFILENAME);
+                        $("#main_image").prop("alt", entry.ORIGINFILENAME);
                         imageHtml += '<li class="on">' +
-                            '<div class="box_img"><i><img src="../../' + data.docData[0].ORIGINFILENAME + '" title="' + data.docData[0].ORIGINFILENAME + '"></i></div>' +
-                            '<span>' + data.docData[0].ORIGINFILENAME + '</span>' +
+                            '<div class="box_img"><i><img src="../../uploads/' + entry.ORIGINFILENAME + '" title="' + entry.ORIGINFILENAME + '"></i></div>' +
+                            '<span>' + entry.ORIGINFILENAME + '</span>' +
                                     '</li>';
                     } else {
-                        alert(data.docData[0] + "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&2");
                         imageHtml += 
                                     '<li>' +
-                        '<div class="box_img"><i><img src="../../' + data.docData[0].ORIGINFILENAME + '" title="' + data.docData[0].ORIGINFILENAME + '"></i></div>' + 
-                        '<span>' + data.docData[0].ORIGINFILENAME + '</span>' +
+                        '<div class="box_img"><i><img src="../../uploads/' + entry.ORIGINFILENAME + '" title="' + entry.ORIGINFILENAME + '"></i></div>' + 
+                        '<span>' + entry.ORIGINFILENAME + '</span>' +
                                     '</li>';
                     }
                 });

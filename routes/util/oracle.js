@@ -2558,7 +2558,7 @@ exports.searchApprovalDtlList = function (req, done) {
     });
 };
 
-/*//결재리스트 (상세 이미지)
+//결재리스트 (상세 이미지)
 exports.searchApprovalImageList = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -2584,7 +2584,7 @@ exports.searchApprovalImageList = function (req, done) {
         }
     });
 };
-*/
+
 //문서 기본정보 삭제
 exports.deleteDocument = function (req, done) {
     return new Promise(async function (resolve, reject) {
