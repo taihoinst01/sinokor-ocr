@@ -1911,11 +1911,11 @@ function fn_ContractNumExtraction() {
     for (var l = 0; l < cdnNm.length; l++) {
         for (var j = 0; j < ctNm.length; j++) {
             for (var k = 0; k < ttyYy.length; k++) {
-
                 $.ajax({
                     url: '/wF_WorkflowProc/',
                     type: 'post',
                     datatype: 'json',
+                    async: false,
                     data: JSON.stringify({ cdnNm: cdnNm[l], ctNm: ctNm[j], ttyYy: ttyYy[k] }),
                     contentType: 'application/json; charset=UTF-8',
                     beforeSend: function () {
@@ -1923,6 +1923,7 @@ function fn_ContractNumExtraction() {
                         progressId = showProgressBar();
                     },
                     success: function (data) {
+
                         var dtlHtml = '';
                         for (var i in data.data) {
                             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
@@ -1974,7 +1975,13 @@ function fn_ContractNumExtraction() {
                         $("#tbody_dtlList input[type=checkbox]").ezMark();
                         $("#div_dtl").css("display", "block");
                         endProgressBar(progressId);
-                        
+
+                        if (l == cdnNm.length -1 && k == ttyYy.length - 1) {
+                            if ($("#tbody_dtlList").length == 1) {
+                                fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
+                            }
+                        }
+
                     },
                     error: function (err) {
                         console.log(err);
