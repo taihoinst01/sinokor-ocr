@@ -299,8 +299,8 @@ $(function () {
 
 /**
  * alert 팝업
- *  {'alert', '제목', '내용'}
- *  {'confirm', '제목', '내용'}
+ *  {'alert', '내용'}
+ *  {'confirm', '내용'}
  * */
 var fn_alert = function ( type, contents, callback ) {
 
