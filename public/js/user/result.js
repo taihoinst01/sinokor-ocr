@@ -20,7 +20,7 @@
                 console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
                 var data2 = data.split('^');
                 for (var i in data2) {
-                    alert(data2[i]);
+                    fn_alert('alert', data2[i]);
                 }
 
                 $("#resultValue01").val(data2[0] + "----");
@@ -113,11 +113,11 @@
 
                 if (data == "success") {//gubun값이 WF_RemarkUpdate 일 경우
                     console.log("Success!!" + data);
-                    alert("Success : " + data);
+                    fn_alert('alert', "Success : " + data);
                 }
                 else {
                     console.log("Fail!!");
-                    alert("Fail : " + data);
+                    fn_alert('alert', "Fail : " + data);
                 }
             },
             error: function (err) {
@@ -159,11 +159,11 @@
 
                 if (data == "0") {//gubun값이 WF_Registration 일 경우
                     console.log("Success!!" + data);
-                    alert("Success : " + data);
+                    fn_alert('alert', "Success : " + data);
                 }
                 else {
                     console.log("Fail!!");
-                    alert("Fail : " + data);
+                    fn_alert('alert', "Fail : " + data);
                 }
             },
             error: function (err) {
@@ -193,11 +193,11 @@
 
                 if (data == "1") {//gubun값이 WF_ApprovalCheck 일 경우
                     console.log("Success!!" + data);
-                    alert("Success : " + data);
+                    fn_alert('alert', "Success : " + data);
                 }
                 else {
                     console.log("Fail!!");
-                    alert("Fail : " + data);
+                    fn_alert('alert', "Fail : " + data);
                 }
             },
             error: function (err) {
@@ -238,7 +238,7 @@
 
                 if (data == "0") {//gubun값이 WF_ReturnRegistration 일 경우
                     console.log("Success!!" + data);
-                    alert("Success : " + data);
+                    fn_alert('alert', "Success : " + data);
                 }
                 else {
                     console.log("Fail!!");
@@ -283,11 +283,11 @@
                 for (var i = 0; i < data.length; i++) {
                         if (data[i].resultInt == "-998") {
                             console.log("Fail!!" + data[i].laProId + " : " + data[i].resultInt);
-                            alert("Fail : " + data[i].laProId + " : " + data[i].resultInt);
+                            fn_alert('alert', "Fail : " + data[i].laProId + " : " + data[i].resultInt);
                     }
                     else if (data[i].resultInt == "0") {
                             console.log("Success!!" + data[i].laProId + " : " + data[i].resultInt);
-                            alert("Success : " + data[i].laProId + " : " + data[i].resultInt);
+                            fn_alert('alert', "Success : " + data[i].laProId + " : " + data[i].resultInt);
                     }
                 }
             },
@@ -317,7 +317,7 @@
 
                 for (var i = 0; i < data.length; i++) {
                     console.log("Success : " + data[i].imgId);
-                    alert("Success : " + data[i].imgId);
+                    fn_alert('alert', "Success : " + data[i].imgId);
                 }
             },
             error: function (err) {
@@ -358,11 +358,11 @@
 
                 if (data == "0") {//gubun값이 WF_ApprovalCancel 일 경우
                     console.log("Success!!" + data);
-                    alert("Success : " + data);
+                    fn_alert('alert', "Success : " + data);
                 }
                 else {
                     console.log("Fail!!");
-                    alert("Fail : ");
+                    fn_alert('alert', "Fail : ");
                 }
             },
             error: function (err) {

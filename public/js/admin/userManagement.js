@@ -157,7 +157,7 @@ function fn_chooseUser(seqNum) {
                     }
                 });
             } else {
-                alert("장애가 발생하였습니다.");
+                fn_alert('alert', "장애가 발생하였습니다.");
                 return;
             }
             endProgressBar();
@@ -210,12 +210,12 @@ var fn_selectHighApproval = function (seqNum, userId) {
 var fn_validate = function (flag) {
     //예외 처리
     if (isNull($("#userId").val())) {
-        alert("사용자 ID는 필수입니다.");
+        fn_alert('alert', "사용자 ID는 필수입니다.");
         $("#userId").focus();
         return false;
     }
     if (flag == "INSERT" && isNull($("#userPw").val())) {
-        alert("사용자 비밀번호는 필수입니다.");
+        fn_alert('alert', "사용자 비밀번호는 필수입니다.");
         $("#userPw").focus();
         return false;
     }
@@ -226,7 +226,7 @@ var fn_validate = function (flag) {
         }
     });
     if (chkDupl) {
-        alert(`이미 ${$("#userId").val()} 사번이 존재합니다.`);
+        fn_alert('alert', `이미 ${$("#userId").val()} 사번이 존재합니다.`);
         $("#userId").focus();
         return false;
     }
@@ -262,11 +262,11 @@ function fn_insertUser() {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             if (data.CODE == "200") {
-                alert(data.RESULT);
+                fn_alert('alert', data.RESULT);
                 fn_initUser(); // 초기화
                 fn_searchUser();
             } else if(data.CODE == "300") {
-                alert(data.RESULT);
+                fn_alert('alert', data.RESULT);
             }
         },
         error: function (err) {
@@ -288,13 +288,13 @@ function fn_updateUser() {
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             if (data.CODE == "200") {
-                alert(data.RESULT);
+                fn_alert('alert', data.RESULT);
                 fn_initUser(); // 초기화
                 $("#btn_update").hide();
                 $("#btn_insert").fadeIn(); // 등록모드
                 fn_searchUser();
             } else if (data.CODE == "300") {
-                alert(data.RESULT);
+                fn_alert('alert', data.RESULT);
             }
         },
         error: function (err) {
@@ -308,22 +308,22 @@ function insUserBtnEvent() {
     $('#insUserBtn').click(function () {
         //예외 처리
         if(isNull($("#userId").val())) {
-            alert("사용자 ID를 입력해주세요.");
+            fn_alert('alert', "사용자 ID를 입력해주세요.");
             $("#userId").focus();
             return;
         }
         if (isNull($("#userPw").val())) {
-            alert("비밀번호를 입력해주세요.");
+            fn_alert('alert', "비밀번호를 입력해주세요.");
             $("#userPw").focus();
             return;
         }
         if (isNull($("#userPwConfirm").val())) {
-            alert("비밀번호를 확인해주세요.");
+            fn_alert('alert', "비밀번호를 확인해주세요.");
             $("#userPwConfirm").focus();
             return;
         }
         if ($("#userPw").val() != $("#userPwConfirm").val()) {
-            alert("비밀번호 확인이 일치하지 않습니다.");
+            fn_alert('alert', "비밀번호 확인이 일치하지 않습니다.");
             $("#userPwConfirm").focus();
             return;
         }
@@ -340,33 +340,31 @@ function openUpdatePw(seqNum, userId) {
 function updatePw() {
     //예외 처리
     if (isNull($("#userPwUpdate").val())) {
-        alert("비밀번호를 입력해주세요.");
+        fn_alert('alert', "비밀번호를 입력해주세요.");
         $("#userPwUpdate").focus();
         return;
     }
     if (isNull($("#userPwUpdateConfirm").val())) {
-        alert("비밀번호를 확인해주세요.");
+        fn_alert('alert', "비밀번호를 확인해주세요.");
         $("#userPwUpdateConfirm").focus();
         return;
     }
     if ($("#userPwUpdate").val() != $("#userPwUpdateConfirm").val()) {
-        alert("비밀번호 확인이 일치하지 않습니다.");
+        fn_alert('alert', "비밀번호 확인이 일치하지 않습니다.");
         $("#userPwUpdateConfirm").focus();
         return;
     }
     $("#updatePwForm").submit();
-    alert("수정되었습니다.");
+    fn_alert('alert', "수정되었습니다.");
 }
 
 /**
  * 사용자 삭제
  */
 function openDeleteUser(seqNum) {
-    if (confirm("삭제하시겠습니까?")) {
+    fn_alert('confirm', "삭제하시겠습니까?", function () {
         deleteUser(seqNum);
-    } else {
-        return;
-    }
+    });
 }
 function deleteUser(seqNum) {
     console.log(seqNum);
@@ -378,7 +376,7 @@ function deleteUser(seqNum) {
         data: JSON.stringify({ 'seqNum': seqNum }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            alert("삭제되었습니다.");
+            fn_alert('alert', "삭제되었습니다.");
             location.href = "/userManagement";
         },
         error: function (err) {

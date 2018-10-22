@@ -17,6 +17,7 @@ var docType = '';
 var progressId; // progress Id
 var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
+var regMlData = [];
 
 /**
  * 전역변수 초기화
@@ -207,20 +208,20 @@ var fn_uploadFileEvent = function () {
         var files = e.originalEvent.dataTransfer.files;
         if (files != null) {
             if (files.length < 1) {
-                alert("폴더 업로드 불가");
+                fn_alert('alert', "폴더 업로드 불가");
                 return;
             }
 
             F_FileMultiUpload(files, dropZone);
 
         } else {
-            alert("ERROR");
+            fn_alert('alert', "ERROR");
         }
     });
     
     // 파일 멀티 업로드
     function F_FileMultiUpload(files, obj) {
-        if (confirm(files.length + "개의 파일을 업로드 하시겠습니까?")) {
+        fn_alert('confirm', files.length + "개의 파일을 업로드 하시겠습니까?", function () {
             initGlobalVariable();   // 전역변수 초기화
             initForm(1);             // 폼 초기화
             var data = new FormData();
@@ -263,7 +264,7 @@ var fn_uploadFileEvent = function () {
                     endProgressBar(progressId);
                 }
             });
-        }
+        });
     }
     
 };
@@ -641,7 +642,7 @@ function popUpRunEvent() {
         var chkValue = $('input:radio[name=radio_batch]:checked').val();
 
         if ((chkValue == '1' && $('#orgDocName').val() == '') || (chkValue == '2' && $('#newDocName').val() == '')) {
-            alert('The document name is missing');
+            fn_alert('alert', 'The document name is missing');
             return false;
         }
 
@@ -764,7 +765,7 @@ function popUpSearchDocCategory() {
                 }
             });
         } else {
-            alert('Please enter your search keyword');
+            fn_alert('alert', 'Please enter your search keyword');
         }
     });
 }
@@ -788,7 +789,7 @@ function popUpInsertDocCategory() {
                         $('#docName').text(data.docCategory[0].DOCNAME);
                         $('#layer1').fadeOut();
                     } else {
-                        alert(data.message);
+                        fn_alert('alert', data.message);
                     }
                 },
                 error: function (err) {
@@ -905,7 +906,7 @@ function modifyTextData() {
 
                     if (data.code == 200) {
                         endProgressBar(progressId);
-                        //alert("success training");
+                        //fn_alert('alert', "success training");
 
                         fn_search_dtl($("input[name=popupDocNum]").val());
                     }
@@ -1125,8 +1126,8 @@ var fn_clickEvent = function () {//jmh
         var numArr = id.replace("tr_base_", "");
         var seqNum = numArr.split("-")[0];
         var docNum = numArr.split("-")[1];
+
         $("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked');   
-        $("input:checkbox[id='base_chk_" + docNum+"']").attr("checked", true);
 
         fn_search_dtl(docNum); // document_dtl 조회
     });
@@ -1362,8 +1363,9 @@ var ocrResult = function () {
     $('#addRow').click(function () {
 
         var appendRowHtml = '<tr><td><input type="checkbox" value="" name="dtl_chk"></td>' +
-            '<td><input type="text" name=""></td> <!--출재사명-->' +
-            '<td><input type="text" name=""></td> <!--계약명-->' +
+            '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
+            '<td><input type="text" name="moveFocus" onkeydown=moveFocus("test1")></td> <!--출재사명-->' +
+            '<td><input type="text" name="" onkeydown=moveFocus("test2")></td> <!--계약명-->' +
             '<td><input type="text" name=""></td> <!--UY-->' +
             '<td><input type="text" name=""></td> <!--계약번호-->' +
             '<td><input type="text" name=""></td> <!--페이지번호 FROM-->' +
@@ -1409,7 +1411,7 @@ var ocrResult = function () {
     //행 삭제
     $('#deleteRow').click(function () {
 
-        if (confirm("행 삭제를 하시겠습니까?")) {
+        fn_alert('confirm', "행 삭제를 하시겠습니까?", function () {
 
             $('input[name=dtl_chk]').each(function () {
                 if ($(this).is(':checked')) {
@@ -1418,7 +1420,7 @@ var ocrResult = function () {
             });
 
             $('#deleteRow').prop('disabled', true);
-        }
+        });
     });
 
     //체크박스 여부에 따른 행 삭제 버튼 활성화/비활성화
@@ -1514,11 +1516,11 @@ var fn_processDtlImage = function (fileDtlInfo) {
             oriOcrData.push({ fileName: fileName, data: JSON.stringify(data) });
         } else if (data.error) { //ocr 이외 에러이면
             endProgressBar();
-            alert(data.error);
+            fn_alert('alert', data.error);
         } else { // ocr 에러 이면
             insertCommError(data.code, 'ocr');
             endProgressBar();
-            alert(data.message);
+            fn_alert('alert', data.message);
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
     });
@@ -1549,17 +1551,24 @@ function executeML(totData) {
         data: JSON.stringify(totData),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
+            //console.log(data);
+            //console.log(totData);
             if (data.column) searchDBColumnsCount++;
             if (data.message) {
-                alert(message);
+                fn_alert('alert', message);
             } else {
                 //console.log(data);
                 lineText.push(data);
-                fn_processFinish(data.data, totData.fileDtlInfo); // 인식 결과
+                //fn_processFinish(data.data, totData.fileDtlInfo); // 인식 결과
                 $('#docSid').val(data.data.docSid);
                 docType = data.data.docCategory.DOCTYPE;
                 $('#docType').val(data.data.docCategory.DOCTYPE);
+
+                for (var i = 0; i < data.data.data.length; i++) {
+                    data.data.data[i].convertFileName = totData.fileDtlInfo.convertFileName;
+                    regMlData.push(data.data.data[i]);
+                }
+
                 if (searchDBColumnsCount == 1) {
 
                     var mainImgHtml = '';
@@ -1585,9 +1594,9 @@ function executeML(totData) {
 
                 if (totCount == searchDBColumnsCount) {
                     thumnImg();
-                    //fn_processFinish(lineText);
                     thumbImgEvent();
                     thumbImgPagingEvent();
+					fn_processFinish(regMlData, totData.fileDtlInfo.imgId);
                 }
             }
 
@@ -1758,74 +1767,75 @@ function fn_processFinish_Old1(data) {
 */
 
 // 인식 결과 처리
-function fn_processFinish(data, fileDtlInfo) {
+function fn_processFinish(mlData, imgId) {
     //console.log("data : " + JSON.stringify(data));
     //console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
 
-    var dataObj = {};
-    var dataVal = data.data;
-    dataObj["imgId"] = fileDtlInfo.imgId;
+    //var dataObj = {};
+    //var dataVal = data.data;
+    //dataObj["imgId"] = fileDtlInfo.imgId;
 
 
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
-        '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-        '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
-        '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
-        '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
+        '<td><input type="checkbox" value="' + imgId + '" name="dtl_chk" /></td>' +
+        '<td>' + makeMLSelect(mlData, 0, null) + '</td> <!--출재사명-->' +
+        '<td>' + makeMLSelect(mlData, 1, null) + '</td> <!--계약명-->' +
+        '<td>' + makeMLSelect(mlData, 2, null) + '</td> <!--UY-->' +
         '<td></td> <!--계약번호-->' +
         '<td></td> <!--페이지번호 FROM-->' +
         '<td></td> <!--페이지번호 TO-->' +
-        '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
-        '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
-        '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
-        '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
-        '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
-        '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
-        '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
-        '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
-        '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
-        '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
-        '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
-        '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
-        '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
-        '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
-        '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
-        '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
-        '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
-        '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
-        '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-        '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-        '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-        '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
-        '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
-        '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
-        '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
-        '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
-        '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
-        '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
-        '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
-        '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
-        '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
-        '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
-        '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+        '<td>' + makeMLSelect(mlData, 3, null) + '</td> <!--화폐코드-->' +
+        '<td>' + makeMLSelect(mlData, 4, null) + '</td> <!--화폐단위-->' +
+        '<td>' + makeMLSelect(mlData, 5, 0) + '</td> <!--Paid(100%)-->' +
+        '<td>' + makeMLSelect(mlData, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+        '<td>' + makeMLSelect(mlData, 7, 2) + '</td> <!--OSL(100%)-->' +
+        '<td>' + makeMLSelect(mlData, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+        '<td>' + makeMLSelect(mlData, 9, 4) + '</td> <!--PREMIUM-->' +
+        '<td>' + makeMLSelect(mlData, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+        '<td>' + makeMLSelect(mlData, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+        '<td>' + makeMLSelect(mlData, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+        '<td>' + makeMLSelect(mlData, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+        '<td>' + makeMLSelect(mlData, 14, 9) + '</td> <!--COMMISION -->' +
+        '<td>' + makeMLSelect(mlData, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+        '<td>' + makeMLSelect(mlData, 16, 11) + '</td> <!--BROKERAGE-->' +
+        '<td>' + makeMLSelect(mlData, 17, 12) + '</td> <!--TEX-->' +
+        '<td>' + makeMLSelect(mlData, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+        '<td>' + makeMLSelect(mlData, 19, 14) + '</td> <!--CHARGE-->' +
+        '<td>' + makeMLSelect(mlData, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+        '<td>' + makeMLSelect(mlData, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+        '<td>' + makeMLSelect(mlData, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+        '<td>' + makeMLSelect(mlData, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+        '<td>' + makeMLSelect(mlData, 24, 19) + '</td> <!--CLAIM -->' +
+        '<td>' + makeMLSelect(mlData, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+        '<td>' + makeMLSelect(mlData, 26, 21) + '</td> <!--CASH LOSS -->' +
+        '<td>' + makeMLSelect(mlData, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+        '<td>' + makeMLSelect(mlData, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+        '<td>' + makeMLSelect(mlData, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+        '<td>' + makeMLSelect(mlData, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+        '<td>' + makeMLSelect(mlData, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+        '<td>' + makeMLSelect(mlData, 32, 27) + '</td> <!--INTEREST -->' +
+        '<td>' + makeMLSelect(mlData, 33, 28) + '</td> <!--TAX ON -->' +
+        '<td>' + makeMLSelect(mlData, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+        '<td>' + makeMLSelect(mlData, 35, null) + '</td> <!--YOUR REF -->' +
         '</tr>';
 
     $("#tbody_dtlList").empty().append(dtlHtml);
     $("#tbody_dtlList input[type=checkbox]").ezMark();
     $("#div_dtl").css("display", "block");
     $("#btn_pop_ui_close").click();
+
     function makeMLSelect(mlData, colnum, entry) {
 
         var appendMLSelect = '';
         if (colnum == 0) {
-            appendMLSelect = '<select class="selectDbClick" name="cdnNm" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" name="cdnNm" onchange="zoomImg(this)">';
         } else if (colnum == 1) {
-            appendMLSelect = '<select class="selectDbClick" name="ctNm" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" name="ctNm" onchange="zoomImg(this)">';
         } else if (colnum == 2) {
-            appendMLSelect = '<select class="selectDbClick" name="ttyYy" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" name="ttyYy" onchange="zoomImg(this)">';
         } else {
-            appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this)">';
         }
         appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
@@ -1833,15 +1843,17 @@ function fn_processFinish(data, fileDtlInfo) {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
         return hasColvalue ? appendMLSelect : '';
     }
+
+    regMlData = [];
 }
 
 //계약 번호 추출
@@ -1892,17 +1904,17 @@ function fn_ContractNumExtraction() {
     }
 
     if (cdnNm.length == 0) {
-        alert("출재사명이 없습니다.");
+        fn_alert('alert', "출재사명이 없습니다.");
         return;
     }
 
     if (ctNm.length == 0) {
-        alert("계약명이 없습니다.");
+        fn_alert('alert', "계약명이 없습니다.");
         return;
     }
 
     if (ttyYy.length == 0) {
-        alert("UY가 없습니다.");
+        fn_alert('alert', "UY가 없습니다.");
         return;
     }
 
@@ -1929,6 +1941,7 @@ function fn_ContractNumExtraction() {
                             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
                             dtlHtml += '<tr>' +
                                 '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
+                                '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
                                 '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
                                 '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
                                 '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
@@ -2376,6 +2389,58 @@ function zoomImg(e, fileName) {
     $('#redZoomNemo').show();
 }
 
+function zoomImg(e) {
+    var fileName = $(e).find('option:selected').attr('alt');    
+    var mainImage = $("#mainImage").css('background-image');
+    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
+
+    if (mainImage != fileName) {
+        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+    }
+
+    $('.thumb-img').each(function (i, el) {
+        $(el).closest('li').removeClass('on');
+        var imgSrc = $(el).children('img').attr('src');
+        if (imgSrc.indexOf(fileName) != -1) {
+            $(el).closest('li').addClass('on');
+        }
+    });
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
+    //imageZoom 고정크기
+    var fixWidth = 744;
+    var fixHeight = 1052;
+
+    var widthPercent = fixWidth / width;
+    var heightPercent = fixHeight / height;
+
+    $('#mainImage').hide();
+    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+
+    // 사각형 좌표값
+    var location = $(e).val().split('_')[0].split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+
+    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
+    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
+    //console.log(xPosition + yPosition);
+    $('#imageZoom').css('background-position', xPosition + yPosition);
+
+    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
+    $('#redZoomNemo').show();
+}
+
 function viewOriginImg() {
     $('#imageZoom').hide();
     $('#mainImage').show();
@@ -2438,7 +2503,7 @@ var fn_docEvent = function () {
             var managerChk = true;
             $('input[name="base_chk"]:checked').each(function () {
                 if ($('#userId').val() != $(this).closest('tr').children().eq(3).text() && nvl($("#adminApproval").val() == 'N' ) ) {
-                    alert("문서 담당자가 아닙니다. 다시 선택해주세요.");
+                    fn_alert('alert', "문서 담당자가 아닙니다. 다시 선택해주세요.");
                     managerChk = false;
                     $('input[name="base_chk"]:checked').parent().removeClass('ez-checked');
                     $('input[name="base_chk"]:checked').prop('checked', false);
@@ -2451,7 +2516,7 @@ var fn_docEvent = function () {
 
             if (managerChk == false) return;
 
-            if (confirm("삭제하시겠습니까?")) {
+            fn_alert('confirm', "삭제하시겠습니까?", function () {
 
                 var rowData = new Array();
                 var tdArr = new Array();
@@ -2487,16 +2552,16 @@ var fn_docEvent = function () {
                         }
                         var totCnt = $("input[name = base_chk]").length;
                         $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt) + '건');
-                        alert(data.docData + " 건의 문서가 삭제되었습니다.");
-                        
+                        fn_alert('alert', data.docData + " 건의 문서가 삭제되었습니다.");
+
                     },
                     error: function (err) {
                         console.log(err);
                     }
                 });
-            }
+            });
         } else {
-            alert('문서를 선택하세요');
+            fn_alert('alert', '문서를 선택하세요');
         }
     });
 
@@ -2511,7 +2576,7 @@ var fn_docEvent = function () {
                     userId = $(this).closest('tr').children().eq(3).text();
                 }
                 if (userId != $(this).closest('tr').children().eq(3).text() && nvl($("#adminApproval").val() == 'N' )) {
-                    alert("문서 담당자가 아닙니다. 다시 선택해주세요.");
+                    fn_alert('alert', "문서 담당자가 아닙니다. 다시 선택해주세요.");
                     managerChk = false;
                     $('input[name="base_chk"]:checked').parent().removeClass('ez-checked');
                     $('input[name="base_chk"]:checked').prop('checked', false);
@@ -2525,23 +2590,23 @@ var fn_docEvent = function () {
             if (managerChk == false) return;
 
             if ($('#icrApproval').val() == 'Y') {
-                    if (confirm('반려 하시겠습니까?')) {
-                        var docNumArr = [];
-                        $('input[name="base_chk"]:checked').each(function (i, e) {
-                            if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
-                                docNumArr.push($(e).val());
-                            }
-                        });
-                        if (docNumArr.length > 0) {
-                            refuseDoc('icrApproval', docNumArr);
+                fn_alert('confirm', '반려 하시겠습니까?', function () {
+                    var docNumArr = [];
+                    $('input[name="base_chk"]:checked').each(function (i, e) {
+                        if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
+                            docNumArr.push($(e).val());
                         }
+                    });
+                    if (docNumArr.length > 0) {
+                        refuseDoc('icrApproval', docNumArr);
                     }
+                });
            
             } else if ($('#scanApproval').val() == 'Y') {                       
                 layer_open('layer1');            
             }                  
         } else {
-            alert('문서를 선택하세요');
+            fn_alert('alert', '문서를 선택하세요');
         }
     });
 
@@ -2581,7 +2646,7 @@ var fn_docEvent = function () {
                         $('#searchManagerResult').append(appendHtml);
                     }
                 } else {
-                    alert(data.error);
+                    fn_alert('alert', data.error);
                 }
             },
             error: function (err) {
@@ -2640,7 +2705,7 @@ var fn_docEvent = function () {
                         userChoiceTdArr.push(userId);
                 });
 
-                if (fn_alert('confirm', userChoiceTdArr[0] + "를 선택하셨습니다. 결제를 진행하시겠습니까?", function () {
+                fn_alert('confirm', userChoiceTdArr[0] + "를 선택하셨습니다. 결제를 진행하시겠습니까?", function () {
                     $.ajax({
                         url: '/invoiceRegistration/sendDocument',
                         type: 'post',
@@ -2651,7 +2716,7 @@ var fn_docEvent = function () {
                         }),
                         contentType: 'application/json; charset=UTF-8',
                         success: function (data) {
-                            alert(data.docData + "건의 문서가 전달 되었습니다.");
+                            fn_alert('alert', data.docData + "건의 문서가 전달 되었습니다.");
                             $('#layer1').fadeOut();
                             initForm(2);
                             var totCnt = $("input[name = base_chk]").length;
@@ -2664,9 +2729,8 @@ var fn_docEvent = function () {
                             console.log(err);
                         }
                     });
-                })) {
-                }
-                
+                }); 
+                         
             }
             
             else if (($('#icrApproval').val() == 'Y' && $("#adminApproval").val() == 'N') || $("#adminApproval").val() == 'Y') {
@@ -2726,9 +2790,9 @@ var fn_docEvent = function () {
                             } else {
                                 value = "N";
                             }
-                        } else if (j >= 1 && j <= 4) {
+                        } else if (j >= 2 && j <= 5) {
                             value = dtlTdList.eq(j).text();
-                        } else if (j >= 5) {
+                        } else if (j >= 6 || j == 1) {
                             if (dtlTdList.eq(j).find('select').length == 1) {
                                 value = dtlTdList.eq(j).find('select option:selected').text();
                             } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
@@ -2746,7 +2810,7 @@ var fn_docEvent = function () {
 
                 for (var i in mlExportRowData) {
                     if (mlExportRowData[i][0] == "Y" && (mlExportRowData[i][4] == '' || mlExportRowData[i][4] == null)) {
-                        alert("계약번호를 확인 할수 없습니다.");
+                        fn_alert('alert', "계약번호를 확인 할수 없습니다.");
                         return;
                     }
 
@@ -2769,15 +2833,14 @@ var fn_docEvent = function () {
                     }),
                     contentType: 'application/json; charset=UTF-8',
                     success: function (data) {
-                        if (confirm(data.docData + "건의 문서가 전달 되었습니다.")) {
-                            $('#layer1').fadeOut();
-                            var totCnt = $("input[name = base_chk]");
-                            $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + ' 건');
-                            for (var i in deleteTr) {
-                                deleteTr[i].remove();
-                            }
-                            $("#tbody_dtlList").empty();
+                        fn_alert('alert', data.docData + "건의 문서가 전달 되었습니다.");
+                        $('#layer1').fadeOut();
+                        var totCnt = $("input[name = base_chk]");
+                        $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + ' 건');
+                        for (var i in deleteTr) {
+                            deleteTr[i].remove();
                         }
+                        $("#tbody_dtlList").empty();
                     },
                     error: function (err) {
                         console.log(err);
@@ -2805,10 +2868,10 @@ var fn_docEvent = function () {
             if (isCheckboxYn) {
                 layer_open('layer1');
             } else {
-                alert("전달할 문서를 선택하세요.");
+                fn_alert('alert', "전달할 문서를 선택하세요.");
             }
         } else {
-            alert("전달/결제상신에 대한 권한이 없습니다.");
+            fn_alert('alert', "전달/결제상신에 대한 권한이 없습니다.");
         }        
     });
 
@@ -2828,7 +2891,7 @@ var refuseDoc = function (refuseType, docNumArr) {
                 $('#documentManager').val('');
                 $('#btn_search').click();
             } else {
-                alert(data.message);
+                fn_alert('alert', data.message);
             }
         },
         error: function (err) {

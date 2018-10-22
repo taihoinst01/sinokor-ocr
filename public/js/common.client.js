@@ -299,8 +299,8 @@ $(function () {
 
 /**
  * alert 팝업
- *  {'alert', '제목', '내용'}
- *  {'confirm', '제목', '내용'}
+ *  {'alert', '내용'}
+ *  {'confirm', '내용', 콜백함수}
  * */
 var fn_alert = function ( type, contents, callback ) {
 
@@ -313,6 +313,8 @@ var fn_alert = function ( type, contents, callback ) {
     $('#alertContent').empty().html(contents);
     layer_open('layer_alert');
 
+    $('#btn_layer_alert_submit').unbind('click');
+
     // confirm 확인버튼
     $('#btn_layer_alert_submit').on('click', function () {
         $('#layer_alert').fadeOut();
@@ -320,4 +322,8 @@ var fn_alert = function ( type, contents, callback ) {
             callback();
         }
     });
+}
+
+function submitConfirm() {
+
 }

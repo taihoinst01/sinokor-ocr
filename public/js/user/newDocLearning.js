@@ -283,7 +283,7 @@ function trainBtnEvent() {
             data: JSON.stringify({ 'formName': (($('#newDocName').val() != '') ? $('#newDocName').val() : $('#preTitle').text()) , 'data': insertData }),
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
-                alert(data.message);
+                fn_alert('alert', data.message);
             },
             error: function (err) {
                 console.log(err);
