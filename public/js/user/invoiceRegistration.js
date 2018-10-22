@@ -1779,6 +1779,7 @@ function fn_processFinish(mlData, imgId) {
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
         '<td><input type="checkbox" value="' + imgId + '" name="dtl_chk" /></td>' +
+        '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
         '<td>' + makeMLSelect(mlData, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(mlData, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(mlData, 2, null) + '</td> <!--UY-->' +
