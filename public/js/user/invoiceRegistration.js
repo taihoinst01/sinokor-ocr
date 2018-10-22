@@ -17,6 +17,7 @@ var docType = '';
 var progressId; // progress Id
 var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
+var regMlData = [];
 
 /**
  * 전역변수 초기화
@@ -1363,8 +1364,8 @@ var ocrResult = function () {
 
         var appendRowHtml = '<tr><td><input type="checkbox" value="" name="dtl_chk"></td>' +
             '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
-            '<td><input type="text" name=""></td> <!--출재사명-->' +
-            '<td><input type="text" name=""></td> <!--계약명-->' +
+            '<td><input type="text" name="moveFocus" onkeydown=moveFocus("test1")></td> <!--출재사명-->' +
+            '<td><input type="text" name="" onkeydown=moveFocus("test2")></td> <!--계약명-->' +
             '<td><input type="text" name=""></td> <!--UY-->' +
             '<td><input type="text" name=""></td> <!--계약번호-->' +
             '<td><input type="text" name=""></td> <!--페이지번호 FROM-->' +
@@ -1550,17 +1551,24 @@ function executeML(totData) {
         data: JSON.stringify(totData),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
-            console.log(data);
+            //console.log(data);
+            //console.log(totData);
             if (data.column) searchDBColumnsCount++;
             if (data.message) {
                 fn_alert('alert', message);
             } else {
                 //console.log(data);
                 lineText.push(data);
-                fn_processFinish(data.data, totData.fileDtlInfo); // 인식 결과
+                //fn_processFinish(data.data, totData.fileDtlInfo); // 인식 결과
                 $('#docSid').val(data.data.docSid);
                 docType = data.data.docCategory.DOCTYPE;
                 $('#docType').val(data.data.docCategory.DOCTYPE);
+
+                for (var i = 0; i < data.data.data.length; i++) {
+                    data.data.data[i].convertFileName = totData.fileDtlInfo.convertFileName;
+                    regMlData.push(data.data.data[i]);
+                }
+
                 if (searchDBColumnsCount == 1) {
 
                     var mainImgHtml = '';
@@ -1586,9 +1594,9 @@ function executeML(totData) {
 
                 if (totCount == searchDBColumnsCount) {
                     thumnImg();
-                    //fn_processFinish(lineText);
                     thumbImgEvent();
                     thumbImgPagingEvent();
+					fn_processFinish(regMlData, totData.fileDtlInfo.imgId);
                 }
             }
 
@@ -1759,75 +1767,75 @@ function fn_processFinish_Old1(data) {
 */
 
 // 인식 결과 처리
-function fn_processFinish(data, fileDtlInfo) {
+function fn_processFinish(mlData, imgId) {
     //console.log("data : " + JSON.stringify(data));
     //console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
 
-    var dataObj = {};
-    var dataVal = data.data;
-    dataObj["imgId"] = fileDtlInfo.imgId;
+    //var dataObj = {};
+    //var dataVal = data.data;
+    //dataObj["imgId"] = fileDtlInfo.imgId;
 
 
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
-        '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-        '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
-        '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
-        '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
-        '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
+        '<td><input type="checkbox" value="' + imgId + '" name="dtl_chk" /></td>' +
+        '<td>' + makeMLSelect(mlData, 0, null) + '</td> <!--출재사명-->' +
+        '<td>' + makeMLSelect(mlData, 1, null) + '</td> <!--계약명-->' +
+        '<td>' + makeMLSelect(mlData, 2, null) + '</td> <!--UY-->' +
         '<td></td> <!--계약번호-->' +
         '<td></td> <!--페이지번호 FROM-->' +
         '<td></td> <!--페이지번호 TO-->' +
-        '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
-        '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
-        '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
-        '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
-        '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
-        '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
-        '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
-        '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
-        '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
-        '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
-        '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
-        '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
-        '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
-        '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
-        '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
-        '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
-        '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
-        '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
-        '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-        '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-        '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-        '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
-        '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
-        '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
-        '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
-        '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
-        '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
-        '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
-        '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
-        '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
-        '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
-        '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
-        '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+        '<td>' + makeMLSelect(mlData, 3, null) + '</td> <!--화폐코드-->' +
+        '<td>' + makeMLSelect(mlData, 4, null) + '</td> <!--화폐단위-->' +
+        '<td>' + makeMLSelect(mlData, 5, 0) + '</td> <!--Paid(100%)-->' +
+        '<td>' + makeMLSelect(mlData, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+        '<td>' + makeMLSelect(mlData, 7, 2) + '</td> <!--OSL(100%)-->' +
+        '<td>' + makeMLSelect(mlData, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+        '<td>' + makeMLSelect(mlData, 9, 4) + '</td> <!--PREMIUM-->' +
+        '<td>' + makeMLSelect(mlData, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+        '<td>' + makeMLSelect(mlData, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+        '<td>' + makeMLSelect(mlData, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+        '<td>' + makeMLSelect(mlData, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+        '<td>' + makeMLSelect(mlData, 14, 9) + '</td> <!--COMMISION -->' +
+        '<td>' + makeMLSelect(mlData, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+        '<td>' + makeMLSelect(mlData, 16, 11) + '</td> <!--BROKERAGE-->' +
+        '<td>' + makeMLSelect(mlData, 17, 12) + '</td> <!--TEX-->' +
+        '<td>' + makeMLSelect(mlData, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+        '<td>' + makeMLSelect(mlData, 19, 14) + '</td> <!--CHARGE-->' +
+        '<td>' + makeMLSelect(mlData, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+        '<td>' + makeMLSelect(mlData, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+        '<td>' + makeMLSelect(mlData, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+        '<td>' + makeMLSelect(mlData, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+        '<td>' + makeMLSelect(mlData, 24, 19) + '</td> <!--CLAIM -->' +
+        '<td>' + makeMLSelect(mlData, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+        '<td>' + makeMLSelect(mlData, 26, 21) + '</td> <!--CASH LOSS -->' +
+        '<td>' + makeMLSelect(mlData, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+        '<td>' + makeMLSelect(mlData, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+        '<td>' + makeMLSelect(mlData, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+        '<td>' + makeMLSelect(mlData, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+        '<td>' + makeMLSelect(mlData, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+        '<td>' + makeMLSelect(mlData, 32, 27) + '</td> <!--INTEREST -->' +
+        '<td>' + makeMLSelect(mlData, 33, 28) + '</td> <!--TAX ON -->' +
+        '<td>' + makeMLSelect(mlData, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+        '<td>' + makeMLSelect(mlData, 35, null) + '</td> <!--YOUR REF -->' +
         '</tr>';
 
     $("#tbody_dtlList").empty().append(dtlHtml);
     $("#tbody_dtlList input[type=checkbox]").ezMark();
     $("#div_dtl").css("display", "block");
     $("#btn_pop_ui_close").click();
+
     function makeMLSelect(mlData, colnum, entry) {
 
         var appendMLSelect = '';
         if (colnum == 0) {
-            appendMLSelect = '<select class="selectDbClick" name="cdnNm" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" name="cdnNm" onchange="zoomImg(this)">';
         } else if (colnum == 1) {
-            appendMLSelect = '<select class="selectDbClick" name="ctNm" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" name="ctNm" onchange="zoomImg(this)">';
         } else if (colnum == 2) {
-            appendMLSelect = '<select class="selectDbClick" name="ttyYy" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" name="ttyYy" onchange="zoomImg(this)">';
         } else {
-            appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
+            appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this)">';
         }
         appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
@@ -1835,15 +1843,17 @@ function fn_processFinish(data, fileDtlInfo) {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
         return hasColvalue ? appendMLSelect : '';
     }
+
+    regMlData = [];
 }
 
 //계약 번호 추출
@@ -1913,11 +1923,11 @@ function fn_ContractNumExtraction() {
     for (var l = 0; l < cdnNm.length; l++) {
         for (var j = 0; j < ctNm.length; j++) {
             for (var k = 0; k < ttyYy.length; k++) {
-
                 $.ajax({
                     url: '/wF_WorkflowProc/',
                     type: 'post',
                     datatype: 'json',
+                    async: false,
                     data: JSON.stringify({ cdnNm: cdnNm[l], ctNm: ctNm[j], ttyYy: ttyYy[k] }),
                     contentType: 'application/json; charset=UTF-8',
                     beforeSend: function () {
@@ -1925,6 +1935,7 @@ function fn_ContractNumExtraction() {
                         progressId = showProgressBar();
                     },
                     success: function (data) {
+
                         var dtlHtml = '';
                         for (var i in data.data) {
                             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
@@ -1977,7 +1988,13 @@ function fn_ContractNumExtraction() {
                         $("#tbody_dtlList input[type=checkbox]").ezMark();
                         $("#div_dtl").css("display", "block");
                         endProgressBar(progressId);
-                        
+
+                        if (l == cdnNm.length -1 && k == ttyYy.length - 1) {
+                            if ($("#tbody_dtlList").length == 1) {
+                                fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
+                            }
+                        }
+
                     },
                     error: function (err) {
                         console.log(err);
@@ -2372,6 +2389,58 @@ function zoomImg(e, fileName) {
     $('#redZoomNemo').show();
 }
 
+function zoomImg(e) {
+    var fileName = $(e).find('option:selected').attr('alt');    
+    var mainImage = $("#mainImage").css('background-image');
+    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
+
+    if (mainImage != fileName) {
+        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+    }
+
+    $('.thumb-img').each(function (i, el) {
+        $(el).closest('li').removeClass('on');
+        var imgSrc = $(el).children('img').attr('src');
+        if (imgSrc.indexOf(fileName) != -1) {
+            $(el).closest('li').addClass('on');
+        }
+    });
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
+    //imageZoom 고정크기
+    var fixWidth = 744;
+    var fixHeight = 1052;
+
+    var widthPercent = fixWidth / width;
+    var heightPercent = fixHeight / height;
+
+    $('#mainImage').hide();
+    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+
+    // 사각형 좌표값
+    var location = $(e).val().split('_')[0].split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+
+    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
+    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
+    //console.log(xPosition + yPosition);
+    $('#imageZoom').css('background-position', xPosition + yPosition);
+
+    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
+    $('#redZoomNemo').show();
+}
+
 function viewOriginImg() {
     $('#imageZoom').hide();
     $('#mainImage').show();
@@ -2661,8 +2730,7 @@ var fn_docEvent = function () {
                         }
                     });
                 }); 
-                
-                
+                         
             }
             
             else if (($('#icrApproval').val() == 'Y' && $("#adminApproval").val() == 'N') || $("#adminApproval").val() == 'Y') {
