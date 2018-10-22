@@ -2392,6 +2392,14 @@ function zoomImg(e) {
         $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
     }
 
+    $('.thumb-img').each(function (i, el) {
+        $(el).closest('li').removeClass('on');
+        var imgSrc = $(el).children('img').attr('src');
+        if (imgSrc.indexOf(fileName) != -1) {
+            $(el).closest('li').addClass('on');
+        }
+    });
+
     //실제 이미지 사이즈와 메인이미지div 축소율 판단
     var reImg = new Image();
     var imgPath = $('#mainImage').css('background-image').split('("')[1];
