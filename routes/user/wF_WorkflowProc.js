@@ -24,7 +24,7 @@ router.post('/', function (req, res) {
     var token = req.session.passport.user.token;
 
     var testData = 
-        '<? xml version = "1.0" encoding = "utf-8" ?>'+
+        '<?xml version="1.0" encoding="utf-8"?>'+
         '<Root>'+
             '<Parameters>'+
                 '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>'+

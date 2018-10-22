@@ -296,3 +296,28 @@ $(function () {
     });
 
 });
+
+/**
+ * alert 팝업
+ *  {'alert', '제목', '내용'}
+ *  {'confirm', '제목', '내용'}
+ * */
+var fn_alert = function ( type, contents, callback ) {
+
+    if (type == 'alert') {
+        $('#btn_layer_alert_cancel').hide();
+    } else {
+        $('#btn_layer_alert_cancel').show();
+    }
+
+    $('#alertContent').empty().html(contents);
+    layer_open('layer_alert');
+
+    // confirm 확인버튼
+    $('#btn_layer_alert_submit').on('click', function () {
+        $('#layer_alert').fadeOut();
+        if (type == 'confirm') {
+            callback();
+        }
+    });
+}

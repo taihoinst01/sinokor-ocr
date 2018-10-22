@@ -341,7 +341,8 @@ h3.tits:before,
 .button_control13:before,
 .button_control14:before,
 .searchIcon:before,
-#content h2:before {
+#content h2:before,
+.alert_icon:before {
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat;
 }
@@ -6298,4 +6299,26 @@ input:disabled {
 .searchManagerResultDiv {
     height: 250px;
     overflow: overlay;
+}
+
+.pop_popup_alert {
+    width: 350px !important;
+}
+
+.alert_icon:before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-position: -265px -543px;
+    margin-right: 5px;
+}
+#layer_alert {
+    z-index: 2000 !important;
+}
+#layer_alert .pop_layer {
+    z-index: 2000 !important;
+}
+#layer_alert .bg {
+    z-index: 200 !important;
 }
