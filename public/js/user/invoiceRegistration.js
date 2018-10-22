@@ -2722,9 +2722,9 @@ var fn_docEvent = function () {
                             } else {
                                 value = "N";
                             }
-                        } else if (j >= 1 && j <= 4) {
+                        } else if (j >= 2 && j <= 5) {
                             value = dtlTdList.eq(j).text();
-                        } else if (j >= 5) {
+                        } else if (j >= 6 || j == 1) {
                             if (dtlTdList.eq(j).find('select').length == 1) {
                                 value = dtlTdList.eq(j).find('select option:selected').text();
                             } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
@@ -2765,15 +2765,14 @@ var fn_docEvent = function () {
                     }),
                     contentType: 'application/json; charset=UTF-8',
                     success: function (data) {
-                        fn_alert('confirm', data.docData + "건의 문서가 전달 되었습니다.", function () {
-                            $('#layer1').fadeOut();
-                            var totCnt = $("input[name = base_chk]");
-                            $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + ' 건');
-                            for (var i in deleteTr) {
-                                deleteTr[i].remove();
-                            }
-                            $("#tbody_dtlList").empty();
-                        });
+                        fn_alert('alert', data.docData + "건의 문서가 전달 되었습니다.");
+                        $('#layer1').fadeOut();
+                        var totCnt = $("input[name = base_chk]");
+                        $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + ' 건');
+                        for (var i in deleteTr) {
+                            deleteTr[i].remove();
+                        }
+                        $("#tbody_dtlList").empty();
                     },
                     error: function (err) {
                         console.log(err);
