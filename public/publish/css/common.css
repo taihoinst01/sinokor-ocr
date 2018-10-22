@@ -6323,3 +6323,19 @@ input:disabled {
 #layer_alert .bg {
     z-index: 200 !important;
 }
+.width100 {
+    width: 100%;
+}
+
+.btn_small {
+    display: inline-block;
+    min-width: 40px;
+    height: 40px;
+    margin: 0;
+    font-size: 12px;
+    color: #525250;
+    background: none;
+    border: 1px solid #b6b6b6;
+    border-radius: 5px;
+    cursor: pointer;
+}

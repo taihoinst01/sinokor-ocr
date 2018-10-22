@@ -1471,7 +1471,7 @@ var fn_processBaseImage = function (fileInfo) {
                                 '<td></td>' +
                                 '<td></td>' +
                                 '<td></td>' +
-                                '<td></td>' +
+                                '<td class="td_dbclick">' + getNowYearMonth()+ '</td>' +
                                 '<td></td>' +
                             '</tr>';
                 }
@@ -2831,3 +2831,30 @@ var refuseDoc = function (refuseType, docNumArr) {
         }
     });
 };
+
+// 마감년월 더블클릭시 수정
+$(document).on('dblclick', '.td_dbclick', function (e) {
+    var orignalText = $(this).text() == '' ? '' : $(this).text();
+    var appendIptHtml = '<input type="text" name="ipt_nowYearMonth" value="' + orignalText + '">';
+    $(this).empty().append(appendIptHtml);
+    $('input[name=ipt_nowYearMonth]').focus();
+});
+
+// 마감년월 수정 후 값 체크 yyyymm
+$(document).on('focusout', 'input[name=ipt_nowYearMonth]', function () {
+    var data = $(this).val();
+    var num = String(data).replace(/^\s+|\s+$/g, "");
+
+    var regex = /^[0-9]{6}$/g;
+
+
+    if (regex.test(num)) {
+        num = num.replace(/,/g, "");
+        return isNaN(num) ? false : true;
+    } else {
+        fn_alert('alert', '올바른형식이 아닙니다.<br> yyyymm 숫자형식으로 입력해주세요.');
+        $(this).val('').focus();
+        return false
+    }
+
+});
