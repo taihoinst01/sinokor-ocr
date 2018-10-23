@@ -1381,21 +1381,18 @@ exports.selectCurCd = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sql = "SELECT beforeText, afterText FROM tbl_curcd_mapping WHERE beforeText like '%" + req.split(' ')[1] + "%'";
+            let sql = "SELECT beforeText, afterText FROM tbl_curcd_mapping";
             result = await conn.execute(sql);
 
+            var afterText = req;
             if (result.rows.length > 0) {
-                if (result.rows.length == 1) {
-                    return done(null, result.rows[0].AFTERTEXT);
-                } else {
-                    for (var i in result.rows) {
-                        var row = result.rows[i];
-                        if (req == row.BEFORETEXT) {
-                            return done(null, row.AFTERTEXT);
-                        }
+                for (var i in result.rows) {
+                    if (req.lastIndexOf(result.rows[i].BEFORETEXT) != -1) {
+                        afterText = result.rows[i].AFTERTEXT;
+                        break;
                     }
-                    return done(null, result.rows[0].AFTERTEXT);
                 }
+                return done(null, afterText);
             } else {
                 return done(null, req);
             }
@@ -3089,6 +3086,41 @@ exports.insertDocumentDtl = function (mlData, done) {
         }
     });
 };
+
+exports.rollbackTrain = function (date, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var delFormMappingSql = "DELETE FROM TBL_FORM_MAPPING";
+            var delColumnMappingSql = "";
+            var delDocumentSentenceSql = "";
+            var delBannedWordSql = "";
+            var delOcrSymspellSql = "";
+            var delContractMappingSql = "";
+            var delCurcdMappingSql = "";
+            var delDocumentCategorySql = "";
+
+            await conn.execute(delFormMappingSql, [date]);
+            await conn.execute(delColumnMappingSql, [date]);
+            await conn.execute(delDocumentSentenceSql, [date]);
+            await conn.execute(delBannedWordSql, [date]);
+            await conn.execute(delOcrSymspellSql, [date]);
+            await conn.execute(delContractMappingSql, [date]);
+            await conn.execute(delCurcdMappingSql, [date]);
+            await conn.execute(delDocumentCategorySql, [date]);
+
+        } catch (err) {
+            reject(err);
+        } finally {
+            return done(null, null);
+        }
+    });
+};
+
 
 /*
 exports.convertMs = function (data, done) {

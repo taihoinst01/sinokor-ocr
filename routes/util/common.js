@@ -238,6 +238,26 @@ router.post('/imageUpload', upload.any(), function (req, res) {
     */
 });
 
+router.post('/rollback', function (req, res) {
+    var date = req.body.date;
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            //delete tbl_form_mapping
+            sync.await(oracle.rollbackTrain(date, sync.defer()));
+
+            returnObj = { code: 200, message: 'modify textData success' };
+
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
 router.post('/approvalDtlProcess', function (req, res) {
     var data = req.body.data;
     var returnObj;

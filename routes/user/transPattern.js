@@ -7,6 +7,8 @@ module.exports = {
     trans: function (reqArr, done) {
         sync.fiber(function () {
             try {
+                //Specific documents Before treatment
+                reqArr = convertedSpecificDocumentsBefore(reqArr);
                 //UY
                 reqArr = convertedUY(reqArr);
                 //Entry
@@ -15,8 +17,9 @@ module.exports = {
                 reqArr = convertedOurShare(reqArr);
                 //Currency Code
                 reqArr = sync.await(convertedCurrencyCode(reqArr, sync.defer()));
-                //Specific documents
-                reqArr = convertedSpecificDocuments(reqArr);
+                //Specific documents After treatment
+                reqArr = convertedSpecificDocumentsAfter(reqArr);
+
                 return done(null, reqArr);
 
             } catch (e) {
@@ -27,6 +30,19 @@ module.exports = {
     }
 };
 
+function convertedSpecificDocumentsBefore(reqArr) {
+    //COSMOS
+    if (reqArr.docCategory.DOCNAME == 'COSMOS') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 37 && item.text.toUpperCase().indexOf('CR') == -1) {
+                item.text += 'DR';
+            }
+        }
+    }
+
+    return reqArr;
+}
 
 function convertedUY(reqArr) {
     // UY outputs only year START
@@ -175,7 +191,7 @@ function convertedCurrencyCode(reqArr, done) {
     });
 }
 
-function convertedSpecificDocuments(reqArr) {
+function convertedSpecificDocumentsAfter(reqArr) {
     // BT
     if (reqArr.docCategory.DOCNAME == 'BT') {
         var oslLocation;
@@ -192,6 +208,10 @@ function convertedSpecificDocuments(reqArr) {
                 oslText = item.text;
             } else if (item.colLbl == 36) { // Our Share Label
                 yourShare = item.text;
+            } else if (item.colLbl == 35) {
+                if (isNaN(item.text)) {
+                    item.colLbl = 38;
+                }
             }
         }
 
