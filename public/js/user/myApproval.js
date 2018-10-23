@@ -311,8 +311,7 @@ var fn_search = function () {
             fn_clickEvent(); // regist and refresh click event
             $('input[type=checkbox]').ezMark();
 
-            console.log($('#tbody_baseList > tr').length);
-            if($('#tbody_baseList > tr').length > 0){
+            if (!$('#tbody_baseList > tr').find('td').eq(0).attr('colspan')){
                 $('#tbody_baseList > tr').eq(0).find('td[name="td_base"]').eq(0).click();
              }
             //endProgressBar(progressId); // end progressbar

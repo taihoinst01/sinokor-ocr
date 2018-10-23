@@ -520,9 +520,11 @@ exports.insertBatchColumnMappingFromUi = function (req, docType, before, done) {
             
             result = await conn.execute(selectSid, [req.text.replace(regExp, "")]);
             if (result.rows[0].SID) {              
-                var locArr = req.location.split(',');
+                //var locArr = req.location.split(',');
+                var locArr = req.sid.split(',');
                 var sid = result.rows[0].SID;
-                var colSid = docType + ',' + locArr[0] + ',' + locArr[1] + ',' + (Number(locArr[0]) + Number(locArr[2])) + ',' + result.rows[0].SID;
+                //var colSid = docType + ',' + locArr[0] + ',' + locArr[1] + ',' + (Number(locArr[0]) + Number(locArr[2])) + ',' + result.rows[0].SID;
+                var colSid = docType + ',' + locArr[0] + ',' + locArr[1] + ',' + locArr[2] + ',' + result.rows[0].SID;
                 req.colSid = colSid;
                 result = await conn.execute(selectBatchColumnMapping, [colSid, before.colLbl]);
                 if ( result.rows.length == 0 && !(((req.colLbl >= 5 && req.colLbl <= 34) || req.colLbl == 36) && (sid == "0,0,0,0,0" || sid == "1,1,1,1,1")) ) {
@@ -1214,9 +1216,11 @@ exports.selectSid = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
             let sqltext = `SELECT EXPORT_SENTENCE_SID(LOWER(:COND)) SID FROM DUAL`;
             var sid = "";
-            locSplit = req.location.split(",");
+            //locSplit = req.location.split(",");
             //need check
-            sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
+            //sid += locSplit[0] + "," + locSplit[1] + "," + (Number(locSplit[0]) + Number(locSplit[2]));
+            locSplit = req.mappingSid.split(",");
+            sid += locSplit[1] + "," + locSplit[2] + "," + locSplit[3];
 
             var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
             let result = await conn.execute(sqltext, [req.text.replace(regExp,"")]);
