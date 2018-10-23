@@ -146,13 +146,14 @@ var fn_uploadFileEvent = function () {
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
             $("#progressMsgTitle").html('파일 업로드 중..');
-            startProgressBar(); // start progressbar
-            addProgressBar(1, 10); // proceed progressbar
+            //startProgressBar(); // start progressbar
+            //addProgressBar(1, 10); // proceed progressbar
+            progressId = showProgressBar();
             return true;
         },
         success: function (responseText, statusText) {
             $("#progressMsgTitle").html('파일 업로드 완료..');
-            addProgressBar(11, 20);
+            //addProgressBar(11, 20);
 
             //console.log('base 사이즈 :' + responseText.fileInfo.length);
             //console.log('dtl 사이즈 :' + responseText.fileDtlInfo.length);
@@ -171,10 +172,10 @@ var fn_uploadFileEvent = function () {
             }
             */
 
-            //endProgressBar();
+            //endProgressBar(progressId);
         },
         error: function (e) {
-            endProgressBar();
+            endProgressBar(progressId);
             //console.log(e);
         }
     });
@@ -945,7 +946,7 @@ var fn_search = function () {
         data: JSON.stringify(param),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
-            addProgressBar(1, 99);
+            progressId = showProgressBar();
         },
         success: function (data) {
             var appendHtml = "";
@@ -967,18 +968,26 @@ var fn_search = function () {
             } else {
                 appendHtml += '<tr><td colspan="9">조회된 데이터가 없습니다.</td></tr>';
             }
+
             $("#tbody_baseList").empty().append(appendHtml);
             $("#tbody_baseList input[type=checkbox]").ezMark();
             $("#span_document_base").empty().html("문서 기본정보 - " + data.length + "건");
             $("#div_base").fadeIn();
             fn_clickEvent();
-            endProgressBar();
+            if (!$('#tbody_baseList > tr').find('td').eq(0).attr('colspan')) {
+                $('#tbody_baseList > tr').eq(0).find('td[name="td_base"]').eq(0).click();
+            } else {
+                endProgressBar(progressId);
+                $('#sendDocBtn').focus();
+            }
+
         },
         error: function (err) {
-            endProgressBar();
+            endProgressBar(progressId);
             console.log(err);
         }
     });
+    
 };
 
 var fn_searchDocEnterEvent = function () {
@@ -1478,6 +1487,7 @@ var fn_processBaseImage = function (fileInfo) {
                 }
                 $("#tbody_baseList").empty().append(html);
                 $("#tbody_baseList input[type=checkbox]").ezMark();
+                $("#tbody_baseList tr:eq(0) input[type=checkbox]").click();
                 $("#div_base").css("display", "block");
                 fn_clickEvent();
                 endProgressBar();
@@ -1496,7 +1506,7 @@ var fn_processBaseImage = function (fileInfo) {
 var fn_processDtlImage = function (fileDtlInfo) {
     var fileName = fileDtlInfo.oriFileName;
     $('#progressMsgTitle').html('OCR 처리 중..');
-    addProgressBar(21, 30);
+    //addProgressBar(21, 30);
     $.ajax({
         url: '/common/ocr',
         beforeSend: function (jqXHR) {
@@ -1511,15 +1521,15 @@ var fn_processDtlImage = function (fileDtlInfo) {
         if (!data.code) { // 에러가 아니면
             //thumbImgs.push(fileName);
             $('#progressMsgTitle').html('OCR 처리 완료');
-            addProgressBar(31, 40);
+            //addProgressBar(31, 40);
             appendOcrData(fileDtlInfo, fileName, data);
             oriOcrData.push({ fileName: fileName, data: JSON.stringify(data) });
         } else if (data.error) { //ocr 이외 에러이면
-            endProgressBar();
+            endProgressBar(progressId);
             fn_alert('alert', data.error);
         } else { // ocr 에러 이면
             insertCommError(data.code, 'ocr');
-            endProgressBar();
+            endProgressBar(progressId);
             fn_alert('alert', data.message);
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -1600,7 +1610,7 @@ function executeML(totData) {
                 }
             }
 
-            endProgressBar();
+            endProgressBar(progressId);
         },
         error: function (err) {
             console.log(err);

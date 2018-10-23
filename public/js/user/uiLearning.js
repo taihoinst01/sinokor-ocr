@@ -869,9 +869,9 @@ function detailTable(fileName) {
                     if (data[i].originText) {
                         tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:150px;">';
                     } else {
-                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:150px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:320px;">';
                     }
-                    tblTag += '<input type="text" value="' + data[i].text + '" style="width:40px !important; border:0;" />';
+                    tblTag += '<input type="text" value="' + data[i].text + '" style="width:100% !important; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
                     tblTag += '<input type="hidden" value="' + fileName + '" />';
                     tblTag += '</label>';
@@ -892,9 +892,9 @@ function detailTable(fileName) {
                     if (data[i].originText) {
                         tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:150px;">';
                     } else {
-                        tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:150px;">';
+                        tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:320px;">';
                     }
-                    tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:440px !important; border:0;" />';
+                    tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:100% !important; border:0;" />';
                     tblSortTag += '<input type="hidden" value="' + data[i].location + '" />';
                     tblSortTag += '<input type="hidden" value="' + fileName + '" />';
                     tblSortTag += '</label>';
@@ -915,9 +915,9 @@ function detailTable(fileName) {
                     if (data[i].originText) {
                         tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:150px;">';
                     } else {
-                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:150px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:320px;">';
                     }
-                    tblTag += '<input type="text" value="' + data[i].text + '" style="440px !important; border:0;" />';
+                    tblTag += '<input type="text" value="' + data[i].text + '" style="100% !important; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
                     tblTag += '<input type="hidden" value="' + fileName + '" />';
                     tblTag += '</label>';
