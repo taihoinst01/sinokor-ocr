@@ -1478,6 +1478,7 @@ var fn_processBaseImage = function (fileInfo) {
                 }
                 $("#tbody_baseList").empty().append(html);
                 $("#tbody_baseList input[type=checkbox]").ezMark();
+                $("#tbody_baseList tr:eq(0) input[type=checkbox]").click();
                 $("#div_base").css("display", "block");
                 fn_clickEvent();
                 endProgressBar();
