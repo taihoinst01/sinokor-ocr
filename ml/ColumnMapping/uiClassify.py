@@ -37,7 +37,7 @@ def isfloat(value):
 
 
 def boundaryCheck(str1, str2):
-    return abs(int(str1) - int(str2)) < 6
+    return abs(int(str1) - int(str2)) < 15
 
 
 def findLabelDB(inputsid):
@@ -303,10 +303,27 @@ def getDocSid(data):
 
 def getSidParsing(data, docType):
     try:
+        maxWidth = 0
+        maxHeight = 0
+
         for item in data:
             loc = item["location"].split(',')
-            item["mappingSid"] = str(docType) + "," + str(loc[0]) + "," + str(loc[1]) + "," + str(
-                int(loc[0]) + int(loc[2])) + "," + str(item["sid"])
+
+            if (int(loc[0]) + int(loc[2])) > maxWidth:
+                maxWidth = int(loc[0]) + int(loc[2])
+            if int(loc[1]) > maxHeight:
+                maxHeight = int(loc[1])
+
+        rateWidth = maxWidth / 2000
+        rateheight = maxHeight / 2830
+
+        for item in data:
+            loc = item["location"].split(',')
+            x = int(loc[0]) / rateWidth
+            xlength = int(loc[2]) / rateWidth
+            y = int(loc[1]) / rateheight
+            item["mappingSid"] = str(docType) + "," + str(int(x)) + "," + str(int(y)) + "," + str(
+                int(x + xlength)) + "," + str(item["sid"])
 
         return data
 
@@ -317,7 +334,7 @@ def getSidParsing(data, docType):
 
 def selectFormMapping(sentencesSid):
     try:
-        selectFormMappingSql = "SELECT CLASS FROM TBL_FORM_MAPPING WHERE DATA = :data"
+        selectFormMappingSql = "SELECT CLASS FROM TBL_FORM_MAPPING WHERE DATA = :data order by regdate desc"
         curs.execute(selectFormMappingSql, {"data": sentencesSid})
         rows = curs.fetchall()
         return rows

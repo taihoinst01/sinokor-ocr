@@ -157,49 +157,10 @@ router.post('/', function (req, res) {
                 <Col id="brkCd">MY0088</Col>	
                 <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
             </Row>	
-            <Row>	
-                <Col id="ctNo">C2014010027281</Col>	
-                <Col id="ttyDtlNo">C203</Col>	
-                <Col id="cdnCd">MY0119</Col>	
-                <Col id="cdnNm">TOKIO&#32;MARINE&#32;INS&#32;-&#32;MALAYSIA</Col>	
-                <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL&#32;3</Col>	
-                <Col id="ttyYy">2014</Col>	
-                <Col id="brkCd">MY0088</Col>	
-                <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
-            </Row>	
-            <Row>	
-                <Col id="ctNo">C2014010027282</Col>	
-                <Col id="ttyDtlNo">C204</Col>	
-                <Col id="cdnCd">MY0119</Col>	
-                <Col id="cdnNm">TOKIO&#32;MARINE&#32;INS&#32;-&#32;MALAYSIA</Col>	
-                <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL&#32;4</Col>	
-                <Col id="ttyYy">2014</Col>	
-                <Col id="brkCd">MY0088</Col>	
-                <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
-            </Row>	
-            <Row>	
-                <Col id="ctNo">C2014010027283</Col>	
-                <Col id="ttyDtlNo">C205</Col>	
-                <Col id="cdnCd">MY0119</Col>	
-                <Col id="cdnNm">TOKIO&#32;MARINE&#32;INS&#32;-&#32;MALAYSIA</Col>	
-                <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL&#32;5</Col>	
-                <Col id="ttyYy">2014</Col>	
-                <Col id="brkCd">MY0088</Col>	
-                <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
-            </Row>	
-            <Row>	
-                <Col id="ctNo">C2014010027284</Col>	
-                <Col id="ttyDtlNo">C206</Col>	
-                <Col id="cdnCd">MY0119</Col>	
-                <Col id="cdnNm">TOKIO&#32;MARINE&#32;INS&#32;-&#32;MALAYSIA</Col>	
-                <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL&#32;6</Col>	
-                <Col id="ttyYy">2014</Col>	
-                <Col id="brkCd">MY0088</Col>	
-                <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
-            </Row>	
         </Rows>	
     </Dataset>	
 </Root>`;
+
         if (data == null) {
             console.log("실패...");
         } else {
