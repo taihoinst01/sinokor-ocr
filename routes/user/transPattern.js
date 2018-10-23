@@ -40,6 +40,8 @@ function convertedSpecificDocumentsBefore(reqArr) {
             }
         }
     }
+
+    retunr reqArr;
 }
 
 function convertedUY(reqArr) {
