@@ -41,7 +41,7 @@ function convertedSpecificDocumentsBefore(reqArr) {
         }
     }
 
-    retunr reqArr;
+    return reqArr;
 }
 
 function convertedUY(reqArr) {
