@@ -39,6 +39,7 @@ var initGlobalVariable = function () {
     mouseY = 0;
     mouseMoveX = 0;
     mouseMoveY = 0; // 마우스 이동 시작 좌표, 마우스 이동 좌표
+    $("#ul_image").html("");
 };
 
 // 폼 초기화
@@ -1153,13 +1154,12 @@ var fn_search_dtl = function (docNum) {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $("#progressMsgTitle").html("retrieving document detail list...");
-            startProgressBar(); // start progressbar
-            addProgressBar(1, 1); // proceed progressbar
+            progressId = showProgressBar();
         },
         success: function (data) {
             //console.log(data);
-            addProgressBar(2, 99); // proceed progressbar
-            thumbImgs = [];
+            initGlobalVariable();
+
             totCount = data.docData.length;
             for (var i in data.docData) {
 
@@ -1172,9 +1172,9 @@ var fn_search_dtl = function (docNum) {
                 fn_processDtlImage(obj);
             }
             
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId);
         }, error: function (err) {
-            endProgressBar(); // end progressbar
+            endProgressBar(progressId);
             console.log(err);
         }
     });
@@ -1883,23 +1883,23 @@ function fn_ContractNumExtraction() {
     var ctNm = [];
     var ttyYy = [];
 
-    for (var i = 0; i <= $("select[name='cdnNm']").length; i++) {
+    for (var i = 0; i < $("select[name='cdnNm'] > option").length; i++) {
         if (i > 0) {
-            var text = $("select[name='cdnNm'] option:eq(" + i + ")").text();
+            var text = $("select[name='cdnNm'] option:eq('" + i + "')").text();
             cdnNm.push(text);
         }
     }
 
-    for (var i = 0; i <= $("select[name='ctNm']").length; i++) {
+    for (var i = 0; i < $("select[name='ctNm'] > option").length; i++) {
         if (i > 0) {
-            var text = $("select[name='ctNm'] option:eq(" + i + ")").text();
+            var text = $("select[name='ctNm'] option:eq('" + i + "')").text();
             ctNm.push(text);
         }
     }
 
-    for (var i = 0; i <= $("select[name='ttyYy']").length; i++) {
+    for (var i = 0; i < $("select[name='ttyYy']  > option").length; i++) {
         if (i > 0) {
-            var text = $("select[name='ttyYy'] option:eq(" + i + ")").text();
+            var text = $("select[name='ttyYy'] option:eq('" + i + "')").text();
             ttyYy.push(text);
         }
     }
@@ -1920,7 +1920,10 @@ function fn_ContractNumExtraction() {
     }
 
     var extCount = (cdnNm.length) * (ctNm.length) * (ttyYy.length);
+    var dtlCount = 0;
     $("#tbody_dtlList").empty();
+    $("#progressMsgTitle").html("계약번호 추출 중..");
+    progressId = showProgressBar();
     for (var l = 0; l < cdnNm.length; l++) {
         for (var j = 0; j < ctNm.length; j++) {
             for (var k = 0; k < ttyYy.length; k++) {
@@ -1932,8 +1935,7 @@ function fn_ContractNumExtraction() {
                     data: JSON.stringify({ cdnNm: cdnNm[l], ctNm: ctNm[j], ttyYy: ttyYy[k] }),
                     contentType: 'application/json; charset=UTF-8',
                     beforeSend: function () {
-                        $("#progressMsgTitle").html("계약번호 추출 중..");
-                        progressId = showProgressBar();
+
                     },
                     success: function (data) {
 
@@ -1988,14 +1990,15 @@ function fn_ContractNumExtraction() {
                         $("#tbody_dtlList").append(dtlHtml);
                         $("#tbody_dtlList input[type=checkbox]").ezMark();
                         $("#div_dtl").css("display", "block");
-                        endProgressBar(progressId);
+                        
+                        dtlCount++;
+                        if (dtlCount == extCount) {
+                            endProgressBar(progressId);
 
-                        if (l == cdnNm.length -1 && k == ttyYy.length - 1) {
-                            if ($("#tbody_dtlList").length == 1) {
+                            if ($("#tbody_dtlList > tr").length == 0) {
                                 fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
                             }
                         }
-
                     },
                     error: function (err) {
                         console.log(err);
