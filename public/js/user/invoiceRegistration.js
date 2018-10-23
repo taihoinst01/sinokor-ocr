@@ -28,6 +28,7 @@ var initGlobalVariable = function () {
     searchDBColumnsCount = 0;
     lineText = [];
     oriOcrData = [];
+    regMlData = [];
     thumbImgs = []; // 썸네일 이미지 경로 배열
     thumnImgPageCount = 1; // 썸네일 이미지 페이징 번호
     thumnbImgPerPage = 6; // 한 페이지당 썸네일 이미지 개수
@@ -903,15 +904,13 @@ function modifyTextData() {
                 }),
                 contentType: 'application/json; charset=UTF-8',
                 beforeSend: function () {
+                    $("#progressMsgTitle").html("retrieving document detail list...");
                     progressId = showProgressBar();
                 },
                 success: function (data) {
                     //makeTrainingData();
 
                     if (data.code == 200) {
-                        endProgressBar(progressId);
-                        //fn_alert('alert', "success training");
-
                         fn_search_dtl($("input[name=popupDocNum]").val());
                     }
                 },
@@ -1157,42 +1156,84 @@ var fn_search_dtl = function (docNum) {
     var param = {
         docNum: docNum
     };
+    $("#progressMsgTitle").html("retrieving document detail list...");
+    if (progressId == null) {
+        progressId = showProgressBar();
+    }
+    addProgressBar(70, 99);
+    setTimeout(function () {
+        $.ajax({
+            url: '/invoiceRegistration/selectOcrFileDtl',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                initGlobalVariable();
 
-    $.ajax({
-        url: '/invoiceRegistration/selectOcrFileDtl',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify(param),
-        contentType: 'application/json; charset=UTF-8',
-        beforeSend: function () {
-            $("#progressMsgTitle").html("retrieving document detail list...");
-            progressId = showProgressBar();
-        },
-        success: function (data) {
-            //console.log(data);
-            initGlobalVariable();
+                totCount = data.docData.length;
+                for (var i in data.docData) {
 
-            totCount = data.docData.length;
-            for (var i in data.docData) {
+                    var obj = {};
+                    obj.imgId = data.docData[i].IMGID;
+                    obj.convertedFilePath = data.fileRootPath;
+                    obj.filePath = data.docData[i].FILEPATH;
+                    obj.oriFileName = data.docData[i].ORIGINFILENAME;
+                    obj.convertFileName = data.docData[i].ORIGINFILENAME;
+                    fn_processDtlImage(obj);
 
-                var obj = {};
-                obj.imgId = data.docData[i].IMGID;
-                obj.convertedFilePath = data.fileRootPath;
-                obj.filePath = data.docData[i].FILEPATH;
-                obj.oriFileName = data.docData[i].ORIGINFILENAME;
-                obj.convertFileName = data.docData[i].ORIGINFILENAME;
-                fn_processDtlImage(obj);
+                    if (i == data.docData.length-1) {
+                        endProgressBar(progressId);
+                        progressId = null;
+                    }
+                }
+            }, error: function (err) {
+                endProgressBar(progressId);
+                console.log(err);
             }
-            
-            endProgressBar(progressId);
-        }, error: function (err) {
-            endProgressBar(progressId);
-            console.log(err);
-        }
-    });
+        });
+    }, 1000);
 
     
 }
+
+/*
+function wrapWindowByMask2() {
+    //화면의 높이와 너비를 구한다.
+    var maskHeight = $(document).height();
+    var maskWidth = $(window).width();
+
+    //마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
+    $('#mask').css({ 'width': maskWidth, 'height': maskHeight });
+
+    //애니메이션 효과 - 일단 1초동안 까맣게 됐다가 80% 불투명도로 간다.
+    //$('#mask').fadeIn(1000);      
+    $('#mask').fadeTo("slow", 0.6);
+}
+
+// New Progress Bar (2018-08-27)
+function showProgressBar2() {
+    $('body').css('overflow', 'hidden');
+    $('#loadingBackground').css('width', $('body').width());
+    $('#loadingBackground').css('height', $('body').height());
+    $('#loadingBackground').show();
+    wrapWindowByMask2();
+    $("#ocrProgress").fadeIn("fast");
+
+    var elem = document.getElementById("ocrBar");
+    var percentNum = $('#ocrBar span');
+    elem.style.width = 50 + '%';
+    percentNum.html(50 + '%');
+}
+
+function endProgressBar2() {
+    $("#ocrProgress").fadeOut("fast");
+    document.getElementById("ocrBar").style.width = 1;
+    $('body').css('overflow', 'auto');
+    $('#mask').fadeOut("fast");
+    $('#loadingBackground').hide();
+}
+*/
 
 /*
 // document_dtl 조회
@@ -1493,7 +1534,7 @@ var fn_processBaseImage = function (fileInfo) {
                 $("#tbody_baseList tr:eq(0) input[type=checkbox]").click();
                 $("#div_base").css("display", "block");
                 fn_clickEvent();
-                endProgressBar();
+                //endProgressBar();
 				fn_search_dtl(fileInfo[0].imgId); // 첫번째 로우 ml 수행 함수
             } else {
                 console.log(data.error);
@@ -1528,11 +1569,11 @@ var fn_processDtlImage = function (fileDtlInfo) {
             appendOcrData(fileDtlInfo, fileName, data);
             oriOcrData.push({ fileName: fileName, data: JSON.stringify(data) });
         } else if (data.error) { //ocr 이외 에러이면
-            endProgressBar(progressId);
+            //endProgressBar();
             fn_alert('alert', data.error);
         } else { // ocr 에러 이면
             insertCommError(data.code, 'ocr');
-            endProgressBar(progressId);
+            //endProgressBar();
             fn_alert('alert', data.message);
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -1866,8 +1907,6 @@ function fn_processFinish(mlData, imgId) {
         appendMLSelect += '</select>';
         return hasColvalue ? appendMLSelect : '';
     }
-
-    regMlData = [];
 }
 
 //계약 번호 추출
@@ -1890,7 +1929,8 @@ function fn_ContractNumExtraction() {
 
     var dataObj = {};
     dataObj["imgId"] = $("input[name='dtl_chk']").val();
-    var dataVal = lineText[0].data.data;
+    //var dataVal = lineText[0].data.data;
+    var dataVal = regMlData;
     var fileName = lineText[0].fileName;
     var cdnNm = [];
     var ctNm = [];
@@ -1937,91 +1977,95 @@ function fn_ContractNumExtraction() {
     $("#tbody_dtlList").empty();
     $("#progressMsgTitle").html("계약번호 추출 중..");
     progressId = showProgressBar();
-    for (var l = 0; l < cdnNm.length; l++) {
-        for (var j = 0; j < ctNm.length; j++) {
-            for (var k = 0; k < ttyYy.length; k++) {
-                $.ajax({
-                    url: '/wF_WorkflowProc/',
-                    type: 'post',
-                    datatype: 'json',
-                    async: false,
-                    data: JSON.stringify({ cdnNm: cdnNm[l], ctNm: ctNm[j], ttyYy: ttyYy[k] }),
-                    contentType: 'application/json; charset=UTF-8',
-                    beforeSend: function () {
+    addProgressBar(70, 99);
+    setTimeout(function () {
+        for (var l = 0; l < cdnNm.length; l++) {
+            for (var j = 0; j < ctNm.length; j++) {
+                for (var k = 0; k < ttyYy.length; k++) {
+                    $.ajax({
+                        url: '/wF_WorkflowProc/',
+                        type: 'post',
+                        datatype: 'json',
+                        async: false,
+                        data: JSON.stringify({ cdnNm: cdnNm[l], ctNm: ctNm[j], ttyYy: ttyYy[k] }),
+                        contentType: 'application/json; charset=UTF-8',
+                        beforeSend: function () {
 
-                    },
-                    success: function (data) {
+                        },
+                        success: function (data) {
 
-                        var dtlHtml = '';
-                        for (var i in data.data) {
-                            // TODO : 분석 결과를 정리하고 1 record로 생성한다.
-                            dtlHtml += '<tr>' +
-                                '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-                                '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
-                                '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
-                                '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
-                                '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
-                                '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->' +
-                                '<td>' + makePageNum((parseInt(i) + 1), data.data.length) + '</td> <!--페이지번호 FROM-->' +
-                                '<td>' + makePageNum(data.data.length, data.data.length) + '</td> <!--페이지번호 TO-->' +
-                                '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
-                                '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
-                                '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
-                                '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
-                                '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
-                                '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
-                                '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
-                                '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
-                                '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
-                                '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
-                                '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
-                                '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
-                                '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
-                                '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
-                                '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
-                                '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
-                                '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
-                                '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
-                                '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-                                '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
-                                '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
-                                '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
-                                '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
-                                '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
-                                '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
-                                '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
-                                '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
-                                '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
-                                '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
-                                '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
-                                '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
-                                '</tr>';
-                        }
-
-                        $("#tbody_dtlList").append(dtlHtml);
-                        $("#tbody_dtlList input[type=checkbox]").ezMark();
-                        $("#div_dtl").css("display", "block");
-                        
-                        dtlCount++;
-                        if (dtlCount == extCount) {
-                            endProgressBar(progressId);
-
-                            if ($("#tbody_dtlList > tr").length == 0) {
-                                fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
+                            var dtlHtml = '';
+                            for (var i in data.data) {
+                                // TODO : 분석 결과를 정리하고 1 record로 생성한다.
+                                dtlHtml += '<tr>' +
+                                    '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
+                                    '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
+                                    '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
+                                    '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
+                                    '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
+                                    '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->' +
+                                    '<td>' + makePageNum((parseInt(i) + 1), data.data.length) + '</td> <!--페이지번호 FROM-->' +
+                                    '<td>' + makePageNum(data.data.length, data.data.length) + '</td> <!--페이지번호 TO-->' +
+                                    '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
+                                    '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
+                                    '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
+                                    '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+                                    '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
+                                    '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+                                    '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
+                                    '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+                                    '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+                                    '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+                                    '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+                                    '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
+                                    '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+                                    '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
+                                    '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
+                                    '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+                                    '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
+                                    '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                                    '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                                    '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                    '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                    '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
+                                    '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+                                    '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
+                                    '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+                                    '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+                                    '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+                                    '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+                                    '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+                                    '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
+                                    '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
+                                    '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+                                    '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+                                    '</tr>';
                             }
-                        }
-                    },
-                    error: function (err) {
-                        console.log(err);
-                        endProgressBar(progressId);
-                    }
-                });
-            }
-        }
 
-    }
+                            $("#tbody_dtlList").append(dtlHtml);
+                            $("#tbody_dtlList input[type=checkbox]").ezMark();
+                            $("#div_dtl").css("display", "block");
+
+                            dtlCount++;
+                            if (dtlCount == extCount) {
+                                endProgressBar(progressId);
+                                progressId = null;
+                                if ($("#tbody_dtlList > tr").length == 0) {
+                                    fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
+                                }
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                            endProgressBar(progressId);
+                        }
+                    });
+                }
+            }
+
+        }
+    }, 1000);
+
     function makeMLSelect(mlData, colnum, entry) {
 
         var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileName + '\')">';
@@ -2031,10 +2075,10 @@ function fn_ContractNumExtraction() {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';

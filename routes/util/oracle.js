@@ -3087,6 +3087,41 @@ exports.insertDocumentDtl = function (mlData, done) {
     });
 };
 
+exports.rollbackTrain = function (date, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var delFormMappingSql = "DELETE FROM TBL_FORM_MAPPING";
+            var delColumnMappingSql = "";
+            var delDocumentSentenceSql = "";
+            var delBannedWordSql = "";
+            var delOcrSymspellSql = "";
+            var delContractMappingSql = "";
+            var delCurcdMappingSql = "";
+            var delDocumentCategorySql = "";
+
+            await conn.execute(delFormMappingSql, [date]);
+            await conn.execute(delColumnMappingSql, [date]);
+            await conn.execute(delDocumentSentenceSql, [date]);
+            await conn.execute(delBannedWordSql, [date]);
+            await conn.execute(delOcrSymspellSql, [date]);
+            await conn.execute(delContractMappingSql, [date]);
+            await conn.execute(delCurcdMappingSql, [date]);
+            await conn.execute(delDocumentCategorySql, [date]);
+
+        } catch (err) {
+            reject(err);
+        } finally {
+            return done(null, null);
+        }
+    });
+};
+
+
 /*
 exports.convertMs = function (data, done) {
     return new Promise(async function (resolve, reject) {
