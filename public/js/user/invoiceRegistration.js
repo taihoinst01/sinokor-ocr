@@ -979,6 +979,7 @@ var fn_search = function () {
                 $('#tbody_baseList > tr').eq(0).find('td[name="td_base"]').eq(0).click();
             } else {
                 endProgressBar(progressId);
+                progressId = null;
                 $('#sendDocBtn').focus();
             }
 
