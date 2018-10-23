@@ -146,13 +146,14 @@ var fn_uploadFileEvent = function () {
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
             $("#progressMsgTitle").html('파일 업로드 중..');
-            startProgressBar(); // start progressbar
-            addProgressBar(1, 10); // proceed progressbar
+            //startProgressBar(); // start progressbar
+            //addProgressBar(1, 10); // proceed progressbar
+            progressId = showProgressBar();
             return true;
         },
         success: function (responseText, statusText) {
             $("#progressMsgTitle").html('파일 업로드 완료..');
-            addProgressBar(11, 20);
+            //addProgressBar(11, 20);
 
             //console.log('base 사이즈 :' + responseText.fileInfo.length);
             //console.log('dtl 사이즈 :' + responseText.fileDtlInfo.length);
@@ -171,10 +172,10 @@ var fn_uploadFileEvent = function () {
             }
             */
 
-            //endProgressBar();
+            //endProgressBar(progressId);
         },
         error: function (e) {
-            endProgressBar();
+            endProgressBar(progressId);
             //console.log(e);
         }
     });
@@ -977,6 +978,7 @@ var fn_search = function () {
                 $('#tbody_baseList > tr').eq(0).find('td[name="td_base"]').eq(0).click();
             } else {
                 endProgressBar(progressId);
+                $('#sendDocBtn').focus();
             }
 
         },
