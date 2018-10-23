@@ -961,7 +961,7 @@ var fn_search = function () {
                         '<td></td>' +
                         '<td></td>' +
                         '<td></td>' +
-                        '<td></td>' +
+                        '<td class="td_dbclick">' + entry.DEADLINE + '</td>' +
                         '<td></td>' +
                         '</tr>';
                 });
@@ -1137,7 +1137,8 @@ var fn_clickEvent = function () {//jmh
         var seqNum = numArr.split("-")[0];
         var docNum = numArr.split("-")[1];
 
-        $("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked');   
+        //$("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked');   
+        $("input:checkbox[id='base_chk_" + docNum + "']").click();  
 
         fn_search_dtl(docNum); // document_dtl 조회
     });
@@ -1481,7 +1482,7 @@ var fn_processBaseImage = function (fileInfo) {
                                 '<td></td>' +
                                 '<td></td>' +
                                 '<td></td>' +
-                                '<td class="td_dbclick">' + getNowYearMonth()+ '</td>' +
+                                '<td class="td_dbclick">' + item.DEADLINE+ '</td>' +
                                 '<td></td>' +
                             '</tr>';
                 }
@@ -2698,9 +2699,9 @@ var fn_docEvent = function () {
 
                     // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
                     var docNum = popDoctd.eq(1).text();
-
+                    var deadline = popDoctd.eq(7).text();
                     // 가져온 값을 배열에 담는다.
-                    docNumTdArr.push(docNum);
+                    docNumTdArr.push({ docNum: docNum, deadline: deadline });
                     deleteTr.push(popDoctr);
                 });
 
@@ -2726,7 +2727,7 @@ var fn_docEvent = function () {
                         datatype: "json",
                         data: JSON.stringify({
                             'userId': userChoiceTdArr,
-                            'docNum': docNumTdArr
+                            'docInfo': docNumTdArr
                         }),
                         contentType: 'application/json; charset=UTF-8',
                         success: function (data) {
@@ -2924,12 +2925,15 @@ $(document).on('dblclick', '.td_dbclick', function (e) {
 
 // 마감년월 수정 후 값 체크 yyyymm
 $(document).on('focusout', 'input[name=ipt_nowYearMonth]', function () {
-    var data = $(this).val();;
+    var data = $(this).val();
     var regex = /^[0-9]{6}$/g;
 
     if (regex.test(data)) {
-        num = num.replace(/,/g, "");
-        return isNaN(num) ? false : true;
+        data = data.replace(/,/g, "");
+        $(this).closest('td').text(data);
+        $(this).remove();
+        
+        return isNaN(data) ? false : true;
     } else {
         fn_alert('alert', '올바른형식이 아닙니다.<br> yyyymm 숫자형식으로 입력해주세요.');
         $(this).val('').focus();

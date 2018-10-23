@@ -85,7 +85,7 @@ var dbcolumnsConfig = {
 
 var invoiceRegistrationConfig = {
     selectDocumentList:
-        `SELECT SEQNUM, DOCNUM, STATUS, PAGECNT, NOWNUM
+        `SELECT SEQNUM, DOCNUM, STATUS, PAGECNT, NOWNUM, DEADLINE
             FROM TBL_APPROVAL_MASTER
            WHERE 1=1 `,
     selectDocumentDtlList:
