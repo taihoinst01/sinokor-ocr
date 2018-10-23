@@ -1381,7 +1381,7 @@ exports.selectCurCd = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sql = "SELECT beforeText, afterText FROM tbl_curcd_mapping WHERE beforeText like '%" + req.split(' ')[1] + "%'";
+            let sql = "SELECT beforeText, afterText FROM tbl_curcd_mapping WHERE beforeText = '" + req + "'";
             result = await conn.execute(sql);
 
             if (result.rows.length > 0) {

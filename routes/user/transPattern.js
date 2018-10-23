@@ -192,6 +192,10 @@ function convertedSpecificDocuments(reqArr) {
                 oslText = item.text;
             } else if (item.colLbl == 36) { // Our Share Label
                 yourShare = item.text;
+            } else if (item.colLbl == 35) {
+                if (isNaN(item.text)) {
+                    item.colLbl = 38;
+                }
             }
         }
 
