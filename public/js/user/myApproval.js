@@ -123,12 +123,12 @@ var fn_clickEvent = function () {
             $("input:checkbox[id='chk_document_" + docNum + "']").parent().addClass('ez-checked');
             $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", true);
             fn_search_dtl(seqNum, docNum); // document_dtl 조회
+            fn_search_image(docNum);
         }else {
             $("input:checkbox[id='chk_document_" + docNum + "']").parent().removeClass('ez-checked');
             $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", false);
         }
 
-        fn_search_image(docNum);
         //$("td[name='td_base']").unbind();
     });
 
@@ -222,10 +222,12 @@ var fn_search = function () {
     var level = '';
     if ($('#adminApproval').val() == 'Y') {
         level = 'adminApproval';
-    }else if ( $('#middleApproval').val() == 'Y' && $('#adminApproval').val() == 'N' ) {
+    } else if ($('#middleApproval').val() == 'Y' && $('#adminApproval').val() == 'N') {
         level = 'middleApproval';
-    } else if ( $('#lastApproval').val() == 'Y' && $('#adminApproval').val() == 'N' ) {
+    } else if ($('#lastApproval').val() == 'Y' && $('#adminApproval').val() == 'N') {
         level = 'lastApproval';
+    } else {
+        return false;
     }
     var param = {
         docNum: nvl($("#docNum").val()),
@@ -288,9 +290,9 @@ var fn_search = function () {
                             '<td name="td_base">' + nvl(entry["PAGECNT"]) + '</td>' +
                             '<td name="td_base">' + endDate + '</td>';
                         if ($('#middleApproval').val() == 'Y') {
-                            appendHtml += '<td class="td_base">' + nvl(entry["ICRNUM"]) + '</td>';
+                            appendHtml += '<td name="td_base" class="td_base">' + nvl(entry["ICRNUM"]) + '</td>';
                         } else {
-                            appendHtml += '<td class="td_base" >' + nvl(entry["MIDDLENUM"]) + '</td>';
+                            appendHtml += '<td name="td_base" class="td_base">' + nvl(entry["MIDDLENUM"]) + '</td>';
                         }
                         appendHtml +=
                             '<td class="td_base">' + nvl(entry["NOWNUM"]) + '</td>' +
