@@ -978,9 +978,10 @@ var fn_search = function () {
             fn_clickEvent();
             if (!$('#tbody_baseList > tr').find('td').eq(0).attr('colspan')) {
                 $('#tbody_baseList > tr').eq(0).find('td[name="td_base"]').eq(0).click();
-            } else {
-                endProgressBar(progressId);
                 $('#sendDocBtn').focus();
+            } else {
+                $('#deleteDocBtn').prop('disabled', true);
+                endProgressBar(progressId);
             }
 
         },
@@ -1347,11 +1348,27 @@ var fn_checkboxEvent = function () {
         if ($(this).is(':checked')) {
             $('#tbody_baseList .ez-checkbox').addClass('ez-checked');
             $('#tbody_baseList input[type=checkbox]').prop('checked', true);
+            $('#deleteDocBtn').prop('disabled', false);
+            $('#sendDocBtn').prop('disabled', false);
         } else {
             $('#tbody_baseList .ez-checkbox').removeClass('ez-checked');
             $('#tbody_baseList input[type=checkbox]').prop('checked', false);
+            $('#deleteDocBtn').prop('disabled', true);
+            $('#sendDocBtn').prop('disabled', true);
         }
     });
+
+    //문서 기본정보 체크박스
+    $(document).on('click', 'input[name=base_chk]', function () {
+        if ($('input[name=base_chk]:checked').length == 0) {
+            $('#deleteDocBtn').prop('disabled', true);
+            $('#sendDocBtn').prop('disabled', true);
+        } else {
+            $('#deleteDocBtn').prop('disabled', false);
+            $('#sendDocBtn').prop('disabled', false);
+        }
+    });
+
 
     //인식 결과 모두선택 체크
     $('#ocrResultAllChk').on('click', function () {

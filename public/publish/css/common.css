@@ -4882,23 +4882,6 @@ thead .ez-checked {
     margin-left: 15px;
 }
 
-#uploadFileBtn {
-    display: block;
-     min-width: 60px; */
-    /* height: 23px; */
-    /* line-height: 25px; */
-    /*
-    padding: 7px 29px 8px;
-    margin: 0;
-    font-size: 14px;
-    color: #0370b2;
-    text-align: center;
-    border-radius: 5px;
-    cursor: pointer;
-    border: 1px solid #0370b2;
-        */
-}
-
 .box_content_T_01 {
     float: left;
     display: table;
@@ -6363,6 +6346,7 @@ input:disabled {
 }
 
 .btn {
+    /*
     box-sizing: border-box;
     appearance: none;
     background-color: transparent;
@@ -6382,15 +6366,30 @@ input:disabled {
     height: 40px;
     line-height: 25px;
     font-weight: 500;
+    */
+    display: inline-block;
+    min-width: 80px;
+    height: 40px;
+    line-height: 16px;
+    padding: 0 15px;
+    font-size: 15px;
+    border-radius: 5px;
+    border: 1px solid;
+    cursor: pointer;
+    background-color:transparent;
 }
 
-    .btn:hover, focus {
-        color: #fff;
-        outline: 0;
+    .btn:enabled:hover {
+        background-position: 0;
+        color: white;
     }
 
-
-
+    .btn:enabled:focus {
+        background-position: 0;
+        color: white;
+    }
+    .btn:disabled {
+    }
 .fourth {
     border-color: #0370b2;
     color: #0370b2;
@@ -6404,3 +6403,72 @@ input:disabled {
         background-position: 0;
         color: white;
     }
+
+    .fourth:focus {
+        background-position: 0;
+        color: white;
+    }
+
+/*ÆÄ¶û*/    
+.btn_style_k01 {
+    border-color: #0370b2;
+    color: #0370b2;
+    background-image: linear-gradient(45deg, #0370b2 50%, transparent 50%);
+    background-position: 100%;
+    background-size: 400%;
+    transition: background 300ms ease-in-out;
+}
+
+/*»¡°­*/
+.btn_style_k02 {
+    border-color: #ab3c3c;
+    color: #ab3c3c;
+    background-image: linear-gradient(45deg, #ab3c3c 50%, transparent 50%);
+    background-position: 100%;
+    background-size: 400%;
+    transition: background 300ms ease-in-out;
+}
+
+/*È¸»ö*/
+.btn_style_k03 {
+    border-color: #525250;
+    color: #525250;
+    background-image: linear-gradient(45deg, #525250 50%, transparent 50%);
+    background-position: 100%;
+    background-size: 400%;
+    transition: background 300ms ease-in-out;
+}
+
+/*¶óº§*/
+.label_style_k01 {
+    display: block;
+    min-width: 60px;
+    box-sizing: border-box;
+    appearance: none;
+    background-color: transparent;
+    border: 1px solid;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-self: center;
+    font-size: 14px;
+    line-height: 1;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 7px 20px 8px;
+    min-width: 60px;
+    height: 40px;
+    line-height: 25px;
+    font-weight: 500;
+}
+    .label_style_k01:hover {
+        background-position: 0;
+        color: white;
+    }
+
+    .label_style_k01:focus {
+        background-position: 0;
+        color: white;
+    }
+   
