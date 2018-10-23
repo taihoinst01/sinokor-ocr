@@ -6308,10 +6308,10 @@ input:disabled {
 .alert_icon:before {
     content: '';
     display: inline-block;
-    width: 20px;
-    height: 20px;
-    background-position: -265px -543px;
-    margin-right: 5px;
+    width: 22px;
+    height: 25px;
+    background-position: -264px -538px;
+    margin-right: 8px;
 }
 #layer_alert {
     z-index: 2000 !important;
@@ -6338,4 +6338,8 @@ input:disabled {
     border: 1px solid #b6b6b6;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.alertContent_span {
+    font-size: 14px;
 }
