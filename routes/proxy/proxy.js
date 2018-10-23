@@ -55,7 +55,8 @@ function ocrParsing(body) {
         }
 
         // ocr x location parsing
-        var xInterval = 20; // x pixel value
+        var xInterval = 40; // x pixel value
+        var yInterval = 2;
 
         for (var i = 0; i < data.length; i++) {
             for (var j = 0; j < data.length; j++) {
@@ -65,7 +66,7 @@ function ocrParsing(body) {
                     var width = Number(targetLocArr[0]) + Number(targetLocArr[2]); // target text width
                     var textSpacing = Math.abs(Number(compareLocArr[0]) - width) // spacing between target text and compare text
 
-                    if (textSpacing <= xInterval && compareLocArr[1] == targetLocArr[1]) {
+                    if (textSpacing <= xInterval && Math.abs(compareLocArr[1] - targetLocArr[1]) <= yInterval) {
                         data[i].location = targetLocArr[0] + ',' + targetLocArr[1] + ',' +
                             (Number(targetLocArr[2]) + Number(compareLocArr[2]) + textSpacing) + ',' + targetLocArr[3];
                         data[i].text += ' ' + data[j].text;
