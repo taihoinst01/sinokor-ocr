@@ -154,6 +154,7 @@ var fn_uploadFileEvent = function () {
         },
         success: function (responseText, statusText) {
             $("#progressMsgTitle").html('파일 업로드 완료..');
+            //addProgressBar(11, 20);
 
             //console.log('base 사이즈 :' + responseText.fileInfo.length);
             //console.log('dtl 사이즈 :' + responseText.fileDtlInfo.length);
@@ -172,10 +173,10 @@ var fn_uploadFileEvent = function () {
             }
             */
 
-            //endProgressBar();
+            //endProgressBar(progressId);
         },
         error: function (e) {
-            endProgressBar();
+            endProgressBar(progressId);
             //console.log(e);
         }
     });
@@ -709,8 +710,9 @@ function popUpRunEvent() {
                 lineText[currentImgCount].data.docCategory.DOCNAME = data.docName;
                 lineText[currentImgCount].data.docCategory.DOCTYPE = data.docType;
                 lineText[currentImgCount].data.docSid = data.docSid;
-                //$('#btn_pop_doc_cancel').click();
                 endProgressBar(progressId);
+                fn_alert('alert', '계산서 양식 저장이 완료 되었습니다.');
+                $('#btn_pop_doc_cancel').click();
             },
             error: function (err) {
                 console.log(err);
@@ -745,6 +747,7 @@ function popUpSearchDocCategory() {
                     $('.button_control10 .button_control12').attr('disabled', true);
                     docPopImagesCurrentCount = 1;
                     if (data.length == 0) {
+                        fn_alert('alert', '입력하신 회사명의 계산서가 없습니다. 회사명을 재확인 부탁드립니다.');
                         return false;
                     } else {
                         docPopImages = data;
@@ -959,26 +962,33 @@ var fn_search = function () {
                         '<td></td>' +
                         '<td></td>' +
                         '<td></td>' +
-                        '<td></td>' +
+                        '<td class="td_dbclick">' + entry.DEADLINE + '</td>' +
                         '<td></td>' +
                         '</tr>';
                 });
             } else {
                 appendHtml += '<tr><td colspan="9">조회된 데이터가 없습니다.</td></tr>';
             }
+
             $("#tbody_baseList").empty().append(appendHtml);
             $("#tbody_baseList input[type=checkbox]").ezMark();
             $("#span_document_base").empty().html("문서 기본정보 - " + data.length + "건");
             $("#div_base").fadeIn();
             fn_clickEvent();
-            endProgressBar(progressId);
-            progressId = null;
+            if (!$('#tbody_baseList > tr').find('td').eq(0).attr('colspan')) {
+                $('#tbody_baseList > tr').eq(0).find('td[name="td_base"]').eq(0).click();
+            } else {
+                endProgressBar(progressId);
+                $('#sendDocBtn').focus();
+            }
+
         },
         error: function (err) {
-            endProgressBar();
+            endProgressBar(progressId);
             console.log(err);
         }
     });
+    
 };
 
 var fn_searchDocEnterEvent = function () {
@@ -1128,7 +1138,8 @@ var fn_clickEvent = function () {//jmh
         var seqNum = numArr.split("-")[0];
         var docNum = numArr.split("-")[1];
 
-        $("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked');   
+        //$("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked');   
+        $("input:checkbox[id='base_chk_" + docNum + "']").click();  
 
         fn_search_dtl(docNum); // document_dtl 조회
     });
@@ -1514,12 +1525,13 @@ var fn_processBaseImage = function (fileInfo) {
                                 '<td></td>' +
                                 '<td></td>' +
                                 '<td></td>' +
-                                '<td class="td_dbclick">' + getNowYearMonth()+ '</td>' +
+                                '<td class="td_dbclick">' + item.DEADLINE+ '</td>' +
                                 '<td></td>' +
                             '</tr>';
                 }
                 $("#tbody_baseList").empty().append(html);
                 $("#tbody_baseList input[type=checkbox]").ezMark();
+                $("#tbody_baseList tr:eq(0) input[type=checkbox]").click();
                 $("#div_base").css("display", "block");
                 fn_clickEvent();
                 //endProgressBar();
@@ -1642,7 +1654,7 @@ function executeML(totData) {
                 }
             }
 
-            endProgressBar();
+            endProgressBar(progressId);
         },
         error: function (err) {
             console.log(err);
@@ -2733,9 +2745,9 @@ var fn_docEvent = function () {
 
                     // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
                     var docNum = popDoctd.eq(1).text();
-
+                    var deadline = popDoctd.eq(7).text();
                     // 가져온 값을 배열에 담는다.
-                    docNumTdArr.push(docNum);
+                    docNumTdArr.push({ docNum: docNum, deadline: deadline });
                     deleteTr.push(popDoctr);
                 });
 
@@ -2761,7 +2773,7 @@ var fn_docEvent = function () {
                         datatype: "json",
                         data: JSON.stringify({
                             'userId': userChoiceTdArr,
-                            'docNum': docNumTdArr
+                            'docInfo': docNumTdArr
                         }),
                         contentType: 'application/json; charset=UTF-8',
                         success: function (data) {
@@ -2959,12 +2971,15 @@ $(document).on('dblclick', '.td_dbclick', function (e) {
 
 // 마감년월 수정 후 값 체크 yyyymm
 $(document).on('focusout', 'input[name=ipt_nowYearMonth]', function () {
-    var data = $(this).val();;
+    var data = $(this).val();
     var regex = /^[0-9]{6}$/g;
 
     if (regex.test(data)) {
-        num = num.replace(/,/g, "");
-        return isNaN(num) ? false : true;
+        data = data.replace(/,/g, "");
+        $(this).closest('td').text(data);
+        $(this).remove();
+        
+        return isNaN(data) ? false : true;
     } else {
         fn_alert('alert', '올바른형식이 아닙니다.<br> yyyymm 숫자형식으로 입력해주세요.');
         $(this).val('').focus();

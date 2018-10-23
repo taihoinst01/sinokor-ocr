@@ -37,13 +37,16 @@ function convertedUY(reqArr) {
         var item = reqArr.data[i];
 
         if (item.colLbl == 2) {
-            if (pattern.test(item.text) || lastPattern.test(item.text)) {
-                var arr;
-                if (pattern.test(item.text)) {
-                    arr = item.text.match(pattern);
-                } else {
-                    arr = item.text.match(lastPattern);
+            var arr;
+            if (pattern.test(item.text)) {
+                arr = item.text.match(pattern);
+                var intArr = Math.min.apply(null, arr.map(Number));
+                if (item.text != String(intArr)) {
+                    item.originText = item.text;
+                    item.text = String(intArr);
                 }
+            } else if (lastPattern.test(item.text)) {
+                arr = item.text.match(lastPattern);
                 var intArr = Math.min.apply(null, arr.map(Number));
                 if (item.text != String(intArr)) {
                     item.originText = item.text;
@@ -52,7 +55,6 @@ function convertedUY(reqArr) {
             } else {
                 item.colLbl = 38;
             }
-        } else {
         }
     }
     // UY outputs only year END
@@ -190,6 +192,10 @@ function convertedSpecificDocuments(reqArr) {
                 oslText = item.text;
             } else if (item.colLbl == 36) { // Our Share Label
                 yourShare = item.text;
+            } else if (item.colLbl == 35) {
+                if (isNaN(item.text)) {
+                    item.colLbl = 38;
+                }
             }
         }
 

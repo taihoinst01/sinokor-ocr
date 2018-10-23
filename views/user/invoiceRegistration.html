@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
-    <title>ICR</title>
+    <title alt="계산서 등록">KoreanRe ICR Service - 계산서 등록</title>
     <%include  ../common/commonLib.html%>
 
     <!-- 문서 조회 학습 전용 css -->
@@ -73,12 +73,12 @@
                                     if(currentUser.scanApproval == 'Y') {
                                     %>
                                     <input type="file" id="uploadFile" name="file" value="upload" multiple />
-                                    <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
+                                    <label id="uploadFileBtn" for="customer_file" class="btn fourth">계산서 업로드</label>
                                     <%
                                     } else {
                                     %>
                                     <input type="file" id="uploadFile" name="file" value="upload" multiple />
-                                    <label id="uploadFileBtn" for="customer_file" >계산서 업로드</label>
+                                    <label id="uploadFileBtn" for="customer_file" class="btn fourth">계산서 업로드</label>
                                     <%
                                     }
                                     %>

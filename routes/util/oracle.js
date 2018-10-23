@@ -1381,7 +1381,7 @@ exports.selectCurCd = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sql = "SELECT beforeText, afterText FROM tbl_curcd_mapping WHERE beforeText like '%" + req.split(' ')[1] + "%'";
+            let sql = "SELECT beforeText, afterText FROM tbl_curcd_mapping WHERE beforeText = '" + req + "'";
             result = await conn.execute(sql);
 
             if (result.rows.length > 0) {
@@ -2395,7 +2395,7 @@ exports.selectDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute(`SELECT SEQNUM, DOCNUM, PAGECNT, STATUS, NOWNUM FROM TBL_APPROVAL_MASTER WHERE DOCNUM IN ( ` + req + `)`);
+            result = await conn.execute(`SELECT SEQNUM, DOCNUM, PAGECNT, STATUS, NOWNUM, DEADLINE FROM TBL_APPROVAL_MASTER WHERE DOCNUM IN ( ` + req + `)`);
             if (result.rows.length > 0) {
                 return done(null, result.rows);
             } else {
@@ -2519,7 +2519,7 @@ exports.sendDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET ICRNUM = :icrNum, NOWNUM = :nowNum WHERE DOCNUM = :docNum ", req);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET ICRNUM = :icrNum, NOWNUM = :nowNum, DEADLINE = :deadline WHERE DOCNUM = :docNum ", req);
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2619,9 +2619,9 @@ exports.insertDocument = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             await conn.execute(`INSERT INTO
-                                    TBL_APPROVAL_MASTER(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM )
+                                    TBL_APPROVAL_MASTER(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM, DEADLINE )
                                 VALUES
-                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :nowNum) `, [req[0][0].imgId, req[1], req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
+                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :nowNum, TO_CHAR(SYSDATE, 'YYYYMM')) `, [req[0][0].imgId, req[1], req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
