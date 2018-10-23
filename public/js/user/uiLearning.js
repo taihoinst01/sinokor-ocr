@@ -117,8 +117,9 @@ function popUpRunEvent() {
                 lineText[currentImgCount].data.docCategory.DOCNAME = data.docName;
                 lineText[currentImgCount].data.docCategory.DOCTYPE = data.docType;
                 lineText[currentImgCount].data.docSid = data.docSid;
-                //$('#btn_pop_doc_cancel').click();
                 endProgressBar(progressId);
+                fn_alert('alert', '계산서 양식 저장이 완료 되었습니다.');
+                $('#btn_pop_doc_cancel').click();
             },
             error: function (err) {
                 console.log(err);
@@ -153,6 +154,7 @@ function popUpSearchDocCategory() {
                     $('.button_control10 .button_control12').attr('disabled', true);
                     docPopImagesCurrentCount = 1;
                     if (data.length == 0) {
+                        fn_alert('alert', '입력하신 회사명의 계산서가 없습니다. 회사명을 재확인 부탁드립니다.');
                         return false;
                     } else {
                         docPopImages = data;
@@ -867,7 +869,7 @@ function detailTable(fileName) {
                     tblTag += '<dl>';
                     tblTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
                     if (data[i].originText) {
-                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:150px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:320px;">';
                     } else {
                         tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:320px;">';
                     }
@@ -890,7 +892,7 @@ function detailTable(fileName) {
                     tblSortTag += '<dl>';
                     tblSortTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
                     if (data[i].originText) {
-                        tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:150px;">';
+                        tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:320px;">';
                     } else {
                         tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:320px;">';
                     }
@@ -913,7 +915,7 @@ function detailTable(fileName) {
                     tblTag += '<dl>';
                     tblTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
                     if (data[i].originText) {
-                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:150px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:320px;">';
                     } else {
                         tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:320px;">';
                     }

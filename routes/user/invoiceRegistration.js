@@ -454,9 +454,9 @@ router.post('/sendDocument', function (req, res) {
     var returnObj = {};
     var sendCount = 0;
     try {
-        for (var i = 0; i < req.body.docNum.length; i++) {
+        for (var i = 0; i < req.body.docInfo.length; i++) {
             sync.fiber(function () {
-                sync.await(oracle.sendDocument([ req.body.userId[0], req.body.userId[0], req.body.docNum[i]], sync.defer()));
+                sync.await(oracle.sendDocument([req.body.userId[0], req.body.userId[0], req.body.docInfo[i].deadline, req.body.docInfo[i].docNum], sync.defer()));
             });
             sendCount += 1;
         }
