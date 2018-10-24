@@ -204,17 +204,24 @@
                             <%
                             if(currentUser.scanApproval == 'Y' || currentUser.icrApproval == 'Y') {
                             %>
-                            <button type="button" id="btn_baseList_return" class="btn btn_style_k03" >반려</button>
-                            <button type="button" id="btn_baseList_forward" class="btn btn_style_k03" >전달</button>
-                            <button type="button" id="btn_baseList_approval" class="btn btn_style_k01" >승인</button>
+                            <button type="button" id="btn_baseList_return" class="btn btn_style_k03">반려</button>
+                            <button type="button" id="btn_baseList_forward" class="btn btn_style_k03">전달</button>
+                            <button type="button" id="btn_baseList_approval" class="btn btn_style_k01">승인</button>
                             <%
                             } else{
                             %>
                             <button type="button" id="btn_baseList_return" class="btn btn_style_k03">반려</button>
                             <button type="button" id="btn_baseList_forward" class="btn btn_style_k03">전달</button>
+                            <%
+                            if(currentUser.lastApproval == 'Y') {
+                            %>
                             <button type="button" id="btn_baseList_approval" class="btn btn_style_k01">승인</button>
                             <%
-                            }
+                            } else{
+                            %>
+                            <button type="button" id="btn_baseList_approval" class="btn btn_style_k01" disabled>승인</button>
+                            <%
+                            }}
                             %>
                         </div>
                         <!-- // 버튼 영역 -->

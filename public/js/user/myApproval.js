@@ -34,6 +34,30 @@ var checkboxEvent = function () {
         }
 
     });
+
+    //결재리스트(기본)
+    $(document).on("click", "input[name=chk_document]", function () {
+        if ($(this).is(":checked")) {
+            $('#btn_baseList_return').prop('disabled', false);
+            $('#btn_baseList_forward').prop('disabled', false);
+            if ($('#lastApproval').val() == 'Y') {
+                $('#btn_baseList_approval').prop('disabled', false);                              
+            } else {
+                $('#btn_baseList_approval').prop('disabled', true);    
+            }
+            $("input[name=chk_document]").attr("checked", true);
+            $("input[name=chk_document]").parent().addClass("ez-checked");
+        }
+        else {
+            $('#btn_baseList_return').prop('disabled', true);
+            $('#btn_baseList_forward').prop('disabled', true);
+            $('#btn_baseList_approval').prop('disabled', true); 
+            $("input[name=chk_document]").attr("checked", false);
+            $("input[name=chk_document]").parent().removeClass("ez-checked");
+        }
+
+    });
+    
 };
 
 // [이벤트] 버튼
@@ -315,7 +339,13 @@ var fn_search = function () {
 
             if (!$('#tbody_baseList > tr').find('td').eq(0).attr('colspan')){
                 $('#tbody_baseList > tr').eq(0).find('td[name="td_base"]').eq(0).click();
-             }
+            } else {
+                $('#btn_baseList_return').prop('disabled', true);
+                $('#btn_baseList_forward').prop('disabled', true);
+                $('#btn_baseList_approval').prop('disabled', true);
+                endProgressBar(progressId);
+                progressId = null;
+            }
             //endProgressBar(progressId); // end progressbar
         },
         error: function (err) {

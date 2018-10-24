@@ -981,6 +981,7 @@ var fn_search = function () {
                 $('#sendDocBtn').focus();
             } else {
                 $('#deleteDocBtn').prop('disabled', true);
+                $('#sendDocBtn').prop('disabled', true);
                 endProgressBar(progressId);
                 progressId = null;
             }
