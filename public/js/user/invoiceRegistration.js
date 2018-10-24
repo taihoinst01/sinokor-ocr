@@ -18,6 +18,7 @@ var progressId; // progress Id
 var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
 var regMlData = [];
+var isExtract = false; //계약번호 추출여부 true: 추출 후, false: 추출 전
 
 /**
  * 전역변수 초기화
@@ -1143,7 +1144,10 @@ var fn_clickEvent = function () {//jmh
         //$("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked');   
         $("input:checkbox[id='base_chk_" + docNum + "']").click();  
         $("#sendApprovalBtn").prop('disabled', true);
+        $("#reTrainBtn").prop('disabled', true);
+        $("#ctnExtractionBtn").prop('disabled', true);
         $("#deleteRow").prop('disabled', true);
+
         fn_search_dtl(docNum); // document_dtl 조회
     });
     // Document DTL 클릭 시 이미지 조회
@@ -1401,7 +1405,7 @@ var fn_checkboxEvent = function () {
         }
     });
 
-    //문서 기본정보 체크박스
+    //문서 기본정보 단일선택 체크박스
     $(document).on('click', 'input[name=base_chk]', function () {
         if ($('input[name=base_chk]:checked').length == 0) {
             $('#deleteDocBtn').prop('disabled', true);
@@ -1419,12 +1423,37 @@ var fn_checkboxEvent = function () {
             $('#tbody_dtlList .ez-checkbox').addClass('ez-checked');
             $('#tbody_dtlList input[type=checkbox]').prop('checked', true);
             $('#deleteRow').attr('disabled', false);
+            $('#sendApprovalBtn').prop('disabled', false);
+            $('#reTrainBtn').prop('disabled', false);
+            $('#ctnExtractionBtn').prop('disabled', false);
         } else {
             $('#tbody_dtlList .ez-checkbox').removeClass('ez-checked');
             $('#tbody_dtlList input[type=checkbox]').prop('checked', false);
             $('#deleteRow').attr('disabled', true);
+            $('#sendApprovalBtn').prop('disabled', true);
+            $('#reTrainBtn').prop('disabled', true);
+            $('#ctnExtractionBtn').prop('disabled', true);
         }
     });
+
+    //인식결과 단일선택 체크박스
+    $(document).on('click', 'input[name=dtl_chk]', function () {
+        if ($('input[name=dtl_chk]:checked').length == 0) {
+            $('#sendApprovalBtn').prop('disabled', true);
+            $('#reTrainBtn').prop('disabled', true);
+            $('#ctnExtractionBtn').prop('disabled', true);
+        } else {
+            if (isExtract == true) {
+
+                $('#sendApprovalBtn').prop('disabled', false);
+            } else {
+                $('#sendApprovalBtn').prop('disabled', true);
+            }
+            $('#reTrainBtn').prop('disabled', false);
+            $('#ctnExtractionBtn').prop('disabled', false);
+        }
+    });
+    
 }
 
 
@@ -1896,6 +1925,10 @@ function fn_processFinish(mlData, imgId) {
 
     $("#tbody_dtlList").empty().append(dtlHtml);
     $("#tbody_dtlList input[type=checkbox]").ezMark();
+    $('#ocrResultAllChk:checked').click();
+    //$("#sendApprovalBtn").prop("disabled", true);
+    //$("#reTrainBtn").prop("disabled", true);
+    //$("#ctnExtractionBtn").prop("disabled", true);
     $("#div_dtl").css("display", "block");
     $("#btn_pop_ui_close").click();
 
@@ -2064,9 +2097,13 @@ function fn_ContractNumExtraction() {
                             $("#tbody_dtlList").append(dtlHtml);
                             $("#tbody_dtlList input[type=checkbox]").ezMark();
                             $("#div_dtl").css("display", "block");
-
-                            dtlCount++;                         
-                            $('#sendApprovalBtn').prop('disabled', false);
+                            $('#ocrResultAllChk:checked').click();
+                            //$("#sendApprovalBtn").prop("disabled", true);
+                            //$("#reTrainBtn").prop("disabled", true);
+                            //$("#ctnExtractionBtn").prop("disabled", true);
+                            dtlCount++;     
+                            isExtract = true;
+                            //$('#sendApprovalBtn').prop('disabled', false);
                             $('#deleteRow').prop('disabled', true)
                             if (dtlCount == extCount) {
                                 endProgressBar(progressId);
