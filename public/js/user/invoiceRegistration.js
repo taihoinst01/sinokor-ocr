@@ -2588,7 +2588,8 @@ var fn_docEvent = function () {
                     $('input[name="base_chk"]:checked').prop('checked', false);
                     $('input[name="docListAllChk"]:checked').parent().removeClass('ez-checked');
                     $('input[name="docListAllChk"]:checked').prop('checked', false);
-
+                    $('#deleteDocBtn').prop('disabled', true);
+                    $('#sendDocBtn').prop('disabled', true);
                     return false;
                 }
             });
@@ -2661,6 +2662,8 @@ var fn_docEvent = function () {
                     $('input[name="base_chk"]:checked').prop('checked', false);
                     $('input[name="docListAllChk"]:checked').parent().removeClass('ez-checked');
                     $('input[name="docListAllChk"]:checked').prop('checked', false);
+                    $('#deleteDocBtn').prop('disabled', true);
+                    $('#sendDocBtn').prop('disabled', true);
                     
                     return false;
                 }
