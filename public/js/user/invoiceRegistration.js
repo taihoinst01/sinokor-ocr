@@ -1142,7 +1142,8 @@ var fn_clickEvent = function () {//jmh
 
         //$("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked');   
         $("input:checkbox[id='base_chk_" + docNum + "']").click();  
-
+        $("#sendApprovalBtn").prop('disabled', true);
+        $("#deleteRow").prop('disabled', true);
         fn_search_dtl(docNum); // document_dtl 조회
     });
     // Document DTL 클릭 시 이미지 조회
@@ -2064,7 +2065,9 @@ function fn_ContractNumExtraction() {
                             $("#tbody_dtlList input[type=checkbox]").ezMark();
                             $("#div_dtl").css("display", "block");
 
-                            dtlCount++;
+                            dtlCount++;                         
+                            $('#sendApprovalBtn').prop('disabled', false);
+                            $('#deleteRow').prop('disabled', true)
                             if (dtlCount == extCount) {
                                 endProgressBar(progressId);
                                 progressId = null;
