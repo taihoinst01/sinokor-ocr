@@ -2696,11 +2696,6 @@ h3.tits span {
         background: #0075bb;
     }
 
-    .button_st5:hover {
-        background-color: #0370b2;
-        color: #fff;
-    }
-
 .button_st6 {
     display: inline-block;
     width: 27px;
@@ -6327,6 +6322,7 @@ input:disabled {
 .btn_small {
     display: inline-block !important;
     width: 60px !important;
+    min-width: unset !important;
     height: 40px !important;
     margin: 0 !important;
     font-size: 12px !important;
@@ -6362,7 +6358,7 @@ input:disabled {
     font-weight: 500;
     */
     display: inline-block;
-    width: 80px;
+    min-width: 80px;
     height: 40px;
     /*
     line-height: 16px;
@@ -6430,6 +6426,16 @@ input:disabled {
 .btn_style_k03 {
     border-color: #525250;
     color: #525250;
+    background-image: linear-gradient(45deg, #525250 50%, transparent 50%);
+    background-position: 100%;
+    background-size: 400%;
+    transition: background 300ms ease-in-out;
+}
+
+/*연한회색*/
+.btn_style_k04 {
+    border-color: #939393;   
+    color: #939393;
     background-image: linear-gradient(45deg, #525250 50%, transparent 50%);
     background-position: 100%;
     background-size: 400%;
