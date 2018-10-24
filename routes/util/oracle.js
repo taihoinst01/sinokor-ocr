@@ -3095,23 +3095,17 @@ exports.rollbackTrain = function (date, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            var delFormMappingSql = "DELETE FROM TBL_FORM_MAPPING";
-            var delColumnMappingSql = "";
-            var delDocumentSentenceSql = "";
-            var delBannedWordSql = "";
-            var delOcrSymspellSql = "";
-            var delContractMappingSql = "";
-            var delCurcdMappingSql = "";
-            var delDocumentCategorySql = "";
+            var delFormMappingSql = "DELETE FROM TBL_FORM_MAPPING WHERE REGDATE BETWEEN TO_DATE(" + date + " || ' 00:00:00','YYYY-MM-DD HH24:MI:SS') AND SYSDATE";
+            var delColumnMappingSql = "DELETE FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE REGDATE BETWEEN TO_DATE(" + date + " || ' 00:00:00','YYYY-MM-DD HH24:MI:SS') AND SYSDATE";
+            var delDocumentSentenceSql = "DELETE FROM TBL_DOCUMENT_SENTENCE WHERE REGDATE BETWEEN TO_DATE(" + date + " || ' 00:00:00','YYYY-MM-DD HH24:MI:SS') AND SYSDATE";
+            var delBannedWordSql = "DELETE FROM TBL_BANNED_WORD WHERE REGDATE BETWEEN TO_DATE(" + date + " || ' 00:00:00','YYYY-MM-DD HH24:MI:SS') AND SYSDATE";
+            //var delDocumentCategorySql = "DELTE FROM TBL_DOCUMENT_CATEGORY WHERE REGDATE BETWEEN TO_DATE(" + date + " || ' 00:00:00','YYYY-MM-DD HH24:MI:SS') AND SYSDATE";
 
-            await conn.execute(delFormMappingSql, [date]);
-            await conn.execute(delColumnMappingSql, [date]);
-            await conn.execute(delDocumentSentenceSql, [date]);
-            await conn.execute(delBannedWordSql, [date]);
-            await conn.execute(delOcrSymspellSql, [date]);
-            await conn.execute(delContractMappingSql, [date]);
-            await conn.execute(delCurcdMappingSql, [date]);
-            await conn.execute(delDocumentCategorySql, [date]);
+            await conn.execute(delFormMappingSql);
+            await conn.execute(delColumnMappingSql);
+            await conn.execute(delDocumentSentenceSql);
+            await conn.execute(delBannedWordSql);
+            //await conn.execute(delDocumentCategorySql);
 
         } catch (err) {
             reject(err);
@@ -3121,6 +3115,39 @@ exports.rollbackTrain = function (date, done) {
     });
 };
 
+exports.selectFormMapping = function (done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var selFormMappingSql = "SELECT DATA, CLASS FROM TBL_FORM_MAPPING";
+            result = await conn.execute(selFormMappingSql);
+        } catch (err) {
+            reject(err);
+        } finally {
+            return done(null, result);
+        }
+    });
+};
+
+exports.selectColumnMapping = function (done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var selColumnMappingSql = "SELECT DATA, CLASS FROM TBL_BATCH_COLUMN_MAPPING_TRAIN";
+            result = await conn.execute(selColumnMappingSql);
+        } catch (err) {
+            reject(err);
+        } finally {
+            return done(null, result);
+        }
+    });
+};
 
 /*
 exports.convertMs = function (data, done) {

@@ -181,7 +181,8 @@ router.post('/uploadFile', upload.any(), function (req, res) {
             var ofile = "";
 
             if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
-                files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff') {
+                files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff' ||
+                files[i].originalname.split('.')[1] === 'JPG' || files[i].originalname.split('.')[1] === 'jpg') {
                 ifile = appRoot + '\\' + files[i].path;
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
 
