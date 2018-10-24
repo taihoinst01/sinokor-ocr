@@ -16,7 +16,7 @@ var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 var execSync = require('sync-exec');
 var ocrUtil = require('../util/ocr.js');
-var request = require('sync-request');
+var requestSync = require('sync-request');
 
 const upload = multer({
     storage: multer.diskStorage({
@@ -256,7 +256,7 @@ router.post('/rollback', function (req, res) {
             var resColumnMapping = sync.await(oracle.selectColumnMapping(sync.defer()));
 
             // Azure ml train 프록시 호출
-            var azureRes = request('POST', 'http://localhost:8888/ml/rollbackTrain', { json: { 'fmData': resFormMapping.rows, 'cmData': resColumnMapping.rows } });
+            var azureRes = requestSync('POST', 'http://localhost:8888/ml/rollbackTrain', { json: { 'fmData': resFormMapping.rows, 'cmData': resColumnMapping.rows } });
 
             returnObj = { code: 200, message: 'modify textData success' };
 
