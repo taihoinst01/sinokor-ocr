@@ -96,7 +96,7 @@ function fn_searchUser() {
                         '<td>' + nvl(entry.ADMIN) + '</td>' + 
                         '<td>' + nvl(entry.LASTLOGINDATE) + '</td>' + 
                         '<td>' + nvl(entry.OCRUSECOUNT) + '</td>' + 
-                        '<td><button class="btn btn_delete" onclick="javascript:openDeleteUser(' + entry.SEQNUM + ')">삭제</button></td>;' + 
+                        '<td><button class="btn btn_style_k03" onclick="javascript:openDeleteUser(' + entry.SEQNUM + ')">삭제</button></td>;' + 
                     '</tr>';
                 });
                 //<td><button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn" onclick="javascript:openUpdatePw(${entry.seqNum}, ${entry.userId})">수정</button></td>

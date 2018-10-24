@@ -2763,6 +2763,7 @@ function popUpSearchDocCategory() {
                     $('.button_control10').attr('disabled', true);
                     docPopImagesCurrentCount = 1;
                     if (data.length == 0) {
+                        fn_alert('alert', '입력하신 회사명의 계산서가 없습니다. 회사명을 재확인 부탁드립니다.');
                         return false;
                     } else {
                         /**
@@ -2852,6 +2853,8 @@ function popUpRunEvent() {
                 $('#leftRowNum_' + rowNum).remove();
                 $('.rowNum' + rowNum).remove();
                 $('.mlRowNum' + rowNum).remove();
+                fn_alert('alert', '계산서 양식 저장이 완료 되었습니다.');
+                $('#btn_pop_doc_cancel').click();
             },
             error: function (err) {
                 console.log(err);

@@ -7,7 +7,7 @@
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
 
-    <title>ICR</title>
+    <title alt="개별학습">KoreanRe ICR Service - 개별학습</title>
 
     <%include  ../common/commonLib.html%>
 
@@ -76,7 +76,7 @@
                         <form id="uploadFileForm" action="" method="post" enctype="multipart/form-data">
                             <p class="attach_btn">
                                 <input type="file" id="uploadFile" name="file" value="upload"/>
-                                <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
+                                <label id="uploadFileBtn" for="customer_file" class="label_style_k01 btn_style_k01">계산서 업로드</label>
                             </p>
                         </form>
                     </div>
@@ -125,7 +125,7 @@
                             </h3>
                             <button type="button" id="docCompareBtn" class="tits11_btn01"></button>
                             <div class="btn_rt">
-                                <button type="button" id="uiTrainBtn" class="button_st1">ADD Training</button>
+                                <button type="button" id="uiTrainBtn" class="btn btn_style_k01">ADD Training</button>
                             </div>
                             <div class="table_style100">
                                 <table>
@@ -218,8 +218,8 @@
                         <input type="text" name="orgDocName" id="orgDocName" class="inputst_box01 ui_doc_pop_ipt" value="" disabled />
                         <input type="text" name="newDocName" id="newDocName" class="inputst_box01 ui_doc_pop_ipt" value="" placeholder="신규문서명을 입력해 주세요" style="display:none" />
                         <input type="text" name="notInvoice" id="notInvoice" class="inputst_box01 ui_doc_pop_ipt" value="NotInvoice" placeholder="NotInvoice" disabled style="display:none" />
-                        <button type="button" id="btn_pop_doc_cancel" class="ui_doc_pop_btn2 cbtn">취 소</button>
-                        <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1 ml5">저장</button>
+                        <button type="button" id="btn_pop_doc_cancel" class="btn btn_style_k03 cbtn">취 소</button>
+                        <button type="button" id="btn_pop_doc_run" class="btn btn_style_k01 ml5">저장</button>
                     </div>
                     <div class="pop_content">
                         <div class="ui_doc_pop_div fl">
@@ -269,7 +269,7 @@
                                 <div class="ui_doc_pop_div01">
                                     <label class="searchIcon"></label>
                                     <input type="text" id="searchDocCategoryKeyword" class="ipt83" placeholder="검색할 단어를 입력해 주세요">
-                                    <button type="button" id="searchDocCategoryBtn" class="ui_doc_pop_btn3">검색</button>
+                                    <button type="button" id="searchDocCategoryBtn" class="btn btn_style_k03 ml5">검색</button>
                                 </div>
                                 <div class="ui_doc_pop_div01">
                                     <input type="text" id="searchResultDocName" disabled="disabled">

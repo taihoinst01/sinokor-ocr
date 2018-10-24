@@ -1381,21 +1381,18 @@ exports.selectCurCd = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let sql = "SELECT beforeText, afterText FROM tbl_curcd_mapping WHERE beforeText like '%" + req.split(' ')[1] + "%'";
+            let sql = "SELECT beforeText, afterText FROM tbl_curcd_mapping";
             result = await conn.execute(sql);
 
+            var afterText = req;
             if (result.rows.length > 0) {
-                if (result.rows.length == 1) {
-                    return done(null, result.rows[0].AFTERTEXT);
-                } else {
-                    for (var i in result.rows) {
-                        var row = result.rows[i];
-                        if (req == row.BEFORETEXT) {
-                            return done(null, row.AFTERTEXT);
-                        }
+                for (var i in result.rows) {
+                    if (req.lastIndexOf(result.rows[i].BEFORETEXT) != -1) {
+                        afterText = result.rows[i].AFTERTEXT;
+                        break;
                     }
-                    return done(null, result.rows[0].AFTERTEXT);
                 }
+                return done(null, afterText);
             } else {
                 return done(null, req);
             }
@@ -2395,7 +2392,7 @@ exports.selectDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute(`SELECT SEQNUM, DOCNUM, PAGECNT, STATUS, NOWNUM FROM TBL_APPROVAL_MASTER WHERE DOCNUM IN ( ` + req + `)`);
+            result = await conn.execute(`SELECT SEQNUM, DOCNUM, PAGECNT, STATUS, NOWNUM, DEADLINE FROM TBL_APPROVAL_MASTER WHERE DOCNUM IN ( ` + req + `)`);
             if (result.rows.length > 0) {
                 return done(null, result.rows);
             } else {
@@ -2519,7 +2516,7 @@ exports.sendDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET ICRNUM = :icrNum, NOWNUM = :nowNum WHERE DOCNUM = :docNum ", req);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET ICRNUM = :icrNum, NOWNUM = :nowNum, DEADLINE = :deadline WHERE DOCNUM = :docNum ", req);
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2619,9 +2616,9 @@ exports.insertDocument = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             await conn.execute(`INSERT INTO
-                                    TBL_APPROVAL_MASTER(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM )
+                                    TBL_APPROVAL_MASTER(SEQNUM, DOCNUM, STATUS, PAGECNT, FILENAME, FILEPATH, UPLOADNUM, NOWNUM, DEADLINE )
                                 VALUES
-                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :nowNum) `, [req[0][0].imgId, req[1], req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
+                                    (SEQ_DOCUMENT.NEXTVAL, :docNum, 'ZZ', :pageCnt, :fileName, :filePath, :uploadNum, :nowNum, TO_CHAR(SYSDATE, 'YYYYMM')) `, [req[0][0].imgId, req[1], req[0][0].oriFileName, req[0][0].filePath, req[0][0].regId, req[0][0].regId]);
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -3086,6 +3083,68 @@ exports.insertDocumentDtl = function (mlData, done) {
             reject(err);
         } finally {
             return done(null, null);
+        }
+    });
+};
+
+exports.rollbackTrain = function (date, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var delFormMappingSql = "DELETE FROM TBL_FORM_MAPPING WHERE REGDATE BETWEEN TO_DATE(" + date + " || ' 00:00:00','YYYY-MM-DD HH24:MI:SS') AND SYSDATE";
+            var delColumnMappingSql = "DELETE FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE REGDATE BETWEEN TO_DATE(" + date + " || ' 00:00:00','YYYY-MM-DD HH24:MI:SS') AND SYSDATE";
+            var delDocumentSentenceSql = "DELETE FROM TBL_DOCUMENT_SENTENCE WHERE REGDATE BETWEEN TO_DATE(" + date + " || ' 00:00:00','YYYY-MM-DD HH24:MI:SS') AND SYSDATE";
+            var delBannedWordSql = "DELETE FROM TBL_BANNED_WORD WHERE REGDATE BETWEEN TO_DATE(" + date + " || ' 00:00:00','YYYY-MM-DD HH24:MI:SS') AND SYSDATE";
+            //var delDocumentCategorySql = "DELTE FROM TBL_DOCUMENT_CATEGORY WHERE REGDATE BETWEEN TO_DATE(" + date + " || ' 00:00:00','YYYY-MM-DD HH24:MI:SS') AND SYSDATE";
+
+            await conn.execute(delFormMappingSql);
+            await conn.execute(delColumnMappingSql);
+            await conn.execute(delDocumentSentenceSql);
+            await conn.execute(delBannedWordSql);
+            //await conn.execute(delDocumentCategorySql);
+
+        } catch (err) {
+            reject(err);
+        } finally {
+            return done(null, null);
+        }
+    });
+};
+
+exports.selectFormMapping = function (done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var selFormMappingSql = "SELECT DATA, CLASS FROM TBL_FORM_MAPPING";
+            result = await conn.execute(selFormMappingSql);
+        } catch (err) {
+            reject(err);
+        } finally {
+            return done(null, result);
+        }
+    });
+};
+
+exports.selectColumnMapping = function (done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var selColumnMappingSql = "SELECT DATA, CLASS FROM TBL_BATCH_COLUMN_MAPPING_TRAIN";
+            result = await conn.execute(selColumnMappingSql);
+        } catch (err) {
+            reject(err);
+        } finally {
+            return done(null, result);
         }
     });
 };

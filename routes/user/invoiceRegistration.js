@@ -181,7 +181,8 @@ router.post('/uploadFile', upload.any(), function (req, res) {
             var ofile = "";
 
             if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
-                files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff') {
+                files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff' ||
+                files[i].originalname.split('.')[1] === 'JPG' || files[i].originalname.split('.')[1] === 'jpg') {
                 ifile = appRoot + '\\' + files[i].path;
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
 
@@ -454,9 +455,9 @@ router.post('/sendDocument', function (req, res) {
     var returnObj = {};
     var sendCount = 0;
     try {
-        for (var i = 0; i < req.body.docNum.length; i++) {
+        for (var i = 0; i < req.body.docInfo.length; i++) {
             sync.fiber(function () {
-                sync.await(oracle.sendDocument([ req.body.userId[0], req.body.userId[0], req.body.docNum[i]], sync.defer()));
+                sync.await(oracle.sendDocument([req.body.userId[0], req.body.userId[0], req.body.docInfo[i].deadline, req.body.docInfo[i].docNum], sync.defer()));
             });
             sendCount += 1;
         }

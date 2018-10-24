@@ -243,9 +243,11 @@ input.noline{border:none !important;}*/
 .mb0 {
     margin-bottom: 0px !important;
 }
+
 .mb20 {
     margin-bottom: 20px !important;
 }
+
 .mb40 {
     margin-bottom: 40px !important;
 }
@@ -2694,11 +2696,6 @@ h3.tits span {
         background: #0075bb;
     }
 
-    .button_st5:hover {
-        background-color: #0370b2;
-        color: #fff;
-    }
-
 .button_st6 {
     display: inline-block;
     width: 27px;
@@ -2754,6 +2751,8 @@ h3.tits span {
 
     .attach_btn label {
         display: block;
+        padding: 7px 28px 8px !important;
+        /*
         min-width: 60px;
         height: 23px;
         line-height: 25px;
@@ -2766,8 +2765,9 @@ h3.tits span {
         border-radius: 5px;
         cursor: pointer;
         border: 1px solid #666
+            */
     }
-
+/*
         .attach_btn label:hover {
             background-color: #0370b2;
             color: #fff;
@@ -2777,6 +2777,7 @@ h3.tits span {
         padding-right: 5px;
         padding-left: 5px;
     }
+        */
 
 #canvas-holder {
     position: relative;
@@ -4876,22 +4877,6 @@ thead .ez-checked {
     margin-left: 15px;
 }
 
-#uploadFileBtn {
-    display: block;
-    /* min-width: 60px; */
-    /* height: 23px; */
-    /* line-height: 25px; */
-    padding: 7px 29px 8px;
-    margin: 0;
-    font-size: 14px;
-    color: #fff;
-    text-align: center;
-    background: #0370b2;
-    border-radius: 5px;
-    cursor: pointer;
-    border: 0;
-}
-
 .box_content_T_01 {
     float: left;
     display: table;
@@ -5020,6 +5005,7 @@ button[disabled] {
     opacity: 0.5;
     cursor: default;
 }
+
 label[disabled] {
     opacity: 0.5;
     cursor: default !important;
@@ -5183,9 +5169,11 @@ label[disabled] {
 #uploadSucessForm #touchSlider {
     height: 150px !important;
 }
+
 #uploadSucessForm .box_imgtmb {
     max-height: 150px;
 }
+
 #docSearchResultMask {
     width: 496px;
     height: 481px;
@@ -5335,10 +5323,6 @@ label[disabled] {
     margin: 0 0 0 0 !important;
 }
 
-    .kDl03 button {
-        width: 75px !important;
-        min-width: 70px !important;
-    }
 
 .box_content_T_02 .tits {
     margin: 0;
@@ -6206,6 +6190,7 @@ input:disabled {
     height: 480px;
     width: 100%;
 }
+
 .pop_header h1 {
     line-height: 42px;
     padding: 0 0 0 26px;
@@ -6236,6 +6221,7 @@ input:disabled {
         border-radius: 5px;
         cursor: pointer;
     }
+
 #div_invoice_view_image {
     height: 305px !important;
     overflow-y: scroll;
@@ -6287,15 +6273,17 @@ input:disabled {
 }
 
 .lnb_menu_count.on {
-    display:inline-block !important;
+    display: inline-block !important;
 }
 
 #searchManagerResult tr.on {
     background-color: #939393 !important;
 }
-    #searchManagerResult tr.on td{
+
+    #searchManagerResult tr.on td {
         color: white !important;
     }
+
 .searchManagerResultDiv {
     height: 250px;
     overflow: overlay;
@@ -6313,33 +6301,177 @@ input:disabled {
     background-position: -264px -538px;
     margin-right: 8px;
 }
+
 #layer_alert {
     z-index: 2000 !important;
 }
+
     #layer_alert .pop_layer {
         z-index: 2000 !important;
         top: 20% !important;
     }
-#layer_alert .bg {
-    z-index: 200 !important;
-}
+
+    #layer_alert .bg {
+        z-index: 200 !important;
+    }
+
 .width100 {
     width: 100%;
 }
 
 .btn_small {
-    display: inline-block;
-    min-width: 40px;
-    height: 40px;
-    margin: 0;
-    font-size: 12px;
-    color: #525250;
-    background: none;
-    border: 1px solid #b6b6b6;
-    border-radius: 5px;
-    cursor: pointer;
+    display: inline-block !important;
+    width: 60px !important;
+    min-width: unset !important;
+    height: 40px !important;
+    margin: 0 !important;
+    font-size: 12px !important;
+    background-color:transparent !important;
+    border: 1px solid #b6b6b6 !important;
+    border-radius: 5px !important;
 }
 
 .alertContent_span {
     font-size: 14px;
 }
+
+.btn {
+    /*
+    box-sizing: border-box;
+    appearance: none;
+    background-color: transparent;
+    border: 1px solid black;
+    border-radius: 5px;
+    color: black;
+    cursor: pointer;
+    display: flex;
+    align-self: center;
+    font-size: 14px;
+    line-height: 1;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 7px 20px 8px;
+    min-width: 60px;
+    height: 40px;
+    line-height: 25px;
+    font-weight: 500;
+    */
+    display: inline-block;
+    min-width: 80px;
+    height: 40px;
+    /*
+    line-height: 16px;
+    padding: 0 15px;
+
+    */
+    font-size: 15px;
+    border-radius: 5px;
+    border: 1px solid;
+    cursor: pointer;
+    background-color:transparent;
+}
+
+    .btn:enabled:hover {
+        background-position: 0;
+        color: white;
+    }
+
+    .btn:enabled:focus {
+        background-position: 0;
+        color: white;
+    }
+    .btn:disabled {
+    }
+.fourth {
+    border-color: #0370b2;
+    color: #0370b2;
+    background-image: linear-gradient(45deg, #0370b2 50%, transparent 50%);
+    background-position: 100%;
+    background-size: 400%;
+    transition: background 300ms ease-in-out;
+}
+
+    .fourth:hover {
+        background-position: 0;
+        color: white;
+    }
+
+    .fourth:focus {
+        background-position: 0;
+        color: white;
+    }
+
+/*파랑*/    
+.btn_style_k01 {
+    border-color: #0370b2;
+    color: #0370b2;
+    background-image: linear-gradient(45deg, #0370b2 50%, transparent 50%);
+    background-position: 100%;
+    background-size: 400%;
+    transition: background 300ms ease-in-out;
+}
+
+/*빨강*/
+.btn_style_k02 {
+    border-color: #ab3c3c;
+    color: #ab3c3c;
+    background-image: linear-gradient(45deg, #ab3c3c 50%, transparent 50%);
+    background-position: 100%;
+    background-size: 400%;
+    transition: background 300ms ease-in-out;
+}
+
+/*회색*/
+.btn_style_k03 {
+    border-color: #525250;
+    color: #525250;
+    background-image: linear-gradient(45deg, #525250 50%, transparent 50%);
+    background-position: 100%;
+    background-size: 400%;
+    transition: background 300ms ease-in-out;
+}
+
+/*연한회색*/
+.btn_style_k04 {
+    border-color: #939393;   
+    color: #939393;
+    background-image: linear-gradient(45deg, #525250 50%, transparent 50%);
+    background-position: 100%;
+    background-size: 400%;
+    transition: background 300ms ease-in-out;
+}
+
+/*라벨*/
+.label_style_k01 {
+    display: block;
+    min-width: 60px;
+    box-sizing: border-box;
+    appearance: none;
+    background-color: transparent;
+    border: 1px solid;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-self: center;
+    font-size: 14px;
+    line-height: 1;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 7px 20px 8px;
+    min-width: 60px;
+    height: 40px;
+    line-height: 25px;
+    font-weight: 500;
+}
+    .label_style_k01:hover {
+        background-position: 0;
+        color: white;
+    }
+
+    .label_style_k01:focus {
+        background-position: 0;
+        color: white;
+    }
+   
