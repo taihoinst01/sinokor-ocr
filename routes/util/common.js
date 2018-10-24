@@ -16,6 +16,7 @@ var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 var execSync = require('sync-exec');
 var ocrUtil = require('../util/ocr.js');
+var request = require('sync-request');
 
 const upload = multer({
     storage: multer.diskStorage({
@@ -238,14 +239,24 @@ router.post('/imageUpload', upload.any(), function (req, res) {
     */
 });
 
+
 router.post('/rollback', function (req, res) {
-    var date = req.body.date;
+    //var date = req.body.date;
+    var date = "2018-10-24";
+    date = date.replace(/-/g, "");
     var returnObj;
 
     sync.fiber(function () {
         try {
             //delete tbl_form_mapping
             sync.await(oracle.rollbackTrain(date, sync.defer()));
+
+            var resFormMapping = sync.await(oracle.selectFormMapping(sync.defer()));
+
+            var resColumnMapping = sync.await(oracle.selectColumnMapping(sync.defer()));
+
+            // Azure ml train 프록시 호출
+            var azureRes = request('POST', 'http://localhost:8888/ml/rollbackTrain', { json: { 'fmData': resFormMapping.rows, 'cmData': resColumnMapping.rows } });
 
             returnObj = { code: 200, message: 'modify textData success' };
 
