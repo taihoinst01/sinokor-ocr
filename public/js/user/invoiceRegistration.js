@@ -53,6 +53,8 @@ var initForm = function ({ type }) {
     $("#main_image").prop("src", "");
     $("#main_image").prop("alt", "");
     $("#ul_image").html("");
+    //$(".label_style_k01").focus();
+    //$("#btn_search").focus();
 
     $("#div_image").fadeOut("fast");
     $("#div_dtl").fadeOut("fast");
@@ -68,6 +70,19 @@ var initForm = function ({ type }) {
 
 $(function () {
     _init();
+});
+
+$(window).on('keyup', function (e) {
+    if (e.keyCode == '9') {
+        //console.log(e);
+        if (e.target.tagName == 'A') {
+            $("select").eq(0).focus();
+        }
+
+        if (e.target.tagName == 'SELECT') {
+            $(e.target).mousedown();
+        }
+    }
 });
 
 /****************************************************************************************
@@ -123,6 +138,7 @@ var fn_buttonEvent = function () {
     $("#uiTrainBtn").on("click", function () {
         fn_uiTrain();
     });
+
 };
 
 /****************************************************************************************
@@ -1544,6 +1560,21 @@ var ocrResult = function () {
         td.empty().append(editHtml);
         td.find('input[type=text]').focus();
     });
+
+    $(document).on('dblclick', '.dtl_td_dblclcik', function () {
+
+        if ($(this).html() == "") {
+            $(this).html('<input type="text"/>');
+        }
+
+        /*
+        var selectVal = $(this).val().split('_')[1] == undefined ? "" : $(this).val().split('_')[1];
+        var editHtml = '<input type="text" value="' + selectVal + '">';
+        var td = $(this).closest('td');
+        td.empty().append(editHtml);
+        td.find('input[type=text]').focus();
+        */
+    });
 }
 
 
@@ -1789,86 +1820,6 @@ var executeML_Old = function (fileDtlInfo, fileName, data, type) {
 };
 */
 
-/*
-// 인식 결과 처리
-function fn_processFinish_Old1(data) {
-    var dataVal = [];
-    for (var i = 0; i < lineText.length; i++) {
-        for (var j = 0; j < lineText[i].data.data.length; j++) {
-            dataVal.push(lineText[i].data.data[j]);
-        }
-    }
-
-    // TODO : 분석 결과를 정리하고 1 record로 생성한다.
-    var dtlHtml = '<tr>' +
-        '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-        '<td>' + makeMLSelect(dataVal, 0, null) + '</td> <!--출재사명-->' +
-        '<td>' + makeMLSelect(dataVal, 1, null) + '</td> <!--계약명-->' +
-        '<td>' + makeMLSelect(dataVal, 2, null) + '</td> <!--UY-->' +
-        '<td></td> <!--계약번호-->' +
-        '<td></td> <!--페이지번호 FROM-->' +
-        '<td></td> <!--페이지번호 TO-->' +
-        '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
-        '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
-        '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
-        '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
-        '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
-        '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
-        '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
-        '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
-        '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
-        '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
-        '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
-        '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
-        '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
-        '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
-        '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
-        '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
-        '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
-        '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
-        '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-        '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-        '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-        '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
-        '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
-        '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
-        '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
-        '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
-        '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
-        '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
-        '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
-        '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
-        '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
-        '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
-        '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
-        '</tr>';
-
-    $("#tbody_dtlList").append(dtlHtml);
-    $("#tbody_dtlList input[type=checkbox]").ezMark();
-    $("#div_dtl").css("display", "block");
-    function makeMLSelect(mlData, colnum, entry) {
-
-        var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileDtlInfo.convertFileName + '\')">';
-        appendMLSelect += '<option value="선택">선택</option>';
-        var hasColvalue = false;
-        for (var y = 0; y < mlData.length; y++) {
-
-            if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
-                hasColvalue = true;
-                appendMLSelect += '<option>' + mlData[y].text + '</option>';
-            } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
-                hasColvalue = true;
-                appendMLSelect += '<option>' + mlData[y].text + '</option>';
-            }
-
-        }
-        appendMLSelect += '</select>';
-
-        return hasColvalue ? appendMLSelect : '';
-    }
-}
-*/
-
 // 인식 결과 처리
 function fn_processFinish(mlData, imgId) {
     //console.log("data : " + JSON.stringify(data));
@@ -1933,19 +1884,23 @@ function fn_processFinish(mlData, imgId) {
     $("#div_dtl").css("display", "block");
     $("#btn_pop_ui_close").click();
 
+    if (!$("#sendDocBtn").is(":focus")) {
+        $('select').eq(0).focus();
+    }
+
     function makeMLSelect(mlData, colnum, entry) {
 
         var appendMLSelect = '';
         if (colnum == 0) {
-            appendMLSelect = '<select class="selectDbClick" name="cdnNm" onchange="zoomImg(this)">';
+            appendMLSelect = '<select class="selectDbClick" name="cdnNm" onchange="zoomImg(this)" onmousedown="zoomImg(this)">';
         } else if (colnum == 1) {
-            appendMLSelect = '<select class="selectDbClick" name="ctNm" onchange="zoomImg(this)">';
+            appendMLSelect = '<select class="selectDbClick" name="ctNm" onchange="zoomImg(this)" onmousedown="zoomImg(this)">';
         } else if (colnum == 2) {
-            appendMLSelect = '<select class="selectDbClick" name="ttyYy" onchange="zoomImg(this)">';
+            appendMLSelect = '<select class="selectDbClick" name="ttyYy" onchange="zoomImg(this)" onmousedown="zoomImg(this)">';
         } else {
-            appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this)">';
+            appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this)" onmousedown="zoomImg(this)">';
         }
-        appendMLSelect += '<option value="선택">선택</option>';
+        //appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
@@ -1990,24 +1945,24 @@ function fn_ContractNumExtraction() {
     var ttyYy = [];
 
     for (var i = 0; i < $("select[name='cdnNm'] > option").length; i++) {
-        if (i > 0) {
+        //if (i > 0) {
             var text = $("select[name='cdnNm'] option:eq('" + i + "')").text();
             cdnNm.push(text);
-        }
+        //}
     }
 
     for (var i = 0; i < $("select[name='ctNm'] > option").length; i++) {
-        if (i > 0) {
+        //if (i > 0) {
             var text = $("select[name='ctNm'] option:eq('" + i + "')").text();
             ctNm.push(text);
-        }
+        //}
     }
 
     for (var i = 0; i < $("select[name='ttyYy']  > option").length; i++) {
-        if (i > 0) {
+        //if (i > 0) {
             var text = $("select[name='ttyYy'] option:eq('" + i + "')").text();
             ttyYy.push(text);
-        }
+        //}
     }
 
     if (cdnNm.length == 0) {
@@ -2059,39 +2014,39 @@ function fn_ContractNumExtraction() {
                                     '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->' +
                                     '<td>' + makePageNum((parseInt(i) + 1), data.data.length) + '</td> <!--페이지번호 FROM-->' +
                                     '<td>' + makePageNum(data.data.length, data.data.length) + '</td> <!--페이지번호 TO-->' +
-                                    '<td>' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
-                                    '<td>' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
-                                    '<td>' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
-                                    '<td>' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
-                                    '<td>' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
-                                    '<td>' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
-                                    '<td>' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
-                                    '<td>' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
-                                    '<td>' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
-                                    '<td>' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
-                                    '<td>' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
-                                    '<td>' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
-                                    '<td>' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
-                                    '<td>' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
-                                    '<td>' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
-                                    '<td>' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
-                                    '<td>' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
-                                    '<td>' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
-                                    '<td>' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-                                    '<td>' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                    '<td>' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                    '<td>' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
-                                    '<td>' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
-                                    '<td>' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
-                                    '<td>' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
-                                    '<td>' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
-                                    '<td>' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
-                                    '<td>' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
-                                    '<td>' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
-                                    '<td>' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
-                                    '<td>' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
-                                    '<td>' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
-                                    '<td>' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
                                     '</tr>';
                             }
 
@@ -2113,6 +2068,7 @@ function fn_ContractNumExtraction() {
                                     fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
                                 }
                             }
+                            $("select").eq(0).focus();
                         },
                         error: function (err) {
                             console.log(err);
@@ -2127,8 +2083,8 @@ function fn_ContractNumExtraction() {
 
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileName + '\')">';
-        appendMLSelect += '<option value="선택">선택</option>';
+        var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileName + '\')" onmousedown="zoomImg(this)">';
+        //appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
@@ -2536,14 +2492,17 @@ function zoomImg(e) {
     var height = reImg.height;
 
     //imageZoom 고정크기
-    var fixWidth = 744;
-    var fixHeight = 1052;
+    //var fixWidth = 744;
+    //var fixHeight = 1052;
+
+    var fixWidth = 800;
+    var fixHeight = 1300;
 
     var widthPercent = fixWidth / width;
     var heightPercent = fixHeight / height;
 
     $('#mainImage').hide();
-    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+    $('#imageZoom').css('height', '1600px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
 
     // 사각형 좌표값
     var location = $(e).val().split('_')[0].split(',');
@@ -2552,8 +2511,10 @@ function zoomImg(e) {
     textWidth = parseInt(location[2]);
     textHeight = parseInt(location[3]);
 
-    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
-    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
+    //var xPosition = ((- (x * widthPercent)) + 400) + 'px ';
+    //var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    var xPosition = '0px ';
+    var yPosition = ((- (y * heightPercent)) + 260) + 'px';
     //console.log(xPosition + yPosition);
     $('#imageZoom').css('background-position', xPosition + yPosition);
 

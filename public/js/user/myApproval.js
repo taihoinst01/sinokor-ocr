@@ -5,6 +5,16 @@ $(function () {
     _init();
 });
 
+$(window).on('keyup', function (e) {
+    if (e.keyCode == '9') {
+        console.log(e);
+
+        if (e.target.id == "mCSB_1") {
+            $("#btn_baseList_return").focus();
+        }
+    }
+});
+
 /***************************************************
  * Event
  ***************************************************/
@@ -25,12 +35,33 @@ var checkboxEvent = function () {
     // all checkbox
     $("#listCheckAll").on("click", function () {
         if ($("#listCheckAll").prop("checked")) {
-            $("input[name=chk_document]").attr("checked", true);
-            $("input[name=chk_document]").parent().addClass("ez-checked");
+            for (var i = 0; i < $("input[name=chk_document]").length; i++) {
+                $("input[name=chk_document]").eq(i).prop("checked", true);
+                $("input[name=chk_document]").eq(i).parent().addClass("ez-checked");
+            }
         }
         else {
-            $("input[name=chk_document]").attr("checked", false);
-            $("input[name=chk_document]").parent().removeClass("ez-checked");
+            for (var i = 0; i < $("input[name=chk_document]").length; i++) {
+                $("input[name=chk_document]").eq(i).prop("checked", false);
+                $("input[name=chk_document]").eq(i).parent().removeClass("ez-checked");
+            }
+        }
+
+        for (var j = 0; j < $("input[name=chk_document]").length; j++) {
+            if ($("input[name=chk_document]").eq(j).is(":checked")) {
+                $('#btn_baseList_return').prop('disabled', false);
+                $('#btn_baseList_forward').prop('disabled', false);
+                if ($('#lastApproval').val() == 'Y') {
+                    $('#btn_baseList_approval').prop('disabled', false);
+                } else {
+                    $('#btn_baseList_approval').prop('disabled', true);
+                }
+                break;
+            }
+
+            $('#btn_baseList_return').prop('disabled', true);
+            $('#btn_baseList_forward').prop('disabled', true);
+            $('#btn_baseList_approval').prop('disabled', true);
         }
 
     });
@@ -45,15 +76,19 @@ var checkboxEvent = function () {
             } else {
                 $('#btn_baseList_approval').prop('disabled', true);    
             }
-            $("input[name=chk_document]").attr("checked", true);
-            $("input[name=chk_document]").parent().addClass("ez-checked");
+            //$("input[name=chk_document]").attr("checked", true);
+            //$("input[name=chk_document]").parent().addClass("ez-checked");
+            $(this).attr("checked", true);
+            $(this).parent().addClass("ez-checked");
         }
         else {
             $('#btn_baseList_return').prop('disabled', true);
             $('#btn_baseList_forward').prop('disabled', true);
             $('#btn_baseList_approval').prop('disabled', true); 
-            $("input[name=chk_document]").attr("checked", false);
-            $("input[name=chk_document]").parent().removeClass("ez-checked");
+            //$("input[name=chk_document]").attr("checked", false);
+            //$("input[name=chk_document]").parent().removeClass("ez-checked");
+            $(this).attr("checked", false);
+            $(this).parent().removeClass("ez-checked");
         }
 
     });

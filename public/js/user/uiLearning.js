@@ -915,7 +915,7 @@ function detailTable(fileName) {
                     tblTag += '<dl>';
                     tblTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
                     if (data[i].originText) {
-                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:320px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" style="width:320px;">';
                     } else {
                         tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:320px;">';
                     }
@@ -1020,7 +1020,9 @@ function detailTable(fileName) {
     $('#textResultTbl').append(tblTag).append(tblSortTag);
     // input 태그 마우스오버 말풍선 Tooltip 적용
     $('#textResultTbl input[type=checkbox]').ezMark();
-    new $.Zebra_Tooltips($('.tip'));
+    new $.Zebra_Tooltips($('.tip'), {
+        max_width: 300
+    });
     dbSelectClickEvent();
 
     $(".entryChk").change(function () {

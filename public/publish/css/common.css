@@ -4997,7 +4997,7 @@ thead .ez-checked {
     display: none;
     border: 2px solid red;
     position: absolute;
-    top: 185px;
+    top: 245px;
     width: 100%;
 }
 
@@ -6469,9 +6469,9 @@ input:disabled {
         background-position: 0;
         color: white;
     }
-
     .label_style_k01:focus {
         background-position: 0;
         color: white;
     }
+
    
