@@ -1986,7 +1986,7 @@ function fn_ContractNumExtraction() {
 
     var extCount = (cdnNm.length) * (ctNm.length) * (ttyYy.length);
     var dtlCount = 0;
-    $("#tbody_dtlList").empty();
+    
     $("#progressMsgTitle").html("계약번호 추출 중..");
     progressId = showProgressBar();
     addProgressBar(70, 99);
@@ -2054,21 +2054,25 @@ function fn_ContractNumExtraction() {
                                     '</tr>';
                             }
 
-                            $("#tbody_dtlList").append(dtlHtml);
-                            $("#tbody_dtlList input[type=checkbox]").ezMark();
-                            $("#div_dtl").css("display", "block");
-                            $('#ocrResultAllChk:checked').click();
+                            if (dtlHtml != '') {
+                                $("#tbody_dtlList").empty();
+                                $("#tbody_dtlList").append(dtlHtml);
+                                $("#tbody_dtlList input[type=checkbox]").ezMark();
+                                $("#div_dtl").css("display", "block");
+                                $('#ocrResultAllChk:checked').click();
+                            }
+
                             //$("#sendApprovalBtn").prop("disabled", true);
                             //$("#reTrainBtn").prop("disabled", true);
                             //$("#ctnExtractionBtn").prop("disabled", true);
                             dtlCount++;     
                             isExtract = true;
                             //$('#sendApprovalBtn').prop('disabled', false);
-                            $('#deleteRow').prop('disabled', true)
+                            $('#deleteRow').prop('disabled', true);
                             if (dtlCount == extCount) {
                                 endProgressBar(progressId);
                                 progressId = null;
-                                if ($("#tbody_dtlList > tr").length == 0) {
+                                if (dtlHtml == '') {
                                     fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
                                 }
                             }
