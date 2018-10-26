@@ -121,12 +121,22 @@ var invoiceRegistrationConfig = {
                 , PAIDPERCENT, PAIDSHARE, OSLPERCENT, OSLSHARE, PM, PMPFEND, PMPFWOS, XOLPM, RETURNPM, CN, PROFITCN
                 , BROKERAGE, TAX, OVERRIDINGCOM, CHARGE, PMRESERVERTD, PFPMRESERVERTD, PMRESERVERLD, PFPMRESERVERLD
                 , CLAIM, LOSSRECOVERY, CASHLOSS, CASHLOSSRD, LOSSRR, LOSSRR2, LOSSPFENT, LOSSPFWOA, INTEREST, TAXON, MISCELLANEOUS
-                , CSCOSARFRNCNNT2, DOCNUM ) 
+                , CSCOSARFRNCNNT2, CURCD_LOC, CURUNIT_LOC
+                , PAIDPERCENT_LOC, PAIDSHARE_LOC, OSLPERCENT_LOC, OSLSHARE_LOC, PM_LOC, PMPFEND_LOC, PMPFWOS_LOC, XOLPM_LOC, RETURNPM_LOC
+                , CN_LOC, PROFITCN_LOC, BROKERAGE_LOC, TAX_LOC, OVERRIDINGCOM_LOC, CHARGE_LOC, PMRESERVERTD_LOC
+                , PFPMRESERVERTD_LOC, PMRESERVERLD_LOC, PFPMRESERVERLD_LOC, CLAIM_LOC, LOSSRECOVERY_LOC, CASHLOSS_LOC, CASHLOSSRD_LOC
+                , LOSSRR_LOC, LOSSRR2_LOC, LOSSPFENT_LOC, LOSSPFWOA_LOC, INTEREST_LOC, TAXON_LOC, MISCELLANEOUS_LOC, CSCOSARFRNCNNT2_LOC
+                , DOCNUM ) 
          VALUES(seq_document_dtl.nextval, :status, :invoicetype, :ogcompanyname, :ctnm, :uy, :ctno, :pagefrom, :pageto, :curcd
                 , :curunit, :paidpercent, :paidshare, :oslpercent, :oslshare, :pm, :pmpfend, :pmpfwos, :xolpm, :returnpm
                 , :cn, :profitcn, :brokerage, :tax, :overridingcom, :charge, :pmreservertd, :pfpmreservertd, :pmreserverld
                 , :pfpmreserverld, :claim, :lossrecovery, :cashloss, :cashlossrd, :lossrr, :lossrr2, :losspfent, :losspfwoa
-                , :interest, :taxon, :miscellaneous, :cscosarfrncnnt2, :docnum ) `,
+                , :interest, :taxon, :miscellaneous, :cscosarfrncnnt2
+                , :curcd_loc, :curunit_loc, :paidpercent_loc, :paidshare_loc, :oslpercent_loc, :oslshare_loc, :pm_loc, :pmpfend_loc
+                , :pmpfwos_loc, :xolpm_loc, :returnpm_loc, :cn_loc, :profitcn_loc, :brokerage_loc, :tax_loc, :overridingcom_loc, :charge_loc
+                , :pmreservertd_loc, :pfpmreservertd_loc, :pmreserverld_loc, :pfpmreserverld_loc, :claim_loc, :lossrecovery_loc, :cashloss_loc
+                , :cashlossrd_loc, :lossrr_loc, :lossrr2_loc, :losspfent_loc, :losspfwoa_loc, :interest_loc, :taxon_loc, :miscellaneous_loc, :cscosarfrncnnt2_loc
+                , :docnum ) `,
     deleteDocumentDtl:
         `DELETE FROM TBL_DOCUMENT_DTL WHERE DOCNUM = :docnum `
 };

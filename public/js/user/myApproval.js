@@ -7,10 +7,13 @@ $(function () {
 
 $(window).on('keyup', function (e) {
     if (e.keyCode == '9') {
-        console.log(e);
-
+        //console.log(e);
         if (e.target.id == "mCSB_1") {
             $("#btn_baseList_return").focus();
+        }
+
+        if (e.target.tagName == "A" && e.target.parentNode.tagName == "TD") {
+            $(e.target).click();
         }
     }
 });
@@ -189,6 +192,12 @@ var fn_clickEvent = function () {
         }
 
         //$("td[name='td_base']").unbind();
+    });
+
+    $('.box_img').click(function () {
+        $('#ul_image > li').removeClass('on');
+        $(this).parent().addClass('on');
+        $("#main_image").prop("src", $(this).find("img").attr("src"));
     });
 
     /*
@@ -421,39 +430,39 @@ var fn_search_dtl = function (seqNum, docNum) {
                      '<td>' + nvl2(data.docData[i].CTNO,'') + '</td>' +
                      '<td>' + nvl2(data.docData[i].PAGEFROM, 0) + '</td>' +
                      '<td>' + nvl2(data.docData[i].PAGETO, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].CURCD, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].CURUNIT, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].PAIDPERCENT, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].PAIDSHARE, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].OSLPERCENT, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].OSLSHARE, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].PM, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].PMPFEND, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].PMPFWOS, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].XOLPM, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].RETURNPM, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].CN, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].PROFITCN, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].BROKERAGE, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].TAX, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].OVERRIDINGCOM, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].CHARGE, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].PMRESERVERTD, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].PFPMRESERVERTD, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].PMRESERVERLD, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].PFPMRESERVERLD, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].CLAIM, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].LOSSRECOVERY, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].CASHLOSS, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].CASHLOSSRD, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].LOSSRR, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].LOSSRR2, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].LOSSPFENT, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].LOSSPFWOA, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].INTEREST, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].TAXON, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].MISCELLANEOUS, 0) + '</td>' +
-                     '<td>' + nvl2(data.docData[i].CSCOSARFRNCNNT2, 0) + '</td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].CURCD, 0) + '</a><input type="hidden" value="' + data.docData[i].CURCD_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].CURUNIT, 0) + '</a><input type="hidden" value="' + data.docData[i].CURUNIT_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].PAIDPERCENT, 0) + '</a><input type="hidden" value="' + data.docData[i].PAIDPERCENT_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].PAIDSHARE, 0) + '</a><input type="hidden" value="' + data.docData[i].PAIDSHARE_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].OSLPERCENT, 0) + '</a><input type="hidden" value="' + data.docData[i].OSLPERCENT_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].OSLSHARE, 0) + '</a><input type="hidden" value="' + data.docData[i].OSLSHARE_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].PM, 0) + '</a><input type="hidden" value="' + data.docData[i].PM_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].PMPFEND, 0) + '</a><input type="hidden" value="' + data.docData[i].PMPFEND_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].PMPFWOS, 0) + '</a><input type="hidden" value="' + data.docData[i].PMPFWOS_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].XOLPM, 0) + '</a><input type="hidden" value="' + data.docData[i].XOLPM_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].RETURNPM, 0) + '</a><input type="hidden" value="' + data.docData[i].RETURNPM_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].CN, 0) + '</a><input type="hidden" value="' + data.docData[i].CN_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].PROFITCN, 0) + '</a><input type="hidden" value="' + data.docData[i].PROFITCN_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].BROKERAGE, 0) + '</a><input type="hidden" value="' + data.docData[i].BROKERAGE_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].TAX, 0) + '</a><input type="hidden" value="' + data.docData[i].TAX_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].OVERRIDINGCOM, 0) + '</a><input type="hidden" value="' + data.docData[i].OVERRIDINGCOM_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].CHARGE, 0) + '</a><input type="hidden" value="' + data.docData[i].CHARGE_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].PMRESERVERTD, 0) + '</a><input type="hidden" value="' + data.docData[i].PMRESERVERTD_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].PFPMRESERVERTD, 0) + '</a><input type="hidden" value="' + data.docData[i].PFPMRESERVERTD_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].PMRESERVERLD, 0) + '</a><input type="hidden" value="' + data.docData[i].PMRESERVERLD_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].PFPMRESERVERLD, 0) + '</a><input type="hidden" value="' + data.docData[i].PFPMRESERVERLD_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].CLAIM, 0) + '</a><input type="hidden" value="' + data.docData[i].CLAIM_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].LOSSRECOVERY, 0) + '</a><input type="hidden" value="' + data.docData[i].LOSSRECOVERY_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].CASHLOSS, 0) + '</a><input type="hidden" value="' + data.docData[i].CASHLOSS_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].CASHLOSSRD, 0) + '</a><input type="hidden" value="' + data.docData[i].CASHLOSSRD_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].LOSSRR, 0) + '</a><input type="hidden" value="' + data.docData[i].LOSSRR_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].LOSSRR2, 0) + '</a><input type="hidden" value="' + data.docData[i].LOSSRR2_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].LOSSPFENT, 0) + '</a><input type="hidden" value="' + data.docData[i].LOSSPFENT_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].LOSSPFWOA, 0) + '</a><input type="hidden" value="' + data.docData[i].LOSSPFWOA_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].INTEREST, 0) + '</a><input type="hidden" value="' + data.docData[i].INTEREST_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].TAXON, 0) + '</a><input type="hidden" value="' + data.docData[i].TAXON_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].MISCELLANEOUS, 0) + '</a><input type="hidden" value="' + data.docData[i].MISCELLANEOUS_LOC + '"/></td>' +
+                     '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].CSCOSARFRNCNNT2, 0) + '</a><input type="hidden" value="' + data.docData[i].CSCOSARFRNCNNT2_LOC + '"/></td>' +
                     '</tr>';    
                 }               
             } else {
@@ -548,6 +557,11 @@ var fn_search_image = function (imgId) {
             //addProgressBar(2, 99); // proceed progressbar
             if (data.docData.length > 0) {
                 $('#mainImgDiv').html('<img id="main_image" src="" alt="샘플이미지" />');
+                var redNemoHtml = '<div id="imageZoom" ondblclick="viewOriginImg()">';
+                redNemoHtml += '<div id="redZoomNemo">';
+                redNemoHtml += '</div>';
+                redNemoHtml += '</div>';
+                $('#mainImgDiv').after(redNemoHtml);
                 $.each(data.docData, function (index, entry) {
                     if (index == 0) {
                         $("#main_image").prop("src", '../../uploads/' + entry.ORIGINFILENAME);
@@ -580,6 +594,73 @@ var fn_search_image = function (imgId) {
         }
     });
 };
+
+function zoomImg(e) {
+    var fileName = $(e).parent().find('input[type="hidden"]').val().split("_")[1];
+
+    if (fileName == "undefined" || fileName == "" || fileName == null) {
+        return;
+    }
+
+    var mainImage = $("#main_image").css('background-image');
+    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
+
+    if (mainImage != fileName) {
+        $('#main_image').css('background-image', 'url("../../uploads/' + fileName + '")');
+    }
+
+    $('.box_img').each(function (i, el) {
+        $(el).closest('li').removeClass('on');
+        var imgSrc = $(el).find('img').attr('src');
+        if (imgSrc.indexOf(fileName) != -1) {
+            $(el).closest('li').addClass('on');
+        }
+    });
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#main_image').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
+    //imageZoom 고정크기
+    //var fixWidth = 744;
+    //var fixHeight = 1052;
+
+    var fixWidth = 800;
+    var fixHeight = 1300;
+
+    var widthPercent = fixWidth / width;
+    var heightPercent = fixHeight / height;
+
+    $('#mainImgDiv').hide();
+    $('#imageZoom').css('height', '458px').css('background-image', $('#main_image').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+
+    // 사각형 좌표값
+    var location = $(e).parent().find('input[type="hidden"]').val().split("_")[0].split(',');
+    var x = parseInt(location[0]);
+    var y = parseInt(location[1]);
+    var textWidth = parseInt(location[2]);
+    var textHeight = parseInt(location[3]);
+
+    //var xPosition = ((- (x * widthPercent)) + 400) + 'px ';
+    //var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    var xPosition = '0px ';
+    var yPosition = ((- (y * heightPercent) + 350)) + 'px';
+    //console.log(xPosition + yPosition);
+    $('#imageZoom').css('background-position', xPosition + yPosition);
+
+    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
+    $('#redZoomNemo').show();
+}
+
+function viewOriginImg() {
+    $('#imageZoom').hide();
+    $('#mainImgDiv').show();
+}
 
 // 체크된 문서확인하고 승인/반려/전달 실행
 var fn_baseList_chk = function (flag) {

@@ -74,7 +74,6 @@ $(function () {
 
 $(window).on('keyup', function (e) {
     if (e.keyCode == '9') {
-        //console.log(e);
         if (e.target.tagName == 'A') {
             $("select").eq(0).focus();
         }
@@ -1555,7 +1554,10 @@ var ocrResult = function () {
     //셀렉트박스 더블클릭시 수정폼
     $(document).on('dblclick', '.selectDbClick', function () {
         var selectVal = $(this).val().split('_')[1] == undefined ? "" : $(this).val().split('_')[1];
+        var selectLoc = $(this).val().split('_')[0] == undefined ? "" : $(this).val().split('_')[0];
+        var selectFileName = $(this).find("option:selected").attr("alt");
         var editHtml = '<input type="text" value="' + selectVal + '">';
+        editHtml += '<input type="hidden" value="' + selectLoc + '_' + selectFileName + '">';
         var td = $(this).closest('td');
         td.empty().append(editHtml);
         td.find('input[type=text]').focus();
@@ -1832,7 +1834,7 @@ function fn_processFinish(mlData, imgId) {
 
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
-        '<td><input type="checkbox" value="' + imgId + '" name="dtl_chk" /></td>' +
+        '<td><input type="checkbox" value="' + imgId + '" name="dtl_chk" checked="checked"/></td>' +
         '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 0, null) + '</td> <!--출재사명-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 1, null) + '</td> <!--계약명-->' +
@@ -1875,6 +1877,8 @@ function fn_processFinish(mlData, imgId) {
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 35, null) + '</td> <!--YOUR REF -->' +
         '</tr>';
 
+    $("#reTrainBtn").attr("disabled", false);
+    $("#ctnExtractionBtn").attr("disabled", false);
     $("#tbody_dtlList").empty().append(dtlHtml);
     $("#tbody_dtlList input[type=checkbox]").ezMark();
     $('#ocrResultAllChk:checked').click();
@@ -2012,8 +2016,8 @@ function fn_ContractNumExtraction() {
                                     '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
                                     '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
                                     '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->' +
-                                    '<td>' + makePageNum((parseInt(i) + 1), data.data.length) + '</td> <!--페이지번호 FROM-->' +
-                                    '<td>' + makePageNum(data.data.length, data.data.length) + '</td> <!--페이지번호 TO-->' +
+                                    '<td>' + makePageNum(1, thumbImgs.length) + '</td> <!--페이지번호 FROM-->' +
+                                    '<td>' + makePageNum(thumbImgs.length, thumbImgs.length) + '</td> <!--페이지번호 TO-->' +
                                     '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
                                     '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
                                     '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
@@ -2775,7 +2779,9 @@ var fn_docEvent = function () {
                 });
 
                 // 체크된 담당자를 가져온다
-                popUserChoice.find('td:eq(0)').text();
+                var checkId = popUserChoice.find('td:eq(0)').text();
+                userChoiceTdArr.push(checkId)
+                /*
                 popUserChoice.each(function (i) {
                     var popUsertr = popUserChoice;
                     var popUsertd = popUserChoice.children();
@@ -2788,6 +2794,7 @@ var fn_docEvent = function () {
                     }
                         userChoiceTdArr.push(userId);
                 });
+                */
 
                 fn_alert('confirm', userChoiceTdArr[0] + "를 선택하셨습니다. 결제를 진행하시겠습니까?", function () {
                     $.ajax({
@@ -2867,6 +2874,8 @@ var fn_docEvent = function () {
                     mlExporttdArr = [];
                     for (var j = 0; j < dtlTdList.length; j++) {
                         var value = '';
+                        var loc = '';
+                        var fileName = '';
                         if (j == 0) {
                             value = dtlTdList.eq(j).find('input[name=dtl_chk]').is(':checked');
                             if (value == true) {
@@ -2879,14 +2888,36 @@ var fn_docEvent = function () {
                         } else if (j >= 6 || j == 1) {
                             if (dtlTdList.eq(j).find('select').length == 1) {
                                 value = dtlTdList.eq(j).find('select option:selected').text();
+                                loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
+                                fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
+                                loc = loc + '_' + fileName;
                             } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
                                 value = dtlTdList.eq(j).find('input[type="text"]').val();
+                                loc = dtlTdList.eq(j).find('input[type="hidden"]').val();
                             } else {
                                 value = '';
                             }
                         }
                         mlExporttdArr.push(value);
                     }
+
+                    for (var j = 0; j < dtlTdList.length; j++) {
+                        var loc = '';
+                        var fileName = '';
+                        if (j >= 8) {
+                            if (dtlTdList.eq(j).find('select').length == 1) {
+                                loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
+                                fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
+                                loc = loc + '_' + fileName;
+                            } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
+                                loc = dtlTdList.eq(j).find('input[type="hidden"]').val();
+                            } else {
+                                loc = '';
+                            }
+                            mlExporttdArr.push(loc);
+                        }
+                    }
+
                     mlExportRowData.push(mlExporttdArr);
                 }
                 //추출한 DOCNUM
