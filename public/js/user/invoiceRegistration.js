@@ -1557,7 +1557,7 @@ var ocrResult = function () {
         var selectLoc = $(this).val().split('_')[0] == undefined ? "" : $(this).val().split('_')[0];
         var selectFileName = $(this).find("option:selected").attr("alt");
         var editHtml = '<input type="text" value="' + selectVal + '">';
-        editHtml += '<input type="hidden" value="' + selectLoc + '_' + selectFileName + '">';
+        editHtml += '<input type="hidden" value="' + selectLoc + '::' + selectFileName + '">';
         var td = $(this).closest('td');
         td.empty().append(editHtml);
         td.find('input[type=text]').focus();
@@ -2890,7 +2890,7 @@ var fn_docEvent = function () {
                                 value = dtlTdList.eq(j).find('select option:selected').text();
                                 loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
                                 fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
-                                loc = loc + '_' + fileName;
+                                loc = loc + '::' + fileName;
                             } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
                                 value = dtlTdList.eq(j).find('input[type="text"]').val();
                                 loc = dtlTdList.eq(j).find('input[type="hidden"]').val();
@@ -2908,7 +2908,7 @@ var fn_docEvent = function () {
                             if (dtlTdList.eq(j).find('select').length == 1) {
                                 loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
                                 fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
-                                loc = loc + '_' + fileName;
+                                loc = loc + '::' + fileName;
                             } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
                                 loc = dtlTdList.eq(j).find('input[type="hidden"]').val();
                             } else {

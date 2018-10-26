@@ -596,7 +596,7 @@ var fn_search_image = function (imgId) {
 };
 
 function zoomImg(e) {
-    var fileName = $(e).parent().find('input[type="hidden"]').val().split("_")[1];
+    var fileName = $(e).parent().find('input[type="hidden"]').val().split("::")[1];
 
     if (fileName == "undefined" || fileName == "" || fileName == null) {
         return;
