@@ -4,7 +4,9 @@ var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 
 module.exports = {
+
     trans: function (reqArr, done) {
+
         sync.fiber(function () {
             try {
                 //Specific documents Before treatment
@@ -194,40 +196,77 @@ function convertedCurrencyCode(reqArr, done) {
 function convertedSpecificDocumentsAfter(reqArr) {
     // BT
     if (reqArr.docCategory.DOCNAME == 'BT') {
-        var oslLocation;
-        var oslMappingSid;
-        var oslSid;
-        var oslText;
         var yourShare;
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
-            if (item.entryLbl && item.entryLbl == 2) { // OSL(100%) entry
-                oslLocation = item.location;
-                oslMappingSid = item.mappingSid;
-                oslSid = item.sid;
-                oslText = item.text;
-            } else if (item.colLbl == 36) { // Our Share Label
+            if (item.colLbl == 36) { // Our Share Label
                 yourShare = item.text;
-            } else if (item.colLbl == 35) {
-                if (isNaN(item.text)) {
-                    item.colLbl = 38;
-                }
             }
         }
+        if (yourShare) {
+            for (var i in reqArr.data) {
+                var oslLocation;
+                var oslMappingSid;
+                var oslSid;
+                var oslText;
+                var entryLbl;
+                var text;
+                var item = reqArr.data[i];
+                if (item.entryLbl && item.entryLbl == 2) { // OSL(100%) entry
+                    oslLocation = item.location;
+                    oslMappingSid = item.mappingSid;
+                    oslSid = item.sid;
+                    oslText = item.text;
+                    entryLbl = 3;
+                    text = String(Number(Number(oslText) * (Number(yourShare) / 100)).toFixed(2));
+                } else if (item.entryLbl && item.entryLbl == 4) { // PREMIUM entry
+                    oslLocation = item.location;
+                    oslMappingSid = item.mappingSid;
+                    oslSid = item.sid;
+                    oslText = item.text;
+                    entryLbl = 4;
+                    item.text = String(Number(Number(oslText) * (Number(yourShare) / 100)).toFixed(2));
+                } else if (item.entryLbl && item.entryLbl == 9) { // COMMISSION entry
+                    oslLocation = item.location;
+                    oslMappingSid = item.mappingSid;
+                    oslSid = item.sid;
+                    oslText = item.text;
+                    entryLbl = 9;
+                    item.text = String(Number(Number(oslText) * (Number(yourShare) / 100)).toFixed(2));
+                } else if (item.entryLbl && item.entryLbl == 11) { // BROKERAGE entry
+                    oslLocation = item.location;
+                    oslMappingSid = item.mappingSid;
+                    oslSid = item.sid;
+                    oslText = item.text;
+                    entryLbl = 11;
+                    item.text = String(Number(Number(oslText) * (Number(yourShare) / 100)).toFixed(2));
+                } else if (item.entryLbl && item.entryLbl == 19) { // CLAIM entry
+                    oslLocation = item.location;
+                    oslMappingSid = item.mappingSid;
+                    oslSid = item.sid;
+                    oslText = item.text;
+                    entryLbl = 19;
+                    item.text = String(Number(Number(oslText) * (Number(yourShare) / 100)).toFixed(2));
+                } else if (item.colLbl == 35) {
+                    if (isNaN(item.text)) {
+                        item.colLbl = 38;
+                    }
+                }
+            }
+                if (oslText && yourShare) {
+                reqArr.data.push({
+                    'entryLbl': entryLbl,
+                    'text': text,
+                    'colLbl': 37,
+                    'location': oslLocation,
+                    'colAccu': 0.99,
+                    'mappingSid': oslMappingSid,
+                    'sid': oslSid
+                });
+            }
 
-        if (oslText && yourShare) {
-            reqArr.data.push({
-                'entryLbl': 3,
-                'text': String(Number(Number(oslText) * (Number(yourShare) / 100)).toFixed(2)),
-                'colLbl': 37,
-                'location': oslLocation,
-                'colAccu': 0.99,
-                'mappingSid': oslMappingSid,
-                'sid': oslSid
-            });
         }
 
     }
-
     return reqArr;
 }
