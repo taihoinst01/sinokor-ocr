@@ -465,12 +465,12 @@ if __name__ == '__main__':
         # 20180911 doc type 이 1인 경우(NOT INVOICE)는 바로 리턴 EVAL 안함 1이외의 경우는 레이블 정보 추출
         obj = {}
 
-        if documentSentenceDoctype and ratio > 0.6:
+        if documentSentenceDoctype and ratio > 0.3:
             obj["docCategory"] = selectDocCategory(documentSentenceDoctype)
             obj["docCategory"]["DOCSCORE"] = round(ratio,4)
         elif formMappingRows:
             obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
-            obj["docCategory"]["DOCSCORE"] = 0.59
+            obj["docCategory"]["DOCSCORE"] = 0.29
         else:
             obj["docCategory"] = azureFormMappingRows
         
@@ -487,7 +487,7 @@ if __name__ == '__main__':
         # else:
         #     obj["data"] = eval(ocrData, azureFormMappingRows["DOCTYPE"])
 
-        if documentSentenceDoctype and ratio > 0.6:
+        if documentSentenceDoctype and ratio > 0.3:
             if documentSentenceDoctype == 1 or documentSentenceDoctype == 0:
                 obj["data"] = ocrData
                 obj["data"] = colLblDefaultValue(obj["data"])

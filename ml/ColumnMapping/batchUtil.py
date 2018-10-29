@@ -304,7 +304,7 @@ def classifyDocument(sentences):
                 maxNum = ratio
                 row = rows[1]
 
-        if maxNum > 0.6:
+        if maxNum > 0.3:
             return maxNum, row
         else:
             return '',''
