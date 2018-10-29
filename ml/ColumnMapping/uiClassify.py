@@ -346,17 +346,18 @@ def selectFormMapping(sentencesSid):
 
 def azureFormMapping(sentencesSid):
     try:
-        params = {"data": sentencesSid, "type": "formMapping"}
-        response = requests.post(url='http://172.16.53.143:8888/ml/api', data=params)
-        r = response.json()
+        #params = {"data": sentencesSid, "type": "formMapping"}
+        #response = requests.post(url='http://172.16.53.143:8888/ml/api', data=params)
+        #r = response.json()
 
         selectDocCategorySql = "SELECT SEQNUM, DOCNAME, DOCTYPE, SAMPLEIMAGEPATH FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType"
-        curs.execute(selectDocCategorySql, {"docType": r["DOCTYPE"]})
+        curs.execute(selectDocCategorySql, {"docType": "0"})
+        #curs.execute(selectDocCategorySql, {"docType": r["DOCTYPE"]})
         rows = curs.fetchall()
 
         if rows:
             return {"SEQNUM": rows[0][0], "DOCNAME": rows[0][1], "DOCTYPE": rows[0][2], "SAMPLEIMAGEPATH": rows[0][3],
-                    "DOCSCORE": r["SCORE"]}
+                    "DOCSCORE": "0.99"}
         else:
             return {}
     except Exception as e:

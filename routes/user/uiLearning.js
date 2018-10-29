@@ -174,7 +174,8 @@ router.post('/uiTraining', function (req, res) {
             }            
 
             // Azure ml train 프록시 호출
-            var azureRes = request('POST', 'http://172.16.53.143:8888/ml/train', { json: { 'fmData': fmData, 'cmData': cmData } });
+            var azureRes = request('POST', 'http://172.16.53.143:8888/ml/train', { json: { 'fmData': [], 'cmData': cmData } });
+            //var azureRes = request('POST', 'http://172.16.53.143:8888/ml/train', { json: { 'fmData': fmData, 'cmData': cmData } });
 
             returnObj = { code: 200, message: 'ui training success' };
 
