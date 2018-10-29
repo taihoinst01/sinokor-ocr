@@ -72,7 +72,7 @@ function insertDoctypeMapping(req, done) {
 
             for (var i in data.textList) {
                 similarSentences.push(data.textList[i]);
-                if (similarSentences.length >= 5) break;
+                if (similarSentences.length >= 30) break;
             }
 
             //20180911 가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출

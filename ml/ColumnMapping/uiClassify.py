@@ -429,7 +429,7 @@ if __name__ == '__main__':
         similarSentence = []
         for item in ocrData:
             similarSentence.append(item)
-            if len(similarSentence) == 5:
+            if len(similarSentence) == 30:
                 break
 
         # 문장단위로 for문
@@ -465,10 +465,12 @@ if __name__ == '__main__':
         # 20180911 doc type 이 1인 경우(NOT INVOICE)는 바로 리턴 EVAL 안함 1이외의 경우는 레이블 정보 추출
         obj = {}
 
-        if formMappingRows:
-            obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
-        elif documentSentenceDoctype and ratio > 0.5:
+        if documentSentenceDoctype and ratio > 0.6:
             obj["docCategory"] = selectDocCategory(documentSentenceDoctype)
+            obj["docCategory"]["DOCSCORE"] = round(ratio,4)
+        elif formMappingRows:
+            obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
+            obj["docCategory"]["DOCSCORE"] = 0.59
         else:
             obj["docCategory"] = azureFormMappingRows
         
@@ -485,18 +487,18 @@ if __name__ == '__main__':
         # else:
         #     obj["data"] = eval(ocrData, azureFormMappingRows["DOCTYPE"])
 
-        if formMappingRows:
-            if formMappingRows[0][0] == 1 or formMappingRows[0][0] == 0:
-                obj["data"] = ocrData
-                obj["data"] = colLblDefaultValue(obj["data"])
-            else:
-                obj["data"] = eval(ocrData, formMappingRows[0][0])
-        elif documentSentenceDoctype and ratio > 0.5:
+        if documentSentenceDoctype and ratio > 0.6:
             if documentSentenceDoctype == 1 or documentSentenceDoctype == 0:
                 obj["data"] = ocrData
                 obj["data"] = colLblDefaultValue(obj["data"])
             else:
                 obj["data"] = eval(ocrData, documentSentenceDoctype)
+        elif formMappingRows:
+            if formMappingRows[0][0] == 1 or formMappingRows[0][0] == 0:
+                obj["data"] = ocrData
+                obj["data"] = colLblDefaultValue(obj["data"])
+            else:
+                obj["data"] = eval(ocrData, formMappingRows[0][0])
         else:
             obj["data"] = eval(ocrData, azureFormMappingRows["DOCTYPE"])
 
