@@ -312,16 +312,33 @@ function convertedSpecificDocumentsAfter(reqArr) {
     }
 
     //WIS
-    if (reqArr.docCategory.DOCNAME == 'WIS_06') {
+    if (reqArr.docCategory.DOCNAME == 'WIS_06') { //todo: 문서양식저장하는 방식 수정 되면 docname 비교값을 WIS_07로 수정
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
             if (item.colLbl && item.colLbl == 35) { // your reference
                 if (item.text.indexOf('Tran No:') != -1) {
                     item.originText = item.text;
-                    item.text = item.text.replace(/Tran No:/g, "").trim(); // "InvoiceNo.: 2108581" -> 2108581
+                    item.text = item.text.replace(/Tran No:/g, "").trim(); // "Tran No: 587326-565839" -> 587326-565839
                 }
             }
         }
     }
+
+    //GUY
+    if (reqArr.docCategory.DOCNAME == 'MARSH_01' || reqArr.docCategory.DOCNAME == 'GUY_03') { //todo: 문서양식저장하는 방식 수정 되면 docname 비교값을 GUY_01과 GUY_04로 수정
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf(':') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.split(':')[1].trim(); // nvoce No.: 2110347 -> 2110347
+                } else if (item.text.indexOf('.') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.split('.')[1].trim(); //INVOICE NO. 5379052 -> 5379052
+                }
+            }
+        }
+    }
+
     return reqArr;
 }
