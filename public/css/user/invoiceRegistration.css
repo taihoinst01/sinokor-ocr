@@ -23,3 +23,11 @@ li.on img {
 #popupImageZoom {
     background-repeat: no-repeat;
 }
+
+#redNemo, #redZoomNemo {
+    display: none;
+    border: 2px solid red;
+    position: absolute;
+    top: 245px;
+    width: 100%;
+}
