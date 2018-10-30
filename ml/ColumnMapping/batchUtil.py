@@ -284,14 +284,9 @@ def selectNotInvoice(sentences):
         raise Exception(str({'code': 500, 'message': 'TBL_NOTINVOICE_DATA table select fail',
                              'error': str(e).replace("'", "").replace('"', '')}))
 
-def classifyDocument(sentences):
+def classifyDocument(ocrData):
     try:
-        text = ''
-        for item in sentences:
-            text += item["text"] + ","
-        text = text[:-1].lower()
-
-        selectDocumentSql = "SELECT DATA, DOCTYPE FROM TBL_DOCUMENT_SENTENCE"
+        selectDocumentSql = "SELECT DATA, DOCTYPE, SENTENCELENGTH FROM TBL_DOCUMENT_SENTENCE"
         curs.execute(selectDocumentSql)
         selDocument = curs.fetchall()
 
@@ -299,15 +294,51 @@ def classifyDocument(sentences):
         row = ''
 
         for rows in selDocument:
+            sentenceLeng = rows[2]
+            text = ''
+            for i, item in enumerate(ocrData):
+                text += re.sub(regExp,'',item["text"]) + ","
+                if i == (int(sentenceLeng)-1):
+                    break;
+            text = text[:-1].lower()
+
             ratio = similar(text, rows[0])
             if ratio > maxNum:
                 maxNum = ratio
                 row = rows[1]
 
-        if maxNum > 0.6:
+        if maxNum > 0.5:
             return maxNum, row
         else:
             return '',''
 
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_NOTINVOICE_DATA table select fail', 'error': str(e).replace("'", "").replace('"', '')}))
+
+# def classifyDocument(sentences):
+#     try:
+#         text = ''
+#         for item in sentences:
+#             text += item["text"] + ","
+#         text = text[:-1].lower()
+#
+#         selectDocumentSql = "SELECT DATA, DOCTYPE FROM TBL_DOCUMENT_SENTENCE"
+#         curs.execute(selectDocumentSql)
+#         selDocument = curs.fetchall()
+#
+#         maxNum = 0
+#         row = ''
+#
+#         for rows in selDocument:
+#             ratio = similar(text, rows[0])
+#             if ratio > maxNum:
+#                 maxNum = ratio
+#                 row = rows[1]
+#
+#         if maxNum > 0.3:
+#             return maxNum, row
+#         else:
+#             return '',''
+#
+#     except Exception as e:
+#         raise Exception(str({'code': 500, 'message': 'TBL_NOTINVOICE_DATA table select fail', 'error': str(e).replace("'", "").replace('"', '')}))

@@ -527,7 +527,7 @@ exports.insertBatchColumnMappingFromUi = function (req, docType, before, done) {
                 var colSid = docType + ',' + locArr[0] + ',' + locArr[1] + ',' + locArr[2] + ',' + result.rows[0].SID;
                 req.colSid = colSid;
                 result = await conn.execute(selectBatchColumnMapping, [colSid, before.colLbl]);
-                if ( result.rows.length == 0 && !(((req.colLbl >= 5 && req.colLbl <= 34) || req.colLbl == 36) && (sid == "0,0,0,0,0" || sid == "1,1,1,1,1")) ) {
+                if ( result.rows.length == 0 && !(((req.colLbl >= 5 && req.colLbl <= 34)) && (sid == "0,0,0,0,0" || sid == "1,1,1,1,1")) ) {
                     await conn.execute(insertBatchColumnMapping, [colSid, req.colLbl]);
                     return done(null, req);
                 } else {
@@ -2640,12 +2640,12 @@ exports.insertDocumentSentence = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute(`SELECT SEQNUM FROM TBL_DOCUMENT_SENTENCE WHERE DATA = LOWER(:data) AND DOCTYPE = :doctype `, req);
+            result = await conn.execute(`SELECT SEQNUM FROM TBL_DOCUMENT_SENTENCE WHERE DATA = LOWER(:data) AND DOCTYPE = :doctype AND SENTENCELENGTH = :length`, req);
             if (result.rows.length == 0) {
                 await conn.execute(`INSERT INTO
                                         TBL_DOCUMENT_SENTENCE
                                     VALUES
-                                        (seq_document_sentence.nextval, LOWER(:data), :doctype, sysdate) `,
+                                        (seq_document_sentence.nextval, LOWER(:data), :doctype, sysdate, :length) `,
                     req);
             }
 

@@ -425,12 +425,12 @@ if __name__ == '__main__':
         # 20180911 ocr데이터 정렬 y축 기준
         ocrData = sortArrLocation(ocrData)
 
-        #bannedword에 상관없이 similar에 사용할 5개 문장 추출
-        similarSentence = []
-        for item in ocrData:
-            similarSentence.append(item)
-            if len(similarSentence) == 30:
-                break
+        # bannedword에 상관없이 similar에 사용할 30개 문장 추출
+        # similarSentence = []
+        # for item in ocrData:
+        #     similarSentence.append(item)
+        #     if len(similarSentence) == 30:
+        #         break
 
         # 문장단위로 for문
         sentences = []
@@ -460,17 +460,17 @@ if __name__ == '__main__':
         azureFormMappingRows = azureFormMapping(sentencesSid)
 
         # TBL_DOCUMENT_SENTENCE에 5개의 문장 조회
-        ratio, documentSentenceDoctype = bUtil.classifyDocument(similarSentence)
+        ratio, documentSentenceDoctype = bUtil.classifyDocument(ocrData)
 
         # 20180911 doc type 이 1인 경우(NOT INVOICE)는 바로 리턴 EVAL 안함 1이외의 경우는 레이블 정보 추출
         obj = {}
 
-        if documentSentenceDoctype and ratio > 0.6:
+        if documentSentenceDoctype and ratio > 0.5:
             obj["docCategory"] = selectDocCategory(documentSentenceDoctype)
             obj["docCategory"]["DOCSCORE"] = round(ratio,4)
         elif formMappingRows:
             obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
-            obj["docCategory"]["DOCSCORE"] = 0.59
+            obj["docCategory"]["DOCSCORE"] = 0.49
         else:
             obj["docCategory"] = azureFormMappingRows
         
@@ -487,7 +487,7 @@ if __name__ == '__main__':
         # else:
         #     obj["data"] = eval(ocrData, azureFormMappingRows["DOCTYPE"])
 
-        if documentSentenceDoctype and ratio > 0.6:
+        if documentSentenceDoctype and ratio > 0.5:
             if documentSentenceDoctype == 1 or documentSentenceDoctype == 0:
                 obj["data"] = ocrData
                 obj["data"] = colLblDefaultValue(obj["data"])
