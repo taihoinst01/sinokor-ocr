@@ -20,6 +20,7 @@ var oracle = require('../util/oracle.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
 var transPantternVar = require('./transPattern');
+var sizeOf = require('image-size');
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
@@ -991,11 +992,14 @@ router.post('/uiLearnTraining', function (req, res) {
     var fileExt = filePath.split(".")[1];
     var imgId = req.body.fileDtlInfo.imgId;
     var returnObj;
-    
+    var path = filePath.substr(0, filePath.lastIndexOf("\\") + 1);
+    var dimensions = sizeOf(path + fileName);
     sync.fiber(function () {
         try {
             console.time("mlTime");
             pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(dimensions.width);
+            pythonConfig.columnMappingOptions.args.push(dimensions.height);
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
             var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0]);
