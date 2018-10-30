@@ -186,7 +186,8 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 ifile = appRoot + '\\' + files[i].path;
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
 
-                //execSync('java -jar C:/Main.jar' + ifile);
+                //file decription 운영
+                //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
 
                 // 파일 정보 추출
                 var fileObj = files[i];                             // 파일
