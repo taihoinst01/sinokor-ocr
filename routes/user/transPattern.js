@@ -268,7 +268,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
 
     }
-
+    
     //CATHAY
     if (reqArr.docCategory.DOCNAME == 'CATHAY_01' || reqArr.docCategory.DOCNAME == 'CATHAY_02' || reqArr.docCategory.DOCNAME == 'CATHAY_03') {
         for (var i in reqArr.data) {
@@ -312,7 +312,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
     }
 
     //WIS
-    if (reqArr.docCategory.DOCNAME == 'WIS_06') { //todo: 문서양식저장하는 방식 수정 되면 docname 비교값을 WIS_07로 수정
+    if (reqArr.docCategory.DOCNAME == 'WIS_07') { 
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
             if (item.colLbl && item.colLbl == 35) { // your reference
@@ -325,7 +325,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
     }
 
     //GUY
-    if (reqArr.docCategory.DOCNAME == 'MARSH_01' || reqArr.docCategory.DOCNAME == 'GUY_03') { //todo: 문서양식저장하는 방식 수정 되면 docname 비교값을 GUY_01과 GUY_04로 수정
+    if (reqArr.docCategory.DOCNAME == 'GUY_01' || reqArr.docCategory.DOCNAME == 'GUY_04') { 
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
             if (item.colLbl && item.colLbl == 35) { // your reference
@@ -335,6 +335,19 @@ function convertedSpecificDocumentsAfter(reqArr) {
                 } else if (item.text.indexOf('.') != -1) {
                     item.originText = item.text;
                     item.text = item.text.split('.')[1].trim(); //INVOICE NO. 5379052 -> 5379052
+                }
+            }
+        }
+    }
+
+    //WILLIS
+    if (reqArr.docCategory.DOCNAME == 'WILLIS_01' || reqArr.docCategory.DOCNAME == 'WILLIS_02' || reqArr.docCategory.DOCNAME == 'WILLIS_04') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf('Our Reference') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(/Our Reference/g, "").replace(/\//g, "").replace(/\s/gi, ""); // Our Reference 131741417/ OOOOOIMDP -> 131741417OOOOOIMDP
                 }
             }
         }
