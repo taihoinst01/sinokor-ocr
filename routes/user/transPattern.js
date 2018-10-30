@@ -194,6 +194,10 @@ function convertedCurrencyCode(reqArr, done) {
 }
 
 function convertedSpecificDocumentsAfter(reqArr) {
+
+    /****************************************
+     * BT
+     ****************************************/
     // BT
     if (reqArr.docCategory.DOCNAME == 'BT') {
         var yourShare;
@@ -269,6 +273,23 @@ function convertedSpecificDocumentsAfter(reqArr) {
 
     }
 
+    /****************************************
+     * MARSH
+     ****************************************/
+
+    //MARSH_01
+    if (reqArr.docCategory.DOCNAME == 'MARSH_01') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf('InvoiceNo') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(/InvoiceNo.:/g, "").trim(); // "InvoiceNo.: 2108581" -> 2108581
+                }
+            }
+        }
+    }
+
     //MARSH_02
     if (reqArr.docCategory.DOCNAME == 'MARSH_02') {
         var marsh02Length = 0;
@@ -327,6 +348,26 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
+    /****************************************
+     * GUY
+     ****************************************/
+
+    //GUY_01, GUY_04
+    if (reqArr.docCategory.DOCNAME == 'GUY_01' || reqArr.docCategory.DOCNAME == 'GUY_04') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf(':') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.split(':')[1].trim(); // nvoce No.: 2110347 -> 2110347
+                } else if (item.text.indexOf('.') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.split('.')[1].trim(); //INVOICE NO. 5379052 -> 5379052
+                }
+            }
+        }
+    }
+
     //GUY_05
     if (reqArr.docCategory.DOCNAME == 'GUY_05') {
         var guy05Length = 0;
@@ -359,7 +400,10 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
-    //CATHAY
+    /****************************************
+     * CATHAY
+     ****************************************/
+    //CATHAY_01,CATHAY_02,CATHAY_03,
     if (reqArr.docCategory.DOCNAME == 'CATHAY_01' || reqArr.docCategory.DOCNAME == 'CATHAY_02' || reqArr.docCategory.DOCNAME == 'CATHAY_03') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
@@ -388,20 +432,11 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
-    //MARSH
-    if (reqArr.docCategory.DOCNAME == 'MARSH_01') {
-        for (var i in reqArr.data) {
-            var item = reqArr.data[i];
-            if (item.colLbl && item.colLbl == 35) { // your reference
-                if (item.text.indexOf('InvoiceNo') != -1) {
-                    item.originText = item.text;
-                    item.text = item.text.replace(/InvoiceNo.:/g, "").trim(); // "InvoiceNo.: 2108581" -> 2108581
-                }
-            }
-        }
-    }
+    /****************************************
+     * WIS
+     ****************************************/
 
-    //WIS
+    //WIS_07
     if (reqArr.docCategory.DOCNAME == 'WIS_07') { 
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
@@ -414,23 +449,13 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
-    //GUY
-    if (reqArr.docCategory.DOCNAME == 'GUY_01' || reqArr.docCategory.DOCNAME == 'GUY_04') { 
-        for (var i in reqArr.data) {
-            var item = reqArr.data[i];
-            if (item.colLbl && item.colLbl == 35) { // your reference
-                if (item.text.indexOf(':') != -1) {
-                    item.originText = item.text;
-                    item.text = item.text.split(':')[1].trim(); // nvoce No.: 2110347 -> 2110347
-                } else if (item.text.indexOf('.') != -1) {
-                    item.originText = item.text;
-                    item.text = item.text.split('.')[1].trim(); //INVOICE NO. 5379052 -> 5379052
-                }
-            }
-        }
-    }
 
-    //WILLIS
+
+    /****************************************
+     * WILLIS
+     ****************************************/
+
+    //WILLIS_01, WILLIS_02, WILLIS_04,
     if (reqArr.docCategory.DOCNAME == 'WILLIS_01' || reqArr.docCategory.DOCNAME == 'WILLIS_02' || reqArr.docCategory.DOCNAME == 'WILLIS_04') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
