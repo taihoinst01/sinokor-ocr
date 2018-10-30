@@ -1455,6 +1455,7 @@ var fn_checkboxEvent = function () {
     //인식결과 단일선택 체크박스
     $(document).on('click', 'input[name=dtl_chk]', function () {
         if ($('input[name=dtl_chk]:checked').length == 0) {
+            $('#deleteRow').prop('disabled', true);
             $('#sendApprovalBtn').prop('disabled', true);
             $('#reTrainBtn').prop('disabled', true);
             $('#ctnExtractionBtn').prop('disabled', true);
@@ -1465,6 +1466,7 @@ var fn_checkboxEvent = function () {
             } else {
                 $('#sendApprovalBtn').prop('disabled', true);
             }
+            $('#deleteRow').prop('disabled', false);
             $('#reTrainBtn').prop('disabled', false);
             $('#ctnExtractionBtn').prop('disabled', false);
         }
@@ -1537,18 +1539,11 @@ var ocrResult = function () {
             });
 
             $('#deleteRow').prop('disabled', true);
+            if ($('input[name=dtl_chk]').length == 0) {
+                $('#ctnExtractionBtn').prop('disabled', true);
+                $('#reTrainBtn').prop('disabled', true);
+            }
         });
-    });
-
-    //체크박스 여부에 따른 행 삭제 버튼 활성화/비활성화
-    $(document).on('click', 'input[name=dtl_chk]', function () {
-
-        var chkCnt = $('input[name="dtl_chk"]:checked').length;
-        if (chkCnt >= 1) {
-            $('#deleteRow').attr('disabled', false);
-        } else {
-            $('#deleteRow').attr('disabled', true);
-        }
     });
 
     //셀렉트박스 더블클릭시 수정폼
