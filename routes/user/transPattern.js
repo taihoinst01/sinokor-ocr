@@ -359,5 +359,76 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
+    //CATHAY
+    if (reqArr.docCategory.DOCNAME == 'CATHAY_01' || reqArr.docCategory.DOCNAME == 'CATHAY_02' || reqArr.docCategory.DOCNAME == 'CATHAY_03') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                var text = item.text.split('-'); // "OP2018000G-O"
+                var isChange = false;
+                // 한글 ㅇ, 영문 o, O 를 숫자 0으로 변경
+                if (text[1] == 'o' || text[1] == 'O' || text[1] == 'ㅇ') {
+                    text[1] = '0';
+                    isChange = true;
+                }
+
+                // 정답: OP20180006-0, OCR: OP2018000G-O 
+                // G를 6으로 변경
+                if (text[0].substr(2, 8).indexOf('G') != -1) {
+                    text[0] = text[0].substr(0, 2) + text[0].substr(2, 8).replace(/G/g, 6);
+                    isChange = true;
+                }
+
+                if (isChange == true) {
+                    item.originText = item.text;
+                    //변경된 값들 다시 합치기
+                    item.text = text[0] + '-' + text[1];
+                }
+            }
+        }
+    }
+
+    //MARSH
+    if (reqArr.docCategory.DOCNAME == 'MARSH_01') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf('InvoiceNo') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(/InvoiceNo.:/g, "").trim(); // "InvoiceNo.: 2108581" -> 2108581
+                }
+            }
+        }
+    }
+
+    //WIS
+    if (reqArr.docCategory.DOCNAME == 'WIS_06') { //todo: 문서양식저장하는 방식 수정 되면 docname 비교값을 WIS_07로 수정
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf('Tran No:') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(/Tran No:/g, "").trim(); // "Tran No: 587326-565839" -> 587326-565839
+                }
+            }
+        }
+    }
+
+    //GUY
+    if (reqArr.docCategory.DOCNAME == 'MARSH_01' || reqArr.docCategory.DOCNAME == 'GUY_03') { //todo: 문서양식저장하는 방식 수정 되면 docname 비교값을 GUY_01과 GUY_04로 수정
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf(':') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.split(':')[1].trim(); // nvoce No.: 2110347 -> 2110347
+                } else if (item.text.indexOf('.') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.split('.')[1].trim(); //INVOICE NO. 5379052 -> 5379052
+                }
+            }
+        }
+    }
+
     return reqArr;
 }

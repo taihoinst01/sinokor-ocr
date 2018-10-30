@@ -42,6 +42,17 @@ function docPopRadioEvent() {
             $('#newDocName').show();
             $('#orgDocName').hide();
             $('#notInvoice').hide();
+
+            for (var i = 0; i < $("input[type='checkbox'].ui_layer1_result_chk").length; i++) {
+                $("input[type='checkbox'].ui_layer1_result_chk").eq(i).parent().removeClass("ez-hide");
+                $("input[type='checkbox'].ui_layer1_result_chk").eq(i).prop("checked", true);
+                $("input[type='checkbox'].ui_layer1_result_chk").eq(i).parent().addClass("ez-checked")
+
+                if (i == 20) {
+                    break;
+                }
+            }
+
         } else if (chkValue == '3') {
             $('#notInvoice').show();
             $('#orgDocName').hide();
@@ -74,8 +85,8 @@ function popUpRunEvent() {
             var chk = $(this).children().find('input[type="checkbox"]').is(':checked') == true ? 1 : 0;
             var text = $(this).children()[1].innerHTML;
 
-            textList.push({ "text": text, "check": chk })
-        })
+            textList.push({ "text": text, "check": chk });
+        });
 
         // docName
         var docName = '';
@@ -792,6 +803,14 @@ function selectClassificationSt(filepath) {
                 });
 
                 for (let i = 0; i < tempArr.length; i++) {
+                    resultOcrData += '<tr class="ui_layer1_result_tr">';
+                    resultOcrData += '<td><input type="checkbox" class="ui_layer1_result_chk"></td>';
+                    resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
+                }
+
+                //banned word check 안함
+                /*
+                for (let i = 0; i < tempArr.length; i++) {
 
                     var bannedCheck = true;
                     for (let j = 0; j < data.bannedData.length; j++) {
@@ -812,9 +831,9 @@ function selectClassificationSt(filepath) {
                     }
 
                 }
+                */
                 $('#ui_layer1_result').empty().append(resultOcrData);
                 $('input[type=checkbox]').ezMark();
-
             }
 
         },

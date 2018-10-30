@@ -23,11 +23,67 @@ exports.insertDoctypeMapping = function (req, done) {
 };
 
 function insertDoctypeMapping(req, done) {
+    sync.fiber(function () {
+        try {
+            var data = req;
+            var similarSentences = [];
+            var topSentenses = [];
+            var docType;
+            var docSid;
+            var convertedFilepath;
+
+
+            for (var i in data.textList) {
+                if (data.textList[i].check == 1) {
+                    similarSentences.push(data.textList[i]);
+                }
+
+                if (topSentenses.length < 5) {
+                    data.textList[i] = insertSymspell(data.textList[i]);
+                    topSentenses.push(data.textList[i]);
+                }
+            }
+
+            data = getSentenceSid(data);
+            docSid = getDocSid(topSentenses);
+
+            //20180911 신규문서일 경우
+            if (data.radioType == '2') {
+                //20180911 기존 문서양식중 max doctype값 가져오기
+                //20180911 TBL_DOCUMENT_CATEGORY테이블에 가져온 신규문서 양식명을 insert
+                docType = insertDocCategory(data);
+
+                //20180911 기존 이미지 파일을 C://ICR/sampleDocImage 폴더에 DocType(숫자).jpg로 저장
+                convertedFilepath = copyFile(data.filepath, docType);
+
+                //20180911 TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
+                insertFormMapping(topSentenses, docType);
+                insertDocumentSentence(similarSentences, docType, similarSentences.length);
+            } else if (data.radioType == '1') {
+                docType = selectDocCategoryFromDocName(data);
+                insertFormMapping(topSentenses, docType);
+                insertDocumentSentence(similarSentences, docType, similarSentences.length);
+            } else {
+                docType = selectDocCategoryFromDocName(data);
+                insertFormMapping(topSentenses, docType);
+                insertDocumentSentence(similarSentences, docType, similarSentences.length);
+            }
+
+            return done(null, [docType, docSid]);
+        } catch (e) {
+            console.log(e);
+            return done(null, e);
+        }
+    });
+}
+
+/*
+function insertDoctypeMapping(req, done) {
     
     sync.fiber(function () {
         try {
             var retData = {};
-            var data = req
+            var data = req;
             let topSentenses = []; // 문서판별을 위한 문장
             var similarSentences = [];
             var docType;
@@ -72,7 +128,7 @@ function insertDoctypeMapping(req, done) {
 
             for (var i in data.textList) {
                 similarSentences.push(data.textList[i]);
-                if (similarSentences.length >= 5) break;
+                if (similarSentences.length >= 30) break;
             }
 
             //20180911 가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
@@ -108,6 +164,8 @@ function insertDoctypeMapping(req, done) {
     });
     
 }
+*/
+
 
 function insertSymspell(item) {    
     var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
@@ -249,13 +307,14 @@ function insertNotInvoce(topSentenses, docType) {
     }
 }
 
-function insertDocumentSentence(topSentenses, docType) {
+function insertDocumentSentence(topSentenses, docType, length) {
     try {
+        var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
         var text = "";
         for (var i in topSentenses) {
-            text += topSentenses[i].text + ",";
+            text += topSentenses[i].text.replace(regExp,'') + ",";
         }
-        sync.await(oracle.insertDocumentSentence([text.slice(0, -1), docType], sync.defer()));
+        sync.await(oracle.insertDocumentSentence([text.slice(0, -1), docType, length], sync.defer()));
     } catch (e) {
         throw e;
     }
