@@ -286,7 +286,7 @@ def selectNotInvoice(sentences):
 
 def classifyDocument(ocrData):
     try:
-        selectDocumentSql = "SELECT DATA, DOCTYPE, SENTENCELENGTH SENTENCELENGTH FROM TBL_DOCUMENT_SENTENCE"
+        selectDocumentSql = "SELECT DATA, DOCTYPE, SENTENCELENGTH FROM TBL_DOCUMENT_SENTENCE"
         curs.execute(selectDocumentSql)
         selDocument = curs.fetchall()
 
