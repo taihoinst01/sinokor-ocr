@@ -194,6 +194,10 @@ function convertedCurrencyCode(reqArr, done) {
 }
 
 function convertedSpecificDocumentsAfter(reqArr) {
+
+    /****************************************
+     * BT
+     ****************************************/
     // BT
     if (reqArr.docCategory.DOCNAME == 'BT') {
         var yourShare;
@@ -269,7 +273,137 @@ function convertedSpecificDocumentsAfter(reqArr) {
 
     }
 
-    //CATHAY
+    /****************************************
+     * MARSH
+     ****************************************/
+
+    //MARSH_01
+    if (reqArr.docCategory.DOCNAME == 'MARSH_01') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf('InvoiceNo') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(/InvoiceNo.:/g, "").trim(); // "InvoiceNo.: 2108581" -> 2108581
+                }
+            }
+        }
+    }
+
+    //MARSH_02
+    if (reqArr.docCategory.DOCNAME == 'MARSH_02') {
+        var marsh02Length = 0;
+        var marsh02Text = [];
+        var marsh02Location = [];
+        var marsh02Result;
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            marsh02Length += 1;
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                item.originText = item.text;
+                marsh02Text.push(item.text);
+                marsh02Location.push(item.location);
+            }
+        }
+        if (marsh02Length > 1) { // yourReference 가공.
+            marsh02Result = marsh02Text[1] + "/" + marsh02Text[0].replace('/ ', ' 00');
+        }
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35 && item.location == marsh02Location[1]) {
+                item.text = marsh02Result;
+            } else if (item.colLbl && item.colLbl == 35 && item.location == marsh02Location[0]) {
+                item.colLbl = "38";
+            }
+        }
+    }
+
+    //MARSH_06
+    if (reqArr.docCategory.DOCNAME == 'MARSH_06') {
+        var yourLength = 0;
+        var yourLocation;
+        var yourMappingSid;
+        var yourSid;
+        var yourText = '';
+        var item;
+        for (var i in reqArr.data) {
+            item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                yourLength += 1
+                yourLocation = item.location;
+                yourMappingSid = item.mappingSid;
+                yourSid = item.sid;
+                yourText += item.text;
+                if (yourText == item.text) {
+                    item.location = '';
+                }
+                item.text = yourText;
+            }
+        }
+        for (var i in reqArr.data) {
+            item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35 && item.location == '') {
+                reqArr.data.splice(i, 1)
+            }
+        }
+    }
+
+    /****************************************
+     * GUY
+     ****************************************/
+
+    //GUY_01, GUY_04
+    if (reqArr.docCategory.DOCNAME == 'GUY_01' || reqArr.docCategory.DOCNAME == 'GUY_04') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf(':') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.split(':')[1].trim(); // nvoce No.: 2110347 -> 2110347
+                } else if (item.text.indexOf('.') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.split('.')[1].trim(); //INVOICE NO. 5379052 -> 5379052
+                }
+            }
+        }
+    }
+
+    //GUY_05
+    if (reqArr.docCategory.DOCNAME == 'GUY_05') {
+        var guy05Length = 0;
+        var guy05Text = [];
+        var guy05Location = [];
+        var guy05Result;
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            guy05Length += 1;
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                item.originText = item.text;
+                guy05Text.push(item.text);
+                guy05Location.push(item.location);
+            }
+        }
+        if (guy05Length > 1) { // yourReference 가공.
+            if (guy05Text[0].substring(4) == 'B') {
+                guy05Result = guy05Text[1] + guy05Text[0].replace('/B', '8');
+            } else {
+                guy05Result = guy05Text[1] + guy05Text[0].replace('/', '');
+            }
+        }
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35 && item.location == guy05Location[1]) {
+                item.text = guy05Result;
+            } else if (item.colLbl && item.colLbl == 35 && item.location == guy05Location[0]) {
+                item.colLbl = "38";
+            }
+        }
+    }
+
+    /****************************************
+     * CATHAY
+     ****************************************/
+    //CATHAY_01,CATHAY_02,CATHAY_03,
     if (reqArr.docCategory.DOCNAME == 'CATHAY_01' || reqArr.docCategory.DOCNAME == 'CATHAY_02' || reqArr.docCategory.DOCNAME == 'CATHAY_03') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
@@ -298,21 +432,12 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
-    //MARSH
-    if (reqArr.docCategory.DOCNAME == 'MARSH_01') {
-        for (var i in reqArr.data) {
-            var item = reqArr.data[i];
-            if (item.colLbl && item.colLbl == 35) { // your reference
-                if (item.text.indexOf('InvoiceNo') != -1) {
-                    item.originText = item.text;
-                    item.text = item.text.replace(/InvoiceNo.:/g, "").trim(); // "InvoiceNo.: 2108581" -> 2108581
-                }
-            }
-        }
-    }
+    /****************************************
+     * WIS
+     ****************************************/
 
-    //WIS
-    if (reqArr.docCategory.DOCNAME == 'WIS_06') { //todo: 문서양식저장하는 방식 수정 되면 docname 비교값을 WIS_07로 수정
+    //WIS_07
+    if (reqArr.docCategory.DOCNAME == 'WIS_07') { 
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
             if (item.colLbl && item.colLbl == 35) { // your reference
@@ -324,17 +449,20 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
-    //GUY
-    if (reqArr.docCategory.DOCNAME == 'MARSH_01' || reqArr.docCategory.DOCNAME == 'GUY_03') { //todo: 문서양식저장하는 방식 수정 되면 docname 비교값을 GUY_01과 GUY_04로 수정
+
+
+    /****************************************
+     * WILLIS
+     ****************************************/
+
+    //WILLIS_01, WILLIS_02, WILLIS_04,
+    if (reqArr.docCategory.DOCNAME == 'WILLIS_01' || reqArr.docCategory.DOCNAME == 'WILLIS_02' || reqArr.docCategory.DOCNAME == 'WILLIS_04') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
             if (item.colLbl && item.colLbl == 35) { // your reference
-                if (item.text.indexOf(':') != -1) {
+                if (item.text.indexOf('Our Reference') != -1) {
                     item.originText = item.text;
-                    item.text = item.text.split(':')[1].trim(); // nvoce No.: 2110347 -> 2110347
-                } else if (item.text.indexOf('.') != -1) {
-                    item.originText = item.text;
-                    item.text = item.text.split('.')[1].trim(); //INVOICE NO. 5379052 -> 5379052
+                    item.text = item.text.replace(/Our Reference/g, "").replace(/\//g, "").replace(/\s/gi, ""); // Our Reference 131741417/ OOOOOIMDP -> 131741417OOOOOIMDP
                 }
             }
         }

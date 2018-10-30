@@ -1455,6 +1455,7 @@ var fn_checkboxEvent = function () {
     //인식결과 단일선택 체크박스
     $(document).on('click', 'input[name=dtl_chk]', function () {
         if ($('input[name=dtl_chk]:checked').length == 0) {
+            $('#deleteRow').prop('disabled', true);
             $('#sendApprovalBtn').prop('disabled', true);
             $('#reTrainBtn').prop('disabled', true);
             $('#ctnExtractionBtn').prop('disabled', true);
@@ -1465,6 +1466,7 @@ var fn_checkboxEvent = function () {
             } else {
                 $('#sendApprovalBtn').prop('disabled', true);
             }
+            $('#deleteRow').prop('disabled', false);
             $('#reTrainBtn').prop('disabled', false);
             $('#ctnExtractionBtn').prop('disabled', false);
         }
@@ -1537,18 +1539,11 @@ var ocrResult = function () {
             });
 
             $('#deleteRow').prop('disabled', true);
+            if ($('input[name=dtl_chk]').length == 0) {
+                $('#ctnExtractionBtn').prop('disabled', true);
+                $('#reTrainBtn').prop('disabled', true);
+            }
         });
-    });
-
-    //체크박스 여부에 따른 행 삭제 버튼 활성화/비활성화
-    $(document).on('click', 'input[name=dtl_chk]', function () {
-
-        var chkCnt = $('input[name="dtl_chk"]:checked').length;
-        if (chkCnt >= 1) {
-            $('#deleteRow').attr('disabled', false);
-        } else {
-            $('#deleteRow').attr('disabled', true);
-        }
     });
 
     //셀렉트박스 더블클릭시 수정폼
@@ -1948,25 +1943,52 @@ function fn_ContractNumExtraction() {
     var ctNm = [];
     var ttyYy = [];
 
-    for (var i = 0; i < $("select[name='cdnNm'] > option").length; i++) {
-        //if (i > 0) {
-            var text = $("select[name='cdnNm'] option:eq('" + i + "')").text();
-            cdnNm.push(text);
-        //}
+    if ($('#tbody_dtlList td:eq(2)').children().length == 2) {
+        if ($('#tbody_dtlList td:eq(2)').find('input[type=text]').val().trim() == "") {
+            fn_alert('alert', "출재사명을 입력해주세요");
+        } else {
+            cdnNm.push($('#tbody_dtlList td:eq(2)').find('input[type=text]').val());
+        }
+    } else {
+
+        for (var i = 0; i < $("select[name='cdnNm'] > option").length; i++) {
+            //if (i > 0) {
+                var text = $("select[name='cdnNm'] option:eq('" + i + "')").text();
+                cdnNm.push(text);
+            //}
+        }
     }
 
-    for (var i = 0; i < $("select[name='ctNm'] > option").length; i++) {
-        //if (i > 0) {
+    if ($('#tbody_dtlList td:eq(3)').children().length == 2) {
+        if ($('#tbody_dtlList td:eq(3)').find('input[type=text]').val().trim() == "") {
+            fn_alert('alert', "계약명을 입력해주세요");
+        } else {
+            ctNm.push($('#tbody_dtlList td:eq(3)').find('input[type=text]').val());
+        }
+    } else {
+        for (var i = 0; i < $("select[name='ctNm'] > option").length; i++) {
+            //if (i > 0) {
             var text = $("select[name='ctNm'] option:eq('" + i + "')").text();
             ctNm.push(text);
-        //}
+            //}
+        }
+
     }
 
-    for (var i = 0; i < $("select[name='ttyYy']  > option").length; i++) {
-        //if (i > 0) {
+    if ($('#tbody_dtlList td:eq(4)').children().length == 2) {
+        if ($('#tbody_dtlList td:eq(4)').find('input[type=text]').val().trim() == "") {
+            fn_alert('alert', "UY를 입력해주세요");
+        } else {
+            ttyYy.push($('#tbody_dtlList td:eq(4)').find('input[type=text]').val());
+        }
+    } else {
+        for (var i = 0; i < $("select[name='ttyYy']  > option").length; i++) {
+            //if (i > 0) {
             var text = $("select[name='ttyYy'] option:eq('" + i + "')").text();
             ttyYy.push(text);
-        //}
+            //}
+        }
+
     }
 
     if (cdnNm.length == 0) {
