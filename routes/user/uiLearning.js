@@ -16,6 +16,7 @@ var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
 var ui = require('../util/ui.js');
 var transPantternVar = require('./transPattern');
+var sizeOf = require('image-size');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -67,11 +68,16 @@ router.post('/uiLearnTraining', function (req, res) {
     var filePath = req.body.filePath;
     var fileName = req.body.fileName;
     var fileExt = filePath.split(".")[1];
+    var path = filePath.substr(0, filePath.lastIndexOf("/")+1);
+    var dimensions = sizeOf(path + fileName);
+
     var returnObj;
     sync.fiber(function () {
         try {
             console.time("mlTime");
             pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(dimensions.width);
+            pythonConfig.columnMappingOptions.args.push(dimensions.height);
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
             var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0]);

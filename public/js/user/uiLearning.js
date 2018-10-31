@@ -1182,14 +1182,14 @@ function zoomImg(e, fileName) {
     var height = reImg.height;
 
     //imageZoom 고정크기
-    var fixWidth = 744;
-    var fixHeight = 1052;
+    var fixWidth = 1200;
+    var fixHeight = 1800;
 
     var widthPercent = fixWidth / width;
     var heightPercent = fixHeight / height;
 
     $('#mainImage').hide();
-    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+    $('#imageZoom').css('height', '1600px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
 
     // 사각형 좌표값
     var location = $(e).find('input[type=hidden]').val().split(',');
@@ -1205,7 +1205,8 @@ function zoomImg(e, fileName) {
     //var xPosition = (x * 0.4) > 0 ? '-' + ((x * 0.4) + 'px ') : (x * 0.4)  + 'px ';
     //var yPosition = (y * 0.4) > 0 ? '-' + ((y * 0.4) + 'px') : (y * 0.4) + 'px';
 
-    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
+    //var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
+    var xPosition = '0px ';
     var yPosition = ((- (y * heightPercent)) + 200) + 'px';
     //console.log(xPosition + yPosition);
     $('#imageZoom').css('background-position', xPosition + yPosition);

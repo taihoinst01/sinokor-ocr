@@ -26,7 +26,8 @@ conn = cx_Oracle.connect(connInfo)
 curs = conn.cursor()
 # rootFilePath = 'C:/ICR/image/MIG/MIG'
 regExp = "[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]"
-
+docWidth = ''
+docHeight = ''
 
 def isfloat(value):
     try:
@@ -303,16 +304,8 @@ def getDocSid(data):
 
 def getSidParsing(data, docType):
     try:
-        maxWidth = 0
-        maxHeight = 0
-
-        for item in data:
-            loc = item["location"].split(',')
-
-            if (int(loc[0]) + int(loc[2])) > maxWidth:
-                maxWidth = int(loc[0]) + int(loc[2])
-            if int(loc[1]) > maxHeight:
-                maxHeight = int(loc[1])
+        maxWidth = int(docWidth)
+        maxHeight = int(docHeight)
 
         rateWidth = maxWidth / 2000
         rateheight = maxHeight / 2830
@@ -412,7 +405,12 @@ if __name__ == '__main__':
     try:
         # 입력받은 ocr data를 json 변환
         # ocrData = json.loads('[{"location":"1933,350,346,94","text":"SJLTRe"},{"location":"1934,524,396,28","text":"JLT Re (North America) Inc."},{"location":"1935,578,169,22","text":"United Plaza"},{"location":"1934,605,414,34","text":"30 South 17th Street, 17th Floor"},{"location":"1935,647,313,28","text":"Philadelphia, PA 19103"},{"location":"1934,717,46,22","text":"Tel:"},{"location":"2080,717,225,22","text":"+1 215 309 4500"},{"location":"119,865,466,32","text":"Korean Reinsurance Company"},{"location":"117,905,470,32","text":"80 Susong-Dong, Chongno-Gu"},{"location":"118,944,84,25","text":"Seoul"},{"location":"119,983,593,32","text":"Democratic Peoples Republic of Korea"},{"location":"1291,857,230,25","text":"Risk Reference"},{"location":"1290,897,216,25","text":"Claim Number"},{"location":"1289,936,248,25","text":"Transaction Ref."},{"location":"1288,976,239,25","text":"Your Reference"},{"location":"1288,1016,255,25","text":"Account Number"},{"location":"1291,1056,67,25","text":"Date"},{"location":"1290,1094,115,25","text":"Contact"},{"location":"1291,1174,362,32","text":"Karen.Hunter@jltre.com"},{"location":"1933,770,186,28","text":"www.jltre.com"},{"location":"1705,857,238,25","text":"E27958-2015-N"},{"location":"1705,897,296,25","text":"MCR 186098 1/15"},{"location":"1705,936,151,25","text":"10287249"},{"location":"1703,976,67,25","text":"TBA"},{"location":"1703,1016,303,25","text":"20002523/US-UWR"},{"location":"1705,1056,199,32","text":"16 April 2018"},{"location":"1681,1094,225,25","text":": Karen Hunter"},{"location":"1704,1134,257,25","text":"+1 215 309 4487"},{"location":"119,1062,292,25","text":"For the attention of:"},{"location":"119,1102,222,25","text":"Mr. Steve Choi"},{"location":"119,1387,160,25","text":"Reassured"},{"location":"118,1426,238,32","text":"Original Insured"},{"location":"119,1466,93,24","text":"Period"},{"location":"117,1506,73,31","text":"Type"},{"location":"119,1545,85,24","text":"Limits"},{"location":"119,1585,110,24","text":"Interest"},{"location":"420,1387,576,32","text":"Concord Group Insurance Companies"},{"location":"418,1426,282,25","text":"Winter Event 2015"},{"location":"419,1465,444,25","text":"01 Jan 2015 TO 01 Jan 2017"},{"location":"421,1506,125,31","text":"Property"},{"location":"421,1544,306,25","text":"USD XS"},{"location":"421,1584,399,32","text":"First Property Catastrophe"},{"location":"118,1665,2121,31","text":"highly persistent cold and snowy pattern that developed in early January and continued through March. While colder than normal conditions"},{"location":"118,1703,2184,32","text":"prevailed in the eastern U.S., the headline of the winter was the incredible snowfall totals across the Northeastern U.S. which aided the extreme"},{"location":"117,1744,67,24","text":"cold."},{"location":"119,1783,1464,32","text":"Further to the Reassureds Proof of Loss, below is the reinstatement calculation for your records:"},{"location":"119,1905,286,25","text":"Paid Loss to Cover"},{"location":"118,1947,170,25","text":"Cover Limit"},{"location":"116,1989,161,25","text":"x Premium"},{"location":"116,2031,127,25","text":"At 1000/0"},{"location":"119,2072,314,32","text":"Less Prior Payments"},{"location":"119,2114,179,25","text":"Due Hereon"},{"location":"119,2155,348,25","text":"Federal Excise Tax 1%"},{"location":"119,2197,591,32","text":"Reinstatement Premium Brokerage 5%"},{"location":"119,2238,207,25","text":"Net Premium"},{"location":"119,2321,319,32","text":"Due to you 1.0000%"},{"location":"1244,1863,69,25","text":"USD"},{"location":"1185,1989,170,30","text":"668,208.59"},{"location":"1185,2031,164,30","text":"545,562.71"},{"location":"1185,2072,170,30","text":"540,662.67"},{"location":"1223,2114,131,30","text":"4,900.04"},{"location":"1270,2155,84,25","text":"49.00"},{"location":"1252,2197,103,25","text":"245.00"},{"location":"1222,2238,132,31","text":"4,606.04"},{"location":"1269,2321,84,25","text":"46.06"},{"location":"119,2369,1521,32","text":"Please send all claims correspondence through our electronic mailbox at JLT .CLAlMS@JLTRE.com"},{"location":"913,3297,653,24","text":"JLT Re is a trading name of JLT Re (North America) Inc."}]')
-        ocrData = json.loads(sys.argv[1])
+        # print(sys.argv)
+        
+        docWidth = sys.argv[1]
+        docHeight = sys.argv[2]
+
+        ocrData = json.loads(sys.argv[3])
         # 입력받은 파일 패스로 ocr 데이터 조회
         # ocrData = selectOcrDataFromFilePath(sys.argv[1])
 

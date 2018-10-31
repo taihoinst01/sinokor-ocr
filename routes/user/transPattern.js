@@ -47,6 +47,24 @@ function convertedSpecificDocumentsBefore(reqArr) {
 }
 
 function convertedUY(reqArr) {
+
+    //각 계산서별 UY값이 "01 Jan 16"와 같이 특수한 경우 UY값을 추출하는 로직.
+    if (reqArr.docCategory.DOCNAME == 'MARSH_01' || reqArr.docCategory.DOCNAME == 'GUY_01' || reqArr.docCategory.DOCNAME == 'GUY_03') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+
+            if (item.colLbl == 2) {
+                var uyResult = item.text.substring(3, 7);
+                //Jan/Feb/Mar/Apr/May/Jun/Jul/Aug/Sept/Oct/Nov/Dec 일 경우에 그 값을 '20'으로 치환.
+                if (uyResult == "Jan " || uyResult == "Feb " || uyResult == "Mar " || uyResult == "Apr " || uyResult == "May " || uyResult == "Jun " ||
+                    uyResult == "Jul " || uyResult == "Aug " || uyResult == "Sept " || uyResult == "Oct " || uyResult == "Nov " || uyResult == "Dec ") {
+                    item.originText = item.text; 
+                    item.text = item.text.replace(item.text.substring(0, 7), '20');
+                }
+            }
+        }
+    }
+
     // UY outputs only year START
     var pattern = /20\d\d/ig;
     var lastPattern = /19\d\d/ig;
@@ -273,6 +291,36 @@ function convertedSpecificDocumentsAfter(reqArr) {
 
     }
 
+    //BT_06
+    if (reqArr.docCategory.DOCNAME == 'BT_06') {
+        var oslLocation;
+        var oslMappingSid;
+        var oslSid;
+        var bt06OslText; //OSL text
+        var bt06Curcd; //화폐코드 text
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 7) { //OSL(100%)
+                oslLocation = item.location;
+                oslMappingSid = item.mappingSid;
+                oslSid = item.sid;
+                // 해당 OSL(100%)에서 화폐코드값을 추출.
+                bt06OslText = item.text.slice(0, -3);
+                bt06Curcd = item.text.slice(bt06OslText.length);
+            }
+        }
+        if (bt06Curcd) {
+            reqArr.data.push({
+                'text': bt06Curcd,
+                'colLbl': 3,
+                'location': oslLocation,
+                'colAccu': 0.99,
+                'mappingSid': oslMappingSid,
+                'sid': oslSid
+            });
+        }
+    }
+
     /****************************************
      * MARSH
      ****************************************/
@@ -320,24 +368,24 @@ function convertedSpecificDocumentsAfter(reqArr) {
 
     //MARSH_06
     if (reqArr.docCategory.DOCNAME == 'MARSH_06') {
-        var yourLength = 0;
-        var yourLocation;
-        var yourMappingSid;
-        var yourSid;
-        var yourText = '';
+        var marsh06Length = 0;
+        var marsh06Location;
+        var marsh06MappingSid;
+        var marsh06Sid;
+        var marsh06Text = '';
         var item;
         for (var i in reqArr.data) {
             item = reqArr.data[i];
             if (item.colLbl && item.colLbl == 35) { // your reference
-                yourLength += 1
-                yourLocation = item.location;
-                yourMappingSid = item.mappingSid;
-                yourSid = item.sid;
-                yourText += item.text;
-                if (yourText == item.text) {
+                marsh06Length += 1
+                marsh06Location = item.location;
+                marsh06MappingSid = item.mappingSid;
+                marsh06Sid = item.sid;
+                marsh06Text += item.text;
+                if (marsh06Text == item.text) {
                     item.location = '';
                 }
-                item.text = yourText;
+                item.text = marsh06Text;
             }
         }
         for (var i in reqArr.data) {
@@ -403,7 +451,9 @@ function convertedSpecificDocumentsAfter(reqArr) {
     /****************************************
      * CATHAY
      ****************************************/
-    //CATHAY_01,CATHAY_02,CATHAY_03,
+
+    //CATHAY_01,CATHAY_
+    , CATHAY_03,
     if (reqArr.docCategory.DOCNAME == 'CATHAY_01' || reqArr.docCategory.DOCNAME == 'CATHAY_02' || reqArr.docCategory.DOCNAME == 'CATHAY_03') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
@@ -416,7 +466,6 @@ function convertedSpecificDocumentsAfter(reqArr) {
                     isChange = true;
                 }
 
-                // 정답: OP20180006-0, OCR: OP2018000G-O 
                 // G를 6으로 변경
                 if (text[0].substr(2, 8).indexOf('G') != -1) {
                     text[0] = text[0].substr(0, 2) + text[0].substr(2, 8).replace(/G/g, 6);
