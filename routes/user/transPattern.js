@@ -47,6 +47,24 @@ function convertedSpecificDocumentsBefore(reqArr) {
 }
 
 function convertedUY(reqArr) {
+
+    //각 계산서별 UY값이 "01 Jan 16"와 같이 특수한 경우 UY값을 추출하는 로직.
+    if (reqArr.docCategory.DOCNAME == 'MARSH_01' || reqArr.docCategory.DOCNAME == 'GUY_01' || reqArr.docCategory.DOCNAME == 'GUY_03') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+
+            if (item.colLbl == 2) {
+                var uyResult = item.text.substring(3, 7);
+                //Jan/Feb/Mar/Apr/May/Jun/Jul/Aug/Sept/Oct/Nov/Dec 일 경우에 그 값을 '20'으로 치환.
+                if (uyResult == "Jan " || uyResult == "Feb " || uyResult == "Mar " || uyResult == "Apr " || uyResult == "May " || uyResult == "Jun " ||
+                    uyResult == "Jul " || uyResult == "Aug " || uyResult == "Sept " || uyResult == "Oct " || uyResult == "Nov " || uyResult == "Dec ") {
+                    item.originText = item.text; 
+                    item.text = item.text.replace(item.text.substring(0, 7), '20');
+                }
+            }
+        }
+    }
+
     // UY outputs only year START
     var pattern = /20\d\d/ig;
     var lastPattern = /19\d\d/ig;
@@ -273,6 +291,36 @@ function convertedSpecificDocumentsAfter(reqArr) {
 
     }
 
+    //BT_06
+    if (reqArr.docCategory.DOCNAME == 'BT_06') {
+        var oslLocation;
+        var oslMappingSid;
+        var oslSid;
+        var bt06OslText; //OSL text
+        var bt06Curcd; //화폐코드 text
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 7) { //OSL(100%)
+                oslLocation = item.location;
+                oslMappingSid = item.mappingSid;
+                oslSid = item.sid;
+                // 해당 OSL(100%)에서 화폐코드값을 추출.
+                bt06OslText = item.text.slice(0, -3);
+                bt06Curcd = item.text.slice(bt06OslText.length);
+            }
+        }
+        if (bt06Curcd) {
+            reqArr.data.push({
+                'text': bt06Curcd,
+                'colLbl': 3,
+                'location': oslLocation,
+                'colAccu': 0.99,
+                'mappingSid': oslMappingSid,
+                'sid': oslSid
+            });
+        }
+    }
+
     /****************************************
      * MARSH
      ****************************************/
@@ -320,24 +368,24 @@ function convertedSpecificDocumentsAfter(reqArr) {
 
     //MARSH_06
     if (reqArr.docCategory.DOCNAME == 'MARSH_06') {
-        var yourLength = 0;
-        var yourLocation;
-        var yourMappingSid;
-        var yourSid;
-        var yourText = '';
+        var marsh06Length = 0;
+        var marsh06Location;
+        var marsh06MappingSid;
+        var marsh06Sid;
+        var marsh06Text = '';
         var item;
         for (var i in reqArr.data) {
             item = reqArr.data[i];
             if (item.colLbl && item.colLbl == 35) { // your reference
-                yourLength += 1
-                yourLocation = item.location;
-                yourMappingSid = item.mappingSid;
-                yourSid = item.sid;
-                yourText += item.text;
-                if (yourText == item.text) {
+                marsh06Length += 1
+                marsh06Location = item.location;
+                marsh06MappingSid = item.mappingSid;
+                marsh06Sid = item.sid;
+                marsh06Text += item.text;
+                if (marsh06Text == item.text) {
                     item.location = '';
                 }
-                item.text = yourText;
+                item.text = marsh06Text;
             }
         }
         for (var i in reqArr.data) {
@@ -403,7 +451,8 @@ function convertedSpecificDocumentsAfter(reqArr) {
     /****************************************
      * CATHAY
      ****************************************/
-    //CATHAY_01,CATHAY_02,CATHAY_03,
+
+    //CATHAY_01,CATHAY_02, CATHAY_03,
     if (reqArr.docCategory.DOCNAME == 'CATHAY_01' || reqArr.docCategory.DOCNAME == 'CATHAY_02' || reqArr.docCategory.DOCNAME == 'CATHAY_03') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
@@ -416,7 +465,6 @@ function convertedSpecificDocumentsAfter(reqArr) {
                     isChange = true;
                 }
 
-                // 정답: OP20180006-0, OCR: OP2018000G-O 
                 // G를 6으로 변경
                 if (text[0].substr(2, 8).indexOf('G') != -1) {
                     text[0] = text[0].substr(0, 2) + text[0].substr(2, 8).replace(/G/g, 6);
@@ -449,6 +497,62 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
+    // WIS_05
+    /**
+     * 문제: OSL(100%) 레이블과 엔트리를 한문장으로 인식
+     * 해결: OSL(100%) 레이블과 엔트리를 분리해서 OSL(100%) 엔트리값과 OSL(ourshare)값을 구해서 배열에 추가 
+     **/
+    if (reqArr.docCategory.DOCNAME == 'WIS_05') {
+
+        var yourShare;
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 36) { // Our Share Label
+                yourShare = Number(item.text) / 100;
+            }
+
+        }
+
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 7) { // your reference
+                var osl100Entry = 0;
+                var pattern = /\d*[.]{1}\d{2}/ig; // 문자열중 . 을 포함한 숫자
+                var numArr = item.text.replace(/,/g, "").match(pattern);
+                //console.log(numArr);
+
+                //OSL(100%) 엔트리값 구하기
+                for (var i in numArr) {
+                    osl100Entry += Number(numArr[i]);
+                }
+
+                //OSL(100%) 엔트리값 추가
+                reqArr.data.push({
+                    'entryLbl': 2,
+                    'text': String(osl100Entry.toFixed(2)),
+                    'colLbl': 37,
+                    'location': item.location,
+                    'colAccu': 0.99,
+                    'mappingSid': item.mappingSid,
+                    'sid': item.sid
+                });
+
+                //OSL(Our Share) 엔트리값 추가
+                if (yourShare) {
+                    reqArr.data.push({
+                        'entryLbl': 3,
+                        'text': String((osl100Entry * yourShare).toFixed(2)),
+                        'colLbl': 37,
+                        'location': item.location,
+                        'colAccu': 0.99,
+                        'mappingSid': item.mappingSid,
+                        'sid': item.sid
+                    });
+                }
+            }
+        }
+    }
+
 
 
     /****************************************
@@ -464,6 +568,17 @@ function convertedSpecificDocumentsAfter(reqArr) {
                     item.originText = item.text;
                     item.text = item.text.replace(/Our Reference/g, "").replace(/\//g, "").replace(/\s/gi, ""); // Our Reference 131741417/ OOOOOIMDP -> 131741417OOOOOIMDP
                 }
+            }
+        }
+    }
+
+    //WILLIS_10
+    if (reqArr.docCategory.DOCNAME == 'WILLIS_10') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.entryLbl && item.entryLbl == 31) { // Unknown
+                //entryLbl이 31이면 PREMIUM entry인 4로 변환.
+                item.entryLbl = 4;
             }
         }
     }
