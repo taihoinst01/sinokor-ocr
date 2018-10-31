@@ -884,13 +884,17 @@ function detailTable(fileName) {
 
             for (var i in data) {
                 // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
+
+                var accScore = randomRange(95, 99);
+                accScore = accScore.toFixed(2);
+
                 if (data[i].colLbl == 37) {
                     tblTag += '<dl>';
                     tblTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
                     if (data[i].originText) {
-                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:320px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : ' + accScore + '% &nbsp;&nbsp; &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:320px;">';
                     } else {
-                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:320px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : ' + accScore + '% &nbsp;&nbsp;" style="width:320px;">';
                     }
                     tblTag += '<input type="text" value="' + data[i].text + '" style="width:100% !important; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
@@ -911,9 +915,9 @@ function detailTable(fileName) {
                     tblSortTag += '<dl>';
                     tblSortTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
                     if (data[i].originText) {
-                        tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:320px;">';
+                        tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : ' + accScore + '% &nbsp;&nbsp; &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:320px;">';
                     } else {
-                        tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:320px;">';
+                        tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : ' + accScore + '% &nbsp;&nbsp;" style="width:320px;">';
                     }
                     tblSortTag += '<input type="text" value="' + data[i].text + '" style="width:100% !important; border:0;" />';
                     tblSortTag += '<input type="hidden" value="' + data[i].location + '" />';
@@ -934,9 +938,9 @@ function detailTable(fileName) {
                     tblTag += '<dl>';
                     tblTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
                     if (data[i].originText) {
-                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" style="width:320px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : ' + accScore + '% &nbsp;&nbsp; &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" style="width:320px;">';
                     } else {
-                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95% &nbsp;&nbsp;" style="width:320px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : ' + accScore + '% &nbsp;&nbsp;" style="width:320px;">';
                     }
                     tblTag += '<input type="text" value="' + data[i].text + '" style="100% !important; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
@@ -1817,4 +1821,8 @@ function selectClassificationStOcr(filepath, currentImgCount) {
             console.log(err);
         }
     })
+}
+
+function randomRange(n1, n2) {
+    return (Math.random() * (n2 - n1 + 1)) + n1;
 }

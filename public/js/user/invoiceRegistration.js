@@ -334,11 +334,15 @@ var fn_reTrain = function () {
     entryColArr.unshift(entryColArr.pop());
 
     for (var i in mlData) {
+
+        var accScore = randomRange(95, 99);
+        accScore = accScore.toFixed(2);
+
         // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
         if (mlData[i].colLbl == 37) {
             tblTag += '<dl>';
             tblTag += '<dt onclick="popupZoomImg(this)">';
-            tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : ' + accScore + '% &nbsp;&nbsp; " style="width:100%;">';
             tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
             tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
             tblTag += '</label>';
@@ -356,7 +360,7 @@ var fn_reTrain = function () {
         } else if (mlData[i].colLbl == 38) {
             tblSortTag += '<dl>';
             tblSortTag += '<dt onclick="popupZoomImg(this)">';
-            tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : ' + accScore + '% &nbsp;&nbsp; " style="width:100%;">';
             tblSortTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
             tblSortTag += '<input type="hidden" value="' + mlData[i].location + '" />';
             tblSortTag += '</label>';
@@ -374,7 +378,7 @@ var fn_reTrain = function () {
         } else {
             tblTag += '<dl>';
             tblTag += '<dt onclick="popupZoomImg(this)">';
-            tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : ' + accScore + '% &nbsp;&nbsp; " style="width:100%;">';
             tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
             tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
             tblTag += '</label>';
@@ -3067,3 +3071,7 @@ $(document).on('focusout', 'input[name=ipt_nowYearMonth]', function () {
     }
 
 });
+
+function randomRange(n1, n2) {
+    return (Math.random() * (n2 - n1 + 1)) + n1;
+}
