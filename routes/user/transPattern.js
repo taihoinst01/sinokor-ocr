@@ -452,8 +452,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
      * CATHAY
      ****************************************/
 
-    //CATHAY_01,CATHAY_
-    , CATHAY_03,
+    //CATHAY_01,CATHAY_02, CATHAY_03,
     if (reqArr.docCategory.DOCNAME == 'CATHAY_01' || reqArr.docCategory.DOCNAME == 'CATHAY_02' || reqArr.docCategory.DOCNAME == 'CATHAY_03') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
