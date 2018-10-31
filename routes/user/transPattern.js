@@ -291,6 +291,36 @@ function convertedSpecificDocumentsAfter(reqArr) {
 
     }
 
+    //BT_06
+    if (reqArr.docCategory.DOCNAME == 'BT_06') {
+        var oslLocation;
+        var oslMappingSid;
+        var oslSid;
+        var bt06OslText; //OSL text
+        var bt06Curcd; //화폐코드 text
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 7) { //OSL(100%)
+                oslLocation = item.location;
+                oslMappingSid = item.mappingSid;
+                oslSid = item.sid;
+                // 해당 OSL(100%)에서 화폐코드값을 추출.
+                bt06OslText = item.text.slice(0, -3);
+                bt06Curcd = item.text.slice(bt06OslText.length);
+            }
+        }
+        if (bt06Curcd) {
+            reqArr.data.push({
+                'text': bt06Curcd,
+                'colLbl': 3,
+                'location': oslLocation,
+                'colAccu': 0.99,
+                'mappingSid': oslMappingSid,
+                'sid': oslSid
+            });
+        }
+    }
+
     /****************************************
      * MARSH
      ****************************************/
