@@ -452,8 +452,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
      * CATHAY
      ****************************************/
 
-    //CATHAY_01,CATHAY_
-    , CATHAY_03,
+    //CATHAY_01,CATHAY_02, CATHAY_03,
     if (reqArr.docCategory.DOCNAME == 'CATHAY_01' || reqArr.docCategory.DOCNAME == 'CATHAY_02' || reqArr.docCategory.DOCNAME == 'CATHAY_03') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
@@ -493,6 +492,62 @@ function convertedSpecificDocumentsAfter(reqArr) {
                 if (item.text.indexOf('Tran No:') != -1) {
                     item.originText = item.text;
                     item.text = item.text.replace(/Tran No:/g, "").trim(); // "Tran No: 587326-565839" -> 587326-565839
+                }
+            }
+        }
+    }
+
+    // WIS_05
+    /**
+     * 문제: OSL(100%) 레이블과 엔트리를 한문장으로 인식
+     * 해결: OSL(100%) 레이블과 엔트리를 분리해서 OSL(100%) 엔트리값과 OSL(ourshare)값을 구해서 배열에 추가 
+     **/
+    if (reqArr.docCategory.DOCNAME == 'WIS_05') {
+
+        var yourShare;
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 36) { // Our Share Label
+                yourShare = Number(item.text) / 100;
+            }
+
+        }
+
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 7) { // your reference
+                var osl100Entry = 0;
+                var pattern = /\d*[.]{1}\d{2}/ig; // 문자열중 . 을 포함한 숫자
+                var numArr = item.text.replace(/,/g, "").match(pattern);
+                //console.log(numArr);
+
+                //OSL(100%) 엔트리값 구하기
+                for (var i in numArr) {
+                    osl100Entry += Number(numArr[i]);
+                }
+
+                //OSL(100%) 엔트리값 추가
+                reqArr.data.push({
+                    'entryLbl': 2,
+                    'text': String(osl100Entry.toFixed(2)),
+                    'colLbl': 37,
+                    'location': item.location,
+                    'colAccu': 0.99,
+                    'mappingSid': item.mappingSid,
+                    'sid': item.sid
+                });
+
+                //OSL(Our Share) 엔트리값 추가
+                if (yourShare) {
+                    reqArr.data.push({
+                        'entryLbl': 3,
+                        'text': String((osl100Entry * yourShare).toFixed(2)),
+                        'colLbl': 37,
+                        'location': item.location,
+                        'colAccu': 0.99,
+                        'mappingSid': item.mappingSid,
+                        'sid': item.sid
+                    });
                 }
             }
         }
