@@ -12,11 +12,11 @@ $(function () {
     });
     // 사용자 등록
     $("#btn_insert").on("click", function () {
-        fn_insertUser();
+        fn_modifyUser('insert');
     });
     // 사용자 수정
     $("#btn_update").on("click", function () {
-        fn_updateUser();
+        fn_modifyUser('update');
     });
     // 초기화 (테스트)
     $("#btn_init").on("click", function () {
@@ -83,12 +83,32 @@ function fn_searchUser() {
         beforeSend: function () {
             $("#progressMsgTitle").html("사용자를 조회 중 입니다.");
             $("#progressMsgDetail").html("..........");
-            startProgressBar(); // 프로그레스바 시작
-            addProgressBar(1, 1); // 프로그레스바 진행
+            //startProgressBar(); // 프로그레스바 시작
+            //addProgressBar(1, 1); // 프로그레스바 진행
         },
         success: function (data) {
-            addProgressBar(2, 99); // 프로그레스바 진행
-            //console.log("data.. : " + JSON.stringify(data));
+            //addProgressBar(2, 99); // 프로그레스바 진행
+            console.log(data);
+            for (var i in data.userData) {
+                var entry = data.userData[i];
+                appendHtml +=
+                    '<tr class="tr_userInfo empNo_' + entry.EMP_NO + '">' +
+                    '<td scope="row">' + nvl(entry.EMP_NO) + '</td>' +
+                    '<td>' + nvl(entry.EMP_NM) + '</td>' +
+                    '<td>' + nvl(entry.DEPT_NM) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_SCAN) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_ICR) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_APPROVAL) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_FINAL_APPROVAL) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' +
+                    '<td>N</td>' +
+                    '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
+                    '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', \'' + entry.EMP_NM + '\', event)">삭제</button></td>;' +
+                    '</tr>';
+            }
+            $("#tbody_user").empty().append(appendHtml);
+            /*
+            console.log("data.. : " + JSON.stringify(data));
             var emp = data.userData.emp;
             var ext = data.userData.ext;
 
@@ -103,7 +123,6 @@ function fn_searchUser() {
 
             // 코리안리 직원
             $.each(emp, function (index, entry) {
-
                 appendHtml +=
                     '<tr class="tr_userInfo">' +
                     '<td scope="row">' + nvl(entry.EMP_NO) + '</td>' +
@@ -116,7 +135,7 @@ function fn_searchUser() {
                     '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' + 
                     '<td>N</td>' +
                     '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
-                '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', \'' + entry.EMP_NM + '\', event)">삭제</button></td>;' +
+                    '<td><button class="btn btn_style_k02" style="display: none;"onclick="javascript:openDeleteUser(' + entry.EMP_NO + ')">삭제</button></td>;' +
                     '</tr>';
             });
 
@@ -124,7 +143,7 @@ function fn_searchUser() {
                 // 외부이용자
                 $.each(ext, function (index, entry) {
                     appendHtml +=
-                        '<tr class="tr_userInfo empNo_' + entry.EMP_NO + '">' +
+                        '<tr class="tr_userInfo">' +
                         '<td scope="row">' + nvl(entry.EMP_NO) + ' <input type="hidden" value="' + nvl(entry.EMP_PW) + '"></td>' +
                         '<td>' + nvl(entry.EMP_NM) + '</td>' +
                         '<td>' + nvl(entry.EMP_DEPT_NM) + '</td>' +
@@ -135,7 +154,7 @@ function fn_searchUser() {
                         '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' +
                         '<td>Y</td>' +
                         '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
-                    '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', \'' + entry.EMP_NM + '\', event)">삭제</button></td>;' +
+                        '<td><button class="btn btn_style_k02" style="display: none;"onclick="javascript:openDeleteUser(' + entry.EMP_NO + ')">삭제</button></td>;' +
                         '</tr>';
                 });
             }
@@ -162,9 +181,10 @@ function fn_searchUser() {
             //    });
                 //<td><button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn" onclick="javascript:openUpdatePw(${entry.seqNum}, ${entry.userId})">수정</button></td>
             //}
-            $("#tbody_user").empty().append(appendHtml).append(appendHtml).append(appendHtml);
+            $("#tbody_user").empty().append(appendHtml);
             //$("#pagination").html(pagination(curPage, data[0].totalCount));
             endProgressBar();
+            */
         },
         error: function (err) {
             endProgressBar();
@@ -365,6 +385,56 @@ var fn_getParam = function () {
     };
     return param;
 };
+
+// 사용자 등록 및 수정
+function fn_modifyUser(type) {
+    var param = {
+        'empNo': $('#empNo').val(),
+        'empPw': $('#empPw').val(),
+        'empNm': '',
+        'authScan': $('#mApproval1').prop("checked") ? 'Y' : 'N',
+        'authIcr': $('#mApproval2').prop("checked") ? 'Y' : 'N',
+        'authMid': $('#mApproval3').prop("checked") ? 'Y' : 'N',
+        'authFinal': $('#mApproval4').prop("checked") ? 'Y' : 'N',
+        'authAdmin': $('#mAdmin').prop("checked") ? 'Y' : 'N',
+        'authExternal': $('#mExternalUsers').prop("checked") ? 'Y' : 'N',
+        'beforeEmpNo': $('#tbody_user > tr.on > td:eq(0)').text(),
+        'type': type
+    };
+    
+    $.ajax({
+        url: '/userManagement/modifyUser',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            fn_alert('alert', data.message);
+            if (data.code == 200) {
+                initUserForm();
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+    
+}
+
+// 사용자 등록 및 수정 폼 초기화
+function initUserForm() {
+    $('#empNo').val('');
+    $('#empPw').val('');
+    $('#mApproval1').prop("checked", false);
+    $('#mApproval2').prop("checked", false);
+    $('#mApproval3').prop("checked", false);
+    $('#mApproval4').prop("checked", false);
+    $('#mAdmin').prop("checked", false);
+    $('#mExternalUsers').prop("checked", false);
+    $('.user-auth .ez-checkbox').removeClass('ez-checked');
+    $('#btn_insert').show();
+    $('#btn_update').hide();
+}
 
 // 사용자 등록
 function fn_insertUser() {

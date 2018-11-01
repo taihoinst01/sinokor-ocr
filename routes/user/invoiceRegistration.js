@@ -84,7 +84,7 @@ var fnSearchDocumentList = function (req, res) {
         adminApproval: commonUtil.nvl(req.body.adminApproval)
     };
     if (param["adminApproval"] == 'Y') {
-        andQuery = '';
+        //andQuery = '';
     } else if (!commonUtil.isNull(param["scanApproval"]) && param["scanApproval"] == 'Y' && param["adminApproval"] == 'N') {
         condQuery += " AND UPLOADNUM = '" + req.session.userId + "' ";
     } else if (!commonUtil.isNull(param["icrApproval"]) && param["icrApproval"] == 'Y' && param["adminApproval"] == 'N') {

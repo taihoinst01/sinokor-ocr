@@ -49,10 +49,13 @@ router.post('/chooseUser', function (req, res) {    // 사용자 조회
 router.post('/searchHighApproval', function (req, res) {    // 상위결재자 조회
     if (req.isAuthenticated()) fnSearchHighApproval(req, res);
 });
-router.post('/insertUser', function (req, res) {    //사용자 등록
+router.post('/modifyUser', function (req, res) {    //사용자 등록 및 수정
+    if (req.isAuthenticated()) fnModify(req, res);
+});
+router.post('/insertUser', function (req, res) {    //사용자 등록 (사용안함)
     if (req.isAuthenticated()) fnInsert(req, res);
 });
-router.post('/updateUser', function (req, res) {    //사용자 수정
+router.post('/updateUser', function (req, res) {    //사용자 수정 (사용안함)
     if (req.isAuthenticated()) fnUpdate(req, res);
 });
 
@@ -99,6 +102,21 @@ var fnSearchHighApproval = function (req, res) {
     console.log(`fnSearchHighApproval query : ${query}`);
     commonDB.reqQuery(query, callbackSearchHighApproval, req, res);
 };
+
+// 사용자 추가 및 수정
+var fnModify = function (req, res) {
+
+    sync.fiber(function () {
+        try {
+            var message = sync.await(oracle.modifyUser(req.body, sync.defer()));
+            res.send({ code: 200, message: message });
+        } catch (e) {
+            console.log(e);
+            res.send({ code: 500, message: 'server error' });           
+        }
+    });
+}
+
 // 사용자 추가
 var callbackInsert = function (rows, req, res) {
     res.send({ CODE: 200, RESULT: "등록되었습니다." });

@@ -12,6 +12,56 @@ var request = require('sync-request');
 var sync = require('./sync.js');
 var oracle = require('./oracle.js');
 
+exports.modifyUser = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        var modifySql;
+        var modifyParams;
+        var regSql;   
+        var regParams;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            if (req.type == 'insert') {
+                var selectSql = 'SELECT EMP_NO FROM TBL_CO_EMP_BS_EXT WHERE EMP_NO = :empNo';
+                result = await conn.execute(selectSql, [req.empNo]);
+                if (result.rows.length != 0) {
+                    return done(null, '사번이 존재합니다.');
+                }
+
+                modifySql = "INSERT INTO TBL_CO_EMP_BS_EXT(EMP_NO, EMP_PW, EMP_NM) VALUES (:empNo, :empPw, :empNm)";
+                modifyParams = [req.empNo, req.empPw, req.empNm];
+                regSql = 'INSERT INTO TBL_CO_EMP_REG(EMP_NO, AUTH_SCAN, AUTH_ICR, AUTH_APPROVAL, AUTH_FINAL_APPROVAL, AUTH_ADMIN) '
+                    + 'VALUES (:empNo, :authScan, :authIcr, :authMid, :authFinal, :authAdmin)';
+                regParams = [req.empNo, req.authScan, req.authIcr, req.authMid, req.authFinal, req.authAdmin];
+            } else {
+                modifySql = "UPDATE TBL_CO_EMP_BS_EXT SET EMP_NO = :empNo, EMP_PW = :empPw, EMP_NM = :empNm WHERE EMP_NO = :beforeEmpNo";
+                modifyParams = [req.empNo, req.empPw, req.empNm, req.beforeEmpNo];
+                regSql = 'UPDATE TBL_CO_EMP_REG SET EMP_NO = :empNo, AUTH_SCAN = :authScan, AUTH_ICR = :authIcr, AUTH_APPROVAL = :authMid, '
+                    + 'AUTH_FINAL_APPROVAL = :authFinal, AUTH_ADMIN = :authAdmin WHERE EMP_NO = :beforeEmpNo';
+                regParams = [req.empNo, req.authScan, req.authIcr, req.authMid, req.authFinal, req.authAdmin, req.beforeEmpNo];
+            }
+            await conn.execute(modifySql, modifyParams);
+            await conn.execute(regSql, regParams);
+            
+
+            return done(null, 'success');
+        } catch (err) {
+            reject(err);
+            //return done(null, err);
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectUserInfo = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -3276,7 +3326,6 @@ exports.searchUser = function (req, done) {
         let conn;
         let result;
         try {
-            //console.log(req);
             let dept = req.body.dept;
             let scan = req.body.scan;
             let icr = req.body.icr;
@@ -3286,7 +3335,28 @@ exports.searchUser = function (req, done) {
             let externalUsers = req.body.externalUsers;
 
             conn = await oracledb.getConnection(dbConfig);
-            
+            var userQuery = ""
+                + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_DEPT.DEPT_NM,"
+                    + "CO_REG.AUTH_SCAN, CO_REG.AUTH_ICR, CO_REG.AUTH_APPROVAL, CO_REG.AUTH_FINAL_APPROVAL, "
+                    + "CO_REG.AUTH_ADMIN, CO_EMP.EXT_USER, TO_CHAR(CO_REG.FINAL_LOGIN_DATE, 'YYYY/MM/DD HH24:MI:SS') AS FINAL_LOGIN_DATE "
+                + "FROM "
+                    + "(SELECT CO_EMP.EMP_NO, NULL AS EMP_PW, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, 'N' AS EXT_USER FROM TBL_CO_EMP_BS CO_EMP "
+                    + "UNION ALL "
+                    + "SELECT EMP_NO, EMP_PW, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, 'Y' AS EXT_USER FROM TBL_CO_EMP_BS_EXT) CO_EMP "
+                + "LEFT JOIN TBL_CO_EMP_REG CO_REG "
+                + "ON CO_EMP.EMP_NO = CO_REG.EMP_NO "
+                + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
+                + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
+                + "WHERE 1=1 ";
+
+
+            result = await conn.execute(userQuery);
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+            /*
             var empQuery = "SELECT EMP.EMP_NO, EMP.EMP_ENGL_NM, EMP.EMP_NM, EMP.BLT_DEPT_CD, EMP.JBLV_CD, EMP.PSTN_CD, " +
                             " REG.AUTH_SCAN, REG.AUTH_ICR, REG.AUTH_APPROVAL, REG.AUTH_FINAL_APPROVAL, REG.AUTH_ADMIN, TO_CHAR(REG.FINAL_LOGIN_DATE, 'yyyy-mm - dd hh: mi: ss') as FINAL_LOGIN_DATE, REG.REG_DATE, REG.ACCOUNT_ENABLE " + 
                             " FROM TBL_CO_EMP_BS EMP, TBL_CO_EMP_REG REG " +
@@ -3356,8 +3426,9 @@ exports.searchUser = function (req, done) {
                 emp: empResult.rows,
                 ext: externalUsers == 'Y' ? extResult.rows : null
                 //dept: deptResult.rows
-            };
+            };          
             return done(null, result);
+            */
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {

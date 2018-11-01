@@ -307,13 +307,13 @@ def classifyDocument(ocrData):
                 maxNum = ratio
                 row = rows[1]
 
-        if maxNum > 0.5:
+        if maxNum > 0.2:
             return maxNum, row
         else:
             return '',''
 
     except Exception as e:
-        raise Exception(str({'code': 500, 'message': 'TBL_NOTINVOICE_DATA table select fail', 'error': str(e).replace("'", "").replace('"', '')}))
+        raise Exception(str({'code': 500, 'message': 'TBL_DOCUMENT_SENTENCE table select fail', 'error': str(e).replace("'", "").replace('"', '')}))
 
 # def classifyDocument(sentences):
 #     try:
