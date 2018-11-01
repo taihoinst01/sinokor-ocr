@@ -23,7 +23,7 @@ $(function () {
         fn_initUser();
     });
 
-    fn_searchUser();
+    fn_searchUser('all');
     //fn_searchHighApproval(0, "");
 
 
@@ -60,7 +60,7 @@ function fn_initUser() {
 /**
  * 사용자 조회
  */
-function fn_searchUser() {
+function fn_searchUser(type) {
     //curPage = isNull(curPage) ? 1 : curPage;
     var appendHtml = "";
     var param = {
@@ -74,6 +74,7 @@ function fn_searchUser() {
         //startNum : ((curPage - 1) * MAX_ENTITY_IN_PAGE),
         //endNum: MAX_ENTITY_IN_PAGE
     };
+    if (type) param.type = type;
     $.ajax({
         url: '/userManagement/searchUser',
         type: 'post',
@@ -88,23 +89,26 @@ function fn_searchUser() {
         },
         success: function (data) {
             //addProgressBar(2, 99); // 프로그레스바 진행
-            console.log(data);
-            for (var i in data.userData) {
-                var entry = data.userData[i];
-                appendHtml +=
-                    '<tr class="tr_userInfo empNo_' + entry.EMP_NO + '">' +
-                    '<td scope="row">' + nvl(entry.EMP_NO) + '</td>' +
-                    '<td>' + nvl(entry.EMP_NM) + '</td>' +
-                    '<td>' + nvl(entry.DEPT_NM) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_SCAN) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_ICR) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_APPROVAL) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_FINAL_APPROVAL) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' +
-                    '<td>N</td>' +
-                    '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
-                    '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', \'' + entry.EMP_NM + '\', event)">삭제</button></td>;' +
-                    '</tr>';
+            if (data.userData.length == 0) {
+                appendHtml = '<tr class="tr_userInfo"><td colspan="11">조회결과가 없습니다.</td></tr>';
+            } else {
+                for (var i in data.userData) {
+                    var entry = data.userData[i];
+                    appendHtml +=
+                        '<tr class="tr_userInfo empNo_' + entry.EMP_NO + '">' +
+                        '<td scope="row">' + nvl(entry.EMP_NO) + '</td>' +
+                        '<td>' + nvl(entry.EMP_NM) + '</td>' +
+                        '<td>' + nvl(entry.DEPT_NM) + '</td>' +
+                        '<td>' + nvl(entry.AUTH_SCAN) + '</td>' +
+                        '<td>' + nvl(entry.AUTH_ICR) + '</td>' +
+                        '<td>' + nvl(entry.AUTH_APPROVAL) + '</td>' +
+                        '<td>' + nvl(entry.AUTH_FINAL_APPROVAL) + '</td>' +
+                        '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' +
+                        '<td>' + nvl(entry.EXT_USER) + '</td>' +
+                        '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
+                        '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', \'' + entry.EMP_NM + '\', event)">삭제</button></td>;' +
+                        '</tr>';
+                }
             }
             $("#tbody_user").empty().append(appendHtml);
             /*

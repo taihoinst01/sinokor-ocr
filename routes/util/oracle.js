@@ -3347,8 +3347,19 @@ exports.searchUser = function (req, done) {
                 + "ON CO_EMP.EMP_NO = CO_REG.EMP_NO "
                 + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
                 + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
-                + "WHERE 1=1 ";
+                + "WHERE 1=1";
 
+            if (!req.body.type) {
+                if (dept != '모든부서') {
+                    userQuery += " AND CO_DEPT.DEPT_NM = '" + dept + "'";
+                }
+                var auths = [scan, icr, approval, finalApproval, admin, externalUsers];
+                var authColumns = ['CO_REG.AUTH_SCAN', 'CO_REG.AUTH_ICR', 'CO_REG.AUTH_APPROVAL', 'CO_REG.AUTH_FINAL_APPROVAL',
+                'CO_REG.AUTH_ADMIN', 'CO_EMP.EXT_USER'];
+                for (var i in auths) {
+                    userQuery += " AND " + authColumns[i] + " = '" + auths[i] + "'";
+                }
+            }
 
             result = await conn.execute(userQuery);
             if (result.rows.length > 0) {
