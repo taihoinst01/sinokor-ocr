@@ -3276,7 +3276,7 @@ exports.searchUser = function (req, done) {
         let conn;
         let result;
         try {
-            console.log(req);
+            //console.log(req);
             let dept = req.body.dept;
             let scan = req.body.scan;
             let icr = req.body.icr;
