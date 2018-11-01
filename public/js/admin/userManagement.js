@@ -388,6 +388,9 @@ var fn_getParam = function () {
 
 // 사용자 등록 및 수정
 function fn_modifyUser(type) {
+    if ($('#empPw').val() == '') {
+        fn_alert('alert', '비밀번호를 입력해 주세요.');
+    }
     var param = {
         'empNo': $('#empNo').val(),
         'empPw': $('#empPw').val(),
