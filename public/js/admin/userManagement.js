@@ -83,11 +83,31 @@ function fn_searchUser() {
         beforeSend: function () {
             $("#progressMsgTitle").html("사용자를 조회 중 입니다.");
             $("#progressMsgDetail").html("..........");
-            startProgressBar(); // 프로그레스바 시작
-            addProgressBar(1, 1); // 프로그레스바 진행
+            //startProgressBar(); // 프로그레스바 시작
+            //addProgressBar(1, 1); // 프로그레스바 진행
         },
         success: function (data) {
-            addProgressBar(2, 99); // 프로그레스바 진행
+            //addProgressBar(2, 99); // 프로그레스바 진행
+            console.log(data);
+            for (var i in data.userData) {
+                var entry = data.userData[i];
+                appendHtml +=
+                    '<tr class="tr_userInfo">' +
+                    '<td scope="row">' + nvl(entry.EMP_NO) + '</td>' +
+                    '<td>' + nvl(entry.EMP_NM) + '</td>' +
+                    '<td>' + nvl(entry.DEPT_NM) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_SCAN) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_ICR) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_APPROVAL) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_FINAL_APPROVAL) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' +
+                    '<td>N</td>' +
+                    '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
+                    '<td><button class="btn btn_style_k02" style="display: none;"onclick="javascript:openDeleteUser(' + entry.EMP_NO + ')">삭제</button></td>;' +
+                    '</tr>';
+            }
+            $("#tbody_user").empty().append(appendHtml);
+            /*
             console.log("data.. : " + JSON.stringify(data));
             var emp = data.userData.emp;
             var ext = data.userData.ext;
@@ -164,6 +184,7 @@ function fn_searchUser() {
             $("#tbody_user").empty().append(appendHtml);
             //$("#pagination").html(pagination(curPage, data[0].totalCount));
             endProgressBar();
+            */
         },
         error: function (err) {
             endProgressBar();
@@ -396,6 +417,7 @@ function fn_modifyUser(type) {
     
 }
 
+// 사용자 등록 및 수정 폼 초기화
 function initUserForm() {
     $('#empNo').val('');
     $('#empPw').val('');
