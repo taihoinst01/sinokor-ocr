@@ -88,7 +88,7 @@ function fn_searchUser() {
         },
         success: function (data) {
             addProgressBar(2, 99); // 프로그레스바 진행
-            console.log("data.. : " + JSON.stringify(data));
+            //console.log("data.. : " + JSON.stringify(data));
             var emp = data.userData.emp;
             var ext = data.userData.ext;
 
@@ -103,6 +103,7 @@ function fn_searchUser() {
 
             // 코리안리 직원
             $.each(emp, function (index, entry) {
+
                 appendHtml +=
                     '<tr class="tr_userInfo">' +
                     '<td scope="row">' + nvl(entry.EMP_NO) + '</td>' +
@@ -115,7 +116,7 @@ function fn_searchUser() {
                     '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' + 
                     '<td>N</td>' +
                     '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
-                    '<td><button class="btn btn_style_k02" style="display: none;"onclick="javascript:openDeleteUser(' + entry.EMP_NO + ')">삭제</button></td>;' +
+                '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', \'' + entry.EMP_NM + '\', event)">삭제</button></td>;' +
                     '</tr>';
             });
 
@@ -123,7 +124,7 @@ function fn_searchUser() {
                 // 외부이용자
                 $.each(ext, function (index, entry) {
                     appendHtml +=
-                        '<tr class="tr_userInfo">' +
+                        '<tr class="tr_userInfo empNo_' + entry.EMP_NO + '">' +
                         '<td scope="row">' + nvl(entry.EMP_NO) + ' <input type="hidden" value="' + nvl(entry.EMP_PW) + '"></td>' +
                         '<td>' + nvl(entry.EMP_NM) + '</td>' +
                         '<td>' + nvl(entry.EMP_DEPT_NM) + '</td>' +
@@ -134,7 +135,7 @@ function fn_searchUser() {
                         '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' +
                         '<td>Y</td>' +
                         '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
-                        '<td><button class="btn btn_style_k02" style="display: none;"onclick="javascript:openDeleteUser(' + entry.EMP_NO + ')">삭제</button></td>;' +
+                    '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', \'' + entry.EMP_NM + '\', event)">삭제</button></td>;' +
                         '</tr>';
                 });
             }
@@ -161,7 +162,7 @@ function fn_searchUser() {
             //    });
                 //<td><button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn" onclick="javascript:openUpdatePw(${entry.seqNum}, ${entry.userId})">수정</button></td>
             //}
-            $("#tbody_user").empty().append(appendHtml);
+            $("#tbody_user").empty().append(appendHtml).append(appendHtml).append(appendHtml);
             //$("#pagination").html(pagination(curPage, data[0].totalCount));
             endProgressBar();
         },
@@ -181,6 +182,10 @@ $(document).on('click', '#tbody_user tr', function () {
     $('.chk_reset').prop('checked', false);
     $('.chk_reset').parent().removeClass('ez-checked');
 
+    // 삭제버튼 초기화
+    $('#tbody_user tr').find('td:last button').hide();
+
+    $(this).find('td:last button').show();
     if ($(this).hasClass('on')) {
         $(this).removeClass('on');
 
@@ -207,8 +212,8 @@ $(document).on('click', '#tbody_user tr', function () {
         }
         if ($(this).find('td:eq(8)').text() == 'Y') { // 외부사용자
             $('#mExternalUsers').click();
-
         }
+
         empNo = $(this).find('td:eq(0)').text();
         empPw = $(this).find('input[type=hidden]').val();
 
@@ -388,6 +393,7 @@ function fn_insertUser() {
         }
     });
 }
+
 // 사용자 수정
 function fn_updateUser() {
     var param = {};
@@ -475,23 +481,25 @@ function updatePw() {
 /**
  * 사용자 삭제
  */
-function openDeleteUser(seqNum) {
-    fn_alert('confirm', "삭제하시겠습니까?", function () {
-        deleteUser(seqNum);
+function openDeleteUser(empNo, empNm, e) {
+
+    e.stopPropagation();
+    fn_alert('confirm', empNm + " 님을 삭제하시겠습니까?", function () {
+        deleteUser(empNo);
     });
 }
-function deleteUser(seqNum) {
-    console.log(seqNum);
+function deleteUser(empNo, empNm) {
+    console.log(empNo);
 
     $.ajax({
         url: '/userManagement/deleteUser',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'seqNum': seqNum }),
+        data: JSON.stringify({ 'empNo': empNo }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             fn_alert('alert', "삭제되었습니다.");
-            location.href = "/userManagement";
+            $('.empNo_' + empNo).remove();
         },
         error: function (err) {
             console.log(err);

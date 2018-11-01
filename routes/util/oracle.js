@@ -3372,6 +3372,36 @@ exports.searchUser = function (req, done) {
     });
 };
 
+// 사용자 삭제
+exports.deleteUser = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            //console.log(req);
+            let empNo = req.body.empNo;
+
+            conn = await oracledb.getConnection(dbConfig);
+
+            var empQuery = "UPDATE TBL_CO_EMP_REG SET ACCOUNT_ENABLE = 'N' WHERE EMP_NO = '" + empNo + "'";
+
+            await conn.execute(empQuery, []);
+
+            return done(null, req);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();
