@@ -572,5 +572,16 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
+    //WILLIS_10
+    if (reqArr.docCategory.DOCNAME == 'WILLIS_10') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.entryLbl && item.entryLbl == 31) { // Unknown
+                //entryLbl이 31이면 PREMIUM entry인 4로 변환.
+                item.entryLbl = 4;
+            }
+        }
+    }
+
     return reqArr;
 }
