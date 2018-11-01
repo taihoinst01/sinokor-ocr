@@ -56,7 +56,6 @@
     <Compile Include="public\common\js\respond.min.js" />
     <Compile Include="public\common\js\select2.full.min.js" />
     <Compile Include="public\js\admin\adminDashboard.js" />
-    <Compile Include="public\js\admin\icrManagement.js" />
     <Compile Include="public\js\admin\userManagement.js" />
     <Compile Include="public\js\common.client.js" />
     <Compile Include="public\js\common.db.js" />
@@ -855,7 +854,6 @@
     <Compile Include="public\publish\js\jquery-ui.js" />
     <Compile Include="public\publish\js\jquerys.js" />
     <Compile Include="routes\admin\adminDashboard.js" />
-    <Compile Include="routes\admin\icrManagement.js" />
     <Compile Include="routes\admin\userManagement.js" />
     <Compile Include="routes\index.js" />
     <Compile Include="routes\proxy\proxy.js" />
@@ -3475,7 +3473,6 @@
     <Content Include="sql\updateTblBatchLearnData.sql" />
     <Content Include="sql\XLSTblAlterColumn.sql" />
     <Content Include="views\admin\adminDashboard.html" />
-    <Content Include="views\admin\icrManagement.html" />
     <Content Include="views\admin\userManagement.html" />
     <Content Include="views\common\commonLib_before.html" />
     <Content Include="views\common\commonLib.html" />
@@ -3505,7 +3502,6 @@
     <Content Include="views\user\ocrFormAnalysis.html" />
     <Content Include="views\user\ocrHistorySearch.html" />
     <Content Include="views\user\ocrImgJson.html" />
-    <Content Include="views\user\popUpLegacy.html" />
     <Content Include="views\user\uiLearning_before.html" />
     <Content Include="views\user\uiLearning.html" />
     <Content Include="Web.config" />

@@ -3335,78 +3335,69 @@ exports.searchUser = function (req, done) {
             let externalUsers = req.body.externalUsers;
 
             conn = await oracledb.getConnection(dbConfig);
-            
-            var empQuery = "SELECT EMP.EMP_NO, EMP.EMP_ENGL_NM, EMP.EMP_NM, EMP.BLT_DEPT_CD, EMP.JBLV_CD, EMP.PSTN_CD, " +
-                            " REG.AUTH_SCAN, REG.AUTH_ICR, REG.AUTH_APPROVAL, REG.AUTH_FINAL_APPROVAL, REG.AUTH_ADMIN, TO_CHAR(REG.FINAL_LOGIN_DATE, 'yyyy-mm - dd hh: mi: ss') as FINAL_LOGIN_DATE, REG.REG_DATE, REG.ACCOUNT_ENABLE " + 
-                            " FROM TBL_CO_EMP_BS EMP, TBL_CO_EMP_REG REG " +
-                            " WHERE EMP.EMP_NO = REG.EMP_NO "; 
-            var extQuery = "SELECT EXT.EMP_NO, EXT.EMP_PW, EXT.EMP_ENGL_NM, EXT.EMP_NM, EXT.BLT_DEPT_CD, EXT.JBLV_CD, EXT.PSTN_CD, " +
-                " REG.AUTH_SCAN, REG.AUTH_ICR, REG.AUTH_APPROVAL, REG.AUTH_FINAL_APPROVAL, REG.AUTH_ADMIN, TO_CHAR(REG.FINAL_LOGIN_DATE, 'yyyy-mm - dd hh: mi: ss') as FINAL_LOGIN_DATE, REG.REG_DATE, REG.ACCOUNT_ENABLE " +
-                " FROM TBL_CO_EMP_BS_EXT EXT, TBL_CO_EMP_REG REG " +
-                " WHERE EXT.EMP_NO = REG.EMP_NO ";
+            var userQuery = ""
+                + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_EMP.EMP_PW, CO_DEPT.DEPT_NM,"
+                    + "CO_REG.AUTH_SCAN, CO_REG.AUTH_ICR, CO_REG.AUTH_APPROVAL, CO_REG.AUTH_FINAL_APPROVAL, "
+                    + "CO_REG.AUTH_ADMIN, CO_EMP.EXT_USER, TO_CHAR(CO_REG.FINAL_LOGIN_DATE, 'YYYY/MM/DD HH24:MI:SS') AS FINAL_LOGIN_DATE "
+                + "FROM "
+                    + "(SELECT CO_EMP.EMP_NO, NULL AS EMP_PW, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, 'N' AS EXT_USER FROM TBL_CO_EMP_BS CO_EMP "
+                    + "UNION ALL "
+                    + "SELECT EMP_NO, EMP_PW, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, 'Y' AS EXT_USER FROM TBL_CO_EMP_BS_EXT) CO_EMP "
+                + "LEFT JOIN TBL_CO_EMP_REG CO_REG "
+                + "ON CO_EMP.EMP_NO = CO_REG.EMP_NO "
+                + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
+                + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
+                + "WHERE 1=1";
 
-            if (externalUsers == 'Y') {
-                //todo
+            if (!req.body.type) {
+                if (dept != '모든부서') {
+                    userQuery += " AND CO_DEPT.DEPT_NM = '" + dept + "'";
+                }
+                var auths = [scan, icr, approval, finalApproval, admin, externalUsers];
+                var authColumns = ['CO_REG.AUTH_SCAN', 'CO_REG.AUTH_ICR', 'CO_REG.AUTH_APPROVAL', 'CO_REG.AUTH_FINAL_APPROVAL',
+                'CO_REG.AUTH_ADMIN', 'CO_EMP.EXT_USER'];
+                for (var i in auths) {
+                    userQuery += " AND " + authColumns[i] + " = '" + auths[i] + "'";
+                }
+            }
+
+            result = await conn.execute(userQuery);
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
             } else {
-                //todo
+                return done(null, []);
             }
-            if (scan == 'Y') {
-                empQuery += " AND REG.AUTH_SCAN = 'Y'";
-
-                if (externalUsers == 'Y') {
-                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
+            
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
                 }
-            } 
-
-            if (icr == 'Y') {
-                empQuery += " AND REG.AUTH_SCAN = 'Y'";
-
-                if (externalUsers == 'Y') {
-                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
-                }
-            } 
-
-            if (approval == 'Y') {
-                empQuery += " AND REG.AUTH_SCAN = 'Y'";
-
-                if (externalUsers == 'Y') {
-                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
-                }
-            } 
-
-            if (finalApproval == 'Y') {
-                empQuery += " AND REG.AUTH_SCAN = 'Y'";
-
-                if (externalUsers == 'Y') {
-                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
-                }
-            } 
-
-            if (admin == 'Y') {
-                empQuery += " AND REG.AUTH_SCAN = 'Y'";
-
-                if (externalUsers == 'Y') {
-                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
-                }
-            } 
-
-
-            //코리안리 사원
-            var empResult = await conn.execute(empQuery, []);
-
-            //외부이용자
-            var extResult;
-            if (externalUsers == 'Y') {
-                extResult = await conn.execute(extQuery, []);
             }
-            //var deptResult = await conn.execute('SELECT * FROM TBL_CO_DEPT_BS', []);
+        }
+    });
+};
 
-            result = {
-                emp: empResult.rows,
-                ext: externalUsers == 'Y' ? extResult.rows : null
-                //dept: deptResult.rows
-            };
-            return done(null, result);
+// 사용자 삭제
+exports.deleteUser = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            //console.log(req);
+            let empNo = req.body.empNo;
+
+            conn = await oracledb.getConnection(dbConfig);
+
+            var empQuery = "UPDATE TBL_CO_EMP_REG SET ACCOUNT_ENABLE = 'N' WHERE EMP_NO = '" + empNo + "'";
+
+            await conn.execute(empQuery, []);
+
+            return done(null, req);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {

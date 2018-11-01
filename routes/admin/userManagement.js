@@ -58,10 +58,11 @@ router.post('/insertUser', function (req, res) {    //사용자 등록 (사용�
 router.post('/updateUser', function (req, res) {    //사용자 수정 (사용안함)
     if (req.isAuthenticated()) fnUpdate(req, res);
 });
-router.post("/deleteUser", function (req, res) {     // 사용자 삭제
-    var data = [req.body.seqNum];
-    if (req.isAuthenticated()) commonDB.reqQueryParam(deleteQuery, data, callbackDelete, req, res);
-});
+
+//router.post("/deleteUser", function (req, res) {     // 사용자 삭제
+//    var data = [req.body.seqNum];
+//    if (req.isAuthenticated()) commonDB.reqQueryParam(deleteQuery, data, callbackDelete, req, res);
+//});
 //router.post("/updatePw", function (req, res) {     // 사용자 비밀번호 수정
 //    var data = [req.body.userPwUpdate, req.body.seqNumUpdate];
 //    if (req.isAuthenticated()) commonDB.reqQueryParam(updateQuery, data, callbackUpdate, req, res);
@@ -252,5 +253,23 @@ router.post('/searchUser', function (req, res) {
 
 });
 
+// 사용자 삭제
+router.post('/deleteUser', function (req, res) {
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+
+            sync.await(oracle.deleteUser(req, sync.defer()));
+
+            returnObj = { code: 200 };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+
+});
 
 module.exports = router;
