@@ -12,11 +12,11 @@ $(function () {
     });
     // 사용자 등록
     $("#btn_insert").on("click", function () {
-        fn_insertUser();
+        fn_modifyUser('insert');
     });
     // 사용자 수정
     $("#btn_update").on("click", function () {
-        fn_updateUser();
+        fn_modifyUser('update');
     });
     // 초기화 (테스트)
     $("#btn_init").on("click", function () {
@@ -360,6 +360,42 @@ var fn_getParam = function () {
     };
     return param;
 };
+
+// 사용자 등록 및 수정
+function fn_modifyUser(type) {
+    var param = {
+        'empNo': $('#empNo').val(),
+        'empPw': $('#empPw').val(),
+        'empNm': '',
+        'authScan': $('#mApproval1').prop("checked") ? 'Y' : 'N',
+        'authIcr': $('#mApproval2').prop("checked") ? 'Y' : 'N',
+        'authMid': $('#mApproval3').prop("checked") ? 'Y' : 'N',
+        'authFinal': $('#mApproval4').prop("checked") ? 'Y' : 'N',
+        'authAdmin': $('#mAdmin').prop("checked") ? 'Y' : 'N',
+        'authExternal': $('#mExternalUsers').prop("checked") ? 'Y' : 'N',
+        'beforeEmpNo': $('#tbody_user > tr.on > td:eq(0)').text(),
+        'type': type
+    };
+    
+    $.ajax({
+        url: '/userManagement/modifyUser',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            fn_alert('alert', data.message);
+            if (data.code == 200) {
+                //fn_initUser();
+                //fn_searchUser();
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+    
+}
 
 // 사용자 등록
 function fn_insertUser() {
