@@ -2296,6 +2296,9 @@
     <Content Include="public\common\font\NanumGothicBold.ttf" />
     <Content Include="public\common\font\NanumGothicBoldd41d.eot" />
     <Content Include="public\common\font\NanumGothicd41d.eot" />
+    <Content Include="public\css\admin\userManagement.css">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="public\css\common.css" />
     <Content Include="public\css\dropdown.css" />
     <Content Include="public\css\egovframework\sample.css" />
@@ -3569,6 +3572,7 @@
     <Folder Include="node_modules\xlsx\bin\" />
     <Folder Include="node_modules\xlsx\dist\" />
     <Folder Include="node_modules\xlsx\types\" />
+    <Folder Include="public\css\admin\" />
     <Folder Include="sample\" />
     <Folder Include="pdf2img\" />
     <Folder Include="pdf2img\20180614152820406\" />

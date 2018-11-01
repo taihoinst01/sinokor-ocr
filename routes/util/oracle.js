@@ -3240,6 +3240,138 @@ exports.finalApproval = function (req, done) {
     });
 };
 
+// 부서 조회
+exports.searchDept = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            let deptQuery = "SELECT * FROM TBL_CO_DEPT_BS";
+            let deptResult = await conn.execute(deptQuery, []);
+
+            result = {
+                dept: deptResult.rows
+            };
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+// 사용자 찾기
+exports.searchUser = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            console.log(req);
+            let dept = req.body.dept;
+            let scan = req.body.scan;
+            let icr = req.body.icr;
+            let approval = req.body.approval;
+            let finalApproval = req.body.finalApproval;
+            let admin = req.body.admin;
+            let externalUsers = req.body.externalUsers;
+
+            conn = await oracledb.getConnection(dbConfig);
+            
+            var empQuery = "SELECT EMP.EMP_NO, EMP.EMP_ENGL_NM, EMP.EMP_NM, EMP.BLT_DEPT_CD, EMP.JBLV_CD, EMP.PSTN_CD, " +
+                            " REG.AUTH_SCAN, REG.AUTH_ICR, REG.AUTH_APPROVAL, REG.AUTH_FINAL_APPROVAL, REG.AUTH_ADMIN, TO_CHAR(REG.FINAL_LOGIN_DATE, 'yyyy-mm - dd hh: mi: ss') as FINAL_LOGIN_DATE, REG.REG_DATE, REG.ACCOUNT_ENABLE " + 
+                            " FROM TBL_CO_EMP_BS EMP, TBL_CO_EMP_REG REG " +
+                            " WHERE EMP.EMP_NO = REG.EMP_NO "; 
+            var extQuery = "SELECT EXT.EMP_NO, EXT.EMP_PW, EXT.EMP_ENGL_NM, EXT.EMP_NM, EXT.BLT_DEPT_CD, EXT.JBLV_CD, EXT.PSTN_CD, " +
+                " REG.AUTH_SCAN, REG.AUTH_ICR, REG.AUTH_APPROVAL, REG.AUTH_FINAL_APPROVAL, REG.AUTH_ADMIN, TO_CHAR(REG.FINAL_LOGIN_DATE, 'yyyy-mm - dd hh: mi: ss') as FINAL_LOGIN_DATE, REG.REG_DATE, REG.ACCOUNT_ENABLE " +
+                " FROM TBL_CO_EMP_BS_EXT EXT, TBL_CO_EMP_REG REG " +
+                " WHERE EXT.EMP_NO = REG.EMP_NO ";
+
+            if (externalUsers == 'Y') {
+                //todo
+            } else {
+                //todo
+            }
+            if (scan == 'Y') {
+                empQuery += " AND REG.AUTH_SCAN = 'Y'";
+
+                if (externalUsers == 'Y') {
+                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
+                }
+            } 
+
+            if (icr == 'Y') {
+                empQuery += " AND REG.AUTH_SCAN = 'Y'";
+
+                if (externalUsers == 'Y') {
+                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
+                }
+            } 
+
+            if (approval == 'Y') {
+                empQuery += " AND REG.AUTH_SCAN = 'Y'";
+
+                if (externalUsers == 'Y') {
+                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
+                }
+            } 
+
+            if (finalApproval == 'Y') {
+                empQuery += " AND REG.AUTH_SCAN = 'Y'";
+
+                if (externalUsers == 'Y') {
+                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
+                }
+            } 
+
+            if (admin == 'Y') {
+                empQuery += " AND REG.AUTH_SCAN = 'Y'";
+
+                if (externalUsers == 'Y') {
+                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
+                }
+            } 
+
+
+            //코리안리 사원
+            var empResult = await conn.execute(empQuery, []);
+
+            //외부이용자
+            var extResult;
+            if (externalUsers == 'Y') {
+                extResult = await conn.execute(extQuery, []);
+            }
+            //var deptResult = await conn.execute('SELECT * FROM TBL_CO_DEPT_BS', []);
+
+            result = {
+                emp: empResult.rows,
+                ext: externalUsers == 'Y' ? extResult.rows : null
+                //dept: deptResult.rows
+            };
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();

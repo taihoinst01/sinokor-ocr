@@ -24,6 +24,7 @@
     "ejs": "^2.6.1",
     "exceljs": "^1.5.1",
     "express": "^4.14.0",
+    "express-paginate": "^1.0.0",
     "express-session": "^1.15.6",
     "fiber": "^1.0.4",
     "fibers": "^3.0.0",

@@ -1,7 +1,9 @@
 ﻿'use strict';
 var curPage = 1;
-
+var deptList = []; // 부서
 $(function () {
+
+    searchDept(); // 부서조회
     insUserBtnEvent(); // 사용자 추가 이벤트
 
     // 사용자 조회
@@ -62,9 +64,15 @@ function fn_searchUser() {
     //curPage = isNull(curPage) ? 1 : curPage;
     var appendHtml = "";
     var param = {
-        //'userId': $("#searchUserId").val(),
-        //'startNum': ((curPage - 1) * MAX_ENTITY_IN_PAGE),
-        //'endNum': MAX_ENTITY_IN_PAGE
+        dept: $('#dept').val(),
+        scan: $('#scan').is(":checked") ? "Y" : "N",
+        icr: $('#icr').is(":checked") ? "Y" : "N",
+        approval: $('#approval').is(":checked") ? "Y" : "N",
+        finalApproval: $('#finalApproval').is(":checked") ? "Y" : "N",
+        admin: $('#admin').is(":checked") ? "Y" : "N",
+        externalUsers: $('#externalUsers').is(":checked") ? "Y" : "N"
+        //startNum : ((curPage - 1) * MAX_ENTITY_IN_PAGE),
+        //endNum: MAX_ENTITY_IN_PAGE
     };
     $.ajax({
         url: '/userManagement/searchUser',
@@ -81,26 +89,78 @@ function fn_searchUser() {
         success: function (data) {
             addProgressBar(2, 99); // 프로그레스바 진행
             console.log("data.. : " + JSON.stringify(data));
-            if (data.length > 0) {
-                $.each(data, function (index, entry) {
-                    appendHtml += 
-                    '<tr>' + 
-                        '<td scope="row">' + nvl(entry.SEQNUM) + '</td>' + 
-                    '<td><a href="#none" onclick="javascript:fn_chooseUser(' + entry.SEQNUM + ');" class="tip" title="사번:' + nvl(entry.USERID) + '">' + nvl(entry.USERID) + '</a></td>' + 
-                        '<td>' + nvl(entry.EMAIL) + '</td>' + 
-                        '<td>' + nvl(entry.NOTE) + '</td>' + 
-                        '<td>' + nvl(entry.SCANAPPROVAL) + '</td>' + 
-                        '<td>' + nvl(entry.ICRAPPROVAL) + '</td>' + 
-                        '<td>' + nvl(entry.MIDDLEAPPROVAL) + '</td>' + 
-                        '<td>' + nvl(entry.LASTAPPROVAL) + '</td>' + 
-                        '<td>' + nvl(entry.ADMIN) + '</td>' + 
-                        '<td>' + nvl(entry.LASTLOGINDATE) + '</td>' + 
-                        '<td>' + nvl(entry.OCRUSECOUNT) + '</td>' + 
-                        '<td><button class="btn btn_style_k03" onclick="javascript:openDeleteUser(' + entry.SEQNUM + ')">삭제</button></td>;' + 
-                    '</tr>';
-                });
-                //<td><button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn" onclick="javascript:openUpdatePw(${entry.seqNum}, ${entry.userId})">수정</button></td>
+            var emp = data.userData.emp;
+            var ext = data.userData.ext;
+
+            for (var i in emp) {
+                for (var j in deptList) {
+                    if (deptList[j].DEPT_CD == emp[i].BLT_DEPT_CD) {
+                        emp[i].EMP_DEPT_NM = deptList[j].DEPT_NM;
+                    }
+                }
+                
             }
+
+            // 코리안리 직원
+            $.each(emp, function (index, entry) {
+                appendHtml +=
+                    '<tr class="tr_userInfo">' +
+                    '<td scope="row">' + nvl(entry.EMP_NO) + '</td>' +
+                    '<td>' + nvl(entry.EMP_NM) + '</td>' +
+                    '<td>' + nvl(entry.EMP_DEPT_NM) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_SCAN) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_ICR) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_APPROVAL) + '</td>' +
+                    '<td>' + nvl(entry.AUTH_FINAL_APPROVAL) + '</td>' + 
+                    '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' + 
+                    '<td>N</td>' +
+                    '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
+                    '<td><button class="btn btn_style_k02" style="display: none;"onclick="javascript:openDeleteUser(' + entry.EMP_NO + ')">삭제</button></td>;' +
+                    '</tr>';
+            });
+
+            if (ext) {
+                // 외부이용자
+                $.each(ext, function (index, entry) {
+                    appendHtml +=
+                        '<tr class="tr_userInfo">' +
+                        '<td scope="row">' + nvl(entry.EMP_NO) + ' <input type="hidden" value="' + nvl(entry.EMP_PW) + '"></td>' +
+                        '<td>' + nvl(entry.EMP_NM) + '</td>' +
+                        '<td>' + nvl(entry.EMP_DEPT_NM) + '</td>' +
+                        '<td>' + nvl(entry.AUTH_SCAN) + '</td>' +
+                        '<td>' + nvl(entry.AUTH_ICR) + '</td>' +
+                        '<td>' + nvl(entry.AUTH_APPROVAL) + '</td>' +
+                        '<td>' + nvl(entry.AUTH_FINAL_APPROVAL) + '</td>' +
+                        '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' +
+                        '<td>Y</td>' +
+                        '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
+                        '<td><button class="btn btn_style_k02" style="display: none;"onclick="javascript:openDeleteUser(' + entry.EMP_NO + ')">삭제</button></td>;' +
+                        '</tr>';
+                });
+            }
+
+
+            //if (data.length > 0) {
+            //    $.each(data, function (index, entry) {
+            //        appendHtml += 
+            //        '<tr>' + 
+            //            '<td scope="row">' + nvl(entry.SEQNUM) + '</td>' + 
+            //        '<td><a href="#none" onclick="javascript:fn_chooseUser(' + entry.SEQNUM + ');" class="tip" title="사번:' + nvl(entry.USERID) + '">' + nvl(entry.USERID) + '</a></td>' + 
+            //            '<td>' + nvl(entry.EMAIL) + '</td>' + 
+            //            '<td>' + nvl(entry.NOTE) + '</td>' + 
+            //            '<td>' + nvl(entry.SCANAPPROVAL) + '</td>' + 
+            //            '<td>' + nvl(entry.ICRAPPROVAL) + '</td>' + 
+            //            '<td>' + nvl(entry.MIDDLEAPPROVAL) + '</td>' + 
+            //            '<td>' + nvl(entry.LASTAPPROVAL) + '</td>' + 
+            //            '<td>' + nvl(entry.ADMIN) + '</td>' + 
+            //            '<td>todo</td>' + 
+            //            '<td>' + nvl(entry.LASTLOGINDATE) + '</td>' + 
+            //            '<td>' + nvl(entry.OCRUSECOUNT) + '</td>' + 
+            //            '<td><button class="btn btn_style_k03" onclick="javascript:openDeleteUser(' + entry.SEQNUM + ')">삭제</button></td>;' + 
+            //        '</tr>';
+            //    });
+                //<td><button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn" onclick="javascript:openUpdatePw(${entry.seqNum}, ${entry.userId})">수정</button></td>
+            //}
             $("#tbody_user").empty().append(appendHtml);
             //$("#pagination").html(pagination(curPage, data[0].totalCount));
             endProgressBar();
@@ -111,6 +171,60 @@ function fn_searchUser() {
         }
     });
 }
+
+// 사용자 클릭
+$(document).on('click', '#tbody_user tr', function () {
+    var empNo = "";
+    var empPw = "";
+
+    // 체크박스 초기화
+    $('.chk_reset').prop('checked', false);
+    $('.chk_reset').parent().removeClass('ez-checked');
+
+    if ($(this).hasClass('on')) {
+        $(this).removeClass('on');
+
+        $(this).find('td:last button').hide();
+        $('#btn_update').hide();
+        $('#btn_insert').show();
+    } else {
+        $('#tbody_user tr').removeClass('on');
+        $(this).addClass('on');
+        if ($(this).find('td:eq(3)').text() == 'Y') { // 스캔
+            $('#mApproval1').click();
+        }
+        if ($(this).find('td:eq(4)').text() == 'Y') { // icr
+            $('#mApproval2').click();
+        }
+        if ($(this).find('td:eq(5)').text() == 'Y') { // 중간
+            $('#mApproval3').click();
+        }
+        if ($(this).find('td:eq(6)').text() == 'Y') { // 최종
+            $('#mApproval4').click();
+        }
+        if ($(this).find('td:eq(7)').text() == 'Y') { // 관리자
+            $('#mAdmin').click();
+        }
+        if ($(this).find('td:eq(8)').text() == 'Y') { // 외부사용자
+            $('#mExternalUsers').click();
+
+        }
+        empNo = $(this).find('td:eq(0)').text();
+        empPw = $(this).find('input[type=hidden]').val();
+
+        $(this).find('td:last button').show();
+        $('#btn_update').show();
+        $('#btn_insert').hide();
+    }
+
+
+
+    // 사번, PASSWORD 입력
+    $('#empNo').val(empNo);
+    $('#empPw').val(empPw);
+
+})
+
 
 // 사용자 개별 조회
 function fn_chooseUser(seqNum) {
@@ -378,6 +492,29 @@ function deleteUser(seqNum) {
         success: function (data) {
             fn_alert('alert', "삭제되었습니다.");
             location.href = "/userManagement";
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// 부서조회
+function searchDept() {
+    $.ajax({
+        url: '/userManagement/searchDept',
+        type: 'post',
+        datatype: "json",
+        async: false,
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            var dept = data.dept.dept;
+            for (var i in dept) {
+                deptList.push(dept[i]);
+                var appendText = '<li><a>' + dept[i].DEPT_NM + '</a></li>';
+                $('#deptType').append(appendText);
+            }
+
         },
         error: function (err) {
             console.log(err);

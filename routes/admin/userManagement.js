@@ -11,6 +11,9 @@ var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var router = express.Router();
+var sync = require('../util/sync.js');
+var oracle = require('../util/oracle.js');
+
 // DB
 var dbConfig = require(appRoot + '/config/dbConfig');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
@@ -34,9 +37,12 @@ router.get('/', function (req, res) {               // 사용자 관리 (GET)
     if (req.isAuthenticated()) res.render('admin/userManagement', { currentUser: req.user });
     else res.redirect("/logout");
 });
+/*
 router.post('/searchUser', function (req, res) {    // 사용자 목록 조회
     if (req.isAuthenticated()) fnSearch(req, res);
 });
+*/
+
 router.post('/chooseUser', function (req, res) {    // 사용자 조회
     if (req.isAuthenticated()) fnChoose(req, res);
 });
@@ -187,5 +193,46 @@ function callbackUpdate(rows, req, res) {
 function callbackDelete(rows, req, res) {
     res.redirect('/userManagement');
 }
+
+
+// 부서조회
+router.post('/searchDept', function (req, res) {
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+
+            var result = sync.await(oracle.searchDept([], sync.defer()));
+
+
+            returnObj = { code: 200, dept: result };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+
+});
+
+// 사용자 찾기
+router.post('/searchUser', function (req, res) {
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            
+            var result = sync.await(oracle.searchUser(req, sync.defer()));
+                      
+            returnObj = { code: 200, userData: result };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+
+});
+
 
 module.exports = router;
