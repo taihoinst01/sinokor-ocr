@@ -49,7 +49,7 @@ exports.modifyUser = function (req, done) {
             return done(null, 'success');
         } catch (err) {
             reject(err);
-            //return done(null, err);            
+            //return done(null, err);
         } finally {
             if (conn) {
                 try {

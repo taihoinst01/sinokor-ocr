@@ -386,8 +386,7 @@ function fn_modifyUser(type) {
         success: function (data) {
             fn_alert('alert', data.message);
             if (data.code == 200) {
-                //fn_initUser();
-                //fn_searchUser();
+                initUserForm();
             }
         },
         error: function (err) {
@@ -395,6 +394,20 @@ function fn_modifyUser(type) {
         }
     });
     
+}
+
+function initUserForm() {
+    $('#empNo').val('');
+    $('#empPw').val('');
+    $('#mApproval1').prop("checked", false);
+    $('#mApproval2').prop("checked", false);
+    $('#mApproval3').prop("checked", false);
+    $('#mApproval4').prop("checked", false);
+    $('#mAdmin').prop("checked", false);
+    $('#mExternalUsers').prop("checked", false);
+    $('.user-auth .ez-checkbox').removeClass('ez-checked');
+    $('#btn_insert').show();
+    $('#btn_update').hide();
 }
 
 // 사용자 등록
