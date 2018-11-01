@@ -3347,8 +3347,19 @@ exports.searchUser = function (req, done) {
                 + "ON CO_EMP.EMP_NO = CO_REG.EMP_NO "
                 + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
                 + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
-                + "WHERE 1=1 ";
+                + "WHERE 1=1";
 
+            if (!req.body.type) {
+                if (dept != '모든부서') {
+                    userQuery += " AND CO_DEPT.DEPT_NM = '" + dept + "'";
+                }
+                var auths = [scan, icr, approval, finalApproval, admin, externalUsers];
+                var authColumns = ['CO_REG.AUTH_SCAN', 'CO_REG.AUTH_ICR', 'CO_REG.AUTH_APPROVAL', 'CO_REG.AUTH_FINAL_APPROVAL',
+                'CO_REG.AUTH_ADMIN', 'CO_EMP.EXT_USER'];
+                for (var i in auths) {
+                    userQuery += " AND " + authColumns[i] + " = '" + auths[i] + "'";
+                }
+            }
 
             result = await conn.execute(userQuery);
             if (result.rows.length > 0) {
@@ -3356,79 +3367,7 @@ exports.searchUser = function (req, done) {
             } else {
                 return done(null, []);
             }
-            /*
-            var empQuery = "SELECT EMP.EMP_NO, EMP.EMP_ENGL_NM, EMP.EMP_NM, EMP.BLT_DEPT_CD, EMP.JBLV_CD, EMP.PSTN_CD, " +
-                            " REG.AUTH_SCAN, REG.AUTH_ICR, REG.AUTH_APPROVAL, REG.AUTH_FINAL_APPROVAL, REG.AUTH_ADMIN, TO_CHAR(REG.FINAL_LOGIN_DATE, 'yyyy-mm - dd hh: mi: ss') as FINAL_LOGIN_DATE, REG.REG_DATE, REG.ACCOUNT_ENABLE " + 
-                            " FROM TBL_CO_EMP_BS EMP, TBL_CO_EMP_REG REG " +
-                            " WHERE EMP.EMP_NO = REG.EMP_NO "; 
-            var extQuery = "SELECT EXT.EMP_NO, EXT.EMP_PW, EXT.EMP_ENGL_NM, EXT.EMP_NM, EXT.BLT_DEPT_CD, EXT.JBLV_CD, EXT.PSTN_CD, " +
-                " REG.AUTH_SCAN, REG.AUTH_ICR, REG.AUTH_APPROVAL, REG.AUTH_FINAL_APPROVAL, REG.AUTH_ADMIN, TO_CHAR(REG.FINAL_LOGIN_DATE, 'yyyy-mm - dd hh: mi: ss') as FINAL_LOGIN_DATE, REG.REG_DATE, REG.ACCOUNT_ENABLE " +
-                " FROM TBL_CO_EMP_BS_EXT EXT, TBL_CO_EMP_REG REG " +
-                " WHERE EXT.EMP_NO = REG.EMP_NO ";
-
-            if (externalUsers == 'Y') {
-                //todo
-            } else {
-                //todo
-            }
-            if (scan == 'Y') {
-                empQuery += " AND REG.AUTH_SCAN = 'Y'";
-
-                if (externalUsers == 'Y') {
-                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
-                }
-            } 
-
-            if (icr == 'Y') {
-                empQuery += " AND REG.AUTH_SCAN = 'Y'";
-
-                if (externalUsers == 'Y') {
-                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
-                }
-            } 
-
-            if (approval == 'Y') {
-                empQuery += " AND REG.AUTH_SCAN = 'Y'";
-
-                if (externalUsers == 'Y') {
-                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
-                }
-            } 
-
-            if (finalApproval == 'Y') {
-                empQuery += " AND REG.AUTH_SCAN = 'Y'";
-
-                if (externalUsers == 'Y') {
-                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
-                }
-            } 
-
-            if (admin == 'Y') {
-                empQuery += " AND REG.AUTH_SCAN = 'Y'";
-
-                if (externalUsers == 'Y') {
-                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
-                }
-            } 
-
-
-            //코리안리 사원
-            var empResult = await conn.execute(empQuery, []);
-
-            //외부이용자
-            var extResult;
-            if (externalUsers == 'Y') {
-                extResult = await conn.execute(extQuery, []);
-            }
-            //var deptResult = await conn.execute('SELECT * FROM TBL_CO_DEPT_BS', []);
-
-            result = {
-                emp: empResult.rows,
-                ext: externalUsers == 'Y' ? extResult.rows : null
-                //dept: deptResult.rows
-            };          
-            return done(null, result);
-            */
+            
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {

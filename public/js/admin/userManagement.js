@@ -1,6 +1,8 @@
 ﻿'use strict';
 var curPage = 1;
 var deptList = []; // 부서
+var progressId;
+
 $(function () {
 
     searchDept(); // 부서조회
@@ -23,7 +25,7 @@ $(function () {
         fn_initUser();
     });
 
-    fn_searchUser();
+    fn_searchUser('all');
     //fn_searchHighApproval(0, "");
 
 
@@ -60,7 +62,7 @@ function fn_initUser() {
 /**
  * 사용자 조회
  */
-function fn_searchUser() {
+function fn_searchUser(type) {
     //curPage = isNull(curPage) ? 1 : curPage;
     var appendHtml = "";
     var param = {
@@ -74,6 +76,7 @@ function fn_searchUser() {
         //startNum : ((curPage - 1) * MAX_ENTITY_IN_PAGE),
         //endNum: MAX_ENTITY_IN_PAGE
     };
+    if (type) param.type = type;
     $.ajax({
         url: '/userManagement/searchUser',
         type: 'post',
@@ -83,111 +86,36 @@ function fn_searchUser() {
         beforeSend: function () {
             $("#progressMsgTitle").html("사용자를 조회 중 입니다.");
             $("#progressMsgDetail").html("..........");
-            //startProgressBar(); // 프로그레스바 시작
-            //addProgressBar(1, 1); // 프로그레스바 진행
+            progressId = showProgressBar();
         },
         success: function (data) {
-            //addProgressBar(2, 99); // 프로그레스바 진행
-            console.log(data);
-            for (var i in data.userData) {
-                var entry = data.userData[i];
-                appendHtml +=
-                    '<tr class="tr_userInfo empNo_' + entry.EMP_NO + '">' +
-                    '<td scope="row">' + nvl(entry.EMP_NO) + '<input type="hidden" value="' + entry.EMP_PW + '"></td>' +
-                    '<td>' + nvl(entry.EMP_NM) + '</td>' +
-                    '<td>' + nvl(entry.DEPT_NM) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_SCAN) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_ICR) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_APPROVAL) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_FINAL_APPROVAL) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' +
-                    '<td>' + nvl(entry.EXT_USER) + '</td>' +
-                    '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
-                    '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', event)">삭제</button></td>;' +
-                    '</tr>';
-            }
-            $("#tbody_user").empty().append(appendHtml);
-            /*
-            console.log("data.. : " + JSON.stringify(data));
-            var emp = data.userData.emp;
-            var ext = data.userData.ext;
-
-            for (var i in emp) {
-                for (var j in deptList) {
-                    if (deptList[j].DEPT_CD == emp[i].BLT_DEPT_CD) {
-                        emp[i].EMP_DEPT_NM = deptList[j].DEPT_NM;
-                    }
-                }
-                
-            }
-
-            // 코리안리 직원
-            $.each(emp, function (index, entry) {
-                appendHtml +=
-                    '<tr class="tr_userInfo">' +
-                    '<td scope="row">' + nvl(entry.EMP_NO) + '</td>' +
-                    '<td>' + nvl(entry.EMP_NM) + '</td>' +
-                    '<td>' + nvl(entry.EMP_DEPT_NM) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_SCAN) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_ICR) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_APPROVAL) + '</td>' +
-                    '<td>' + nvl(entry.AUTH_FINAL_APPROVAL) + '</td>' + 
-                    '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' + 
-                    '<td>N</td>' +
-                    '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
-                    '<td><button class="btn btn_style_k02" style="display: none;"onclick="javascript:openDeleteUser(' + entry.EMP_NO + ')">삭제</button></td>;' +
-                    '</tr>';
-            });
-
-            if (ext) {
-                // 외부이용자
-                $.each(ext, function (index, entry) {
+            if (data.userData.length == 0) {
+                appendHtml = '<tr class="tr_userInfo"><td colspan="11">조회결과가 없습니다.</td></tr>';
+            } else {
+                for (var i in data.userData) {
+                    var entry = data.userData[i];
                     appendHtml +=
-                        '<tr class="tr_userInfo">' +
-                        '<td scope="row">' + nvl(entry.EMP_NO) + ' <input type="hidden" value="' + nvl(entry.EMP_PW) + '"></td>' +
+                        '<tr class="tr_userInfo empNo_' + entry.EMP_NO + '">' +
+                        '<td scope="row">' + nvl(entry.EMP_NO) + '<input type="hidden" value="' + entry.EMP_PW + '"></td>' +
                         '<td>' + nvl(entry.EMP_NM) + '</td>' +
-                        '<td>' + nvl(entry.EMP_DEPT_NM) + '</td>' +
+                        '<td>' + nvl(entry.DEPT_NM) + '</td>' +
                         '<td>' + nvl(entry.AUTH_SCAN) + '</td>' +
                         '<td>' + nvl(entry.AUTH_ICR) + '</td>' +
                         '<td>' + nvl(entry.AUTH_APPROVAL) + '</td>' +
                         '<td>' + nvl(entry.AUTH_FINAL_APPROVAL) + '</td>' +
                         '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' +
-                        '<td>Y</td>' +
+                        '<td>' + nvl(entry.EXT_USER) + '</td>' +
                         '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
-                        '<td><button class="btn btn_style_k02" style="display: none;"onclick="javascript:openDeleteUser(' + entry.EMP_NO + ')">삭제</button></td>;' +
+                        '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', event)">삭제</button></td>;' +
                         '</tr>';
-                });
+                }
             }
-
-
-            //if (data.length > 0) {
-            //    $.each(data, function (index, entry) {
-            //        appendHtml += 
-            //        '<tr>' + 
-            //            '<td scope="row">' + nvl(entry.SEQNUM) + '</td>' + 
-            //        '<td><a href="#none" onclick="javascript:fn_chooseUser(' + entry.SEQNUM + ');" class="tip" title="사번:' + nvl(entry.USERID) + '">' + nvl(entry.USERID) + '</a></td>' + 
-            //            '<td>' + nvl(entry.EMAIL) + '</td>' + 
-            //            '<td>' + nvl(entry.NOTE) + '</td>' + 
-            //            '<td>' + nvl(entry.SCANAPPROVAL) + '</td>' + 
-            //            '<td>' + nvl(entry.ICRAPPROVAL) + '</td>' + 
-            //            '<td>' + nvl(entry.MIDDLEAPPROVAL) + '</td>' + 
-            //            '<td>' + nvl(entry.LASTAPPROVAL) + '</td>' + 
-            //            '<td>' + nvl(entry.ADMIN) + '</td>' + 
-            //            '<td>todo</td>' + 
-            //            '<td>' + nvl(entry.LASTLOGINDATE) + '</td>' + 
-            //            '<td>' + nvl(entry.OCRUSECOUNT) + '</td>' + 
-            //            '<td><button class="btn btn_style_k03" onclick="javascript:openDeleteUser(' + entry.SEQNUM + ')">삭제</button></td>;' + 
-            //        '</tr>';
-            //    });
-                //<td><button class="btn btn-default" data-toggle="modal" data-target="#userUpdate" id="updatePwBtn" onclick="javascript:openUpdatePw(${entry.seqNum}, ${entry.userId})">수정</button></td>
-            //}
             $("#tbody_user").empty().append(appendHtml);
-            //$("#pagination").html(pagination(curPage, data[0].totalCount));
-            endProgressBar();
-            */
+            endProgressBar(progressId);
+            
         },
         error: function (err) {
-            endProgressBar();
+            endProgressBar(progressId);
             console.log(err);
         }
     });
