@@ -10,13 +10,14 @@
     <title alt="사용자관리">KoreanRe ICR Service - 사용자 관리</title>
 
     <%include  ../common/commonLib.html%>
-
+    <!--사용자 관리 전용 css-->
+    <link rel="stylesheet" href="css/admin/userManagement.css">
     <!-- 공통 js -->
     <script type="text/javascript" src="js/common.client.js"></script>
     <!-- // 공통 js -->
-    <!-- 문서 조회 학습 전용 js -->
+    <!-- 사용자 관리 학습 전용 js -->
     <script type="text/javascript" src="js/admin/userManagement.js"></script>
-    <!-- // 문서 조회 전용 js -->
+    <!-- // 사용자 관리 전용 js -->
 
     <style>
     </style>
@@ -61,10 +62,23 @@
                             <dd>
                                 <div class="select_style wh300">
                                     <span class="ctrl"><span class="arrow"></span></span>
-                                    <button type="button" class="btnSelector">부서구분</button>
-                                    <ul class="aList">
-                                        <li><a>글로벌사업팀</a></li>
+                                    <input type="hidden" id="dept"value="모든부서"/>
+                                    <button type="button" class="btnSelector">모든부서</button>
+                                    <ul class="aList" id="deptType">
+                                        <li><a>모든부서</a></li>
                                     </ul>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dd>
+                                <div class="checkbox-options">
+                                    <input type="checkbox" value="1" id="scan" name="approval" /><label for="approval1"><span>스캔결재자</span></label>
+                                    <input type="checkbox" value="2" id="icr" name="approval" /><label for="approval2"><span>ICR결재자</span></label>
+                                    <input type="checkbox" value="3" id="approval" name="approval" /><label for="approval3"><span>중간결재자</span></label>
+                                    <input type="checkbox" value="4" id="finalApproval" name="approval" /><label for="approval4"><span>최종결재자</span></label>
+                                    <input type="checkbox" value="5" id="admin" name="admin" /><label for="admin"><span>관리자</span></label>
+                                    <input type="checkbox" value="6" id="externalUsers" name="externalUsers" /><label for="externalUsers"><span>외부사용자</span></label>
                                 </div>
                             </dd>
                         </dl>
@@ -83,32 +97,30 @@
                         <table>
                             <caption>사용자관리 타이틀</caption>
                             <colgroup>
-                                <col style="width:5%" />
-                                <col style="width:11%" />
-                                <col style="width:11%" />
-                                <col style="width:11%" />
+                                <col style="width:7%" />
+                                <col style="width:13%" />
+                                <col style="width:13%" />
                                 <col style="width:7%" />
                                 <col style="width:7%" />
                                 <col style="width:7%" />
                                 <col style="width:7%" />
-                                <col style="width:12%" />
-                                <col style="width:10%" />
-                                <col style="width:6%" />
-                                <col style="width:6%" />
+                                <col style="width:7%" />
+                                <col style="width:7%" />
+                                <col style="width:15%" />
+                                <col style="width:7%" />
                             </colgroup>
                             <thead>
                                 <tr>
-                                    <th scope="row">번호</th>
                                     <th scope="row">사번</th>
-                                    <th scope="row">이메일</th>
-                                    <th scope="row">비고</th>
+                                    <th scope="row">이름</th>
+                                    <th scope="row">부서</th>
                                     <th scope="row">스캔결재자</th>
                                     <th scope="row">ICR결재자</th>
                                     <th scope="row">중간결재자</th>
                                     <th scope="row">최종결재자</th>
                                     <th scope="row">관리자</th>
+                                    <th scope="row">외부사용자</th>
                                     <th scope="row">최종접속일</th>
-                                    <th scope="row">OCR이용횟수</th>
                                     <th scope="row">삭제</th>
                                 </tr>
                             </thead>
@@ -117,21 +129,23 @@
                             <table>
                                 <caption>사용자관리 정보</caption>
                                 <colgroup>
-                                    <col style="width:5%" />
-                                    <col style="width:11%" />
-                                    <col style="width:11%" />
-                                    <col style="width:11%" />
+                                    <col style="width:7%" />
+                                    <col style="width:13%" />
+                                    <col style="width:13%" />
                                     <col style="width:7%" />
                                     <col style="width:7%" />
                                     <col style="width:7%" />
                                     <col style="width:7%" />
-                                    <col style="width:12%" />
-                                    <col style="width:10%" />
-                                    <col style="width:6%" />
-                                    <col style="width:6%" />
+                                    <col style="width:7%" />
+                                    <col style="width:7%" />
+                                    <col style="width:15%" />
+                                    <col style="width:7%" />
                                 </colgroup>
                                 <tbody id="tbody_user"></tbody>
                             </table>
+                        </div>
+                        <div id="pagination">
+
                         </div>
                     </div>
                 </div>
@@ -145,36 +159,25 @@
                             <dt><label for="intxt_01">사번</label></dt>
                             <dd>
                                 <input type="hidden" name="seqNum" id="seqNum" />
-                                <input type="text" name="userId" id="userId" class="inputst_box01" maxlength="30" value="" />
+                                <input type="text" name="empNo" id="empNo" class="inputst_box01" maxlength="30" value="" />
                             </dd>
                         </dl>
                         <dl>
                             <dt><label for="intxt_03">Password</label></dt>
                             <dd>
-                                <input type="password" name="userPw" id="userPw" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="intxt_01">이메일</label></dt>
-                            <dd>
-                                <input type="text" name="email" id="email" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label for="intxt_01">비고</label></dt>
-                            <dd>
-                                <input type="text" name="note" id="note" class="inputst_box01" value="" />
+                                <input type="password" name="empPw" id="empPw" class="inputst_box01" value="" />
                             </dd>
                         </dl>
                         <dl>
                             <dt><label for="">결재자</label></dt>
                             <dd>
                                 <div class="checkbox-options">
-                                    <input type="checkbox" value="1" id="approval1" name="approval" /><label for="approval1"><span>스캔결재자</span></label>
-                                    <input type="checkbox" value="2" id="approval2" name="approval" /><label for="approval2"><span>ICR결재자</span></label>
-                                    <input type="checkbox" value="3" id="approval3" name="approval" /><label for="approval3"><span>중간결재자</span></label>
-                                    <input type="checkbox" value="4" id="approval4" name="approval" /><label for="approval4"><span>최종결재자</span></label>
-                                    <input type="checkbox" value="5" id="admin" name="admin" /><label for="admin"><span>관리자</span></label>
+                                    <input type="checkbox" value="1" id="mApproval1" name="approval" class="chk_reset"/><label for="approval1"><span>스캔결재자</span></label>
+                                    <input type="checkbox" value="2" id="mApproval2" name="approval" class="chk_reset"/><label for="approval2"><span>ICR결재자</span></label>
+                                    <input type="checkbox" value="3" id="mApproval3" name="approval" class="chk_reset"/><label for="approval3"><span>중간결재자</span></label>
+                                    <input type="checkbox" value="4" id="mApproval4" name="approval" class="chk_reset"/><label for="approval4"><span>최종결재자</span></label>
+                                    <input type="checkbox" value="5" id="mAdmin" name="admin" class="chk_reset"/><label for="admin"><span>관리자</span></label>
+                                    <input type="checkbox" value="6" id="mExternalUsers" name="externalUsers" class="chk_reset"/><label for="externalUsers"><span>외부사용자</span></label>
                                 </div>
                             </dd>
                         </dl>

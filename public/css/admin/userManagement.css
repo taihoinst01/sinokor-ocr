@@ -1,0 +1,25 @@
+﻿body {
+}
+.tr_userInfo.on {
+    background-color: #e5e5e5;
+}
+
+.mUser_div {
+    height: 435px !important;
+}
+
+.box_txt_st01.st00_sh > dl:nth-child(1) {
+    width: 330px !important;
+}
+
+.box_txt_st01.st00_sh > dl:nth-child(2) {
+    width: 600px !important;
+}
+
+.box_scroll_st5 {
+    height:370px !important;
+}
+
+#pagination {
+    height: 60px;
+}

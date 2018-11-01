@@ -1518,6 +1518,7 @@ select:disabled + ul.idealSelect:before {
         .box_txt_st01.st00_sh > dl:nth-child(1) {
             width: 200px;
         }
+        
 
         .box_txt_st01.st00_sh > dl:nth-child(6) {
             width: 320px;
@@ -1540,7 +1541,7 @@ select:disabled + ul.idealSelect:before {
     }
 
         .box_txt_st01.st00_us > dl:last-child {
-            width: 470px;
+            width: 700px;
             margin: 0 0 0 10px;
         }
 

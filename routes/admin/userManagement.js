@@ -11,6 +11,9 @@ var multer = require("multer");
 var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var router = express.Router();
+var sync = require('../util/sync.js');
+var oracle = require('../util/oracle.js');
+
 // DB
 var dbConfig = require(appRoot + '/config/dbConfig');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
@@ -34,19 +37,25 @@ router.get('/', function (req, res) {               // 사용자 관리 (GET)
     if (req.isAuthenticated()) res.render('admin/userManagement', { currentUser: req.user });
     else res.redirect("/logout");
 });
+/*
 router.post('/searchUser', function (req, res) {    // 사용자 목록 조회
     if (req.isAuthenticated()) fnSearch(req, res);
 });
+*/
+
 router.post('/chooseUser', function (req, res) {    // 사용자 조회
     if (req.isAuthenticated()) fnChoose(req, res);
 });
 router.post('/searchHighApproval', function (req, res) {    // 상위결재자 조회
     if (req.isAuthenticated()) fnSearchHighApproval(req, res);
 });
-router.post('/insertUser', function (req, res) {    //사용자 등록
+router.post('/modifyUser', function (req, res) {    //사용자 등록 및 수정
+    if (req.isAuthenticated()) fnModify(req, res);
+});
+router.post('/insertUser', function (req, res) {    //사용자 등록 (사용안함)
     if (req.isAuthenticated()) fnInsert(req, res);
 });
-router.post('/updateUser', function (req, res) {    //사용자 수정
+router.post('/updateUser', function (req, res) {    //사용자 수정 (사용안함)
     if (req.isAuthenticated()) fnUpdate(req, res);
 });
 router.post("/deleteUser", function (req, res) {     // 사용자 삭제
@@ -92,6 +101,21 @@ var fnSearchHighApproval = function (req, res) {
     console.log(`fnSearchHighApproval query : ${query}`);
     commonDB.reqQuery(query, callbackSearchHighApproval, req, res);
 };
+
+// 사용자 추가 및 수정
+var fnModify = function (req, res) {
+
+    sync.fiber(function () {
+        try {
+            var message = sync.await(oracle.modifyUser(req.body, sync.defer()));
+            res.send({ code: 200, message: message });
+        } catch (e) {
+            console.log(e);
+            res.send({ code: 500, message: 'server error' });           
+        }
+    });
+}
+
 // 사용자 추가
 var callbackInsert = function (rows, req, res) {
     res.send({ CODE: 200, RESULT: "등록되었습니다." });
@@ -187,5 +211,46 @@ function callbackUpdate(rows, req, res) {
 function callbackDelete(rows, req, res) {
     res.redirect('/userManagement');
 }
+
+
+// 부서조회
+router.post('/searchDept', function (req, res) {
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+
+            var result = sync.await(oracle.searchDept([], sync.defer()));
+
+
+            returnObj = { code: 200, dept: result };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+
+});
+
+// 사용자 찾기
+router.post('/searchUser', function (req, res) {
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            
+            var result = sync.await(oracle.searchUser(req, sync.defer()));
+                      
+            returnObj = { code: 200, userData: result };
+        } catch (e) {
+            returnObj = { code: 200, error: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+
+});
+
 
 module.exports = router;

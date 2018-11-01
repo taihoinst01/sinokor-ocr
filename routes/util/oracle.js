@@ -12,6 +12,56 @@ var request = require('sync-request');
 var sync = require('./sync.js');
 var oracle = require('./oracle.js');
 
+exports.modifyUser = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        var modifySql;
+        var modifyParams;
+        var regSql;   
+        var regParams;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            if (req.type == 'insert') {
+                var selectSql = 'SELECT EMP_NO FROM TBL_CO_EMP_BS_EXT WHERE EMP_NO = :empNo';
+                result = await conn.execute(selectSql, [req.empNo]);
+                if (result.rows.length != 0) {
+                    return done(null, '사번이 존재합니다.');
+                }
+
+                modifySql = "INSERT INTO TBL_CO_EMP_BS_EXT(EMP_NO, EMP_PW, EMP_NM) VALUES (:empNo, :empPw, :empNm)";
+                modifyParams = [req.empNo, req.empPw, req.empNm];
+                regSql = 'INSERT INTO TBL_CO_EMP_REG(EMP_NO, AUTH_SCAN, AUTH_ICR, AUTH_APPROVAL, AUTH_FINAL_APPROVAL, AUTH_ADMIN) '
+                    + 'VALUES (:empNo, :authScan, :authIcr, :authMid, :authFinal, :authAdmin)';
+                regParams = [req.empNo, req.authScan, req.authIcr, req.authMid, req.authFinal, req.authAdmin];
+            } else {
+                modifySql = "UPDATE TBL_CO_EMP_BS_EXT SET EMP_NO = :empNo, EMP_PW = :empPw, EMP_NM = :empNm WHERE EMP_NO = :beforeEmpNo";
+                modifyParams = [req.empNo, req.empPw, req.empNm, req.beforeEmpNo];
+                regSql = 'UPDATE TBL_CO_EMP_REG SET EMP_NO = :empNo, AUTH_SCAN = :authScan, AUTH_ICR = :authIcr, AUTH_APPROVAL = :authMid, '
+                    + 'AUTH_FINAL_APPROVAL = :authFinal, AUTH_ADMIN = :authAdmin WHERE EMP_NO = :beforeEmpNo';
+                regParams = [req.empNo, req.authScan, req.authIcr, req.authMid, req.authFinal, req.authAdmin, req.beforeEmpNo];
+            }
+            await conn.execute(modifySql, modifyParams);
+            await conn.execute(regSql, regParams);
+            
+
+            return done(null, 'success');
+        } catch (err) {
+            reject(err);
+            //return done(null, err);            
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectUserInfo = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -3226,6 +3276,137 @@ exports.finalApproval = function (req, done) {
                 }
             }
             return done(null, dateArr);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+// 부서 조회
+exports.searchDept = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            let deptQuery = "SELECT * FROM TBL_CO_DEPT_BS";
+            let deptResult = await conn.execute(deptQuery, []);
+
+            result = {
+                dept: deptResult.rows
+            };
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+// 사용자 찾기
+exports.searchUser = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            let dept = req.body.dept;
+            let scan = req.body.scan;
+            let icr = req.body.icr;
+            let approval = req.body.approval;
+            let finalApproval = req.body.finalApproval;
+            let admin = req.body.admin;
+            let externalUsers = req.body.externalUsers;
+
+            conn = await oracledb.getConnection(dbConfig);
+            
+            var empQuery = "SELECT EMP.EMP_NO, EMP.EMP_ENGL_NM, EMP.EMP_NM, EMP.BLT_DEPT_CD, EMP.JBLV_CD, EMP.PSTN_CD, " +
+                            " REG.AUTH_SCAN, REG.AUTH_ICR, REG.AUTH_APPROVAL, REG.AUTH_FINAL_APPROVAL, REG.AUTH_ADMIN, TO_CHAR(REG.FINAL_LOGIN_DATE, 'yyyy-mm - dd hh: mi: ss') as FINAL_LOGIN_DATE, REG.REG_DATE, REG.ACCOUNT_ENABLE " + 
+                            " FROM TBL_CO_EMP_BS EMP, TBL_CO_EMP_REG REG " +
+                            " WHERE EMP.EMP_NO = REG.EMP_NO "; 
+            var extQuery = "SELECT EXT.EMP_NO, EXT.EMP_PW, EXT.EMP_ENGL_NM, EXT.EMP_NM, EXT.BLT_DEPT_CD, EXT.JBLV_CD, EXT.PSTN_CD, " +
+                " REG.AUTH_SCAN, REG.AUTH_ICR, REG.AUTH_APPROVAL, REG.AUTH_FINAL_APPROVAL, REG.AUTH_ADMIN, TO_CHAR(REG.FINAL_LOGIN_DATE, 'yyyy-mm - dd hh: mi: ss') as FINAL_LOGIN_DATE, REG.REG_DATE, REG.ACCOUNT_ENABLE " +
+                " FROM TBL_CO_EMP_BS_EXT EXT, TBL_CO_EMP_REG REG " +
+                " WHERE EXT.EMP_NO = REG.EMP_NO ";
+
+            if (externalUsers == 'Y') {
+                //todo
+            } else {
+                //todo
+            }
+            if (scan == 'Y') {
+                empQuery += " AND REG.AUTH_SCAN = 'Y'";
+
+                if (externalUsers == 'Y') {
+                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
+                }
+            } 
+
+            if (icr == 'Y') {
+                empQuery += " AND REG.AUTH_SCAN = 'Y'";
+
+                if (externalUsers == 'Y') {
+                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
+                }
+            } 
+
+            if (approval == 'Y') {
+                empQuery += " AND REG.AUTH_SCAN = 'Y'";
+
+                if (externalUsers == 'Y') {
+                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
+                }
+            } 
+
+            if (finalApproval == 'Y') {
+                empQuery += " AND REG.AUTH_SCAN = 'Y'";
+
+                if (externalUsers == 'Y') {
+                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
+                }
+            } 
+
+            if (admin == 'Y') {
+                empQuery += " AND REG.AUTH_SCAN = 'Y'";
+
+                if (externalUsers == 'Y') {
+                    extQuery += " AND REG.AUTH_SCAN = 'Y'";
+                }
+            } 
+
+
+            //코리안리 사원
+            var empResult = await conn.execute(empQuery, []);
+
+            //외부이용자
+            var extResult;
+            if (externalUsers == 'Y') {
+                extResult = await conn.execute(extQuery, []);
+            }
+            //var deptResult = await conn.execute('SELECT * FROM TBL_CO_DEPT_BS', []);
+
+            result = {
+                emp: empResult.rows,
+                ext: externalUsers == 'Y' ? extResult.rows : null
+                //dept: deptResult.rows
+            };
+            return done(null, result);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
