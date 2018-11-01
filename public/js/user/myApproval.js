@@ -399,14 +399,77 @@ var fn_search = function () {
     });
 };
 
-// document_dtl 조회
 var fn_search_dtl = function (seqNum, docNum) {
     var seqNum = seqNum;
     var docNum = docNum;
     var progressId;
     var appendHtml = "";
     $.ajax({
-        url: '/myApproval/searchApprovalDtlList',
+        //url: '/myApproval/searchApprovalDtlList',
+        url: '/wF_WorkflowProc/IF4',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'docNum': docNum }),
+        contentType: 'application/json; charset=UTF-8',
+        /*  beforeSend: function () {
+                $("#progressMsgTitle").html("retrieving document detail list...");
+                progressId = showProgressBar();
+                //startProgressBar(); // start progressbar
+                //addProgressBar(1, 1); // proceed progressbar
+            },*/
+        success: function (data) {
+            //addProgressBar(2, 99); // proceed progressbar
+            if (data.data.length > 0) {
+                for (var i = 0; i < data.data.length; i++) {
+                    appendHtml +=
+                        '<tr id="tr_dtl_' + docNum + '" name="tr_dtl" style="cursor:pointer">' +
+                        '<td>' + data.data[i].acDvNm + '</td> <!--계산서구분-->' +
+                        '<td>' + data.data[i].ctNo + '</td>' +
+                        '<td>' + data.data[i].ctNm + '</td>' +
+                        '<td>' + data.data[i].imgFileStNo + '</td>' +
+                        '<td>' + data.data[i].imgFileEndNo + '</td>' +
+                        '<td>' + data.data[i].curCd + '</td>' +
+                        '<td>' + data.data[i].ntbl + '</td>' +
+                        '<td>' + data.data[i].osl + '</td>' +
+                        '<td>' + data.data[i].ibnr + '</td>' +
+                        '</tr>'; 
+                }
+                $("#span_document_dtl").empty().html('결재리스트(상세) -' + data.data.length + '건');
+            } else {
+                fn_alert('alert', '조회할 데이터가 없습니다.');
+                appendHtml += '<tr><td colspan="6">조회할 데이터가 없습니다.</td></tr>';
+                $("#span_document_dtl").empty().html('결재리스트(상세) -' + 0 + '건');
+            }
+
+            $("#tbody_dtlList").empty().html(appendHtml);
+            
+            $("#div_dtl").fadeIn('slow');
+            fn_clickEvent(); // regist and refresh click event
+            if (!$('#tbody_dtlList > tr').find('td').eq(0).attr('colspan')) {
+                $('#tbody_dtlList > tr').eq(0).find('td').eq(0).click();
+            } else {
+                $('#mainImgDiv').html('');
+                $('#ul_image').html('');
+
+            }
+            //endProgressBar(progressId); // end progressbar\
+        },
+        error: function (err) {
+            endProgressBar(progressId); // end progressbar
+            console.log(err);
+        }
+    });
+};
+
+// document_dtl 조회
+var fn_search_dtl_old = function (seqNum, docNum) {
+    var seqNum = seqNum;
+    var docNum = docNum;
+    var progressId;
+    var appendHtml = "";
+    $.ajax({
+        //url: '/myApproval/searchApprovalDtlList',
+        url: '/wF_WorkflowProc/IF4',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'docNum': docNum }),
@@ -486,51 +549,6 @@ var fn_search_dtl = function (seqNum, docNum) {
             console.log(err);
         }
     });
- /* 기존소스
-    $.ajax({
-        url: '/myApproval/searchApprovalDtlList',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify(param),
-        contentType: 'application/json; charset=UTF-8',
-        beforeSend: function () {
-            $("#progressMsgTitle").html("retrieving document detail list...");
-            progressId = showProgressBar();
-            //startProgressBar(); // start progressbar
-            //addProgressBar(1, 1); // proceed progressbar
-        },
-        success: function (data) {
-            //addProgressBar(2, 99); // proceed progressbar
-            if (data.length > 0) {
-
-
-               
-                * $.each(data, function (index, entry) {
-                    appendHtml += 
-                        '<tr id="tr_dtl_' + entry["IMGID"] + '" name="tr_dtl" style="cursor:pointer">' +
-                            '<th scope="row">' + entry["IMGFILESTARTNO"] + ' ~ ' + entry["IMGFILESTARTNO"] +'</th>' +
-                            '<td>' + nvl(entry["CONTRACTNUM"]) + '</td>' +
-                            '<td><a href="#none" class="tip" title="' + nvl(entry["CTNM"]) + '">' + nvl(entry["CTNM"]) + '</a></td>' +
-                            '<td>' + nvl(entry["UY"]) + '</td>' +
-                            '<td>' + nvl(entry["CURCD"]) + '</td>' +
-                            '<td>' + nvl(entry["NTBL"]) + '</td>' +
-                            '<td>' + nvl(entry["ENTRYNO"]) + '</td>' +
-                        '</tr>';
-                }); 
-            } else {
-                appendHtml += '<tr><td colspan="6">조회할 데이터가 없습니다.</td></tr>';
-            }
-            $("#tbody_dtlList").empty().html(appendHtml);
-            $("#span_document_dtl").empty().html('결재리스트(상세) -' + data.length + '건');
-            $("#div_dtl").fadeIn('slow');
-            fn_clickEvent(); // regist and refresh click event
-            endProgressBar(progressId); // end progressbar\
-
-        }, error: function (err) {
-            endProgressBar(progressId); // end progressbar
-            console.log(err);
-        }
-    });*/
 };
 
 // img 조회
