@@ -296,7 +296,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
 
                 //file convert Pdf to Png
-                var convertResult = execSync('module\\imageMagick\\convert.exe -quiet -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile +'"');
+                var convertResult = execSync('module\\imageMagick\\convert.exe -quiet -density 150 -quality 100% -compress None -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile +'"');
 				/*
                 if (convertResult.status != 0) {
                     throw new Error(convertResult.stderr);
