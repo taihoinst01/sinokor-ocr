@@ -93,7 +93,7 @@ function fn_searchUser() {
                 var entry = data.userData[i];
                 appendHtml +=
                     '<tr class="tr_userInfo empNo_' + entry.EMP_NO + '">' +
-                    '<td scope="row">' + nvl(entry.EMP_NO) + '</td>' +
+                    '<td scope="row">' + nvl(entry.EMP_NO) + '<input type="hidden" value="' + entry.EMP_PW + '"></td>' +
                     '<td>' + nvl(entry.EMP_NM) + '</td>' +
                     '<td>' + nvl(entry.DEPT_NM) + '</td>' +
                     '<td>' + nvl(entry.AUTH_SCAN) + '</td>' +
@@ -101,9 +101,9 @@ function fn_searchUser() {
                     '<td>' + nvl(entry.AUTH_APPROVAL) + '</td>' +
                     '<td>' + nvl(entry.AUTH_FINAL_APPROVAL) + '</td>' +
                     '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' +
-                    '<td>N</td>' +
+                    '<td>' + nvl(entry.EXT_USER) + '</td>' +
                     '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
-                    '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', \'' + entry.EMP_NM + '\', event)">삭제</button></td>;' +
+                    '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', event)">삭제</button></td>;' +
                     '</tr>';
             }
             $("#tbody_user").empty().append(appendHtml);
@@ -246,7 +246,7 @@ $(document).on('click', '#tbody_user tr', function () {
 
     // 사번, PASSWORD 입력
     $('#empNo').val(empNo);
-    $('#empPw').val(empPw);
+    $('#empPw').val(nvl(empPw));
 
 })
 
@@ -554,10 +554,10 @@ function updatePw() {
 /**
  * 사용자 삭제
  */
-function openDeleteUser(empNo, empNm, e) {
+function openDeleteUser(empNo, e) {
 
     e.stopPropagation();
-    fn_alert('confirm', empNm + " 님을 삭제하시겠습니까?", function () {
+    fn_alert('confirm', empNo + " 님을 삭제하시겠습니까?", function () {
         deleteUser(empNo);
     });
 }

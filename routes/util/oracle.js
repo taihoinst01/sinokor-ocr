@@ -3336,7 +3336,7 @@ exports.searchUser = function (req, done) {
 
             conn = await oracledb.getConnection(dbConfig);
             var userQuery = ""
-                + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_DEPT.DEPT_NM,"
+                + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_EMP.EMP_PW, CO_DEPT.DEPT_NM,"
                     + "CO_REG.AUTH_SCAN, CO_REG.AUTH_ICR, CO_REG.AUTH_APPROVAL, CO_REG.AUTH_FINAL_APPROVAL, "
                     + "CO_REG.AUTH_ADMIN, CO_EMP.EXT_USER, TO_CHAR(CO_REG.FINAL_LOGIN_DATE, 'YYYY/MM/DD HH24:MI:SS') AS FINAL_LOGIN_DATE "
                 + "FROM "
