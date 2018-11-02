@@ -165,12 +165,14 @@ router.post('/uploadFile', upload.any(), function (req, res) {
             var fileDtlInfoTemp = [];
             var imgId = 'ICR';
             var date = new Date();
-            var yyyymmdd = String(date.getFullYear()) + String(date.getMonth() + 1) + String(date.getDate());
+            var yyyymmdd = String(date.getFullYear()) + String((date.getMonth() + 1 < 10) ? '0' + (date.getMonth() +1) : '' + (date.getMonth()+1) ) + String((date.getDate() < 10) ? '0' + date.getDate() : '' + date.getDate());
             var maxDocNum = sync.await(oracle.selectMaxDocNum(sync.defer()));
+            console.log(yyyymmdd);
             if (maxDocNum == 0) {
                 imgId += yyyymmdd + '0000001';
             } else {
                 var Maxyyyymmdd = maxDocNum.substring(3, 11);
+                console.log(Maxyyyymmdd);
                 if (Number(Maxyyyymmdd) < Number(yyyymmdd)) {
                     imgId += yyyymmdd + '0000001';
                 } else {
