@@ -601,6 +601,19 @@ function convertedSpecificDocumentsAfter(reqArr) {
                 }
             }
         }
+
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+
+            if (item.colLbl && item.colLbl == 1 && item.text.toLowerCase().indexOf("ins - 2nd surplus") > 0) { // 계약명
+                item.text = 'INS - 2ND Surplus - Miami';
+            }
+
+            if (item.colLbl && item.colLbl == 1 && item.text.toLowerCase().indexOf("cooperat") > 0) { // 계약명
+                item.text = 'Cooperators General - Property Quota Share and surplus Reinsurance Agreement';
+            }
+        }
+
     }
 
     //WILLIS_10
