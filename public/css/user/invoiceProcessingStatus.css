@@ -133,9 +133,10 @@
     margin: 40px 5% 0 0;
     width: 150px;
     height: 40px;
+    border: 1px solid #0370b2;
     border-radius: 5px;
-    background: #525250;
-    color: #FFF;
+    background: #FFF;
+    color: #0370b2;
 }
 
 .ips_date_year {

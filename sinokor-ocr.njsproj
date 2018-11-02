@@ -3066,6 +3066,7 @@
     <Content Include="public\publish\font\notokr-medium.woff" />
     <Content Include="public\publish\font\notokr-medium.woff2" />
     <Content Include="public\publish\image\bg_img.png" />
+    <Content Include="public\publish\image\bg_img2.png" />
     <Content Include="public\publish\image\bg_main.jpg" />
     <Content Include="public\publish\image\man1.png" />
     <Content Include="public\publish\image\man2.png" />
