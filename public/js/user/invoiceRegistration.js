@@ -1922,21 +1922,6 @@ function fn_processFinish(mlData, imgId) {
 
 //계약 번호 추출
 function fn_ContractNumExtraction() {
-    //console.log("data : " + JSON.stringify(data));
-    //console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
-    /*
-    for (var i in dataVal) {
-        if (dataVal[i].colLbl == 0) {
-            cdnNm = dataVal[i].text;
-        }
-        if (dataVal[i].colLbl == 1) {
-            ctNm = dataVal[i].text;
-        }
-        if (dataVal[i].colLbl == 2) {
-            ttyYy = dataVal[i].text;
-        }
-    }
-    */
 
     var dataObj = {};
     dataObj["imgId"] = $("input[name='dtl_chk']").val();
@@ -2016,6 +2001,8 @@ function fn_ContractNumExtraction() {
     $("#progressMsgTitle").html("계약번호 추출 중..");
     progressId = showProgressBar();
     addProgressBar(70, 99);
+    var dtlHtml = '';
+    var existCntNum = [];
     setTimeout(function () {
         for (var l = 0; l < cdnNm.length; l++) {
             for (var j = 0; j < ctNm.length; j++) {
@@ -2031,53 +2018,57 @@ function fn_ContractNumExtraction() {
 
                         },
                         success: function (data) {
-
-                            var dtlHtml = '';
+                            
                             for (var i in data.data) {
-                                // TODO : 분석 결과를 정리하고 1 record로 생성한다.
-                                dtlHtml += '<tr>' +
-                                    '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-                                    '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
-                                    '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
-                                    '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
-                                    '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
-                                    '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->' +
-                                    '<td>' + makePageNum(1, thumbImgs.length) + '</td> <!--페이지번호 FROM-->' +
-                                    '<td>' + makePageNum(thumbImgs.length, thumbImgs.length) + '</td> <!--페이지번호 TO-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
-                                    '</tr>';
+
+                                if (existCntNum.indexOf(data.data[i].ctNo) < 0) {
+                                    existCntNum.push(data.data[i].ctNo);
+                                    // TODO : 분석 결과를 정리하고 1 record로 생성한다.
+                                    dtlHtml += '<tr>' +
+                                        '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
+                                        '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
+                                        '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
+                                        '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
+                                        '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
+                                        '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->' +
+                                        '<td>' + makePageNum(1, thumbImgs.length) + '</td> <!--페이지번호 FROM-->' +
+                                        '<td>' + makePageNum(thumbImgs.length, thumbImgs.length) + '</td> <!--페이지번호 TO-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+                                        '</tr>';
+                                }
+
                             }
 
                             if (dtlHtml != '') {
