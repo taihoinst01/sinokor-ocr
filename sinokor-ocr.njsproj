@@ -849,7 +849,8 @@
     <Compile Include="public\js\user\ocrFormAnalysis.js" />
     <Compile Include="public\js\user\ocrHistorySearch.js" />
     <Compile Include="public\js\user\uiLearning.js" />
-    <Compile Include="public\publish\js\Chart.js" />
+    <Compile Include="public\publish\js\chart\Chart.bundle.min.js" />
+    <Compile Include="public\publish\js\chart\utils.js" />
     <Compile Include="public\publish\js\jquery-1.9.1.min.js" />
     <Compile Include="public\publish\js\jquery-ui.js" />
     <Compile Include="public\publish\js\jquerys.js" />
@@ -2236,6 +2237,7 @@
     <Content Include="public\css\style.css" />
     <Content Include="public\css\sub.css" />
     <Content Include="public\css\test.css" />
+    <Content Include="public\css\user\invoiceProcessingStatus.css" />
     <Content Include="public\css\user\myApproval.css" />
     <Content Include="public\css\user\invoiceRegistration.css" />
     <Content Include="public\css\user\ocrFormAnalysis.css" />
@@ -3253,6 +3255,7 @@
     <Folder Include="node_modules\xlsx\dist\" />
     <Folder Include="node_modules\xlsx\types\" />
     <Folder Include="public\css\admin\" />
+    <Folder Include="public\publish\js\chart\" />
     <Folder Include="sample\" />
     <Folder Include="pdf2img\" />
     <Folder Include="pdf2img\20180614152820406\" />

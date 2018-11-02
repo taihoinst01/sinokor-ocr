@@ -344,11 +344,18 @@ h3.tits:before,
 .button_control14:before,
 .searchIcon:before,
 #content h2:before,
-.alert_icon:before {
+.alert_icon:before,
+.wait_doc_icon,
+.success_doc_icon,
+.date_up_btn,
+.date_down_btn {
     display: inline-block;
-    background: url('../image/bg_img.png') no-repeat;
+    background: url('../image/bg_img2.png') no-repeat;
 }
-
+.wait_doc_icon { width:40px; height: 40px; float:left; background-position: -66px -621px; margin: 4px 0 0 62px; }
+.success_doc_icon { width:40px; height: 40px; float:left; background-position: -2px -621px; margin: 4px 0 0 62px; }
+.date_up_btn { width:100%; height: 15%; background-position: -4px -680px; cursor: pointer; }
+.date_down_btn { width:100%; height: 15%; background-position: -4px -745px; cursor: pointer; }
 
 /* input */
 input[type='text'].inputst_box01,
