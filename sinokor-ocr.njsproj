@@ -436,6 +436,7 @@
     <Compile Include="public\js\import\jqplot\plugins\jqplot.trendline.js" />
     <Compile Include="public\js\import\jquery-1.9.1.min.js" />
     <Compile Include="public\js\import\jquery-2.2.4.min.js" />
+    <Compile Include="public\js\import\jquery-editable-select.js" />
     <Compile Include="public\js\import\jquery-ti-ajax.min.js" />
     <Compile Include="public\js\import\jquery-ti-ajaxvalidate.min.js" />
     <Compile Include="public\js\import\jquery-ti-common.js" />
@@ -1979,6 +1980,7 @@
     </Content>
     <Content Include="public\css\common.css" />
     <Content Include="public\css\dropdown.css" />
+    <Content Include="public\css\editable-select.css" />
     <Content Include="public\css\egovframework\sample.css" />
     <Content Include="public\css\ext\images\blank.png" />
     <Content Include="public\css\ext\images\col-resize-handle.png" />
