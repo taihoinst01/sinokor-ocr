@@ -860,7 +860,7 @@ var fn_baseList_chk = function (flag) {
             var tdArr = new Array();
             var checkbox = $("input[name=chk_document]:checked");
             var statusCnt = 0;
-            // 체크된 체크박스 값들 중 결제완료 된 경우를 예외시킨다.
+            // 체크된 체크박스 값들 중 결재완료 된 경우를 예외시킨다.
             checkbox.each(function (i) {
 
                 var tr = checkbox.parent().parent().parent().parent().eq(i);

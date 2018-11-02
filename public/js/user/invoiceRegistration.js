@@ -2773,7 +2773,7 @@ var fn_docEvent = function () {
         });
     })
 
-    //결제담당자 선택시 발생이벤트.
+    //결재담당자 선택시 발생이벤트.
     $("#btn_pop_user_choice").click(function () {
         var choiceCnt = $('#searchManagerResult tr.on').length;
 
@@ -3016,7 +3016,7 @@ var fn_docEvent = function () {
                 fn_alert('alert', "전달할 문서를 선택하세요.");
             }
         } else {
-            fn_alert('alert', "전달/결제상신에 대한 권한이 없습니다.");
+            fn_alert('alert', "전달/결재상신에 대한 권한이 없습니다.");
         }        
     });
 
