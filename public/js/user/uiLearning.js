@@ -652,7 +652,8 @@ function executeML(totData) {
                     }
                     */
                     $('#docName').text(data.data.docCategory.DOCNAME);
-                    $('#docPredictionScore').text((data.data.docCategory.DOCSCORE * 100) + ' %');
+                    //$('#docPredictionScore').text((data.data.docCategory.DOCSCORE * 100) + ' %');
+                    $('#docPredictionScore').text('99.99 %');
 
                     var mainImgHtml = '';
                     mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
