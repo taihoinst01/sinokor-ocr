@@ -399,7 +399,7 @@ var fn_search = function () {
     });
 };
 
-var fn_search_dtl = function (seqNum, docNum) {
+var fn_search_dtl_IF4 = function (seqNum, docNum) {
     var seqNum = seqNum;
     var docNum = docNum;
     var progressId;
@@ -461,6 +461,64 @@ var fn_search_dtl = function (seqNum, docNum) {
     });
 };
 
+var fn_search_dtl = function (seqNum, docNum) {
+    var seqNum = seqNum;
+    var docNum = docNum;
+    var progressId;
+    var appendHtml = "";
+    $.ajax({
+        url: '/myApproval/searchApprovalDtlList',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'docNum': docNum }),
+        contentType: 'application/json; charset=UTF-8',
+        /*  beforeSend: function () {
+                $("#progressMsgTitle").html("retrieving document detail list...");
+                progressId = showProgressBar();
+                //startProgressBar(); // start progressbar
+                //addProgressBar(1, 1); // proceed progressbar
+            },*/
+        success: function (data) {
+            //addProgressBar(2, 99); // proceed progressbar
+            if (data.docData.length > 0) {
+                for (var i = 0; i < data.docData.length; i++) {
+                    appendHtml +=
+                        '<tr id="tr_dtl_' + data.docData[i].DOCNUM + '" name="tr_dtl" style="cursor:pointer">' +
+                        '<td>' + data.docData[i].INVOICETYPE + '</td> <!--계산서구분-->' +
+                        '<td>' + nvl2(data.docData[i].CTNO, '') + '</td>' +
+                        '<td>' + data.docData[i].CTNM + '</td>' +
+                        '<td>' + nvl2(data.docData[i].PAGEFROM, 0) + '</td>' +
+                        '<td>' + nvl2(data.docData[i].PAGETO, 0) + '</td>' +
+                        '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].CURCD, 0) + '</a><input type="hidden" value="' + data.docData[i].CURCD_LOC + '"/></td>' +
+                        '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].PM - data.docData[i].BROKERAGE - data.docData[i].TAX - data.docData[i].CN, 0) + '</a><input type="hidden" value="' + data.docData[i].OSLSHARE_LOC + '"/></td>' +
+                        '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].OSLSHARE, 0) + '</a><input type="hidden" value="' + data.docData[i].OSLSHARE_LOC + '"/></td>' +
+                        '<td><a href="#" onclick="zoomImg(this); return false;">' + nvl2(data.docData[i].OSLSHARE * 0.1, 0) + '</a><input type="hidden" value="' + data.docData[i].TAXON_LOC + '"/></td>' +
+                        '</tr>';
+                }
+            } else {
+                appendHtml += '<tr><td colspan="6">조회할 데이터가 없습니다.</td></tr>';
+            }
+            $("#tbody_dtlList").empty().html(appendHtml);
+            $("#span_document_dtl").empty().html('결재리스트(상세) -' + data.docData.length + '건');
+            $("#div_dtl").fadeIn('slow');
+            fn_clickEvent(); // regist and refresh click event
+            if (!$('#tbody_dtlList > tr').find('td').eq(0).attr('colspan')) {
+                $('#tbody_dtlList > tr').eq(0).find('td').eq(0).click();
+            } else {
+                $('#mainImgDiv').html('');
+                $('#ul_image').html('');
+
+            }
+            //endProgressBar(progressId); // end progressbar\
+        },
+        error: function (err) {
+            endProgressBar(progressId); // end progressbar
+            console.log(err);
+        }
+    });
+};
+
+
 // document_dtl 조회
 var fn_search_dtl_old = function (seqNum, docNum) {
     var seqNum = seqNum;
@@ -468,8 +526,7 @@ var fn_search_dtl_old = function (seqNum, docNum) {
     var progressId;
     var appendHtml = "";
     $.ajax({
-        //url: '/myApproval/searchApprovalDtlList',
-        url: '/wF_WorkflowProc/IF4',
+        url: '/myApproval/searchApprovalDtlList',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'docNum': docNum }),

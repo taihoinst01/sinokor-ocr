@@ -515,7 +515,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
 
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
-            if (item.colLbl && item.colLbl == 7) { // your reference
+            if (item.colLbl && item.colLbl == 7) { // OSL(100%)
                 var osl100Entry = 0;
                 var pattern = /\d*[.]{1}\d{2}/ig; // 문자열중 . 을 포함한 숫자
                 var numArr = item.text.replace(/,/g, "").match(pattern);
@@ -567,6 +567,37 @@ function convertedSpecificDocumentsAfter(reqArr) {
                 if (item.text.indexOf('Our Reference') != -1) {
                     item.originText = item.text;
                     item.text = item.text.replace(/Our Reference/g, "").replace(/\//g, "").replace(/\s/gi, ""); // Our Reference 131741417/ OOOOOIMDP -> 131741417OOOOOIMDP
+                }
+            }
+        }
+    }
+
+    //WILLIS_02 - 계약명 따로 나오는 경우 하나로 합쳐주기
+    if (reqArr.docCategory.DOCNAME == 'WILLIS_02') {
+        var textList = [];
+        var sumText = '';
+        var count = 0;
+
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+
+            if (item.colLbl && item.colLbl == 1) { // 계약명
+                textList.push(item.text);
+            }
+        }
+
+        for (var i in textList) {
+            sumText += ' ' + textList[i];
+        }
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+
+            if (item.colLbl && item.colLbl == 1) { // 계약명
+                if (count == 0) {
+                    item.text = sumText;
+                    count++;
+                } else {
+                    item.colLbl = 38;
                 }
             }
         }
