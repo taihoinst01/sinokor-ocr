@@ -19,6 +19,7 @@ var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
 var regMlData = [];
 var isExtract = false; //계약번호 추출여부 true: 추출 후, false: 추출 전
+var deptList = [] //부서
 
 /**
  * 전역변수 초기화
@@ -98,7 +99,8 @@ var _init = function () {
     fn_searchDocEnterEvent();
     ocrResult();
     popUpEvent();
-    changeDocPopupImage()
+    changeDocPopupImage();
+    searchDept(); //부서조회
 };
 
 /****************************************************************************************
@@ -812,7 +814,7 @@ function popUpInsertDocCategory() {
                         //console.log(data);
                         $('#docData').val(JSON.stringify(data.docCategory[0]));
                         $('#docName').text(data.docCategory[0].DOCNAME);
-                        $('#layer1').fadeOut();
+                        $('#searchUserPop').fadeOut();
                     } else {
                         fn_alert('alert', data.message);
                     }
@@ -979,7 +981,6 @@ var fn_search = function () {
                         '<td name="td_base">' + entry.DOCNUM + '</td>' +
                         '<td name="td_base">' + nvl2(entry.PAGECNT, 0) + '</td>' +
                         '<td name="td_base">' + entry.NOWNUM + '</td>' +
-                        '<td></td>' +
                         '<td></td>' +
                         '<td></td>' +
                         '<td class="td_dbclick">' + entry.DEADLINE + '</td>' +
@@ -1603,7 +1604,6 @@ var fn_processBaseImage = function (fileInfo) {
                                 '<td name="td_base">' + item.DOCNUM + '</td>' +
                                 '<td name="td_base">' + item.PAGECNT + '</td>' +
                                 '<td name="td_base">' + item.NOWNUM + '</td>' +
-                                '<td></td>' +
                                 '<td></td>' +
                                 '<td></td>' +
                                 '<td class="td_dbclick">' + item.DEADLINE+ '</td>' +
@@ -2712,7 +2712,7 @@ var fn_docEvent = function () {
                 });
            
             } else if ($('#scanApproval').val() == 'Y') {                       
-                layer_open('layer1');            
+                layer_open('searchUserPop');            
             }                  
         } else {
             fn_alert('alert', '문서를 선택하세요');
@@ -2727,8 +2727,7 @@ var fn_docEvent = function () {
             middleManagerChk: $('#middleManagerChk').is(':checked'),
             approvalManagerChk: $('#approvalManagerChk').is(':checked'),
             keyword: $('#searchManger').val().trim(),
-            team: $('#select_team').val(),
-            part: $('#select_part').val()
+            team: $('#select_team').val()
         };
 
         $.ajax({
@@ -2748,7 +2747,6 @@ var fn_docEvent = function () {
                             appendHtml += '<tr>' +
                                 '<td>' + data[i].USERID + '</td>' +
                                 '<td>소속팀</td>' +
-                                '<td>소속파트</td>' +
                                 '</tr >'; 
                         }
 
@@ -2764,7 +2762,7 @@ var fn_docEvent = function () {
         });
     })
 
-    //결제담당자 선택시 발생이벤트.
+    //결재담당자 선택시 발생이벤트.
     $("#btn_pop_user_choice").click(function () {
         var choiceCnt = $('#searchManagerResult tr.on').length;
 
@@ -2793,7 +2791,7 @@ var fn_docEvent = function () {
 
                     // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
                     var docNum = popDoctd.eq(1).text();
-                    var deadline = popDoctd.eq(7).text();
+                    var deadline = popDoctd.eq(6).text();
                     // 가져온 값을 배열에 담는다.
                     docNumTdArr.push({ docNum: docNum, deadline: deadline });
                     deleteTr.push(popDoctr);
@@ -2829,7 +2827,7 @@ var fn_docEvent = function () {
                         contentType: 'application/json; charset=UTF-8',
                         success: function (data) {
                             fn_alert('alert', data.docData + "건의 문서가 전달 되었습니다.");
-                            $('#layer1').fadeOut();
+                            $('#searchUserPop').fadeOut();
                             initForm(2);
                             var totCnt = $("input[name = base_chk]").length;
                             $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt) + '건');
@@ -2970,7 +2968,7 @@ var fn_docEvent = function () {
                     contentType: 'application/json; charset=UTF-8',
                     success: function (data) {
                         fn_alert('alert', data.docData + "건의 문서가 전달 되었습니다.");
-                        $('#layer1').fadeOut();
+                        $('#searchUserPop').fadeOut();
                         var totCnt = $("input[name = base_chk]");
                         $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + ' 건');
                         for (var i in deleteTr) {
@@ -3002,12 +3000,12 @@ var fn_docEvent = function () {
                 }
             }
             if (isCheckboxYn) {
-                layer_open('layer1');
+                layer_open('searchUserPop');
             } else {
                 fn_alert('alert', "전달할 문서를 선택하세요.");
             }
         } else {
-            fn_alert('alert', "전달/결제상신에 대한 권한이 없습니다.");
+            fn_alert('alert', "전달/결재상신에 대한 권한이 없습니다.");
         }        
     });
 
@@ -3065,4 +3063,28 @@ $(document).on('focusout', 'input[name=ipt_nowYearMonth]', function () {
 
 function randomRange(n1, n2) {
     return (Math.random() * (n2 - n1 + 1)) + n1;
+}
+
+
+// 부서조회
+function searchDept() {
+    $.ajax({
+        url: '/userManagement/searchDept',
+        type: 'post',
+        datatype: "json",
+        async: false,
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            var dept = data.dept.dept;
+            for (var i in dept) {
+                var appendLi = '<li><a>' + dept[i].DEPT_NM + '</a></li>';
+                $('#teamList').append(appendLi);
+                deptList.push(dept[i]);
+            }
+
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 }

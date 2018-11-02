@@ -1,0 +1,256 @@
+﻿.ips_content_title {
+    font-weight: bold;
+    font-family: 'NanumGothicR';
+    font-size: 20px;
+    margin: 3px 0 20px 0;
+    color: #4C5059;
+}
+
+.ips_content_sub {
+    width: 100%;
+    height: 850px;
+}
+
+.ips_content_sub span {
+    font: bold 15px 'NanumGothicR';
+    color: #000;
+}
+
+.ips_content_sub_top {
+    width: 100%;
+    height: 60%;
+}
+
+.ips_content_sub_bottom {
+    width: 100%;
+    height: 40%;
+}
+
+.ips_line_graph {
+    float: left;
+    height: 100%;
+    width: 50%;
+}
+
+.ips_tot_document_count {
+    float: left;
+    height: 100%;
+    width: 15%;
+}
+
+.ips_date {
+    float: left;
+    height: 100%;
+    width: 35%;
+}
+
+.ips_user_status {
+    float: left;
+    height: 100%;
+    width: 33%;
+    margin: 0 2% 0 0;
+}
+
+.ips_pie_graph {
+    float: left;
+    height: 100%;
+    width: 28%;
+    margin: 0 2% 0 0;
+}
+
+.ips_bar_graph {
+    float: left;
+    height: 100%;
+    width: 35%;
+}
+
+.ips_top_comment {
+    width: 100%;
+    height: 5%;
+}
+
+.ips_top_comment > span {
+    float: left;
+    color: #4C5059;
+}
+
+.ips_top_comment > p {
+    float: right;
+    width: auto;
+    font-size: 15px;
+    color: #4C5059;
+}
+
+.ips_top_comment > p > span {
+    color: #4C5059;
+}
+
+.ips_line_convas {
+    width: 100%;
+    background: #FFF;
+    border-radius: 5px;
+    padding: 10px 0 10px 0;
+    margin: 10px 0;
+}
+
+.ips_box_document {
+    width: 80%;
+    background: #FFF;
+    height: 38.5%;
+    margin: 10px 15px 25px 25px;
+    border-radius: 5px;
+}
+
+.ips_box_document span {
+    color: #4C5059;
+}
+
+.ips_box_last {
+    margin: 50px 15px 25px 25px;
+}
+
+.ips_date_count {
+    width: 100%;
+    height: 79%;
+    background: #FFF;
+    border-radius: 5px;
+    padding: 5% 0 10px 0;
+    margin: 10px 0;
+}
+
+.ips_date_top {
+    width: 100%;
+    height: 70%;
+}
+
+.ips_date_bottom {
+    width: 100%;
+    height: 30%;
+}
+
+.ips_date_bottom button {
+    float: right;
+    margin: 40px 5% 0 0;
+    width: 150px;
+    height: 40px;
+    border: 1px solid #0370b2;
+    border-radius: 5px;
+    background: #FFF;
+    color: #0370b2;
+}
+
+.ips_date_year {
+    width: 28%;
+    height: 100%;
+    float: left;
+    margin: 0 2% 2% 4%;
+}
+
+.ips_date_month {
+    width: 28%;
+    height: 100%;
+    float: left;
+    margin: 0 2% 2% 2%;
+}
+
+.ips_date_day {
+    width: 28%;
+    height: 100%;
+    float: left;
+    margin: 0 2% 2% 2%;
+}
+
+.ips_user_tbody {
+    background: #FFF;
+}
+
+.ips_user_status .table_style02 {
+    margin-top: 15px;
+}
+
+#pie_convas {
+    width: 100%;
+    margin-top: 15px;
+}
+
+#pie {
+    background: #FFF;
+    border-radius: 5px;
+    padding: 6% 0 6.7% 0;
+}
+
+#bar_convas {
+    width: 100%;
+    margin-top: 15px;
+}
+
+#bar {
+    background: #FFF;
+    border-radius: 5px;
+}
+
+.red {
+    color: red !important;
+}
+
+.date_content {
+    width: 100%;
+    height: 70%;
+}
+
+.before_div {
+    padding-top: 16%;
+    height: 20%;
+    color: #BDBDBD;
+    font: bold 23px 'NanumGothicR';
+}
+
+.main_div {
+    height: 30%;
+    color: #000;
+    font: bold 40px 'NanumGothicR';
+}
+
+.after_div {
+    height: 30%;
+    color: #BDBDBD;
+    font: bold 23px 'NanumGothicR';
+    padding-top: 12px;
+}
+
+.before_div p {
+    text-align: center;
+}
+
+.main_div p {
+    text-align: center;
+}
+
+.ips_date_year .main_div p {
+    padding-top: 5px;
+}
+
+.after_div p {
+    text-align: center;
+}
+
+.ips_date_count span {
+    color: #BDBDBD;
+    font: bold 23px 'NanumGothicR';
+}
+
+.bottom_line {
+    border-bottom: 1px solid #0370b2;
+    padding-bottom: 8px;
+    display: inline-block;
+    width: 52px;
+    height: 27px;
+}
+
+.top_line {
+    border-top: 1px solid #0370b2;
+    padding-top: 8px;
+    display: inline-block;
+    width: 52px;
+    height: 36px;
+}
