@@ -1527,11 +1527,11 @@ select:disabled + ul.idealSelect:before {
         }
         
 
-        .box_txt_st01.st00_sh > dl:nth-child(6) {
+        .box_txt_st01.st00_sh > dl:nth-child(5) {
             width: 320px;
         }
 
-        .box_txt_st01.st00_sh > dl:nth-child(7) {
+        .box_txt_st01.st00_sh > dl:nth-child(6) {
             width: 250px;
             margin: 0 0 0 10px;
         }
@@ -6482,4 +6482,12 @@ input:disabled {
         color: white;
     }
 
-   
+
+.box_txt_K01 {
+    width: 50% !important;
+    float: left !important;
+}
+
+.invoice_Dl_K02 {
+    float: right !important;
+}

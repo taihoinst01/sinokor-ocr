@@ -1,6 +1,6 @@
 ﻿//import { identifier } from "babel-types";
 "use strict";
-
+var deptList = []; //부서
 $(function () {
     _init();
 });
@@ -878,7 +878,7 @@ var fn_baseList_chk = function (flag) {
             if (statusCnt > 0) {
                 fn_alert('alert', "이미 결재완료 된 문서가 존재합니다.");
             } else {
-                layer_open('layer1');            
+                layer_open('searchUserPop');            
             }
         } else {
             fn_alert('alert', "전달에 대한 권한이 없습니다.");
@@ -999,7 +999,7 @@ var fn_baseList_chk = function (flag) {
                         contentType: 'application/json; charset=UTF-8',
                         success: function (data) {
                             fn_alert('confirm', data.docData + "건의 문서가 전달 되었습니다.", function () {
-                                $('#layer1').fadeOut();
+                                $('#searchUserPop').fadeOut();
                                 var totCnt = $("input[name = chk_document]");
                                 $("#span_document").empty().html('결재리스트(기본) - ' + (totCnt.length - deleteTr.length) + ' 건');
                                 for (var i in deleteTr) {
@@ -1018,10 +1018,34 @@ var fn_baseList_chk = function (flag) {
     }
 }
 
+// 부서조회
+function searchDept() {
+    $.ajax({
+        url: '/userManagement/searchDept',
+        type: 'post',
+        datatype: "json",
+        async: false,
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            var dept = data.dept.dept;
+            for (var i in dept) {
+                var appendLi = '<li><a>' + dept[i].DEPT_NM + '</a></li>';
+                $('#teamList').append(appendLi);
+                $('#myApprovalDept').append(appendLi);
+                deptList.push(dept[i]);
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
 // [시작 함수]
 var _init = function () {
     checkboxEvent();
     buttonEvent();
     datePickerEvent();
     fn_search();
+    searchDept();
 };
