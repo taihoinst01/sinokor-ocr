@@ -7,9 +7,11 @@
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
 
-    <title alt="계산서 처리 현황">KoreanRe ICR Service - 계산서 처리 현황</title>
+    <title alt="ICR관리">KoreanRe ICR Service - ICR관리</title>
 
     <%include  ../common/commonLib.html%>
+
+    <link type="text/css" rel="stylesheet" href="css/user/invoiceProcessingStatus.css" />
 
     <!-- 공통 js -->
     <script type="text/javascript" src="js/common.client.js"></script>
@@ -17,6 +19,9 @@
     <!-- 문서 조회 학습 전용 js -->
     <script type="text/javascript" src="js/user/invoiceProcessingStatus.js"></script>
     <!-- // 문서 조회 전용 js -->
+
+    <script type="text/javascript" src="/publish/js/chart/Chart.bundle.min.js"></script>
+    <script type="text/javascript" src="/publish/js/chart/utils.js"></script>
 
     <style>
         #ocrProgress {
@@ -61,12 +66,173 @@
             <!-- // LNB -->
             <!-- 본문영역 -->
             <div id="content">
-                <h2 class="subtit subtit_st01 blind"><span>계산서 처리 현황</span></h2>
+                <h2 class="subtit subtit_st01 blind"><span>ICR관리</span></h2>
 
-                <span>계산서 처리 현황</span>
+                <div class="content_title_icon_ips"></div>
+                <div class="clear_both"></div>
+
+                <div class="ips_content_sub">
+                    <div class="ips_content_sub_top">
+                        <div class="ips_line_graph">
+                            <div class="ips_top_comment">
+                                <span>일간 계산서 처리 현황</span>
+                                <p>업데이트 시간 : <span>2018.10.18 00:00:00</span></p>
+                            </div>
+                            <div class="ips_line_convas">
+                                <canvas id="line"></canvas>
+                            </div>
+                        </div>
+                        <div class="ips_tot_document_count">
+                            <div class="ips_top_comment">
+                            </div>
+                            <div class="ips_box_document" style=" text-align: center; align-content: center;">
+                                <div style="padding-top: 50px;">
+                                    <div class="wait_doc_icon"></div>
+                                    <span style="font-size: 35px; padding-right:50px;">15</span>
+                                    <div class="clear_both"></div><br /><br />
+                                    <span class="doc_text" style="font-size: 25px;">대기중인 문서</span>
+                                </div>
+                            </div>
+                            <div class="ips_box_last ips_box_document" style=" text-align: center; align-content: center;">
+                                <div style="padding-top: 50px;">
+                                    <div class="success_doc_icon"></div>
+                                    <span style="font-size: 35px; padding-right:50px;">70</span>
+                                    <div class="clear_both"></div><br /><br />
+                                    <span class="doc_text" style="font-size: 25px;">완료된 문서</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ips_date">
+                            <div class="ips_top_comment">
+                                <span>일반처리건수</span>
+                            </div>
+                            <div class="ips_date_count">
+                                <div class="ips_date_top">
+                                    <div class="ips_date_year">
+                                        <div id="year_up_btn" class="date_up_btn"></div>
+                                        <div class="date_content">
+                                            <div class="before_div"><p><span class="bottom_line">2017</span></p></div>
+                                            <div class="main_div"><p>2018</p></div>
+                                            <div class="after_div"><p><span class="top_line">2019</span></p></div>
+                                        </div>
+                                        <div id="year_down_btn" class="date_down_btn"></div>
+                                    </div>
+                                    <div class="ips_date_month">
+                                        <div id="month_up_btn" class="date_up_btn"></div>
+                                        <div class="date_content">
+                                            <div class="before_div"><p><span class="bottom_line">9</span></p></div>
+                                            <div class="main_div"><p>10</p><p style="font-size: 12px;">October</p></div>
+                                            <div class="after_div"><p><span class="top_line">11</span></div>
+                                        </div>
+                                        <div id="month_down_btn" class="date_down_btn"></div>
+                                    </div>
+                                    <div class="ips_date_day">
+                                        <div id="day_up_btn" class="date_up_btn"></div>
+                                        <div class="date_content">
+                                            <div class="before_div"><p><span class="bottom_line">22</span></p></div>
+                                            <div class="main_div"><p>23</p><p style="font-size: 12px;">Tuesday</p></div>
+                                            <div class="after_div"><p><span class="top_line">24</span></p></div>
+                                        </div>
+                                        <div id="day_down_btn" class="date_down_btn"></div>
+                                    </div>
+                                </div>
+                                <div class="ips_date_bottom">
+                                    <button id="roll_back_btn">Roll back</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ips_content_sub_bottom">
+                        <div class="ips_user_status">
+                            <div class="ips_top_comment">
+                                <span>사용자별 처리 현황</span>
+                            </div>
+
+                            <div class="table_style02">
+                                <table id="userProcessingStatus">
+                                    <colgroup>
+                                        <col style="width: 25%">
+                                        <col style="width: 25%">
+                                        <col style="width: 25%">
+                                        <col style="width: 25%">
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th scope="row">문서번호</th>
+                                            <th scope="row">페이지수</th>
+                                            <th scope="row">마감년월</th>
+                                            <th scope="row">마감년월</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="ips_user_tbody">
+                                        <tr>
+                                            <td name="td_base">ICR20181018</td>
+                                            <td name="td_base">27</td>
+                                            <td name="td_base">1018</td>
+                                            <td name="td_base" class="red">42%</td>
+                                        </tr>
+                                        <tr>
+                                            <td name="td_base">ICR20181017</td>
+                                            <td name="td_base">20</td>
+                                            <td name="td_base">1017</td>
+                                            <td name="td_base" class="red">50%</td>
+                                        </tr>
+                                        <tr>
+                                            <td name="td_base">ICR20181016</td>
+                                            <td name="td_base">34</td>
+                                            <td name="td_base">1016</td>
+                                            <td name="td_base" class="red">67%</td>
+                                        </tr>
+                                        <tr>
+                                            <td name="td_base">ICR20181015</td>
+                                            <td name="td_base">12</td>
+                                            <td name="td_base">1015</td>
+                                            <td name="td_base" class="red">46%</td>
+                                        </tr>
+                                        <tr>
+                                            <td name="td_base">ICR20181013</td>
+                                            <td name="td_base">39</td>
+                                            <td name="td_base">1013</td>
+                                            <td name="td_base" class="red">55%</td>
+                                        </tr>
+                                        <tr>
+                                            <td name="td_base">ICR20181011</td>
+                                            <td name="td_base">23</td>
+                                            <td name="td_base">1011</td>
+                                            <td name="td_base" class="red">62%</td>
+                                        </tr>
+                                        <tr>
+                                            <td name="td_base">ICR20181010</td>
+                                            <td name="td_base">41</td>
+                                            <td name="td_base">1010</td>
+                                            <td name="td_base" class="red">70%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="ips_pie_graph">
+                            <div class="ips_top_comment">
+                                <span>출재사별 현황</span>
+                                <p>업데이트 시간 : <span>2018.10.18 00:00:00</span></p>
+                            </div>
+                            <div id="pie_convas">
+                                <canvas id="pie"></canvas>
+                            </div>
+                        </div>
+                        <div class="ips_bar_graph">
+                            <div class="ips_top_comment">
+                                <span>재학습율</span>
+                                <p>업데이트 시간 : <span>2018.10.18 00:00:00</span></p>
+                            </div>
+                            <div id="bar_convas">
+                                <canvas id="bar"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- // Content -->
-
         </div>
     </div>
 </body>
