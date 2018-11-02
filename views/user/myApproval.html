@@ -129,7 +129,7 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label for="intxt_01">결제상태</label></dt>
+                            <dt><label for="intxt_01">결재상태</label></dt>
                             <dd>
                                 <div class="checkbox-options">
                                     <input type="checkbox" value="02" id="st1" name="approvalState" checked /><label for="st1"><span>진행</span></label>
@@ -171,7 +171,7 @@
                                             <th scope="row">문서번호</th>
                                             <th scope="row">페이지수</th>
                                             <th scope="row">마감년월</th>
-                                            <th scope="row">결제상신자</th>
+                                            <th scope="row">결재상신자</th>
                                             <th scope="row">문서담당자</th>
                                             <th scope="row">메모</th>
                                             <th scope="row">상태</th>
@@ -205,9 +205,9 @@
                             <%
                             if(currentUser.scanApproval == 'Y' || currentUser.icrApproval == 'Y') {
                             %>
-                            <button type="button" id="btn_baseList_return" class="btn btn_style_k03">반려</button>
-                            <button type="button" id="btn_baseList_forward" class="btn btn_style_k03">전달</button>
                             <button type="button" id="btn_baseList_approval" class="btn btn_style_k01" disabled>승인</button>
+                            <button type="button" id="btn_baseList_forward" class="btn btn_style_k03">전달</button>
+                            <button type="button" id="btn_baseList_return" class="btn btn_style_k03">반려</button>
                             <%
                             } else{
                             %>
