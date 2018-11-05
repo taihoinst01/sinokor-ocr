@@ -6,12 +6,13 @@ var dayEngNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frid
 var progressId; // progress Id
 
 $(function () {
-    _init();
     dateEvent();
+    _init();    
 });
 
 function _init() {
     selectChartData();
+    $('#roll_back_btn').click();
 }
 
 function selectChartData() {

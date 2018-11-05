@@ -18,7 +18,18 @@ router.get('/favicon.ico', function (req, res) {
 // invoiceProcessingStatus.html 보여주기
 router.get('/', function (req, res) {
     console.log("check");
-    if (req.isAuthenticated()) res.render('user/invoiceProcessingStatus', { currentUser: req.user });
+    if (req.isAuthenticated()) {
+        var today = new Date();
+        var yyyy = today.getFullYear();
+        var mm = (today.getMonth() + 1 < 10) ? '0' + (today.getMonth() + 1) : today.getMonth() + 1;
+        var dd = (today.getDate() < 10) ? '0' + today.getDate() : today.getDate();
+        var hh = (today.getHours() < 10) ? '0' + today.getHours() : today.getHours();
+        var minute = (today.getMinutes() < 10) ? '0' + today.getMinutes() : today.getMinutes();
+        var ss = (today.getSeconds() < 10) ? '0' + today.getSeconds() : today.getSeconds();
+
+        var current = yyyy + '-' + mm + '-' + dd + ' ' + hh + ':' + minute + ':' + ss;
+        res.render('user/invoiceProcessingStatus', { currentUser: req.user, currentDate: current });
+    }
     else res.redirect("/logout");
 });
 
