@@ -160,6 +160,13 @@
     margin: 0 2% 2% 2%;
 }
 
+.ips_user_table {
+    height: 296px;
+    background: #FFF;
+    border-radius: 5px;
+    overflow: auto;
+}
+
 .ips_user_tbody {
     background: #FFF;
 }
@@ -189,8 +196,8 @@
     border-radius: 5px;
 }
 
-.red {
-    color: red !important;
+.emphasis-color {
+    color: blue !important;
 }
 
 .date_content {

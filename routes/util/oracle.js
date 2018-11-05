@@ -3412,6 +3412,81 @@ exports.deleteUser = function (req, done) {
     });
 };
 
+exports.selectInvoiceProcessingStatus = function (done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let selectQuery = 'SELECT * FROM TBL_INVOICE_PROCESSING_STATUS';
+            result = await conn.execute(selectQuery);
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.countingStatistics = function (type, userId, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        let query;
+        var targetColumn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var now = getConvertYYYYMMDD();
+            if (type != 'retrain') {
+                query = 'SELECT * FROM TBL_INVOICE_PROCESSING_STATUS WHERE YEARMONTHDAY = :yearMonthDay AND EMP_NO = :userId';
+                result = await conn.execute(query, [now, userId]);
+
+                if (type == 'line') {
+                    targetColumn = 'INVOICEPROCESSINGCOUNT';
+                } else if (type == 'pie') {
+                    targetColumn = 'OCRCOUNT';
+                }
+
+                if (result.rows.length > 0) {
+                    query = 'UPDATE TBL_INVOICE_PROCESSING_STATUS SET ' + targetColumn + ' = ' + targetColumn + ' + 1 WHERE YEARMONTHDAY = :yearMonthDay AND EMP_NO = :userId';
+                } else {
+                    query = 'INSERT INTO TBL_INVOICE_PROCESSING_STATUS(YEARMONTHDAY, EMP_NO, ' + targetColumn + ') VALUES (:yyyymmdd, :userId, 1)';
+                }
+            } else {
+                targetColumn = 'RETRAINCOUNT';
+                query = 'UPDATE TBL_INVOICE_PROCESSING_STATUS SET ' + targetColumn + ' = ' + targetColumn + ' + 1 WHERE YEARMONTHDAY = :yearMonthDay AND EMP_NO = :userId';
+            }
+
+            await conn.execute(query, [now, userId]);
+
+
+            return done(null, null);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();
@@ -3423,4 +3498,13 @@ function getConvertDate() {
     var mss = (today.getMilliseconds() < 100) ? ((today.getMilliseconds() < 10) ? '00' + today.getMilliseconds() : '0' + today.getMilliseconds()) : today.getMilliseconds();
 
     return '' + yyyy + mm + dd + hh + minute + ss + mss;
+}
+
+function getConvertYYYYMMDD() {
+    var today = new Date();
+    var yyyy = today.getFullYear();
+    var mm = (today.getMonth() + 1 < 10) ? '0' + (today.getMonth() + 1) : today.getMonth() + 1;
+    var dd = (today.getDate() < 10) ? '0' + (today.getDate()) : today.getDate();
+
+    return yyyy + '-' + mm + '-' + dd;
 }

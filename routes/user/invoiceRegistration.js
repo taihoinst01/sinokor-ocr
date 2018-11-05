@@ -410,6 +410,9 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         //sync.await(oracle.insertDocument([fileInfo], sync.defer()));
         sync.await(oracle.insertOcrFileDtl(fileDtlInfo, sync.defer()));
 
+        // 통계 insert (선형 그래프)
+        sync.await(oracle.countingStatistics('line', userId, sync.defer()));
+
         res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlInfo });
     });
 

@@ -5,75 +5,58 @@ var monthEngNames = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'Jul
 var dayEngNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 var progressId; // progress Id
 
-
 $(function () {
     _init();
     dateEvent();
 });
 
 function _init() {
-    lineChart();
-    pieChart();
-    barChart();
+    selectChartData();
 }
 
-function barChart() {
-
-    var color = Chart.helpers.color;
-    var barChartData = {
-        labels: ['January', 'February', 'March', 'April', 'May'],
-        datasets: [{
-            label: '',
-            backgroundColor: color(window.chartColors.blue).alpha(0.3).rgbString(),
-            borderColor: 'rgba(3,112,178,1)',
-            borderWidth: 1,
-            data: [
-                6,
-                7,
-                5,
-                4,
-                7
-            ]
-        }]
-
-    };
-
-    var barConfig = {
-        type: 'bar',
-        data: barChartData,
-        options: {
-            responsive: true,
-            legend: {
-                position: '0',
-            },
-            scales: {
-                yAxes: [{
-                    display: true,
-                    ticks: {
-                        beginAtZero: true,
-                        steps: 1,
-                        stepValue: 1,
-                        min: 0
-                    }
-                }]
+function selectChartData() {
+    $.ajax({
+        url: "/invoiceProcessingStatus/selectChartData",
+        method: 'post',
+        data: {},
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        beforeSend: function () {
+            $("#progressMsgTitle").html("update Chart Data...");
+            progressId = showProgressBar();
+        },
+        success: function (data) {
+            if (data.code == 200) {
+                lineChart(data.chartData); // 일간 계산서 처리 현황
+                userList(data.chartData); // 사용자별 처리 현황
+                pieChart(data.chartData); // 출재사별 현황
+                barChart(data.chartData); // 재학습율
+            } else {
+                fn_alert('alert', "오류가 발생했습니다.");
             }
-        }
-    };
 
-    var barCtx = document.getElementById('bar').getContext('2d');
-    window.myBar = new Chart(barCtx, barConfig);  
+            endProgressBar(progressId);
+        },
+        error: function (e) {
+            endProgressBar(progressId);
+        }
+    });
 }
 
-function lineChart() {
+function lineChart(data) {
+    var lineChartData = convertLineChartData(data);
+
     var lineConfig = {
         type: 'line',
         data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+                'October', 'November', 'December'],
             datasets: [{
                 label: '',
                 backgroundColor: 'rgba(3,112,178,1)',
                 borderColor: 'rgba(3,112,178,1)',
-                data: [5, 4, 7, 8, 3, 3, 0],
+                data: lineChartData,
                 fill: false,
             }]
         },
@@ -94,7 +77,7 @@ function lineChart() {
             scales: {
                 yAxes: [{
                     ticks: {
-                        stepSize: 1,
+                        stepSize: 5,
                         suggestedMin: 0,
                         suggestedMax: 10,
                     }
@@ -104,6 +87,58 @@ function lineChart() {
     };
     var lineCtx = document.getElementById('line').getContext('2d');
     window.myLine = new Chart(lineCtx, lineConfig);
+}
+
+function convertLineChartData(data) {
+    var countArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    for (var i in data) {
+        countArr[Number(data[i].YEARMONTHDAY.split('-')[1]) - 1] += Number(data[i].INVOICEPROCESSINGCOUNT);
+    }
+
+    return countArr;
+}
+
+function userList(data) {
+    var userListData = convertUserListData(data);
+    /*
+    <tr>
+        <td name="td_base">ICR20181018</td>
+        <td name="td_base">27</td>
+        <td name="td_base">1018</td>
+        <td name="td_base" class="red">42%</td>
+    </tr>
+    */
+    var tableHtml = '';
+    for (var i in userListData) {
+        tableHtml += '<tr>';
+        tableHtml += '<td name="td_base">' + userListData[i].EMP_NO +'</td>';
+        tableHtml += '<td name="td_base">' + userListData[i].INVOICEPROCESSINGCOUNT +'</td>';
+        tableHtml += '<td name="td_base">0</td>';
+        tableHtml += '<td name="td_base" class="emphasis-color">0%</td>';
+        tableHtml += '</tr>';
+    }
+    $('.ips_user_tbody').empty().append(tableHtml);
+}
+
+function convertUserListData(data) {
+    var returnData = [];
+    var isOverlap = false;
+
+    for (var i in data) {
+        isOverlap = false;
+        for (var j in returnData) {
+            if (data[i].EMP_NO == returnData[j].EMP_NO) {
+                returnData[j].INVOICEPROCESSINGCOUNT = Number(returnData[j].INVOICEPROCESSINGCOUNT) + Number(data[i].INVOICEPROCESSINGCOUNT);
+                isOverlap = true;
+                break;
+            }
+        }
+        if (!isOverlap) {
+            returnData.push(data[i]);
+        }
+    }
+    return returnData;
 }
 
 function pieChart() {
@@ -131,6 +166,68 @@ function pieChart() {
     };
     var pieCtx = document.getElementById('pie').getContext('2d');
     window.myPie = new Chart(pieCtx, pieConfig);
+}
+
+function barChart(data) {
+    var barData = convertBarChartData(data);
+
+    var color = Chart.helpers.color;
+    var barChartData = {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+            'October', 'November', 'December'],
+        datasets: [{
+            label: '',
+            backgroundColor: color(window.chartColors.blue).alpha(0.3).rgbString(),
+            borderColor: 'rgba(3,112,178,1)',
+            borderWidth: 1,
+            data: barData
+        }]
+
+    };
+
+    var barConfig = {
+        type: 'bar',
+        data: barChartData,
+        options: {
+            responsive: true,
+            legend: {
+                position: '0',
+            },
+            scales: {
+                yAxes: [{
+                    display: true,
+                    ticks: {
+                        beginAtZero: true,
+                        steps: 1,
+                        stepValue: 1,
+                        min: 0
+                    }
+                }]
+            }
+        }
+    };
+
+    var barCtx = document.getElementById('bar').getContext('2d');
+    window.myBar = new Chart(barCtx, barConfig);
+}
+
+function convertBarChartData(data) {
+    var ocrArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    var retrainArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    var returnArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    for (var i in data) {
+        ocrArr[Number(data[i].YEARMONTHDAY.split('-')[1]) - 1] += Number(data[i].OCRCOUNT);
+        retrainArr[Number(data[i].YEARMONTHDAY.split('-')[1]) - 1] += Number(data[i].RETRAINCOUNT);
+    }
+    for (var i in ocrArr) {
+        if (ocrArr[i] != 0) {
+            returnArr[i] = Number(((ocrArr[i] - retrainArr[i]) / ocrArr[i]) * 100);
+        } else {
+            returnArr[i] = 100;
+        }
+    }
+    console.log(returnArr);
+    return returnArr;
 }
 
 var dateEvent = function () {
