@@ -221,7 +221,7 @@ function convertBarChartData(data) {
     }
     for (var i in ocrArr) {
         if (ocrArr[i] != 0) {
-            returnArr[i] = Number(((ocrArr[i] - retrainArr[i]) / ocrArr[i]) * 100);
+            returnArr[i] = Number(((ocrArr[i] - retrainArr[i]) / ocrArr[i]) * 100).toFixed(2);
         } else {
             returnArr[i] = 100;
         }
