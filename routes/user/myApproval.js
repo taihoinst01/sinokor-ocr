@@ -49,7 +49,8 @@ var fnSearchApprovalList = function (req, res) {
         searchEndDate: commonUtil.nvl(req.body.searchEndDate),
         approvalState: commonUtil.nvl(req.body.approvalState),
         level: commonUtil.nvl(req.body.level),
-        adminApproval: commonUtil.nvl(req.body.adminApproval)
+        adminApproval: commonUtil.nvl(req.body.adminApproval),
+        deadLine: commonUtil.nvl(req.body.deadLine)
     };
     if (param["docNum"] != '') {
         condQuery += ' AND DOCNUM LIKE \'%' + param["docNum"] + '%\'';
@@ -76,6 +77,12 @@ var fnSearchApprovalList = function (req, res) {
             condQuery += ` AND STATUS IN ${param["approvalState"]}`
         } 
     }
+
+    if (param["deadLine"] != "") { // 마감년월
+        condQuery += " AND DEADLINE = '" + param["deadLine"] + "'";
+    }
+
+    condQuery += " AND REGDATE BETWEEN TO_DATE ('" + param["searchStartDate"] + "') AND (TO_DATE('" + param["searchEndDate"] + "', 'YYYY-MM-DD') + 1) ";
 
     var approvalListQuery = "SELECT * FROM TBL_APPROVAL_MASTER WHERE 1=1 ";
     var listQuery = approvalListQuery + condQuery + orderQuery;

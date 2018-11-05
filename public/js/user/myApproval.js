@@ -297,17 +297,18 @@ var fn_search = function () {
     } else {
         return false;
     }
+
     var param = {
         docNum: nvl($("#docNum").val()),
         faoTeam: nvl($("#select_faoTeam").val()),
-        faoPart: nvl($("#select_faoPart").val()),
         documentManager: nvl($("#documentManager").val()),
         deadLineDt: nvl($("#deadLineDt").val()),
         searchStartDate: nvl($("#searchStartDate").val()),
         searchEndDate: nvl($("#searchEndDate").val()),
         approvalState: approvalState,
         level: level,
-        adminApproval: $('#adminApproval').val()
+        adminApproval: $('#adminApproval').val(),
+        deadLine: $('#deadLineDt').val()
     };
     //console.log("조건 : " + JSON.stringify(param));
 
@@ -373,6 +374,7 @@ var fn_search = function () {
                 });
             } else {
                 appendHtml += '<tr><td colspan="8">조회할 데이터가 없습니다.</td></tr>';
+
             }
 
             $("#tbody_baseList").empty().append(appendHtml);
@@ -914,7 +916,6 @@ var fn_baseList_chk = function (flag) {
                                 appendHtml += '<tr>' +
                                     '<td>' + data[i].USERID + '</td>' +
                                     '<td>소속팀</td>' +
-                                    '<td>소속파트</td>' +
                                     '</tr >';
                             }
 
