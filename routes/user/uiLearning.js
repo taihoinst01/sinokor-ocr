@@ -186,6 +186,12 @@ router.post('/uiTraining', function (req, res) {
 
             // 통계 insert (막대 그래프)
             sync.await(oracle.countingStatistics('retrain', userId, sync.defer()));
+            // 통계 insert (파이 그래프)
+            for (var i in afterData.data) {
+                if ((docType != 0 && docType != 1) && afterData.data[i].colLbl == 0) {
+                    sync.await(oracle.insertOgCompanyStatus(afterData.data[i].text, sync.defer()));
+                }
+            }
 
             returnObj = { code: 200, message: 'ui training success' };
 

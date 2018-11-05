@@ -48,8 +48,9 @@ router.post('/selectChartData', function (req, res) {
                 
                 var chartData = sync.await(oracle.selectInvoiceProcessingStatus(sync.defer()));
                 var docCountData = sync.await(oracle.selectDocumentCount(sync.defer()));
+                var ogcCountData = sync.await(oracle.selectOgCompanyStatus(sync.defer()));
 
-                returnObj = { code: 200, chartData: chartData, docCountData: docCountData };
+                returnObj = { code: 200, chartData: chartData, docCountData: docCountData, ogcCountData: ogcCountData };
             } catch (e) {
                 console.log(e);
                 returnObj = { code: 500, message: e };

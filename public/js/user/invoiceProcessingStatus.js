@@ -31,7 +31,7 @@ function selectChartData() {
             if (data.code == 200) {
                 lineChart(data.chartData); // 일간 계산서 처리 현황
                 userList(data.docCountData); // 사용자별 처리 현황
-                pieChart(data.chartData); // 출재사별 현황
+                pieChart(data.ogcCountData); // 출재사별 현황
                 barChart(data.chartData); // 재학습율
             } else {
                 fn_alert('alert', "오류가 발생했습니다.");
@@ -130,12 +130,14 @@ function userList(data) {
     $('#success_doc_count').text(successCount);
 }
 
-function pieChart() {
+function pieChart(data) {
+    var pieChartData = convertPieChartData(data);
+
     var pieConfig = {
         type: 'doughnut',
         data: {
             datasets: [{
-                data: [65, 12, 23],
+                data: pieChartData.data,
                 backgroundColor: [
                     'rgba(15,142,200,1)',
                     'rgba(10,122,190,1)',
@@ -143,18 +145,40 @@ function pieChart() {
                 ],
                 label: ''
             }],
-            labels: [
-                'ICR2018',
-                'ICR2018',
-                'ICR2018'
-            ]
+            labels: pieChartData.labels
         },
         options: {
-            responsive: true
+            responsive: true,
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        return pieChartData.originLabels[tooltipItem.index] + " : " + data.datasets[0].data[tooltipItem.index];
+                    }
+                }
+            }
         }
     };
     var pieCtx = document.getElementById('pie').getContext('2d');
     window.myPie = new Chart(pieCtx, pieConfig);
+}
+
+function convertPieChartData(data) {
+    var pieData = {
+        'originLabels': [],
+        'labels': [],
+        'data': []
+    };
+    for (var i in data) {
+        pieData.originLabels.push(data[i].OGCOMPANYNAME);
+        pieData.labels.push((data[i].OGCOMPANYNAME.length > 12) ? data[i].OGCOMPANYNAME.substring(0, 12) + '..' : data[i].OGCOMPANYNAME);
+        pieData.data.push(data[i].OGCCOUNT);
+    }
+    for (var i = pieData.labels.length; i < 3; i++) {
+        pieData.labels.push('');
+        pieData.data.push(0);
+    }
+
+    return pieData;
 }
 
 function barChart(data) {

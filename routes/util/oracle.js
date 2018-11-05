@@ -3525,6 +3525,74 @@ exports.selectDocumentCount = function (done) {
     });
 };
 
+exports.selectOgCompanyStatus = function (done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let selectQuery = '' +
+                'SELECT ' +
+                    '* ' +
+                'FROM ' +
+                    '(SELECT ' +
+                        '* ' +
+                    'FROM ' +
+                        'TBL_INVOICE_OGCOMPANY_STATUS ' +
+                    'ORDER BY OGCCOUNT DESC) ' +
+                'WHERE ' +
+                    'rownum <= 3';
+            result = await conn.execute(selectQuery);
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertOgCompanyStatus = function (ogcn, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let query = 'SELECT * FROM TBL_INVOICE_OGCOMPANY_STATUS WHERE OGCOMPANYNAME = :ogcn';
+            result = await conn.execute(query, [ogcn]);
+            if (result.rows.length > 0) {
+                query = 'UPDATE TBL_INVOICE_OGCOMPANY_STATUS SET OGCCOUNT=OGCCOUNT+1 WHERE OGCOMPANYNAME = :ogcn';
+            } else {
+                query = 'INSERT INTO TBL_INVOICE_OGCOMPANY_STATUS(OGCOMPANYNAME, OGCCOUNT) VALUES (:ogcn,1)';
+            }
+            await conn.execute(query, [ogcn]);
+
+            return done(null, null);
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();
