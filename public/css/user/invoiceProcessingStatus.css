@@ -27,9 +27,12 @@
 }
 
 .ips_line_graph {
+    background: #FFF;
+    padding: 1%;
     float: left;
-    height: 100%;
-    width: 50%;
+    height: 87%;
+    width: 48%;
+    border-radius: 5px;
 }
 
 .ips_tot_document_count {
@@ -39,29 +42,41 @@
 }
 
 .ips_date {
+    background: #FFF;
+    border-radius: 5px;
+    padding: 1%;
     float: left;
-    height: 100%;
-    width: 35%;
+    height: 87%;
+    width: 33%;
 }
 
 .ips_user_status {
+    background: #FFF;
+    border-radius: 5px;
     float: left;
-    height: 100%;
-    width: 33%;
+    height: 91%;
+    padding: 1%;
+    width: 31%;
     margin: 0 2% 0 0;
 }
 
 .ips_pie_graph {
+    background: #FFF;
+    border-radius: 5px;
     float: left;
-    height: 100%;
-    width: 28%;
+    height: 91%;
+    width: 26%;
+    padding: 1%;
     margin: 0 2% 0 0;
 }
 
 .ips_bar_graph {
+    background: #FFF;
+    border-radius: 5px;
     float: left;
-    height: 100%;
-    width: 35%;
+    height: 91%;
+    width: 33%;
+    padding: 1%;
 }
 
 .ips_top_comment {
@@ -97,7 +112,7 @@
     width: 80%;
     background: #FFF;
     height: 38.5%;
-    margin: 10px 15px 25px 25px;
+    margin: 17px 15px 25px 25px;
     border-radius: 5px;
 }
 
