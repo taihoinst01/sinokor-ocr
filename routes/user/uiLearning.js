@@ -142,6 +142,7 @@ router.post('/uiTraining', function (req, res) {
     var afterData = req.body.afterData;
     var docType = req.body.docType;
     var docSid = req.body.docSid;
+    var userId = req.session.userId;
     var fmData = [];
     var cmData = [];
     var returnObj;
@@ -182,6 +183,9 @@ router.post('/uiTraining', function (req, res) {
             // Azure ml train 프록시 호출
             var azureRes = request('POST', 'http://172.16.53.143:8888/ml/train', { json: { 'fmData': [], 'cmData': cmData } });
             //var azureRes = request('POST', 'http://172.16.53.143:8888/ml/train', { json: { 'fmData': fmData, 'cmData': cmData } });
+
+            // 통계 insert (막대 그래프)
+            sync.await(oracle.countingStatistics('retrain', userId, sync.defer()));
 
             returnObj = { code: 200, message: 'ui training success' };
 

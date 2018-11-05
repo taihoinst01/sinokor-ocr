@@ -3456,7 +3456,7 @@ exports.countingStatistics = function (type, userId, done) {
 
                 if (type == 'line') {
                     targetColumn = 'INVOICEPROCESSINGCOUNT';
-                } else if (type == 'pie') {
+                } else if (type == 'bar') {
                     targetColumn = 'OCRCOUNT';
                 }
 

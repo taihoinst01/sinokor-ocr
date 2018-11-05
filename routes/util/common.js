@@ -528,9 +528,10 @@ router.post('/selectUserInfo', function (req, res) {
 // [POST] OCR API (request binary data)
 router.post('/ocr', function (req, res) {
     var fileInfo = req.body.fileInfo;
+    var userId = req.session.userId;
 
     console.time("ocrTime")
-    fs.readFile(fileInfo.convertedFilePath + fileInfo.convertFileName , function (err, data) {
+    fs.readFile(fileInfo.convertedFilePath + fileInfo.convertFileName, function (err, data) {
         if (err) { // fs error
             console.log(err);
             res.send({ code: 404, error: '파일이 없습니다.' });
@@ -568,13 +569,21 @@ router.post('/ocr', function (req, res) {
                         console.timeEnd("ocrTime");
                         res.send({ code: (JSON.parse(body)).code, message: (JSON.parse(body)).message });
                     } else { // 성공
-                        console.timeEnd("ocrTime");
-                        res.send(ocrParsing(body));
+                        console.timeEnd("ocrTime");                       
+                        sync.fiber(function () {
+                            try {
+                                sync.await(oracle.countingStatistics('bar', userId, sync.defer()));
+                                res.send(ocrParsing(body)); 
+                            } catch (e) {
+                                console.log(e);
+                            }
+                        });                     
                     }
                 }
             });
         }
-    });
+    });  
+    
 });
 
 //pass => 한글 English 1234567890 <>,.!@#$%^&*()~`-+_=|;:?/ lid => Iñtërnâtiônàlizætiøn☃

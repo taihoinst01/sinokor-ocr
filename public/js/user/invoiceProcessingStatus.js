@@ -226,7 +226,7 @@ function convertBarChartData(data) {
             returnArr[i] = 100;
         }
     }
-    console.log(returnArr);
+
     return returnArr;
 }
 
