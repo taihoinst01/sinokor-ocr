@@ -221,7 +221,7 @@
 }
 
 .before_div {
-    padding-top: 16%;
+    padding-top: 7%;
     height: 20%;
     color: #BDBDBD;
     font: bold 23px 'NanumGothicR';
@@ -275,4 +275,5 @@
     display: inline-block;
     width: 52px;
     height: 36px;
+    margin-top: 7px;
 }
