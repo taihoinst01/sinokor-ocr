@@ -12,7 +12,7 @@ $(function () {
 
 function _init() {
     selectChartData();
-    $('#roll_back_btn').click();
+    initDate();
 }
 
 function selectChartData() {
@@ -352,39 +352,42 @@ var dateEvent = function () {
         }
     });
 
-    $('#roll_back_btn').click(function (e) {       
-        var d = new Date();
-        $('.ips_date_year .bottom_line:eq(0)').text(d.getFullYear() - 1);
-        $('.ips_date_year .main_div > p').text(d.getFullYear());
-        $('.ips_date_year .top_line:eq(0)').text(d.getFullYear() + 1);
+    $('#roll_back_btn').click(function (e) {                
 
-        if (d.getMonth() != 0) {
-            $('.ips_date_month .bottom_line:eq(0)').text(d.getMonth());
-        } else {
-            $('.ips_date_month .bottom_line:eq(0)').text('');
-        }
-        $('.ips_date_month .main_div > p:eq(0)').text(d.getMonth() + 1);
-        $('.ips_date_month .main_div > p:eq(1)').text(monthEngNames[d.getMonth()]);
-        if (d.getMonth() != 11) {
-            $('.ips_date_month .top_line:eq(0)').text(d.getMonth() + 2);
-        } else {
-            $('.ips_date_month .top_line:eq(0)').text('');
-        }
-
-        if (d.getDate() != 1) {
-            $('.ips_date_day .bottom_line:eq(0)').text(d.getDate() - 1);
-        } else {
-            $('.ips_date_day .bottom_line:eq(0)').text('');
-        }
-        $('.ips_date_day .main_div > p:eq(0)').text(d.getDate());
-        $('.ips_date_day .main_div > p:eq(1)').text(dayEngNames[d.getDay()]);
-
-        if (d.getDate() != 31) {
-            $('.ips_date_day .top_line:eq(0)').text(d.getDate() + 1);
-        } else {
-            $('.ips_date_day .top_line:eq(0)').text('');
-        }
-        
     });
 
 };
+
+function initDate() {
+    var d = new Date();
+    $('.ips_date_year .bottom_line:eq(0)').text(d.getFullYear() - 1);
+    $('.ips_date_year .main_div > p').text(d.getFullYear());
+    $('.ips_date_year .top_line:eq(0)').text(d.getFullYear() + 1);
+
+    if (d.getMonth() != 0) {
+        $('.ips_date_month .bottom_line:eq(0)').text(d.getMonth());
+    } else {
+        $('.ips_date_month .bottom_line:eq(0)').text('');
+    }
+    $('.ips_date_month .main_div > p:eq(0)').text(d.getMonth() + 1);
+    $('.ips_date_month .main_div > p:eq(1)').text(monthEngNames[d.getMonth()]);
+    if (d.getMonth() != 11) {
+        $('.ips_date_month .top_line:eq(0)').text(d.getMonth() + 2);
+    } else {
+        $('.ips_date_month .top_line:eq(0)').text('');
+    }
+
+    if (d.getDate() != 1) {
+        $('.ips_date_day .bottom_line:eq(0)').text(d.getDate() - 1);
+    } else {
+        $('.ips_date_day .bottom_line:eq(0)').text('');
+    }
+    $('.ips_date_day .main_div > p:eq(0)').text(d.getDate());
+    $('.ips_date_day .main_div > p:eq(1)').text(dayEngNames[d.getDay()]);
+
+    if (d.getDate() != 31) {
+        $('.ips_date_day .top_line:eq(0)').text(d.getDate() + 1);
+    } else {
+        $('.ips_date_day .top_line:eq(0)').text('');
+    }
+}
