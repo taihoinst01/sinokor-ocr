@@ -29,7 +29,7 @@ function selectChartData() {
         success: function (data) {
             if (data.code == 200) {
                 lineChart(data.chartData); // 일간 계산서 처리 현황
-                userList(data.chartData); // 사용자별 처리 현황
+                userList(data.docCountData); // 사용자별 처리 현황
                 pieChart(data.chartData); // 출재사별 현황
                 barChart(data.chartData); // 재학습율
             } else {
@@ -100,7 +100,9 @@ function convertLineChartData(data) {
 }
 
 function userList(data) {
-    var userListData = convertUserListData(data);
+    var waitCount = 0;
+    var successCount = 0;
+    var userListData = data;
     /*
     <tr>
         <td name="td_base">ICR20181018</td>
@@ -111,34 +113,20 @@ function userList(data) {
     */
     var tableHtml = '';
     for (var i in userListData) {
+        waitCount += Number(userListData[i].DOCUMENTCOUNT);
+        successCount += Number(userListData[i].SUCCESSCOUNT);
         tableHtml += '<tr>';
-        tableHtml += '<td name="td_base">' + userListData[i].EMP_NO +'</td>';
-        tableHtml += '<td name="td_base">' + userListData[i].INVOICEPROCESSINGCOUNT +'</td>';
-        tableHtml += '<td name="td_base">0</td>';
-        tableHtml += '<td name="td_base" class="emphasis-color">0%</td>';
+        tableHtml += '<td name="td_base">' + userListData[i].UPLOADNUM +'</td>';
+        tableHtml += '<td name="td_base">' + userListData[i].DOCUMENTCOUNT +'</td>';
+        tableHtml += '<td name="td_base">' + userListData[i].SUCCESSCOUNT +'</td>';
+        tableHtml += '<td name="td_base" class="emphasis-color">' +
+            ((Number(userListData[i].SUCCESSCOUNT) / Number(userListData[i].DOCUMENTCOUNT)) * 100).toFixed(0)
+            + '%</td>';
         tableHtml += '</tr>';
     }
     $('.ips_user_tbody').empty().append(tableHtml);
-}
-
-function convertUserListData(data) {
-    var returnData = [];
-    var isOverlap = false;
-
-    for (var i in data) {
-        isOverlap = false;
-        for (var j in returnData) {
-            if (data[i].EMP_NO == returnData[j].EMP_NO) {
-                returnData[j].INVOICEPROCESSINGCOUNT = Number(returnData[j].INVOICEPROCESSINGCOUNT) + Number(data[i].INVOICEPROCESSINGCOUNT);
-                isOverlap = true;
-                break;
-            }
-        }
-        if (!isOverlap) {
-            returnData.push(data[i]);
-        }
-    }
-    return returnData;
+    $('#wait_doc_count').text(waitCount)
+    $('#success_doc_count').text(successCount);
 }
 
 function pieChart() {

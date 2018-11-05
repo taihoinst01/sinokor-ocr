@@ -3488,6 +3488,43 @@ exports.countingStatistics = function (type, userId, done) {
     });
 };
 
+exports.selectDocumentCount = function (done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let selectQuery = '' +
+            'SELECT ' +
+                'A.UPLOADNUM, COUNT(A.UPLOADNUM) AS DOCUMENTCOUNT, ' +
+                '(SELECT COUNT(B.SEQNUM) FROM TBL_APPROVAL_MASTER B WHERE B.NOWNUM IS NULL AND B.UPLOADNUM = A.UPLOADNUM) AS SUCCESSCOUNT ' +
+            'FROM ' +
+                'TBL_APPROVAL_MASTER A ' +
+            'WHERE ' +
+                'A.UPLOADNUM IS NOT NULL ' +
+            'GROUP BY ' +
+                'A.UPLOADNUM ';
+            result = await conn.execute(selectQuery);
+
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+        } catch (err) {
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();
