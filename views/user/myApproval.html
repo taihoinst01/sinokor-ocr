@@ -70,31 +70,14 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label>소속팀</label></dt>
+                            <dt><label>소속부서</label></dt>
                             <dd>
                                 <div class="select_style w100">
                                     <input type="hidden" id="select_faoTeam" value="" />
                                     <span class="ctrl"><span class="arrow"></span></span>
-                                    <button type="button" class="myValue btnSelector">전 체</button>
-                                    <ul class="aList">
-                                        <li><a>테스트팀A</a></li>
-                                        <li><a>테스트팀B</a></li>
-                                        <li><a>테스트팀C</a></li>
-                                    </ul>
-                                </div>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><label>소속파트</label></dt>
-                            <dd>
-                                <div class="select_style w100">
-                                    <input type="hidden" id="select_faoPart" value="" />
-                                    <span class="ctrl"><span class="arrow"></span></span>
-                                    <button type="button" class="myValue btnSelector">전 체</button>
-                                    <ul class="aList">
-                                        <li class="select_li"><a>테스트파트X</a></li>
-                                        <li class="select_li"><a>테스트파트Y</a></li>
-                                        <li class="select_li"><a>테스트파트Z</a></li>
+                                    <button type="button" class="myValue btnSelector">전체</button>
+                                    <ul id="myApprovalDept" class="aList">
+                                        <li><a>전체</a></li>
                                     </ul>
                                 </div>
                             </dd>
@@ -148,7 +131,7 @@
 
                 <div class="box_content st_stsh">
                     <!-- 기본결재리스트 영역 -->
-                    <div id="div_base" class="box_st03 box_st031 box_content_bg" >
+                    <div id="div_base" class="box_st03 box_st031 box_content_bg">
                         <h3 class="tits"><span id="span_document">결재리스트(기본)</span></h3>
 
                         <div class="table_style02 table_K01">
@@ -297,7 +280,7 @@
 
 
                     <h3 class="tits"><span>양식이미지</span></h3>
-                    <div id="mainImgDiv" class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3" >
+                    <div id="mainImgDiv" class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3">
                     </div>
 
                     <div class="box_imgtmb">
@@ -320,7 +303,7 @@
     </div>
 
     <!-- 팝업_유저찾기팝업 -->
-    <div id="layer1" class="poplayer">
+    <div id="searchUserPop" class="poplayer">
         <input type="hidden" id="docPopImgPath" />
         <input type="hidden" id="docPopImgId" />
         <input type="hidden" id="batchListRowNum" />
@@ -331,7 +314,7 @@
                     <h1>ICR유저 찾기</h1>
                 </div>
                 <div class="pop_content">
-                    <div class="box_txt_st01 st00_sh mb20">
+                    <div class="box_txt_st01 st00_sh mb20 box_txt_K01">
                         <dl class="invoice_Dl_01">
                             <dt>
                                 <label for="intxt_01">
@@ -349,7 +332,30 @@
                                 <label class="label_k01" for="approvalManagerChk">결재담당자</label>
                             </dd>
                         </dl>
-                        <dl class="invoice_Dl_02">
+                    </div>
+
+                    <div class="box_txt_st01 st00_sh mb20 box_txt_K01">
+                        <dl class="invoice_Dl_05 invoice_Dl_K02" style="margin-right:30px;">
+                            <dt><label for="intxt_02"></label></dt>
+                            <dd>
+                                <button type="button" id="btn_pop_user_search" class="btn btn_style_k03">검색</button>
+                            </dd>
+                        </dl>
+                        <dl class="invoice_Dl_03 invoice_Dl_K02">
+                            <dt><label for="intxt_02">소속부서</label></dt>
+                            <dd>
+                                <div class="select_style select_style_K01">
+                                    <input type="hidden" id="select_team" value="전체" />
+                                    <span class="ctrl"><span class="arrow"></span></span>
+                                    <button type="button" class="myValue btnSelector">전체</button>
+                                    <ul id="teamList" class="aList">
+                                        <li><a>전체</a></li>
+                                        <!--<li><a onclick="liSelect(this, '소속팀1')">소속팀1</a></li>-->
+                                    </ul>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl class="invoice_Dl_02 invoice_Dl_K02">
                             <dt>
                                 <label for="intxt_01">
                                     이름
@@ -359,44 +365,6 @@
                                 <input type="text" name="searchManger" id="searchManger" class="inputst_box01" value="" />
                             </dd>
                         </dl>
-                        <dl class="invoice_Dl_03">
-                            <dt><label for="intxt_02">소속팀</label></dt>
-                            <dd>
-                                <div class="select_style select_style_K01">
-                                    <input type="hidden" id="select_team" value="전체" />
-                                    <span class="ctrl"><span class="arrow"></span></span>
-                                    <button type="button" class="myValue btnSelector">전체</button>
-                                    <ul id="teamList" class="aList">
-                                        <li><a onclick="liSelect(this, 'all')">전체</a></li>
-                                        <li><a onclick="liSelect(this, '소속팀1')">소속팀1</a></li>
-                                        <li><a onclick="liSelect(this, '소속팀2')">소속팀2</a></li>
-                                        <li><a onclick="liSelect(this, '소속팀3')">소속팀3</a></li>
-                                    </ul>
-                                </div>
-                            </dd>
-                        </dl>
-                        <dl class="invoice_Dl_04">
-                            <dt><label for="intxt_02">소속파트</label></dt>
-                            <dd>
-                                <div class="select_style select_style_K01">
-                                    <input type="hidden" id="select_part" value="전체" />
-                                    <span class="ctrl"><span class="arrow"></span></span>
-                                    <button type="button" class="myValue btnSelector">전체</button>
-                                    <ul id="partList" class="aList">
-                                        <li><a onclick="liSelect(this, 'all')">전체</a></li>
-                                        <li><a onclick="liSelect(this, '소속파트1')">소속파트1</a></li>
-                                        <li><a onclick="liSelect(this, '소속파트2')">소속파트2</a></li>
-                                        <li><a onclick="liSelect(this, '소속파트3')">소속파트3</a></li>
-                                    </ul>
-                                </div>
-                            </dd>
-                        </dl>
-                        <dl class="invoice_Dl_05">
-                            <dt><label for="intxt_02"></label></dt>
-                            <dd>
-                                <button type="button" id="btn_pop_user_search" class="btn btn_style_k03">검색</button>
-                            </dd>
-                        </dl>
                     </div>
 
                     <div class="table_style03">
@@ -404,8 +372,7 @@
                             <thead>
                                 <tr>
                                     <th>이름</th>
-                                    <th>소속팀</th>
-                                    <th>소속파트</th>
+                                    <th>소속부서</th>
                                 </tr>
                             </thead>
                         </table>
@@ -424,5 +391,8 @@
         </div>
     </div>
     <!-- // 팝업_유저찾기팝업 -->
+    <script type="text/javascript">
+        //layer_open('searchUserPop');
+    </script>
 </body>
 </html>

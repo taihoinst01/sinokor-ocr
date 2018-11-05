@@ -1527,11 +1527,11 @@ select:disabled + ul.idealSelect:before {
         }
         
 
-        .box_txt_st01.st00_sh > dl:nth-child(6) {
+        .box_txt_st01.st00_sh > dl:nth-child(5) {
             width: 320px;
         }
 
-        .box_txt_st01.st00_sh > dl:nth-child(7) {
+        .box_txt_st01.st00_sh > dl:nth-child(6) {
             width: 250px;
             margin: 0 0 0 10px;
         }
@@ -3285,11 +3285,11 @@ h3.tits span {
     }
 
 .ui-icon.ui-icon-circle-triangle-w {
-    background-position: -190px -100px;
+    background-position: -320px -104px;
 }
 
 .ui-icon.ui-icon-circle-triangle-e {
-    background-position: -210px -100px;
+    background-position: -370px -104px;
 }
 
 .ui-datepicker .ui-datepicker-prev {
@@ -3302,9 +3302,9 @@ h3.tits span {
 
 .ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next {
     position: absolute;
-    top: 6px;
-    width: 1.8em;
-    height: 1.8em;
+    top: 11px;
+    width: 30px;
+    height: 30px;
 }
 
     .ui-datepicker .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-next span {
@@ -3313,7 +3313,7 @@ h3.tits span {
         left: 50%;
         margin-left: -8px;
         top: 50%;
-        margin-top: -8px;
+        margin-top: -14px;
     }
 
 .ui-icon {
@@ -6482,4 +6482,12 @@ input:disabled {
         color: white;
     }
 
-   
+
+.box_txt_K01 {
+    width: 50% !important;
+    float: left !important;
+}
+
+.invoice_Dl_K02 {
+    float: right !important;
+}

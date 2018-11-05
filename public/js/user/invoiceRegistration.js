@@ -19,6 +19,7 @@ var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
 var regMlData = [];
 var isExtract = false; //계약번호 추출여부 true: 추출 후, false: 추출 전
+var deptList = [] //부서
 
 /**
  * 전역변수 초기화
@@ -98,7 +99,8 @@ var _init = function () {
     fn_searchDocEnterEvent();
     ocrResult();
     popUpEvent();
-    changeDocPopupImage()
+    changeDocPopupImage();
+    searchDept(); //부서조회
 };
 
 /****************************************************************************************
@@ -812,7 +814,7 @@ function popUpInsertDocCategory() {
                         //console.log(data);
                         $('#docData').val(JSON.stringify(data.docCategory[0]));
                         $('#docName').text(data.docCategory[0].DOCNAME);
-                        $('#layer1').fadeOut();
+                        $('#searchUserPop').fadeOut();
                     } else {
                         fn_alert('alert', data.message);
                     }
@@ -979,7 +981,6 @@ var fn_search = function () {
                         '<td name="td_base">' + entry.DOCNUM + '</td>' +
                         '<td name="td_base">' + nvl2(entry.PAGECNT, 0) + '</td>' +
                         '<td name="td_base">' + entry.NOWNUM + '</td>' +
-                        '<td></td>' +
                         '<td></td>' +
                         '<td></td>' +
                         '<td class="td_dbclick">' + entry.DEADLINE + '</td>' +
@@ -1605,7 +1606,6 @@ var fn_processBaseImage = function (fileInfo) {
                                 '<td name="td_base">' + item.NOWNUM + '</td>' +
                                 '<td></td>' +
                                 '<td></td>' +
-                                '<td></td>' +
                                 '<td class="td_dbclick">' + item.DEADLINE+ '</td>' +
                                 '<td></td>' +
                             '</tr>';
@@ -1922,21 +1922,6 @@ function fn_processFinish(mlData, imgId) {
 
 //계약 번호 추출
 function fn_ContractNumExtraction() {
-    //console.log("data : " + JSON.stringify(data));
-    //console.log("fileDtlInfo : " + JSON.stringify(fileDtlInfo));
-    /*
-    for (var i in dataVal) {
-        if (dataVal[i].colLbl == 0) {
-            cdnNm = dataVal[i].text;
-        }
-        if (dataVal[i].colLbl == 1) {
-            ctNm = dataVal[i].text;
-        }
-        if (dataVal[i].colLbl == 2) {
-            ttyYy = dataVal[i].text;
-        }
-    }
-    */
 
     var dataObj = {};
     dataObj["imgId"] = $("input[name='dtl_chk']").val();
@@ -2016,6 +2001,8 @@ function fn_ContractNumExtraction() {
     $("#progressMsgTitle").html("계약번호 추출 중..");
     progressId = showProgressBar();
     addProgressBar(70, 99);
+    var dtlHtml = '';
+    var existCntNum = [];
     setTimeout(function () {
         for (var l = 0; l < cdnNm.length; l++) {
             for (var j = 0; j < ctNm.length; j++) {
@@ -2031,53 +2018,57 @@ function fn_ContractNumExtraction() {
 
                         },
                         success: function (data) {
-
-                            var dtlHtml = '';
+                            
                             for (var i in data.data) {
-                                // TODO : 분석 결과를 정리하고 1 record로 생성한다.
-                                dtlHtml += '<tr>' +
-                                    '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-                                    '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
-                                    '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
-                                    '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
-                                    '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
-                                    '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->' +
-                                    '<td>' + makePageNum(1, thumbImgs.length) + '</td> <!--페이지번호 FROM-->' +
-                                    '<td>' + makePageNum(thumbImgs.length, thumbImgs.length) + '</td> <!--페이지번호 TO-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
-                                    '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
-                                    '</tr>';
+
+                                if (existCntNum.indexOf(data.data[i].ctNo) < 0) {
+                                    existCntNum.push(data.data[i].ctNo);
+                                    // TODO : 분석 결과를 정리하고 1 record로 생성한다.
+                                    dtlHtml += '<tr>' +
+                                        '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
+                                        '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
+                                        '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
+                                        '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
+                                        '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
+                                        '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->' +
+                                        '<td>' + makePageNum(1, thumbImgs.length) + '</td> <!--페이지번호 FROM-->' +
+                                        '<td>' + makePageNum(thumbImgs.length, thumbImgs.length) + '</td> <!--페이지번호 TO-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+                                        '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+                                        '</tr>';
+                                }
+
                             }
 
                             if (dtlHtml != '') {
@@ -2721,7 +2712,7 @@ var fn_docEvent = function () {
                 });
            
             } else if ($('#scanApproval').val() == 'Y') {                       
-                layer_open('layer1');            
+                layer_open('searchUserPop');            
             }                  
         } else {
             fn_alert('alert', '문서를 선택하세요');
@@ -2736,8 +2727,7 @@ var fn_docEvent = function () {
             middleManagerChk: $('#middleManagerChk').is(':checked'),
             approvalManagerChk: $('#approvalManagerChk').is(':checked'),
             keyword: $('#searchManger').val().trim(),
-            team: $('#select_team').val(),
-            part: $('#select_part').val()
+            team: $('#select_team').val()
         };
 
         $.ajax({
@@ -2757,7 +2747,6 @@ var fn_docEvent = function () {
                             appendHtml += '<tr>' +
                                 '<td>' + data[i].USERID + '</td>' +
                                 '<td>소속팀</td>' +
-                                '<td>소속파트</td>' +
                                 '</tr >'; 
                         }
 
@@ -2802,7 +2791,7 @@ var fn_docEvent = function () {
 
                     // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
                     var docNum = popDoctd.eq(1).text();
-                    var deadline = popDoctd.eq(7).text();
+                    var deadline = popDoctd.eq(6).text();
                     // 가져온 값을 배열에 담는다.
                     docNumTdArr.push({ docNum: docNum, deadline: deadline });
                     deleteTr.push(popDoctr);
@@ -2838,7 +2827,7 @@ var fn_docEvent = function () {
                         contentType: 'application/json; charset=UTF-8',
                         success: function (data) {
                             fn_alert('alert', data.docData + "건의 문서가 전달 되었습니다.");
-                            $('#layer1').fadeOut();
+                            $('#searchUserPop').fadeOut();
                             initForm(2);
                             var totCnt = $("input[name = base_chk]").length;
                             $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt) + '건');
@@ -2979,7 +2968,7 @@ var fn_docEvent = function () {
                     contentType: 'application/json; charset=UTF-8',
                     success: function (data) {
                         fn_alert('alert', data.docData + "건의 문서가 전달 되었습니다.");
-                        $('#layer1').fadeOut();
+                        $('#searchUserPop').fadeOut();
                         var totCnt = $("input[name = base_chk]");
                         $("#span_document_base").empty().html('문서 기본정보 - ' + (totCnt.length - deleteTr.length) + ' 건');
                         for (var i in deleteTr) {
@@ -3011,7 +3000,7 @@ var fn_docEvent = function () {
                 }
             }
             if (isCheckboxYn) {
-                layer_open('layer1');
+                layer_open('searchUserPop');
             } else {
                 fn_alert('alert', "전달할 문서를 선택하세요.");
             }
@@ -3074,4 +3063,28 @@ $(document).on('focusout', 'input[name=ipt_nowYearMonth]', function () {
 
 function randomRange(n1, n2) {
     return (Math.random() * (n2 - n1 + 1)) + n1;
+}
+
+
+// 부서조회
+function searchDept() {
+    $.ajax({
+        url: '/userManagement/searchDept',
+        type: 'post',
+        datatype: "json",
+        async: false,
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            var dept = data.dept.dept;
+            for (var i in dept) {
+                var appendLi = '<li><a>' + dept[i].DEPT_NM + '</a></li>';
+                $('#teamList').append(appendLi);
+                deptList.push(dept[i]);
+            }
+
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 }

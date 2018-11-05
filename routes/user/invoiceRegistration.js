@@ -432,7 +432,8 @@ router.post('/sendApprovalDocument', function (req, res) {
     sync.fiber(function () {
         try {
             for (var i = 0; i < docInfo.length; i++) {               
-                var draftDate = sync.await(oracle.sendApprovalDocument([req.body.userId, userChoiceId[0], userChoiceId[0], docInfo[i]], sync.defer()));
+                var draftDate = getTimeStamp();
+                sync.await(oracle.sendApprovalDocument([req.body.userId, userChoiceId[0], userChoiceId[0], draftDate, docInfo[i]], sync.defer()));
                 approvalDtlData.push({
                     'docNum': docInfo[i],
                     'status': '02',
@@ -1045,5 +1046,31 @@ router.post('/refuseDoc', function (req, res) {
 
     });
 });
+
+function getTimeStamp() {
+    var d = new Date();
+
+    var s =
+        leadingZeros(d.getFullYear(), 4) + '-' +
+        leadingZeros(d.getMonth() + 1, 2) + '-' +
+        leadingZeros(d.getDate(), 2) + ' ' +
+
+        leadingZeros(d.getHours(), 2) + ':' +
+        leadingZeros(d.getMinutes(), 2) + ':' +
+        leadingZeros(d.getSeconds(), 2);
+
+    return s;
+}
+
+function leadingZeros(n, digits) {
+    var zero = '';
+    n = n.toString();
+
+    if (n.length < digits) {
+        for (var i = 0; i < digits - n.length; i++)
+            zero += '0';
+    }
+    return zero + n;
+}
 
 module.exports = router;
