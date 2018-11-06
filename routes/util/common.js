@@ -241,8 +241,8 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 
 
 router.post('/rollback', function (req, res) {
-    //var date = req.body.date;
-    var date = "2018-10-24";
+    var date = req.body.date;
+    //var date = "2018-10-24";
     date = date.replace(/-/g, "");
     var returnObj;
 
@@ -258,7 +258,7 @@ router.post('/rollback', function (req, res) {
             // Azure ml train 프록시 호출
             var azureRes = requestSync('POST', 'http://localhost:8888/ml/rollbackTrain', { json: { 'fmData': resFormMapping.rows, 'cmData': resColumnMapping.rows } });
 
-            returnObj = { code: 200, message: 'modify textData success' };
+            returnObj = { code: 200, message: 'rollback Data success' };
 
         } catch (e) {
             console.log(e);
