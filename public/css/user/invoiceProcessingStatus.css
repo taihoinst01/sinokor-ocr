@@ -148,13 +148,15 @@
 
 .ips_date_bottom button {
     float: right;
-    margin: 40px 5% 0 0;
-    width: 150px;
-    height: 40px;
+    margin: 40px 4% 0 0;
+    width: 150px !important;
+    height: 40px !important;
+    /*
     border: 1px solid #0370b2;
     border-radius: 5px;
     background: #FFF;
     color: #0370b2;
+    */
 }
 
 .ips_date_year {
