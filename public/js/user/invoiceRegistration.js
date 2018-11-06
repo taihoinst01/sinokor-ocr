@@ -989,6 +989,7 @@ var fn_search = function () {
                 });
             } else {
                 appendHtml += '<tr><td colspan="9">조회된 데이터가 없습니다.</td></tr>';
+                init_div();
             }
 
             $("#tbody_baseList").empty().append(appendHtml);
@@ -3090,4 +3091,11 @@ function searchDept() {
             console.log(err);
         }
     });
+}
+
+// 초기화(양식이미지, 인식결과)
+function init_div() {
+    isExtract = false; 
+    $('#div_image').hide(); // 양식이미지 div 숨김
+    $('#div_dtl').hide(); // 인식결과 div 숨김
 }
