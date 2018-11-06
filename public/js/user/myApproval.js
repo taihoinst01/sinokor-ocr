@@ -352,7 +352,7 @@ var fn_search = function () {
                     }
                     var docId = nvl(entry['SEQNUM']) + '-' + nvl(entry['DOCNUM']);
                     var idValue = "chk_document_" + nvl(entry['DOCNUM']);
-                    if ($('#middleApproval').val() == 'Y' || $('#lastApproval').val() == 'Y') {
+                    if ($('#middleApproval').val() == 'Y' || $('#lastApproval').val() == 'Y' || $('#adminApproval').val() == 'Y') {
                         appendHtml +=
                             '<tr id="tr_base_' + entry["SEQNUM"] + '-' + entry["DOCNUM"] + '-' + entry["STATUS"] + '" style="cursor:pointer" name ="tr_base_chk">' +
                         '<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + docId + '" class="sta00 stck_tr" name="chk_document" id = "'+ idValue +'" /></div></th>' +

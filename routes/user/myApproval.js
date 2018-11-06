@@ -59,10 +59,12 @@ var fnSearchApprovalList = function (req, res) {
 
     if (param["level"] == 'adminApproval') {
         //관리자가 조회할때
+        //todo
         if (!commonUtil.isNull(param["approvalState"])) {
             condQuery += ` AND STATUS IN ${param["approvalState"]}`
-            condQuery += " AND MIDDLENUM IS NOT NULL"
-            condQuery += " AND FINALNUM IS NOT NULL"
+            condQuery += ` AND (MIDDLENUM = '${param["documentManager"]}' OR FINALNUM = '${param["documentManager"]}') `;
+           // condQuery += ` AND MIDDLENUM = '${param["documentManager"]}'`;
+           // condQuery += " AND FINALNUM IS NOT NULL"
         } 
     }
     else if (param["level"] == 'middleApproval' && param["adminApproval"] == 'N' ) {
