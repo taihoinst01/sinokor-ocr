@@ -2747,7 +2747,7 @@ var fn_docEvent = function () {
                         for (var i = 0; i < data.length; i++) {
                             appendHtml += '<tr>' +
                                 '<td>' + data[i].EMP_NM + '</td>' +
-                                '<td>' + data[i].DEPT_NM + '</td>' +
+                                '<td>' + nvl(data[i].DEPT_NM) + '</td>' +
                                 '</tr >';
                         }
 
