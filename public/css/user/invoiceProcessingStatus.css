@@ -114,10 +114,13 @@
     height: 38.5%;
     margin: 17px 15px 25px 25px;
     border-radius: 5px;
+    text-align: center;
+    align-content: center;
 }
 
 .ips_box_document span {
     color: #4C5059;
+    font-size: 25px;
 }
 
 .ips_box_last {
@@ -250,6 +253,14 @@
     text-align: center;
 }
 
+#main_div_month {
+    font-size: 12px;
+}
+
+#main_div_week {
+    font-size: 12px;
+}
+
 .ips_date_year .main_div p {
     padding-top: 5px;
 }
@@ -279,3 +290,22 @@
     height: 36px;
     margin-top: 7px;
 }
+
+.ips_box_document_div {
+    padding-top: 50px;
+}
+
+#wait_doc_count {
+    font-size: 35px;
+    padding-right: 50px;
+}
+
+.ips_box_last_div {
+    padding-top: 50px;
+}
+
+#success_doc_count {
+    font-size: 35px;
+    padding-right: 50px;
+}
+

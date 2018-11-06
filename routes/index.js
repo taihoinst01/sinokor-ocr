@@ -22,6 +22,7 @@ var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 // Session
 var passport = require('passport')
+    , CookieStrategy = require('passport-cookie')
     , LocalStrategy = require('passport-local').Strategy
     , RememberMeStrategy = require('passport-remember-me').Strategy;
 var session = require('express-session');
@@ -29,6 +30,101 @@ var session = require('express-session');
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
+
+router.get('/test', passport.authenticate("cookie", { successRedirect: "/myApproval", failureRedirect: "/login", failureFlash: true }), function (req, res) {
+    if (commonUtil.isNull(req.user)) {
+        //res.redirect("/logout");
+        res.send();
+    } else {
+        var sess = req.session;
+
+        if (req.isAuthenticated()) {
+            //res.locals.currentUser = req.user;
+            if (!fs.existsSync(propertiesConfig.filepath.createImgDirPath)) {
+                fs.mkdir(propertiesConfig.filepath.createImgDirPath);
+            }
+            if (!fs.existsSync(propertiesConfig.filepath.createImgconvertedDirPath)) {
+                fs.mkdir(propertiesConfig.filepath.createImgconvertedDirPath);
+            }
+            res.render('user/myApproval', { currentUser: req.user });
+        } else {
+            res.render("index", {
+                messages: { error: req.flash('errors') }
+            });
+        }
+    }
+});
+
+passport.use(new CookieStrategy(
+    function (token, done) {
+        //운영
+        /*
+        var child = exec('java -jar C:/ICR/app/source/module/sso.jar Verify ' + token,
+            function (error, stdout, stderr) {
+                if (error !== null) {
+                    console.log("Error -> " + error);
+                    res.redirect("/logout");
+                }
+
+                stdout = stdout.split("koreanreId:");
+
+                if (stdout[1]) {
+                    var koreanreId = stdout[1];
+                    commonDB.reqQueryParam(`UPDATE TBL_CO_EMP_REG SET FINAL_LOGIN_DATE = sysdate WHERE EMP_NO = :empNo `, [koreanreId], function () { });
+
+                    oracledb.getConnection(dbConfig, function (err, connection) {
+                        connection.execute(`SELECT * FROM TBL_CO_EMP_REG WHERE EMP_NO = :empNo `, [koreanreId], function (err, result) {
+                            if (result.rows.length > 0) {
+
+                                var sessionInfo = {
+                                    userId: koreanreId,
+                                    auth: result.rows[0].AUTH_ADMIN,
+                                    scanApproval: result.rows[0].AUTH_SCAN,
+                                    icrApproval: result.rows[0].AUTH_ICR,
+                                    middleApproval: result.rows[0].AUTH_APPROVAL,
+                                    lastApproval: result.rows[0].AUTH_FINAL_APPROVAL,
+                                    lastLoginDate: result.rows[0].FINAL_LOGIN_DATE,
+                                    admin: result.rows[0].AUTH_ADMIN,
+                                    token: token
+                                };
+
+                                return done(null, sessionInfo);
+                            } else {
+                                return done(null, false);
+                            }
+                        });
+                    });
+                } else {
+                    return done(null, false);
+                }
+            });
+        */
+        //개발
+        commonDB.reqQueryParam(`UPDATE TBL_CO_EMP_REG SET FINAL_LOGIN_DATE = sysdate WHERE EMP_NO = :empNo `, [token], function () { });
+
+        oracledb.getConnection(dbConfig, function (err, connection) {
+            connection.execute(`SELECT * FROM TBL_CO_EMP_REG WHERE EMP_NO = :empNo `, [token], function (err, result) {
+                if (result.rows.length > 0) {
+                    var sessionInfo = {
+                        userId: token,
+                        auth: result.rows[0].AUTH_ADMIN,
+                        scanApproval: result.rows[0].AUTH_SCAN,
+                        icrApproval: result.rows[0].AUTH_ICR,
+                        middleApproval: result.rows[0].AUTH_APPROVAL,
+                        lastApproval: result.rows[0].AUTH_FINAL_APPROVAL,
+                        lastLoginDate: result.rows[0].FINAL_LOGIN_DATE,
+                        admin: result.rows[0].AUTH_ADMIN,
+                        token: 'tokenTest'
+                    };
+                    return done(null, sessionInfo);
+                } else {
+                    return done(null, false);
+                }
+            });
+        });
+    }
+));
+
 
 // index.html
 router.get('/', function (req, res) {   
@@ -55,7 +151,7 @@ router.get('/', function (req, res) {
 });
 router.get('/login', function (req, res) {
     if (req.user !== undefined) {
-        res.redirect("/");
+        res.redirect("/myApproval");
     } else {
         res.render('index', {
             messages: { error: req.flash('errors') }
@@ -89,7 +185,7 @@ router.post("/login",
             if (req.body.remember_me == "on") {
                 res.cookie('ocr_userid', req.body.userId, { maxAge: 604800000 }); // save cookie 7days
             }
-
+            //todo
             commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [req.body.userId], callbackUpdate, req, res);
             sess.userId = req.body.userId;
             next();
@@ -143,7 +239,8 @@ passport.use(new LocalStrategy({
     passReqToCallback: true
 }, function (req, userId, userPw, done) {
     oracledb.getConnection(dbConfig, function (err, connection) {
-        connection.execute(queryConfig.sessionConfig.loginQuery, [userId], function (err, result) {
+        //todo
+        connection.execute(queryConfig.sessionConfig.loginQuery, [userId], function (err, result) { 
             result = result.rows;
             if (err) {
                 console.log('err :' + err);
@@ -195,7 +292,7 @@ passport.use(new LocalStrategy({
                     if (commonUtil.isNull(userPw)) {
                         req.flash("errors", "비밀번호를 입력해주세요.");
                         return done(false, null);
-                    } else if (userPw != result[0].USERPW) {
+                    } else if (userPw != result[0].EMP_PW) {
                         req.flash("errors", "비밀번호가 일치하지 않습니다.");
                         return done(false, null);
                     } else {
@@ -242,14 +339,14 @@ passport.use(new LocalStrategy({
                         */
                         var sessionInfo = {
                             userId: userId,
-                            email: result[0].EMAIL,
-                            auth: result[0].AUTH,
-                            scanApproval: result[0].SCANAPPROVAL,
-                            icrApproval: result[0].ICRAPPROVAL,
-                            middleApproval: result[0].MIDDLEAPPROVAL,
-                            lastApproval: result[0].LASTAPPROVAL,
-                            lastLoginDate: result[0].LASTLOGINDATE,
-                            admin: result[0].ADMIN,
+                           // email: result[0].EMAIL,
+                           // auth: result[0].AUTH,
+                            scanApproval: result[0].AUTH_SCAN,
+                            icrApproval: result[0].AUTH_ICR,
+                            middleApproval: result[0].AUTH_APPROVAL,
+                            lastApproval: result[0].AUTH_FINAL_APPROVAL,
+                            lastLoginDate: result[0].FINAL_LOGIN_DATE,
+                            admin: result[0].AUTH_ADMIN,
                             token: 'tokenTest'
                         };
                         return done(null, sessionInfo);
@@ -286,8 +383,8 @@ passport.use(new RememberMeStrategy(
                     if (!result) { return done(null, false); }
                     var sessionInfo = {
                         userId: uid,
-                        email: result[0].email,
-                        auth: result[0].auth
+                        //email: result[0].email,
+                        //auth: result[0].auth
                     };
                     return done(null, sessionInfo);
                 });

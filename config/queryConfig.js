@@ -6,21 +6,25 @@ var count = {
 var sessionConfig = {
     loginQuery:
         `SELECT
-            seqnum, userId, userPw, auth, email, ocrUseCount,
-            scanApproval,icrApproval,middleApproval,lastApproval, admin,
-            TO_CHAR(joinDate, 'yyyy-mm-dd hh:mi:ss') AS joinDate, 
-            TO_CHAR(lastLoginDate, 'yyyy-mm-dd hh:mi:ss') AS lastLoginDate
+            A.EMP_NO,
+            A.AUTH_SCAN, A.AUTH_ICR, A.AUTH_APPROVAL, A.AUTH_FINAL_APPROVAL, A.AUTH_ADMIN,
+            TO_CHAR(A.REG_DATE, 'yyyy-mm-dd hh:mi:ss') AS REG_DATE, 
+            TO_CHAR(A.FINAL_LOGIN_DATE, 'yyyy-mm-dd hh:mi:ss') AS FINAL_LOGIN_DATE,
+            B.EMP_PW AS EMP_PW
+
          FROM
-            tbl_ocr_comm_user
+            TBL_CO_EMP_REG A, TBL_CO_EMP_BS_EXT B
          WHERE
-            userId = :id `,
+            A.EMP_NO =B.EMP_NO
+         AND
+            A.EMP_NO = :id `,
     lastLoginUpdateQuery:
         `UPDATE
-            tbl_ocr_comm_user
+            TBL_CO_EMP_REG
          SET
-            lastLoginDate = sysdate
+            FINAL_LOGIN_DATE = sysdate
          WHERE
-            userId = :id `,
+            EMP_NO = :id `,
     leftSideBarInvoiceRegistration:
         "SELECT COUNT(*) AS CNT FROM TBL_APPROVAL_MASTER WHERE 1=1 AND (STATUS = 'ZZ' or STATUS = '04' ) " ,
     leftSideBarMyApproval:
