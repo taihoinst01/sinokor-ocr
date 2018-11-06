@@ -66,10 +66,9 @@ var fnSearchApprovalList = function (req, res) {
     }
     else if (param["level"] == 'middleApproval' && param["adminApproval"] == 'N' ) {
         // 현업담당자C가 조회할때
-        condQuery += ` AND MIDDLENUM = '${param["documentManager"]}'`;
-        if (!commonUtil.isNull(param["approvalState"])) {
-            condQuery += `AND STATUS IN ${param["approvalState"]}`;
-        } 
+            condQuery += ` AND MIDDLENUM = '${param["documentManager"]}'`;
+            condQuery += ` AND STATUS IN ${param["approvalState"]}`;
+        
     } else if (param["level"] == 'lastApproval' && param["adminApproval"] == 'N' ) {
         // 현업담당자D가 조회할때
         condQuery += ` AND FINALNUM = '${param["documentManager"]}'`;

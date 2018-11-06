@@ -272,7 +272,8 @@ var makeDocumentManager = function (docId, manager) {
             '</div>';
 }
 
-// document 조회
+// document 조회 
+//todo
 var fn_search = function () {
     var approvalState = "";
     var st1 = $("#st1").is(":checked") ? $("#st1").val() : "";
