@@ -353,6 +353,38 @@ var dateEvent = function () {
     });
 
     $('#roll_back_btn').click(function (e) {                
+        var year = $('.ips_date_year .main_div > p').text();
+        var month = $('.ips_date_month .main_div > p:eq(0)').text();
+        month = month.length == 1 ? '0' + month : month;
+        var day = $('.ips_date_day .main_div > p:eq(0)').text();
+        day = day.length == 1 ? '0' + day : day;
+
+        var date = year + month + day
+
+        $.ajax({
+            url: "/common/rollback",
+            method: 'post',
+            data: JSON.stringify({date:date}),
+            dataType: 'json',
+            processData: false,
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                $("#progressMsgTitle").html("Roll Back Data...");
+                progressId = showProgressBar();
+            },
+            success: function (data) {
+                if (data.code == 200) {
+                    fn_alert('alert', data.message);
+                } else {
+                    fn_alert('alert', "오류가 발생했습니다.");
+                }
+
+                endProgressBar(progressId);
+            },
+            error: function (e) {
+                endProgressBar(progressId);
+            }
+        });
 
     });
 

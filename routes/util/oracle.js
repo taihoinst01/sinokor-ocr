@@ -62,8 +62,96 @@ exports.modifyUser = function (req, done) {
     });
 };
 
+//todo - 한기훈
 exports.selectUserInfo = function (req, done) {
+
     return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            let dept = req.dept;
+            let scan = req.scan;
+            let icr = req.icr;
+            let approval = req.approval;
+            let finalApproval = req.finalApproval;
+            //let admin = req.admin; ******** 사용 여부에 따라 주석 제거 ***********
+            //let externalUsers = req.externalUsers; ******** 사용 여부에 따라 주석 제거 ********
+            let keyword = req.keyword;
+
+            conn = await oracledb.getConnection(dbConfig);
+
+            // 외부사용자 포함용
+            /*
+            var userQuery = ""
+                + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_EMP.EMP_PW, CO_DEPT.DEPT_NM,"
+                + "CO_EMP.EXT_USER "
+                + "FROM "
+                + "(SELECT CO_EMP.EMP_NO, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, 'N' AS EXT_USER FROM TBL_CO_EMP_BS CO_EMP "
+                + "UNION ALL "
+                + "SELECT EMP_NO, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, 'Y' AS EXT_USER FROM TBL_CO_EMP_BS_EXT) CO_EMP "
+                + "LEFT JOIN TBL_CO_EMP_REG CO_REG "
+                + "ON CO_EMP.EMP_NO = CO_REG.EMP_NO "
+                + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
+                + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
+                + "WHERE 1=1";
+            */
+
+            // 코리안리 직원만
+            var userQuery = ""
+                + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_DEPT.DEPT_NM "
+                + "FROM "
+                    + "TBL_CO_EMP_BS CO_EMP "
+                + "LEFT JOIN TBL_CO_EMP_REG CO_REG "
+                + "ON CO_EMP.EMP_NO = CO_REG.EMP_NO "
+                + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
+                + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
+                + "WHERE 1=1 ";
+
+            if (dept != '모든부서') {
+                userQuery += " AND CO_DEPT.DEPT_NM = '" + dept + "' ";
+            }
+            var auths = [scan, icr, approval, finalApproval/*, admin, externalUsers */]; // ******** 사용 여부에 따라 주석 제거 ********
+            var authColumns = ['CO_REG.AUTH_SCAN', 'CO_REG.AUTH_ICR', 'CO_REG.AUTH_APPROVAL', 'CO_REG.AUTH_FINAL_APPROVAL',
+                /*'CO_REG.AUTH_ADMIN', 'CO_EMP.EXT_USER'*/]; // ******** 사용 여부에 따라 주석 제거 ********
+
+            if (keyword) {
+                userQuery += " AND CO_EMP.EMP_NM LIKE '%" + keyword + "%' ";
+            }
+
+            if (scan == 'Y' || icr == 'Y' || approval == 'Y' || finalApproval == 'Y') {
+                userQuery += "AND ( ";
+
+                for (var i in auths) {
+                    if (auths[i] == 'Y') {
+                        userQuery += authColumns[i] + " = 'Y' OR ";
+                    }
+                }               
+                userQuery = userQuery.substring(0, userQuery.length - 3);
+                userQuery += ") ";
+            }
+            userQuery += "ORDER BY CO_EMP.EMP_NM";
+
+
+            result = await conn.execute(userQuery);
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+
+        /* 변경 이전 소스 (comm_user)
         let conn;
         let result
         var userSql;
@@ -109,8 +197,9 @@ exports.selectUserInfo = function (req, done) {
                     console.error(e);
                 }
             }
-        }
+        }*/
     });
+    
 };
 
 exports.select = function (req, done) {
@@ -3607,6 +3696,7 @@ function getConvertDate() {
 
     return '' + yyyy + mm + dd + hh + minute + ss + mss;
 }
+
 
 function getConvertYYYYMMDD() {
     var today = new Date();
