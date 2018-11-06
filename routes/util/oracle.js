@@ -80,22 +80,21 @@ exports.selectUserInfo = function (req, done) {
 
             conn = await oracledb.getConnection(dbConfig);
 
-            // 외부사용자 포함용
+            // 외부사용자 포함용 
             /*
             var userQuery = ""
-                + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_EMP.EMP_PW, CO_DEPT.DEPT_NM,"
-                + "CO_EMP.EXT_USER "
+                + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_DEPT.DEPT_NM, CO_EMP.EXT_USER "
                 + "FROM "
-                + "(SELECT CO_EMP.EMP_NO, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, 'N' AS EXT_USER FROM TBL_CO_EMP_BS CO_EMP "
+                + "(SELECT CO_EMP.EMP_NO, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, 'N' AS EXT_USER FROM TBL_CO_EMP_BS CO_EMP "
                 + "UNION ALL "
-                + "SELECT EMP_NO, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, 'Y' AS EXT_USER FROM TBL_CO_EMP_BS_EXT) CO_EMP "
+                + "SELECT EMP_NO, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, 'Y' AS EXT_USER FROM TBL_CO_EMP_BS_EXT) CO_EMP "
                 + "LEFT JOIN TBL_CO_EMP_REG CO_REG "
                 + "ON CO_EMP.EMP_NO = CO_REG.EMP_NO "
                 + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
                 + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
-                + "WHERE 1=1";
+                + "WHERE 1=1 ";
             */
-
+            
             // 코리안리 직원만
             var userQuery = ""
                 + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_DEPT.DEPT_NM "
@@ -106,7 +105,7 @@ exports.selectUserInfo = function (req, done) {
                 + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
                 + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
                 + "WHERE 1=1 ";
-
+            
             if (dept != '모든부서') {
                 userQuery += " AND CO_DEPT.DEPT_NM = '" + dept + "' ";
             }
