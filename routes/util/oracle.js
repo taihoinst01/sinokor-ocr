@@ -81,7 +81,7 @@ exports.selectUserInfo = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
 
             // 외부사용자 포함용 
-            /*
+            
             var userQuery = ""
                 + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_DEPT.DEPT_NM, CO_EMP.EXT_USER "
                 + "FROM "
@@ -93,10 +93,10 @@ exports.selectUserInfo = function (req, done) {
                 + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
                 + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
                 + "WHERE 1=1 ";
-            */
+            
             
             // 코리안리 직원만
-            var userQuery = ""
+           /* var userQuery = ""
                 + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_DEPT.DEPT_NM "
                 + "FROM "
                     + "TBL_CO_EMP_BS CO_EMP "
@@ -105,7 +105,7 @@ exports.selectUserInfo = function (req, done) {
                 + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
                 + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
                 + "WHERE 1=1 ";
-            
+            */
             if (dept != '모든부서') {
                 userQuery += " AND CO_DEPT.DEPT_NM = '" + dept + "' ";
             }
