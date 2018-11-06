@@ -3358,7 +3358,9 @@ exports.searchUser = function (req, done) {
                 var authColumns = ['CO_REG.AUTH_SCAN', 'CO_REG.AUTH_ICR', 'CO_REG.AUTH_APPROVAL', 'CO_REG.AUTH_FINAL_APPROVAL',
                 'CO_REG.AUTH_ADMIN', 'CO_EMP.EXT_USER'];
                 for (var i in auths) {
-                    userQuery += " AND " + authColumns[i] + " = '" + auths[i] + "'";
+                    if (auths[i] == 'Y') {
+                        userQuery += " AND " + authColumns[i] + " = '" + auths[i] + "'";
+                    }
                 }
             }
 

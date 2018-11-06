@@ -185,7 +185,7 @@ router.post("/login",
             if (req.body.remember_me == "on") {
                 res.cookie('ocr_userid', req.body.userId, { maxAge: 604800000 }); // save cookie 7days
             }
-
+            //todo
             commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [req.body.userId], callbackUpdate, req, res);
             sess.userId = req.body.userId;
             next();
@@ -239,7 +239,8 @@ passport.use(new LocalStrategy({
     passReqToCallback: true
 }, function (req, userId, userPw, done) {
     oracledb.getConnection(dbConfig, function (err, connection) {
-        connection.execute(queryConfig.sessionConfig.loginQuery, [userId], function (err, result) {
+        //todo
+        connection.execute(queryConfig.sessionConfig.loginQuery, [userId], function (err, result) { 
             result = result.rows;
             if (err) {
                 console.log('err :' + err);
@@ -291,7 +292,7 @@ passport.use(new LocalStrategy({
                     if (commonUtil.isNull(userPw)) {
                         req.flash("errors", "비밀번호를 입력해주세요.");
                         return done(false, null);
-                    } else if (userPw != result[0].USERPW) {
+                    } else if (userPw != result[0].EMP_PW) {
                         req.flash("errors", "비밀번호가 일치하지 않습니다.");
                         return done(false, null);
                     } else {
@@ -338,14 +339,14 @@ passport.use(new LocalStrategy({
                         */
                         var sessionInfo = {
                             userId: userId,
-                            email: result[0].EMAIL,
-                            auth: result[0].AUTH,
-                            scanApproval: result[0].SCANAPPROVAL,
-                            icrApproval: result[0].ICRAPPROVAL,
-                            middleApproval: result[0].MIDDLEAPPROVAL,
-                            lastApproval: result[0].LASTAPPROVAL,
-                            lastLoginDate: result[0].LASTLOGINDATE,
-                            admin: result[0].ADMIN,
+                           // email: result[0].EMAIL,
+                           // auth: result[0].AUTH,
+                            scanApproval: result[0].AUTH_SCAN,
+                            icrApproval: result[0].AUTH_ICR,
+                            middleApproval: result[0].AUTH_APPROVAL,
+                            lastApproval: result[0].AUTH_FINAL_APPROVAL,
+                            lastLoginDate: result[0].FINAL_LOGIN_DATE,
+                            admin: result[0].AUTH_ADMIN,
                             token: 'tokenTest'
                         };
                         return done(null, sessionInfo);
@@ -382,8 +383,8 @@ passport.use(new RememberMeStrategy(
                     if (!result) { return done(null, false); }
                     var sessionInfo = {
                         userId: uid,
-                        email: result[0].email,
-                        auth: result[0].auth
+                        //email: result[0].email,
+                        //auth: result[0].auth
                     };
                     return done(null, sessionInfo);
                 });
