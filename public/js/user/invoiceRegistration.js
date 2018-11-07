@@ -274,11 +274,13 @@ var fn_uploadFileEvent = function () {
                     // 문서 기본 정보 처리
                     fn_processBaseImage(responseText.fileInfo);
                     // 인식 결과 및 ML 처리
+                    /*
                     for (var i = 0, x = responseText.fileDtlInfo.length; i < x; i++) {
                         fn_processDtlImage(responseText.fileDtlInfo[i]);
                     }
+                    */
 
-                    endProgressBar();
+                    //endProgressBar();
                 },
                 error: function (e) {
                     console.log("업로드 에러");
@@ -1886,6 +1888,7 @@ function fn_processFinish(mlData, imgId) {
     //$("#ctnExtractionBtn").prop("disabled", true);
     $("#div_dtl").css("display", "block");
     $("#btn_pop_ui_close").click();
+    //$('select').editableSelect();
 
     if (!$("#sendDocBtn").is(":focus")) {
         $('select').eq(0).focus();
