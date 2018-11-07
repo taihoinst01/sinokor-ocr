@@ -6248,7 +6248,7 @@ input:disabled {
 }
 
 .invoice_Dl_01 {
-    width: 398px !important;
+    width: 100% !important;
 }
 
 .invoice_Dl_02 {
@@ -6484,7 +6484,11 @@ input:disabled {
 
 
 .box_txt_K01 {
-    width: 50% !important;
+    width: 55% !important;
+    float: left !important;
+}
+.box_txt_K02 {
+    width: 45% !important;
     float: left !important;
 }
 

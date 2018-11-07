@@ -898,8 +898,7 @@ var fn_baseList_chk = function (flag) {
                 keyword: $('#searchManger').val().trim(),
                 dept: $('#select_team').val(),
             };
-
-            //todo - 한기훈
+         
             $.ajax({
                 url: '/common/selectUserInfo',
                 type: 'post',

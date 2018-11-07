@@ -2731,7 +2731,7 @@ var fn_docEvent = function () {
             dept: $('#select_team').val(),
         };
 
-        //todo - 한기훈
+        
         $.ajax({
             url: '/common/selectUserInfo',
             type: 'post',
