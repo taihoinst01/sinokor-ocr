@@ -272,7 +272,8 @@ var makeDocumentManager = function (docId, manager) {
             '</div>';
 }
 
-// document 조회
+// document 조회 
+//todo
 var fn_search = function () {
     var approvalState = "";
     var st1 = $("#st1").is(":checked") ? $("#st1").val() : "";
@@ -351,7 +352,7 @@ var fn_search = function () {
                     }
                     var docId = nvl(entry['SEQNUM']) + '-' + nvl(entry['DOCNUM']);
                     var idValue = "chk_document_" + nvl(entry['DOCNUM']);
-                    if ($('#middleApproval').val() == 'Y' || $('#lastApproval').val() == 'Y') {
+                    if ($('#middleApproval').val() == 'Y' || $('#lastApproval').val() == 'Y' || $('#adminApproval').val() == 'Y') {
                         appendHtml +=
                             '<tr id="tr_base_' + entry["SEQNUM"] + '-' + entry["DOCNUM"] + '-' + entry["STATUS"] + '" style="cursor:pointer" name ="tr_base_chk">' +
                         '<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + docId + '" class="sta00 stck_tr" name="chk_document" id = "'+ idValue +'" /></div></th>' +
@@ -890,15 +891,15 @@ var fn_baseList_chk = function (flag) {
         $('#btn_pop_user_search').click(function () {
 
             var param = {
-                docManagerChk: $('#docManagerChk').is(':checked'),
-                icrManagerChk: $('#icrManagerChk').is(':checked'),
-                middleManagerChk: $('#middleManagerChk').is(':checked'),
-                approvalManagerChk: $('#approvalManagerChk').is(':checked'),
+                scan: $('#docManagerChk').is(':checked') ? 'Y' : 'N',
+                icr: $('#icrManagerChk').is(':checked') ? 'Y' : 'N',
+                approval: $('#middleManagerChk').is(':checked') ? 'Y' : 'N',
+                finalApproval: $('#approvalManagerChk').is(':checked') ? 'Y' : 'N',
                 keyword: $('#searchManger').val().trim(),
-                team: $('#select_team').val(),
-                part: $('#select_part').val()
+                dept: $('#select_team').val(),
             };
 
+            //todo - 한기훈
             $.ajax({
                 url: '/common/selectUserInfo',
                 type: 'post',
@@ -914,13 +915,15 @@ var fn_baseList_chk = function (flag) {
                         if (data.length > 0) {
                             for (var i = 0; i < data.length; i++) {
                                 appendHtml += '<tr>' +
-                                    '<td>' + data[i].USERID + '</td>' +
-                                    '<td>소속팀</td>' +
+                                    '<td>' + data[i].EMP_NM + '</td>' +
+                                    '<td>' + nvl(data[i].DEPT_NM) + '</td>' +
                                     '</tr >';
                             }
 
-                            $('#searchManagerResult').append(appendHtml);
+                        } else {
+                            appendHtml = '<tr><td colspan="2">검색 결과가 없습니다</td></tr>'
                         }
+                        $('#searchManagerResult').append(appendHtml);
                     } else {
                         fn_alert('alert', data.error);
                     }

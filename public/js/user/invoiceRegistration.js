@@ -991,6 +991,7 @@ var fn_search = function () {
                 });
             } else {
                 appendHtml += '<tr><td colspan="9">조회된 데이터가 없습니다.</td></tr>';
+                init_div();
             }
 
             $("#tbody_baseList").empty().append(appendHtml);
@@ -2725,14 +2726,15 @@ var fn_docEvent = function () {
     $('#btn_pop_user_search').click(function () {
 
         var param = {
-            docManagerChk: $('#docManagerChk').is(':checked'),
-            icrManagerChk: $('#icrManagerChk').is(':checked'),
-            middleManagerChk: $('#middleManagerChk').is(':checked'),
-            approvalManagerChk: $('#approvalManagerChk').is(':checked'),
+            scan: $('#docManagerChk').is(':checked') ? 'Y' : 'N',
+            icr: $('#icrManagerChk').is(':checked') ? 'Y' : 'N',
+            approval: $('#middleManagerChk').is(':checked') ? 'Y' : 'N',
+            finalApproval: $('#approvalManagerChk').is(':checked') ? 'Y' : 'N',
             keyword: $('#searchManger').val().trim(),
-            team: $('#select_team').val()
+            dept: $('#select_team').val(),
         };
 
+        //todo - 한기훈
         $.ajax({
             url: '/common/selectUserInfo',
             type: 'post',
@@ -2748,13 +2750,15 @@ var fn_docEvent = function () {
                     if (data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
                             appendHtml += '<tr>' +
-                                '<td>' + data[i].USERID + '</td>' +
-                                '<td>소속팀</td>' +
-                                '</tr >'; 
+                                '<td>' + data[i].EMP_NM + '</td>' +
+                                '<td>' + nvl(data[i].DEPT_NM) + '</td>' +
+                                '</tr >';
                         }
 
-                        $('#searchManagerResult').append(appendHtml);
+                    } else {
+                        appendHtml = '<tr><td colspan="2">검색 결과가 없습니다</td></tr>'
                     }
+                    $('#searchManagerResult').append(appendHtml);
                 } else {
                     fn_alert('alert', data.error);
                 }
@@ -3090,4 +3094,11 @@ function searchDept() {
             console.log(err);
         }
     });
+}
+
+// 초기화(양식이미지, 인식결과)
+function init_div() {
+    isExtract = false; 
+    $('#div_image').hide(); // 양식이미지 div 숨김
+    $('#div_dtl').hide(); // 인식결과 div 숨김
 }
