@@ -32,3 +32,7 @@ li.on img {
     width: 100%;
 }
 
+
+#tbody_dtlList > tr > td {
+    overflow:visible;
+}
