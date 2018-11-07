@@ -950,7 +950,7 @@ var fn_initUiTraining = function () {
     $("#uiImg").html('');
     $("#textResultTbl").html('');
 };
-
+//todo
 var fn_search = function () {
     var param = {
         docNum: nvl($("#docNum").val().toUpperCase()),
@@ -976,12 +976,15 @@ var fn_search = function () {
             //console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
+                    if (entry.DEADLINE == null) {
+                        entry.DEADLINE = '';
+                    }
                     appendHtml += '<tr id="tr_base_' + entry.SEQNUM + '-' + entry.DOCNUM + '-' + entry.STATUS + '">' +
                         '<td><input type="checkbox" id="base_chk_' + entry.DOCNUM + '" name="base_chk" value="' + entry.DOCNUM + '" /></td>' +
                         '<td name="td_base">' + entry.DOCNUM + '</td>' +
                         '<td name="td_base">' + nvl2(entry.PAGECNT, 0) + '</td>' +
                         '<td name="td_base">' + entry.NOWNUM + '</td>' +
-                        '<td></td>' +
+                        '<td name="td_base">' + entry.DEPT_NM + '</td>' +
                         '<td></td>' +
                         '<td class="td_dbclick">' + entry.DEADLINE + '</td>' +
                         '<td></td>' +
