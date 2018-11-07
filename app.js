@@ -107,6 +107,17 @@ app.use('/common', common);
 //etc
 //app.use('/listProc', listProc);
 
+app.use(function (req, res, next) {
+    throw new Error(req.url + ' not found'); // 404 에러
+});
+app.use(function (err, req, res, next) {
+    console.log(err);
+});
+
+process.on('uncaughtException', function (err) {
+    console.log('formLabelMapping uncaughtException : ' + err);
+});
+
 // server 
 app.set('port', process.env.PORT || 80);
 var server = app.listen(app.get('port'), function () {

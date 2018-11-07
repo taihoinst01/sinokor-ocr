@@ -89,9 +89,19 @@ var dbcolumnsConfig = {
 
 var invoiceRegistrationConfig = {
     selectDocumentList:
-        `SELECT SEQNUM, DOCNUM, STATUS, PAGECNT, NOWNUM, DEADLINE
-            FROM TBL_APPROVAL_MASTER
-           WHERE 1=1 `,
+        `SELECT AA.SEQNUM, AA.DOCNUM, AA.PAGECNT, AA.STATUS, AA.NOWNUM, AA.DEADLINE, BB.DEPT_NM
+            FROM TBL_APPROVAL_MASTER AA,
+                (SELECT A.EMP_NO, A.EMP_NM, A.BLT_DEPT_CD, B.DEPT_NM
+                FROM
+                    (SELECT EMP_NO, EMP_NM, BLT_DEPT_CD FROM TBL_CO_EMP_BS
+                    UNION ALL
+                    SELECT EMP_NO, EMP_NM, BLT_DEPT_CD FROM TBL_CO_EMP_BS_EXT) A,
+                    (SELECT DEPT_CD, DEPT_NM FROM TBL_CO_DEPT_BS
+                    UNION ALL
+                    SELECT DEPT_CD, DEPT_NM FROM TBL_CO_DEPT_BS_EXT) B
+                WHERE A.BLT_DEPT_CD = B.DEPT_CD) BB
+           WHERE 1=1
+           AND AA.NOWNUM = BB.EMP_NO `,
     selectDocumentDtlList:
         `SELECT A.SEQNUM, 
                 A.DOCNUM, A.PAGECNT, A.APPROVALSTATE, A.DEADLINEDT, A.REGDT, A.FAOTEAM, A.FAOPART, A.APPROVALREPORTER, A.DOCUMENTMANAGER, A.MEMO,

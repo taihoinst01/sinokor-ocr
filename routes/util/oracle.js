@@ -3434,14 +3434,20 @@ exports.searchUser = function (req, done) {
                 }
                 var auths = [scan, icr, approval, finalApproval, admin, externalUsers];
                 var authColumns = ['CO_REG.AUTH_SCAN', 'CO_REG.AUTH_ICR', 'CO_REG.AUTH_APPROVAL', 'CO_REG.AUTH_FINAL_APPROVAL',
-                'CO_REG.AUTH_ADMIN', 'CO_EMP.EXT_USER'];
+                    'CO_REG.AUTH_ADMIN', 'CO_EMP.EXT_USER'];
+                var authCnt = 0;
                 for (var i in auths) {
                     if (auths[i] == 'Y') {
-                        userQuery += " AND " + authColumns[i] + " = '" + auths[i] + "'";
+                        authCnt++;
+                        if (authCnt == 1) {
+                            userQuery += " AND (" + authColumns[i] + " = '" + auths[i] + "'";
+                        } else {
+                            userQuery += " OR " + authColumns[i] + " = '" + auths[i] + "'";
+                        }
                     }
                 }
+                if (authCnt > 0) userQuery += ' )';
             }
-
             result = await conn.execute(userQuery);
             if (result.rows.length > 0) {
                 return done(null, result.rows);

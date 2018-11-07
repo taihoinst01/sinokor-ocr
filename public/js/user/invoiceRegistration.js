@@ -274,11 +274,13 @@ var fn_uploadFileEvent = function () {
                     // 문서 기본 정보 처리
                     fn_processBaseImage(responseText.fileInfo);
                     // 인식 결과 및 ML 처리
+                    /*
                     for (var i = 0, x = responseText.fileDtlInfo.length; i < x; i++) {
                         fn_processDtlImage(responseText.fileDtlInfo[i]);
                     }
+                    */
 
-                    endProgressBar();
+                    //endProgressBar();
                 },
                 error: function (e) {
                     console.log("업로드 에러");
@@ -950,7 +952,7 @@ var fn_initUiTraining = function () {
     $("#uiImg").html('');
     $("#textResultTbl").html('');
 };
-
+//todo
 var fn_search = function () {
     var param = {
         docNum: nvl($("#docNum").val().toUpperCase()),
@@ -976,12 +978,15 @@ var fn_search = function () {
             //console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
+                    if (entry.DEADLINE == null) {
+                        entry.DEADLINE = '';
+                    }
                     appendHtml += '<tr id="tr_base_' + entry.SEQNUM + '-' + entry.DOCNUM + '-' + entry.STATUS + '">' +
                         '<td><input type="checkbox" id="base_chk_' + entry.DOCNUM + '" name="base_chk" value="' + entry.DOCNUM + '" /></td>' +
                         '<td name="td_base">' + entry.DOCNUM + '</td>' +
                         '<td name="td_base">' + nvl2(entry.PAGECNT, 0) + '</td>' +
                         '<td name="td_base">' + entry.NOWNUM + '</td>' +
-                        '<td></td>' +
+                        '<td name="td_base">' + entry.DEPT_NM + '</td>' +
                         '<td></td>' +
                         '<td class="td_dbclick">' + entry.DEADLINE + '</td>' +
                         '<td></td>' +
@@ -1887,6 +1892,7 @@ function fn_processFinish(mlData, imgId) {
     //$("#ctnExtractionBtn").prop("disabled", true);
     $("#div_dtl").css("display", "block");
     $("#btn_pop_ui_close").click();
+    //$('select').editableSelect();
 
     if (!$("#sendDocBtn").is(":focus")) {
         $('select').eq(0).focus();
