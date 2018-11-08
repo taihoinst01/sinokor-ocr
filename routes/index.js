@@ -31,7 +31,7 @@ router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 
-router.get('/test', passport.authenticate("cookie", { successRedirect: "/myApproval", failureRedirect: "/login", failureFlash: true }), function (req, res) {
+router.get('/test', passport.authenticate("cookie", { successRedirect: "/myApproval", failureRedirect: "/login", failureFlash: true, session:true }), function (req, res) {
     if (commonUtil.isNull(req.user)) {
         //res.redirect("/logout");
         res.send();
@@ -55,8 +55,11 @@ router.get('/test', passport.authenticate("cookie", { successRedirect: "/myAppro
     }
 });
 
-passport.use(new CookieStrategy(
-    function (token, done) {
+passport.use(new CookieStrategy({
+    passReqToCallback: true
+},
+    function (req, token, done) {
+        var token = req.cookies.ssotoken;
         //운영
         /*
         var child = exec('java -jar C:/ICR/app/source/module/sso.jar Verify ' + token,
@@ -100,6 +103,7 @@ passport.use(new CookieStrategy(
             });
         */
         //개발
+
         commonDB.reqQueryParam(`UPDATE TBL_CO_EMP_REG SET FINAL_LOGIN_DATE = sysdate WHERE EMP_NO = :empNo `, [token], function () { });
 
         oracledb.getConnection(dbConfig, function (err, connection) {
@@ -122,12 +126,13 @@ passport.use(new CookieStrategy(
                 }
             });
         });
+
     }
 ));
 
 
 // index.html
-router.get('/', function (req, res) {   
+router.get('/', function (req, res) {
     if (commonUtil.isNull(req.user)) {
         res.redirect("/logout");
     } else {
@@ -209,7 +214,7 @@ router.get('/logout', function (req, res) {
             if (err) {
                 console.log(err);
             } else {
-                res.clearCookie('ocr_userid', {path:'/'});
+                res.clearCookie('ocr_userid', { path: '/' });
                 req.logout();
                 res.redirect('/login');
             }
@@ -240,7 +245,7 @@ passport.use(new LocalStrategy({
 }, function (req, userId, userPw, done) {
     oracledb.getConnection(dbConfig, function (err, connection) {
         //todo
-        connection.execute(queryConfig.sessionConfig.loginQuery, [userId], function (err, result) { 
+        connection.execute(queryConfig.sessionConfig.loginQuery, [userId], function (err, result) {
             result = result.rows;
             if (err) {
                 console.log('err :' + err);
@@ -339,8 +344,8 @@ passport.use(new LocalStrategy({
                         */
                         var sessionInfo = {
                             userId: userId,
-                           // email: result[0].EMAIL,
-                           // auth: result[0].AUTH,
+                            // email: result[0].EMAIL,
+                            // auth: result[0].AUTH,
                             scanApproval: result[0].AUTH_SCAN,
                             icrApproval: result[0].AUTH_ICR,
                             middleApproval: result[0].AUTH_APPROVAL,
@@ -355,7 +360,7 @@ passport.use(new LocalStrategy({
             }
         });
     });
-    }
+}
 ));
 
 // Auto login (deprecate : 2018-07-05)

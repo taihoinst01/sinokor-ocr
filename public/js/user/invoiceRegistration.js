@@ -2917,7 +2917,7 @@ var fn_docEvent = function () {
                                 //loc = loc + '::' + fileName;
                                 loc = dtlTdList.eq(j).find('.selected').attr('data-val').split('::')[0];
                                 fileName = dtlTdList.eq(j).find('.selected').attr('data-val').split('::')[2];
-                                loc = loc + '::' + filename;
+                                loc = loc + '::' + fileName;
                             } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
                                 loc = dtlTdList.eq(j).find('input[type="hidden"]').val();
                             } else {
