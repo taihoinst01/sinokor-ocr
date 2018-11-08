@@ -107,7 +107,7 @@
             if(opts.editable) {
                 var $input = $downbox.find("input");
                 $input.val($(this).find("option:eq(0)").text());
-                $downbox.find(".inputbox").css('width', $selectWrap.width() - 22 + 'px');
+                $downbox.find(".inputbox").css('width', $selectWrap.width() - 10 + 'px');
                 $input.focus(function(){
                       $selectWrap.addClass('focus');
                       bEdit = true;
