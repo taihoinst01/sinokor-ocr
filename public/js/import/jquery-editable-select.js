@@ -119,17 +119,19 @@
                 $input.bind('keypress',function(event){
                     if(event.keyCode == "13"){
                         var text = $input.val();
-                        var val = text;
-                        if(opts.generateValueId) {
-                            val = _uuid(8, 16);
-                        }
-                        var $opt = _new_opt(text, val, true);
-                        $opt.appendTo($options);
-                        $input.val('');
-                        $("<option>").val(val).text(text).attr('data-is-input', 1).appendTo($select);
-                        $opt.trigger('click');
-                        if(opts.onTextCompleted && $.isFunction(opts.onTextCompleted)) {
-                            opts.onTextCompleted({ text: text, value: val, isInput: true });
+                        if (text.trim() != "") {
+                            var val = text;
+                            if(opts.generateValueId) {
+                                val = _uuid(8, 16);
+                            }
+                            var $opt = _new_opt(text, val, true);
+                            $opt.appendTo($options);
+                            $input.val('');
+                            $("<option>").val(val).text(text).attr('data-is-input', 1).appendTo($select);
+                            $opt.trigger('click');
+                            if(opts.onTextCompleted && $.isFunction(opts.onTextCompleted)) {
+                                opts.onTextCompleted({ text: text, value: val, isInput: true });
+                            }
                         }
                     }
                 });

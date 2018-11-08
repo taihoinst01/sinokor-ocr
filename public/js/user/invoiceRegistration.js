@@ -1892,7 +1892,7 @@ function fn_processFinish(mlData, imgId) {
     //$("#ctnExtractionBtn").prop("disabled", true);
     $("#div_dtl").css("display", "block");
     $("#btn_pop_ui_close").click();
-    //$('select').editableSelect();
+    $('select').editableSelect();
 
     if (!$("#sendDocBtn").is(":focus")) {
         $('select').eq(0).focus();
@@ -1939,52 +1939,26 @@ function fn_ContractNumExtraction() {
     var ctNm = [];
     var ttyYy = [];
 
-    if ($('#tbody_dtlList td:eq(2)').children().length == 2) {
-        if ($('#tbody_dtlList td:eq(2)').find('input[type=text]').val().trim() == "") {
-            fn_alert('alert', "출재사명을 입력해주세요");
-        } else {
-            cdnNm.push($('#tbody_dtlList td:eq(2)').find('input[type=text]').val());
-        }
-    } else {
+    //출재사명
+    var $cdnNmLi = $('#tbody_dtlList td:eq(2)').find('li');
+    for (var i = 0; i < $cdnNmLi.length; i++) {     
+        var text = $cdnNmLi[i].innerText;
+        cdnNm.push(text);      
+    }
+    
 
-        for (var i = 0; i < $("select[name='cdnNm'] > option").length; i++) {
-            //if (i > 0) {
-                var text = $("select[name='cdnNm'] option:eq('" + i + "')").text();
-                cdnNm.push(text);
-            //}
-        }
+    //계약명
+    var $ctNmLi = $('#tbody_dtlList td:eq(3)').find('li');
+    for (var i = 0; i < $ctNmLi.length; i++) {
+        var text = $ctNmLi[i].innerText;
+        ctNm.push(text);
     }
 
-    if ($('#tbody_dtlList td:eq(3)').children().length == 2) {
-        if ($('#tbody_dtlList td:eq(3)').find('input[type=text]').val().trim() == "") {
-            fn_alert('alert', "계약명을 입력해주세요");
-        } else {
-            ctNm.push($('#tbody_dtlList td:eq(3)').find('input[type=text]').val());
-        }
-    } else {
-        for (var i = 0; i < $("select[name='ctNm'] > option").length; i++) {
-            //if (i > 0) {
-            var text = $("select[name='ctNm'] option:eq('" + i + "')").text();
-            ctNm.push(text);
-            //}
-        }
-
-    }
-
-    if ($('#tbody_dtlList td:eq(4)').children().length == 2) {
-        if ($('#tbody_dtlList td:eq(4)').find('input[type=text]').val().trim() == "") {
-            fn_alert('alert', "UY를 입력해주세요");
-        } else {
-            ttyYy.push($('#tbody_dtlList td:eq(4)').find('input[type=text]').val());
-        }
-    } else {
-        for (var i = 0; i < $("select[name='ttyYy']  > option").length; i++) {
-            //if (i > 0) {
-            var text = $("select[name='ttyYy'] option:eq('" + i + "')").text();
-            ttyYy.push(text);
-            //}
-        }
-
+    //UY
+    var $ttyYyLi = $('#tbody_dtlList td:eq(4)').find('li');
+    for (var i = 0; i < $ttyYyLi.length; i++) {
+        var text = $ttyYyLi[i].innerText;
+        ttyYy.push(text);
     }
 
     if (cdnNm.length == 0) {
