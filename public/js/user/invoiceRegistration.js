@@ -1916,10 +1916,10 @@ function fn_processFinish(mlData, imgId) {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
@@ -1939,52 +1939,26 @@ function fn_ContractNumExtraction() {
     var ctNm = [];
     var ttyYy = [];
 
-    if ($('#tbody_dtlList td:eq(2)').children().length == 2) {
-        if ($('#tbody_dtlList td:eq(2)').find('input[type=text]').val().trim() == "") {
-            fn_alert('alert', "출재사명을 입력해주세요");
-        } else {
-            cdnNm.push($('#tbody_dtlList td:eq(2)').find('input[type=text]').val());
-        }
-    } else {
+    //출재사명
+    var $cdnNmLi = $('#tbody_dtlList td:eq(2)').find('li');
+    for (var i = 0; i < $cdnNmLi.length; i++) {     
+        var text = $cdnNmLi[i].innerText;
+        cdnNm.push(text);      
+    }
+    
 
-        for (var i = 0; i < $("select[name='cdnNm'] > option").length; i++) {
-            //if (i > 0) {
-                var text = $("select[name='cdnNm'] option:eq('" + i + "')").text();
-                cdnNm.push(text);
-            //}
-        }
+    //계약명
+    var $ctNmLi = $('#tbody_dtlList td:eq(3)').find('li');
+    for (var i = 0; i < $ctNmLi.length; i++) {
+        var text = $ctNmLi[i].innerText;
+        ctNm.push(text);
     }
 
-    if ($('#tbody_dtlList td:eq(3)').children().length == 2) {
-        if ($('#tbody_dtlList td:eq(3)').find('input[type=text]').val().trim() == "") {
-            fn_alert('alert', "계약명을 입력해주세요");
-        } else {
-            ctNm.push($('#tbody_dtlList td:eq(3)').find('input[type=text]').val());
-        }
-    } else {
-        for (var i = 0; i < $("select[name='ctNm'] > option").length; i++) {
-            //if (i > 0) {
-            var text = $("select[name='ctNm'] option:eq('" + i + "')").text();
-            ctNm.push(text);
-            //}
-        }
-
-    }
-
-    if ($('#tbody_dtlList td:eq(4)').children().length == 2) {
-        if ($('#tbody_dtlList td:eq(4)').find('input[type=text]').val().trim() == "") {
-            fn_alert('alert', "UY를 입력해주세요");
-        } else {
-            ttyYy.push($('#tbody_dtlList td:eq(4)').find('input[type=text]').val());
-        }
-    } else {
-        for (var i = 0; i < $("select[name='ttyYy']  > option").length; i++) {
-            //if (i > 0) {
-            var text = $("select[name='ttyYy'] option:eq('" + i + "')").text();
-            ttyYy.push(text);
-            //}
-        }
-
+    //UY
+    var $ttyYyLi = $('#tbody_dtlList td:eq(4)').find('li');
+    for (var i = 0; i < $ttyYyLi.length; i++) {
+        var text = $ttyYyLi[i].innerText;
+        ttyYy.push(text);
     }
 
     if (cdnNm.length == 0) {
@@ -2084,6 +2058,7 @@ function fn_ContractNumExtraction() {
                                 $("#tbody_dtlList input[type=checkbox]").ezMark();
                                 $("#div_dtl").css("display", "block");
                                 $('#ocrResultAllChk:checked').click();
+                                $('select').editableSelect();
                             }
 
                             //$("#sendApprovalBtn").prop("disabled", true);
@@ -2122,10 +2097,10 @@ function fn_ContractNumExtraction() {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
@@ -2915,14 +2890,16 @@ var fn_docEvent = function () {
                         } else if (j >= 2 && j <= 5) {
                             value = dtlTdList.eq(j).text();
                         } else if (j >= 6 || j == 1) {
-                            if (dtlTdList.eq(j).find('select').length == 1) {
-                                value = dtlTdList.eq(j).find('select option:selected').text();
-                                loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
-                                fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
-                                loc = loc + '::' + fileName;
+                            if (dtlTdList.eq(j).find('.selected > span').length == 1) {
+                                //value = dtlTdList.eq(j).find('select option:selected').text();
+                                //loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
+                                //fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
+                                //loc = loc + '::' + fileName;
+
+                                value = dtlTdList.eq(j).find('.selected > span').text();
                             } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
                                 value = dtlTdList.eq(j).find('input[type="text"]').val();
-                                loc = dtlTdList.eq(j).find('input[type="hidden"]').val();
+                                //loc = dtlTdList.eq(j).find('input[type="hidden"]').val();
                             } else {
                                 value = '';
                             }
@@ -2934,10 +2911,13 @@ var fn_docEvent = function () {
                         var loc = '';
                         var fileName = '';
                         if (j >= 8) {
-                            if (dtlTdList.eq(j).find('select').length == 1) {
-                                loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
-                                fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
-                                loc = loc + '::' + fileName;
+                            if (dtlTdList.eq(j).find('.selected > span').length == 1) {
+                                //loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
+                                //fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
+                                //loc = loc + '::' + fileName;
+                                loc = dtlTdList.eq(j).find('.selected').attr('data-val').split('::')[0];
+                                fileName = dtlTdList.eq(j).find('.selected').attr('data-val').split('::')[2];
+                                loc = loc + '::' + filename;
                             } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
                                 loc = dtlTdList.eq(j).find('input[type="hidden"]').val();
                             } else {
