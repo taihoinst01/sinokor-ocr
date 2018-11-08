@@ -1913,10 +1913,10 @@ function fn_processFinish(mlData, imgId) {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
@@ -2081,6 +2081,7 @@ function fn_ContractNumExtraction() {
                                 $("#tbody_dtlList input[type=checkbox]").ezMark();
                                 $("#div_dtl").css("display", "block");
                                 $('#ocrResultAllChk:checked').click();
+                                $('select').editableSelect();
                             }
 
                             //$("#sendApprovalBtn").prop("disabled", true);
@@ -2119,10 +2120,10 @@ function fn_ContractNumExtraction() {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
@@ -2912,14 +2913,16 @@ var fn_docEvent = function () {
                         } else if (j >= 2 && j <= 5) {
                             value = dtlTdList.eq(j).text();
                         } else if (j >= 6 || j == 1) {
-                            if (dtlTdList.eq(j).find('select').length == 1) {
-                                value = dtlTdList.eq(j).find('select option:selected').text();
-                                loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
-                                fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
-                                loc = loc + '::' + fileName;
+                            if (dtlTdList.eq(j).find('.selected > span').length == 1) {
+                                //value = dtlTdList.eq(j).find('select option:selected').text();
+                                //loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
+                                //fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
+                                //loc = loc + '::' + fileName;
+
+                                value = dtlTdList.eq(j).find('.selected > span').text();
                             } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
                                 value = dtlTdList.eq(j).find('input[type="text"]').val();
-                                loc = dtlTdList.eq(j).find('input[type="hidden"]').val();
+                                //loc = dtlTdList.eq(j).find('input[type="hidden"]').val();
                             } else {
                                 value = '';
                             }
@@ -2931,10 +2934,13 @@ var fn_docEvent = function () {
                         var loc = '';
                         var fileName = '';
                         if (j >= 8) {
-                            if (dtlTdList.eq(j).find('select').length == 1) {
-                                loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
-                                fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
-                                loc = loc + '::' + fileName;
+                            if (dtlTdList.eq(j).find('.selected > span').length == 1) {
+                                //loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
+                                //fileName = dtlTdList.eq(j).find('select option:selected').attr('alt');
+                                //loc = loc + '::' + fileName;
+                                loc = dtlTdList.eq(j).find('.selected').attr('data-val').split('::')[0];
+                                fileName = dtlTdList.eq(j).find('.selected').attr('data-val').split('::')[2];
+                                loc = loc + '::' + filename;
                             } else if (dtlTdList.eq(j).find('input[type="text"]').length == 1) {
                                 loc = dtlTdList.eq(j).find('input[type="hidden"]').val();
                             } else {
