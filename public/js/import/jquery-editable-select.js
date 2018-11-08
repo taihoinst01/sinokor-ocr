@@ -22,14 +22,14 @@
             if($select.attr('data-editable') && $select.attr('data-editable') == 'false') {
                 opts.editable = false;
             }
-            var html = '<div class="' + opts.warpClass + '" tabindex="0">'
+            var html = '<div class="' + opts.warpClass + '" tabindex="0" onmousedown="zoomImg(this)">'
             + '<div class="selected"><span></span>'
             + '<a class="ui-button"><i class="fa fa-angle-down"></i></a></div>'
             + '<div class="dropdown-box">';
             html += (opts.editable ?
                 '<div class="inputbox"><input type="text" placeholder="Enter your text" /></div>' : '');
 
-            html += '<ul></ul></div></div>';
+            html += '<ul onclick="zoomImgClick(this)"></ul></div></div>';
 
             var $selectWrap = $(html).insertAfter(this);
             var $options    = $selectWrap.find('ul');

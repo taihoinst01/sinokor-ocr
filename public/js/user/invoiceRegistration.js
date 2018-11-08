@@ -82,6 +82,10 @@ $(window).on('keyup', function (e) {
         if (e.target.tagName == 'SELECT') {
             $(e.target).mousedown();
         }
+
+        if (e.target.className == 'ui-select-wrap ui-wrap') {
+            zoomImgTarget(e);
+        }
     }
 });
 
@@ -138,6 +142,10 @@ var fn_buttonEvent = function () {
 
     $("#uiTrainBtn").on("click", function () {
         fn_uiTrain();
+    });
+
+    $("document").on("click", "ul", function () {
+        console.log('test');
     });
 
 };
@@ -2429,7 +2437,30 @@ var insertCommError = function (eCode, type) {
     });
 }
 
-function zoomImg(e, fileName) {
+function zoomImgTarget(e) {
+
+    var seltext = $(e.target).find('ul > li.selected').text();
+    var selLiLeng = 9999;
+    var liLeng = $(e.target).find('ul > li').length;
+
+    for (var i = 0; i < liLeng; i++) {
+        if ($(e.target).find('ul > li').eq(i).hasClass("selected") == true) {
+            selLiLeng = i;
+        }
+    }
+
+    var selVal = $(e.target).closest('div').prev().find('option').eq(selLiLeng).val();
+    selVal = selVal.split("::");
+    var fileName = '';
+    var loc = '';
+
+    if (selVal.length == 3 && seltext == selVal[1]) {
+        fileName = selVal[2];
+        loc = selVal[0];
+    } else {
+        return;
+    }
+
     var mainImage = $("#mainImage").css('background-image');
     mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
     mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
@@ -2437,6 +2468,14 @@ function zoomImg(e, fileName) {
     if (mainImage != fileName) {
         $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
     }
+
+    $('.thumb-img').each(function (i, el) {
+        $(el).closest('li').removeClass('on');
+        var imgSrc = $(el).children('img').attr('src');
+        if (imgSrc.indexOf(fileName) != -1) {
+            $(el).closest('li').addClass('on');
+        }
+    });
 
     //실제 이미지 사이즈와 메인이미지div 축소율 판단
     var reImg = new Image();
@@ -2447,24 +2486,29 @@ function zoomImg(e, fileName) {
     var height = reImg.height;
 
     //imageZoom 고정크기
-    var fixWidth = 744;
-    var fixHeight = 1052;
+    //var fixWidth = 744;
+    //var fixHeight = 1052;
+
+    var fixWidth = 800;
+    var fixHeight = 1300;
 
     var widthPercent = fixWidth / width;
     var heightPercent = fixHeight / height;
 
     $('#mainImage').hide();
-    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+    $('#imageZoom').css('height', '1600px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
 
     // 사각형 좌표값
-    var location = $(e).val().split('_')[0].split(',');
+    var location = loc.split(',');
     x = parseInt(location[0]);
     y = parseInt(location[1]);
     textWidth = parseInt(location[2]);
     textHeight = parseInt(location[3]);
 
-    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
-    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
+    //var xPosition = ((- (x * widthPercent)) + 400) + 'px ';
+    //var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    var xPosition = '0px ';
+    var yPosition = ((- (y * heightPercent)) + 260) + 'px';
     //console.log(xPosition + yPosition);
     $('#imageZoom').css('background-position', xPosition + yPosition);
 
@@ -2473,6 +2517,164 @@ function zoomImg(e, fileName) {
 }
 
 function zoomImg(e) {
+
+    var seltext = $(e).find('ul > li.selected').text();
+    var selLiLeng = 9999;
+    var liLeng = $(e).find('ul > li').length;
+
+    for (var i = 0; i < liLeng; i++) {
+        if ($(e).find('ul > li').eq(i).hasClass("selected") == true) {
+            selLiLeng = i;
+        }
+    }
+
+    var selVal = $(e).closest('div').prev().find('option').eq(selLiLeng).val();
+    selVal = selVal.split("::");
+    var fileName = '';
+    var loc = '';
+
+    if (selVal.length == 3 && seltext == selVal[1]) {
+        fileName = selVal[2];
+        loc = selVal[0];
+    } else {
+        return;
+    }
+
+    var mainImage = $("#mainImage").css('background-image');
+    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
+
+    if (mainImage != fileName) {
+        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+    }
+
+    $('.thumb-img').each(function (i, el) {
+        $(el).closest('li').removeClass('on');
+        var imgSrc = $(el).children('img').attr('src');
+        if (imgSrc.indexOf(fileName) != -1) {
+            $(el).closest('li').addClass('on');
+        }
+    });
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
+    //imageZoom 고정크기
+    //var fixWidth = 744;
+    //var fixHeight = 1052;
+
+    var fixWidth = 800;
+    var fixHeight = 1300;
+
+    var widthPercent = fixWidth / width;
+    var heightPercent = fixHeight / height;
+
+    $('#mainImage').hide();
+    $('#imageZoom').css('height', '1600px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+
+    // 사각형 좌표값
+    var location = loc.split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+
+    //var xPosition = ((- (x * widthPercent)) + 400) + 'px ';
+    //var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    var xPosition = '0px ';
+    var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    //console.log(xPosition + yPosition);
+    $('#imageZoom').css('background-position', xPosition + yPosition);
+
+    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
+    $('#redZoomNemo').show();
+}
+
+function zoomImgClick(e) {
+
+    var seltext = $(e).find('li.selected').text();
+    var selLiLeng = 9999;
+    var liLeng = $(e).find('li').length;
+
+    for (var i = 0; i < liLeng; i++) {
+        if ($(e).find('li').eq(i).hasClass("selected") == true) {
+            selLiLeng = i;
+        }
+    }
+    
+    var selVal = $(e).parent().parent().closest('div').prev().find('option').eq(selLiLeng).val();
+    selVal = selVal.split("::");
+    var fileName = '';
+    var loc = '';
+
+    if (selVal.length == 3 && seltext == selVal[1]) {
+        fileName = selVal[2];
+        loc = selVal[0];
+    } else {
+        return;
+    }
+
+    var mainImage = $("#mainImage").css('background-image');
+    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
+
+    if (mainImage != fileName) {
+        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+    }
+
+    $('.thumb-img').each(function (i, el) {
+        $(el).closest('li').removeClass('on');
+        var imgSrc = $(el).children('img').attr('src');
+        if (imgSrc.indexOf(fileName) != -1) {
+            $(el).closest('li').addClass('on');
+        }
+    });
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
+    //imageZoom 고정크기
+    //var fixWidth = 744;
+    //var fixHeight = 1052;
+
+    var fixWidth = 800;
+    var fixHeight = 1300;
+
+    var widthPercent = fixWidth / width;
+    var heightPercent = fixHeight / height;
+
+    $('#mainImage').hide();
+    $('#imageZoom').css('height', '1600px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+
+    // 사각형 좌표값
+    var location = loc.split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+
+    //var xPosition = ((- (x * widthPercent)) + 400) + 'px ';
+    //var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    var xPosition = '0px ';
+    var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    //console.log(xPosition + yPosition);
+    $('#imageZoom').css('background-position', xPosition + yPosition);
+
+    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
+    $('#redZoomNemo').show();
+}
+
+function zoomImg_old(e) {
     var fileName = $(e).find('option:selected').attr('alt');    
     var mainImage = $("#mainImage").css('background-image');
     mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
