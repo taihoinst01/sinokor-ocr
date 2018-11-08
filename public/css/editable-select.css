@@ -132,13 +132,13 @@
     */
 
     .ui-select-wrap .ui-button {
-        border-left: 1px solid #8C8C8C;
+        border-left: 1px solid #0370b2;
         float: right;
         display: table-cell;
         cursor: pointer;
         height: 100%;
-        color: #999999;
-        width: 40px;
+        color: #000000;
+        width: 20px;
         text-align: center;
     }
 .ui-select-wrap .ui-button i {
