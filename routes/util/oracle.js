@@ -62,7 +62,6 @@ exports.modifyUser = function (req, done) {
     });
 };
 
-//todo - 한기훈
 exports.selectUserInfo = function (req, done) {
 
     return new Promise(async function (resolve, reject) {
@@ -74,44 +73,31 @@ exports.selectUserInfo = function (req, done) {
             let icr = req.icr;
             let approval = req.approval;
             let finalApproval = req.finalApproval;
-            //let admin = req.admin; ******** 사용 여부에 따라 주석 제거 ***********
-            //let externalUsers = req.externalUsers; ******** 사용 여부에 따라 주석 제거 ********
+            let externalUsers = req.externalUsers; 
             let keyword = req.keyword;
 
             conn = await oracledb.getConnection(dbConfig);
 
-            // 외부사용자 포함용 
-            
             var userQuery = ""
-                + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_DEPT.DEPT_NM, CO_EMP.EXT_USER "
-                + "FROM "
-                + "(SELECT CO_EMP.EMP_NO, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, 'N' AS EXT_USER FROM TBL_CO_EMP_BS CO_EMP "
-                + "UNION ALL "
-                + "SELECT EMP_NO, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, 'Y' AS EXT_USER FROM TBL_CO_EMP_BS_EXT) CO_EMP "
-                + "LEFT JOIN TBL_CO_EMP_REG CO_REG "
-                + "ON CO_EMP.EMP_NO = CO_REG.EMP_NO "
-                + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
-                + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
-                + "WHERE 1=1 ";
+                + " SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, DEPT_NM " 
+                + " FROM " 
+                + " (SELECT EMP_NO, EMP_NM, EMP_ENGL_NM, DEPT_NM, 1 AS ORDERNUM FROM TBL_CO_EMP_BS CO_EMP_BS " 
+                    + " LEFT JOIN TBL_CO_DEPT_BS CO_DEPT " 
+                    + " ON CO_EMP_BS.BLT_DEPT_CD = CO_DEPT.DEPT_CD " 
+                    + " UNION ALL " 
+                + " SELECT EMP_NO, EMP_NM, EMP_ENGL_NM, DEPT_NM, 2 AS ORDERNUM FROM TBL_CO_EMP_BS_EXT CO_EMP_EXT " 
+                    + " LEFT JOIN TBL_CO_DEPT_BS_EXT CO_DEPT_EXT " 
+                    + " ON CO_EMP_EXT.BLT_DEPT_CD = CO_DEPT_EXT.DEPT_CD " 
+                    + " ) CO_EMP " 
+                + " LEFT JOIN TBL_CO_EMP_REG CO_REG " 
+                + " ON CO_EMP.EMP_NO = CO_REG.EMP_NO  "
+                + " WHERE 1=1 ";
             
-            
-            // 코리안리 직원만
-           /* var userQuery = ""
-                + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_DEPT.DEPT_NM "
-                + "FROM "
-                    + "TBL_CO_EMP_BS CO_EMP "
-                + "LEFT JOIN TBL_CO_EMP_REG CO_REG "
-                + "ON CO_EMP.EMP_NO = CO_REG.EMP_NO "
-                + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
-                + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
-                + "WHERE 1=1 ";
-            */
             if (dept != '모든부서') {
-                userQuery += " AND CO_DEPT.DEPT_NM = '" + dept + "' ";
+                userQuery += " AND CO_EMP.DEPT_NM = '" + dept + "' ";
             }
-            var auths = [scan, icr, approval, finalApproval/*, admin, externalUsers */]; // ******** 사용 여부에 따라 주석 제거 ********
-            var authColumns = ['CO_REG.AUTH_SCAN', 'CO_REG.AUTH_ICR', 'CO_REG.AUTH_APPROVAL', 'CO_REG.AUTH_FINAL_APPROVAL',
-                /*'CO_REG.AUTH_ADMIN', 'CO_EMP.EXT_USER'*/]; // ******** 사용 여부에 따라 주석 제거 ********
+            var auths = [scan, icr, approval, finalApproval]; 
+            var authColumns = ['CO_REG.AUTH_SCAN', 'CO_REG.AUTH_ICR', 'CO_REG.AUTH_APPROVAL', 'CO_REG.AUTH_FINAL_APPROVAL'];
 
             if (keyword) {
                 userQuery += " AND CO_EMP.EMP_NM LIKE '%" + keyword + "%' ";
@@ -128,7 +114,7 @@ exports.selectUserInfo = function (req, done) {
                 userQuery = userQuery.substring(0, userQuery.length - 3);
                 userQuery += ") ";
             }
-            userQuery += "ORDER BY CO_EMP.EMP_NM";
+            userQuery += "ORDER BY ORDERNUM, CO_EMP.DEPT_NM, CO_EMP.EMP_NM";
 
 
             result = await conn.execute(userQuery);
@@ -3388,7 +3374,11 @@ exports.searchDept = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            let deptQuery = "SELECT * FROM TBL_CO_DEPT_BS";
+            let deptQuery =
+                "SELECT DEPT_NM, DEPT_CD, 1 as ORDERNUM FROM TBL_CO_DEPT_BS_EXT " +
+                "UNION " +
+                "SELECT DEPT_NM, DEPT_CD, 2 as ORDERNUM FROM TBL_CO_DEPT_BS " + 
+                "ORDER BY ORDERNUM, DEPT_NM";           
             let deptResult = await conn.execute(deptQuery, []);
 
             result = {
@@ -3421,30 +3411,42 @@ exports.searchUser = function (req, done) {
             let approval = req.body.approval;
             let finalApproval = req.body.finalApproval;
             let admin = req.body.admin;
-            let externalUsers = req.body.externalUsers;
 
             conn = await oracledb.getConnection(dbConfig);
-            var userQuery = ""
-                + "SELECT CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_EMP.EMP_PW, CO_DEPT.DEPT_NM,"
-                    + "CO_REG.AUTH_SCAN, CO_REG.AUTH_ICR, CO_REG.AUTH_APPROVAL, CO_REG.AUTH_FINAL_APPROVAL, "
-                    + "CO_REG.AUTH_ADMIN, CO_EMP.EXT_USER, TO_CHAR(CO_REG.FINAL_LOGIN_DATE, 'YYYY/MM/DD HH24:MI:SS') AS FINAL_LOGIN_DATE "
-                + "FROM "
-                    + "(SELECT CO_EMP.EMP_NO, NULL AS EMP_PW, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, 'N' AS EXT_USER FROM TBL_CO_EMP_BS CO_EMP "
-                    + "UNION ALL "
-                    + "SELECT EMP_NO, EMP_PW, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, 'Y' AS EXT_USER FROM TBL_CO_EMP_BS_EXT) CO_EMP "
-                + "LEFT JOIN TBL_CO_EMP_REG CO_REG "
-                + "ON CO_EMP.EMP_NO = CO_REG.EMP_NO "
-                + "LEFT JOIN TBL_CO_DEPT_BS CO_DEPT "
-                + "ON CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD "
-                + "WHERE 1=1";
+            var userQuery = 
+                "SELECT " +
+                "    CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_EMP.EMP_PW, CO_EMP.DEPT_NM,CO_REG.AUTH_SCAN, CO_REG.AUTH_ICR, CO_REG.AUTH_APPROVAL, EXT_USER, " + 
+                "    CO_REG.AUTH_FINAL_APPROVAL, CO_REG.AUTH_ADMIN, TO_CHAR(CO_REG.FINAL_LOGIN_DATE, 'YYYY/MM/DD HH24:MI:SS') AS FINAL_LOGIN_DATE " +
+                "FROM (SELECT " + 
+                "           CO_EMP.EMP_NO, NULL AS EMP_PW, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, DEPT_NM, 'N' AS EXT_USER " +
+                "        FROM " +
+                "            TBL_CO_EMP_BS CO_EMP " +
+                "        LEFT JOIN TBL_CO_DEPT_BS CO_DEPT " +
+                "        ON " +
+                "            CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD " +
+                "        UNION ALL " +
+                "        SELECT " +
+                "            EMP_NO, EMP_PW, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, DEPT_NM, 'Y' AS EXT_USER " +
+                "        FROM " +
+                "            TBL_CO_EMP_BS_EXT CO_EXT " +
+                "        LEFT JOIN " +
+                "            TBL_CO_DEPT_BS_EXT CO_DEPT_EXT " +
+                "        ON " +
+                "            CO_EXT.BLT_DEPT_CD = CO_DEPT_EXT.DEPT_CD) " +
+                "        CO_EMP " +
+                "LEFT JOIN " +
+                "    TBL_CO_EMP_REG CO_REG " +
+                "ON " +
+                "    CO_EMP.EMP_NO = CO_REG.EMP_NO " +
+                "WHERE 1=1 "
 
             if (!req.body.type) {
                 if (dept != '모든부서') {
-                    userQuery += " AND CO_DEPT.DEPT_NM = '" + dept + "'";
+                    userQuery += " AND CO_EMP.DEPT_NM = '" + dept + "'";
                 }
-                var auths = [scan, icr, approval, finalApproval, admin, externalUsers];
+                var auths = [scan, icr, approval, finalApproval, admin];
                 var authColumns = ['CO_REG.AUTH_SCAN', 'CO_REG.AUTH_ICR', 'CO_REG.AUTH_APPROVAL', 'CO_REG.AUTH_FINAL_APPROVAL',
-                    'CO_REG.AUTH_ADMIN', 'CO_EMP.EXT_USER'];
+                    'CO_REG.AUTH_ADMIN'];
                 var authCnt = 0;
                 for (var i in auths) {
                     if (auths[i] == 'Y') {
@@ -3458,6 +3460,8 @@ exports.searchUser = function (req, done) {
                 }
                 if (authCnt > 0) userQuery += ' )';
             }
+
+            userQuery += "ORDER BY EXT_USER, DEPT_NM, EMP_NM";
             result = await conn.execute(userQuery);
             if (result.rows.length > 0) {
                 return done(null, result.rows);

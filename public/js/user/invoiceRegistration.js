@@ -952,7 +952,7 @@ var fn_initUiTraining = function () {
     $("#uiImg").html('');
     $("#textResultTbl").html('');
 };
-
+//todo
 var fn_search = function () {
     var param = {
         docNum: nvl($("#docNum").val().toUpperCase()),
@@ -978,12 +978,15 @@ var fn_search = function () {
             //console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
+                    if (entry.DEADLINE == null) {
+                        entry.DEADLINE = '';
+                    }
                     appendHtml += '<tr id="tr_base_' + entry.SEQNUM + '-' + entry.DOCNUM + '-' + entry.STATUS + '">' +
                         '<td><input type="checkbox" id="base_chk_' + entry.DOCNUM + '" name="base_chk" value="' + entry.DOCNUM + '" /></td>' +
                         '<td name="td_base">' + entry.DOCNUM + '</td>' +
                         '<td name="td_base">' + nvl2(entry.PAGECNT, 0) + '</td>' +
                         '<td name="td_base">' + entry.NOWNUM + '</td>' +
-                        '<td></td>' +
+                        '<td name="td_base">' + entry.DEPT_NM + '</td>' +
                         '<td></td>' +
                         '<td class="td_dbclick">' + entry.DEADLINE + '</td>' +
                         '<td></td>' +
@@ -1889,7 +1892,7 @@ function fn_processFinish(mlData, imgId) {
     //$("#ctnExtractionBtn").prop("disabled", true);
     $("#div_dtl").css("display", "block");
     $("#btn_pop_ui_close").click();
-    //$('select').editableSelect();
+    $('select').editableSelect();
 
     if (!$("#sendDocBtn").is(":focus")) {
         $('select').eq(0).focus();
@@ -1936,52 +1939,26 @@ function fn_ContractNumExtraction() {
     var ctNm = [];
     var ttyYy = [];
 
-    if ($('#tbody_dtlList td:eq(2)').children().length == 2) {
-        if ($('#tbody_dtlList td:eq(2)').find('input[type=text]').val().trim() == "") {
-            fn_alert('alert', "출재사명을 입력해주세요");
-        } else {
-            cdnNm.push($('#tbody_dtlList td:eq(2)').find('input[type=text]').val());
-        }
-    } else {
+    //출재사명
+    var $cdnNmLi = $('#tbody_dtlList td:eq(2)').find('li');
+    for (var i = 0; i < $cdnNmLi.length; i++) {     
+        var text = $cdnNmLi[i].innerText;
+        cdnNm.push(text);      
+    }
+    
 
-        for (var i = 0; i < $("select[name='cdnNm'] > option").length; i++) {
-            //if (i > 0) {
-                var text = $("select[name='cdnNm'] option:eq('" + i + "')").text();
-                cdnNm.push(text);
-            //}
-        }
+    //계약명
+    var $ctNmLi = $('#tbody_dtlList td:eq(3)').find('li');
+    for (var i = 0; i < $ctNmLi.length; i++) {
+        var text = $ctNmLi[i].innerText;
+        ctNm.push(text);
     }
 
-    if ($('#tbody_dtlList td:eq(3)').children().length == 2) {
-        if ($('#tbody_dtlList td:eq(3)').find('input[type=text]').val().trim() == "") {
-            fn_alert('alert', "계약명을 입력해주세요");
-        } else {
-            ctNm.push($('#tbody_dtlList td:eq(3)').find('input[type=text]').val());
-        }
-    } else {
-        for (var i = 0; i < $("select[name='ctNm'] > option").length; i++) {
-            //if (i > 0) {
-            var text = $("select[name='ctNm'] option:eq('" + i + "')").text();
-            ctNm.push(text);
-            //}
-        }
-
-    }
-
-    if ($('#tbody_dtlList td:eq(4)').children().length == 2) {
-        if ($('#tbody_dtlList td:eq(4)').find('input[type=text]').val().trim() == "") {
-            fn_alert('alert', "UY를 입력해주세요");
-        } else {
-            ttyYy.push($('#tbody_dtlList td:eq(4)').find('input[type=text]').val());
-        }
-    } else {
-        for (var i = 0; i < $("select[name='ttyYy']  > option").length; i++) {
-            //if (i > 0) {
-            var text = $("select[name='ttyYy'] option:eq('" + i + "')").text();
-            ttyYy.push(text);
-            //}
-        }
-
+    //UY
+    var $ttyYyLi = $('#tbody_dtlList td:eq(4)').find('li');
+    for (var i = 0; i < $ttyYyLi.length; i++) {
+        var text = $ttyYyLi[i].innerText;
+        ttyYy.push(text);
     }
 
     if (cdnNm.length == 0) {
@@ -2735,7 +2712,7 @@ var fn_docEvent = function () {
             dept: $('#select_team').val(),
         };
 
-        //todo - 한기훈
+        
         $.ajax({
             url: '/common/selectUserInfo',
             type: 'post',

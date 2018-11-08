@@ -72,7 +72,6 @@ function fn_searchUser(type) {
         approval: $('#approval').is(":checked") ? "Y" : "N",
         finalApproval: $('#finalApproval').is(":checked") ? "Y" : "N",
         admin: $('#admin').is(":checked") ? "Y" : "N",
-        externalUsers: $('#externalUsers').is(":checked") ? "Y" : "N"
         //startNum : ((curPage - 1) * MAX_ENTITY_IN_PAGE),
         //endNum: MAX_ENTITY_IN_PAGE
     };
