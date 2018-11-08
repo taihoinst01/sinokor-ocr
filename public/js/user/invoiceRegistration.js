@@ -1892,7 +1892,7 @@ function fn_processFinish(mlData, imgId) {
     //$("#ctnExtractionBtn").prop("disabled", true);
     $("#div_dtl").css("display", "block");
     $("#btn_pop_ui_close").click();
-    //$('select').editableSelect();
+    $('select').editableSelect();
 
     if (!$("#sendDocBtn").is(":focus")) {
         $('select').eq(0).focus();
