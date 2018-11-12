@@ -13,11 +13,11 @@ import re
 import batchUtil as bUtil
 
 
-id = "koreanre"
+id = "koreanre5"
 pw = "koreanre01"
-sid = "koreanreocr"
+sid = "koreanreocr5"
 # ip = "10.10.20.205"
-ip = "172.16.53.145"
+ip = "172.16.53.147"
 port = "1521"
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
