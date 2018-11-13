@@ -171,7 +171,7 @@ function callbackSSOLogin(rows, req, res) {
 
         if (stdout[1]) {
             var koreanreId = stdout[1];
-            if (koreanreId == req.query.userId) { // queryString으로 넘어온 아이디와 sso token을 통해 넘오온 아이디가 같으면
+            if (koreanreId == req.query.userId) { // queryString으로 넘어온 아이디와 sso token을 통해 넘어온 아이디가 같으면
                 if (rows.length > 0) { // db에 정보가 있으면
                     commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [koreanreId], function () { });
 
@@ -186,7 +186,7 @@ function callbackSSOLogin(rows, req, res) {
                         token: token
                     };
 
-                } else {
+                } else { // db에 정보 없으면 권한 임시 할당
                     req.session.user = {
                         userId: req.query.userId,
                         scanApproval: 'N',
