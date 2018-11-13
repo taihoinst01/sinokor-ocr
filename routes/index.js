@@ -133,29 +133,83 @@ passport.use(new CookieStrategy({
 
 // index.html
 router.get('/', function (req, res) {
-    if (commonUtil.isNull(req.user)) {
-        res.redirect("/logout");
-    } else {
-        var sess = req.session;
+    if (req.query.userId && req.query.token) { // sso 로그인
+        commonDB.reqQueryParam(queryConfig.sessionConfig.ssoLoginQuery, [req.query.userId], callbackSSOLogin, req, res);
+        req.session.userId = req.query.userId;
 
-        if (req.isAuthenticated()) {
-            //res.locals.currentUser = req.user;
-            if (!fs.existsSync(propertiesConfig.filepath.createImgDirPath)) {
-                fs.mkdir(propertiesConfig.filepath.createImgDirPath);
-            }
-            if (!fs.existsSync(propertiesConfig.filepath.createImgconvertedDirPath)) {
-                fs.mkdir(propertiesConfig.filepath.createImgconvertedDirPath);
-            }
-            res.render('user/myApproval', { currentUser: req.user });
+    } else { // 일반 로그인
+        if (commonUtil.isNull(req.session.user)) {
+            res.redirect("/logout");
         } else {
-            res.render("index", {
-                messages: { error: req.flash('errors') }
-            });
+            if (req.session.user !== undefined) {
+                //res.locals.currentUser = req.user;
+                if (!fs.existsSync(propertiesConfig.filepath.createImgDirPath)) {
+                    fs.mkdir(propertiesConfig.filepath.createImgDirPath);
+                }
+                if (!fs.existsSync(propertiesConfig.filepath.createImgconvertedDirPath)) {
+                    fs.mkdir(propertiesConfig.filepath.createImgconvertedDirPath);
+                }
+                res.render('user/myApproval', { currentUser: req.session.user });
+            } else {
+                res.render("index", {
+                    messages: { error: req.flash('errors') }
+                });
+            }
         }
     }
 });
+function callbackSSOLogin(rows, req, res) {
+    var token = req.query.token;
+
+    exec('java -jar C:/ICR/app/source/module/sso.jar Verify ' + token, function (error, stdout, stderr) {
+        if (error !== null) {
+            console.log("Error -> " + error);
+            res.redirect("/logout");
+        }
+
+        stdout = stdout.split("koreanreId:");
+
+        if (stdout[1]) {
+            var koreanreId = stdout[1];
+            if (koreanreId == req.query.userId) { // queryString으로 넘어온 아이디와 sso token을 통해 넘어온 아이디가 같으면
+                if (rows.length > 0) { // db에 정보가 있으면
+                    commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [koreanreId], function () { });
+
+                    req.session.user = {
+                        userId: req.query.userId,
+                        scanApproval: rows[0].AUTH_SCAN,
+                        icrApproval: rows[0].AUTH_ICR,
+                        middleApproval: rows[0].AUTH_APPROVAL,
+                        lastApproval: rows[0].AUTH_FINAL_APPROVAL,
+                        lastLoginDate: rows[0].FINAL_LOGIN_DATE,
+                        admin: rows[0].AUTH_ADMIN,
+                        token: token
+                    };
+
+                } else { // db에 정보 없으면 권한 임시 할당
+                    req.session.user = {
+                        userId: req.query.userId,
+                        scanApproval: 'N',
+                        icrApproval: 'N',
+                        middleApproval: 'N',
+                        lastApproval: 'N',
+                        lastLoginDate: '',
+                        admin: 'N',
+                        token: token
+                    };
+                }
+                res.redirect("/login");
+            } else {
+                res.render('index', { messages: { error: "SSO 토큰과 아이디가 일치하지 않습니다" } });
+            }
+        } else {
+            res.render('index', { messages: { error: "SSO 통신 오류가 발생 했습니다" } });
+        }
+    });
+}
+
 router.get('/login', function (req, res) {
-    if (req.user !== undefined) {
+    if (req.session.user !== undefined) {
         res.redirect("/myApproval");
     } else {
         res.render('index', {
@@ -172,6 +226,7 @@ router.get('/login', function (req, res) {
 router.post("/login",
     function (req, res, next) {
         console.log("login...");
+        
         var sess;
         sess = req.session;
         var loginMessage = {};
@@ -191,9 +246,9 @@ router.post("/login",
                 res.cookie('ocr_userid', req.body.userId, { maxAge: 604800000 }); // save cookie 7days
             }
             //todo
-            commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [req.body.userId], callbackUpdate, req, res);
+            commonDB.reqQueryParam(queryConfig.sessionConfig.loginQuery, [req.body.userId], callbackLogin, req, res);            
             sess.userId = req.body.userId;
-            next();
+            //next();
         } else {
             res.redirect("/login");
         }
@@ -204,12 +259,35 @@ router.post("/login",
         failureFlash: true
     })
 );
+function callbackLogin(rows, req, res) {
+    if (rows.length > 0) {
+        if (req.body.userPw == rows[0].EMP_PW) {
+            req.session.user = {
+                userId: req.body.userId,
+                scanApproval: rows[0].AUTH_SCAN,
+                icrApproval: rows[0].AUTH_ICR,
+                middleApproval: rows[0].AUTH_APPROVAL,
+                lastApproval: rows[0].AUTH_FINAL_APPROVAL,
+                lastLoginDate: rows[0].FINAL_LOGIN_DATE,
+                admin: rows[0].AUTH_ADMIN
+            };
+            commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [req.body.userId], callbackUpdate, req, res);
+            
+        } else {
+            res.render('index', { messages: { error: "비밀번호가 일치하지 않습니다" } });
+        }
+    } else {
+        res.render('index', { messages: { error: "해당 사용자가 존재하지 않습니다" } });
+    }
+}
+
 function callbackUpdate(rows, req, res) {
+    res.redirect("/login");
 }
 // Log out
 router.get('/logout', function (req, res) {
     var sess = req.session;
-    if (sess.username) {
+    if (sess.user) {
         req.session.destroy(function (err) {
             if (err) {
                 console.log(err);

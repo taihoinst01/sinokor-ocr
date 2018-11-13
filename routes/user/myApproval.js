@@ -18,22 +18,22 @@ router.get('/favicon.ico', function (req, res) {
 
 // myApproval.html 보여주기
 router.get('/', function (req, res) {
-    if (req.isAuthenticated()) res.render('user/myApproval', { currentUser: req.user });
+    if (req.session.user !== undefined) res.render('user/myApproval', { currentUser: req.session.user });
     else res.redirect("/logout");
 });
 
 // myApproval.html 보여주기
 router.post('/', function (req, res) {
-    if (req.isAuthenticated()) res.render('user/myApproval', { currentUser: req.user });
+    if (req.session.user !== undefined) res.render('user/myApproval', { currentUser: req.session.user });
     else res.redirect("/logout");
 });
 
 // [POST] 문서 리스트 조회 
 router.post('/searchApprovalList', function (req, res) {
-    if (req.isAuthenticated()) fnSearchApprovalList(req, res);
+    if (req.session.user !== undefined) fnSearchApprovalList(req, res);
 });
 var callbackApprovalList = function (rows, req, res) {
-    if (req.isAuthenticated()) res.send(rows);
+    if (req.session.user !== undefined) res.send(rows);
 };
 var fnSearchApprovalList = function (req, res) {
     // 조회 조건 생성
@@ -176,10 +176,10 @@ var callbackApprovalImageList = function (rows, req, res) {
 };*/
 // [POST] 사용자 조회
 router.post('/selectUsers', function (req, res) {
-    if (req.isAuthenticated()) fnSelectUsers(req, res);
+    if (req.session.user !== undefined) fnSelectUsers(req, res);
 });
 var callbackSelectUsers = function (rows, req, res) {
-    if (req.isAuthenticated()) res.send(rows);
+    if (req.session.user !== undefined) res.send(rows);
 };
 var fnSelectUsers = function (req, res) {
     var query = queryConfig.myApprovalConfig.selectUsers;

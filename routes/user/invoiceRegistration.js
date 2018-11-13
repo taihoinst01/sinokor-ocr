@@ -53,23 +53,23 @@ router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 router.get('/', function (req, res) {
-    if (req.isAuthenticated()) res.render('user/invoiceRegistration', {
-        currentUser: req.user,
+    if (req.session.user !== undefined) res.render('user/invoiceRegistration', {
+        currentUser: req.session.user,
 
     });
     else res.redirect("/logout");
 });
 router.post('/', function (req, res) {
-    if (req.isAuthenticated()) res.render('user/invoiceRegistration', { currentUser: req.user });
+    if (req.session.user !== undefined) res.render('user/invoiceRegistration', { currentUser: req.session.user });
     else res.redirect("/logout");
 });
 
 // [POST] 문서 리스트 조회 
 router.post('/searchDocumentList', function (req, res) {
-    if (req.isAuthenticated()) fnSearchDocumentList(req, res);
+    if (req.session.user !== undefined) fnSearchDocumentList(req, res);
 });
 var callbackDocumentList = function (rows, req, res) {
-    if (req.isAuthenticated()) res.send(rows);
+    if (req.session.user !== undefined) res.send(rows);
 };
 var fnSearchDocumentList = function (req, res) {
     var condQuery = ``;
@@ -106,10 +106,10 @@ var fnSearchDocumentList = function (req, res) {
 
 // [POST] 문서 상세 리스트 조회
 router.post('/searchDocumentDtlList', function (req, res) {
-    if (req.isAuthenticated()) fnSearchDocumentDtlList(req, res);
+    if (req.session.user !== undefined) fnSearchDocumentDtlList(req, res);
 });
 var callbackDocumentDtlList = function (rows, req, res) {
-    if (req.isAuthenticated()) res.send(rows);
+    if (req.session.user !== undefined) res.send(rows);
 };
 var fnSearchDocumentDtlList = function (req, res) {
     var param = {
@@ -127,10 +127,10 @@ var fnSearchDocumentDtlList = function (req, res) {
 
 // [POST] 문서 이미지 리스트 조회 
 router.post('/searchDocumentImageList', function (req, res) {
-    if (req.isAuthenticated()) fnSearchDocumentImageList(req, res);
+    if (req.session.user !== undefined) fnSearchDocumentImageList(req, res);
 });
 var callbackDocumentImageList = function (rows, req, res) {
-    if (req.isAuthenticated()) res.send(rows);
+    if (req.session.user !== undefined) res.send(rows);
 };
 var fnSearchDocumentImageList = function (req, res) {
     var param = {
