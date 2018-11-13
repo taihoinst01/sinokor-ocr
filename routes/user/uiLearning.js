@@ -53,13 +53,13 @@ router.get('/favicon.ico', function (req, res) {
 
 // uiLearning.html 보여주기 (get)
 router.get('/', function (req, res) {
-    if (req.isAuthenticated()) res.render('user/uiLearning', { currentUser: req.user });
+    if (req.session.user !== undefined) res.render('user/uiLearning', { currentUser: req.session.user });
     else res.redirect("/logout");
 });
 
 // userDashbaord.html 보여주기 (post)
 router.post('/', function (req, res) {
-    if (req.isAuthenticated()) res.render('user/uiLearning', { currentUser: req.user });
+    if (req.session.user !== undefined) res.render('user/uiLearning', { currentUser: req.session.user });
     else res.redirect("/logout");
 });
 

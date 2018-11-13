@@ -96,7 +96,7 @@ router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 router.get('/', function (req, res) {                           // 배치학습 (GET)
-    if (req.isAuthenticated()) res.render('user/batchLearning', { currentUser: req.user });
+    if (req.session.user !== undefined) res.render('user/batchLearning', { currentUser: req.session.user });
     else res.redirect("/logout");
 });
 // BLANK CALLBACK
@@ -104,12 +104,12 @@ var callbackBlank = function () { };
 
 // [POST] 배치학습데이터 이미지 조회
 router.post('/viewImage', function (req, res) {
-    if (req.isAuthenticated()) fnViewImage(req, res);
+    if (req.session.user !== undefined) fnViewImage(req, res);
 });
 var callbackViewImage = async function (rows, req, res) {
     console.log("rows : " + JSON.stringify(rows));
     
-    if (req.isAuthenticated()) {
+    if (req.session.user !== undefined) {
         if (commonUtil.isNull(rows[0].CONVERTEDIMGPATH)) {
             
             // 변환 이미지가 없을 경우 변환 후 UPDATE
@@ -143,11 +143,11 @@ var fnViewImage = function (req, res) {
 };
 // [POST] 배치학습데이터 이미지 데이터 조회 
 router.post('/viewImageData', function (req, res) {
-    if (req.isAuthenticated()) fnViewImageData(req, res);
+    if (req.session.user !== undefined) fnViewImageData(req, res);
 });
 var callbackViewImageData = function (rows, req, res) {
     console.log("rows : " + JSON.stringify(rows));
-    if (req.isAuthenticated()) res.send(rows);
+    if (req.session.user !== undefined) res.send(rows);
 };
 var fnViewImageData = function (req, res) {
     var data = [req.body.imgId];
@@ -159,7 +159,7 @@ var fnViewImageData = function (req, res) {
 
 // main menu batch learning 2 [POST] 배치학습데이터리스트 조회 
 router.post('/searchBatchLearnDataList', function (req, res) {   
-    if (req.isAuthenticated()) fnSearchBatchLearningDataList(req, res);
+    if (req.session.user !== undefined) fnSearchBatchLearningDataList(req, res);
 }); 
 var callbackSelectBatchMLExportList = function (rows, req, res, batchData) {
     if (rows.length > 0) {
@@ -171,7 +171,7 @@ var callbackSelectBatchMLExportList = function (rows, req, res, batchData) {
 
 //main menu batch learning 3 
 var callbackBatchLearningDataList = function (rows, req, res) {
-    if (req.isAuthenticated()) {
+    if (req.session.user !== undefined) {
         if (rows.length > 0) {
             var imgId = '(';
             for (var i in rows) {
@@ -285,7 +285,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
 
 // [POST] 배치학습데이터 조회
 router.post('/searchBatchLearnData', function (req, res) {   
-    if (req.isAuthenticated()) fnSearchBatchLearningData(req, res);
+    if (req.session.user !== undefined) fnSearchBatchLearningData(req, res);
 }); 
 var callbackSelectBatchAnswerDataToImgId = function (rows, req, res, fileInfoList, orderbyRows) {
     if (rows.length == 0) {
@@ -406,7 +406,7 @@ var fnSearchBatchLearningData = function (req, res) {
 
 // [POST] delete batchlearningdata (UPDATE)
 var callbackDeleteBatchLearningData = function (rows, req, res) {
-    if (req.isAuthenticated()) res.send({ code: 200, rows: rows });
+    if (req.session.user !== undefined) res.send({ code: 200, rows: rows });
 };
 router.post('/deleteBatchLearningData', function (req, res) {
     var condition = "(";

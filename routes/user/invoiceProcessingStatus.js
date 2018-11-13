@@ -18,7 +18,7 @@ router.get('/favicon.ico', function (req, res) {
 // invoiceProcessingStatus.html 보여주기
 router.get('/', function (req, res) {
     console.log("check");
-    if (req.isAuthenticated()) {
+    if (req.session.user !== undefined) {
         var today = new Date();
         var yyyy = today.getFullYear();
         var mm = (today.getMonth() + 1 < 10) ? '0' + (today.getMonth() + 1) : today.getMonth() + 1;
@@ -28,19 +28,19 @@ router.get('/', function (req, res) {
         var ss = (today.getSeconds() < 10) ? '0' + today.getSeconds() : today.getSeconds();
 
         var current = yyyy + '-' + mm + '-' + dd + ' ' + hh + ':' + minute + ':' + ss;
-        res.render('user/invoiceProcessingStatus', { currentUser: req.user, currentDate: current });
+        res.render('user/invoiceProcessingStatus', { currentUser: req.session.user, currentDate: current });
     }
     else res.redirect("/logout");
 });
 
 // invoiceProcessingStatus.html 보여주기
 router.post('/', function (req, res) {
-    if (req.isAuthenticated()) res.render('user/invoiceProcessingStatus', { currentUser: req.user });
+    if (req.session.user !== undefined) res.render('user/invoiceProcessingStatus', { currentUser: req.session.user });
     else res.redirect("/logout");
 });
 
 router.post('/selectChartData', function (req, res) {
-    if (req.isAuthenticated()) {
+    if (req.session.user !== undefined) {
         let returnObj;
 
         sync.fiber(function () {

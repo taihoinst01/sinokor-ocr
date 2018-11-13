@@ -34,29 +34,29 @@ router.get('/favicon.ico', function (req, res) {    // favicon
     res.status(204).end();
 });
 router.get('/', function (req, res) {               // 사용자 관리 (GET)
-    if (req.isAuthenticated()) res.render('admin/userManagement', { currentUser: req.user });
+    if (req.session.user !== undefined) res.render('admin/userManagement', { currentUser: req.session.user });
     else res.redirect("/logout");
 });
 /*
 router.post('/searchUser', function (req, res) {    // 사용자 목록 조회
-    if (req.isAuthenticated()) fnSearch(req, res);
+    if (req.session.user !== undefined) fnSearch(req, res);
 });
 */
 
 router.post('/chooseUser', function (req, res) {    // 사용자 조회
-    if (req.isAuthenticated()) fnChoose(req, res);
+    if (req.session.user !== undefined) fnChoose(req, res);
 });
 router.post('/searchHighApproval', function (req, res) {    // 상위결재자 조회
-    if (req.isAuthenticated()) fnSearchHighApproval(req, res);
+    if (req.session.user !== undefined) fnSearchHighApproval(req, res);
 });
 router.post('/modifyUser', function (req, res) {    //사용자 등록 및 수정
-    if (req.isAuthenticated()) fnModify(req, res);
+    if (req.session.user !== undefined) fnModify(req, res);
 });
 router.post('/insertUser', function (req, res) {    //사용자 등록 (사용안함)
-    if (req.isAuthenticated()) fnInsert(req, res);
+    if (req.session.user !== undefined) fnInsert(req, res);
 });
 router.post('/updateUser', function (req, res) {    //사용자 수정 (사용안함)
-    if (req.isAuthenticated()) fnUpdate(req, res);
+    if (req.session.user !== undefined) fnUpdate(req, res);
 });
 
 //router.post("/deleteUser", function (req, res) {     // 사용자 삭제
@@ -126,7 +126,7 @@ var fnInsert = function (req, res) {
         res.send({ CODE: 300, RESULT: "비정상적인 요청입니다." });
     } else {
         var data = [req.body.userId, req.body.userPw, req.body.email, req.body.note, req.body.scanApproval, req.body.middleApproval, req.body.lastApproval, req.body.highApprovalId];
-        if (req.isAuthenticated()) commonDB.reqQueryParam(insertQuery, data, callbackInsert, req, res);
+        if (req.session.user !== undefined) commonDB.reqQueryParam(insertQuery, data, callbackInsert, req, res);
     }
 };
 // 사용자 수정
