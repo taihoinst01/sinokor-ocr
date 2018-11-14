@@ -196,12 +196,12 @@ router.get('/logout', function (req, res) {
                 console.log(err);
             } else {
                 res.clearCookie('ocr_userid', { path: '/' });
-                req.logout();
+                //req.logout();
                 res.redirect('/login');
             }
         });
     } else {
-        req.logout();
+        //req.logout();
         res.redirect('/login');
     }
 });
