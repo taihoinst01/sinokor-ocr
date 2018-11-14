@@ -1,18 +1,22 @@
 ﻿'use strict';
 var express = require('express');
 var fs = require('fs');
-var debug = require('debug');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var multer = require("multer");
-var exceljs = require('exceljs');
+//var debug = require('debug');
+//var path = require('path');
+//var favicon = require('serve-favicon');
+//var logger = require('morgan');
+//var cookieParser = require('cookie-parser');
+//var bodyParser = require('body-parser');
+//var multer = require("multer");
+//var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var exec = require('child_process').exec;
-var router = express.Router();
+var passport = require('passport')
+    , CookieStrategy = require('passport-cookie')
+    , LocalStrategy = require('passport-local').Strategy
+    , RememberMeStrategy = require('passport-remember-me').Strategy;
+
 // DB
 //var mysql = require('mysql');
 var oracledb = require('oracledb');
@@ -20,122 +24,20 @@ var dbConfig = require('../config/dbConfig.js');
 var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
+
 // Session
-var passport = require('passport')
-    , CookieStrategy = require('passport-cookie')
-    , LocalStrategy = require('passport-local').Strategy
-    , RememberMeStrategy = require('passport-remember-me').Strategy;
-var session = require('express-session');
+//var session = require('express-session');
+
+var router = express.Router();
 
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
 });
 
-router.get('/test', passport.authenticate("cookie", { successRedirect: "/myApproval", failureRedirect: "/login", failureFlash: true, session:true }), function (req, res) {
-    if (commonUtil.isNull(req.user)) {
-        //res.redirect("/logout");
-        res.send();
-    } else {
-        var sess = req.session;
-
-        if (req.isAuthenticated()) {
-            //res.locals.currentUser = req.user;
-            if (!fs.existsSync(propertiesConfig.filepath.createImgDirPath)) {
-                fs.mkdir(propertiesConfig.filepath.createImgDirPath);
-            }
-            if (!fs.existsSync(propertiesConfig.filepath.createImgconvertedDirPath)) {
-                fs.mkdir(propertiesConfig.filepath.createImgconvertedDirPath);
-            }
-            res.render('user/myApproval', { currentUser: req.user });
-        } else {
-            res.render("index", {
-                messages: { error: req.flash('errors') }
-            });
-        }
-    }
-});
-
-passport.use(new CookieStrategy({
-    passReqToCallback: true
-},
-    function (req, token, done) {
-        var token = req.cookies.ssotoken;
-        //운영
-        /*
-        var child = exec('java -jar C:/ICR/app/source/module/sso.jar Verify ' + token,
-            function (error, stdout, stderr) {
-                if (error !== null) {
-                    console.log("Error -> " + error);
-                    res.redirect("/logout");
-                }
-
-                stdout = stdout.split("koreanreId:");
-
-                if (stdout[1]) {
-                    var koreanreId = stdout[1];
-                    commonDB.reqQueryParam(`UPDATE TBL_CO_EMP_REG SET FINAL_LOGIN_DATE = sysdate WHERE EMP_NO = :empNo `, [koreanreId], function () { });
-
-                    oracledb.getConnection(dbConfig, function (err, connection) {
-                        connection.execute(`SELECT * FROM TBL_CO_EMP_REG WHERE EMP_NO = :empNo `, [koreanreId], function (err, result) {
-                            if (result.rows.length > 0) {
-
-                                var sessionInfo = {
-                                    userId: koreanreId,
-                                    auth: result.rows[0].AUTH_ADMIN,
-                                    scanApproval: result.rows[0].AUTH_SCAN,
-                                    icrApproval: result.rows[0].AUTH_ICR,
-                                    middleApproval: result.rows[0].AUTH_APPROVAL,
-                                    lastApproval: result.rows[0].AUTH_FINAL_APPROVAL,
-                                    lastLoginDate: result.rows[0].FINAL_LOGIN_DATE,
-                                    admin: result.rows[0].AUTH_ADMIN,
-                                    token: token
-                                };
-
-                                return done(null, sessionInfo);
-                            } else {
-                                return done(null, false);
-                            }
-                        });
-                    });
-                } else {
-                    return done(null, false);
-                }
-            });
-        */
-        //개발
-
-        commonDB.reqQueryParam(`UPDATE TBL_CO_EMP_REG SET FINAL_LOGIN_DATE = sysdate WHERE EMP_NO = :empNo `, [token], function () { });
-
-        oracledb.getConnection(dbConfig, function (err, connection) {
-            connection.execute(`SELECT * FROM TBL_CO_EMP_REG WHERE EMP_NO = :empNo `, [token], function (err, result) {
-                if (result.rows.length > 0) {
-                    var sessionInfo = {
-                        userId: token,
-                        auth: result.rows[0].AUTH_ADMIN,
-                        scanApproval: result.rows[0].AUTH_SCAN,
-                        icrApproval: result.rows[0].AUTH_ICR,
-                        middleApproval: result.rows[0].AUTH_APPROVAL,
-                        lastApproval: result.rows[0].AUTH_FINAL_APPROVAL,
-                        lastLoginDate: result.rows[0].FINAL_LOGIN_DATE,
-                        admin: result.rows[0].AUTH_ADMIN,
-                        token: 'tokenTest'
-                    };
-                    return done(null, sessionInfo);
-                } else {
-                    return done(null, false);
-                }
-            });
-        });
-
-    }
-));
-
-
 // index.html
 router.get('/', function (req, res) {
     if (req.query.userId && req.query.token) { // sso 로그인
         commonDB.reqQueryParam(queryConfig.sessionConfig.ssoLoginQuery, [req.query.userId], callbackSSOLogin, req, res);
-        req.session.userId = req.query.userId;
 
     } else { // 일반 로그인
         if (commonUtil.isNull(req.session.user)) {
@@ -143,12 +45,14 @@ router.get('/', function (req, res) {
         } else {
             if (req.session.user !== undefined) {
                 //res.locals.currentUser = req.user;
+                /*
                 if (!fs.existsSync(propertiesConfig.filepath.createImgDirPath)) {
                     fs.mkdir(propertiesConfig.filepath.createImgDirPath);
                 }
                 if (!fs.existsSync(propertiesConfig.filepath.createImgconvertedDirPath)) {
                     fs.mkdir(propertiesConfig.filepath.createImgconvertedDirPath);
                 }
+                */
                 res.render('user/myApproval', { currentUser: req.session.user });
             } else {
                 res.render("index", {
@@ -162,6 +66,7 @@ function callbackSSOLogin(rows, req, res) {
     var userId = req.query.userId;
     var token = req.query.token;
     if (userId || token) {
+        req.session.userId = userId;
         exec('java -jar C:/ICR/app/source/module/sso.jar Verify ' + token, function (error, stdout, stderr) {
             if (error !== null) {
                 console.log("sso.jar exec error -> " + error);
@@ -221,19 +126,14 @@ router.get('/login', function (req, res) {
         });
     }
 });
-// 로그인 (기본)
-//router.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), function (req, res) {
-//    console.log("POST /login"); 
-//    res.redirect('/');
-//});
-// 로그인 (확장)
+
 router.post("/login",
     function (req, res, next) {
-        console.log("login...");
+        //console.log("login...");
         
         var sess;
         sess = req.session;
-        var loginMessage = {};
+        var loginMessage;
         var isValid = true;
         if (!req.body.userId) {
             isValid = false;
@@ -249,7 +149,6 @@ router.post("/login",
             if (req.body.remember_me == "on") {
                 res.cookie('ocr_userid', req.body.userId, { maxAge: 604800000 }); // save cookie 7days
             }
-            //todo
             commonDB.reqQueryParam(queryConfig.sessionConfig.loginQuery, [req.body.userId], callbackLogin, req, res);            
             sess.userId = req.body.userId;
             //next();
@@ -306,6 +205,12 @@ router.get('/logout', function (req, res) {
         res.redirect('/login');
     }
 });
+
+/******************************************************************************************
+                                        Deprecate Logic
+*******************************************************************************************/
+
+// passport login (deprecate : 2018-11-13)
 // Passport module
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -443,6 +348,108 @@ passport.use(new LocalStrategy({
         });
     });
 }
+));
+
+// passport sso login (deprecate : 2018-11-13)
+router.get('/test', passport.authenticate("cookie", {
+    successRedirect: "/myApproval", failureRedirect: "/login", failureFlash: true, session: true
+}), function (req, res) {
+    if (commonUtil.isNull(req.user)) {
+        //res.redirect("/logout");
+        res.send();
+    } else {
+        var sess = req.session;
+
+        if (req.isAuthenticated()) {
+            //res.locals.currentUser = req.user;
+            if (!fs.existsSync(propertiesConfig.filepath.createImgDirPath)) {
+                fs.mkdir(propertiesConfig.filepath.createImgDirPath);
+            }
+            if (!fs.existsSync(propertiesConfig.filepath.createImgconvertedDirPath)) {
+                fs.mkdir(propertiesConfig.filepath.createImgconvertedDirPath);
+            }
+            res.render('user/myApproval', { currentUser: req.user });
+        } else {
+            res.render("index", {
+                messages: { error: req.flash('errors') }
+            });
+        }
+    }
+});
+
+passport.use(new CookieStrategy({
+    passReqToCallback: true
+},
+    function (req, token, done) {
+        var token = req.cookies.ssotoken;
+        //운영
+        /*
+        var child = exec('java -jar C:/ICR/app/source/module/sso.jar Verify ' + token,
+            function (error, stdout, stderr) {
+                if (error !== null) {
+                    console.log("Error -> " + error);
+                    res.redirect("/logout");
+                }
+
+                stdout = stdout.split("koreanreId:");
+
+                if (stdout[1]) {
+                    var koreanreId = stdout[1];
+                    commonDB.reqQueryParam(`UPDATE TBL_CO_EMP_REG SET FINAL_LOGIN_DATE = sysdate WHERE EMP_NO = :empNo `, [koreanreId], function () { });
+
+                    oracledb.getConnection(dbConfig, function (err, connection) {
+                        connection.execute(`SELECT * FROM TBL_CO_EMP_REG WHERE EMP_NO = :empNo `, [koreanreId], function (err, result) {
+                            if (result.rows.length > 0) {
+
+                                var sessionInfo = {
+                                    userId: koreanreId,
+                                    auth: result.rows[0].AUTH_ADMIN,
+                                    scanApproval: result.rows[0].AUTH_SCAN,
+                                    icrApproval: result.rows[0].AUTH_ICR,
+                                    middleApproval: result.rows[0].AUTH_APPROVAL,
+                                    lastApproval: result.rows[0].AUTH_FINAL_APPROVAL,
+                                    lastLoginDate: result.rows[0].FINAL_LOGIN_DATE,
+                                    admin: result.rows[0].AUTH_ADMIN,
+                                    token: token
+                                };
+
+                                return done(null, sessionInfo);
+                            } else {
+                                return done(null, false);
+                            }
+                        });
+                    });
+                } else {
+                    return done(null, false);
+                }
+            });
+        */
+        //개발
+
+        commonDB.reqQueryParam(`UPDATE TBL_CO_EMP_REG SET FINAL_LOGIN_DATE = sysdate WHERE EMP_NO = :empNo `, [token], function () { });
+
+        oracledb.getConnection(dbConfig, function (err, connection) {
+            connection.execute(`SELECT * FROM TBL_CO_EMP_REG WHERE EMP_NO = :empNo `, [token], function (err, result) {
+                if (result.rows.length > 0) {
+                    var sessionInfo = {
+                        userId: token,
+                        auth: result.rows[0].AUTH_ADMIN,
+                        scanApproval: result.rows[0].AUTH_SCAN,
+                        icrApproval: result.rows[0].AUTH_ICR,
+                        middleApproval: result.rows[0].AUTH_APPROVAL,
+                        lastApproval: result.rows[0].AUTH_FINAL_APPROVAL,
+                        lastLoginDate: result.rows[0].FINAL_LOGIN_DATE,
+                        admin: result.rows[0].AUTH_ADMIN,
+                        token: 'tokenTest'
+                    };
+                    return done(null, sessionInfo);
+                } else {
+                    return done(null, false);
+                }
+            });
+        });
+
+    }
 ));
 
 // Auto login (deprecate : 2018-07-05)
