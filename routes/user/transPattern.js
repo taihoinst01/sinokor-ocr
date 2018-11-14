@@ -639,7 +639,29 @@ function convertedSpecificDocumentsAfter(reqArr) {
      * WILLIS
      ****************************************/
 
-    //WILLIS_01, WILLIS_02, WILLIS_04,
+    //WILLIS_01
+    //ex) 정답지엔 your rf값이 10215D18000001MDP 이지만 OCR결과 출력값은 10215D18 / OOOOOIMDP 로 출력.
+    if (reqArr.docCategory.DOCNAME == 'WILLIS_08' || reqArr.docCategory.DOCNAME == 'WILLIS_09' || reqArr.docCategory.DOCNAME == 'WILLIS_10') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.substring(8, 11) == ' / ') {
+                    item.originText = item.text;
+                    item.text = item.text.replace(' / ', "");
+                    if (item.text.substring(8, 14) == 'OOOOOI') {
+                        item.text = item.text.replace('OOOOOI', '000001');
+                    } else if (item.text.substring(14, 15) == 'I') {
+                        item.text = item.text.replace('00001 I', '000011');
+                    } else if (item.text.substring(14, 15) == 'I') {
+                        item.text = item.text.replace('00001I', '000011');
+                    }
+                }
+            }
+        }
+    }
+
+    //WILLIS_01, WILLIS_02, WILLIS_04
+    //ex) Our Reference 131741417/ OOOOOIMDP -> 131741417OOOOOIMDP 로 변경하여 출력.
     if (reqArr.docCategory.DOCNAME == 'WILLIS_01' || reqArr.docCategory.DOCNAME == 'WILLIS_02' || reqArr.docCategory.DOCNAME == 'WILLIS_04') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
@@ -647,6 +669,10 @@ function convertedSpecificDocumentsAfter(reqArr) {
                 if (item.text.indexOf('Our Reference') != -1) {
                     item.originText = item.text;
                     item.text = item.text.replace(/Our Reference/g, "").replace(/\//g, "").replace(/\s/gi, ""); // Our Reference 131741417/ OOOOOIMDP -> 131741417OOOOOIMDP
+                }
+                else if (item.text.indexOf('our Reference') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(/our Reference/g, "").replace(/\//g, "").replace(/\s/gi, ""); // our Reference 131741417/ OOOOOIMDP -> 131741417OOOOOIMDP
                 }
             }
         }
