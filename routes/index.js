@@ -159,53 +159,57 @@ router.get('/', function (req, res) {
     }
 });
 function callbackSSOLogin(rows, req, res) {
+    var userId = req.query.userId;
     var token = req.query.token;
-
-    exec('java -jar C:/ICR/app/source/module/sso.jar Verify ' + token, function (error, stdout, stderr) {
-        if (error !== null) {
-            console.log("Error -> " + error);
-            res.redirect("/logout");
-        }
-
-        stdout = stdout.split("koreanreId:");
-
-        if (stdout[1]) {
-            var koreanreId = stdout[1];
-            if (koreanreId == req.query.userId) { // queryString으로 넘어온 아이디와 sso token을 통해 넘어온 아이디가 같으면
-                if (rows.length > 0) { // db에 정보가 있으면
-                    commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [koreanreId], function () { });
-
-                    req.session.user = {
-                        userId: req.query.userId,
-                        scanApproval: rows[0].AUTH_SCAN,
-                        icrApproval: rows[0].AUTH_ICR,
-                        middleApproval: rows[0].AUTH_APPROVAL,
-                        lastApproval: rows[0].AUTH_FINAL_APPROVAL,
-                        lastLoginDate: rows[0].FINAL_LOGIN_DATE,
-                        admin: rows[0].AUTH_ADMIN,
-                        token: token
-                    };
-
-                } else { // db에 정보 없으면 권한 임시 할당
-                    req.session.user = {
-                        userId: req.query.userId,
-                        scanApproval: 'N',
-                        icrApproval: 'N',
-                        middleApproval: 'N',
-                        lastApproval: 'N',
-                        lastLoginDate: '',
-                        admin: 'N',
-                        token: token
-                    };
-                }
-                res.redirect("/login");
-            } else {
-                res.render('index', { messages: { error: "SSO 토큰과 아이디가 일치하지 않습니다" } });
+    if (userId || token) {
+        exec('java -jar C:/ICR/app/source/module/sso.jar Verify ' + token, function (error, stdout, stderr) {
+            if (error !== null) {
+                console.log("sso.jar exec error -> " + error);
+                res.redirect("/logout");
             }
-        } else {
-            res.render('index', { messages: { error: "SSO 통신 오류가 발생 했습니다" } });
-        }
-    });
+
+            stdout = stdout.split("koreanreId:");
+
+            if (stdout[1]) {
+                var koreanreId = stdout[1];
+                if (koreanreId == userId) { // queryString으로 넘어온 아이디와 sso token을 통해 넘어온 아이디가 같으면
+                    if (rows.length > 0) { // db에 정보가 있으면
+                        commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [koreanreId], function () { });
+
+                        req.session.user = {
+                            userId: userId,
+                            scanApproval: rows[0].AUTH_SCAN,
+                            icrApproval: rows[0].AUTH_ICR,
+                            middleApproval: rows[0].AUTH_APPROVAL,
+                            lastApproval: rows[0].AUTH_FINAL_APPROVAL,
+                            lastLoginDate: rows[0].FINAL_LOGIN_DATE,
+                            admin: rows[0].AUTH_ADMIN,
+                            token: token
+                        };
+
+                    } else { // db에 정보 없으면 권한 임시 할당
+                        req.session.user = {
+                            userId: userId,
+                            scanApproval: 'N',
+                            icrApproval: 'N',
+                            middleApproval: 'N',
+                            lastApproval: 'N',
+                            lastLoginDate: '',
+                            admin: 'N',
+                            token: token
+                        };
+                    }
+                    res.redirect("/login");
+                } else {
+                    res.render('index', { messages: { error: "SSO 토큰과 아이디가 일치하지 않습니다" } });
+                }
+            } else {
+                res.render('index', { messages: { error: "SSO 통신 오류가 발생 했습니다" } });
+            }
+        });
+    } else {
+        res.render('index', { messages: { error: "요청 파라미터가 없거나 유효하지 않습니다" } });
+    }
 }
 
 router.get('/login', function (req, res) {
