@@ -137,11 +137,11 @@ router.post("/login",
         var isValid = true;
         if (!req.body.userId) {
             isValid = false;
-            loginMessage = "Username is required!";
+            loginMessage = "ID가 비어있습니다";
         }
         if (!req.body.userPw) {
             isValid = false;
-            loginMessage = "Password is required!";
+            loginMessage = "비밀번호가 비어있습니다";
         }
         // remember-me (아이디 저장) 체크시 on, 체크 안할 시 undefined
         if (isValid) {
@@ -153,7 +153,7 @@ router.post("/login",
             sess.userId = req.body.userId;
             //next();
         } else {
-            res.redirect("/login");
+            res.render('index', { messages: { error: loginMessage } });
         }
     },
     passport.authenticate("local", {
