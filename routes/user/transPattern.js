@@ -54,12 +54,28 @@ function convertedUY(reqArr) {
             var item = reqArr.data[i];
 
             if (item.colLbl == 2) {
-                var uyResult = item.text.substring(3, 7);
+                var uyMonth = item.text.substring(3, 7);
                 //Jan/Feb/Mar/Apr/May/Jun/Jul/Aug/Sept/Oct/Nov/Dec 일 경우에 그 값을 '20'으로 치환.
-                if (uyResult == "Jan " || uyResult == "Feb " || uyResult == "Mar " || uyResult == "Apr " || uyResult == "May " || uyResult == "Jun " ||
-                    uyResult == "Jul " || uyResult == "Aug " || uyResult == "Sept " || uyResult == "Oct " || uyResult == "Nov " || uyResult == "Dec ") {
+                if (uyMonth == "Jan " || uyMonth == "Feb " || uyMonth == "Mar " || uyMonth == "Apr " || uyMonth == "May " || uyMonth == "Jun " ||
+                    uyMonth == "Jul " || uyMonth == "Aug " || uyMonth == "Sept " || uyMonth == "Oct " || uyMonth == "Nov " || uyMonth == "Dec ") {
                     item.originText = item.text; 
                     item.text = item.text.replace(item.text.substring(0, 7), '20');
+                }
+            }
+        }
+    }
+
+    //각 계산서별 UY값이 "01/01/18 TO 31/12/18"와 같이 특수한 경우 UY값을 추출하는 로직.
+    if (reqArr.docCategory.DOCNAME == 'GUY_04') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+
+            if (item.colLbl == 2) {
+                var uyMonth = item.text.substring(6, 7);
+                //년도가 2000년도 이상일 경우에 그값을 '20'으로 치환
+                if (Number(uyMonth) > 0) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(item.text.substring(0, 6), '20');
                 }
             }
         }
@@ -401,7 +417,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
      ****************************************/
 
     //GUY_01, GUY_04
-    if (reqArr.docCategory.DOCNAME == 'GUY_01' || reqArr.docCategory.DOCNAME == 'GUY_04') {
+    if (reqArr.docCategory.DOCNAME == 'GUY_01' || reqArr.docCategory.DOCNAME == 'GUY_03' || reqArr.docCategory.DOCNAME == 'GUY_04') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
             if (item.colLbl && item.colLbl == 35) { // your reference
@@ -412,6 +428,34 @@ function convertedSpecificDocumentsAfter(reqArr) {
                     item.originText = item.text;
                     item.text = item.text.split('.')[1].trim(); //INVOICE NO. 5379052 -> 5379052
                 }
+            }
+        }
+    }
+
+    //GUY_04
+    if (reqArr.docCategory.DOCNAME == 'GUY_04') {
+        var guyLength = 0;
+        var guyText = [];
+        var guyLocation = [];
+        var guyResult;
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            guyLength += 1;
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                item.originText = item.text;
+                guyText.push(item.text);
+                guyLocation.push(item.location);
+            }
+        }
+        if (guyLength > 1) { // yourReference 가공.
+            guyResult = guyText[0] + "/" + guyText[1];
+        }
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35 && item.location == guyLocation[1]) {
+                item.text = guyResult;
+            } else if (item.colLbl && item.colLbl == 35 && item.location == guyLocation[0]) {
+                item.colLbl = "38";
             }
         }
     }
@@ -443,6 +487,42 @@ function convertedSpecificDocumentsAfter(reqArr) {
             if (item.colLbl && item.colLbl == 35 && item.location == guy05Location[1]) {
                 item.text = guy05Result;
             } else if (item.colLbl && item.colLbl == 35 && item.location == guy05Location[0]) {
+                item.colLbl = "38";
+            }
+        }
+    }
+
+     /****************************************
+     * BUREAU_01
+     ****************************************/
+
+    //BUREAU_01
+    if (reqArr.docCategory.DOCNAME == 'BUREAU_01') {
+        var bureau01Length = 0;
+        var bureau01Text = [];
+        var bureau01Location = [];
+        var bureau01Result;
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            bureau01Length += 1;
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                item.originText = item.text;
+                bureau01Text.push(item.text);
+                bureau01Location.push(item.location);
+            }
+        }
+        if (bureau01Length > 1) { // yourReference 가공.
+            if (bureau01Text[0].substring(4) == 'B') {
+                bureau01Result = bureau01Text[1] + bureau01Text[0].replace('/B', '8');
+            } else {
+                bureau01Result = bureau01Text[1] + bureau01Text[0].replace('/', '');
+            }
+        }
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35 && item.location ==  bureau01Location[1]) {
+                item.text = bureau01Result;
+            } else if (item.colLbl && item.colLbl == 35 && item.location ==  bureau01Location[0]) {
                 item.colLbl = "38";
             }
         }
