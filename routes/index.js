@@ -76,7 +76,7 @@ function callbackSSOLogin(rows, req, res) {
             stdout = stdout.split("koreanreId:");
 
             if (stdout[1]) {
-                var koreanreId = stdout[1];
+                var koreanreId = stdout[1].replace(/\n/,'').trim();
                 if (koreanreId == userId) { // queryString으로 넘어온 아이디와 sso token을 통해 넘어온 아이디가 같으면
                     if (rows.length > 0) { // db에 정보가 있으면
                         commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [koreanreId], function () { });
