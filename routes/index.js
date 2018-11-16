@@ -76,7 +76,7 @@ function callbackSSOLogin(rows, req, res) {
             stdout = stdout.split("koreanreId:");
 
             if (stdout[1]) {
-                var koreanreId = stdout[1];
+                var koreanreId = stdout[1].replace(/\n/,'').trim();
                 if (koreanreId == userId) { // queryString으로 넘어온 아이디와 sso token을 통해 넘어온 아이디가 같으면
                     if (rows.length > 0) { // db에 정보가 있으면
                         commonDB.reqQueryParam(queryConfig.sessionConfig.lastLoginUpdateQuery, [koreanreId], function () { });
@@ -137,11 +137,11 @@ router.post("/login",
         var isValid = true;
         if (!req.body.userId) {
             isValid = false;
-            loginMessage = "Username is required!";
+            loginMessage = "ID가 비어있습니다";
         }
         if (!req.body.userPw) {
             isValid = false;
-            loginMessage = "Password is required!";
+            loginMessage = "비밀번호가 비어있습니다";
         }
         // remember-me (아이디 저장) 체크시 on, 체크 안할 시 undefined
         if (isValid) {
@@ -153,7 +153,7 @@ router.post("/login",
             sess.userId = req.body.userId;
             //next();
         } else {
-            res.redirect("/login");
+            res.render('index', { messages: { error: loginMessage } });
         }
     },
     passport.authenticate("local", {

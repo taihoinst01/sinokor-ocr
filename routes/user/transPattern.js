@@ -43,6 +43,25 @@ function convertedSpecificDocumentsBefore(reqArr) {
         }
     }
 
+    //BT_02
+    if (reqArr.docCategory.DOCNAME == 'BT_02') {
+        var temp;
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.text == 'OUTSTANDING LOSSES (100%) AS AT 30/09/2017 = HKD 15 910,350.39') {
+                item.text = 'OUTSTANDING LOSSES (100%) AS AT 30/09/2017';
+                item.colLbl = 7;
+                temp = copyObject(item);
+                temp.text = '15,910,350.39';
+                temp.entryLbl = 2;
+                temp.colLbl = 37;
+            }
+        }
+        if (temp) {
+            reqArr.data.push(temp);
+        }
+    }
+
     return reqArr;
 }
 
@@ -751,4 +770,20 @@ function convertedSpecificDocumentsAfter(reqArr) {
     }
 
     return reqArr;
+}
+
+function copyObject(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+
+    const copiedObj = obj.constructor();
+
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            copiedObj[key] = copyObject(obj[key]);
+        }
+    }
+
+    return copiedObj;
 }
