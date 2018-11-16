@@ -752,6 +752,16 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
+    //BT_04
+    if (reqArr.docCategory.DOCNAME == 'BT_04') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 35 && item.text == 'TN029 2018') { 
+                item.text = 'TN029.2018';
+            }
+        }
+    }
+
     return reqArr;
 }
 
