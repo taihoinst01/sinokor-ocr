@@ -62,6 +62,20 @@ function convertedSpecificDocumentsBefore(reqArr) {
         }
     }
 
+    //TPRB_06
+    //ex) 정답지엔 CLAIM의 엔트리가 1394.87이지만 ocr결과 출력값은 394.87일 경우.
+    if (reqArr.docCategory.DOCNAME == 'TPRB_06') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 37) {
+                if (item.text == 'I ,394.87') {
+                    item.originText = item.text;
+                    item.text = '1394.87';
+                }
+            }
+        }
+    }
+
     return reqArr;
 }
 
@@ -461,9 +475,15 @@ function convertedSpecificDocumentsAfter(reqArr) {
             var item = reqArr.data[i];
             guyLength += 1;
             if (item.colLbl && item.colLbl == 35) { // your reference
-                item.originText = item.text;
-                guyText.push(item.text);
-                guyLocation.push(item.location);
+                //정답지엔 your reference가 RAP0001 이지만 ocr결과 출력값은 /RAP 0001일 경우.
+                if (item.text == '/RAP 0001') {
+                    item.originText = item.text;
+                    item.text = 'RAP0001';
+                } else {
+                    item.originText = item.text;
+                    guyText.push(item.text);
+                    guyLocation.push(item.location);
+                }
             }
         }
         if (guyLength > 1) { // yourReference 가공.
@@ -764,6 +784,62 @@ function convertedSpecificDocumentsAfter(reqArr) {
                 if (item.text == '53 17 3354') {
                     item.originText = item.text;
                     item.text = '73 17 3354';
+                }
+            }
+        }
+    }
+
+    /****************************************
+     * TURNER
+     ****************************************/
+    //TURNER_01
+    //ex)정답지엔 your reference가 XKG30913/E/20 이지만 ocr결과 출력값은 XKG30913 과 / E/ 20 일 경우
+    if (reqArr.docCategory.DOCNAME == 'TURNER_01') {
+        var guyLength = 0;
+        var guyText = [];
+        var guyLocation = [];
+        var guyResult;
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            guyLength += 1;
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                item.originText = item.text;
+                guyText.push(item.text);
+                guyLocation.push(item.location);
+            }
+        }
+        if (guyLength > 1) { // yourReference 가공.
+            guyResult = guyText[0] + guyText[1];
+        }
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35 && item.location == guyLocation[1]) {
+                item.text = guyResult;
+            } else if (item.colLbl && item.colLbl == 35 && item.location == guyLocation[0]) {
+                item.colLbl = "38";
+            }
+        }
+    }
+
+    /****************************************
+     * TPRB
+     ****************************************/
+    // TPRB_02
+    if (reqArr.docCategory.DOCNAME == 'TPRB_02') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            //ex) 정답지엔 your reference가 CEC201600017 이지만 ocr결과 출력값은 CEC20i60001? 일 경우
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text == 'CEC20i60001?') {
+                    item.originText = item.text;
+                    item.text = 'CEC201600017';
+                }
+            }
+            //ex) 정답지엔 OSL(100 %) 엔트리가 67374.63 이지만 ocr결과 출력값은 675374363 일 경우
+            if (item.entryLbl && item.entryLbl == 2) { // OSL(100%) entry
+                if (item.text == '675374363') {
+                    item.originText = item.text;
+                    item.text = '67374.63';
                 }
             }
         }
