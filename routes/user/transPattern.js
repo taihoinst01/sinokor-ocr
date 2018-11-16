@@ -733,5 +733,22 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
+    /****************************************
+     * NASCO
+     ****************************************/
+    // NASCO_03
+    // ex) 정답지엔 your reference가 73 17 3354 이지만 ocr결과 출력값은 53 17 3354일 경우.
+    if (reqArr.docCategory.DOCNAME == 'NASCO_03') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text == '53 17 3354') {
+                    item.originText = item.text;
+                    item.text = '73 17 3354';
+                }
+            }
+        }
+    }
+
     return reqArr;
 }
