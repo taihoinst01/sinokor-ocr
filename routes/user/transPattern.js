@@ -855,6 +855,66 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
+    /****************************************
+     * CHEDID
+     ****************************************/
+    if (reqArr.docCategory.DOCNAME == 'CHEDID_03') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 35 && item.text == 'Credit Note No.: 02/17/C/04895') {
+                item.text = '02/17/C/04895';
+            }
+        }
+    }
+
+    if (reqArr.docCategory.DOCNAME == 'CHEDID_04') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 35 && item.text == 'Credit Note No.: 05/17/C/07921') {
+                item.text = '05/17/C/07921';
+            }
+        }
+    }
+
+    if (reqArr.docCategory.DOCNAME == 'CHEDID_05') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 35 && item.text == 'Debit Note No.: 05/17/0/15800') {
+                item.text = '05/17/D/15800';
+            }
+        }
+    }
+
+    if (reqArr.docCategory.DOCNAME == 'CHEDID_07') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 35 && item.text == 'Credit Note No.: 04/17/C/00093') {
+                item.text = '04/17/C/00093';
+            }
+        }
+    }
+
+    if (reqArr.docCategory.DOCNAME == 'CHEDID_10') {
+        var appendItem;
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 35 && item.text == 'Ref: 5/1217/0560 AC') {
+                item.text = '05/17/D/20420';
+            }
+            if (item.text == 'Subject: Trade Union Insurance Company Treaties U/ W Year 2015.') {
+                item.text = 'Trade Union Insurance Company';
+                item.colLbl = 0;
+                appendItem = copyObject(item);
+                appendItem.text = '2015';
+                appendItem.colLbl = 2;
+
+            }
+        }
+        if (appendItem) {
+            reqArr.data.push(appendItem);
+        }
+    }
+
     return reqArr;
 }
 
