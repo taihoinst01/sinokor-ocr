@@ -61,7 +61,7 @@ function convertedSpecificDocumentsBefore(reqArr) {
             reqArr.data.push(temp);
         }
     }
-
+    
     //TPRB_06
     //ex) 정답지엔 CLAIM의 엔트리가 1394.87이지만 ocr결과 출력값은 394.87일 경우.
     if (reqArr.docCategory.DOCNAME == 'TPRB_06') {
@@ -76,10 +76,72 @@ function convertedSpecificDocumentsBefore(reqArr) {
         }
     }
 
+    /****************************************
+     * SAVA
+     ****************************************/
+    // SAVA_01
+    //ex) 정답지엔 our share의 엔트리가 0.84 이지만 ocr결과 출력값은 0,84 입니다.학습후 84로 출력될 경우.
+    if (reqArr.docCategory.DOCNAME == 'SAVA_01') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 37)// your reference
+            {
+                if (item.text == '0,84') {
+                    item.originText = item.text;
+                    item.text = '0.84';
+                }
+            }
+        }
+    }
+
+    /****************************************
+     * HJ
+     ****************************************/
+    // HJ_03
+    //ex) 정답지엔 premium -163  이지만 OCR결과 출력값은 (i 63)일 경우.
+    if (reqArr.docCategory.DOCNAME == 'HJ_03') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35)// your reference
+            {
+                if (item.text == '(i 63)') {
+                    item.originText = item.text;
+                    item.text = '(163)';
+                }
+            }
+        }
+    }
+
     return reqArr;
 }
 
 function convertedUY(reqArr) {
+
+    // 정답지엔 UY가 2016 이지만 OCR결과 16 PERIOD FROM 01-07-20 6 TO 30-06-2017 라고 출력되어 UY가 2017이 나올 경우.
+    if (reqArr.docCategory.DOCNAME == 'JB_06') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 2) { // UY
+                if (item.text == '16 PERIOD FROM 01-07-20 6 TO 30-06-2017') {
+                    item.originText = item.text;
+                    item.text = '16 PERIOD FROM 01-07-2016 TO 30-06-2017';
+                }
+            }
+        }
+    }
+
+    // 정답지엔 UY가 2017 이지만 OCR결과 출력값은 2이7-07 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'COMMON') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 2) { // UY
+                if (item.text == '2이7-07') {
+                    item.originText = item.text;
+                    item.text = '2017';
+                }
+            }
+        }
+    }
 
     //각 계산서별 UY값이 "01 Jan 16"와 같이 특수한 경우 UY값을 추출하는 로직.
     if (reqArr.docCategory.DOCNAME == 'MARSH_01' || reqArr.docCategory.DOCNAME == 'GUY_01' || reqArr.docCategory.DOCNAME == 'GUY_03') {
@@ -261,6 +323,95 @@ function convertedCurrencyCode(reqArr, done) {
 }
 
 function convertedSpecificDocumentsAfter(reqArr) {
+
+    /****************************************
+     * AON
+     ****************************************/
+    // AON_22
+    //ex) 정답지엔 your Reference가 881770 이지만 ocr결과 출력값은 881770 / SB 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'AON_22') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35)// your reference
+            {
+                if (item.text == '881770 / SB') {
+                    item.originText = item.text;
+                    item.text = '881770';
+                }
+            }
+        }
+    }
+
+    /****************************************
+     * JLT
+     ****************************************/
+    // JLT_05
+    //ex) 정답지엔 your Reference가 JM1899944 이지만 ocr결과 출력값은 JMIB99944 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'JLT_05') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35)// your reference
+            {
+                if (item.text == 'JMIB99944') {
+                    item.originText = item.text;
+                    item.text = 'JM1899944';
+                }
+            }
+        }
+    }
+
+    /****************************************
+     * LOCKTON
+     ****************************************/
+    // LOCKTON_10
+    //ex) 정답지엔 your Reference가 B12135MENAT1700042 이지만 ocr결과 출력값은 131235MF.NAT1700042 일 경우
+    if (reqArr.docCategory.DOCNAME == 'LOCKTON_10') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35)// your reference
+            {
+                if (item.text == '131235MF.NAT1700042') {
+                    item.originText = item.text;
+                    item.text = 'B12135MENAT1700042';
+                }
+            }
+        }
+    }
+
+    /****************************************
+     * JB
+     ****************************************/
+    //JB_06
+    //ex)정답지엔 your Reference가 1429324 SSD 이지만 ocr결과 출력값은 1429324 와 OUR REFERENCE SSD 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'JB_06') {
+        var jbLength = 0;
+        var jbText = [];
+        var jbLocation = [];
+        var jbResult;
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            jbLength += 1;
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                item.originText = item.text;
+                if (item.text == 'OUR REFERENCE SSD') {
+                    item.text = ' SSD';
+                }
+                jbText.push(item.text);
+                jbLocation.push(item.location);
+            }
+        }
+        if (jbLength > 1) { // yourReference 가공.
+            jbResult = jbText[0] + jbText[1];
+        }
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35 && item.location == jbLocation[1]) {
+                item.text = jbResult;
+            } else if (item.colLbl && item.colLbl == 35 && item.location == jbLocation[0]) {
+                item.colLbl = "38";
+            }
+        }
+    }
 
     /****************************************
      * BT
