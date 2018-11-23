@@ -21,8 +21,8 @@ router.post('/', function (req, res) {
     //var brkNm = req.body.brkNm.replace(/ /g, "&#32;");
     var brkNm = '';
     var ttyYy = req.body.ttyYy;
-    var token = req.session.passport.user.token;
-
+   // var token = req.session.passport.user.token;
+    var token = req.session.user.token;
     var testData = 
         '<?xml version="1.0" encoding="utf-8"?>'+
         '<Root>'+
