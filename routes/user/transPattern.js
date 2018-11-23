@@ -124,7 +124,10 @@ function convertedSpecificDocumentsBefore(reqArr) {
         }
     }
 
-    if (reqArr.docCategory.DOCNAME == 'ED_07') {
+    /****************************************
+     * integro
+     ****************************************/
+    if (reqArr.docCategory.DOCNAME == 'integro_01') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
             if (item.colLbl == 37) {
@@ -1099,7 +1102,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
 
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
-            if (item.colLbl == 36) {
+            if (item.colLbl == 35) {
                 if (yfCount == 0) {
                     yf = item;
                 } else {
@@ -1107,9 +1110,9 @@ function convertedSpecificDocumentsAfter(reqArr) {
                     item.colLbl = 38;
                 }
                 yfCount++;
-            } else if (item.colLbl == 37) { // our share
+            } else if (item.colLbl == 36) { // our share
                 ourShare = item;
-            } else if (item.colLbl == 38) {
+            } else if (item.colLbl == 37) {
                 if (item.entryLbl && item.entryLbl == 4) { // premium entry
                     premiumEntry = item;
                 } else if (item.entryLbl && item.entryLbl == 11) { // brokerage entry
@@ -1119,9 +1122,10 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
 
         if (ourShare && premiumEntry) {
-            premiumEntry.text = '' + Number(Number(premiumEntry.text) * (Number(ourShare) / 100)).toFixed(2);
-        } else if (ourShare && brokerageEntry) {
-            brokerageEntry.text = '' + Number(Number(brokerageEntry.text) * (Number(ourShare) / 100)).toFixed(2);
+            premiumEntry.text = '' + Number(Number(premiumEntry.text) * (Number(ourShare.text) / 100)).toFixed(2);
+        }
+        if (ourShare && brokerageEntry) {
+            brokerageEntry.text = '' + Number(Number(brokerageEntry.text) * (Number(ourShare.text) / 100)).toFixed(2);
         }
     }
 
@@ -1131,7 +1135,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
 
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
-            if (item.colLbl == 37) {
+            if (item.colLbl == 36) {
                 ourShare = item;
             } else if (item.colLbl == 37) {
                 oslEntry = item;
@@ -1139,7 +1143,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
 
         if (ourShare && oslEntry) {
-            oslEntry.text = '' + Number(Number(oslEntry.text) * (Number(ourShare) / 100)).toFixed(2);
+            oslEntry.text = '' + Number(Number(oslEntry.text) * (Number(ourShare.text) / 100)).toFixed(2);
         }
     }
 
