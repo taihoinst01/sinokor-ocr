@@ -127,6 +127,7 @@ function convertedSpecificDocumentsBefore(reqArr) {
     /****************************************
      * integro
      ****************************************/
+    /*
     if (reqArr.docCategory.DOCNAME == 'integro_01') {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
@@ -135,6 +136,7 @@ function convertedSpecificDocumentsBefore(reqArr) {
             }
         }
     }
+    */
 
     return reqArr;
 }
