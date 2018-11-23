@@ -77,6 +77,24 @@ function convertedSpecificDocumentsBefore(reqArr) {
     }
 
     /****************************************
+     * TALANX
+     ****************************************/
+    // TALANX_06
+    //ex) 정답지엔 commission 엔트리값이 -0.05이지만 ocr결과 출력값은 o, 05 라고 출력되어 5라고 학습될 경우.
+    if (reqArr.docCategory.DOCNAME == 'TALANX_06') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 37)// your reference
+            {
+                if (item.text == 'o, 05') {
+                    item.originText = item.text;
+                    item.text = '-0.05';
+                }
+            }
+        }
+    }
+
+    /****************************************
      * SAVA
      ****************************************/
     // SAVA_01
@@ -1148,6 +1166,43 @@ function convertedSpecificDocumentsAfter(reqArr) {
             oslEntry.text = '' + Number(Number(oslEntry.text) * (Number(ourShare.text) / 100)).toFixed(2);
         }
     }
+
+    /****************************************
+     * MATRIX
+     ****************************************/
+    //MATRIX_04, MATRIX_07, MATRIX_11
+    //ex) 정답지엔 your Reference가 CNXL00940/00 이지만 ocr결과 출력값은 Our Ref: CNXL00940/OO 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'MATRIX_04' || reqArr.docCategory.DOCNAME == 'MATRIX_07' || reqArr.docCategory.DOCNAME == 'MATRIX_11') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf('Our Ref:') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(/Our Ref:/g, "").trim(); // "Our Ref: CNXL00940/OO" -> CNXL00940/OO
+                    if (item.text.substring(10, 12) == 'OO') { // "CNXL00940/OO" -> CNXL00940/00 or "CNXL00940/oo" -> CNXL00940/00
+                        item.text = item.text.replace('OO', '00');
+                    } else if (item.text.substring(10, 12) == 'oo') {
+                        item.text = item.text.replace('oo', '00');
+                    }
+
+                } else if (item.text.indexOf('Our ref.:') != -1) { //정답지엔 your Reference가 CNTR00562/00/1/10 이지만 ocr결과 출력값은 Our ref.: CNTR00562/OO/1 일 경우.
+                    item.originText = item.text;
+                    item.text = item.text.replace(/Our ref.:/g, "").trim(); // "Our ref.: CNTR00562/OO/1" -> CNTR00562/OO/1
+                    if (item.text.substring(10, 12) == 'OO') { // "CNTR00562/OO/1" -> CNTR00562/00/1 or "CNTR00562/oo/1" -> CNTR00562/00/1
+                        item.text = item.text.replace('OO', '00');
+                        if (item.text == 'CNTR00562/00/1') {
+                            item.text = 'CNTR00562/00/1/10';
+                        } else if (item.text == 'CNTR00563/00/2/ & 1/') {//정답지엔 your Reference가 CNTR00563/00/2/& 1 이지만 ocr결과 출력값은 Our ref.: CNTR00563/OO/2/ & 1/ 일 경우.
+                            item.text = 'CNTR00563/00/2/& 1';
+                        }
+                    } else if (item.text.substring(10, 12) == 'oo') {
+                        item.text = item.text.replace('oo', '00');
+                    }
+                }
+            }
+        }
+    }
+
 
     return reqArr;
 }
