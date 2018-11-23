@@ -112,6 +112,27 @@ function convertedSpecificDocumentsBefore(reqArr) {
         }
     }
 
+     /****************************************
+     * ED
+     ****************************************/
+    if (reqArr.docCategory.DOCNAME == 'ED_04') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 2 && item.text == '3RD QTR 20 n 7') {
+                item.text = '3RD QTR 2017';
+            }
+        }
+    }
+
+    if (reqArr.docCategory.DOCNAME == 'ED_07') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 37) {
+                item.text = item.text.replace(/,/, '');
+            }
+        }
+    }
+
     return reqArr;
 }
 
@@ -1063,6 +1084,62 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
         if (appendItem) {
             reqArr.data.push(appendItem);
+        }
+    }
+
+    /****************************************
+     * ED
+     ****************************************/
+    if (reqArr.docCategory.DOCNAME == 'ED_01') {
+        var ourShare;
+        var premiumEntry;
+        var brokerageEntry;
+        var yf = ''; //your reference text
+        var yfCount = 0;
+
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 36) {
+                if (yfCount == 0) {
+                    yf = item;
+                } else {
+                    yf.text += ' ' + item.text;
+                    item.colLbl = 38;
+                }
+                yfCount++;
+            } else if (item.colLbl == 37) { // our share
+                ourShare = item;
+            } else if (item.colLbl == 38) {
+                if (item.entryLbl && item.entryLbl == 4) { // premium entry
+                    premiumEntry = item;
+                } else if (item.entryLbl && item.entryLbl == 11) { // brokerage entry
+                    brokerageEntry = item;
+                }
+            }
+        }
+
+        if (ourShare && premiumEntry) {
+            premiumEntry.text = '' + Number(Number(premiumEntry.text) * (Number(ourShare) / 100)).toFixed(2);
+        } else if (ourShare && brokerageEntry) {
+            brokerageEntry.text = '' + Number(Number(brokerageEntry.text) * (Number(ourShare) / 100)).toFixed(2);
+        }
+    }
+
+    if (reqArr.docCategory.DOCNAME == 'ED_04') {
+        var ourShare;
+        var oslEntry;
+
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl == 37) {
+                ourShare = item;
+            } else if (item.colLbl == 37) {
+                oslEntry = item;
+            }
+        }
+
+        if (ourShare && oslEntry) {
+            oslEntry.text = '' + Number(Number(oslEntry.text) * (Number(ourShare) / 100)).toFixed(2);
         }
     }
 
