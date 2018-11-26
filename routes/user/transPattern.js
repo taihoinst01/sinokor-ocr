@@ -1217,6 +1217,39 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
+    /****************************************
+     * APEX
+     ****************************************/
+    // APEX_01
+    //ex) 정답지엔 your Reference가 APEX/BORD/2388 이지만 ocr결과 출력값은  . APEX/BORD/2378 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'APEX_01') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text == '. APEX/BORD/2378') {
+                    item.originText = item.text;
+                    item.text = 'APEX/BORD/2388';
+                }
+            }
+        }
+    }
+
+    /****************************************
+     * RFIB
+     ****************************************/
+    // RFIB_10
+    //ex) 정답지엔 your Reference가 RAFSA1800631/001/001/3/1 이지만 ocr결과 출력값은 RAFSAI 800631/ 001/ / 3/1 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'RFIB_10') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text == 'RAFSAI 800631/ 001/ / 3/1') {
+                    item.originText = item.text;
+                    item.text = 'RAFSA1800631/001/001/3/1';
+                }
+            }
+        }
+    }
 
     return reqArr;
 }
