@@ -1009,8 +1009,8 @@ function convertedSpecificDocumentsAfter(reqArr) {
 
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
-            guyLength += 1;
             if (item.colLbl && item.colLbl == 35) { // your reference
+                guyLength += 1;
                 item.originText = item.text;
                 guyText.push(item.text);
                 guyLocation.push(item.location);
@@ -1031,6 +1031,16 @@ function convertedSpecificDocumentsAfter(reqArr) {
                     item.colLbl = "38";
                 }
             }
+        } else if (guyLength == 1) {
+            for (var i in reqArr.data) {
+                var item = reqArr.data[i];
+                if (item.colLbl && item.colLbl == 35) { // your reference
+                    if (item.text == 'CTT152 / / 01') {
+                        item.originText = item.text;
+                        item.text = 'CTT152//01';
+                    }
+                }
+            }
         }
 
         if (ourShare) {
@@ -1039,6 +1049,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
             }
         }
     }
+
 
     /****************************************
      * TPRB
