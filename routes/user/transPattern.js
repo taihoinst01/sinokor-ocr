@@ -1004,6 +1004,9 @@ function convertedSpecificDocumentsAfter(reqArr) {
         var guyText = [];
         var guyLocation = [];
         var guyResult;
+        var ourShare;
+        var ourShareCalEntry = []; // ourshare 계산 해야할 값들
+
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
             guyLength += 1;
@@ -1011,17 +1014,28 @@ function convertedSpecificDocumentsAfter(reqArr) {
                 item.originText = item.text;
                 guyText.push(item.text);
                 guyLocation.push(item.location);
+            } else if (item.colLbl && item.colLbl == 36) { // our share
+                ourShare = item;
+            } else if (item.colLbl && item.colLbl == 37
+                && item.entryLbl && item.entryLbl == 4) { // premium entry
+                ourShareCalEntry.push(item);
             }
         }
         if (guyLength > 1) { // yourReference 가공.
             guyResult = guyText[0] + guyText[1];
+            for (var i in reqArr.data) {
+                var item = reqArr.data[i];
+                if (item.colLbl && item.colLbl == 35 && item.location == guyLocation[1]) {
+                    item.text = guyResult;
+                } else if (item.colLbl && item.colLbl == 35 && item.location == guyLocation[0]) {
+                    item.colLbl = "38";
+                }
+            }
         }
-        for (var i in reqArr.data) {
-            var item = reqArr.data[i];
-            if (item.colLbl && item.colLbl == 35 && item.location == guyLocation[1]) {
-                item.text = guyResult;
-            } else if (item.colLbl && item.colLbl == 35 && item.location == guyLocation[0]) {
-                item.colLbl = "38";
+
+        if (ourShare) {
+            for (var i in ourShareCalEntry) {
+                ourShareCalEntry[i].text = String(Number(Number(ourShareCalEntry[i].text) * (Number(ourShare.text) / 100)).toFixed(2));
             }
         }
     }
