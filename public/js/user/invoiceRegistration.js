@@ -2931,6 +2931,7 @@ var fn_docEvent = function () {
                         for (var i = 0; i < data.length; i++) {
                             appendHtml += '<tr>' +
                                 '<td>' + data[i].EMP_NO + '</td>' +
+                                '<td>' + data[i].EMP_NM + '</td>' +
                                 '<td>' + nvl(data[i].DEPT_NM) + '</td>' +
                                 '</tr >';
                         }
@@ -3058,7 +3059,6 @@ var fn_docEvent = function () {
 
                     // td.eq(0)은 체크박스 이므로  td.eq(1)의  값부터 가져온다.
                     var docNum = popDoctd.eq(1).text();
-
                     // 가져온 값을 배열에 담는다.
                     docInfoTdArr.push(docNum);
                     deleteTr.push(popDoctr);
@@ -3159,6 +3159,7 @@ var fn_docEvent = function () {
                     }),
                     contentType: 'application/json; charset=UTF-8',
                     success: function (data) {
+                        console.log(data);
                         fn_alert('alert', data.docData + "건의 문서가 전달 되었습니다.");
                         $('#searchUserPop').fadeOut();
                         var totCnt = $("input[name = base_chk]");

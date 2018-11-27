@@ -254,7 +254,7 @@ router.post('/sendApprovalDocumentCtoD', function (req, res) {
                 });
                 sendCount += 1;
             }
-            sync.await(oracle.approvalDtlProcess(approvalDtlData, req.user.token, sync.defer()));
+            sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
             returnObj = { code: 200, docData: sendCount };
         } catch (e) {
             returnObj = { code: 200, error: e };
@@ -285,7 +285,7 @@ router.post('/finalApproval', function (req, res) {
                     'nextApprovalNum': ''
                 });
             }
-            sync.await(oracle.approvalDtlProcess(approvalDtlData, req.user.token, sync.defer()));
+            sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
 
             returnObj = { code: 200 };
         } catch (e) {
