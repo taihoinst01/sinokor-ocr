@@ -1,6 +1,13 @@
 ﻿'use strict';
 
 $(document).ready(function () {
+    if ($('#scanApproval').val() == 'Y' || $('#icrApproval').val() == 'Y') {
+        fn_loadLeftSideBarInvoiceRegistration();    // 레프트사이드바 계산서등록(진행 수) 표시
+    } else if ($('#middleApproval').val() == 'Y' || $('#lastApproval').val() == 'Y') {
+        fn_loadLeftSideBarMyApproval();             // 레프트사이드바 내결재(진행 수) 표시
+    }
+
+    /* 18.11.27 주석
     if ($('#adminApproval').val() == 'Y') { //관리자일 경우
         fn_loadLeftSideBarInvoiceRegistration();
         fn_loadLeftSideBarMyApproval()
@@ -9,6 +16,7 @@ $(document).ready(function () {
     } else if ( ($('#middleApproval').val() == 'Y' && $('#adminApproval').val() == 'N') || ($('#lastApproval').val() == 'Y' && $('#adminApproval').val() == 'N') ) {
         fn_loadLeftSideBarMyApproval();             // 레프트사이드바 내결재(진행 수) 표시
     }
+    */
 });
 
 // 레프트사이드바 계산서등록 표시

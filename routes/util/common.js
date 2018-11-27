@@ -794,6 +794,13 @@ var callbackLeftSideBarInvoiceRegistration = function (rows, req, res) {
 router.post('/leftSideBarInvoiceRegistration', function (req, res) {
     var param = [];
     var andQuery = '';
+    if (req.body.scanApproval == 'Y') {
+        andQuery = 'AND UPLOADNUM = ' + "'" + req.session.userId + "' AND ICRNUM IS NULL AND MIDDLENUM IS NULL AND FINALNUM IS NULL";
+    } else if (req.body.icrApproval == 'Y') {
+        andQuery = 'AND ICRNUM = ' + "'" + req.session.userId + "' AND MIDDLENUM IS NULL AND FINALNUM IS NULL";
+    }
+
+    /* 18.11.27 주석
     if (req.body.scanApproval == 'Y' && req.body.adminApproval == 'N') {
         andQuery = 'AND UPLOADNUM = ' + "'" + req.session.userId + "' AND ICRNUM IS NULL AND MIDDLENUM IS NULL AND FINALNUM IS NULL";
     } else if (req.body.icrApproval == 'Y' && req.body.adminApproval == 'N') {
@@ -801,6 +808,7 @@ router.post('/leftSideBarInvoiceRegistration', function (req, res) {
     } else if (req.body.adminApproval == 'Y') {
         andQuery = "AND MIDDLENUM IS NULL AND FINALNUM IS NULL";
     }
+    */
     commonDB.reqCountQueryParam2(queryConfig.sessionConfig.leftSideBarInvoiceRegistration + andQuery, param, callbackLeftSideBarInvoiceRegistration, req, res);
    
 });
@@ -811,7 +819,14 @@ var callbackLeftSideBarMyApproval = function (rows, req, res) {
 };
 router.post('/leftSideBarMyApproval', function (req, res) {
     var param = [];
-    var andQuery='';
+    var andQuery = '';
+    if (req.body.middleApproval == 'Y') {
+        andQuery = 'AND MIDDLENUM = ' + "'" + req.session.userId + "'";
+    } else if (req.body.lastApproval == 'Y') {
+        andQuery = 'AND FINALNUM = ' + "'" + req.session.userId + "'";
+    }
+
+    /* 18.11.27 주석
     if (req.body.middleApproval == 'Y' && req.body.adminApproval == 'N') {
         andQuery = 'AND MIDDLENUM = ' + "'" + req.session.userId + "'";
     } else if (req.body.lastApproval == 'Y' && req.body.adminApproval == 'N') {
@@ -819,6 +834,7 @@ router.post('/leftSideBarMyApproval', function (req, res) {
     } else if (req.body.adminApproval == 'Y') {
         andQuery = "OR STATUS = '03' AND MIDDLENUM IS NOT NULL";
     }
+    */
     commonDB.reqCountQueryParam2(queryConfig.sessionConfig.leftSideBarMyApproval + andQuery, param, callbackLeftSideBarMyApproval, req, res);
 });
 
