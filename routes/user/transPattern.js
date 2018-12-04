@@ -1135,6 +1135,18 @@ function convertedSpecificDocumentsAfter(reqArr) {
         }
     }
 
+    if (reqArr.docCategory.DOCNAME == 'CHEDID_13') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text == 'Credit Note No.: 05/18/C/01777') {
+                    item.originText = item.text;
+                    item.text = '05/18/C/01777';
+                }
+            }
+        }
+    }
+
     /****************************************
      * ED
      ****************************************/
@@ -1257,6 +1269,19 @@ function convertedSpecificDocumentsAfter(reqArr) {
                 if (item.text == 'RAFSAI 800631/ 001/ / 3/1') {
                     item.originText = item.text;
                     item.text = 'RAFSA1800631/001/001/3/1';
+                }
+            }
+        }
+    }
+
+    //RFIB_11
+    if (reqArr.docCategory.DOCNAME == 'RFIB_11') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text == 'RNMNTI 100116/ 027/ 002/ 1/2') {
+                    item.originText = item.text;
+                    item.text = 'RNMNT1100116/027/002/1/2';
                 }
             }
         }
