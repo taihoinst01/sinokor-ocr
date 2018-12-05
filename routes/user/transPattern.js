@@ -1282,6 +1282,38 @@ function convertedSpecificDocumentsAfter(reqArr) {
                 if (item.text == 'RNMNTI 100116/ 027/ 002/ 1/2') {
                     item.originText = item.text;
                     item.text = 'RNMNT1100116/027/002/1/2';
+                } else if (item.text == '04508/ 038/ 001/ 1/1') {
+                    item.originText = item.text;
+                    item.text = 'RMAMH1104508/038/001/1/1';
+                }
+            }
+        }
+    }
+
+    /****************************************
+     * OMAN
+     ****************************************/
+    // OMAN_09
+    if (reqArr.docCategory.DOCNAME == 'OMAN_09') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text == 'Doc. No. : CNR1000215341 ,CNR100024593 ,DNR1000244462 ') {
+                    item.originText = item.text;
+                    item.text = 'CNRI000215341';
+                }
+            }
+        }
+    }
+
+    // OMAN_13
+    if (reqArr.docCategory.DOCNAME == 'OMAN_13') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text == 'Doc. No.: CNR1000218628/DNR1000247867 .') {
+                    item.originText = item.text;
+                    item.text = 'CNRI000217960';
                 }
             }
         }
