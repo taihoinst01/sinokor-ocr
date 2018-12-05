@@ -71,8 +71,8 @@ def findLabelDB(inputsid):
 
     # 나머지 ml predict
     if not ret:
-        result.append(-1)
-        result.append(0)
+        result.append(38)
+        result.append(0.99)
         return result
     else:
         if '38' not in ret:
