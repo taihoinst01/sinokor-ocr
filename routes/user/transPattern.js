@@ -1298,7 +1298,7 @@ function convertedSpecificDocumentsAfter(reqArr) {
         for (var i in reqArr.data) {
             var item = reqArr.data[i];
             if (item.colLbl && item.colLbl == 35) { // your reference
-                if (item.text == 'Doc. No. : CNR1000215341 ,CNR100024593 ,DNR1000244462 ') {
+                if (item.text == 'Doc. No. : CNR1000215341 ,CNR100024593 ,DNR1000244462') {
                     item.originText = item.text;
                     item.text = 'CNRI000215341';
                 }
