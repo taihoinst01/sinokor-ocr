@@ -76,6 +76,34 @@ function convertedSpecificDocumentsBefore(reqArr) {
         }
     }
 
+    //JB_06
+    //ex) 이미지상엔 CLAIM 엔트리값이 1,203.00이지만 ocr결과 출력값은 I .20300 라고 출력되어 0.203 라고 학습될 경우.
+    if (reqArr.docCategory.DOCNAME == 'JB_06') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 37) {
+                if (item.text == 'I .20300') {
+                    item.originText = item.text;
+                    item.text = '1,203.00';
+                }
+            }
+        }
+    }
+
+    //NACIONAL_03
+    //ex) 정답지엔 LOSS RESERVE RTD 값이 0.01 이지만 ocr결과 0,01로 출력되어 학습결과 값이 1이 될 경우.
+    if (reqArr.docCategory.DOCNAME == 'NACIONAL_03') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 37) {
+                if (item.text == '0,01') {
+                    item.originText = item.text;
+                    item.text = '0.01';
+                }
+            }
+        }
+    }
+
     /****************************************
      * TALANX
      ****************************************/
@@ -456,6 +484,55 @@ function convertedSpecificDocumentsAfter(reqArr) {
             }
         }
     }
+ 
+    // BODA_02 (=JB)
+    //정답지엔 your Reference가 T/58887 이지만 ocr결과 출력값은 Statement No: T / 58887 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'BODA_02') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf('Statement No: ') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(/Statement No: /g, "").trim(); // "Statement No: T / 58887" -> T / 58887
+                }
+            }
+        }
+    }
+
+    /****************************************
+     * CLAL
+     ****************************************/
+
+    //정답지엔 your Reference가 T/60045 이지만 ocr결과 출력값은 Statement No: T /60045 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'CLAL_10') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf('Statement No: ') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(/Statement No: /g, "").trim(); // "Statement No: T /60045" -> T/60045
+                }
+            }
+        }
+    }
+
+    /****************************************
+     * CONTINENTAL
+     ****************************************/
+
+    //CONTINENTAL_02
+    //ex) 정답지엔 your Reference가 CN-003-P2018012529 이지만 ocr결과 출력값은 Our Account No.:CN-003-P2018012529 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'CONTINENTAL_02') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf('Our Account No.:') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(/Our Account No.:/g, "").trim(); // "Our Account No.:CN-003-P2018012529" -> CN-003-P2018012529
+                }
+            }
+        }
+    }
 
     /****************************************
      * BT
@@ -722,6 +799,20 @@ function convertedSpecificDocumentsAfter(reqArr) {
                 item.text = guy05Result;
             } else if (item.colLbl && item.colLbl == 35 && item.location == guy05Location[0]) {
                 item.colLbl = "38";
+            }
+        }
+    }
+
+    //GUY_12
+    //ex) 정답지엔 your Reference가 2075662 이지만 ocr결과 출력값은 INVOICE NO. 2075662 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'GUY_12') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text.indexOf('INVOICE NO. ') != -1) {
+                    item.originText = item.text;
+                    item.text = item.text.replace(/INVOICE NO. /g, "").trim(); // "INVOICE NO. 2075662" -> 2075662
+                }
             }
         }
     }
@@ -1314,6 +1405,24 @@ function convertedSpecificDocumentsAfter(reqArr) {
                 if (item.text == 'Doc. No.: CNR1000218628/DNR1000247867 .') {
                     item.originText = item.text;
                     item.text = 'CNRI000217960';
+                }
+            }
+        }
+    }
+
+    /****************************************
+     * ADNIC
+     ****************************************/
+
+    //ADNIC_16
+    //ex) 정답지엔 your Reference가 TS-18-00-1652 이지만 ocr결과 출력값은 1652-OO-18TS 일 경우.
+    if (reqArr.docCategory.DOCNAME == 'ADNIC_16') {
+        for (var i in reqArr.data) {
+            var item = reqArr.data[i];
+            if (item.colLbl && item.colLbl == 35) { // your reference
+                if (item.text == '1652-OO-18TS') {
+                    item.originText = item.text;
+                    item.text = 'TS-18-00-1652';
                 }
             }
         }
