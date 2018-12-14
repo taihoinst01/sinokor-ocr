@@ -3438,7 +3438,8 @@ exports.searchUser = function (req, done) {
                 "    TBL_CO_EMP_REG CO_REG " +
                 "ON " +
                 "    CO_EMP.EMP_NO = CO_REG.EMP_NO " +
-                "WHERE 1=1 "
+                "WHERE 1=1 " +
+                "AND ACCOUNT_ENABLE ='Y'"
 
             if (!req.body.type) {
                 if (dept != '모든부서') {
