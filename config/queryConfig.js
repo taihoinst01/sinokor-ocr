@@ -11,7 +11,6 @@ var sessionConfig = {
             TO_CHAR(A.REG_DATE, 'yyyy-mm-dd hh:mi:ss') AS REG_DATE, 
             TO_CHAR(A.FINAL_LOGIN_DATE, 'yyyy-mm-dd hh:mi:ss') AS FINAL_LOGIN_DATE,
             B.EMP_PW AS EMP_PW
-
          FROM
             TBL_CO_EMP_REG A, TBL_CO_EMP_BS_EXT B
          WHERE
