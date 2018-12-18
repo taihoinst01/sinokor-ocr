@@ -294,6 +294,141 @@ router.post('/IF2', function (req, res) {
         
 });
 
+router.post('/IF3', function (req, res) {
+
+    sync.fiber(function () {
+        try {
+            var data = '' +
+                '<?xml version="1.0" encoding="utf-8"?>' +
+                '<Root>' +
+                    '<Parameters>' +
+                        '<Parameter id="gv_encryptToken" type="STRING"></Parameter>' +
+                        '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
+                        '<Parameter id="lginIpAdr" type="STRING">172.16.12.54</Parameter>' +
+                        '<Parameter id="userId" type="STRING">9999068</Parameter>' +
+                        '<Parameter id="userEmpNo" type="STRING">9999068</Parameter>' +
+                        '<Parameter id="userDeptCd" type="STRING">240065</Parameter>' +
+                        '<Parameter id="frstRqseDttm" type="STRING">20181217131508909</Parameter>' +
+                        '<Parameter id="rqseDttm" type="STRING">20181217131508909</Parameter>' +
+                        '<Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>' +
+                        '<Parameter id="srnId" type="STRING">CTCTM107</Parameter>' +
+                        '<Parameter id="rqseSrvcNm" type="STRING">koreanre.co.ct.commonct.svc.CtCommonCheckSvc</Parameter>' +
+                        '<Parameter id="rqseMthdNm" type="STRING">saveTmpAcList</Parameter>' +
+                        '<Parameter id="rqseVoNm" type="STRING">koreanre.co.ct.commonct.vo.CtCommonCheckVO</Parameter>' +
+                    '</Parameters>' +
+                    '<Dataset id="saveTmpAcList">' +
+                        '<ColumnInfo>' +
+                            '<Column id="imgId" type="STRING" size="18"/>' +
+                            '<Column id="imgFileStNo" type="STRING" size="3"/>' +
+                            '<Column id="imgFileEndNo" type="STRING" size="3"/>' +
+                            '<Column id="rmk" type="STRING" size="4000"/>' +
+                            '<Column id="saOcrnCycCd" type="STRING" size="3"/>' +
+                            '<Column id="iwowDvCd" type="STRING" size="1"/>' +
+                            '<Column id="fy" type="STRING" size="4"/>' +
+                            '<Column id="appYrmm" type="STRING" size="6"/>' +
+                            '<Column id="deptCd" type="STRING" size="6"/>' +
+                            '<Column id="secd" type="STRING" size="6"/>' +
+                            '<Column id="ctNo" type="STRING" size="14"/>' +
+                            '<Column id="curCd" type="STRING" size="3"/>' +
+                            '<Column id="rgstEmpNo" type="STRING" size="7"/>' +
+                            '<Column id="prinEmpNo" type="STRING" size="7"/>' +
+                            '<Column id="cscoSaRfrnCnnt2" type="STRING" size="200"/>' +
+                            '<Column id="pre" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="prePfinAmt" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="prePfoutAmt" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="xolPre" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="icpreOcpre" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="com" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="pfcom" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="brkg" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="txam" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="rtrcCom" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="cdnCnam" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="prrsCf" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="pfPrrsCf" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="prrsRls" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="pfPrrsRls" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="cla" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="lsRcvyAmt" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="cas" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="casRfn" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="lsresCf" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="lsresRls" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="claPfinAmt" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="claPfoutAmt" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="rsreInt" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="intTxam" type="BIGDECIMAL" size="21"/>' +
+                            '<Column id="spyCost" type="BIGDECIMAL" size="21"/>' +
+                        '</ColumnInfo > ' +
+                        '<Rows>' +
+                            '<Row>' +
+                                '<Col id="imgId">ICR201811010000002</Col>' +
+                                '<Col id="imgFileStNo">1</Col>' +
+                                '<Col id="imgFileEndNo">2</Col>' +
+                                '<Col id="rmk">SA</Col>' +
+                                '<Col id="saOcrnCycCd">Q14</Col>' +
+                                '<Col id="iwowDvCd">1</Col>' +
+                                '<Col id="fy">2018</Col>' +
+                                '<Col id="appYrmm">201811</Col>' +
+                                '<Col id="deptCd">308000</Col>' +
+                                '<Col id="secd">308010</Col>' +
+                                '<Col id="ctNo">C2016022140727</Col>' +
+                                '<Col id="curCd">EUR</Col>' +
+                                '<Col id="rgstEmpNo">2014999</Col>' +
+                                '<Col id="prinEmpNo">2011813</Col>' +
+                                '<Col id="cscoSaRfrnCnnt2">your&#32;ref&#32;13579</Col>' +
+                                '<Col id="pre">138969.59</Col>' +
+                                '<Col id="com">36132.11</Col>' +
+                                '<Col id="brkg">2084.54</Col>' +
+                                '<Col id="cla">95323.34</Col>' +
+                                '<Col id="casRfn">49188.67</Col>' +
+                            '</Row>' +
+                            '<Row>' +
+                                '<Col id="imgId">ICR201811010000003</Col>' +
+                                '<Col id="imgFileStNo">3</Col>' +
+                                '<Col id="imgFileEndNo">5</Col>' +
+                                '<Col id="rmk">OS</Col>' +
+                                '<Col id="saOcrnCycCd">Q34</Col>' +
+                                '<Col id="iwowDvCd">1</Col>' +
+                                '<Col id="fy">2019</Col>' +
+                                '<Col id="appYrmm">201901</Col>' +
+                                '<Col id="deptCd">308000</Col>' +
+                                '<Col id="secd">308010</Col>' +
+                                '<Col id="ctNo">C2016022140727</Col>' +
+                                '<Col id="curCd">USD</Col>' +
+                                '<Col id="rgstEmpNo">2014999</Col>' +
+                                '<Col id="prinEmpNo">2011813</Col>' +
+                                '<Col id="cscoSaRfrnCnnt2">your&#32;ref&#32;24680</Col>' +
+                                '<Col id="pre">777</Col>' +
+                                '<Col id="com">222</Col>' +
+                                '<Col id="cla">0</Col>' +
+                            '</Row>' +
+                        '</Rows>' +
+                    '</Dataset>' +
+                '</Root>';
+
+            var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+                headers: {
+                    'content-type': 'text/xml'
+                },
+                body: data
+            });
+            var ifData = res1.getBody('utf8');
+
+            if (ifData == null) {
+                console.log("IF3 실패...");
+            } else {
+                parser.parseString(ifData, function (err, result) {
+                    console.log(result);
+                });
+            }
+        }catch (e) {
+            console.log(e);
+        }
+
+    });
+});
+
 router.post('/IF4', function (req, res) {
     var docNum = req.body.docNum;
     docNum = 'ICR201810260000001';
