@@ -3066,9 +3066,15 @@ var fn_docEvent = function () {
                     docInfoRowData.push(popDoctd.text());
 
                     // td.eq(0)은 체크박스 이므로  td.eq(1)의  값부터 가져온다.
-                    var docNum = popDoctd.eq(1).text();
+                    var docNum = popDoctd.eq(1).text(); //문서번호
+                    var appYrmm = popDoctd.eq(6).text(); //마감년월
+                    var deptNm = popDoctd.eq(4).text(); //소속부서명
+                    var prinEmpNo = popDoctd.eq(1).text(); //문서담당자명
                     // 가져온 값을 배열에 담는다.
                     docInfoTdArr.push(docNum);
+                    docInfoTdArr.push(appYrmm);
+                    docInfoTdArr.push(deptNm);
+                    docInfoTdArr.push(prinEmpNo);
                     deleteTr.push(popDoctr);
                 });
 
@@ -3117,7 +3123,7 @@ var fn_docEvent = function () {
                         mlExporttdArr.push(value);
                     }
 
-                    for (var j = 0; j < dtlTdList.length; j++) {
+                    /*for (var j = 0; j < dtlTdList.length; j++) {
                         var loc = '';
                         var fileName = '';
                         if (j >= 8) {
@@ -3135,7 +3141,7 @@ var fn_docEvent = function () {
                             }
                             mlExporttdArr.push(loc);
                         }
-                    }
+                    }*/
 
                     mlExportRowData.push(mlExporttdArr);
                 }

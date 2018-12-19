@@ -435,6 +435,7 @@ router.post('/sendApprovalDocument', function (req, res) {
     var sendCount = 0;
     sync.fiber(function () {
         try {
+            /*
             for (var i = 0; i < docInfo.length; i++) {               
                 var draftDate = getTimeStamp();
                 sync.await(oracle.sendApprovalDocument([req.body.userId, userChoiceId[0], userChoiceId[0], draftDate, docInfo[i]], sync.defer()));
@@ -448,8 +449,20 @@ router.post('/sendApprovalDocument', function (req, res) {
                 });
                 sendCount += 1;
             }
-            //sync.await(oracle.insertDocumentDtl(mlData, sync.defer())); -- DB저장(시연용)
-            sync.await(if3(mlData, token, sync.defer()));
+            */
+            var draftDate = getTimeStamp();
+            sync.await(oracle.sendApprovalDocument([req.body.userId, userChoiceId[0], userChoiceId[0], draftDate, docInfo[0]], sync.defer()));
+            approvalDtlData.push({
+                'docNum': docInfo[0],
+                'status': '02',
+                'approvalNum': userId,
+                'approvalDate': draftDate,
+                'approvalComment': null,
+                'nextApprovalNum': userChoiceId[0]
+            });
+            sendCount += 1;
+            //sync.await(oracle.insertDocumentDtl(mlData, sync.defer())); -- DB저장(시연용)       
+            sync.await(if3(mlData, token, docInfo, sync.defer()));
             sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
             returnObj = { code: 200, docData: sendCount };
         
@@ -462,9 +475,11 @@ router.post('/sendApprovalDocument', function (req, res) {
     
 });
 
-function if3(mlData, token, done) {
+function if3(mlData, token, docInfo, done) {
     sync.fiber(function () {
         try {
+            var deptCode = sync.await(oracle.selectDeptCode(docInfo.body.deptNm, sync.defer()));
+
             var data = '' +
                 '<?xml version="1.0" encoding="utf-8"?>' +
                 '<Root>' +
@@ -539,13 +554,13 @@ function if3(mlData, token, done) {
                         '<Col id="saOcrnCycCd">' + mlData.mlExportData[i][8] + '</Col>' +
                         '<Col id="iwowDvCd">1</Col>' +
                         '<Col id="fy">' + mlData.mlExportData[i][4] + '</Col>' +
-                        '<Col id="appYrmm">201811</Col>' +
-                        '<Col id="deptCd">308000</Col>' +
-                        '<Col id="secd">308010</Col>' +
+                        '<Col id="appYrmm">' + docInfo[1]+ '</Col>' +
+                        '<Col id="deptCd">' + deptCode[0].DEPT_CD + '</Col>' +
+                        '<Col id="secd">308010</Col>' + 
                         '<Col id="ctNo">' + mlData.mlExportData[i][5] + '</Col>' +
                         '<Col id="curCd">' + mlData.mlExportData[i][9] + '</Col>' +
                         '<Col id="rgstEmpNo">2014999</Col>' +
-                        '<Col id="prinEmpNo">2011813</Col>' +
+                        '<Col id="prinEmpNo">' + docInfo[3] + '</Col>' +
                         '<Col id="cscoSaRfrnCnnt2">' + mlData.mlExportData[i][41].replace(/ /gi, '&#32;') + '</Col>' +
                         '<Col id="pre">' + mlData.mlExportData[i][15] + '</Col>' +
                         '<Col id="prePfinAmt>' + mlData.mlExportData[i][16] + '</Col>' +
