@@ -408,8 +408,8 @@ var fn_search_dtl_IF4 = function (seqNum, docNum) {
     var progressId;
     var appendHtml = "";
     $.ajax({
-        //url: '/myApproval/searchApprovalDtlList',
-        url: '/wF_WorkflowProc/IF4',
+        url: '/myApproval/searchApprovalDtlList',
+        //url: '/wF_WorkflowProc/IF4',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'docNum': docNum }),
