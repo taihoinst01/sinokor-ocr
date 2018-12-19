@@ -463,7 +463,7 @@ router.post('/sendApprovalDocument', function (req, res) {
 });
 
 function if3(mlData, done) {
-    return new Promise(async function (resolve, reject) {
+    sync.fiber(function () {
         try {
             var data = '' +
                 '<?xml version="1.0" encoding="utf-8"?>' +
@@ -600,6 +600,7 @@ function if3(mlData, done) {
 
         } catch (err) {
             reject(err);
+            return done(null, err);
         } finally {
 
         }
