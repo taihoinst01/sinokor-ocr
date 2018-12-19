@@ -1855,6 +1855,10 @@ function fn_processFinish(mlData, imgId) {
         '<td class="dtl_td_dblclcik"></td> <!--계약번호-->' +
         '<td class="dtl_td_dblclcik"></td> <!--페이지번호 FROM-->' +
         '<td class="dtl_td_dblclcik"></td> <!--페이지번호 TO-->' +
+        '<td><select><option selected>HFF</option><option>HFS</option><option>HYP</option><option>M01</option><option>M02</option><option>M03</option><option>M04</option>' +
+        '<option>M05</option><option>M06</option><option>M07</option><option>M08</option><option>M09</option><option>M10</option><option>M11</option><option>M12</option>' +
+        '<option>MMP</option><option>Q13</option><option>Q14</option><option>Q23</option><option>Q24</option><option>Q33</option><option>Q34</option><option>Q44</option>' +
+        '<option>QTP</option><option>YRY</option><option>ZZZ</option></select></td> < !--SA TERM-- > ' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 3, null) + '</td> <!--화폐코드-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 4, null) + '</td> <!--화폐단위-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 5, 0) + '</td> <!--Paid(100%)-->' +
@@ -2022,6 +2026,10 @@ function fn_ContractNumExtraction() {
                                         '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->' +
                                         '<td>' + makePageNum(1, thumbImgs.length) + '</td> <!--페이지번호 FROM-->' +
                                         '<td>' + makePageNum(thumbImgs.length, thumbImgs.length) + '</td> <!--페이지번호 TO-->' +
+                                        '<td><select><option selected>HFF</option><option>HFS</option><option>HYP</option><option>M01</option><option>M02</option><option>M03</option><option>M04</option>' +
+                                        '<option>M05</option><option>M06</option><option>M07</option><option>M08</option><option>M09</option><option>M10</option><option>M11</option><option>M12</option>' +
+                                        '<option>MMP</option><option>Q13</option><option>Q14</option><option>Q23</option><option>Q24</option><option>Q33</option><option>Q34</option><option>Q44</option>' +
+                                        '<option>QTP</option><option>YRY</option><option>ZZZ</option></select></td> < !--SA TERM-- > ' +
                                         '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
                                         '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
                                         '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
