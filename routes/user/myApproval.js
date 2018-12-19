@@ -96,10 +96,141 @@ var fnSearchApprovalList = function (req, res) {
 // [POST] 문서 상세 리스트 조회 
 router.post('/searchApprovalDtlList', function (req, res) {
     var returnObj = {};
+    var token = req.session.user.token;
     sync.fiber(function () {
         try {
-            var result = sync.await(oracle.searchApprovalDtlList([req.body.docNum], sync.defer()));
-            returnObj = { code: 200, docData: result };
+           // var result = sync.await(oracle.searchApprovalDtlList([req.body.docNum], sync.defer()));
+            var data =
+                '<?xml version="1.0" encoding="utf-8"?>' +
+                '<Root>' +
+                '<Parameters>' +
+                '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>' +
+                '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
+                '<Parameter id="lginIpAdr" type="STRING">172.16.12.54</Parameter>' +
+                '<Parameter id="userId" type="STRING">9999068</Parameter>' +
+                '<Parameter id="userEmpNo" type="STRING">9999068</Parameter>' +
+                '<Parameter id="userDeptCd" type="STRING">240065</Parameter>' +
+                '<Parameter id="frstRqseDttm" type="STRING">20181030194635225</Parameter>' +
+                '<Parameter id="rqseDttm" type="STRING">20181030194635225</Parameter>' +
+                '<Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>' +
+                '<Parameter id="srnId" type="STRING">CTCTM107</Parameter>' +
+                '<Parameter id="rqseSrvcNm" type="STRING">koreanre.co.ct.commonct.svc.CtCommonCheckSvc</Parameter>' +
+                '<Parameter id="rqseMthdNm" type="STRING">readTmpAcList</Parameter>' +
+                '<Parameter id="rqseVoNm" type="STRING">koreanre.co.ct.commonct.vo.CtCommonCheckVO</Parameter>' +
+                '</Parameters>' +
+                '<Dataset id="searchDvo">' +
+                '<ColumnInfo>' +
+                '<Column id="cdnNm" type="STRING" size="150"/>' +
+                '<Column id="ctNm" type="STRING" size="150"/>' +
+                '<Column id="ttyYy" type="STRING" size="4"/>' +
+                '<Column id="brkNm" type="STRING" size="70"/>' +
+                '<Column id="imgId" type="STRING" size="18"/>' +
+                '</ColumnInfo>' +
+                '<Rows>' +
+                '<Row>' +
+                '<Col id="imgId">' + req.body.docNum + '</Col>' +
+                '</Row>' +
+                '</Rows>' +
+                '</Dataset>' +
+                '<Dataset id="tmpAcList.outlist.meta">' +
+                '<ColumnInfo>' +
+                '<Column id="ctNo" type="STRING" size="14"/>' +
+                '<Column id="deptCd" type="STRING" size="6"/>' +
+                '<Column id="aprStatCd" type="STRING" size="2"/>' +
+                '<Column id="ctNm" type="STRING" size="150"/>' +
+                '<Column id="ttyYy" type="STRING" size="4"/>' +
+                '<Column id="ord" type="INT" size="9"/>' +
+                '<Column id="acDvNm" type="STRING" size="70"/>' +
+                '<Column id="ctYy" type="STRING" size="4"/>' +
+                '<Column id="imgId" type="STRING" size="18"/>' +
+                '<Column id="clamSno" type="INT" size="9"/>' +
+                '<Column id="saOcrnSno" type="INT" size="9"/>' +
+                '<Column id="imgFileStNo" type="STRING" size="3"/>' +
+                '<Column id="imgFileEndNo" type="STRING" size="3"/>' +
+                '<Column id="curCd" type="STRING" size="3"/>' +
+                '<Column id="ntbl" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="osl" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="ibnr" type="BIGDECIMAL" size="21"/>' +
+                '</ColumnInfo>' +
+                '<Rows>' +
+                '</Rows>' +
+                '</Dataset>' +
+                '</Root>';
+
+            var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+                headers: {
+                    'content-type': 'text/xml'
+                },
+                body: data
+            });
+            var data = res1.getBody('utf8');
+
+            if (data == null) {
+                console.log("실패...");
+            } else {
+
+                parser.parseString(data, function (err, result) {
+                    console.log(result);
+                    /*
+                    var dataSet = '';
+                    var rowData = [];
+                    for (var i in result.Root.Dataset) {
+                        if (result.Root.Dataset[i].$.id == "ctNoList") {
+                            dataSet = result.Root.Dataset[i];
+                            break;
+                        }
+                    }
+
+                    if (dataSet.Rows[0].Row) {
+                        var row = dataSet.Rows[0].Row;
+
+                        for (var i in row) {
+                            var obj = {};
+                            for (var j in row[i].Col) {
+                                if (row[i].Col[j].$.id == "ctNo") {
+                                    obj.ctNo = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "deptCd") {
+                                    obj.deptCd = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "aprStatCd") {
+                                    obj.aprStatCd = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "ctNm") {
+                                    obj.ctNm = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "ttyYy") {
+                                    obj.ttyYy = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "ord") {
+                                    obj.ord = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "acDvNm") {
+                                    obj.acDvNm = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "ctYy") {
+                                    obj.ctYy = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "imgId") {
+                                    obj.imgId = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "clamSno") {
+                                    obj.clamSno = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "saOcrnSno") {
+                                    obj.saOcrnSno = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "imgFileStNo") {
+                                    obj.imgFileStNo = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "imgFileEndNo") {
+                                    obj.imgFileEndNo = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "curCd") {
+                                    obj.curCd = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "ntbl") {
+                                    obj.ntbl = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "osl") {
+                                    obj.osl = row[i].Col[j]._;
+                                } else if (row[i].Col[j].$.id == "ibnr") {
+                                    obj.ibnr = row[i].Col[j]._;
+                                }
+                            }
+                            rowData.push(obj);
+                        }
+                    }
+                    res.send({ data: rowData });*/
+                });
+            }
+
+            returnObj = { code: 200, docData: [] };
         } catch (e) {
             returnObj = { code: 200, error: e };
         } finally {

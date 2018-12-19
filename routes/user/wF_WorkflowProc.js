@@ -476,7 +476,7 @@ router.post('/IF4', function (req, res) {
                 '</Rows>' +
                 '</Dataset>' +
                 '</Root>';
-            /*
+            
             var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
                 headers: {
                     'content-type': 'text/xml'
@@ -484,7 +484,8 @@ router.post('/IF4', function (req, res) {
                 body: data
             });
             var data = res1.getBody('utf8');
-            */
+            
+            /*
             //TEST data
             var data = `
 <?xml version="1.0" encoding="UTF-8" ?>	
@@ -559,7 +560,7 @@ router.post('/IF4', function (req, res) {
             </Row>	
         </Rows>	
     </Dataset>	
-</Root>`;
+</Root>`;*/
 
             if (data == null) {
                 console.log("실패...");
