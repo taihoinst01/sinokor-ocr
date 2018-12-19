@@ -21,6 +21,9 @@ var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
 var transPantternVar = require('./transPattern');
 var sizeOf = require('image-size');
+var request = require('sync-request');
+var xml2js = require('xml2js');
+var parser = new xml2js.Parser();
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
@@ -425,7 +428,8 @@ router.post('/sendApprovalDocument', function (req, res) {
     var docInfo = req.body.docInfo;
     var userId = req.body.userId;
     var mlData = req.body.mlData;
-
+    var token = req.session.user.token;
+    
     var returnObj = {};
     var approvalDtlData = [];
     var sendCount = 0;
@@ -444,7 +448,8 @@ router.post('/sendApprovalDocument', function (req, res) {
                 });
                 sendCount += 1;
             }
-            sync.await(oracle.insertDocumentDtl(mlData, sync.defer()));
+            //sync.await(oracle.insertDocumentDtl(mlData, sync.defer())); -- DB저장(시연용)
+            sync.await(if3(mlData, token, sync.defer()));
             sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
             returnObj = { code: 200, docData: sendCount };
         
@@ -454,8 +459,153 @@ router.post('/sendApprovalDocument', function (req, res) {
             res.send(returnObj);
         }
     });
-
+    
 });
+
+function if3(mlData, token, done) {
+    sync.fiber(function () {
+        try {
+            var data = '' +
+                '<?xml version="1.0" encoding="utf-8"?>' +
+                '<Root>' +
+                '<Parameters>' +
+                '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>' +
+                '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
+                '<Parameter id="lginIpAdr" type="STRING">172.16.12.54</Parameter>' +
+                '<Parameter id="userId" type="STRING">9999068</Parameter>' +
+                '<Parameter id="userEmpNo" type="STRING">9999068</Parameter>' +
+                '<Parameter id="userDeptCd" type="STRING">240065</Parameter>' +
+                '<Parameter id="frstRqseDttm" type="STRING">20181217131508909</Parameter>' +
+                '<Parameter id="rqseDttm" type="STRING">20181217131508909</Parameter>' +
+                '<Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>' +
+                '<Parameter id="srnId" type="STRING">CTCTM107</Parameter>' +
+                '<Parameter id="rqseSrvcNm" type="STRING">koreanre.co.ct.commonct.svc.CtCommonCheckSvc</Parameter>' +
+                '<Parameter id="rqseMthdNm" type="STRING">saveTmpAcList</Parameter>' +
+                '<Parameter id="rqseVoNm" type="STRING">koreanre.co.ct.commonct.vo.CtCommonCheckVO</Parameter>' +
+                '</Parameters>' +
+                '<Dataset id="saveTmpAcList">' +
+                '<ColumnInfo>' +
+                '<Column id="imgId" type="STRING" size="18"/>' +
+                '<Column id="imgFileStNo" type="STRING" size="3"/>' +
+                '<Column id="imgFileEndNo" type="STRING" size="3"/>' +
+                '<Column id="rmk" type="STRING" size="4000"/>' +
+                '<Column id="saOcrnCycCd" type="STRING" size="3"/>' +
+                '<Column id="iwowDvCd" type="STRING" size="1"/>' +
+                '<Column id="fy" type="STRING" size="4"/>' +
+                '<Column id="appYrmm" type="STRING" size="6"/>' +
+                '<Column id="deptCd" type="STRING" size="6"/>' +
+                '<Column id="secd" type="STRING" size="6"/>' +
+                '<Column id="ctNo" type="STRING" size="14"/>' +
+                '<Column id="curCd" type="STRING" size="3"/>' +
+                '<Column id="rgstEmpNo" type="STRING" size="7"/>' +
+                '<Column id="prinEmpNo" type="STRING" size="7"/>' +
+                '<Column id="cscoSaRfrnCnnt2" type="STRING" size="200"/>' +
+                '<Column id="pre" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="prePfinAmt" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="prePfoutAmt" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="xolPre" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="icpreOcpre" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="com" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="pfcom" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="brkg" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="txam" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="rtrcCom" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="cdnCnam" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="prrsCf" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="pfPrrsCf" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="prrsRls" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="pfPrrsRls" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="cla" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="lsRcvyAmt" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="cas" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="casRfn" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="lsresCf" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="lsresRls" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="claPfinAmt" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="claPfoutAmt" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="rsreInt" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="intTxam" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="spyCost" type="BIGDECIMAL" size="21"/>' +
+                '</ColumnInfo > ' +
+                '<Rows>';
+            for (var i = 0; i < mlData.mlExportData.length; i++) {
+                if (mlData.mlExportData[i][0] == 'Y') {
+                    data += '' +
+                        '<Row>' +
+                        '<Col id="imgId">' + mlData.mlDocNum + '</Col>' +
+                        '<Col id="imgFileStNo">' + mlData.mlExportData[i][6] + '</Col>' +
+                        '<Col id="imgFileEndNo">' + mlData.mlExportData[i][7] + '</Col>' +
+                        '<Col id="rmk">' + mlData.mlExportData[i][1] + '</Col>' +
+                        '<Col id="saOcrnCycCd">' + mlData.mlExportData[i][8] + '</Col>' +
+                        '<Col id="iwowDvCd">1</Col>' +
+                        '<Col id="fy">' + mlData.mlExportData[i][4] + '</Col>' +
+                        '<Col id="appYrmm">201811</Col>' +
+                        '<Col id="deptCd">308000</Col>' +
+                        '<Col id="secd">308010</Col>' +
+                        '<Col id="ctNo">' + mlData.mlExportData[i][5] + '</Col>' +
+                        '<Col id="curCd">' + mlData.mlExportData[i][9] + '</Col>' +
+                        '<Col id="rgstEmpNo">2014999</Col>' +
+                        '<Col id="prinEmpNo">2011813</Col>' +
+                        '<Col id="cscoSaRfrnCnnt2">' + mlData.mlExportData[i][41].replace(/ /gi, '&#32;') + '</Col>' +
+                        '<Col id="pre">' + mlData.mlExportData[i][15] + '</Col>' +
+                        '<Col id="prePfinAmt>' + mlData.mlExportData[i][16] + '</Col>' +
+                        '<Col id="prePfoutAmt>' + mlData.mlExportData[i][17] + '</Col>' +
+                        '<Col id="xolPre>' + mlData.mlExportData[i][18] + '</Col>' +
+                        '<Col id="icpreOcpre>' + mlData.mlExportData[i][19] + '</Col>' +
+                        '<Col id="com>' + mlData.mlExportData[i][20] + '</Col>' +
+                        '<Col id="pfcom>' + mlData.mlExportData[i][21] + '</Col>' +
+                        '<Col id="brkg>' + mlData.mlExportData[i][22] + '</Col>' +
+                        '<Col id="txam>' + mlData.mlExportData[i][23] + '</Col>' +
+                        '<Col id="rtrcCom>' + mlData.mlExportData[i][24] + '</Col>' +
+                        '<Col id="cdnCnam>' + mlData.mlExportData[i][25] + '</Col>' +
+                        '<Col id="prrsCf>' + mlData.mlExportData[i][26] + '</Col>' +
+                        '<Col id="pfPrrsCf>' + mlData.mlExportData[i][27] + '</Col>' +
+                        '<Col id="prrsRls>' + mlData.mlExportData[i][28] + '</Col>' +
+                        '<Col id="pfPrrsRls>' + mlData.mlExportData[i][29] + '</Col>' +
+                        '<Col id="cla>' + mlData.mlExportData[i][30] + '</Col>' +
+                        '<Col id="lsRcvyAmt>' + mlData.mlExportData[i][31] + '</Col>' +
+                        '<Col id="cas>' + mlData.mlExportData[i][32] + '</Col>' +
+                        '<Col id="casRfn>' + mlData.mlExportData[i][33] + '</Col>' +
+                        '<Col id="lsresCf>' + mlData.mlExportData[i][34] + '</Col>' +
+                        '<Col id="lsresRls>' + mlData.mlExportData[i][35] + '</Col>' +
+                        '<Col id="claPfinAmt>' + mlData.mlExportData[i][36] + '</Col>' +
+                        '<Col id="claPfoutAmt>' + mlData.mlExportData[i][37] + '</Col>' +
+                        '<Col id="rsreInt>' + mlData.mlExportData[i][38] + '</Col>' +
+                        '<Col id="intTxam>' + mlData.mlExportData[i][39] + '</Col>' +
+                        '<Col id="spyCost>' + mlData.mlExportData[i][40] + '</Col>' +
+                        '</Row>';
+                }
+            }
+            data += '' +
+                '</Rows>' +
+                '</Dataset>' +
+                '</Root>';
+
+            var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+                headers: {
+                    'content-type': 'text/xml'
+                },
+                body: data
+            });
+            var ifData = res1.getBody('utf8');
+
+            if (ifData == null) {
+                console.log("IF3 실패...");
+            } else {
+                parser.parseString(ifData, function (err, result) {
+                    console.log(result);
+                    return done(null, null);
+                });
+            }
+
+        } catch (err) {
+            reject(err);
+            return done(null, err);
+        } finally {
+
+        }
+    });
+}
 
 //문서전달
 router.post('/sendDocument', function (req, res) {
