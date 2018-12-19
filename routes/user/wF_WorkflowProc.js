@@ -295,6 +295,7 @@ router.post('/IF2', function (req, res) {
 });
 
 router.post('/IF3', function (req, res) {
+    var mlData = req.body.mlData;
 
     sync.fiber(function () {
         try {
@@ -360,7 +361,9 @@ router.post('/IF3', function (req, res) {
                             '<Column id="intTxam" type="BIGDECIMAL" size="21"/>' +
                             '<Column id="spyCost" type="BIGDECIMAL" size="21"/>' +
                         '</ColumnInfo > ' +
-                        '<Rows>' +
+                        '<Rows>';
+                            for(var item in mlData){
+                            data += '' +
                             '<Row>' +
                                 '<Col id="imgId">ICR201811010000002</Col>' +
                                 '<Col id="imgFileStNo">1</Col>' +
@@ -382,27 +385,9 @@ router.post('/IF3', function (req, res) {
                                 '<Col id="brkg">2084.54</Col>' +
                                 '<Col id="cla">95323.34</Col>' +
                                 '<Col id="casRfn">49188.67</Col>' +
-                            '</Row>' +
-                            '<Row>' +
-                                '<Col id="imgId">ICR201811010000003</Col>' +
-                                '<Col id="imgFileStNo">3</Col>' +
-                                '<Col id="imgFileEndNo">5</Col>' +
-                                '<Col id="rmk">OS</Col>' +
-                                '<Col id="saOcrnCycCd">Q34</Col>' +
-                                '<Col id="iwowDvCd">1</Col>' +
-                                '<Col id="fy">2019</Col>' +
-                                '<Col id="appYrmm">201901</Col>' +
-                                '<Col id="deptCd">308000</Col>' +
-                                '<Col id="secd">308010</Col>' +
-                                '<Col id="ctNo">C2016022140727</Col>' +
-                                '<Col id="curCd">USD</Col>' +
-                                '<Col id="rgstEmpNo">2014999</Col>' +
-                                '<Col id="prinEmpNo">2011813</Col>' +
-                                '<Col id="cscoSaRfrnCnnt2">your&#32;ref&#32;24680</Col>' +
-                                '<Col id="pre">777</Col>' +
-                                '<Col id="com">222</Col>' +
-                                '<Col id="cla">0</Col>' +
-                            '</Row>' +
+                            '</Row>';
+                            }
+                        data += '' +
                         '</Rows>' +
                     '</Dataset>' +
                 '</Root>';
