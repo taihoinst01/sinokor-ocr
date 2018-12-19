@@ -296,7 +296,7 @@ router.post('/IF2', function (req, res) {
 
 router.post('/IF3', function (req, res) {
     var mlData = req.body.mlData;
-
+    /*
     sync.fiber(function () {
         try {
             var data = '' +
@@ -412,6 +412,7 @@ router.post('/IF3', function (req, res) {
         }
 
     });
+    */
 });
 
 router.post('/IF4', function (req, res) {
