@@ -428,7 +428,7 @@ router.post('/sendApprovalDocument', function (req, res) {
     var docInfo = req.body.docInfo;
     var userId = req.body.userId;
     var mlData = req.body.mlData;
-
+    var token = req.session.user.token;
     
     var returnObj = {};
     var approvalDtlData = [];
@@ -449,7 +449,7 @@ router.post('/sendApprovalDocument', function (req, res) {
                 sendCount += 1;
             }
             //sync.await(oracle.insertDocumentDtl(mlData, sync.defer())); -- DB저장(시연용)
-            sync.await(if3(mlData, sync.defer()));
+            sync.await(if3(mlData, token, sync.defer()));
             sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
             returnObj = { code: 200, docData: sendCount };
         
@@ -462,14 +462,14 @@ router.post('/sendApprovalDocument', function (req, res) {
     
 });
 
-function if3(mlData, done) {
+function if3(mlData, token, done) {
     sync.fiber(function () {
         try {
             var data = '' +
                 '<?xml version="1.0" encoding="utf-8"?>' +
                 '<Root>' +
                 '<Parameters>' +
-                '<Parameter id="gv_encryptToken" type="STRING"></Parameter>' +
+                '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>' +
                 '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
                 '<Parameter id="lginIpAdr" type="STRING">172.16.12.54</Parameter>' +
                 '<Parameter id="userId" type="STRING">9999068</Parameter>' +
