@@ -184,7 +184,7 @@ var fn_clickEvent = function () {
         if(chkResult2 == null ) {
             $("input:checkbox[id='chk_document_" + docNum + "']").parent().addClass('ez-checked');
             $("input:checkbox[id='chk_document_" + docNum + "']").attr("checked", true);
-            fn_search_dtl(seqNum, docNum); // document_dtl 조회
+            fn_search_dtl_IF4(seqNum, docNum); // document_dtl 조회
             fn_search_image(docNum);
         }else {
             $("input:checkbox[id='chk_document_" + docNum + "']").parent().removeClass('ez-checked');

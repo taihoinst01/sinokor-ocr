@@ -11,6 +11,9 @@ var commonUtil = require(appRoot + '/public/js/common.util.js');
 var sync = require('../util/sync.js');
 var batch = require('../util/myApproval.js');
 var oracle = require('../util/oracle.js');
+var xml2js = require('xml2js');
+var parser = new xml2js.Parser();
+var request = require('sync-request');
 
 router.get('/favicon.ico', function (req, res) {
     res.status(204).end();
@@ -170,12 +173,12 @@ router.post('/searchApprovalDtlList', function (req, res) {
             } else {
 
                 parser.parseString(data, function (err, result) {
-                    console.log(result);
-                    /*
+                    //console.log(result);
+                    
                     var dataSet = '';
                     var rowData = [];
                     for (var i in result.Root.Dataset) {
-                        if (result.Root.Dataset[i].$.id == "ctNoList") {
+                        if (result.Root.Dataset[i].$.id == "tmpAcList") {
                             dataSet = result.Root.Dataset[i];
                             break;
                         }
@@ -226,11 +229,10 @@ router.post('/searchApprovalDtlList', function (req, res) {
                             rowData.push(obj);
                         }
                     }
-                    res.send({ data: rowData });*/
+                    returnObj = { data: rowData };
                 });
             }
 
-            returnObj = { code: 200, docData: [] };
         } catch (e) {
             returnObj = { code: 200, error: e };
         } finally {
