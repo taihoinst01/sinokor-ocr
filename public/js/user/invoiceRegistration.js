@@ -2019,14 +2019,14 @@ function fn_ContractNumExtraction() {
                                     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
                                     dtlHtml += '<tr>' +
                                         '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-                                        '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
-                                        '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
-                                        '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
-                                        '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
-                                        '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->' +
-                                        '<td>' + makePageNum(1, thumbImgs.length) + '</td> <!--페이지번호 FROM-->' +
-                                        '<td>' + makePageNum(thumbImgs.length, thumbImgs.length) + '</td> <!--페이지번호 TO-->' +
-                                        '<td><select><option selected>HFF</option><option>HFS</option><option>HYP</option><option>M01</option><option>M02</option><option>M03</option><option>M04</option>' +
+                                        '<td class="dtl_td_dblclcik"><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
+                                        '<td class="dtl_td_dblclcik">' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
+                                        '<td class="dtl_td_dblclcik">' + data.data[i].ctNm + '</td> <!--계약명-->' +
+                                        '<td class="dtl_td_dblclcik">' + data.data[i].ttyYy + '</td> <!--UY-->' +
+                                        '<td class="dtl_td_dblclcik">' + data.data[i].ctNo + '</td> <!--계약번호-->' +
+                                        '<td class="dtl_td_dblclcik">' + makePageNum(1, thumbImgs.length) + '</td> <!--페이지번호 FROM-->' +
+                                        '<td class="dtl_td_dblclcik">' + makePageNum(thumbImgs.length, thumbImgs.length) + '</td> <!--페이지번호 TO-->' +
+                                        '<td class="dtl_td_dblclcik"><select><option selected>HFF</option><option>HFS</option><option>HYP</option><option>M01</option><option>M02</option><option>M03</option><option>M04</option>' +
                                         '<option>M05</option><option>M06</option><option>M07</option><option>M08</option><option>M09</option><option>M10</option><option>M11</option><option>M12</option>' +
                                         '<option>MMP</option><option>Q13</option><option>Q14</option><option>Q23</option><option>Q24</option><option>Q33</option><option>Q34</option><option>Q44</option>' +
                                         '<option>QTP</option><option>YRY</option><option>ZZZ</option></select></td> < !--SA TERM-- > ' +
