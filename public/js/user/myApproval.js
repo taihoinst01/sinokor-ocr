@@ -425,16 +425,92 @@ var fn_search_dtl_IF4 = function (seqNum, docNum) {
             if (data.data.length > 0) {
                 for (var i = 0; i < data.data.length; i++) {
                     appendHtml +=
-                        '<tr id="tr_dtl_' + docNum + '" name="tr_dtl" style="cursor:pointer">' +
-                        '<td>' + data.data[i].acDvNm + '</td> <!--계산서구분-->' +
-                        '<td>' + data.data[i].ctNo + '</td>' +
-                        '<td>' + data.data[i].ctNm + '</td>' +
-                        '<td>' + data.data[i].imgFileStNo + '</td>' +
-                        '<td>' + data.data[i].imgFileEndNo + '</td>' +
-                        '<td>' + data.data[i].curCd + '</td>' +
-                        '<td>' + data.data[i].ntbl + '</td>' +
-                        '<td>' + data.data[i].osl + '</td>' +
-                        '<td>' + data.data[i].ibnr + '</td>' +
+                        '<tr id="tr_dtl_' + docNum + '" name="tr_dtl" style="cursor:pointer">';
+                        if (data.data[i].ctNo) {
+                                appendHtml += '<td>' + data.data[i].ctNo + '</td> <!--계약번호-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].deptCd) {
+                                appendHtml += '<td>' + data.data[i].deptCd + '</td> <!--팀코드-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].aprStatCd) {
+                                appendHtml += '<td>' + data.data[i].aprStatCd + '</td> <!--결재상태코드-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].ctNm) {
+                                appendHtml += '<td>' + data.data[i].ctNm + '</td> <!--계약명-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].ttyYy) {
+                                appendHtml += '<td>' + data.data[i].ttyYy + '</td> <!--UY-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].ord) {
+                                appendHtml += '<td>' + data.data[i].ord + '</td> <!--순서-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].acDvNm) {
+                                appendHtml += '<td>' + data.data[i].acDvNm + '</td> <!--계산서구분(SA/OS/Claim Note)-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].ctYy) {
+                                appendHtml += '<td>' + data.data[i].ctYy + '</td> <!--UY2-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].imgId) {
+                                appendHtml += '<td>' + data.data[i].imgId + '</td> <!--imgId-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].clamSno) {
+                            appendHtml += '<td>' + data.data[i].clamSno + '</td> <!--사고순번-->';
+                        } else {
+                            appendHtml += '<td></td>';
+                        }
+                        if (data.data[i].saOcrnSno) {
+                            appendHtml += '<td>' + data.data[i].saOcrnSno + '</td> <!--계산서순번-->';
+                        } else {
+                            appendHtml += '<td></td>';
+                        }
+                        if (data.data[i].imgFileStNo) {
+                            appendHtml += '<td>' + data.data[i].imgFileStNo + '</td> <!--페이지번호from-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].imgFileEndNo) {
+                                appendHtml += '<td>' + data.data[i].imgFileEndNo + '</td> <!--페이지번호to-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].curCd) {
+                            appendHtml += '<td>' + data.data[i].curCd + '</td> <!--화폐코드-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].ntbl) {
+                                appendHtml += '<td>' + data.data[i].ntbl + '</td> <!--Net Balance-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].osl) {
+                            appendHtml += '<td>' + data.data[i].osl + '</td> <!--OSL-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
+                        if (data.data[i].ibnr) {
+                                appendHtml += '<td>' + data.data[i].ibnr + '</td> <!--IBNR-->';
+                            } else {
+                                appendHtml += '<td></td>';
+                            }
                         '</tr>'; 
                 }
                 $("#span_document_dtl").empty().html('결재리스트(상세) -' + data.data.length + '건');
