@@ -1,9 +1,9 @@
 // Oracle Config
 // 설치시 : npm 에러 날 경우 cmd창에서 git config http.sslVerify false 수행
 var dbConfig = {
-    user: process.env.NODE_ORACLEDB_USER || "koreanre5",
+    user: process.env.NODE_ORACLEDB_USER || "koreanre",
     password: process.env.NODE_ORACLEDB_PASSWORD || "koreanre01",
-    connectString: process.env.NODE_ORACLEDB_CONNECTIONSTRING || "172.16.53.147/koreanreocr5",
+    connectString: process.env.NODE_ORACLEDB_CONNECTIONSTRING || "localhost/orcl",
     externalAuth: process.env.NODE_ORACLEDB_EXTERNALAUTH ? true : false,
     poolMax: 30,
     poolMin: 10
