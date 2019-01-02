@@ -96,7 +96,7 @@ var fnSearchApprovalList = function (req, res) {
     commonDB.reqQuery(listQuery, callbackApprovalList, req, res);
 };
 
-// [POST] 문서 상세 리스트 조회 
+// [POST] 문서 상세 리스트 조회 IF4
 router.post('/searchApprovalDtlList', function (req, res) {
     var returnObj = {};
     var token = req.session.user.token;
@@ -160,7 +160,7 @@ router.post('/searchApprovalDtlList', function (req, res) {
                 '</Dataset>' +
                 '</Root>';
 
-            var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+            var res1 = request('POST', 'http://solomon.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
                 headers: {
                     'content-type': 'text/xml'
                 },
@@ -329,6 +329,7 @@ router.post('/cancelDocument', function (req, res) {
     var approvalDtlData = [];
     var returnObj = {};
     var cancelCount = 0;
+    var token = req.session.user.token;
 
     sync.fiber(function () {
         try {
@@ -340,8 +341,10 @@ router.post('/cancelDocument', function (req, res) {
                 } else if (level == 'lastApproval') {
                     var finalNum = 'FINALNUM = NULL, NOWNUM = MIDDLENUM';                 
                     sync.await(oracle.cancelDocument([finalNum, docNum[i]], sync.defer()));
-                    cancelCount += 1;               
+                    sync.await(if5(docNum[i], token, '-1', sync.defer()));
+                    cancelCount += 1;       
                 }
+                /*
                 approvalDtlData.push({
                     'docNum': docNum[i],
                     'status': '04',
@@ -350,8 +353,9 @@ router.post('/cancelDocument', function (req, res) {
                     'approvalComment': (comment[i] != '') ? comment[i] : null,
                     'nextApprovalNum': middleNumArr[i]
                 });
+                */
             }
-            sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
+            //sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
 
             returnObj = { code: 200, docData: cancelCount };
         } catch (e) {
@@ -377,6 +381,7 @@ router.post('/sendApprovalDocumentCtoD', function (req, res) {
         try {
             for (var i = 0; i < docInfo.length; i++) {
                 sync.await(oracle.sendApprovalDocumentCtoD([userChoiceId[0], userChoiceId[0], docInfo[i]], sync.defer()));
+                /*
                 approvalDtlData.push({
                     'docNum': docInfo[i],
                     'status': '02',
@@ -385,9 +390,10 @@ router.post('/sendApprovalDocumentCtoD', function (req, res) {
                     'approvalComment': (comment[i] != '') ? comment[i] : null,
                     'nextApprovalNum': userChoiceId[0]
                 });
+                */
                 sendCount += 1;
             }
-            sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
+            //sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
             returnObj = { code: 200, docData: sendCount };
         } catch (e) {
             returnObj = { code: 200, error: e };
@@ -404,10 +410,15 @@ router.post('/finalApproval', function (req, res) {
     var approvalDtlData = [];
     var returnObj = {};
     var sendCount = 0;
+    var token = req.session.user.token;
 
     sync.fiber(function () {
         try {
             var dateArr = sync.await(oracle.finalApproval(req, sync.defer()));
+            for (var i = 0; i < arrDocInfo.length; i++) {
+                sync.await(if5(arrDocInfo[i].docNum, token, '03', sync.defer()));
+            }
+            /*
             for (var i in arrDocInfo) {
                 approvalDtlData.push({
                     'docNum': arrDocInfo[i].docNum,
@@ -419,6 +430,7 @@ router.post('/finalApproval', function (req, res) {
                 });
             }
             sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
+            */
 
             returnObj = { code: 200 };
         } catch (e) {
@@ -428,5 +440,54 @@ router.post('/finalApproval', function (req, res) {
         }
     });
 });
+
+function if5(docNum, token, aprStatCd, done) {
+    sync.fiber(function () {
+        try {
+            var data = '' +
+                '<?xml version = "1.0" encoding = "utf-8"?>' +
+                '<Root>' +
+                '<Parameters>' +
+                '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>' +
+                '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
+                '<Parameter id="lginIpAdr" type="STRING">172.16.12.54</Parameter>' +
+                '<Parameter id="userId" type="STRING">9999068</Parameter>' +
+                '<Parameter id="userEmpNo" type="STRING">9999068</Parameter>' +
+                '<Parameter id="userDeptCd" type="STRING">240065</Parameter>' +
+                '<Parameter id="frstRqseDttm" type="STRING">20181230142413289</Parameter>' +
+                '<Parameter id="rqseDttm" type="STRING">20181230142413289</Parameter>' +
+                '<Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>' +
+                '<Parameter id="srnId" type="STRING">CTCTM107</Parameter>' +
+                '<Parameter id="rqseSrvcNm" type="STRING">koreanre.co.ct.commonct.svc.CtCommonCheckSvc</Parameter>' +
+                '<Parameter id="rqseMthdNm" type="STRING">transferTmpAcList</Parameter>' +
+                '<Parameter id="rqseVoNm" type="STRING">koreanre.co.ct.commonct.vo.CtCommonCheckVO</Parameter>' +
+                '<Parameter id="imgId" type="STRING">' + docNum + '</Parameter>' +
+                '<Parameter id="aprStatCd" type="STRING">' + aprStatCd + '</Parameter>' +
+                '</Parameters>' +
+                '</Root>';
+
+            var res1 = request('POST', 'http://solomon.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+                headers: {
+                    'content-type': 'text/xml'
+                },
+                body: data
+            });
+            var ifData = res1.getBody('utf8');
+
+            if (ifData == null) {
+                console.log("IF5 실패...");
+                return done(null, 'data empty.');
+            } else {
+                parser.parseString(ifData, function (err, result) {
+                    return done(null, null);
+                });
+            }
+        } catch (e) {
+            return done(null, err);
+        } finally {
+        }
+            
+    });
+}
 
 module.exports = router;

@@ -452,6 +452,7 @@ router.post('/sendApprovalDocument', function (req, res) {
             */
             var draftDate = getTimeStamp();
             sync.await(oracle.sendApprovalDocument([req.body.userId, userChoiceId[0], userChoiceId[0], draftDate, docInfo[0]], sync.defer()));
+            /*
             approvalDtlData.push({
                 'docNum': docInfo[0],
                 'status': '02',
@@ -460,10 +461,11 @@ router.post('/sendApprovalDocument', function (req, res) {
                 'approvalComment': null,
                 'nextApprovalNum': userChoiceId[0]
             });
+            */
             sendCount += 1;
             //sync.await(oracle.insertDocumentDtl(mlData, sync.defer())); -- DB저장(시연용)       
             sync.await(if3(mlData, token, docInfo, sync.defer()));
-            sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
+            //sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
             returnObj = { code: 200, docData: sendCount };
         
         } catch (e) {
@@ -596,7 +598,7 @@ function if3(mlData, token, docInfo, done) {
                 '</Dataset>' +
                 '</Root>';
 
-            var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+            var res1 = request('POST', 'http://solomon.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
                 headers: {
                     'content-type': 'text/xml'
                 },

@@ -75,7 +75,7 @@ router.post('/', function (req, res) {
     //console.log(testData);
     try {
         /*
-        var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', { //해당 URL에 POST방식으로 값을 전달.
+        var res1 = request('POST', 'http://solomon.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', { //해당 URL에 POST방식으로 값을 전달.
             headers: {
                 'content-type': 'text/xml'
             },
@@ -220,6 +220,7 @@ router.post('/IF2', function (req, res) {
     var drafterNum = req.body.drafterNum;
     var draftDate = req.body.draftDate;
     var nowNum = req.body.nowNum;
+    var token = req.session.user.token;
 
     sync.fiber(function () {
         try {
@@ -229,7 +230,7 @@ router.post('/IF2', function (req, res) {
             '<?xml version="1.0" encoding="utf-8"?>' +
                 '<Root>' +
                 '<Parameters>' +
-                    '<Parameter id="gv_encryptToken" type="STRING">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1539564980zPy86400zAy23zEyP7D2Wpx2Bf0dkRRoplRJmZ0Q3Za7WHjeSKx78rg3x78rcDe0bGsQMsAlvwOn7rqK48NEQpA8pi2x7A0PVVN0NZg4x7As0RJFx79YbNw0MoHnIx7Aj7x797CB8bx7A0QYP68D763IdCx2FEWx79UXEIVT6TgScx7A64SUjXXf55fMVMbaUfQ2frENHx2BPtQf2A81Px79GGIt6dB5uQ1D8x7AWjAR9KuA5KfjGOgZjbSDbkqGnPGAx3Dx3DzKyF8x78ICfDirBJ4BDeVx78e5S1x7AaUSDYhrZlx79Wbl1x78FbugXOagNG0cfIx787hj2x78Hd33QDbx00x00x00x00x00zSSy00002479000zUURy1f9d134b0e195793zMyfsNjWrhSdZkx3Dz</Parameter>' +
+                    '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>' +
                     '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
                     '<Parameter id="lginIpAdr" type="STRING" />' +
                     '<Parameter id="userId" type="STRING">2011813</Parameter>' +
@@ -277,7 +278,7 @@ router.post('/IF2', function (req, res) {
                     '</Dataset>' +
                 '</Root>';
 
-            var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+            var res1 = request('POST', 'http://solomon.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
                 headers: {
                     'content-type': 'text/xml'
                 },
@@ -392,7 +393,7 @@ router.post('/IF3', function (req, res) {
                     '</Dataset>' +
                 '</Root>';
 
-            var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+            var res1 = request('POST', 'http://solomon.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
                 headers: {
                     'content-type': 'text/xml'
                 },
@@ -417,7 +418,7 @@ router.post('/IF3', function (req, res) {
 
 router.post('/IF4', function (req, res) {
     var docNum = req.body.docNum;
-    docNum = 'ICR201810260000001';
+    var token = req.session.user.token;
 
     sync.fiber(function () {
         try {
@@ -425,7 +426,7 @@ router.post('/IF4', function (req, res) {
                 '<?xml version="1.0" encoding="utf-8"?>' +
                 '<Root>' +
                 '<Parameters>' +
-                '<Parameter id="gv_encryptToken" type="STRING">Vy3zFyENGINEx5F1zTyGIDx5FDEMO1zCy1541036144zPy86400zAy23zEy5qQhbPCKUUv1QUc85T7qftOgbDkdgGquicox2Bx2FCSvx79KNbhXAHjJ63tlMJhuPuObKpYWjsUGwR6x78Z4Nx78iMb4oex78Uik0dQj5BnHlQlLpbujx2BTFK6ea5Q2wZQcx78cgB3x79G72WvgttI8SOuRhx7AYS23WjpQUV0VVt62x2BBrrsx2BrOC5nrqueY7x790PEZ7bYtYjeWMt6iSb49Rkx79cV9Zx2BJ4UDcex7ARx7A1vwx3Dx3DzKyI7brXbOL7Ph4x79vYPgN6x2F51x79SSHoYm4wex78iHAFx7AlFvHHUKPk14MW6Tfx79RAlPx7Ax7At40x00x00x00x00x00zSSy00002504000zUURy7989307d20067464zMygu9kx7AH9DEcMx3Dz</Parameter>' +
+                '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>' +
                 '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
                 '<Parameter id="lginIpAdr" type="STRING">172.16.12.54</Parameter>' +
                 '<Parameter id="userId" type="STRING">9999068</Parameter>' +
@@ -478,7 +479,7 @@ router.post('/IF4', function (req, res) {
                 '</Dataset>' +
                 '</Root>';
             
-            var res1 = request('POST', 'http://solomondev.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+            var res1 = request('POST', 'http://solomon.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
                 headers: {
                     'content-type': 'text/xml'
                 },
@@ -634,6 +635,57 @@ router.post('/IF4', function (req, res) {
 
     });
 
+});
+
+router.post('/IF5', function (req, res) {
+    var token = req.session.user.token;
+    var docNum = req.body.docNum;
+    var aprStatCd = req.body.aprStatCd; // 계수전송 03, 계수취소 -1
+
+    sync.fiber(function () {
+        try {
+            var data = ''+       
+            '<?xml version = "1.0" encoding = "utf-8"?>'+
+                '<Root>' +
+                '<Parameters>' +
+                '<Parameter id="gv_encryptToken" type="STRING">' + token + '</Parameter>' +
+                '<Parameter id="WMONID" type="STRING">NXrGufbtBrq</Parameter>' +
+                '<Parameter id="lginIpAdr" type="STRING">172.16.12.54</Parameter>' +
+                '<Parameter id="userId" type="STRING">9999068</Parameter>' +
+                '<Parameter id="userEmpNo" type="STRING">9999068</Parameter>' +
+                '<Parameter id="userDeptCd" type="STRING">240065</Parameter>' +
+                '<Parameter id="frstRqseDttm" type="STRING">20181230142413289</Parameter>' +
+                '<Parameter id="rqseDttm" type="STRING">20181230142413289</Parameter>' +
+                '<Parameter id="lngeClsfCd" type="STRING">ko-kr</Parameter>' +
+                '<Parameter id="srnId" type="STRING">CTCTM107</Parameter>' +
+                '<Parameter id="rqseSrvcNm" type="STRING">koreanre.co.ct.commonct.svc.CtCommonCheckSvc</Parameter>' +
+                '<Parameter id="rqseMthdNm" type="STRING">transferTmpAcList</Parameter>' +
+                '<Parameter id="rqseVoNm" type="STRING">koreanre.co.ct.commonct.vo.CtCommonCheckVO</Parameter>' +
+                '<Parameter id="imgId" type="STRING">' + docNum + '</Parameter>' +
+                '<Parameter id="aprStatCd" type="STRING">' + aprStatCd + '</Parameter>' +
+                '</Parameters>' +
+                '</Root>';
+
+            var res1 = request('POST', 'http://solomon.koreanre.co.kr:8083/KoreanreWeb/xplatform.do', {
+                headers: {
+                    'content-type': 'text/xml'
+                },
+                body: data
+            });
+            var ifData = res1.getBody('utf8');
+
+            if (ifData == null) {
+                console.log("IF5 실패...");
+            } else {
+                parser.parseString(ifData, function (err, result) {
+                    console.log(result);
+                });
+            }
+        }catch (e) {
+            console.log(e);
+        }
+
+    });   
 });
 
 

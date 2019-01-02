@@ -150,8 +150,8 @@ var datePickerEvent = function () {
     //$(".dateclick").dateclick();		// DateClick
     $(".searchDate").schDate();	// searchDate
 
-    // 1개월전 날짜 구하기 (searchStartDate)
-    var startDate = getAddMonth(-1, "-");
+    // 1개월전 날짜 구하기 (searchStartDate) // 수정 1월일경우 0월로 표시
+    var startDate = getAddMonth(0, "-");
     $("#searchStartDate").val(startDate);
 
     // 오늘날짜 구하기 (searchEndDate)
