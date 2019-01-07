@@ -479,6 +479,7 @@ function if5(docNum, token, aprStatCd, done) {
                 return done(null, 'data empty.');
             } else {
                 parser.parseString(ifData, function (err, result) {
+                    //console.log(result.Root.Parameters[0].Parameter);
                     return done(null, null);
                 });
             }
