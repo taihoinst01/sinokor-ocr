@@ -386,6 +386,9 @@ var fn_search = function () {
 
             if (!$('#tbody_baseList > tr').find('td').eq(0).attr('colspan')){
                 $('#tbody_baseList > tr').eq(0).find('td[name="td_base"]').eq(0).click();
+                $('#btn_baseList_return').prop('disabled', false);
+                $('#btn_baseList_forward').prop('disabled', false);
+                $('#btn_baseList_approval').prop('disabled', false);
             } else {
                 $('#btn_baseList_return').prop('disabled', true);
                 $('#btn_baseList_forward').prop('disabled', true);
