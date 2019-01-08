@@ -341,7 +341,7 @@ router.post('/cancelDocument', function (req, res) {
                 } else if (level == 'lastApproval') {
                     var finalNum = 'FINALNUM = NULL, NOWNUM = MIDDLENUM';                 
                     sync.await(oracle.cancelDocument([finalNum, docNum[i]], sync.defer()));
-                    sync.await(if5(docNum[i], token, '-1', sync.defer()));
+                    //sync.await(if5(docNum[i], token, '-1', sync.defer()));
                     cancelCount += 1;       
                 }
                 /*
