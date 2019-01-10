@@ -421,7 +421,7 @@ router.post('/finalApproval', function (req, res) {
             var dateArr = sync.await(oracle.finalApproval(req, sync.defer()));
             if (propertiesConfig.isOperation == 'Y') {
                 for (var i = 0; i < arrDocInfo.length; i++) {
-                    sync.await(if5(arrDocInfo[i].docNum, req.session.user.token, '03', sync.defer()));
+                    sync.await(if5(arrDocInfo[i].docNum, token, '03', sync.defer()));
                 }
             }
             /*
