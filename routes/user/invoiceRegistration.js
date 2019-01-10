@@ -22,6 +22,7 @@ var PythonShell = require('python-shell');
 var transPantternVar = require('./transPattern');
 var sizeOf = require('image-size');
 var request = require('sync-request');
+var propertiesConfig = require('../../config/propertiesConfig.js');
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
@@ -192,7 +193,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
 
                 //file decription 운영
-                //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
+                if (propertiesConfig.isOperation == 'Y') execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
 
                 // 파일 정보 추출
                 var fileObj = files[i];                             // 파일
@@ -262,12 +263,15 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
 
                 //file decription 운영
-                //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
+                if (propertiesConfig.isOperation == 'Y') execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
 
                 //file convert to MsOffice to Pdf
-                if ( !(files[i].originalname.split('.')[1] === 'PDF' || files[i].originalname.split('.')[1] === 'pdf') ) {
-                    //execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');   //운영
-                    execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" C:/projectWork/koreanre/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
+                if (!(files[i].originalname.split('.')[1] === 'PDF' || files[i].originalname.split('.')[1] === 'pdf')) {
+                    if (propertiesConfig.isOperation == 'Y') {
+                        execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');   //운영
+                    } else {
+                        execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" C:/projectWork/koreanre/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
+                    }
                 }
                 
                 ifile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
@@ -428,7 +432,10 @@ router.post('/sendApprovalDocument', function (req, res) {
     var docInfo = req.body.docInfo;
     var userId = req.body.userId;
     var mlData = req.body.mlData;
-    var token = req.session.user.token;
+    var token = '';
+    if (propertiesConfig.isOperation == 'Y') {
+        token = req.session.user.token;
+    }
     
     var returnObj = {};
     var approvalDtlData = [];
@@ -464,7 +471,7 @@ router.post('/sendApprovalDocument', function (req, res) {
             */
             sendCount += 1;
             //sync.await(oracle.insertDocumentDtl(mlData, sync.defer())); -- DB저장(시연용)       
-            sync.await(if3(mlData, token, docInfo, sync.defer()));
+            if (propertiesConfig.isOperation == 'Y') sync.await(if3(mlData, token, docInfo, sync.defer()));
             //sync.await(oracle.approvalDtlProcess(approvalDtlData, '', sync.defer()));
             returnObj = { code: 200, docData: sendCount };
         

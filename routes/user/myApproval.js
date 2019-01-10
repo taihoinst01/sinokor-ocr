@@ -6,6 +6,7 @@ var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var router = express.Router();
 var queryConfig = require(appRoot + '/config/queryConfig.js');
+var propertiesConfig = require('../../config/propertiesConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 var sync = require('../util/sync.js');
@@ -410,13 +411,18 @@ router.post('/finalApproval', function (req, res) {
     var approvalDtlData = [];
     var returnObj = {};
     var sendCount = 0;
-    var token = req.session.user.token;
+    var token = '';
+    if (propertiesConfig.isOperation == 'Y') {
+        token = req.session.user.token;
+    }
 
     sync.fiber(function () {
         try {
             var dateArr = sync.await(oracle.finalApproval(req, sync.defer()));
-            for (var i = 0; i < arrDocInfo.length; i++) {
-                sync.await(if5(arrDocInfo[i].docNum, token, '03', sync.defer()));
+            if (propertiesConfig.isOperation == 'Y') {
+                for (var i = 0; i < arrDocInfo.length; i++) {
+                    sync.await(if5(arrDocInfo[i].docNum, req.session.user.token, '03', sync.defer()));
+                }
             }
             /*
             for (var i in arrDocInfo) {
