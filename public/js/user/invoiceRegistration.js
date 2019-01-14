@@ -1565,6 +1565,73 @@ var ocrResult = function () {
         });
     });
 
+    //행 복사
+    $('#copyRow').click(function () {
+        fn_alert('confirm', "행 복사를 하시겠습니까?", function () {
+
+            $('input[name=dtl_chk]').each(function () {
+                if ($(this).is(':checked')) {
+                    var invoiceText = $(this).closest('tr').find('td').eq(1).find('span').eq(0).text();
+                    var selectedArr = ['','',''];
+                    if (invoiceText == 'SA') selectedArr[0] = ' selected';
+                    else if (invoiceText == 'OS') selectedArr[1] = ' selected';
+                    else if (invoiceText == 'Claim Note') selectedArr[2] = ' selected';
+
+                    var appendRowHtml = '<tr><td><input type="checkbox" value="' + $(this).val() + '" name="dtl_chk"></td>' +
+                        '<td><select>' +
+                        '<option' + selectedArr[0] + '>SA</option>' +
+                        '<option' + selectedArr[1] + '>OS</option>' +
+                        '<option' + selectedArr[2] + '>Claim Note</option>' +
+                        '</select></td> < !--계산서구분--> ' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(2).find('span').eq(0).text() + '" ></td> <!--출재사명-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(3).find('span').eq(0).text() + '" ></td> <!--계약명-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(4).find('span').eq(0).text() + '" ></td> <!--UY-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(5).find('span').eq(0).text() + '" ></td> <!--계약번호-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(6).find('span').eq(0).text() + '" ></td> <!--페이지번호 FROM-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(7).find('span').eq(0).text() + '" ></td> <!--페이지번호 TO-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(8).find('span').eq(0).text() + '" ></td> <!--SA TERM -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(9).find('span').eq(0).text() + '" ></td> <!--화폐코드-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(10).find('span').eq(0).text() + '" ></td> <!--화폐단위-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(11).find('span').eq(0).text() + '" ></td> <!--Paid(100%)-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(12).find('span').eq(0).text() + '" ></td> <!--Paid(Our Share)-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(13).find('span').eq(0).text() + '" ></td> <!--OSL(100%)-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(14).find('span').eq(0).text() + '" ></td> <!--OSL(Our Share)-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(15).find('span').eq(0).text() + '" ></td> <!--PREMIUM-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(16).find('span').eq(0).text() + '" ></td> <!--PREMIUM P/F ENT-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(17).find('span').eq(0).text() + '" ></td> <!--PREMIUM P/F WOS-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(18).find('span').eq(0).text() + '" ></td> <!--XOL PREMIUM-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(19).find('span').eq(0).text() + '" ></td> <!--RETURN PREMIUM-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(20).find('span').eq(0).text() + '" ></td> <!--COMMISION -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(21).find('span').eq(0).text() + '" ></td> <!--PROFIT COMMISION-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(22).find('span').eq(0).text() + '" ></td> <!--BROKERAGE-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(23).find('span').eq(0).text() + '" ></td> <!--TEX-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(24).find('span').eq(0).text() + '" ></td> <!-- OVERIDING COM-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(25).find('span').eq(0).text() + '" ></td> <!--CHARGE-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(26).find('span').eq(0).text() + '" ></td> <!--PREMIUM RESERVE RTD-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(27).find('span').eq(0).text() + '" ></td> <!--P/F PREMIUM RESERVE RTD-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(28).find('span').eq(0).text() + '" ></td> <!--P/F PREMIUM RESERVE RLD-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(29).find('span').eq(0).text() + '" ></td> <!--P/F PREMIUM RESERVE RLD-->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(30).find('span').eq(0).text() + '" ></td> <!--CLAIM -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(31).find('span').eq(0).text() + '" ></td> <!--LOSS RECOVERY -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(32).find('span').eq(0).text() + '" ></td> <!--CASH LOSS -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(33).find('span').eq(0).text() + '" ></td> <!--CASH LOSS REFUND -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(34).find('span').eq(0).text() + '" ></td> <!--LOSS RESERVE RTD -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(35).find('span').eq(0).text() + '" ></td> <!--LOSS RESERVE RLD -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(36).find('span').eq(0).text() + '" ></td> <!--LOSS P/F ENT -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(37).find('span').eq(0).text() + '" ></td> <!--LOSS P/F WOA -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(38).find('span').eq(0).text() + '" ></td> <!--INTEREST -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(39).find('span').eq(0).text() + '" ></td> <!--TAX ON -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(40).find('span').eq(0).text() + '" ></td> <!--MISCELLANEOUS -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(41).find('span').eq(0).text() + '" ></td> <!--YOUR REF -->' +
+                        '</tr>';
+                    $('#tbody_dtlList').append(appendRowHtml);
+                    $('#tbody_dtlList input[type=checkbox]:last').ezMark();
+                    
+                }
+            });
+        });
+    });
+
     //셀렉트박스 더블클릭시 수정폼
     $(document).on('dblclick', '.selectDbClick', function () {
         var selectVal = $(this).val().split('_')[1] == undefined ? "" : $(this).val().split('_')[1];
@@ -1843,7 +1910,7 @@ function fn_processFinish(mlData, imgId) {
     //var dataObj = {};
     //var dataVal = data.data;
     //dataObj["imgId"] = fileDtlInfo.imgId;
-
+    //console.log(mlData);
 
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
@@ -1951,6 +2018,29 @@ function fn_ContractNumExtraction() {
     var ctNm = [];
     var ttyYy = [];
 
+    $('input[name=dtl_chk]').each(function () {
+        if ($(this).is(':checked')) {
+            var cdnNmLi;
+            var ctNmLi;
+            var ttyYyLi;
+
+            if ($(this).closest('tr').find('td').eq(2).find('span').eq(0).text()) {
+                cdnNmLi = $(this).closest('tr').find('td').eq(2).find('span').eq(0).text();
+                ctNmLi = $(this).closest('tr').find('td').eq(3).find('span').eq(0).text();
+                ttyYyLi = $(this).closest('tr').find('td').eq(4).find('span').eq(0).text();
+            } else {
+                cdnNmLi = $(this).closest('tr').find('td').eq(2).find('input[type="text"]').eq(0).val();
+                ctNmLi = $(this).closest('tr').find('td').eq(3).find('input[type="text"]').eq(0).val();
+                ttyYyLi = $(this).closest('tr').find('td').eq(4).find('input[type="text"]').eq(0).val();
+            }
+
+            cdnNm.push(cdnNmLi);
+            ctNm.push(ctNmLi);
+            ttyYy.push(ttyYyLi);
+        }
+    });
+
+    /*
     //출재사명
     var $cdnNmLi = $('#tbody_dtlList td:eq(2)').find('li');
     for (var i = 0; i < $cdnNmLi.length; i++) {     
@@ -1972,7 +2062,7 @@ function fn_ContractNumExtraction() {
         var text = $ttyYyLi[i].innerText;
         ttyYy.push(text);
     }
-
+    */
     if (cdnNm.length == 0) {
         fn_alert('alert', "출재사명이 없습니다.");
         return;
@@ -1997,6 +2087,125 @@ function fn_ContractNumExtraction() {
     var dtlHtml = '';
     var existCntNum = [];
     setTimeout(function () {
+        var ifCount = 0;
+
+        for (var l = 0; l < cdnNm.length; l++) {
+            $.ajax({
+                url: '/wF_WorkflowProc/',
+                type: 'post',
+                datatype: 'json',
+                async: false,
+                data: JSON.stringify({ cdnNm: cdnNm[l], ctNm: ctNm[l], ttyYy: ttyYy[l] }),
+                contentType: 'application/json; charset=UTF-8',
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+                    ifCount++;
+                    if (ifCount == 1) { // 최초 ajax 후
+                        $("#tbody_dtlList").empty();
+                    }
+                    for (var i in data.data) {                       
+
+                        if (existCntNum.indexOf(data.data[i].ctNo) < 0) {
+                            existCntNum.push(data.data[i].ctNo);
+                            // TODO : 분석 결과를 정리하고 1 record로 생성한다.
+                            dtlHtml += '<tr>' +
+                                '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
+                                '<td class="dtl_td_dblclcik"><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
+                                '<td class="dtl_td_dblclcik">' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
+                                '<td class="dtl_td_dblclcik">' + data.data[i].ctNm + '</td> <!--계약명-->' +
+                                '<td class="dtl_td_dblclcik">' + data.data[i].ttyYy + '</td> <!--UY-->' +
+                                '<td class="dtl_td_dblclcik">' + data.data[i].ctNo + '</td> <!--계약번호-->' +
+                                '<td class="dtl_td_dblclcik">' + makePageNum(1, thumbImgs.length) + '</td> <!--페이지번호 FROM-->' +
+                                '<td class="dtl_td_dblclcik">' + makePageNum(thumbImgs.length, thumbImgs.length) + '</td> <!--페이지번호 TO-->' +
+                                '<td class="dtl_td_dblclcik"><select><option selected>HFF</option><option>HFS</option><option>HYP</option><option>M01</option><option>M02</option><option>M03</option><option>M04</option>' +
+                                '<option>M05</option><option>M06</option><option>M07</option><option>M08</option><option>M09</option><option>M10</option><option>M11</option><option>M12</option>' +
+                                '<option>MMP</option><option>Q13</option><option>Q14</option><option>Q23</option><option>Q24</option><option>Q33</option><option>Q34</option><option>Q44</option>' +
+                                '<option>QTP</option><option>YRY</option><option>ZZZ</option></select></td> < !--SA TERM-- > ' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 3, null) + '</td> <!--화폐코드-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 4, null) + '</td> <!--화폐단위-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 12, 7) + '</td> <!--XOL PREMIUM-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 13, 8) + '</td> <!--RETURN PREMIUM-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 14, 9) + '</td> <!--COMMISION -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 15, 10) + '</td> <!--PROFIT COMMISION-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 16, 11) + '</td> <!--BROKERAGE-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 17, 12) + '</td> <!--TEX-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 18, 13) + '</td> <!-- OVERIDING COM-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 19, 14) + '</td> <!--CHARGE-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 20, 15) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 21, 16) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 22, 17) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 23, 18) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 24, 19) + '</td> <!--CLAIM -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 25, 20) + '</td> <!--LOSS RECOVERY -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 26, 21) + '</td> <!--CASH LOSS -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 27, 22) + '</td> <!--CASH LOSS REFUND -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 28, 23) + '</td> <!--LOSS RESERVE RTD -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 29, 24) + '</td> <!--LOSS RESERVE RLD -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 30, 25) + '</td> <!--LOSS P/F ENT -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 31, 26) + '</td> <!--LOSS P/F WOA -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 32, 27) + '</td> <!--INTEREST -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 33, 28) + '</td> <!--TAX ON -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
+                                '</tr>';
+                        }
+
+                    }
+
+                    if (dtlHtml != '') {
+                        $("#tbody_dtlList").append(dtlHtml);                       
+                    }
+                    if (ifCount == cdnNm.length) { // 마지막 ajax 후
+                        $("#tbody_dtlList input[type=checkbox]").ezMark();
+                        $("#div_dtl").css("display", "block");
+                        $('#ocrResultAllChk:checked').click();
+                        $('select').editableSelect();
+
+                        $('#copyRow').prop('disabled', true);
+                        $('#addRow').prop('disabled', true);
+                        $('#deleteRow').prop('disabled', true);
+
+                        endProgressBar(progressId);
+                        progressId = null;
+                        if (dtlHtml == '') {
+                            fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
+                        }
+                    }
+
+                    //$("#sendApprovalBtn").prop("disabled", true);
+                    //$("#reTrainBtn").prop("disabled", true);
+                    //$("#ctnExtractionBtn").prop("disabled", true);
+                    dtlCount++;
+                    isExtract = true;
+                    //$('#sendApprovalBtn').prop('disabled', false);
+                    /*
+                    if (dtlCount == extCount) {
+                        endProgressBar(progressId);
+                        progressId = null;
+                        if (dtlHtml == '') {
+                            fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
+                        }
+                    }
+                    */
+                    $("select").eq(0).focus();
+                },
+                error: function (err) {
+                    console.log(err);
+                    endProgressBar(progressId);
+                }
+            });
+        }
+
+        /*
         for (var l = 0; l < cdnNm.length; l++) {
             for (var j = 0; j < ctNm.length; j++) {
                 for (var k = 0; k < ttyYy.length; k++) {
@@ -2102,6 +2311,7 @@ function fn_ContractNumExtraction() {
             }
 
         }
+        */
     }, 1000);
 
     function makeMLSelect(mlData, colnum, entry) {
