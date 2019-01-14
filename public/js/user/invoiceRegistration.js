@@ -2176,7 +2176,7 @@ function fn_ContractNumExtraction() {
 
                         endProgressBar(progressId);
                         progressId = null;
-                        if (dtlHtml == '') {
+                        if ($("#tbody_dtlList tr").length == 0) {
                             fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
                         }
                     }
