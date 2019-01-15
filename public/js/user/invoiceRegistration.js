@@ -1181,6 +1181,7 @@ var fn_clickEvent = function () {//jmh
         $("#sendApprovalBtn").prop('disabled', true);
         $("#reTrainBtn").prop('disabled', true);
         $("#ctnExtractionBtn").prop('disabled', true);
+        $('#copyRow').prop('disabled', true);
         $("#deleteRow").prop('disabled', true);
 
         fn_search_dtl(docNum); // document_dtl 조회
@@ -1457,6 +1458,7 @@ var fn_checkboxEvent = function () {
         if ($(this).is(':checked')) {
             $('#tbody_dtlList .ez-checkbox').addClass('ez-checked');
             $('#tbody_dtlList input[type=checkbox]').prop('checked', true);
+            $('#copyRow').prop('disabled', false);
             $('#deleteRow').attr('disabled', false);
             $('#sendApprovalBtn').prop('disabled', false);
             $('#reTrainBtn').prop('disabled', false);
@@ -1464,6 +1466,7 @@ var fn_checkboxEvent = function () {
         } else {
             $('#tbody_dtlList .ez-checkbox').removeClass('ez-checked');
             $('#tbody_dtlList input[type=checkbox]').prop('checked', false);
+            $('#copyRow').prop('disabled', true);
             $('#deleteRow').attr('disabled', true);
             $('#sendApprovalBtn').prop('disabled', true);
             $('#reTrainBtn').prop('disabled', true);
@@ -1474,6 +1477,7 @@ var fn_checkboxEvent = function () {
     //인식결과 단일선택 체크박스
     $(document).on('click', 'input[name=dtl_chk]', function () {
         if ($('input[name=dtl_chk]:checked').length == 0) {
+            $('#copyRow').prop('disabled', true);
             $('#deleteRow').prop('disabled', true);
             $('#sendApprovalBtn').prop('disabled', true);
             $('#reTrainBtn').prop('disabled', true);
@@ -1485,6 +1489,7 @@ var fn_checkboxEvent = function () {
             } else {
                 $('#sendApprovalBtn').prop('disabled', true);
             }
+            $('#copyRow').prop('disabled', false);
             $('#deleteRow').prop('disabled', false);
             $('#reTrainBtn').prop('disabled', false);
             $('#ctnExtractionBtn').prop('disabled', false);
@@ -1914,7 +1919,7 @@ function fn_processFinish(mlData, imgId) {
 
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
-        '<td><input type="checkbox" value="' + imgId + '" name="dtl_chk" checked="checked"/></td>' +
+        '<td><input type="checkbox" value="' + imgId + '" name="dtl_chk" /></td>' +
         '<td class="dtl_td_dblclcik"><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 0, null) + '</td> <!--출재사명-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 1, null) + '</td> <!--계약명-->' +
@@ -1965,7 +1970,10 @@ function fn_processFinish(mlData, imgId) {
     $("#ctnExtractionBtn").attr("disabled", false);
     $("#tbody_dtlList").empty().append(dtlHtml);
     $("#tbody_dtlList input[type=checkbox]").ezMark();
-    $('#ocrResultAllChk:checked').click();
+    $("#tbody_dtlList input[type=checkbox]").each(function () {
+        $(this).click();
+    });
+    //$('#ocrResultAllChk:checked').click();
     //$("#sendApprovalBtn").prop("disabled", true);
     //$("#reTrainBtn").prop("disabled", true);
     //$("#ctnExtractionBtn").prop("disabled", true);
