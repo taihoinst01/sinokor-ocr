@@ -488,7 +488,7 @@ router.post('/sendApprovalDocument', function (req, res) {
 function if3(mlData, token, docInfo, done) {
     sync.fiber(function () {
         try {
-            var deptCode = sync.await(oracle.selectDeptCode(docInfo.body.deptNm, sync.defer()));
+            var deptCode = sync.await(oracle.selectDeptCode(docInfo[2], sync.defer()));
 
             var data = '' +
                 '<?xml version="1.0" encoding="utf-8"?>' +
