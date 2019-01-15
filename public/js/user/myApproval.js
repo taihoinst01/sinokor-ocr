@@ -874,6 +874,7 @@ var fn_baseList_chk = function (flag) {
             var commentArr = new Array();
             var middleNumArr = new Array();
             var statusTdArr = new Array();
+            var memoArr = new Array();
             var checkbox = $("input[name=chk_document]:checked");
             var deleteTr = [];
 
@@ -892,10 +893,12 @@ var fn_baseList_chk = function (flag) {
                 var comment = tr.find('input').eq(1).val();
                 var middleNum = td.eq(4).text();
                 var status = td.eq(7).text();
+                var memo = td.eq(6).find('input[type="text"]').eq(0).val();
                 // 가져온 값을 배열에 담는다.
                 tdArr.push(docNum);
                 commentArr.push(comment);
                 middleNumArr.push(middleNum);
+                memoArr.push(memo);
                 // 상태=승인 값 추출
                 statusTdArr.push(status);
                 deleteTr.push(tr);
@@ -917,7 +920,8 @@ var fn_baseList_chk = function (flag) {
                         'level': level,
                         'comment': commentArr,
                         'middleNum': middleNumArr,
-                        'userId': $('#documentManager').val()
+                        'userId': $('#documentManager').val(),
+                        'memo': memoArr
                     }),
                     contentType: 'application/json; charset=UTF-8',
                     success: function (data) {
@@ -1029,6 +1033,7 @@ var fn_baseList_chk = function (flag) {
                     var docInfoRowData = new Array();
                     var docInfoTdArr = new Array();
                     var commentArr = new Array();
+                    var memoArr = new Array();
                     var popDocInfoCheckbox = $("input[name=chk_document]:checked");
                     var deleteTr = [];
 
@@ -1049,11 +1054,13 @@ var fn_baseList_chk = function (flag) {
                         // td.eq(0)은 체크박스 이므로  td.eq(1)의  값부터 가져온다.
                         var docNum = popDoctd.eq(1).text();
                         var comment = popDoctr.find('input').eq(1).val();
+                        var memo = popDoctd.eq(6).find('input[type="text"]').eq(0).val();
 
                         // 가져온 값을 배열에 담는다.
                         docInfoTdArr.push(docNum);
                         commentArr.push(comment);
                         deleteTr.push(popDoctr);
+                        memoArr.push(memo);
                     });
 
                     // 체크된 담당자를 가져온다
@@ -1077,7 +1084,8 @@ var fn_baseList_chk = function (flag) {
                             'userChoiceId': userChoiceTdArr,
                             'docInfo': docInfoTdArr,
                             'userId': userId,
-                            'comment': commentArr
+                            'comment': commentArr,
+                            'memo': memoArr
                         }),
                         contentType: 'application/json; charset=UTF-8',
                         success: function (data) {

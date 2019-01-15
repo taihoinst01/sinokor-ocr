@@ -989,6 +989,7 @@ var fn_search = function () {
                     if (entry.DEADLINE == null) {
                         entry.DEADLINE = '';
                     }
+                    var memoText = entry.MEMO ? entry.MEMO : '';
                     appendHtml += '<tr id="tr_base_' + entry.SEQNUM + '-' + entry.DOCNUM + '-' + entry.STATUS + '">' +
                         '<td><input type="checkbox" id="base_chk_' + entry.DOCNUM + '" name="base_chk" value="' + entry.DOCNUM + '" /></td>' +
                         '<td name="td_base">' + entry.DOCNUM + '</td>' +
@@ -997,7 +998,7 @@ var fn_search = function () {
                         '<td name="td_base">' + entry.DEPT_NM + '</td>' +
                         '<td></td>' +
                         '<td class="td_dbclick">' + entry.DEADLINE + '</td>' +
-                        '<td></td>' +
+                        '<td><input type="text" class="memo" value="' + memoText + '" /></td>' +
                         '</tr>';
                 });
             } else {
@@ -1693,7 +1694,7 @@ var fn_processBaseImage = function (fileInfo) {
                                 '<td></td>' +
                                 '<td></td>' +
                                 '<td class="td_dbclick">' + item.DEADLINE+ '</td>' +
-                                '<td></td>' +
+                                '<td><input type="text" class="memo" value="" /></td>' +
                             '</tr>';
                 }
                 $("#tbody_baseList").empty().append(html);
@@ -3111,13 +3112,15 @@ var fn_docEvent = function () {
             if ($('#icrApproval').val() == 'Y') {
                 fn_alert('confirm', '반려 하시겠습니까?', function () {
                     var docNumArr = [];
+                    var memoArr = [];
                     $('input[name="base_chk"]:checked').each(function (i, e) {
                         if ($('#userId').val() == $(e).closest('tr').children().eq(3).text()) {
                             docNumArr.push($(e).val());
+                            memoArr.push($(e).closest('tr').children().eq(7).find('input[type="text"]').eq(0).val());
                         }
                     });
                     if (docNumArr.length > 0) {
-                        refuseDoc('icrApproval', docNumArr);
+                        refuseDoc('icrApproval', docNumArr, memoArr);
                     }
                 });
            
@@ -3188,6 +3191,7 @@ var fn_docEvent = function () {
                 //선택된 유저ID 추출(단일 건)
                 var userChoiceRowData = new Array();
                 var userChoiceTdArr = new Array();
+                var userChoiceMemoArr = new Array();
                 var popUserChoice = $("#searchManagerResult tr.on");
 
                 //선택된 문서번호 추출(단일 or 다중 건)
@@ -3206,8 +3210,10 @@ var fn_docEvent = function () {
                     // td.eq(0)은 체크박스 이므로  td.eq(1)의 값부터 가져온다.
                     var docNum = popDoctd.eq(1).text();
                     var deadline = popDoctd.eq(6).text();
+                    var memo = popDoctd.eq(7).find('input[type="text"]').eq(0).val();
                     // 가져온 값을 배열에 담는다.
                     docNumTdArr.push({ docNum: docNum, deadline: deadline });
+                    userChoiceMemoArr.push(memo);
                     deleteTr.push(popDoctr);
                 });
 
@@ -3236,7 +3242,8 @@ var fn_docEvent = function () {
                         datatype: "json",
                         data: JSON.stringify({
                             'userId': userChoiceTdArr,
-                            'docInfo': docNumTdArr
+                            'docInfo': docNumTdArr,
+                            'memo': userChoiceMemoArr
                         }),
                         contentType: 'application/json; charset=UTF-8',
                         success: function (data) {
@@ -3270,6 +3277,7 @@ var fn_docEvent = function () {
                 //선택된 유저ID 추출(단일 건)
                 var userChoiceRowData = new Array();
                 var userChoiceTdArr = new Array();
+                var userChoiceMemoArr = new Array();
                 var popUserChoice = $("#searchManagerResult tr.on");
                 var mlExportRowData = [];
                 var mlExporttdArr = [];
@@ -3288,11 +3296,13 @@ var fn_docEvent = function () {
                     var appYrmm = popDoctd.eq(6).text(); //마감년월
                     var deptNm = popDoctd.eq(4).text(); //소속부서명
                     var prinEmpNo = popDoctd.eq(1).text(); //문서담당자명
+                    var memo = popDoctd.eq(7).find('input[type="text"]').eq(0).val();
                     // 가져온 값을 배열에 담는다.
                     docInfoTdArr.push(docNum);
                     docInfoTdArr.push(appYrmm);
                     docInfoTdArr.push(deptNm);
                     docInfoTdArr.push(prinEmpNo);
+                    userChoiceMemoArr.push(memo);
                     deleteTr.push(popDoctr);
                 });
 
@@ -3387,7 +3397,8 @@ var fn_docEvent = function () {
                         'mlData': { mlDocNum: mlDocNum, mlExportData: mlExportRowData },
                         'userChoiceId': userChoiceTdArr,
                         'docInfo': docInfoTdArr,
-                        'userId': userId
+                        'userId': userId,
+                        'memo': userChoiceMemoArr
                     }),
                     contentType: 'application/json; charset=UTF-8',
                     success: function (data) {
@@ -3437,12 +3448,12 @@ var fn_docEvent = function () {
     //저장
 }
 
-var refuseDoc = function (refuseType, docNumArr) {
+var refuseDoc = function (refuseType, docNumArr, memoArr) {
     $.ajax({
         url: '/invoiceRegistration/refuseDoc',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'refuseType': refuseType, 'docNumArr': docNumArr }),
+        data: JSON.stringify({ 'refuseType': refuseType, 'docNumArr': docNumArr, 'memoArr': memoArr }),
         contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             if (data.code == 200) {

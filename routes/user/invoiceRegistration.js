@@ -432,6 +432,7 @@ router.post('/sendApprovalDocument', function (req, res) {
     var docInfo = req.body.docInfo;
     var userId = req.body.userId;
     var mlData = req.body.mlData;
+    var memo = req.body.memo;
     var token = '';
     if (propertiesConfig.isOperation == 'Y') {
         token = req.session.user.token;
@@ -458,7 +459,7 @@ router.post('/sendApprovalDocument', function (req, res) {
             }
             */
             var draftDate = getTimeStamp();
-            sync.await(oracle.sendApprovalDocument([req.body.userId, userChoiceId[0], userChoiceId[0], draftDate, docInfo[0]], sync.defer()));
+            sync.await(oracle.sendApprovalDocument([req.body.userId, userChoiceId[0], userChoiceId[0], draftDate, memo[0], docInfo[0]], sync.defer()));
             /*
             approvalDtlData.push({
                 'docNum': docInfo[0],
@@ -636,15 +637,17 @@ function if3(mlData, token, docInfo, done) {
 router.post('/sendDocument', function (req, res) {
     var returnObj = {};
     var sendCount = 0;
+
     try {
         for (var i = 0; i < req.body.docInfo.length; i++) {
             sync.fiber(function () {
-                sync.await(oracle.sendDocument([req.body.userId[0], req.body.userId[0], req.body.docInfo[i].deadline, req.body.docInfo[i].docNum], sync.defer()));
+                sync.await(oracle.sendDocument([req.body.userId[0], req.body.userId[0], req.body.docInfo[i].deadline, req.body.memo[i], req.body.docInfo[i].docNum], sync.defer()));
             });
             sendCount += 1;
         }
         returnObj = { code: 200, docData: sendCount };
     } catch (e) {
+        console.log(e);
         returnObj = { code: 200, error: e };
     } finally {
         res.send(returnObj);
@@ -1204,11 +1207,12 @@ router.post('/uiLearnTraining', function (req, res) {
 router.post('/refuseDoc', function (req, res) {
     var refuseType = req.body.refuseType;
     var docNumArr = req.body.docNumArr;
+    var memoArr = req.body.memoArr;
     var returnObj;
 
     sync.fiber(function () {
         try {
-            sync.await(oracle.updateApprovalMaster([refuseType, docNumArr], sync.defer()));
+            sync.await(oracle.updateApprovalMaster([refuseType, docNumArr, memoArr], sync.defer()));
 
             returnObj = { code: 200, data: 'refuse success'};
         } catch (e) {

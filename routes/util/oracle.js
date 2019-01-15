@@ -2569,7 +2569,7 @@ exports.cancelDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='04', " + req[0] + " WHERE DOCNUM = '"+ req[1]+ "'");
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET STATUS ='04', " + req[0] + ", MEMO = '"+ req[1] + "' WHERE DOCNUM = '"+ req[2]+ "'");
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2593,7 +2593,7 @@ exports.sendApprovalDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET DRAFTERNUM = :draftNum, MIDDLENUM = :middleNum, NOWNUM = :nowNum, STATUS = '02', DRAFTDATE = to_date(:draftdate, 'YYYY-MM-DD HH24:MI:SS') WHERE DOCNUM = :docNum ", req);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET DRAFTERNUM = :draftNum, MIDDLENUM = :middleNum, NOWNUM = :nowNum, STATUS = '02', DRAFTDATE = to_date(:draftdate, 'YYYY-MM-DD HH24:MI:SS'), MEMO = :memo WHERE DOCNUM = :docNum ", req);
             //result = await conn.execute("SELECT DRAFTDATE FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum ", [req[3]]);
             //return done(null, result.rows[0].DRAFTDATE);
             return done(null, null);
@@ -2641,7 +2641,7 @@ exports.sendApprovalDocumentCtoD = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET FINALNUM = :finalnum, NOWNUM = :nowNum, STATUS = '02' WHERE DOCNUM = :docNum ", req);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET FINALNUM = :finalnum, NOWNUM = :nowNum, STATUS = '02', MEMO = :memo WHERE DOCNUM = :docNum ", req);
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -2664,7 +2664,7 @@ exports.sendDocument = function (req, done) {
         let result;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET ICRNUM = :icrNum, NOWNUM = :nowNum, DEADLINE = :deadline WHERE DOCNUM = :docNum ", req);
+            await conn.execute("UPDATE TBL_APPROVAL_MASTER SET ICRNUM = :icrNum, NOWNUM = :nowNum, DEADLINE = :deadline, MEMO = :memo WHERE DOCNUM = :docNum ", req);
             return done;
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
@@ -3019,8 +3019,10 @@ exports.updateApprovalMaster = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
             var targetCol;
+            var initNum = '';
             if (req[0] == 'icrApproval') {
                 targetCol = 'UPLOADNUM';
+                initNum = ', ICRNUM = NULL';
             } else if (req[0] == 'middleApproval') {
                 targetCol = 'ICRNUM';
             } else if (req[0] == 'lastApproval') {
@@ -3029,7 +3031,7 @@ exports.updateApprovalMaster = function (req, done) {
 
             }
             for (var i in req[1]) {
-                await conn.execute('UPDATE TBL_APPROVAL_MASTER SET NOWNUM = (SELECT ' + targetCol +' FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum ) WHERE DOCNUM = :docNum', [req[1][i]]);
+                await conn.execute('UPDATE TBL_APPROVAL_MASTER SET NOWNUM = (SELECT ' + targetCol + ' FROM TBL_APPROVAL_MASTER WHERE DOCNUM = :docNum ), MEMO = :memo' + initNum + ' WHERE DOCNUM = :docNum', [req[1][i], req[2][i]]);
             }          
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query

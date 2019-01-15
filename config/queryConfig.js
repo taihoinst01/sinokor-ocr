@@ -100,7 +100,7 @@ var dbcolumnsConfig = {
 
 var invoiceRegistrationConfig = {
     selectDocumentList:
-        `SELECT AA.SEQNUM, AA.DOCNUM, AA.PAGECNT, AA.STATUS, AA.NOWNUM, AA.DEADLINE, BB.DEPT_NM
+        `SELECT AA.SEQNUM, AA.DOCNUM, AA.PAGECNT, AA.STATUS, AA.NOWNUM, AA.DEADLINE, AA.MEMO, BB.DEPT_NM
             FROM TBL_APPROVAL_MASTER AA,
                 (SELECT A.EMP_NO, A.EMP_NM, A.BLT_DEPT_CD, B.DEPT_NM
                 FROM

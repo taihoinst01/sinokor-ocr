@@ -327,6 +327,7 @@ router.post('/cancelDocument', function (req, res) {
     var comment = req.body.comment;
     var middleNumArr = req.body.middleNum;
     var userId = req.body.userId;
+    var memo = req.body.memo;
     var approvalDtlData = [];
     var returnObj = {};
     var cancelCount = 0;
@@ -337,11 +338,11 @@ router.post('/cancelDocument', function (req, res) {
             for (var i = 0; i < docNum.length; i++) {
                 if (level == 'middleApproval') {
                     var middleNum = 'MIDDLENUM = NULL, NOWNUM = ICRNUM';                 
-                    sync.await(oracle.cancelDocument([middleNum, docNum[i]], sync.defer()));
+                    sync.await(oracle.cancelDocument([middleNum, memo[i], docNum[i]], sync.defer()));
                     cancelCount += 1;                   
                 } else if (level == 'lastApproval') {
                     var finalNum = 'FINALNUM = NULL, NOWNUM = MIDDLENUM';                 
-                    sync.await(oracle.cancelDocument([finalNum, docNum[i]], sync.defer()));
+                    sync.await(oracle.cancelDocument([finalNum, memo[i], docNum[i]], sync.defer()));
                     //sync.await(if5(docNum[i], token, '-1', sync.defer()));
                     cancelCount += 1;       
                 }
@@ -374,6 +375,7 @@ router.post('/sendApprovalDocumentCtoD', function (req, res) {
     var docInfo = req.body.docInfo;
     var userId = req.body.userId;
     var comment = req.body.comment;
+    var memo = req.body.memo;
     var approvalDtlData = [];
     var returnObj = {};
     var sendCount = 0;
@@ -381,7 +383,7 @@ router.post('/sendApprovalDocumentCtoD', function (req, res) {
     sync.fiber(function () {
         try {
             for (var i = 0; i < docInfo.length; i++) {
-                sync.await(oracle.sendApprovalDocumentCtoD([userChoiceId[0], userChoiceId[0], docInfo[i]], sync.defer()));
+                sync.await(oracle.sendApprovalDocumentCtoD([userChoiceId[0], userChoiceId[0], memo[0], docInfo[i]], sync.defer()));
                 /*
                 approvalDtlData.push({
                     'docNum': docInfo[i],
