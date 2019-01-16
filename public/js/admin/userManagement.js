@@ -7,6 +7,7 @@ $(function () {
 
     searchDept(); // 부서조회
     insUserBtnEvent(); // 사용자 추가 이벤트
+    userPopBtn();
 
     // 사용자 조회
     $("#btn_search").on("click", function () {
@@ -23,6 +24,10 @@ $(function () {
     // 초기화 (테스트)
     $("#btn_init").on("click", function () {
         fn_initUser();
+    });
+    // 다음결재자 설정
+    $('#btn_next_insert').on("click", function () {
+        layer_open('searchUserPop');
     });
 
     fn_searchUser('all');
@@ -58,6 +63,69 @@ function fn_initUser() {
     $("#highApprovalId").val("");
     $(".myValue").html("전 체");
     fn_searchHighApproval(0, "");
+
+}
+
+function userPopBtn() {
+
+    //검색 버튼
+    $('#btn_pop_user_search').click(function () {
+
+        var param = {
+            scan: $('#docManagerChk').is(':checked') ? 'Y' : 'N',
+            icr: $('#icrManagerChk').is(':checked') ? 'Y' : 'N',
+            approval: $('#middleManagerChk').is(':checked') ? 'Y' : 'N',
+            finalApproval: $('#approvalManagerChk').is(':checked') ? 'Y' : 'N',
+            keyword: $('#searchManger').val().trim(),
+            dept: $('#select_team').val(),
+        };
+
+        $.ajax({
+            url: '/common/selectUserInfo',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify({ 'param': param }),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                if (data.code == 200) {
+                    $('#searchManagerResult').empty();
+                    console.log(data);
+                    var data = data.data;
+                    var appendHtml = '';
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            appendHtml += '<tr>' +
+                                '<td>' + data[i].EMP_NO + '</td>' +
+                                '<td>' + data[i].EMP_NM + '</td>' +
+                                '<td>' + nvl(data[i].DEPT_NM) + '</td>' +
+                                '</tr >';
+                        }
+
+                    } else {
+                        appendHtml = '<tr><td colspan="2">검색 결과가 없습니다</td></tr>'
+                    }
+                    $('#searchManagerResult').append(appendHtml);
+                } else {
+                    fn_alert('alert', data.error);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    })
+
+    //선택 버튼
+    $("#btn_pop_user_choice").click(function () {
+        if ($('#searchManagerResult tr.on').length > 0) {
+            var choiceTr = $('#searchManagerResult tr.on').eq(0);
+
+            $('#nextapproval').val(choiceTr.find('td').eq(0).text());
+            $('#btn_pop_doc_cancel').click();
+        } else {
+            fn_alert('alert', '선택된 사용자가 없습니다.');
+        }
+    });
 }
 /**
  * 사용자 조회
@@ -104,6 +172,7 @@ function fn_searchUser(type) {
                         '<td>' + nvl(entry.AUTH_FINAL_APPROVAL) + '</td>' +
                         '<td>' + nvl(entry.AUTH_ADMIN) + '</td>' +
                         '<td>' + nvl(entry.EXT_USER) + '</td>' +
+                        '<td>' + nvl(entry.NEXT_EMP_NO) + '</td>' +
                         '<td>' + nvl(entry.FINAL_LOGIN_DATE) + '</td>' +
                         '<td><button class="btn btn_style_k02 deleteBtn" style="display: none;"onclick="javascript:openDeleteUser(\'' + entry.EMP_NO + '\', event)">삭제</button></td>;' +
                         '</tr>';
@@ -124,6 +193,7 @@ function fn_searchUser(type) {
 $(document).on('click', '#tbody_user tr', function () {
     var empNo = "";
     var empPw = "";
+    var nextEmpNo = "";
 
     // 체크박스 초기화
     $('.chk_reset').prop('checked', false);
@@ -162,7 +232,8 @@ $(document).on('click', '#tbody_user tr', function () {
         }
 
         empNo = $(this).find('td:eq(0)').text();
-        empPw = $(this).find('input[type=hidden]').val();
+        empPw = $(this).find('input[type=hidden]').val();7
+        nextEmpNo = $(this).find('td:eq(9)').text();
 
         $(this).find('td:last button').show();
         $('#btn_update').show();
@@ -174,6 +245,7 @@ $(document).on('click', '#tbody_user tr', function () {
     // 사번, PASSWORD 입력
     $('#empNo').val(empNo);
     $('#empPw').val(nvl(empPw));
+    $('#nextapproval').val(nvl(nextEmpNo));
 
 })
 
@@ -329,7 +401,8 @@ function fn_modifyUser(type) {
         'authAdmin': $('#mAdmin').prop("checked") ? 'Y' : 'N',
         'authExternal': $('#mExternalUsers').prop("checked") ? 'Y' : 'N',
         'beforeEmpNo': $('#tbody_user > tr.on > td:eq(0)').text(),
-        'type': type
+        'type': type,
+        'nextApproval': $('#nextapproval').val()
     };
     
     $.ajax({
@@ -355,6 +428,7 @@ function fn_modifyUser(type) {
 function initUserForm() {
     $('#empNo').val('');
     $('#empPw').val('');
+    $('#nextapproval').val('');
     $('#mApproval1').prop("checked", false);
     $('#mApproval2').prop("checked", false);
     $('#mApproval3').prop("checked", false);

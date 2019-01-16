@@ -23,6 +23,8 @@ exports.modifyUser = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
+
+            // 사용자 정보 등록 및 수정
             if (req.type == 'insert') {
                 var selectSql = 'SELECT EMP_NO FROM TBL_CO_EMP_BS_EXT WHERE EMP_NO = :empNo';
                 result = await conn.execute(selectSql, [req.empNo]);
@@ -44,7 +46,25 @@ exports.modifyUser = function (req, done) {
             }
             await conn.execute(modifySql, modifyParams);
             await conn.execute(regSql, regParams);
-            
+
+            // 다음 결재자 등록 및 수정
+            if (req.nextApproval) {
+                var selectSql = 'SELECT EMP_NO, EMP_NM FROM TBL_CO_EMP_BS WHERE EMP_NO = :nextEmpNo';
+                var selectNextAppSql = 'SELECT EMP_NO FROM TBL_CO_EMP_NEXTAPPROVAL WHERE EMP_NO = :empNo';
+                var nextAppSql;
+                var nextAppParams;
+
+                result = await conn.execute(selectNextAppSql, [req.empNo]);
+                userResult = await conn.execute(selectSql, [req.nextApproval]);
+                if (result.rows.length == 0) { // 다음 결재자가 없으면 (insert)
+                    nextAppSql = 'INSERT INTO TBL_CO_EMP_NEXTAPPROVAL(EMP_NO, NEXT_EMP_NO, NEXT_EMP_NM) VALUES (:empNo, :nextEmpNo, :nextEmpNm)';
+                    nextAppParams = [req.empNo, userResult.rows[0].EMP_NO, userResult.rows[0].EMP_NM];
+                } else { // 다음 결재자가 있으면 (update)
+                    nextAppSql = 'UPDATE TBL_CO_EMP_NEXTAPPROVAL SET NEXT_EMP_NO = :nextEmpNo, NEXT_EMP_NM = :nextEmpNm WHERE EMP_NO = :empNo';
+                    nextAppParams = [userResult.rows[0].EMP_NO, userResult.rows[0].EMP_NM, req.empNo];
+                }
+                await conn.execute(nextAppSql, nextAppParams);
+            }
 
             return done(null, 'success');
         } catch (err) {
@@ -3441,7 +3461,7 @@ exports.searchUser = function (req, done) {
             var userQuery = 
                 "SELECT " +
                 "    CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_EMP.EMP_PW, CO_EMP.DEPT_NM,CO_REG.AUTH_SCAN, CO_REG.AUTH_ICR, CO_REG.AUTH_APPROVAL, EXT_USER, " + 
-                "    CO_REG.AUTH_FINAL_APPROVAL, CO_REG.AUTH_ADMIN, TO_CHAR(CO_REG.FINAL_LOGIN_DATE, 'YYYY/MM/DD HH24:MI:SS') AS FINAL_LOGIN_DATE " +
+                "    CO_REG.AUTH_FINAL_APPROVAL, CO_REG.AUTH_ADMIN, EMP_NEXT.NEXT_EMP_NO AS NEXT_EMP_NO, TO_CHAR(CO_REG.FINAL_LOGIN_DATE, 'YYYY/MM/DD HH24:MI:SS') AS FINAL_LOGIN_DATE " +
                 "FROM (SELECT " + 
                 "           CO_EMP.EMP_NO, NULL AS EMP_PW, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, DEPT_NM, 'N' AS EXT_USER " +
                 "        FROM " +
@@ -3463,6 +3483,10 @@ exports.searchUser = function (req, done) {
                 "    TBL_CO_EMP_REG CO_REG " +
                 "ON " +
                 "    CO_EMP.EMP_NO = CO_REG.EMP_NO " +
+                "LEFT OUTER JOIN " +
+                "   TBL_CO_EMP_NEXTAPPROVAL EMP_NEXT " +
+                "ON " +
+                "   CO_EMP.EMP_NO = EMP_NEXT.EMP_NO " +
                 "WHERE 1=1 " +
                 "AND ACCOUNT_ENABLE ='Y'"
 

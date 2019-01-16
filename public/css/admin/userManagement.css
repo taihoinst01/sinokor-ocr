@@ -8,14 +8,14 @@
     height: 435px !important;
 }
 
-.box_txt_st01.st00_sh > dl:nth-child(1) {
+.box_stsearch .box_txt_st01.st00_sh > dl:nth-child(1) {
     width: 330px !important;
 }
 
-.box_txt_st01.st00_sh > dl:nth-child(2) {
+.box_stsearch .box_txt_st01.st00_sh > dl:nth-child(2) {
     width: 600px !important;
 }
 
-.box_scroll_st5 {
-    height:430px !important;
+.box_stsearch .box_scroll_st5 {
+    height: 430px !important;
 }
