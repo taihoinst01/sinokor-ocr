@@ -49,7 +49,12 @@ exports.modifyUser = function (req, done) {
 
             // 다음 결재자 등록 및 수정
             if (req.nextApproval) {
-                var selectSql = 'SELECT EMP_NO, EMP_NM FROM TBL_CO_EMP_BS WHERE EMP_NO = :nextEmpNo';
+                var selectSql;
+                if (propertiesConfig.isOperation == 'Y') {
+                    selectSql = 'SELECT EMP_NO, EMP_NM FROM TBL_CO_EMP_BS WHERE EMP_NO = :nextEmpNo';
+                } else {
+                    selectSql = 'SELECT EMP_NO, EMP_NM FROM TBL_CO_EMP_BS_EXT WHERE EMP_NO = :nextEmpNo';
+                }
                 var selectNextAppSql = 'SELECT EMP_NO FROM TBL_CO_EMP_NEXTAPPROVAL WHERE EMP_NO = :empNo';
                 var nextAppSql;
                 var nextAppParams;
