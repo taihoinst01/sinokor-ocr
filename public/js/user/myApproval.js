@@ -942,7 +942,8 @@ var fn_baseList_chk = function (flag) {
             }          
         }
         //내 결재 - 전달
-        else if ($('#middleApproval').val() == 'Y') {    
+        else if ($('#middleApproval').val() == 'Y') {   
+            var userId = $('#userId').val();
             var tdArr = new Array();
             var checkbox = $("input[name=chk_document]:checked");
             var statusCnt = 0;
@@ -964,7 +965,8 @@ var fn_baseList_chk = function (flag) {
             if (statusCnt > 0) {
                 fn_alert('alert', "이미 결재완료 된 문서가 존재합니다.");
             } else {
-                layer_open('searchUserPop');            
+                layer_open('searchUserPop'); 
+                nextApprovalSearch(userId);
             }
         } else {
             fn_alert('alert', "전달에 대한 권한이 없습니다.");
@@ -1140,3 +1142,20 @@ var _init = function () {
     fn_search();
     searchDept();
 };
+
+function nextApprovalSearch(userId) {
+    $.ajax({
+        url: '/common/nextApprovalSearch',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'userId': userId }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            $('#searchManger').val(data.NEXT_EMP_NM);
+            if (data.NEXT_EMP_NM) $('#btn_pop_user_search').click();
+        },
+        error: function (err) {
+            $('#searchManger').val('');
+        }
+    });
+}

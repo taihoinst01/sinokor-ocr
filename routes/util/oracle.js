@@ -3747,6 +3747,31 @@ exports.insertOgCompanyStatus = function (ogcn, done) {
     });
 };
 
+exports.nextApprovalSearch = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            let query = 'SELECT NEXT_EMP_NM FROM TBL_CO_EMP_NEXTAPPROVAL WHERE EMP_NO = :empNo';
+            result = await conn.execute(query, [req]);
+            
+
+            return done(null, result);
+        } catch (err) {
+            reject(err);
+            return done(null, null);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
 
 function getConvertDate() {
     var today = new Date();

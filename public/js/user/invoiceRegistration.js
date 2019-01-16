@@ -3125,7 +3125,8 @@ var fn_docEvent = function () {
                 });
            
             } else if ($('#scanApproval').val() == 'Y') {                       
-                layer_open('searchUserPop');            
+                layer_open('searchUserPop');
+                nextApprovalSearch(userId);
             }                  
         } else {
             fn_alert('alert', '문서를 선택하세요');
@@ -3425,6 +3426,7 @@ var fn_docEvent = function () {
 
     //전달/결재상신버튼 클릭 시 발생이벤트.
     $('#sendApprovalBtn').click(function () {
+        var userId = $('#userId').val();
         if (($('#icrApproval').val() == 'Y' && $("#adminApproval").val() == 'N') || $("#adminApproval").val() == 'Y') {
             var isCheckboxYn = false;
             var arr_checkboxYn = document.getElementsByName("base_chk");
@@ -3437,6 +3439,7 @@ var fn_docEvent = function () {
             }
             if (isCheckboxYn) {
                 layer_open('searchUserPop');
+                nextApprovalSearch(userId);
             } else {
                 fn_alert('alert', "전달할 문서를 선택하세요.");
             }
@@ -3521,6 +3524,23 @@ function searchDept() {
         },
         error: function (err) {
             console.log(err);
+        }
+    });
+}
+
+function nextApprovalSearch(userId) {
+    $.ajax({
+        url: '/common/nextApprovalSearch',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify({ 'userId': userId}),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            $('#searchManger').val(data.NEXT_EMP_NM);
+            if (data.NEXT_EMP_NM) $('#btn_pop_user_search').click();
+        },
+        error: function (err) {
+            $('#searchManger').val('');
         }
     });
 }

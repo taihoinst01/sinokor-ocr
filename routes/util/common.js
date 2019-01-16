@@ -855,4 +855,26 @@ router.post('/updateOcrCount', function (req, res) {
     commonDB.reqQueryParam(queryConfig.sessionConfig.updateOcrCount, param, callbackUpdateOcrCount, req, res);
 });
 
+// 다음 결재자 찾기
+router.post('/nextApprovalSearch', function (req, res) {
+    var userId = req.body.userId;
+    var returnObj;
+    sync.fiber(function () {
+        try {
+            let result = sync.await(oracle.nextApprovalSearch(userId, sync.defer()));
+
+            if (result && result.rows.length > 0) {
+                returnObj = { 'NEXT_EMP_NM' : result.rows[0].NEXT_EMP_NM };
+            } else {
+                returnObj = { 'NEXT_EMP_NM': '' };
+            }
+        } catch (e) {
+            console.log(e);
+            returnObj = { 'NEXT_EMP_NM': '' };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
 module.exports = router;
