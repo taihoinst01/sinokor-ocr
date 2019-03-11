@@ -1938,6 +1938,7 @@ function fn_processFinish(mlData, imgId) {
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 6, 1) + '</td> <!--Paid(Our Share)-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 7, 2) + '</td> <!--OSL(100%)-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+        '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 39, 32) + '</td> <!--사고 일자-->' + 
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 9, 4) + '</td> <!--PREMIUM-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
@@ -2138,6 +2139,7 @@ function fn_ContractNumExtraction() {
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 39, 32) + '</td> <!--사고 일자-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +

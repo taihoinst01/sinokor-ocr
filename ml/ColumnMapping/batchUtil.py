@@ -5,10 +5,10 @@ import re
 from difflib import SequenceMatcher
 
 id = "koreanre"
-pw = "koreanre01"
+pw = "koreanre02"
 sid = "orcl"
 # ip = "10.10.20.205"
-ip = "172.16.53.143"
+ip = "127.0.0.1"
 port = "1521"
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 

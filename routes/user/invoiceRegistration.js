@@ -1194,6 +1194,7 @@ router.post('/uiLearnTraining', function (req, res) {
             console.timeEnd("mlTime");
             returnObj = { code: 200, 'fileName': fileName, 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
         } catch (e) {
+            console.log(e);
             console.log(resPyStr);
             returnObj = { 'code': 500, 'message': e };
 
