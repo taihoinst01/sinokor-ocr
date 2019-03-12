@@ -876,7 +876,15 @@ function detailTable(fileName) {
 
             // UNKNOWN selectbox 제일 위로 올리기
             var columnArr = item.column;
-            columnArr.unshift(columnArr.pop());
+            //columnArr.unshift(columnArr.pop());
+            for (var j = 0; j < columnArr.length; j++) {
+                if (columnArr[j].COLNAME == 'UNKNOWN') {
+                    var temp = columnArr[j];
+                    columnArr.splice(j, 1);
+                    columnArr.unshift(temp);
+                    break;
+                }
+            }
             var entryColArr = item.entryMappingList;
             entryColArr.unshift(entryColArr.pop());
 
