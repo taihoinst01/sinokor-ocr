@@ -24,7 +24,10 @@ router.post('/', function (req, res) {
         //var brkNm = req.body.brkNm.replace(/ /g, "&#32;");
         var brkNm = '';
         var ttyYy = req.body.ttyYy;
+        var invoiceDivCode = req.body.invoiceDivCode;
+        var lossOfDate = req.body.lossOfDate;
         var token = req.session.user.token;
+
         var testData =
             '<?xml version="1.0" encoding="utf-8"?>' +
             '<Root>' +
@@ -49,6 +52,8 @@ router.post('/', function (req, res) {
             '<Column id="ctNm" type="STRING" size="150" />' +
             '<Column id="ttyYy" type="STRING" size="4" />' +
             '<Column id="brkNm" type="STRING" size="70" />' +
+            '<Column id="rmk" type="STRING" size="4000"/>' +
+            '<Column id="lsdt" type="DATE" size="0"/>' +
             '</ColumnInfo>' +
             '<Rows>' +
             '<Row>' +
@@ -56,6 +61,8 @@ router.post('/', function (req, res) {
             '<Col id="ctNm">' + ctNm + '</Col>' +
             '<Col id="ttyYy">' + ttyYy + '</Col>' +
             '<Col id="brkNm">' + brkNm + '</Col>' +
+            '<Col id="rmk">' + invoiceDivCode + '</Col>' +
+            '<Col id="lsdt">' + lossOfDate + '</Col>' +
             '</Row>' +
             '</Rows>' +
             '</Dataset>' +
@@ -69,6 +76,9 @@ router.post('/', function (req, res) {
             '<Column id="ttyYy" type="STRING" size="4" />' +
             '<Column id="brkCd" type="STRING" size="6" />' +
             '<Column id="brkNm" type="STRING" size="70" />' +
+            '<Column id="clamSno" type="INT" size="9"/>' +
+            '<Column id="rmk2" type="STRING" size="4000"/>' +
+            '<Column id="lsdt" type="DATE" size="0"/>' +
             '</ColumnInfo>' +
             '<Rows>' +
             '</Rows>' +
@@ -118,7 +128,9 @@ router.post('/', function (req, res) {
                         <Column id="cdnNm" type="string" size="150"/>	
                         <Column id="ctNm" type="string" size="150"/>	
                         <Column id="ttyYy" type="string" size="4"/>	
-                        <Column id="brkNm" type="string" size="70"/>	
+                        <Column id="brkNm" type="string" size="70"/>
+                        <Column id="rmk" type="STRING" size="4000"/>
+                        <Column id="lsdt" type="DATE" size="0"/>
                     </ColumnInfo>	
                     <Rows>	
                         <Row>	
@@ -126,6 +138,8 @@ router.post('/', function (req, res) {
                             <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL</Col>	
                             <Col id="ttyYy">2014</Col>	
                             <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
+                            <Col id="rmk">OS</Col>
+                            <Col id="lsdt">20160531</Col>
                         </Row>	
                     </Rows>	
                 </Dataset>	
@@ -138,7 +152,10 @@ router.post('/', function (req, res) {
                         <Column id="ctNm" type="string" size="150"/>	
                         <Column id="ttyYy" type="string" size="4"/>	
                         <Column id="brkCd" type="string" size="6"/>	
-                        <Column id="brkNm" type="string" size="70"/>	
+                        <Column id="brkNm" type="string" size="70"/>
+                        <Column id="clamSno" type="INT" size="9"/>
+                        <Column id="rmk2" type="STRING" size="4000"/>
+                        <Column id="lsdt" type="DATE" size="0"/>
                     </ColumnInfo>	
                     <Rows>	
                         <Row>	
@@ -150,6 +167,9 @@ router.post('/', function (req, res) {
                             <Col id="ttyYy">2014</Col>	
                             <Col id="brkCd">MY0088</Col>	
                             <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
+                            <Col id="clamSno">9</Col>
+                            <Col id="rmk2">UPDATE</Col>
+                            <Col id="lsdt">20160531</Col>
                         </Row>	
                         <Row>	
                             <Col id="ctNo">C2014010027280</Col>	
@@ -160,6 +180,9 @@ router.post('/', function (req, res) {
                             <Col id="ttyYy">2014</Col>	
                             <Col id="brkCd">MY0088</Col>	
                             <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
+                            <Col id="clamSno">0</Col>
+                            <Col id="rmk2">NEW</Col>
+                            <Col id="lsdt">20190313</Col>
                         </Row>	
                     </Rows>	
                 </Dataset>	
@@ -203,6 +226,12 @@ router.post('/', function (req, res) {
                                 obj.brkCd = row[i].Col[j]._;
                             } else if (row[i].Col[j].$.id == "brkNm") {
                                 obj.brkNm = row[i].Col[j]._;
+                            } else if (row[i].Col[j].$.id == "clamSno") {
+                                obj.clamSno = row[i].Col[j]._;
+                            } else if (row[i].Col[j].$.id == "rmk2") {
+                                obj.rmk2 = row[i].Col[j]._;
+                            } else if (row[i].Col[j].$.id == "lsdt") {
+                                obj.lsdt = row[i].Col[j]._;
                             }
                         }
                         rowData.push(obj);

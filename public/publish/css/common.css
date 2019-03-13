@@ -5834,7 +5834,7 @@ label[disabled] {
     /*
          * tblBody의 데이터는 필요한 열의 수만큼만 만드시고 헤더와 col의 width는 동일해야 합니다.
          */
-    width: 5910px !important;
+    width: 6080px !important;
     table-layout: fixed;
     height: 30px;
     border-collapse: collapse;

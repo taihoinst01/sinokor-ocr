@@ -1938,6 +1938,7 @@ function fn_processFinish(mlData, imgId) {
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 6, 1) + '</td> <!--Paid(Our Share)-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 7, 2) + '</td> <!--OSL(100%)-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 8, 3) + '</td> <!--OSL(Our Share)-->' +
+        '<td class="dtl_td_dblclcik"></td> <!--사고번호-->' + 
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 39, 32) + '</td> <!--LOSS OF DATE-->' + 
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 9, 4) + '</td> <!--PREMIUM-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
@@ -2027,26 +2028,39 @@ function fn_ContractNumExtraction() {
     var cdnNm = [];
     var ctNm = [];
     var ttyYy = [];
+    var invoiceDivCode = [];
+    var lossOfDate = [];
 
     $('input[name=dtl_chk]').each(function () {
         if ($(this).is(':checked')) {
             var cdnNmLi;
             var ctNmLi;
             var ttyYyLi;
+            var lossOfDateLi;
+            var invoiceDivCodeLi = $(this).closest('tr').find('td').eq(1).find('select').eq(0).val();
 
             if ($(this).closest('tr').find('td').eq(2).find('span').eq(0).text()) {
                 cdnNmLi = $(this).closest('tr').find('td').eq(2).find('span').eq(0).text();
                 ctNmLi = $(this).closest('tr').find('td').eq(3).find('span').eq(0).text();
                 ttyYyLi = $(this).closest('tr').find('td').eq(4).find('span').eq(0).text();
+                lossOfDateLi = $(this).closest('tr').find('td').eq(15).find('span').eq(0).text();
             } else {
                 cdnNmLi = $(this).closest('tr').find('td').eq(2).find('input[type="text"]').eq(0).val();
                 ctNmLi = $(this).closest('tr').find('td').eq(3).find('input[type="text"]').eq(0).val();
                 ttyYyLi = $(this).closest('tr').find('td').eq(4).find('input[type="text"]').eq(0).val();
+                lossOfDateLi = $(this).closest('tr').find('td').eq(15).find('input[type="text"]').eq(0).val();
             }
 
+            //if (cdnNmLi) cdnNm.push(cdnNmLi);
+            //if (ctNmLi) ctNm.push(ctNmLi);
+            //if (ttyYyLi) ttyYy.push(ttyYyLi);
+            //if (invoiceDivCodeLi) invoiceDivCode.push(invoiceDivCodeLi);
+            //if (lossOfDateLi) lossOfDate.push(lossOfDateLi);
             cdnNm.push(cdnNmLi);
             ctNm.push(ctNmLi);
             ttyYy.push(ttyYyLi);
+            invoiceDivCode.push(invoiceDivCodeLi);
+            lossOfDate.push(lossOfDateLi);
         }
     });
 
@@ -2088,6 +2102,16 @@ function fn_ContractNumExtraction() {
         return;
     }
 
+    if (lossOfDate.length == 0) {
+        fn_alert('alert', "사고일자가 없습니다.");
+        return;
+    }
+
+    if (invoiceDivCode.length == 0) {
+        fn_alert('alert', "계산서구분코드가 없습니다.");
+        return;
+    }
+    console.log(ctNm);
     var extCount = (cdnNm.length) * (ctNm.length) * (ttyYy.length);
     var dtlCount = 0;
     
@@ -2105,7 +2129,7 @@ function fn_ContractNumExtraction() {
                 type: 'post',
                 datatype: 'json',
                 async: false,
-                data: JSON.stringify({ cdnNm: cdnNm[l], ctNm: ctNm[l], ttyYy: ttyYy[l] }),
+                data: JSON.stringify({ cdnNm: cdnNm[l], ctNm: ctNm[l], ttyYy: ttyYy[l], lossOfDate: lossOfDate[l], invoiceDivCode: invoiceDivCode[l] }),
                 contentType: 'application/json; charset=UTF-8',
                 beforeSend: function () {
 
@@ -2122,7 +2146,7 @@ function fn_ContractNumExtraction() {
                             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
                             dtlHtml += '<tr>' +
                                 '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-                                '<td class="dtl_td_dblclcik"><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
+                                '<td class="dtl_td_dblclcik">' + data.data[i].rmk2 + '</select></td> <!--계산서구분-->' +
                                 '<td class="dtl_td_dblclcik">' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
                                 '<td class="dtl_td_dblclcik">' + data.data[i].ctNm + '</td> <!--계약명-->' +
                                 '<td class="dtl_td_dblclcik">' + data.data[i].ttyYy + '</td> <!--UY-->' +
@@ -2139,7 +2163,8 @@ function fn_ContractNumExtraction() {
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
-                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 39, 32) + '</td> <!--LOSS OF DATE-->' +
+                                '<td class="dtl_td_dblclcik">' + data.data[i].clamSno + '</td> <!--사고번호-->' +
+                                '<td class="dtl_td_dblclcik">' + data.data[i].lsdt + '</td> <!--LOSS OF DATE-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
