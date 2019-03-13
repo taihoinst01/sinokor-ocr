@@ -551,6 +551,9 @@ function if3(mlData, token, docInfo, done) {
                 '<Column id="rsreInt" type="BIGDECIMAL" size="21"/>' +
                 '<Column id="intTxam" type="BIGDECIMAL" size="21"/>' +
                 '<Column id="spyCost" type="BIGDECIMAL" size="21"/>' +
+                '<Column id="clamSno" type="INT" size="9" />' +
+                '<Column id="rmk2" type="STRING" size="4000" />' +
+                '<Column id="lsdt" type="DATE" size="0" />' +
                 '</ColumnInfo > ' +
                 '<Rows>';
             for (var i = 0; i < mlData.mlExportData.length; i++) {
@@ -558,10 +561,10 @@ function if3(mlData, token, docInfo, done) {
                     data += '' +
                         '<Row>' +
                         '<Col id="imgId">' + mlData.mlDocNum + '</Col>';
-                    if (mlData.mlExportData[i][6] != '') data += '<Col id="imgFileStNo">' + mlData.mlExportData[i][6] + '</Col>';
-                    if (mlData.mlExportData[i][7] != '') data += '<Col id="imgFileEndNo">' + mlData.mlExportData[i][7] + '</Col>';
+                    if (mlData.mlExportData[i][9] != '') data += '<Col id="imgFileStNo">' + mlData.mlExportData[i][9] + '</Col>';
+                    if (mlData.mlExportData[i][10] != '') data += '<Col id="imgFileEndNo">' + mlData.mlExportData[i][10] + '</Col>';
                     if (mlData.mlExportData[i][1] != '') data += '<Col id="rmk">' + mlData.mlExportData[i][1] + '</Col>';
-                    if (mlData.mlExportData[i][8] != '') data += '<Col id="saOcrnCycCd">' + mlData.mlExportData[i][8] + '</Col>';
+                    if (mlData.mlExportData[i][11] != '') data += '<Col id="saOcrnCycCd">' + mlData.mlExportData[i][11] + '</Col>';
                     data += '<Col id="iwowDvCd">1</Col>';
                     if (mlData.mlExportData[i][4] != '') data += '<Col id="fy">' + mlData.mlExportData[i][4] + '</Col>';
                     if (docInfo[1] != '') data += '<Col id="appYrmm">' + docInfo[1] + '</Col>';
@@ -569,36 +572,40 @@ function if3(mlData, token, docInfo, done) {
                     if ('308000' != '') data +='<Col id="deptCd">308000</Col>';
                     if ('308010' != '') data +='<Col id="secd">308010</Col>';
                     if (mlData.mlExportData[i][5] != '') data +='<Col id="ctNo">' + mlData.mlExportData[i][5] + '</Col>';
-                    if (mlData.mlExportData[i][9] != '') data +='<Col id="curCd">' + mlData.mlExportData[i][9] + '</Col>' ;
+                    if (mlData.mlExportData[i][12] != '') data +='<Col id="curCd">' + mlData.mlExportData[i][12] + '</Col>' ;
                     //if ('2019000' != '') data +='<Col id="rgstEmpNo">2019000</Col>';
                     //if (docInfo[3] != '') data +='<Col id="prinEmpNo">' + docInfo[3] + '</Col>';
-                    if (mlData.mlExportData[i][42] != '') data +='<Col id="cscoSaRfrnCnnt2">' + mlData.mlExportData[i][42].replace(/ /gi, '&#32;') + '</Col>';
-                    if (mlData.mlExportData[i][16] != '') data +='<Col id="pre">' + mlData.mlExportData[i][16] + '</Col>';
-                    if (mlData.mlExportData[i][17] != '') data +='<Col id="prePfinAmt">' + mlData.mlExportData[i][17] + '</Col>';
-                    if (mlData.mlExportData[i][18] != '') data += '<Col id="prePfoutAmt">' + mlData.mlExportData[i][18] + '</Col>';
-                    if (mlData.mlExportData[i][19] != '') data += '<Col id="xolPre">' + mlData.mlExportData[i][19] + '</Col>';
-                    if (mlData.mlExportData[i][20] != '') data += '<Col id="icpreOcpre">' + mlData.mlExportData[i][20] + '</Col>';
-                    if (mlData.mlExportData[i][21] != '') data += '<Col id="com">' + mlData.mlExportData[i][21] + '</Col>';
-                    if (mlData.mlExportData[i][22] != '') data += '<Col id="pfcom">' + mlData.mlExportData[i][22] + '</Col>';
-                    if (mlData.mlExportData[i][23] != '') data += '<Col id="brkg">' + mlData.mlExportData[i][23] + '</Col>';
-                    if (mlData.mlExportData[i][24] != '') data += '<Col id="txam">' + mlData.mlExportData[i][24] + '</Col>';
-                    if (mlData.mlExportData[i][25] != '') data += '<Col id="rtrcCom">' + mlData.mlExportData[i][25] + '</Col>';
-                    if (mlData.mlExportData[i][26] != '') data += '<Col id="cdnCnam">' + mlData.mlExportData[i][26] + '</Col>';
-                    if (mlData.mlExportData[i][27] != '') data += '<Col id="prrsCf">' + mlData.mlExportData[i][27] + '</Col>';
-                    if (mlData.mlExportData[i][28] != '') data += '<Col id="pfPrrsCf">' + mlData.mlExportData[i][28] + '</Col>';
-                    if (mlData.mlExportData[i][29] != '') data += '<Col id="prrsRls">' + mlData.mlExportData[i][29] + '</Col>';
-                    if (mlData.mlExportData[i][30] != '') data += '<Col id="pfPrrsRls">' + mlData.mlExportData[i][30] + '</Col>';
-                    if (mlData.mlExportData[i][31] != '') data += '<Col id="cla">' + mlData.mlExportData[i][31] + '</Col>';
-                    if (mlData.mlExportData[i][32] != '') data += '<Col id="lsRcvyAmt">' + mlData.mlExportData[i][32] + '</Col>';
-                    if (mlData.mlExportData[i][33] != '') data += '<Col id="cas">' + mlData.mlExportData[i][33] + '</Col>';
-                    if (mlData.mlExportData[i][34] != '') data += '<Col id="casRfn">' + mlData.mlExportData[i][34] + '</Col>';
-                    if (mlData.mlExportData[i][35] != '') data += '<Col id="lsresCf">' + mlData.mlExportData[i][35] + '</Col>';
-                    if (mlData.mlExportData[i][36] != '') data += '<Col id="lsresRls">' + mlData.mlExportData[i][36] + '</Col>';
-                    if (mlData.mlExportData[i][37] != '') data += '<Col id="claPfinAmt">' + mlData.mlExportData[i][37] + '</Col>';
-                    if (mlData.mlExportData[i][38] != '') data += '<Col id="claPfoutAmt">' + mlData.mlExportData[i][38] + '</Col>';
-                    if (mlData.mlExportData[i][39] != '') data += '<Col id="rsreInt">' + mlData.mlExportData[i][39] + '</Col>';
-                    if (mlData.mlExportData[i][40] != '') data += '<Col id="intTxam">' + mlData.mlExportData[i][40] + '</Col>';
-                    if (mlData.mlExportData[i][41] != '') data += '<Col id="spyCost">' + mlData.mlExportData[i][41] + '</Col>';
+                    if (mlData.mlExportData[i][44] != '') data +='<Col id="cscoSaRfrnCnnt2">' + mlData.mlExportData[i][44].replace(/ /gi, '&#32;') + '</Col>';
+                    if (mlData.mlExportData[i][18] != '') data += '<Col id="pre">' + mlData.mlExportData[i][18] + '</Col>';
+                    if (mlData.mlExportData[i][19] != '') data +='<Col id="prePfinAmt">' + mlData.mlExportData[i][19] + '</Col>';
+                    if (mlData.mlExportData[i][20] != '') data += '<Col id="prePfoutAmt">' + mlData.mlExportData[i][20] + '</Col>';
+                    if (mlData.mlExportData[i][21] != '') data += '<Col id="xolPre">' + mlData.mlExportData[i][21] + '</Col>';
+                    if (mlData.mlExportData[i][22] != '') data += '<Col id="icpreOcpre">' + mlData.mlExportData[i][22] + '</Col>';
+                    if (mlData.mlExportData[i][23] != '') data += '<Col id="com">' + mlData.mlExportData[i][23] + '</Col>';
+                    if (mlData.mlExportData[i][24] != '') data += '<Col id="pfcom">' + mlData.mlExportData[i][24] + '</Col>';
+                    if (mlData.mlExportData[i][25] != '') data += '<Col id="brkg">' + mlData.mlExportData[i][25] + '</Col>';
+                    if (mlData.mlExportData[i][26] != '') data += '<Col id="txam">' + mlData.mlExportData[i][26] + '</Col>';
+                    if (mlData.mlExportData[i][27] != '') data += '<Col id="rtrcCom">' + mlData.mlExportData[i][27] + '</Col>';
+                    if (mlData.mlExportData[i][28] != '') data += '<Col id="cdnCnam">' + mlData.mlExportData[i][28] + '</Col>';
+                    if (mlData.mlExportData[i][29] != '') data += '<Col id="prrsCf">' + mlData.mlExportData[i][29] + '</Col>';
+                    if (mlData.mlExportData[i][30] != '') data += '<Col id="pfPrrsCf">' + mlData.mlExportData[i][30] + '</Col>';
+                    if (mlData.mlExportData[i][31] != '') data += '<Col id="prrsRls">' + mlData.mlExportData[i][31] + '</Col>';
+                    if (mlData.mlExportData[i][32] != '') data += '<Col id="pfPrrsRls">' + mlData.mlExportData[i][32] + '</Col>';
+                    if (mlData.mlExportData[i][33] != '') data += '<Col id="cla">' + mlData.mlExportData[i][33] + '</Col>';
+                    if (mlData.mlExportData[i][34] != '') data += '<Col id="lsRcvyAmt">' + mlData.mlExportData[i][34] + '</Col>';
+                    if (mlData.mlExportData[i][35] != '') data += '<Col id="cas">' + mlData.mlExportData[i][35] + '</Col>';
+                    if (mlData.mlExportData[i][36] != '') data += '<Col id="casRfn">' + mlData.mlExportData[i][36] + '</Col>';
+                    if (mlData.mlExportData[i][37] != '') data += '<Col id="lsresCf">' + mlData.mlExportData[i][37] + '</Col>';
+                    if (mlData.mlExportData[i][38] != '') data += '<Col id="lsresRls">' + mlData.mlExportData[i][38] + '</Col>';
+                    if (mlData.mlExportData[i][39] != '') data += '<Col id="claPfinAmt">' + mlData.mlExportData[i][39] + '</Col>';
+                    if (mlData.mlExportData[i][40] != '') data += '<Col id="claPfoutAmt">' + mlData.mlExportData[i][40] + '</Col>';
+                    if (mlData.mlExportData[i][41] != '') data += '<Col id="rsreInt">' + mlData.mlExportData[i][41] + '</Col>';
+                    if (mlData.mlExportData[i][42] != '') data += '<Col id="intTxam">' + mlData.mlExportData[i][42] + '</Col>';
+                    if (mlData.mlExportData[i][43] != '') data += '<Col id="spyCost">' + mlData.mlExportData[i][43] + '</Col>';
+                    if (mlData.mlExportData[i][6] != '') data += '<Col id="clamSno">' + mlData.mlExportData[i][6] + '</Col>';
+                    if (mlData.mlExportData[i][8] != '') data += '<Col id="rmk2">' + mlData.mlExportData[i][8] + '</Col>';
+                    if (mlData.mlExportData[i][7] != '') data += '<Col id="lsdt">' + mlData.mlExportData[i][7] + '</Col>';
+
                     data += '</Row>';
                 }
             }

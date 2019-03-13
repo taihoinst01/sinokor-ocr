@@ -1931,6 +1931,9 @@ function fn_processFinish(mlData, imgId) {
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 1, null) + '</td> <!--계약명-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 2, null) + '</td> <!--UY-->' +
         '<td class="dtl_td_dblclcik"></td> <!--계약번호-->' +
+        '<td class="dtl_td_dblclcik"></td> <!--사고번호-->' +
+        '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 39, 32) + '</td> <!--LOSS OF DATE-->' + 
+        '<td class="dtl_td_dblclcik"></td> <!--OS상태-->' +
         '<td class="dtl_td_dblclcik"></td> <!--페이지번호 FROM-->' +
         '<td class="dtl_td_dblclcik"></td> <!--페이지번호 TO-->' +
         '<td class="dtl_td_dblclcik"><select><option selected>HFF</option><option>HFS</option><option>HYP</option><option>M01</option><option>M02</option><option>M03</option><option>M04</option>' +
@@ -1942,9 +1945,7 @@ function fn_processFinish(mlData, imgId) {
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 5, 0) + '</td> <!--Paid(100%)-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 6, 1) + '</td> <!--Paid(Our Share)-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 7, 2) + '</td> <!--OSL(100%)-->' +
-        '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 8, 3) + '</td> <!--OSL(Our Share)-->' +
-        '<td class="dtl_td_dblclcik"></td> <!--사고번호-->' + 
-        '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 39, 32) + '</td> <!--LOSS OF DATE-->' + 
+        '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 8, 3) + '</td> <!--OSL(Our Share)-->' +        
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 9, 4) + '</td> <!--PREMIUM-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
         '<td class="dtl_td_dblclcik">' + makeMLSelect(mlData, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
@@ -2151,11 +2152,14 @@ function fn_ContractNumExtraction() {
                             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
                             dtlHtml += '<tr>' +
                                 '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-                                '<td class="dtl_td_dblclcik">' + data.data[i].rmk2 + '</select></td> <!--계산서구분-->' +
+                                '<td class="dtl_td_dblclcik"><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></select></td> <!--계산서구분-->' +
                                 '<td class="dtl_td_dblclcik">' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
                                 '<td class="dtl_td_dblclcik">' + data.data[i].ctNm + '</td> <!--계약명-->' +
                                 '<td class="dtl_td_dblclcik">' + data.data[i].ttyYy + '</td> <!--UY-->' +
                                 '<td class="dtl_td_dblclcik">' + data.data[i].ctNo + '</td> <!--계약번호-->' +
+                                '<td class="dtl_td_dblclcik"><input type="text" name="" value="' + data.data[i].clamSno + '" /></td> <!--사고번호-->' +
+                                '<td class="dtl_td_dblclcik"><input type="text" name="" value="' + data.data[i].lsdt + '" /></td> <!--사고일자-->' +
+                                '<td class="dtl_td_dblclcik"><input type="text" name="" value="' + data.data[i].rmk2 + '" /></td> <!--OS상태-->' +
                                 '<td class="dtl_td_dblclcik">' + makePageNum(1, thumbImgs.length) + '</td> <!--페이지번호 FROM-->' +
                                 '<td class="dtl_td_dblclcik">' + makePageNum(thumbImgs.length, thumbImgs.length) + '</td> <!--페이지번호 TO-->' +
                                 '<td class="dtl_td_dblclcik"><select><option selected>HFF</option><option>HFS</option><option>HYP</option><option>M01</option><option>M02</option><option>M03</option><option>M04</option>' +
@@ -2167,9 +2171,7 @@ function fn_ContractNumExtraction() {
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 5, 0) + '</td> <!--Paid(100%)-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 6, 1) + '</td> <!--Paid(Our Share)-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 7, 2) + '</td> <!--OSL(100%)-->' +
-                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +
-                                '<td class="dtl_td_dblclcik">' + data.data[i].clamSno + '</td> <!--사고번호-->' +
-                                '<td class="dtl_td_dblclcik">' + data.data[i].lsdt + '</td> <!--LOSS OF DATE-->' +
+                                '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 8, 3) + '</td> <!--OSL(Our Share)-->' +                               
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 9, 4) + '</td> <!--PREMIUM-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 10, 5) + '</td> <!--PREMIUM P/F ENT-->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 11, 6) + '</td> <!--PREMIUM P/F WOS-->' +
@@ -3366,7 +3368,7 @@ var fn_docEvent = function () {
                             }
                         } else if (j >= 2 && j <= 5) {
                             value = dtlTdList.eq(j).text();
-                        } else if (j >= 6 || j == 1) {
+                        } else if (j >= 9 || j == 1) {
                             if (dtlTdList.eq(j).find('.selected > span').length == 1) {
                                 //value = dtlTdList.eq(j).find('select option:selected').text();
                                 //loc = dtlTdList.eq(j).find('select option:selected').val().split('_')[0];
@@ -3380,7 +3382,9 @@ var fn_docEvent = function () {
                             } else {
                                 value = '';
                             }
-                        }
+                        } else if (j >= 6 && j <= 8) {
+                            value = dtlTdList.eq(j).find('input[type="text"]').val();
+                        } 
                         mlExporttdArr.push(value);
                     }
 
