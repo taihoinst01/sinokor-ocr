@@ -3332,7 +3332,7 @@ var fn_docEvent = function () {
                     var docNum = popDoctd.eq(1).text(); //문서번호
                     var appYrmm = popDoctd.eq(6).text(); //마감년월
                     var deptNm = popDoctd.eq(4).text(); //소속부서명
-                    var prinEmpNo = popDoctd.eq(1).text(); //문서담당자명
+                    var prinEmpNo = popDoctd.eq(3).text(); //문서담당자명
                     var memo = popDoctd.eq(7).find('input[type="text"]').eq(0).val();
                     // 가져온 값을 배열에 담는다.
                     docInfoTdArr.push(docNum);
@@ -3427,7 +3427,8 @@ var fn_docEvent = function () {
                         }
                     }
                 }
-                
+                console.log(docInfoTdArr);
+                return;
                 $.ajax({
                     url: '/invoiceRegistration/sendApprovalDocument',
                     type: 'post',
