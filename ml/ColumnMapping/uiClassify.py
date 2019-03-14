@@ -18,7 +18,7 @@ id = "koreanre"
 pw = "koreanre02"
 sid = "orcl"
 # ip = "10.10.20.205"
-ip = "127.0.0.1"
+ip = "172.16.53.150"
 port = "1521"
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
@@ -132,7 +132,7 @@ def eval(inputJson, docType):
 
         # Azure ml 컬럼 매핑 추출
         params = {"data": json.dumps(inputArr), "type": "columnMapping"}
-        response = requests.post(url='http://127.0.0.1:8888/ml/api', data=params)
+        response = requests.post(url='http://172.16.53.150:8888/ml/api', data=params)
         #response = requests.post(url='http://172.16.53.143:8888/ml/api', data=params)
         inputArr = response.json()
 
