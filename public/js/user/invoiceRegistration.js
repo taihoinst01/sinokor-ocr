@@ -1550,6 +1550,7 @@ var ocrResult = function () {
             '<td><input type="text" name=""></td> <!--MISCELLANEOUS -->' +
             '<td><input type="text" name=""></td> <!--YOUR REF -->' +
             '<td><input type="text" name=""></td> <!--YOUR REF -->' +
+            '<td><input type="text" name=""></td> <!--YOUR REF -->' +
             '</tr> '
         $('#tbody_dtlList').append(appendRowHtml);
         $('#tbody_dtlList input[type=checkbox]:last').ezMark();
@@ -1634,6 +1635,7 @@ var ocrResult = function () {
                         '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(41).find('span').eq(0).text() + '" ></td> <!--YOUR REF -->' +
                         '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(42).find('span').eq(0).text() + '" ></td> <!--MISCELLANEOUS -->' +
                         '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(43).find('span').eq(0).text() + '" ></td> <!--YOUR REF -->' +
+                        '<td><input type="text" name="" value="' + $(this).closest('tr').find('td').eq(44).find('span').eq(0).text() + '" ></td> <!--YOUR REF -->' +
                         '</tr>';
                     $('#tbody_dtlList').append(appendRowHtml);
                     $('#tbody_dtlList input[type=checkbox]:last').ezMark();
