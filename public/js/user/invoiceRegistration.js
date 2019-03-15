@@ -3427,8 +3427,7 @@ var fn_docEvent = function () {
                         }
                     }
                 }
-                console.log(docInfoTdArr);
-                return;
+
                 $.ajax({
                     url: '/invoiceRegistration/sendApprovalDocument',
                     type: 'post',
