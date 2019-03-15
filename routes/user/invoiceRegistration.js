@@ -554,7 +554,7 @@ function if3(mlData, token, docInfo, done) {
                 '<Column id="clamSno" type="INT" size="9" />' +
                 '<Column id="rmk2" type="STRING" size="4000" />' +
                 '<Column id="lsdt" type="DATE" size="0" />' +
-                '</ColumnInfo > ' +
+                '</ColumnInfo> ' +
                 '<Rows>';
             for (var i = 0; i < mlData.mlExportData.length; i++) {
                 if (mlData.mlExportData[i][0] == 'Y') {

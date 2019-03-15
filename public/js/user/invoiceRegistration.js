@@ -2059,11 +2059,13 @@ function fn_ContractNumExtraction() {
                 lossOfDateLi = $(this).closest('tr').find('td').eq(15).find('input[type="text"]').eq(0).val();
             }
 
+            //운영
             //if (cdnNmLi) cdnNm.push(cdnNmLi);
             //if (ctNmLi) ctNm.push(ctNmLi);
             //if (ttyYyLi) ttyYy.push(ttyYyLi);
             //if (invoiceDivCodeLi) invoiceDivCode.push(invoiceDivCodeLi);
             //if (lossOfDateLi) lossOfDate.push(lossOfDateLi);
+            //개발
             cdnNm.push(cdnNmLi);
             ctNm.push(ctNmLi);
             ttyYy.push(ttyYyLi);
