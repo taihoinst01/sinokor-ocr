@@ -1,5 +1,6 @@
 var propertiesConfig = {
     isOperation: 'N',
+    token : '',
     common: {
 
     },

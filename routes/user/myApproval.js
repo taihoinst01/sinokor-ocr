@@ -100,7 +100,12 @@ var fnSearchApprovalList = function (req, res) {
 // [POST] 문서 상세 리스트 조회 IF4
 router.post('/searchApprovalDtlList', function (req, res) {
     var returnObj = {};
-    var token = req.session.user.token;
+    var token = '';
+    if (propertiesConfig.token == '') {
+        token = req.session.user.token;
+    } else {
+        token = propertiesConfig.token;
+    }   
     sync.fiber(function () {
         try {
            // var result = sync.await(oracle.searchApprovalDtlList([req.body.docNum], sync.defer()));

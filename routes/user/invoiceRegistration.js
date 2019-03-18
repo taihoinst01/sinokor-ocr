@@ -435,7 +435,11 @@ router.post('/sendApprovalDocument', function (req, res) {
     var memo = req.body.memo;
     var token = '';
     if (propertiesConfig.isOperation == 'Y') {
-        token = req.session.user.token;
+        if (propertiesConfig.token == '') {
+            token = req.session.user.token;
+        } else {
+            token = propertiesConfig.token;
+        }   
     }
     
     var returnObj = {};
