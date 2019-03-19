@@ -539,9 +539,9 @@ router.post('/ocr', function (req, res) {
 
             var buffer;
             try {
-                var base64 = new Buffer(data, 'binary').toString('base64');
-                var binaryString = new Buffer(base64, 'base64').toString('binary');
-                buffer = new Buffer(binaryString, "binary");
+                var base64 = Buffer.from(data, 'binary').toString('base64');
+                var binaryString = Buffer.from(base64, 'base64').toString('binary');
+                buffer = Buffer.from(binaryString, "binary");
             } catch (e) {
                 res.send({ error: '파일 읽기 도중 버퍼 에러가 발생했습니다.' });
             } finally {
