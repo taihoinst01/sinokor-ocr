@@ -101,14 +101,12 @@ var fnSearchApprovalList = function (req, res) {
 router.post('/searchApprovalDtlList', function (req, res) {
     var returnObj = {};
     var token = '';
-    if (propertiesConfig.token == '') {
-        token = req.session.user.token;
-    } else {
-        token = propertiesConfig.token;
-    }   
+    if (propertiesConfig.isOperation == 'Y') {
+        token = (propertiesConfig.token == '') ? req.session.user.token : propertiesConfig.token;
+    }
     sync.fiber(function () {
         try {
-           // var result = sync.await(oracle.searchApprovalDtlList([req.body.docNum], sync.defer()));
+            //var result = sync.await(oracle.searchApprovalDtlList([req.body.docNum], sync.defer()));
             var data =
                 '<?xml version="1.0" encoding="utf-8"?>' +
                 '<Root>' +

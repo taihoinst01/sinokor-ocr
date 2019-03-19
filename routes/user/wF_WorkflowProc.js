@@ -26,12 +26,8 @@ router.post('/', function (req, res) {
         var ttyYy = req.body.ttyYy;
         var invoiceDivCode = req.body.invoiceDivCode;
         var lossOfDate = req.body.lossOfDate;
-        var token 
-        if (propertiesConfig.token == '') {
-            token = req.session.user.token;
-        } else {
-            token = propertiesConfig.token;
-        }        
+        var token = (propertiesConfig.token == '') ? req.session.user.token : propertiesConfig.token;
+
         var testData =
             '<?xml version="1.0" encoding="utf-8"?>' +
             '<Root>' +
