@@ -52,7 +52,7 @@ router.post('/', function (req, res) {
             '<Column id="ctNm" type="STRING" size="150" />' +
             '<Column id="ttyYy" type="STRING" size="4" />' +
             '<Column id="brkNm" type="STRING" size="70" />' +
-            '<Column id="rmk" type="STRING" size="4000"/>' +
+            '<Column id="rmk1" type="STRING" size="4000"/>' +
             '<Column id="lsdt" type="DATE" size="0"/>' +
             '</ColumnInfo>' +
             '<Rows>' +
@@ -61,7 +61,7 @@ router.post('/', function (req, res) {
             '<Col id="ctNm">' + ctNm + '</Col>' +
             '<Col id="ttyYy">' + ttyYy + '</Col>' +
             '<Col id="brkNm">' + brkNm + '</Col>' +
-            '<Col id="rmk">' + invoiceDivCode + '</Col>' +
+            '<Col id="rmk1">' + invoiceDivCode + '</Col>' +
             '<Col id="lsdt">' + lossOfDate + '</Col>' +
             '</Row>' +
             '</Rows>' +
@@ -129,7 +129,7 @@ router.post('/', function (req, res) {
                         <Column id="ctNm" type="string" size="150"/>	
                         <Column id="ttyYy" type="string" size="4"/>	
                         <Column id="brkNm" type="string" size="70"/>
-                        <Column id="rmk" type="STRING" size="4000"/>
+                        <Column id="rmk1" type="STRING" size="4000"/>
                         <Column id="lsdt" type="DATE" size="0"/>
                     </ColumnInfo>	
                     <Rows>	
@@ -138,7 +138,7 @@ router.post('/', function (req, res) {
                             <Col id="ctNm">TMIM&#32;-&#32;NON&#32;MARINE&#32;XOL</Col>	
                             <Col id="ttyYy">2014</Col>	
                             <Col id="brkNm">WILLIS&#32;(MALAYSIA)</Col>	
-                            <Col id="rmk">OS</Col>
+                            <Col id="rmk1">OS</Col>
                             <Col id="lsdt">20160531</Col>
                         </Row>	
                     </Rows>	

@@ -2051,12 +2051,12 @@ function fn_ContractNumExtraction() {
                 cdnNmLi = $(this).closest('tr').find('td').eq(2).find('span').eq(0).text();
                 ctNmLi = $(this).closest('tr').find('td').eq(3).find('span').eq(0).text();
                 ttyYyLi = $(this).closest('tr').find('td').eq(4).find('span').eq(0).text();
-                lossOfDateLi = $(this).closest('tr').find('td').eq(15).find('span').eq(0).text();
+                lossOfDateLi = $(this).closest('tr').find('td').eq(7).find('span').eq(0).text();
             } else {
                 cdnNmLi = $(this).closest('tr').find('td').eq(2).find('input[type="text"]').eq(0).val();
                 ctNmLi = $(this).closest('tr').find('td').eq(3).find('input[type="text"]').eq(0).val();
                 ttyYyLi = $(this).closest('tr').find('td').eq(4).find('input[type="text"]').eq(0).val();
-                lossOfDateLi = $(this).closest('tr').find('td').eq(15).find('input[type="text"]').eq(0).val();
+                lossOfDateLi = $(this).closest('tr').find('td').eq(7).find('input[type="text"]').eq(0).val();
             }
 
             if (IS_OPERATION == 'Y') {
@@ -2064,7 +2064,7 @@ function fn_ContractNumExtraction() {
                 if (ctNmLi) ctNm.push(ctNmLi);
                 if (ttyYyLi) ttyYy.push(ttyYyLi);
                 if (invoiceDivCodeLi) invoiceDivCode.push(invoiceDivCodeLi);
-                if (lossOfDateLi) lossOfDate.push(lossOfDateLi);
+                lossOfDate.push(lossOfDateLi);
             } else {
                 cdnNm.push(cdnNmLi);
                 ctNm.push(ctNmLi);
@@ -2110,11 +2110,6 @@ function fn_ContractNumExtraction() {
 
     if (ttyYy.length == 0) {
         fn_alert('alert', "UY가 없습니다.");
-        return;
-    }
-
-    if (lossOfDate.length == 0) {
-        fn_alert('alert', "사고일자가 없습니다.");
         return;
     }
 
