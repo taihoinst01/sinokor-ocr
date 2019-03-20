@@ -1141,7 +1141,14 @@ var _init = function () {
     datePickerEvent();
     fn_search();
     searchDept();
+    searchMangerBtnEvent();
 };
+
+var searchMangerBtnEvent = function () {
+    $('#searchManger').keyup(function (e) {
+        if (e.keyCode == 13) $('#btn_pop_user_search').click();
+    });
+}
 
 function nextApprovalSearch(userId) {
     $.ajax({

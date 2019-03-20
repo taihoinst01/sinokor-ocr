@@ -105,7 +105,14 @@ var _init = function () {
     popUpEvent();
     changeDocPopupImage();
     searchDept(); //부서조회
+    searchMangerBtnEvent();
 };
+
+var searchMangerBtnEvent = function () {
+    $('#searchManger').keyup(function (e) {
+        if (e.keyCode == 13) $('#btn_pop_user_search').click();
+    });
+}
 
 /****************************************************************************************
  * SCROLLBAR EVENT
