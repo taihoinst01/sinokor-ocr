@@ -17,7 +17,6 @@ router.get('/', function (req, res) {
 });
 
 router.post('/', function (req, res) {
-    
     if (propertiesConfig.isOperation == 'Y') {
         var cdnNm = req.body.cdnNm.replace(/&/g, '').replace(/  /g, ' ').replace(/ /g, "&#32;");
         var ctNm = req.body.ctNm.replace(/&/g, '').replace(/  /g, ' ').replace(/ /g, "&#32;");
@@ -209,6 +208,7 @@ router.post('/', function (req, res) {
 
                     for (var i in row) {
                         var obj = {};
+                        obj.rmk1 = invoiceDivCode;
                         for (var j in row[i].Col) {
                             if (row[i].Col[j].$.id == "ctNo") {
                                 obj.ctNo = row[i].Col[j]._;

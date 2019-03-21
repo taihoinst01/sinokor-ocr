@@ -2124,7 +2124,7 @@ function fn_ContractNumExtraction() {
         fn_alert('alert', "계산서구분코드가 없습니다.");
         return;
     }
-    console.log(ctNm);
+
     var extCount = (cdnNm.length) * (ctNm.length) * (ttyYy.length);
     var dtlCount = 0;
     
@@ -2159,7 +2159,7 @@ function fn_ContractNumExtraction() {
                             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
                             dtlHtml += '<tr>' +
                                 '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-                                '<td class="dtl_td_dblclcik"><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></select></td> <!--계산서구분-->' +
+                                '<td class="dtl_td_dblclcik">' + invOptionSelected(data.data[i].rmk1) + '</td> <!--계산서구분-->' +
                                 '<td class="dtl_td_dblclcik">' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
                                 '<td class="dtl_td_dblclcik">' + data.data[i].ctNm + '</td> <!--계약명-->' +
                                 '<td class="dtl_td_dblclcik">' + data.data[i].ttyYy + '</td> <!--UY-->' +
@@ -2364,6 +2364,10 @@ function fn_ContractNumExtraction() {
         */
     }, 1000);
 
+    function invOptionSelected(target) {
+        return '<select><option selected>' + target + '</option></select>';
+
+    }
     function makeMLSelect(mlData, colnum, entry) {
 
         var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileName + '\')" onmousedown="zoomImg(this)">';
