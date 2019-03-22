@@ -2133,6 +2133,7 @@ function fn_ContractNumExtraction() {
     addProgressBar(70, 99);
     var dtlHtml = '';
     var existCntNum = [];
+    console.log(invoiceDivCode);
     setTimeout(function () {
         var ifCount = 0;
 
@@ -2148,13 +2149,13 @@ function fn_ContractNumExtraction() {
 
                 },
                 success: function (data) {
+                    var dtlHtml = '';
                     ifCount++;
                     if (ifCount == 1) { // 최초 ajax 후
                         $("#tbody_dtlList").empty();
                     }
                     for (var i in data.data) {                       
-
-                        if (existCntNum.indexOf(data.data[i].ctNo) < 0) {
+                        //if (existCntNum.indexOf(data.data[i].ctNo) < 0) {
                             existCntNum.push(data.data[i].ctNo);
                             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
                             dtlHtml += '<tr>' +
@@ -2207,7 +2208,7 @@ function fn_ContractNumExtraction() {
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 34, 29) + '</td> <!--MISCELLANEOUS -->' +
                                 '<td class="dtl_td_dblclcik">' + makeMLSelect(dataVal, 35, null) + '</td> <!--YOUR REF -->' +
                                 '</tr>';
-                        }
+                        //}
 
                     }
 
@@ -2365,7 +2366,16 @@ function fn_ContractNumExtraction() {
     }, 1000);
 
     function invOptionSelected(target) {
-        return '<select><option selected>' + target + '</option></select>';
+        var option = ['SA', 'OS', 'Claim Note'];
+        var selectHTML = '<select>';
+        for (var idx = 0; idx < option.length; idx++) {
+            if (option[idx] == target) {
+                selectHTML += '<option selected>' + target + '</option>';
+            } else {
+                selectHTML += '<option>' + option[idx] + '</option>';
+            }
+        }
+        return selectHTML;
 
     }
     function makeMLSelect(mlData, colnum, entry) {
